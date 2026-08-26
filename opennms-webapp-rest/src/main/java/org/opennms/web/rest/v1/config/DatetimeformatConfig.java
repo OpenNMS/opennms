@@ -25,7 +25,7 @@ import java.time.ZoneId;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "DatetimeformatConfig", description = "Time zone and date format the web UI should render timestamps with.")
+@Schema(name = "DatetimeformatConfig", description = "Time zone and date format the web UI renders timestamps with.")
 public class DatetimeformatConfig {
 
     @Schema(description = "IANA time zone id, taken from the user's session when one is set and from the server default otherwise.", example = "America/New_York")

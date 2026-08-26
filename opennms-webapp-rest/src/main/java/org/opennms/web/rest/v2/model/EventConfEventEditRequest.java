@@ -33,7 +33,7 @@ import java.io.Serializable;
 @XmlRootElement(name = "eventEdit")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Schema(name = "EventConfEventEditRequest",
-        description = "Updates an existing EventConf event. Both members are optional: send 'event' to replace the event definition, 'enabled' to toggle it, or both.")
+        description = "Updates an existing EventConf event. `event` is required: the whole definition is replaced from it and `enabled` is applied with it. A body carrying only `enabled` fails with a 500.")
 public class EventConfEventEditRequest implements Serializable {
 
     @Schema(description = "Whether the event participates in event matching.", example = "true")

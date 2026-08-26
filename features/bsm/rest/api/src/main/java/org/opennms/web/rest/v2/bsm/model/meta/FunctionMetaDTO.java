@@ -47,7 +47,7 @@ public class FunctionMetaDTO {
     @XmlAttribute
     private FunctionType type;
 
-    @Schema(description = "Function name. Use it as the `type` of a `map-function` or "
+    @Schema(description = "Function name, used as the `type` of a `map-function` or "
             + "`reduce-function` object.",
             example = "Identity", required = true)
     @XmlAttribute(name="name", required=true)

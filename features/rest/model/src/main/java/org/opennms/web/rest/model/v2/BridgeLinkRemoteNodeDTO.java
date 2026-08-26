@@ -33,7 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="bridgeLinkRemoteNode")
 @JsonRootName("bridgeLinkRemoteNode")
-@Schema(description = "The far end of a shared bridge segment. Every field is a display string built for the JSP UI.")
+@Schema(description = "The far end of a shared bridge segment. Every field is a display string.")
 public class BridgeLinkRemoteNodeDTO {
 
     private String bridgeRemote;

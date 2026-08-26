@@ -393,7 +393,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
     @Override
     @Operation(summary = "Get one monitored service",
             description = """
-                    Not implemented. This endpoint has no single-entity lookup, so every identifier is answered with 501 and no body. Read a single service through `/nodes/{nodeCriteria}/ipinterfaces/{ipAddress}/services/{service}` or filter the collection with `_s=id==1017`.""",
+                    This endpoint has no single-entity lookup, so every identifier is answered with 501 and no body.""",
             operationId = "ifServicesGet")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = """
@@ -410,9 +410,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
     @Override
     @Operation(summary = "Create a monitored service",
             description = """
-                    Not supported here: add services under `/nodes/{nodeCriteria}/ipinterfaces/{ipAddress}/services` or let capsd detect them.
-
-                    The body is mapped to an entity before the 501 is raised, and that mapping reads `serviceType.id`, so a body without a `serviceType` fails with 500 instead.""",
+                    Answered with 501. The body is mapped to an entity before the 501 is raised, and that mapping reads `serviceType.id`, so a body without a `serviceType` fails with 500 instead.""",
             operationId = "ifServicesCreate")
     @ApiResponses({
             @ApiResponse(responseCode = "500", description = """
@@ -456,7 +454,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
     @Override
     @Operation(summary = "Update the monitored services matching a query",
             description = """
-                    Sets named properties on every monitored service matching the query, which is how services are moved in and out of maintenance mode. Setting `status=F` forces a service unmanaged and `status=A` returns it to managed. Application membership changes send `applicationChanged` events. At most `limit` entities are affected, so this touches ten entities per call unless a larger `limit` is given.
+                    Sets named properties on every monitored service matching the query. Setting `status=F` forces a service unmanaged and `status=A` returns it to managed. Application membership changes send `applicationChanged` events. At most `limit` entities are affected, ten by default.
 
                     A service whose status did not actually change is skipped rather than reported, so the operation answers 204 whether or not anything changed.
 
@@ -490,7 +488,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
     @Override
     @Operation(summary = "Update one monitored service",
             description = """
-                    Not reachable. The form-parameter handler looks the service up first and that lookup is not implemented, and the JSON or XML replacement handler is not implemented either, so both answer 501. Use the collection-level PUT with an `_s` expression instead.""",
+                    Both the JSON or XML replacement form and the form-parameter form answer 501.""",
             operationId = "ifServicesUpdate")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = """
@@ -540,7 +538,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
     @Override
     @Operation(summary = "Delete one monitored service",
             description = """
-                    Not implemented: the lookup this needs is not implemented for monitored services.""",
+                    Answered with 501 for every identifier.""",
             operationId = "ifServicesDelete")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = """

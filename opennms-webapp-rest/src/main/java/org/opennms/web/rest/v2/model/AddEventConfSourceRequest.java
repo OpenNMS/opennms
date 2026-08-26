@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "AddEventConfSourceRequest", description = "Request body used to create an empty EventConf source.")
 public class AddEventConfSourceRequest {
 
-    @Schema(description = "Source name. Conventionally the event file basename, without the '.xml' extension.",
+    @Schema(description = "Source name.",
             example = "Cisco.syslog.events", required = true)
     private String name;
 

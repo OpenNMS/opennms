@@ -52,15 +52,13 @@ import org.opennms.web.rest.v2.model.TrapdConfigDto;
         Trapd API V2.
 
         Reads and replaces the whole trapd configuration. There is no partial update: `PUT /trapd/config`
-        and both upload endpoints replace the stored configuration with the body they are given, so send a
-        complete document rather than the fields you want to change. `snmpTrapPort` and `newSuspectOnTrap`
-        must be present; the remaining numeric fields fall back to the defaults in
-        `trapd-configuration.xsd` when omitted.
+        and both upload endpoints replace the stored configuration with the body they are given.
+        `snmpTrapPort` and `newSuspectOnTrap` must be present; the remaining numeric fields fall back to
+        the defaults in `trapd-configuration.xsd` when omitted.
 
         SNMPv3 passphrases are masked as `******` by `GET /trapd/config`. Sending a masked value back on a
-        user that already has an `id` keeps the stored passphrase, which makes read-modify-write safe
-        without handling cleartext. Sending a masked value for a user id that does not already exist is
-        rejected with a 400. The two download endpoints return passphrases in cleartext, not masked.""")
+        user that already has an `id` keeps the stored passphrase. Sending a masked value for a user id
+        that does not already exist is rejected with a 400. The two download endpoints return passphrases in cleartext, not masked.""")
 public interface TrapdRestApi {
 
     String TRAPD_CONFIG_JSON_EXAMPLE = """
@@ -224,8 +222,8 @@ public interface TrapdRestApi {
     @Operation(
             summary = "Get trapd configuration",
             description = """
-        Retrieve the current trapd configuration. SNMPv3 passphrases are returned masked as `******`;
-        send those masked values straight back to `PUT /trapd/config` to keep the stored credentials.""",
+        Retrieve the current trapd configuration. SNMPv3 passphrases are returned masked as `******`; a
+        masked value sent back to `PUT /trapd/config` keeps the stored credentials.""",
             operationId = "getTrapdConfiguration"
     )
     @ApiResponses(value = {

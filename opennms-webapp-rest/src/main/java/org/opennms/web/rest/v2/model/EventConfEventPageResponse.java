@@ -34,7 +34,7 @@ public class EventConfEventPageResponse {
     @Schema(description = "Total number of events matching the filter, ignoring pagination.", example = "132")
     public Integer totalRecords;
 
-    @Schema(description = "The requested page of events. Named after sources for historical reasons."
+    @Schema(description = "The requested page of events, under a key named for sources."
             + " Each entry's createdTime and lastModified come back as epoch milliseconds.")
     public List<EventConfEventDto> eventConfSourceList;
 }

@@ -149,8 +149,8 @@ public class UserRestService extends OnmsRestService {
             description = """
                     Return the `users.xml` entry for the authenticated principal. `password` and `passwordSalt`
                     are stripped from the response, so they are absent rather than masked.
-                    An authenticated principal that has no `users.xml` entry (a Spring Security or LDAP-only
-                    login, for instance) yields an empty body with status 204.""",
+                    An authenticated principal that has no `users.xml` entry yields an empty body with status
+                    204.""",
             operationId = "getAuthenticatedUserV1"
     )
     @ApiResponses(value = {
@@ -223,8 +223,8 @@ public class UserRestService extends OnmsRestService {
             description = """
                     Create a user from an XML `<user>` document. Only `application/xml` is consumed; a JSON body is
                     rejected with 415.
-                    Posting a `user-id` that already exists overwrites that entry rather than failing, so this is a
-                    replace as much as a create. `password` has to be present: a body without one fails with 500.
+                    Posting a `user-id` that already exists overwrites that entry rather than failing. `password`
+                    has to be present: a body without one fails with 500.
                     The response carries no entity; the new user's URI is in the `Location` header.""",
             operationId = "addUserV1"
     )

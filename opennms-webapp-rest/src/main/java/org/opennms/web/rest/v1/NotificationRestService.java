@@ -97,8 +97,8 @@ public class NotificationRestService extends OnmsRestService {
                     Return one notification by id, including the per-user delivery records in `destinations`.
                     `ackUser` and `ackTime` carry the `answeredBy` and `respondTime` columns, so they are null
                     while the notification is outstanding.
-                    Timestamps are epoch milliseconds in JSON and ISO-8601 strings in XML, whatever the schema
-                    says.""",
+                    The derived schema shows `date-time`; the wire carries epoch milliseconds in JSON and ISO-8601
+                    strings in XML.""",
             operationId = "getNotificationV1"
     )
     @ApiResponses(value = {
@@ -164,7 +164,7 @@ public class NotificationRestService extends OnmsRestService {
     @Operation(
             summary = "Count all notifications",
             description = "Return the total number of notification rows as a plain-text integer. Query parameters "
-                    + "are ignored, so this is not a count of a filtered set.",
+                    + "are ignored.",
             operationId = "getNotificationCountV1"
     )
     @ApiResponses(value = {
@@ -265,9 +265,9 @@ public class NotificationRestService extends OnmsRestService {
                     says otherwise.
                     Filters are `OnmsNotification` property names, with `node.*`, `event.*`, `ipInterface.*`,
                     `snmpInterface.*` and `usersNotified.*` reachable through their aliases. Outstanding
-                    notifications are the ones with `answeredBy=null`, which the filter syntax expresses as
-                    `answeredBy=null`. `limit` (default 10), `offset`, `orderBy`, `order`, `match` and `comparator`
-                    shape the result. A filter name that is not a property of the entity fails with 500.""",
+                    notifications are the ones matching `answeredBy=null`. `limit` (default 10), `offset`,
+                    `orderBy`, `order`, `match` and `comparator` shape the result. A filter name that is not a
+                    property of the entity fails with 500.""",
             operationId = "getNotificationsV1"
     )
     @ApiResponses(value = {
@@ -388,8 +388,8 @@ public class NotificationRestService extends OnmsRestService {
             summary = "Acknowledge or unacknowledge matching notifications",
             description = """
                     Set or clear the acknowledgement on every notification matching the filters in the form body.
-                    Fields other than `ack` are read as notification filters, so scope the request with `notifyId`,
-                    `nodeId` or another `OnmsNotification` property.
+                    Fields other than `ack` are read as filters on `OnmsNotification` property names such as
+                    `notifyId` and `nodeId`.
                     `ack` is optional here and defaults to `false`, and only the exact string `true`
                     acknowledges. The default limit of 10 applies, so a large match set is processed one page at a
                     time. A body that matches nothing still returns 204.""",
@@ -434,12 +434,11 @@ public class NotificationRestService extends OnmsRestService {
     @Operation(
             summary = "Trigger a destination path",
             description = """
-                    Run every notification command of every target on a destination path, as a delivery test. The
-                    request takes no body and requires `ROLE_ADMIN`.
+                    Run every notification command of every target on a destination path. The request takes no
+                    body and requires `ROLE_ADMIN`.
                     A path name with no targets, including one that does not exist in `destinationPaths.xml`,
                     returns 204 without doing anything. Otherwise the commands are executed synchronously and the
-                    response is 202 once they have all been attempted, so it does not report per-target delivery
-                    success.
+                    response is 202 once they have all been attempted.
                     Only the path's own targets are used; escalation levels are not walked.""",
             operationId = "triggerDestinationPathV1"
     )

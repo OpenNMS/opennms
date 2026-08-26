@@ -72,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
         KSC (Key SNMP Customized) report API, backed by `ksc-performance-reports.xml`.
 
         A KSC report is a numbered collection of graph definitions. The id is chosen by the caller, not
-        assigned by the server, and it is what every other operation addresses.
+        assigned by the server, and every other operation addresses the report by it.
 
         `timespan` on a graph is validated against a fixed list and silently replaced with `7_day` when it
         does not match, so an unrecognised timespan is accepted rather than rejected.
@@ -99,7 +99,7 @@ public class KscRestService extends OnmsRestService {
 
         This listing is terse: only `id` and `label` are populated. `show_timespan_button`,
         `show_graphtype_button` and `graphs_per_line` come back null and `kscGraph` comes back empty even
-        for reports that set them. Fetch a single report to see those fields.""",
+        for reports that set them.""",
             operationId = "getKscReports"
     )
     @ApiResponses(value = {
@@ -142,8 +142,8 @@ public class KscRestService extends OnmsRestService {
             description = """
         Return a single KSC report with all of its graph definitions.
 
-        Unlike the listing, this form populates `show_timespan_button`, `show_graphtype_button`,
-        `graphs_per_line` and the `kscGraph` array. `graphs_per_line` is 0 when the report does not set it.""",
+        `show_timespan_button`, `show_graphtype_button`, `graphs_per_line` and the `kscGraph` array are all
+        populated. `graphs_per_line` is 0 when the report does not set it.""",
             operationId = "getKscReport"
     )
     @ApiResponses(value = {
@@ -221,8 +221,7 @@ public class KscRestService extends OnmsRestService {
             summary = "Reload the KSC report configuration",
             description = """
         Re-read `ksc-performance-reports.xml` from disk and replace the in-memory report set with what it
-        contains. Use this after editing the file directly, including to drop a report that the API has no
-        delete operation for.""",
+        contains.""",
             operationId = "reloadKscConfig"
     )
     @ApiResponses(value = {
@@ -255,9 +254,9 @@ public class KscRestService extends OnmsRestService {
 
         `reportName` is a prefabricated graph name (see `GET /graphs`) and `resourceId` is a resource id
         (see `GET /resources`). Both are required and neither is checked for existence, so a graph naming a
-        resource that does not exist is stored and only fails when something tries to render it.
+        resource that does not exist is stored.
 
-        Graphs are only ever appended. There is no operation to replace or remove one.""",
+        Graphs are only appended; there is no operation to replace or remove one.""",
             operationId = "addGraphToKscReport"
     )
     @ApiResponses(value = {
@@ -346,7 +345,7 @@ public class KscRestService extends OnmsRestService {
 
         This operation consumes XML only; a JSON body is rejected by the container with 415. The body maps
         onto XML attributes rather than elements, and the field names are underscored
-        (`show_timespan_button`, `graphs_per_line`), which is what the derived schema shows.
+        (`show_timespan_button`, `graphs_per_line`).
 
         `Location` on the 201 points at `GET /ksc/{reportId}` for the new report. Graphs may be supplied
         inline as `kscGraph` elements, or added afterwards with `PUT /ksc/{kscReportId}`.""",
@@ -354,7 +353,7 @@ public class KscRestService extends OnmsRestService {
     )
     @RequestBody(
             required = true,
-            description = "The report to create, including any graphs it should start with.",
+            description = "The report to create, including any graphs it starts with.",
             content = @Content(mediaType = MediaType.APPLICATION_XML,
                     schema = @Schema(implementation = KscReport.class),
                     examples = @ExampleObject(value = """
@@ -374,7 +373,8 @@ public class KscRestService extends OnmsRestService {
             @ApiResponse(responseCode = "409", description = "A report with that id already exists.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Invalid request: Existing KSC report found with ID: 8100.")))
+                            examples = @ExampleObject(value = "Invalid request: Existing KSC report found with ID: 8100."))),
+            @ApiResponse(responseCode = "415", description = "The body was not `application/xml`, or no `Content-Type` was sent. The response has no body.")
     })
     public Response addKscReport(@Context final UriInfo uriInfo, final KscReport kscReport) {
         writeLock();

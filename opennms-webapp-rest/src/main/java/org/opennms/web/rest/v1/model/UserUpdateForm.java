@@ -51,12 +51,11 @@ public class UserUpdateForm {
     public Boolean hashPassword;
 
     @Schema(description = "Duty schedule entry. The value is stored as a single list element, so a "
-            + "comma-separated string becomes one malformed entry rather than several.",
+            + "comma-separated string becomes one element containing the commas rather than several entries.",
             example = "MoTuWeThFr800-1700")
     public String dutySchedule;
 
-    @Schema(description = "Security role. Stored as a single list element, which replaces the whole role list. "
-            + "The `/users/{userCriteria}/roles/{roleName}` endpoints are the additive way to change roles.",
+    @Schema(description = "Security role. Stored as a single list element, which replaces the whole role list.",
             example = "ROLE_USER")
     public String roles;
 }

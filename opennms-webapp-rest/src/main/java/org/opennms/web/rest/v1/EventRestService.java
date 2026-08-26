@@ -102,8 +102,8 @@ public class EventRestService extends OnmsRestService {
             summary = "Get an event",
             description = """
                     Return one persisted event by id.
-                    `time` and `createTime` are epoch milliseconds in JSON and ISO-8601 strings in XML, whatever the
-                    schema says.""",
+                    The derived schema shows `date-time`; `time` and `createTime` are epoch milliseconds in JSON
+                    and ISO-8601 strings in XML.""",
             operationId = "getEventV1"
     )
     @ApiResponses(value = {
@@ -155,7 +155,7 @@ public class EventRestService extends OnmsRestService {
     @Operation(
             summary = "Count all events",
             description = "Return the total number of event rows as a plain-text integer. Query parameters are "
-                    + "ignored, so this is not a count of a filtered set.",
+                    + "ignored.",
             operationId = "getEventCountV1"
     )
     @ApiResponses(value = {
@@ -420,8 +420,8 @@ public class EventRestService extends OnmsRestService {
             summary = "Acknowledge or unacknowledge matching events",
             description = """
                     Set or clear the acknowledgement on every event matching the filters in the form body. Fields
-                    other than `ack` are read as event filters, so scope the request with `eventSource`,
-                    `eventUei`, `id` or another `OnmsEvent` property.
+                    other than `ack` are read as filters on `OnmsEvent` property names such as `eventSource`,
+                    `eventUei` and `id`.
                     `ack` is optional here and defaults to `false`, and only the exact string `true` acknowledges.
                     The default limit of 10 applies, so a large match set is processed one page at a time.
                     A body that matches nothing still returns 204.""",
@@ -479,17 +479,17 @@ public class EventRestService extends OnmsRestService {
             summary = "Send an event",
             description = """
                     Hand an event to eventd. `source` defaults to `ReST` and `time` to now when they are absent.
-                    The response is 202 as soon as the event is queued, so it says nothing about whether eventd
-                    accepted or persisted it. Bean validation runs first, but only `source` and `time` carry
-                    constraints and both are defaulted, so a body without a `uei` is still accepted.
+                    The 202 is returned as soon as the event is queued, before eventd accepts or persists it. Bean
+                    validation runs first, but only `source` and `time` carry constraints and both are defaulted,
+                    so a body without a `uei` returns 202.
                     Whether the event produces an alarm depends on the matching event definition, or on an
                     `alarm-data` element supplied in the body.
-                    JSON and XML are not interchangeable. In XML the child elements have to appear in schema
-                    order (`uei`, `source`, `nodeid`, `time`, `host`, `interface`, `snmphost`, `service`, `snmp`,
-                    `parms`, `descr`, `logmsg`, `severity`, and so on) and the description element is `descr`, not
-                    `description`. In JSON the `logmsg` and parameter `value` bodies are carried in a field named
-                    `value`, since Jackson maps the `@XmlValue` field to that name. Getting either wrong is a
-                    500.""",
+                    In XML the child elements have to appear in schema order (`uei`, `source`, `nodeid`, `time`,
+                    `host`, `interface`, `snmphost`, `service`, `snmp`, `parms`, `descr`, `logmsg`, `severity`, and
+                    so on) and the description element is `descr`, not `description`. In JSON the `logmsg` and
+                    parameter `value` bodies are carried in a field named `value`, since Jackson maps the
+                    `@XmlValue` field to that name. Getting either wrong is a 500.
+                    `application/atom+xml` is also consumed and is unmarshalled as the same XML document.""",
             operationId = "publishEventV1"
     )
     @RequestBody(required = true, description = "The event to send.",
@@ -511,6 +511,23 @@ public class EventRestService extends OnmsRestService {
                       ]
                     }""")),
                     @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = org.opennms.netmgt.xml.event.Event.class),
+                            examples = @ExampleObject(value = """
+                    <event>
+                      <uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
+                      <source>ReST</source>
+                      <time>2026-08-26T00:00:00-04:00</time>
+                      <parms>
+                        <parm>
+                          <parmName>probe</parmName>
+                          <value type="string" encoding="text">1</value>
+                        </parm>
+                      </parms>
+                      <descr>Probe event</descr>
+                      <logmsg dest="logndisplay">Probe event</logmsg>
+                      <severity>Warning</severity>
+                    </event>""")),
+                    @Content(mediaType = MediaType.APPLICATION_ATOM_XML,
                             schema = @Schema(implementation = org.opennms.netmgt.xml.event.Event.class),
                             examples = @ExampleObject(value = """
                     <event>

@@ -55,8 +55,8 @@ public class TrapdConfigurationResource {
             summary = "Get the trapd configuration",
             description = """
                     Returns the contents of trapd-configuration.xml, including the SNMPv3 users trapd will
-                    accept traps from. `threads` and `queue-size` describe the ingress pipeline; a `threads`
-                    value of 0 means trapd sizes the pool from the available processor count.""",
+                    accept traps from. A `threads` value of 0 means trapd sizes the pool from the available
+                    processor count.""",
             operationId = "getTrapdConfiguration")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The current trapd configuration.",

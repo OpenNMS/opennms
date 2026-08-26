@@ -91,9 +91,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         The list endpoints take `limit`, `offset`, `orderBy`, `order` and a repeatable `severityFilter`.
         `severityFilter` has to be spelled as a severity label (`Normal`, `Warning`, `Minor`, `Major`,
         `Critical`); any other value fails with a 500. On `/status/applications` and
-        `/status/business-services`, supplying `severityFilter` without `orderBy` also fails with a 500,
-        so send both. An empty page is reported as 204 rather than as an empty list, and a non-empty page
-        carries a `Content-Range: items <first>-<last>/<total>` header.""")
+        `/status/business-services`, supplying `severityFilter` without `orderBy` also fails with a 500.
+        An empty page is reported as 204 rather than as an empty list, and a non-empty page carries a
+        `Content-Range: items <first>-<last>/<total>` header.""")
 public class StatusRestService {
 
     @Autowired
@@ -202,7 +202,7 @@ public class StatusRestService {
             description = """
         Page through the applications, each carrying its rolled-up severity. `limit`, `offset`,
         `orderBy`, `order` and a repeatable `severityFilter` are read straight off the query string.
-        Supplying `severityFilter` without `orderBy` fails with a 500, so send both.""",
+        Supplying `severityFilter` without `orderBy` fails with a 500.""",
             operationId = "getApplicationStatusList"
     )
     @ApiResponses(value = {
@@ -263,7 +263,7 @@ public class StatusRestService {
             description = """
         Page through the business services, each carrying its rolled-up severity. `limit`, `offset`,
         `orderBy`, `order` and a repeatable `severityFilter` are read straight off the query string.
-        Supplying `severityFilter` without `orderBy` fails with a 500, so send both.""",
+        Supplying `severityFilter` without `orderBy` fails with a 500.""",
             operationId = "getBusinessServiceStatusList"
     )
     @ApiResponses(value = {
@@ -276,7 +276,7 @@ public class StatusRestService {
                       "totalCount": 1,
                       "count": 1,
                       "offset": 0,
-                      "business-services": [
+                      "businessservices": [
                         { "id": 23663, "name": "Storefront", "severity": "MINOR" }
                       ]
                     }""")),

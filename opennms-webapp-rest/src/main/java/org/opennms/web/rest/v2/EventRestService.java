@@ -191,8 +191,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
             summary = "List events",
             description = """
         Return a page of events. `application/atom+xml` yields the same document as
-        `application/xml`, not an Atom feed. The event table is the largest in an OpenNMS database, so
-        a call without `_s` and without `limit` still costs a full count over it.
+        `application/xml`, not an Atom feed.
 
         Example query: `_s=event.eventUei==uei.opennms.org/nodes/nodeDown&orderBy=eventTime&order=desc`.""",
             operationId = "getEvents")
@@ -377,8 +376,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
         `select distinct` over the event table. The element type follows the property type: strings for
         `STRING` and `IP_ADDRESS`, numbers for `INTEGER`, `LONG` and `FLOAT`, and epoch milliseconds in
         JSON for `TIMESTAMP`. `propertyId` is the unprefixed id from `GET /events/properties`, so
-        `eventUei` rather than `event.eventUei`. Without `limit` this reads every distinct value in the
-        event table.""",
+        `eventUei` rather than `event.eventUei`.""",
             operationId = "getEventPropertyValues")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The distinct values of the property.",
@@ -427,11 +425,8 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     @Operation(
             summary = "Broken: create an event at a chosen id",
             description = """
-        Inherited from the generic DAO resource and not reachable in practice. This implementation is
-        proxied on its interface, so a method the interface does not declare cannot be invoked on the
-        proxy and the call fails with 500 before any of the handler runs.
-
-        Publish events with `POST /events` instead.""",
+        Inherited from the generic DAO resource. This implementation is proxied on its interface, which
+        does not declare this method, so the call answers 500 before the handler runs.""",
             operationId = "createEventWithId",
             parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
                     description = "Event database id. The value is not read: the call fails before the handler runs.",
@@ -449,11 +444,8 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     @Operation(
             summary = "Broken: update properties of several events",
             description = """
-        Inherited from the generic DAO resource and not reachable in practice. This implementation is
-        proxied on its interface, so a method the interface does not declare cannot be invoked on the
-        proxy and the call fails with 500 before any of the handler runs.
-
-        Events are an immutable record; there is no supported way to change one.""",
+        Inherited from the generic DAO resource. This implementation is proxied on its interface, which
+        does not declare this method, so the call answers 500 before the handler runs.""",
             operationId = "updateEvents")
     @RequestBody(description = "Event properties, form-encoded. Never read.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
@@ -474,11 +466,8 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     @Operation(
             summary = "Broken: replace an event",
             description = """
-        Inherited from the generic DAO resource and not reachable in practice. This implementation is
-        proxied on its interface, so a method the interface does not declare cannot be invoked on the
-        proxy and the call fails with 500 before any of the handler runs.
-
-        Events are an immutable record; there is no supported way to change one.""",
+        Inherited from the generic DAO resource. This implementation is proxied on its interface, which
+        does not declare this method, so the call answers 500 before the handler runs.""",
             operationId = "replaceEvent")
     @RequestBody(description = "Event document. Never read.",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = EventDTO.class),
@@ -500,11 +489,8 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     @Operation(
             summary = "Broken: update properties of an event",
             description = """
-        Inherited from the generic DAO resource and not reachable in practice. This implementation is
-        proxied on its interface, so a method the interface does not declare cannot be invoked on the
-        proxy and the call fails with 500 before any of the handler runs.
-
-        Events are an immutable record; there is no supported way to change one.""",
+        Inherited from the generic DAO resource. This implementation is proxied on its interface, which
+        does not declare this method, so the call answers 500 before the handler runs.""",
             operationId = "updateEventProperties")
     @RequestBody(description = "Event properties, form-encoded. Never read.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
@@ -525,11 +511,8 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     @Operation(
             summary = "Broken: delete several events",
             description = """
-        Inherited from the generic DAO resource and not reachable in practice. This implementation is
-        proxied on its interface, so a method the interface does not declare cannot be invoked on the
-        proxy and the call fails with 500 before any of the handler runs.
-
-        Event retention is handled by vacuumd, not through this API.""",
+        Inherited from the generic DAO resource. This implementation is proxied on its interface, which
+        does not declare this method, so the call answers 500 before the handler runs.""",
             operationId = "deleteEvents")
     @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
             content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
@@ -545,11 +528,8 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     @Operation(
             summary = "Broken: delete one event",
             description = """
-        Inherited from the generic DAO resource and not reachable in practice. This implementation is
-        proxied on its interface, so a method the interface does not declare cannot be invoked on the
-        proxy and the call fails with 500 before any of the handler runs.
-
-        Event retention is handled by vacuumd, not through this API.""",
+        Inherited from the generic DAO resource. This implementation is proxied on its interface, which
+        does not declare this method, so the call answers 500 before the handler runs.""",
             operationId = "deleteEvent")
     @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
             content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),

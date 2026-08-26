@@ -80,12 +80,11 @@ public class InfoRestService extends OnmsRestService {
 
         `services` is a map of daemon name to state, gathered from the running instance over the management
         JMX/RMI connection. If that lookup fails the field comes back as an empty object and the rest of
-        the payload is still returned, so an empty `services` means "could not be determined" rather than
-        "no daemons".
+        the payload is still returned.
 
         `datetimeformatConfig.zoneId` comes from the HTTP session when the caller has one and falls back to
-        the server's default zone otherwise, so it can differ between a browser session and a plain
-        API call. `ticketerConfig.plugin` is only populated when ticketing is enabled.""",
+        the server's default zone otherwise. `ticketerConfig.plugin` is only populated when ticketing is
+        enabled.""",
             operationId = "getInfo"
     )
     @ApiResponses(value = {

@@ -99,10 +99,9 @@ import org.springframework.transaction.annotation.Transactional;
         this API, in requests and in responses alike, is milliseconds, and every timestamp is epoch
         milliseconds.
 
-        Both `application/json` and `application/xml` are accepted and produced. The two are not
-        interchangeable: the JSON and XML spellings of a query body differ, and where they differ it
-        is called out on the operation. When the request carries no `Accept` header the response comes
-        back as XML, since that is the first entry in the produced list.
+        Both `application/json` and `application/xml` are accepted and produced. The JSON and XML
+        spellings of a query body differ. With no `Accept` header the response comes back as XML, the
+        first entry in the produced list.
 
         Error bodies on this resource are `text/plain`, whatever the request asked for.""")
 public class MeasurementsRestService {
@@ -123,9 +122,8 @@ public class MeasurementsRestService {
             description = """
         Metadata for every filter the engine has registered, including the parameters each one takes
         and their defaults. `name` is the value a query body puts in `filter[].name`; `canonicalName`
-        is the implementing class and is informational. `backend` is `Java` for filters evaluated
-        in-process and `R` for filters that hand off to an R installation, which has to be present for
-        those to run.""",
+        is the implementing class. `backend` is `Java` for filters evaluated in-process and `R` for
+        filters that hand off to an R installation, which has to be present for those to run.""",
             operationId = "getMeasurementFilters"
     )
     @ApiResponses(value = {
@@ -171,7 +169,7 @@ public class MeasurementsRestService {
             summary = "Get one filter's metadata",
             description = """
         Metadata for a single filter, looked up by its registered name. The lookup is on `name`, not on
-        the implementing class, so `HoltWinters` resolves while
+        the implementing class: `HoltWinters` resolves,
         `org.opennms.netmgt.measurements.filters.impl.HWForecast` does not.""",
             operationId = "getMeasurementFilterByName"
     )
@@ -223,16 +221,14 @@ public class MeasurementsRestService {
     @Operation(
             summary = "Query a single attribute",
             description = """
-        Fetches one attribute of one resource as a single-column series. This is the query-string form
-        of `POST /measurements` with exactly one source, and it is limited to what that source can
-        express: no expressions, no filters, no second series.
+        Fetches one attribute of one resource as a single-column series. The query-string form of
+        `POST /measurements` with exactly one source: no expressions, no filters, no second series.
 
-        The resource id is one path segment even though it contains `[`, `]`, `:` and `.`. Percent-encode
-        it, since those characters are reserved in a URI:
+        The resource id is one path segment even though it contains `[`, `]`, `:` and `.`, which are
+        reserved in a URI, so it has to be percent-encoded:
         `node[loopback-lab:lb-001].responseTime[127.0.0.1]` becomes
-        `node%5Bloopback-lab%3Alb-001%5D.responseTime%5B127.0.0.1%5D`. The instance under test also
-        accepted the literal, unencoded form, but that is servlet-container behaviour rather than a
-        guarantee of this API.
+        `node%5Bloopback-lab%3Alb-001%5D.responseTime%5B127.0.0.1%5D`. The literal, unencoded form was
+        also accepted on the instance under test.
 
         `end` defaults to 0, which is read as "now". `start` defaults to -14400000, and a negative
         `start` is an offset back from `end`, so the default window is the last four hours. A resulting
@@ -241,7 +237,7 @@ public class MeasurementsRestService {
         The response is the same `QueryResponse` shape the POST form returns, with a single label equal
         to the attribute name. Missing samples come back as the JSON string `"NaN"`, not as `null`.
 
-        A query-string value that will not parse as the declared type (`step=abc`, for instance) is
+        A query-string value that will not parse as its declared type, `step=abc` for instance, is
         rejected by the JAX-RS layer as a 404 rather than a 400.""",
             operationId = "getMeasurementsForAttribute"
     )
@@ -330,10 +326,10 @@ public class MeasurementsRestService {
             @Parameter(description = "Upper bound on the number of rows returned. The step is widened until the window fits. Zero disables the bound. Values far below what the window can be reduced to make the fetch fail with a 500.",
                     example = "0")
             @DefaultValue("0") @QueryParam("maxrows") final int maxrows,
-            @Parameter(description = "Attribute to fall back to when `attribute` is not present on the resource. Empty disables the fallback. This form hard-wires the datasource to `attribute`, so a fallback to a differently named attribute was observed to fail the fetch with a 500; the POST form, where `datasource` can be set alongside `fallback-attribute`, handles that case.",
+            @Parameter(description = "Attribute to fall back to when `attribute` is not present on the resource. Empty disables the fallback. This form hard-wires the datasource to `attribute`, so a fallback to a differently named attribute fails the fetch with a 500. The POST form takes `datasource` alongside `fallback-attribute`.",
                     example = "")
             @DefaultValue("") @QueryParam("fallback-attribute") final String fallbackAttribute,
-            @Parameter(description = "Consolidation function applied when several stored samples fall into one step. The accepted set is whatever the persistence layer defines; a value it does not know fails the fetch with a 500 rather than a 400.",
+            @Parameter(description = "Consolidation function applied when several stored samples fall into one step. The accepted set is defined by the persistence layer; a value it does not know fails the fetch with a 500 rather than a 400.",
                     example = "AVERAGE",
                     schema = @Schema(type = "string", allowableValues = {"AVERAGE", "MIN", "MAX", "LAST", "TOTAL"}, defaultValue = "AVERAGE"))
             @DefaultValue("AVERAGE") @QueryParam("aggregation") final String aggregation,
@@ -380,8 +376,7 @@ public class MeasurementsRestService {
             summary = "Query measurements",
             description = """
         Fetches one or more series, optionally derives further series from them with JEXL expressions,
-        and optionally runs filters over the result. A POST is used for what is a read-only query only
-        because the request does not fit comfortably in a query string.
+        and optionally runs filters over the result. The query is read-only.
 
         The JSON body keys for the three collections are singular: `source`, `expression` and `filter`,
         each an array. The plural spellings are not accepted, and an unknown key is not ignored: sending
@@ -391,22 +386,21 @@ public class MeasurementsRestService {
 
         Each `source` needs `resourceId`, `attribute` and `label`; a source missing one of them is a
         400. `aggregation` defaults to `AVERAGE` and `transient` to false. A transient source is
-        fetched and made available to expressions but is left out of the response. When a source sets
-        `fallback-attribute`, set `datasource` to the datasource the fallback is stored under as well,
-        otherwise the fetch fails with a 500.
+        fetched and made available to expressions but is left out of the response. A source that sets
+        `fallback-attribute` also needs `datasource` set to the datasource the fallback is stored
+        under, otherwise the fetch fails with a 500.
 
         The response holds `timestamps` and `columns` as parallel arrays: `columns[i].values[j]` is the
         sample of series `labels[i]` at `timestamps[j]`, so the two always have the same length. A
-        missing sample is the JSON string `"NaN"`, not `null` and not a number, which means the values
-        array is not uniformly typed. `constants` was empty in every response observed, with and without
-        a filter applied.
+        missing sample is the JSON string `"NaN"`, not `null` and not a number. `constants` was empty in
+        every response observed, with and without a filter applied.
 
-        The XML form of the body is not a transliteration of the JSON. The scalars are attributes on
-        `<query-request>`, each source is a `<source/>` element carrying its fields as attributes, an
-        expression's JEXL text is the element body rather than a `value` attribute, and a filter
-        parameter's value is likewise the body of `<parameter key="...">`. A filter parameter written as
-        `<parameter key="stripNaNs" value="true"/>` binds nothing and the filter silently runs with its
-        default, which was confirmed on the instance.""",
+        In the XML body the scalars are attributes on `<query-request>`, each source is a `<source/>`
+        element carrying its fields as attributes, an expression's JEXL text is the element body rather
+        than a `value` attribute, and a filter parameter's value is likewise the body of
+        `<parameter key="...">`. A filter parameter written as
+        `<parameter key="stripNaNs" value="true"/>` binds nothing and the filter runs with its
+        default.""",
             operationId = "queryMeasurements"
     )
     @RequestBody(

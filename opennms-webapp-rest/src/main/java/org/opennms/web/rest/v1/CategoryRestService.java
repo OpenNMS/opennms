@@ -75,9 +75,6 @@ import org.springframework.transaction.annotation.Transactional;
         Surveillance categories group nodes and gate who may see them. A category is identified by name
         everywhere in this API, and names are unique.
 
-        Deleting a category is unconditional: requisitions, surveillance views, notification rules and filter
-        expressions that name it are not consulted and keep the now-dangling name.
-
         `/categories/nodes/...` and `/categories/groups/...` are fixed sub-resources, so a category whose name is
         literally `nodes` or `groups` cannot be addressed through `/categories/{categoryName}`.""")
 @Transactional
@@ -143,9 +140,8 @@ public class CategoryRestService extends OnmsRestService {
     @Operation(
             summary = "Check whether a node carries a category",
             description = """
-                    Returns the category if it is assigned to the node, so this doubles as a membership test.
-                    The lookup is over the node's own categories, so a category that exists but is not on the node
-                    is a 404 rather than a 200.""",
+                    Returns the category if it is assigned to the node. A category that exists but is not on the
+                    node is a 404 rather than a 200.""",
             operationId = "getCategoryOfNode"
     )
     @ApiResponses(value = {
@@ -188,9 +184,8 @@ public class CategoryRestService extends OnmsRestService {
                     Adds an already-defined category to a node. The category is not created here; an unknown name
                     is a 400.
 
-                    No request body is read, but the method declares `@Consumes(application/xml)`, so a request
-                    that sends no `Content-Type` at all is rejected with 400 before the handler runs. Send
-                    `Content-Type: application/xml` with an empty body.
+                    No request body is read, but `application/xml` is the only accepted `Content-Type`, so a
+                    request that sends none is rejected with 400 before the handler runs.
 
                     The `Location` header of the 201 is built by appending the category name to the request URI,
                     so it comes back with the name repeated
@@ -226,13 +221,13 @@ public class CategoryRestService extends OnmsRestService {
                     are bean property names on `OnmsCategory`; unknown keys are ignored.
 
                     `id`, `dbId`, `nodeId`, `authorizedGroups`, `foreignSource`, `foreignId` and `type` are
-                    protected and dropped with a log warning, so the group ACL cannot be edited here; use
-                    `PUT /categories/{categoryName}/groups/{groupName}`.
+                    protected and dropped with a log warning, so the group ACL cannot be edited here.
+                    `PUT /categories/{categoryName}/groups/{groupName}` writes it.
 
                     `name` is *not* protected on this endpoint, so sending `name=` renames the category in place.
                     The same field is protected on `PUT /nodes/{nodeCriteria}/categories/{categoryName}`. After a
                     rename, requests that still use the old name have been observed to fail with HTTP 500 rather
-                    than 404, because the name-to-category lookup is cached.""",
+                    than 404.""",
             operationId = "updateCategory"
     )
     @RequestBody(
@@ -360,13 +355,11 @@ public class CategoryRestService extends OnmsRestService {
             description = """
                     Creates a surveillance category. The name must not already be in use.
 
-                    The method declares no `@Consumes`, so both an XML and a JSON body are accepted. A
-                    form-encoded body is rejected with 415, and a body that fails to parse comes back as 500
-                    rather than 400.
+                    Both an XML and a JSON body are accepted. A form-encoded body is rejected with 415, and a
+                    body that fails to parse comes back as 500 rather than 400.
 
                     `id` in the body is ignored; the database assigns it. `authorizedGroups` sent here is not
-                    applied, so grant group access afterwards with
-                    `PUT /categories/{categoryName}/groups/{groupName}`.""",
+                    applied; `PUT /categories/{categoryName}/groups/{groupName}` grants group access.""",
             operationId = "createCategory"
     )
     @RequestBody(
@@ -421,7 +414,7 @@ public class CategoryRestService extends OnmsRestService {
             description = """
                     Returns every surveillance category defined in the system. The result is not paged and takes
                     no query parameters; `offset` is always 0 and `count` always equals `totalCount`. The order
-                    follows the database and is not guaranteed.""",
+                    follows the database.""",
             operationId = "listCategories"
     )
     @ApiResponses(value = {
@@ -489,8 +482,7 @@ public class CategoryRestService extends OnmsRestService {
     @Operation(
             summary = "Authorize a group for a category",
             description = """
-                    Adds the category to a group's authorized-category list, which is what lets members of that
-                    group see nodes in the category. No request body is read.
+                    Adds the category to a group's authorized-category list. No request body is read.
 
                     Both the "category does not exist" and the "category is already authorized for this group"
                     cases come back as the same 400 message.""",

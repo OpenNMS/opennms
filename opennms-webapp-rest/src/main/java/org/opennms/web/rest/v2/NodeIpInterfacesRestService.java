@@ -207,8 +207,8 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
 
         `isDown` and `monitoredServiceCount` are derived, not stored. In JSON `id` is a string while
         `nodeId` is a number, and `lastIngressFlow` and `lastEgressFlow` are epoch milliseconds rather
-        than the `string/date-time` the derived schema shows. A FIQL term on `ipAddress` is rejected
-        with 500; filter on `ipHostName` or `isManaged` instead.
+        than the `string/date-time` the derived schema shows. A FIQL term on `ipAddress` is answered
+        with 500, while `ipHostName` and `isManaged` resolve.
 
         Example query: `_s=isManaged==M&orderBy=ipHostName`.""",
             operationId = "NodeIpInterfacesRestServiceGETIpInterfaces",
@@ -296,8 +296,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             summary = "Get IP interface search properties",
             description = """
         List the properties that may appear in a `_s` expression or in `orderBy` for this resource. The
-        set spans the interface, its SNMP interface, its monitored services and the owning node, so it
-        is wider than the fields of the interface itself.""",
+        set spans the interface, its SNMP interface, its monitored services and the owning node.""",
             operationId = "NodeIpInterfacesRestServiceGETIpInterfaceSearchProperties",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`. The property list does not depend on it.", example = "257"))
@@ -412,7 +411,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     @Path("{id}")
     @Operation(
             summary = "Rejected: create an IP interface at a caller-chosen path",
-            description = "Always answered with 404. Post the interface to the collection instead; its address travels in the body.",
+            description = "Always answered with 404, whether or not the address exists.",
             operationId = "NodeIpInterfacesRestServicePOSTIpInterfaceSpecific",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria", required = true,
@@ -519,10 +518,9 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     @Operation(
             summary = "Not implemented: replace an IP interface from a document",
             description = """
-        `AbstractDaoRestServiceWithDTO.doUpdate` is not overridden for IP interfaces, so this variant
-        cannot succeed. It also binds `{id}` as an integer while the collection addresses interfaces by
-        IP address, so an address in the path is answered with 404 before the handler runs. Use the
-        form-encoded `PUT` on the same path to change properties.""",
+        Answered with 501. This variant binds `{id}` as an integer while the collection addresses
+        interfaces by IP address, so an address in the path is answered with 404 before the handler
+        runs.""",
             operationId = "NodeIpInterfacesRestServicePUTIpInterfaceDocument",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -555,9 +553,8 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             summary = "Update properties of an IP interface",
             description = """
         Apply the form parameters as bean properties to one IP interface of the node. Only the
-        properties present in the body are touched. `ipAddress` is rejected: delete the interface and
-        add it again to renumber it. No event is sent, so daemons holding the previous value are not
-        notified.""",
+        properties present in the body are touched. `ipAddress` is answered with 400. No event is
+        sent.""",
             operationId = "NodeIpInterfacesRestServicePUTIpInterfaceProperties",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -906,8 +903,8 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             summary = "Add or replace a metadata entry of an IP interface",
             description = """
         Set one metadata entry on the interface from the request body. An existing entry with the same
-        context and key is overwritten, so this is an upsert rather than an append. No `@Consumes` is
-        declared, so both JSON and XML bodies are accepted; the XML root element is `meta-data`.""",
+        context and key is overwritten. No `@Consumes` is declared, so both JSON and XML bodies are
+        accepted; the XML root element is `meta-data`.""",
             operationId = "NodeIpInterfacesRestServicePOSTMetaDataByIpAddress",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -968,8 +965,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             description = """
         Set one metadata entry on the interface with context, key and value all taken from the path. An
         existing entry with the same context and key is overwritten. A value containing `/` has to be
-        percent-encoded, and an empty value cannot be expressed this way; use the `POST` form for
-        those.""",
+        percent-encoded, and an empty value cannot be expressed this way.""",
             operationId = "NodeIpInterfacesRestServicePUTMetaDataByIpAddress",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))

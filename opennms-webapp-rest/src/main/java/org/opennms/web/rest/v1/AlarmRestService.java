@@ -93,10 +93,9 @@ public class AlarmRestService extends AlarmRestServiceBase {
             description = """
                     Return one alarm by id.
                     The literal path segment `summaries` is handled by this same method and returns per-node alarm
-                    summaries instead of a single alarm, so `GET /alarms/summaries` is a second, differently shaped
-                    response from this operation.
-                    Timestamps are epoch milliseconds in JSON and ISO-8601 strings in XML, whatever the schema
-                    says.""",
+                    summaries instead of a single alarm.
+                    The derived schema shows `date-time`; the wire carries epoch milliseconds in JSON and ISO-8601
+                    strings in XML.""",
             operationId = "getAlarmV1"
     )
     @ApiResponses(value = {
@@ -137,7 +136,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                       }
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No alarm with that id."),
-            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`.",
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The shipped security rules gate the endpoint on the same four roles, so the container answers first with its own HTML error page; the plain-text body below comes from the resource check.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User 'jroe', is not allowed to read alarms."))),
@@ -174,7 +173,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Operation(
             summary = "Count all alarms",
             description = "Return the total number of alarm rows as a plain-text integer. Query parameters are "
-                    + "ignored, so this is not a count of a filtered set.",
+                    + "ignored.",
             operationId = "getAlarmCountV1"
     )
     @ApiResponses(value = {
@@ -182,7 +181,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "13"))),
-            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`.",
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The shipped security rules gate the endpoint on the same four roles, so the container answers first with its own HTML error page; the plain-text body below comes from the resource check.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User 'jroe', is not allowed to read alarms.")))
@@ -260,7 +259,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null"))),
-            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`.",
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The shipped security rules gate the endpoint on the same four roles, so the container answers first with its own HTML error page; the plain-text body below comes from the resource check.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User 'jroe', is not allowed to read alarms.")))
@@ -414,14 +413,13 @@ public class AlarmRestService extends AlarmRestServiceBase {
             summary = "Acknowledge, clear or escalate matching alarms",
             description = """
                     Apply one acknowledgement action to every alarm matching the filters in the form body. Fields
-                    other than `ack`, `escalate`, `clear` and `ackUser` are read as alarm filters, so a body of
-                    just `ack=true` matches everything the filter defaults allow and acknowledges it. Scope the
-                    request with `id`, `severity` or another `OnmsAlarm` property.
+                    other than `ack`, `escalate`, `clear` and `ackUser` are read as filters on `OnmsAlarm` property
+                    names such as `id` and `severity`, so a body of just `ack=true` matches everything the filter
+                    defaults allow and acknowledges it.
                     `alarmId` is accepted as an alias for `id`, but sending both is a 400. `ticketId` and
                     `ticketState` are not honoured here.
-                    The limit and offset that the filter parsing derives are reset to unlimited, so the action
-                    reaches the whole match set rather than one page of it. The paging equivalents on
-                    `GET /alarms` therefore do not restrict what this operation touches.""",
+                    The `limit` and `offset` the filter parsing derives are reset to unlimited, so the action
+                    reaches the whole match set rather than one page of it.""",
             operationId = "updateAlarmsV1"
     )
     @RequestBody(required = true, description = "The action to apply, plus the filters selecting the alarms.",

@@ -367,7 +367,7 @@ public class UserDefinedLinkRestService extends AbstractDaoRestService<UserDefin
     @Override
     @Operation(summary = "Update the user-defined links matching a query",
             description = """
-                    Sets the same named properties on every link matching the query. At most `limit` entities are affected, so this touches ten entities per call unless a larger `limit` is given.
+                    Sets the same named properties on every link matching the query. At most `limit` entities are affected, ten by default.
 
                     For example, `_s=owner==review-seed`.""",
             operationId = "userDefinedLinksUpdateMany")
@@ -448,7 +448,7 @@ public class UserDefinedLinkRestService extends AbstractDaoRestService<UserDefin
     @Override
     @Operation(summary = "Delete the user-defined links matching a query",
             description = """
-                    Deletes every user-defined link matching the query. At most `limit` entities are affected, so this touches ten entities per call unless a larger `limit` is given.
+                    Deletes every user-defined link matching the query. At most `limit` entities are affected, ten by default.
 
                     For example, `_s=owner==review-seed`.""",
             operationId = "userDefinedLinksDeleteMany")

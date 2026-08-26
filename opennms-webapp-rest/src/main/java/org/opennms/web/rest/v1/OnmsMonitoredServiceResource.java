@@ -277,17 +277,15 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             description = """
                     Attaches a monitored service to the interface and publishes `nodeGainedService`.
 
-                    The service type is looked up by `serviceType.name` and created if it does not exist, so this
-                    endpoint can introduce a new service name into the system. A service type created this way
-                    stays in the `service` table after the monitored service is deleted.
+                    The service type is looked up by `serviceType.name` and created if it does not exist. A
+                    service type created this way stays in the `service` table after the monitored service is
+                    deleted.
 
                     Both XML and JSON bodies are accepted; a form-encoded body is rejected with 415. In XML
                     `status` is an attribute on `service` and `serviceType` is a nested element; in JSON both are
-                    plain fields. `serviceType` is required in practice: a body without it fails with 500, because
-                    the check meant to reject it dereferences the missing type.
+                    plain fields. `serviceType` is required: a body without it fails with 500, not 400.
 
-                    The `status` sent in the body is stored, but pollerd may change it immediately afterwards, so
-                    read the service back rather than assuming the posted value stuck.""",
+                    The `status` sent in the body is stored, and pollerd can change it immediately afterwards.""",
             operationId = "addInterfaceService"
     )
     @RequestBody(
@@ -487,8 +485,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             summary = "Delete one monitored service",
             description = """
                     Publishes `deleteService` and returns immediately. The deletion is carried out asynchronously,
-                    so the service is normally still readable for a moment after the 202 and the caller has to
-                    poll to see the effect.
+                    so the service is normally still readable for a moment after the 202.
 
                     The service type row itself is left in place, so a service name introduced by a POST here
                     stays defined after its last monitored service is gone.""",

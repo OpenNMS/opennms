@@ -36,7 +36,7 @@ import com.google.common.collect.Maps;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Schema(description = """
         A reduce function turning the mapped severities of a service's edges into the service's own
-        operational status. Take `type` and the `properties` keys from
+        operational status. `type` and the `properties` keys are those reported by
         `GET /business-services/functions/reduce`.""")
 public class ReduceFunctionDTO {
 

@@ -332,7 +332,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     @Override
     @Operation(summary = "Create a Minion",
             description = """
-                    Not supported: Minions register themselves by heartbeat. The endpoint answers 501 for every body.""",
+                    Answered with 501 for every body.""",
             operationId = "minionsCreate")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
@@ -452,7 +452,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     @Override
     @Operation(summary = "Delete the Minions matching a query",
             description = """
-                    Deletes every Minion matching the query. At most `limit` entities are affected, so this touches ten entities per call unless a larger `limit` is given.
+                    Deletes every Minion matching the query. At most `limit` entities are affected, ten by default.
 
                     For example, `_s=location==Default`.""",
             operationId = "minionsDeleteMany")

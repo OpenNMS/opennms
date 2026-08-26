@@ -33,7 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="isisLinkNode")
 @JsonRootName("isisLinkNode")
-@Schema(description = "One discovered IS-IS adjacency of the node. Most fields are display strings built for the JSP UI; isisCircIfIndex and isisISAdjNbrExtendedCircID are the exceptions and are numeric.")
+@Schema(description = "One discovered IS-IS adjacency of the node. Most fields are display strings; isisCircIfIndex and isisISAdjNbrExtendedCircID are numeric.")
 public class IsisLinkNodeDTO {
 
     private Integer isisCircIfIndex;
@@ -62,7 +62,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisCircIfIndex")
     @JsonProperty("isisCircIfIndex")
-    @Schema(description = "ifIndex of the local IS-IS circuit. One of the few numeric fields on these DTOs: it is the raw ifIndex, not a display label.", example = "2")
+    @Schema(description = "ifIndex of the local IS-IS circuit: the raw ifIndex, not a display label.", example = "2")
     public Integer getIsisCircIfIndex() {
         return isisCircIfIndex;
     }
@@ -126,7 +126,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjNeighSysUrl")
     @JsonProperty("isisISAdjNeighSysUrl")
-    @Schema(description = "Intended as the relative URL of the neighbour's node page. The factory never assigns it, so it is absent from every response; isisISAdjUrl carries that link instead.", example = "element/linkednode.jsp?node=7")
+    @Schema(description = "Relative URL of the neighbour's node page. The factory never assigns it, so it is absent from every response; isisISAdjUrl carries that link instead.", example = "element/linkednode.jsp?node=7")
     public String getIsisISAdjNeighSysUrl() {
         return isisISAdjNeighSysUrl;
     }
@@ -222,7 +222,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisLinkCreateTime")
     @JsonProperty("isisLinkCreateTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getIsisLinkCreateTime() {
         return isisLinkCreateTime;
     }
@@ -238,7 +238,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisLinkLastPollTime")
     @JsonProperty("isisLinkLastPollTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getIsisLinkLastPollTime() {
         return isisLinkLastPollTime;
     }

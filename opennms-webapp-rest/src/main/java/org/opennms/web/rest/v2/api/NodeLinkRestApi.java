@@ -62,21 +62,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         Enlinkd API.
 
         Every operation is addressed by a node criteria and returns the link-discovery rows enlinkd has
-        persisted for that node. The response fields are display strings assembled for the web UI, not
-        raw table columns: a port reads `GigabitEthernet0/1(ifindex:1)(interfaceName:Gi0/1)`, and the
-        `*Url` fields are relative JSP paths (`element/snmpinterface.jsp?node=2&ifindex=1`) meant to be
-        resolved against the OpenNMS web root.
+        persisted for that node. The response fields are display strings, not raw table columns: a port
+        reads `GigabitEthernet0/1(ifindex:1)(interfaceName:Gi0/1)`, and the `*Url` fields are JSP paths
+        (`element/snmpinterface.jsp?node=2&ifindex=1`) relative to the OpenNMS web root.
 
-        The create and last-poll timestamps are already formatted for display, so they arrive as
-        locale-dependent strings such as `8/17/26, 5:20:39 PM` rather than as epoch milliseconds or
-        ISO-8601. On this instance the separator before AM/PM is U+202F (narrow no-break space), not a
-        plain space, which matters to anything matching on the text. Treat these fields as opaque
-        labels rather than parsing them.
+        The create and last-poll timestamps arrive pre-formatted as locale-dependent strings such as
+        `8/17/26, 5:20:39 PM` rather than as epoch milliseconds or ISO-8601. On this instance the
+        separator before AM/PM is U+202F (narrow no-break space), not a plain space.
 
-        A protocol that discovery has not populated is not an error: the `_links` operations answer 200
-        with an empty array, and the LLDP, CDP, OSPF and IS-IS `_elems` operations answer 204.
-        `bridge_elems` returns a collection rather than a single element, so it answers 200 with an
-        empty array like the link operations.""")
+        Where discovery has populated nothing, the `_links` operations answer 200 with an empty array
+        and the LLDP, CDP, OSPF and IS-IS `_elems` operations answer 204. `bridge_elems` returns a
+        collection rather than a single element, so it answers 200 with an empty array.""")
 public interface NodeLinkRestApi {
 
     /** Shared so the twelve node-criteria parameters cannot drift apart. */
@@ -98,7 +94,7 @@ public interface NodeLinkRestApi {
         collections are always present, empty where that protocol has nothing for the node. The
         single-element fields (`lldpElementNode`, `cdpElementNode`, `ospfElementNode`,
         `isisElementNode`) are omitted from the JSON entirely when the node has no such element, rather
-        than being emitted as null, so a client has to treat a missing key as "not discovered".""",
+        than being emitted as null.""",
             operationId = "NodeLinkRestApiGetAllTypesOfLinks", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All link types held for the node.",
@@ -165,8 +161,8 @@ public interface NodeLinkRestApi {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(summary = "Get a node's LLDP Link",
             description = """
-        LLDP neighbour rows for one node. `ldpRemPort` is spelled without the leading `l`; that is the
-        name on the wire in both JSON and XML, not a typo in this document.""",
+        LLDP neighbour rows for one node. `ldpRemPort` is spelled without a leading `l` in both JSON
+        and XML.""",
             operationId = "NodeLinkRestApiGetNodeLLDPLinkByNodeId", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "LLDP links held for the node, empty when LLDP found none.",
@@ -291,7 +287,7 @@ public interface NodeLinkRestApi {
     @Path("lldp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(summary = "Get a node's LLDP element",
-            description = "The node's own LLDP identity (chassis id and system name) as discovery recorded it.",
+            description = "The node's own LLDP identity: chassis id and system name.",
             operationId = "NodeLinkRestApiGetElementLLDPLinkByNodeId", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The node's LLDP element.",
@@ -319,9 +315,9 @@ public interface NodeLinkRestApi {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(summary = "Get a node's bridge element",
             description = """
-        The node's bridge identities, one per discovered bridge base address. Unlike the other
-        `_elems` operations this one returns a collection, so a node with no bridge element answers
-        200 with an empty array rather than 204.""",
+        The node's bridge identities, one per discovered VLAN. A device with no VLAN table yields a single
+        entry whose `vlan` is null. This operation returns a collection, so a node with no bridge element
+        answers 200 with an empty array rather than 204.""",
             operationId = "NodeLinkRestApiGetElementBridgeLinkByNodeId", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The node's bridge elements, empty when it has none.",
@@ -341,7 +337,7 @@ public interface NodeLinkRestApi {
     @Path("cdp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(summary = "Get a node's CDP element",
-            description = "The node's own CDP identity (global device id and run state) as discovery recorded it.",
+            description = "The node's own CDP identity: global device id and run state.",
             operationId = "NodeLinkRestApiGetElementCDPLinkByNodeId" , tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The node's CDP element.",

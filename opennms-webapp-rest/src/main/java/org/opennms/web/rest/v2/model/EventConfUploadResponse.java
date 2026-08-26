@@ -63,7 +63,7 @@ public class EventConfUploadResponse {
         @Schema(example = "Cisco Syslog: LINK-3-UPDOWN")
         public String label;
 
-        @Schema(description = "Currently mirrors the event label rather than the event description.",
+        @Schema(description = "Mirrors the event label rather than the event description.",
                 example = "Cisco Syslog: LINK-3-UPDOWN")
         public String description;
 

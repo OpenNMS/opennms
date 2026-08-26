@@ -351,9 +351,9 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
     }
 
     @Override
-    @Operation(summary = "Create a SNMP interface",
+    @Operation(summary = "Create an SNMP interface",
             description = """
-                    Not supported here: create SNMP interfaces under `/nodes/{nodeCriteria}/snmpinterfaces` or let discovery create them.""",
+                    Answered with 501 for every body.""",
             operationId = "snmpInterfacesCreate")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
@@ -374,7 +374,7 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
     }
 
     @Override
-    @Operation(summary = "Rejected: create a SNMP interface at a caller-chosen identifier",
+    @Operation(summary = "Rejected: create an SNMP interface at a caller-chosen identifier",
             description = DOC_POST_WITH_ID,
             operationId = "snmpInterfacesCreateWithId")
     @Parameters({
@@ -423,7 +423,7 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
     @Override
     @Operation(summary = "Update one SNMP interface",
             description = """
-                    Not supported here. Both the JSON or XML replacement form and the form-parameter form answer 501; update SNMP interfaces under `/nodes/{nodeCriteria}/snmpinterfaces/{id}` instead.""",
+                    Both the JSON or XML replacement form and the form-parameter form answer 501.""",
             operationId = "snmpInterfacesUpdate")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = """
@@ -475,7 +475,7 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
     @Override
     @Operation(summary = "Delete one SNMP interface",
             description = """
-                    Not supported here.""",
+                    Answered with 501 once the identifier resolves, and 404 when it does not.""",
             operationId = "snmpInterfacesDelete")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = """

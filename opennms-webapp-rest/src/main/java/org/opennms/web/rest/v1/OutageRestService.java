@@ -100,10 +100,9 @@ public class OutageRestService extends OnmsRestService {
             description = """
                     Return one outage by id.
                     The literal path segment `summaries` is handled by this same method and returns per-node outage
-                    summaries, honouring a `limit` query parameter that defaults to 10, so `GET /outages/summaries`
-                    is a second, differently shaped response from this operation.
-                    Timestamps are epoch milliseconds in JSON and ISO-8601 strings in XML, whatever the schema
-                    says.""",
+                    summaries, honouring a `limit` query parameter that defaults to 10.
+                    The derived schema shows `date-time`; the wire carries epoch milliseconds in JSON and ISO-8601
+                    strings in XML.""",
             operationId = "getOutageV1"
     )
     @ApiResponses(value = {
@@ -170,10 +169,9 @@ public class OutageRestService extends OnmsRestService {
     @Operation(
             summary = "Count all outages",
             description = """
-                    Return the total number of outage rows as a plain-text integer. Query parameters are ignored,
-                    so this is not a count of a filtered set.
-                    Unlike `GET /outages`, this count includes perspective (remote-poller) outages, so it can be
-                    larger than the `totalCount` that the search operation reports for an unfiltered query.""",
+                    Return the total number of outage rows as a plain-text integer. Query parameters are ignored.
+                    This count includes the perspective (remote-poller) outages that `GET /outages` excludes, so it
+                    can be larger than the `totalCount` that operation reports for an unfiltered query.""",
             operationId = "getOutageCountV1"
     )
     @ApiResponses(value = {

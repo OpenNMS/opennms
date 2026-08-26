@@ -33,7 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="ospfLinkNode")
 @JsonRootName("ospfLinkNode")
-@Schema(description = "One discovered OSPF neighbour of the node. Every field is a display string built for the JSP UI, with ifIndexes and addresses embedded in the port labels and the timestamps locale-formatted rather than epoch milliseconds.")
+@Schema(description = "One discovered OSPF neighbour of the node. Every field is a display string, with ifIndexes and addresses embedded in the port labels and the timestamps locale-formatted rather than epoch milliseconds.")
 public class OspfLinkNodeDTO {
 
     private String ospfLocalPort;
@@ -168,7 +168,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfLinkCreateTime")
     @JsonProperty("ospfLinkCreateTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/17/26, 5:20:39\u202fPM")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfLinkCreateTime() {
         return ospfLinkCreateTime;
     }
@@ -184,7 +184,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfLinkLastPollTime")
     @JsonProperty("ospfLinkLastPollTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/17/26, 5:20:39\u202fPM")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfLinkLastPollTime() {
         return ospfLinkLastPollTime;
     }

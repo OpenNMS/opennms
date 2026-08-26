@@ -86,9 +86,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
             description = """
                     Return acknowledged and unacknowledged alarm counts together with the newest and oldest alarm
                     in each of those two sets.
-                    Query parameters are applied as alarm filters in the same way as `GET /alarms`, so the counts
-                    can be narrowed. The four newest/oldest lookups run against their own criteria and are not
-                    filtered by those parameters.
+                    Query parameters are applied as alarm filters in the same way as `GET /alarms`. The four
+                    newest/oldest lookups run against their own criteria and are not filtered by those parameters.
                     In JSON each of `newestAcked`, `newestUnacked`, `oldestAcked` and `oldestUnacked` is an array
                     of one element, and that element is `null` when the set is empty. Alarm timestamps inside them
                     are epoch milliseconds in JSON and ISO-8601 strings in XML.""",
@@ -139,8 +138,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
             description = """
                     Return one statistics block per severity. With `severities` absent, all seven severities are
                     reported in ordinal order.
-                    A name that is not a severity resolves to `INDETERMINATE` rather than being rejected, so a
-                    misspelled name silently yields the indeterminate block. Names are matched case-insensitively.
+                    A name that is not a severity resolves to `INDETERMINATE` rather than being rejected. Names
+                    are matched case-insensitively.
                     Other query parameters are applied as alarm filters, as on `GET /stats/alarms`.""",
             operationId = "getAlarmStatsBySeverityV1"
     )

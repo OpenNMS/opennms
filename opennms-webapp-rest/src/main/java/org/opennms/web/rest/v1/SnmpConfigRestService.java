@@ -112,13 +112,11 @@ import org.springframework.transaction.annotation.Transactional;
         merged over the file's defaults. It always answers, because every address has a default, so a 200
         does not mean a definition exists for that address.
 
-        `PUT` is an update rather than a create, for the same reason. The address may be a single address or a
-        dash-separated range (`10.1.1.1-10.1.1.20`), in which case the definition is written for the whole
-        range. The factory then merges and optimises the definitions in the file, so the entry that ends up
-        stored is not necessarily the one that was sent.
+        `PUT` takes a single address or a dash-separated range (`10.1.1.1-10.1.1.20`), in which case the
+        definition is written for the whole range. The factory then merges and optimises the definitions in
+        the file, so the entry that ends up stored is not necessarily the one that was sent.
 
-        Writes affect live polling of the addresses they cover. There is no delete: narrowing or removing a
-        definition means editing the configuration directly.""")
+        Writes affect live polling of the addresses they cover. There is no delete operation.""")
 @Transactional
 @Deprecated(forRemoval = true)
 public class SnmpConfigRestService extends OnmsRestService {
@@ -148,12 +146,10 @@ public class SnmpConfigRestService extends OnmsRestService {
         Return the SNMP agent configuration that would be used for one IP address: the most specific matching
         definition in `snmp-config.xml` merged over the file's defaults.
 
-        Every address resolves to something, so this always answers 200 for a parseable address. To tell
-        whether a definition actually exists, compare the result with that of a neighbouring address outside
-        the range.
+        Every address resolves to something, so this always answers 200 for a parseable address.
 
-        `community` and `readCommunity` carry the same value; `community` is the older spelling. Fields the
-        configuration does not set come back null.
+        `community` and `readCommunity` carry the same value. Fields the configuration does not set come back
+        null.
 
         A string that is not a valid IP address fails with 500, not 400.""",
             operationId = "getSnmpInfo"
@@ -214,7 +210,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             @Parameter(description = "Single IP address to resolve. A range is not accepted here.",
                     required = true, example = "192.0.2.10")
             @PathParam("ipAddr") String ipAddr,
-            @Parameter(description = "Monitoring location the configuration should be resolved for. Defaults to the core location.",
+            @Parameter(description = "Monitoring location to resolve the configuration for. Defaults to the core location.",
                     example = "Default")
             @QueryParam("location") String location) {
         final InetAddress addr = InetAddressUtils.addr(ipAddr);
@@ -249,8 +245,7 @@ public class SnmpConfigRestService extends OnmsRestService {
         encoding (`community=public&port=161&...`). The field names are the same in all three.
 
         Values are not validated on the way in. A `version` outside `v1`, `v2c` and `v3` is accepted with 204
-        and only surfaces later, as a validation error on the next `GET` for a covered address, so check the
-        result of a write with a `GET` before relying on it.""",
+        and surfaces only later, as a validation error on the next `GET` for a covered address.""",
             operationId = "setSnmpInfo"
     )
     @RequestBody(

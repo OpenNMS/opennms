@@ -114,11 +114,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                     `collectFlag` and `pollFlag` in the representation are the bean properties `collect` and
                     `poll`; the boolean `collect` and `poll` in the same body are derived read-only views of them.
                     A collection flag ends in `C` to collect and `N` not to, with an optional `U` or `P` prefix
-                    recording whether a user or a provisioning policy set it. That distinction matters when
-                    writing: see the update operation.
-
-                    The node lookup is not guarded, so an unknown `nodeCriteria` fails with HTTP 500 rather than
-                    400 or 404.""",
+                    recording whether a user or a provisioning policy set it.""",
             operationId = "listNodeSnmpInterfaces",
             parameters = {
                     @Parameter(in = ParameterIn.QUERY, name = "limit",
@@ -143,7 +139,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                             schema = @Schema(type = "string", defaultValue = "all", allowableValues = {"all", "any"}),
                             example = "any"),
                     @Parameter(in = ParameterIn.QUERY, name = "ifName",
-                            description = "Restrict by interface name. Example of the generic property-restriction form.",
+                            description = "Restrict by interface name. One of the generic property restrictions.",
                             schema = @Schema(type = "string"), example = "Gi0/8"),
                     @Parameter(in = ParameterIn.QUERY, name = "collect",
                             description = "Restrict by collection flag. Values end in `C` to collect and `N` not to, with an optional `U` or `P` prefix recording whether a user or a provisioning policy set it: `C`, `N`, `UC`, `UN`, `PC`, `PN`. `D` marks a deleted row.",
@@ -207,7 +203,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                       </snmpInterface>
                     </snmpInterfaces>"""))
                     }),
-            @ApiResponse(responseCode = "500", description = "No node matches `nodeCriteria`. The node is dereferenced without a null check, so this is a null-pointer failure rather than a 400.",
+            @ApiResponse(responseCode = "500", description = "No node matches `nodeCriteria`. This path reports a missing node as a null-pointer failure, not as 400 or 404.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Cannot invoke \"org.opennms.netmgt.model.OnmsNode.getId()\" because \"node\" is null")))
@@ -245,8 +241,8 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Operation(
             summary = "Get one SNMP interface of a node",
             description = """
-                    Returns the SNMP interface with the given ifIndex. The lookup is over the node's own interface
-                    set, so unlike the list endpoint it also sees interfaces whose collection flag is `D`.
+                    Returns the SNMP interface with the given ifIndex. Unlike the list endpoint, interfaces whose
+                    collection flag is `D` are returned here.
 
                     `ifIndex` must be an integer. A non-numeric value matches no method and comes back as an empty
                     404 rather than a message.""",
@@ -333,8 +329,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Operation(
             summary = "Add an SNMP interface to a node",
             description = """
-                    Attaches a new SNMP interface to the node. No event is published, so collectd is not told
-                    about it here.
+                    Attaches a new SNMP interface to the node. No event is published.
 
                     XML only. A JSON or form-encoded body is rejected with 415.
 
@@ -344,9 +339,8 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                     interface is stored with the database default of `N`.
 
                     If the node has a primary IP interface (`snmpPrimary` of `P`), that interface is pointed at
-                    the new SNMP interface, which is how an IP interface acquires the `ifIndex` and nested
-                    `snmpInterface` seen in its own representation. The pairing follows the primary flag, not a
-                    matching ifIndex.""",
+                    the new SNMP interface, which gives it the `ifIndex` and nested `snmpInterface` seen in its
+                    own representation. The pairing follows the primary flag, not a matching ifIndex.""",
             operationId = "addNodeSnmpInterface"
     )
     @RequestBody(
@@ -467,16 +461,15 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             description = """
                     Applies form-encoded fields to an existing SNMP interface. Keys are bean property names on
                     `OnmsSnmpInterface`, not the names used in the representation. The collection and poll flags
-                    are the properties `collect` and `poll`, so send `collect=C`, not `collectFlag=C`: a key of
-                    `collectFlag` resolves to nothing and the request comes back 304.
+                    are the properties `collect` and `poll`: `collect=C` is written, while `collectFlag=C`
+                    resolves to nothing and the request comes back 304.
 
                     `nodeId`, `ipInterface` and `ipInterfaces` are skipped, and `id`, `dbId`, `authorizedGroups`,
                     `foreignSource`, `foreignId` and `type` are protected and dropped with a log warning.
 
                     If the body contains a `collect` key, `reinitializePrimarySnmpInterface` is published for the
-                    node so collectd re-reads the interface. That happens whether or not the value actually
-                    changed anything, and is skipped with a log warning when the node has no primary interface to
-                    name in the event.""",
+                    node, whether or not the value changed anything. It is skipped with a log warning when the
+                    node has no primary interface to name in the event.""",
             operationId = "updateNodeSnmpInterface"
     )
     @RequestBody(

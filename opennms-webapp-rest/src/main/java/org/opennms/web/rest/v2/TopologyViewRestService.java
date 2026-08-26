@@ -90,7 +90,7 @@ public class TopologyViewRestService {
             "The view's generated id, as returned by the listing or the create's Location header (a UUID on this build).";
 
     private static final String VIEW_STORE_UNAVAILABLE =
-            "The topology view store bean is not present in this deployment, so no view operation can be served.";
+            "The topology view store bean is not present in this deployment.";
 
     private static final String VIEW_EXAMPLE = """
             {
@@ -118,9 +118,9 @@ public class TopologyViewRestService {
     @GET
     @Operation(summary = "List custom topology views",
             description = """
-        Every view in the shared catalog, with its full `definition` inlined. The catalog is shared
-        rather than per-user, so this returns views other users created as well. A stored definition
-        that is no longer parseable as JSON comes back as `null` rather than failing the listing.""",
+        Every view in the shared catalog, with its full `definition` inlined. The catalog is shared,
+        so views other users created are included. A stored definition that is no longer parseable as
+        JSON comes back as `null` rather than failing the listing.""",
             operationId = "listTopologyViews")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All views, empty when the catalog is empty.",
@@ -164,12 +164,11 @@ public class TopologyViewRestService {
     @POST
     @Operation(summary = "Create a custom topology view",
             description = """
-        `name` and `definition` are both required. The name has to be free: a collision is refused with
-        409 rather than merged. `owner` is taken from the authenticated principal and `created` from the
-        server clock, so values sent for either are ignored.
+        `name` and `definition` are both required. A name collision is refused with 409 rather than
+        merged. `owner` is taken from the authenticated principal and `created` from the server clock,
+        so values sent for either are ignored.
 
-        The 201 has no body. Its `Location` header carries the new view's URL; read the view back from
-        there if the client needs the generated id.""",
+        The 201 has no body; its `Location` header carries the new view's URL.""",
             operationId = "createTopologyView")
     @RequestBody(required = true, description = "The view to create. Only `name` and `definition` are read.",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,

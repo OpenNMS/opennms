@@ -109,8 +109,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         `{"attribute":[{"key":"...","value":"..."}]}`, and sending a plain map fails with a 500.
 
         `POST /business-services` and `PUT /business-services/{id}` apply the child, IP-service and
-        reduction-key edges in the body. Application edges are read back on the response but are not
-        applied from a request body, and there is no per-edge endpoint for them.
+        reduction-key edges in the body. `application-edges` is parsed and discarded: application edges
+        are read back on responses only, and have no per-edge endpoint.
 
         A `{id}` or `{edgeId}` that does not exist is a 404 whose body is a `text/plain` entity
         description such as `BusinessServiceEntity with id 42`. Requests that would not change anything
@@ -163,7 +163,7 @@ public class BusinessServiceRestService {
             summary = "List business services",
             description = """
         Return a link per business service. The list carries resource locations, not the services
-        themselves; follow each one to `GET /business-services/{id}` for the detail.""",
+        themselves; the detail is at `GET /business-services/{id}`.""",
             operationId = "listBusinessServices"
     )
     @ApiResponses(value = {
@@ -512,7 +512,7 @@ public class BusinessServiceRestService {
             description = """
         Add one IP-service edge to an existing business service, leaving its other edges alone. An edge
         that already matches the request adds nothing and answers 304. A successful response carries no
-        body; read the new edge id back from `GET /business-services/{id}`.""",
+        body; the new edge id is readable from `GET /business-services/{id}`.""",
             operationId = "addBusinessServiceIpServiceEdge"
     )
     @RequestBody(
@@ -686,8 +686,8 @@ public class BusinessServiceRestService {
             summary = "Reload the BSM daemon",
             description = """
         Ask the BSM daemon to rebuild its in-memory graph from the database and recompute every
-        operational status. Use it after editing business services outside this API. The call returns as
-        soon as the reload is triggered and carries no body.""",
+        operational status. The call returns as soon as the reload is triggered and carries no
+        body.""",
             operationId = "reloadBusinessServiceDaemon"
     )
     @ApiResponses(value = {
@@ -704,8 +704,8 @@ public class BusinessServiceRestService {
             summary = "List map functions",
             description = """
         Return every available map function with its parameters. A map function transforms the severity
-        an edge reports before the reduce function sees it. Use the `name` as the `type` of a
-        `map-function` object, and the `parameter` keys as its `properties`.""",
+        an edge reports before the reduce function sees it. The `name` is the `type` of a `map-function`
+        object; the `parameter` keys are its `properties`.""",
             operationId = "listBusinessServiceMapFunctions"
     )
     @ApiResponses(value = {
@@ -770,8 +770,8 @@ public class BusinessServiceRestService {
             summary = "List reduce functions",
             description = """
         Return every available reduce function with its parameters. A reduce function turns the mapped
-        severities of a service's edges into the service's own operational status. Use the `name` as the
-        `type` of a `reduce-function` object, and the `parameter` keys as its `properties`.""",
+        severities of a service's edges into the service's own operational status. The `name` is the
+        `type` of a `reduce-function` object; the `parameter` keys are its `properties`.""",
             operationId = "listBusinessServiceReduceFunctions"
     )
     @ApiResponses(value = {

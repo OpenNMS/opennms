@@ -131,7 +131,7 @@ public interface SnmpConfigRestApi {
         Resolve the effective agent configuration for one address, which is what the poller and collector
         would use: the top-level defaults with the first matching `<definition>` applied on top.
         A definition that carries an explicit `timeout` or `retry` of 0 supplies that 0 rather than
-        falling back to the top-level value, so a 0 here usually means a definition set it.""",
+        falling back to the top-level value.""",
             operationId = "getConfigForIp"
     )
     @ApiResponses(value = {
@@ -358,13 +358,12 @@ public interface SnmpConfigRestApi {
             summary = "Download SNMP configuration",
             description = """
         Download the SNMP configuration as an attachment (`snmp-config.json` or `snmp-config.xml`),
-        for re-upload through `/snmp-config/upload` or `/snmp-config/upload/xml`.
+        which `/snmp-config/upload` and `/snmp-config/upload/xml` accept back.
         `format=xml` selects XML; every other value, including an unrecognised one, yields JSON.
 
         Only the XML form round-trips faithfully. The JSON form materialises inherited numeric fields as
         literal `0`, so re-uploading it through `/snmp-config/upload` pins each definition's `timeout`
-        and `retry` to 0 instead of leaving them to inherit the top-level defaults. Prefer XML when the
-        download is meant to be restored.""",
+        and `retry` to 0 instead of leaving them to inherit the top-level defaults.""",
             operationId = "downloadConfig"
     )
     @ApiResponses(value = {
@@ -404,7 +403,7 @@ public interface SnmpConfigRestApi {
 
         A document produced by `GET /snmp-config/download` is not a faithful restore: its inherited
         numeric fields are serialized as literal `0`, and uploading them pins each definition's
-        `timeout` and `retry` to 0. Use `/snmp-config/upload/xml` with the XML download to restore a
+        `timeout` and `retry` to 0. `/snmp-config/upload/xml` with the XML download restores a
         configuration unchanged.""",
             operationId = "uploadConfig"
     )

@@ -333,9 +333,9 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
     }
 
     @Override
-    @Operation(summary = "Create a IP interface",
+    @Operation(summary = "Create an IP interface",
             description = """
-                    Not supported here: create interfaces under `/nodes/{nodeCriteria}/ipinterfaces` or through provisioning.""",
+                    Answered with 501 for every body.""",
             operationId = "ipInterfacesCreate")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
@@ -356,7 +356,7 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
     }
 
     @Override
-    @Operation(summary = "Rejected: create a IP interface at a caller-chosen identifier",
+    @Operation(summary = "Rejected: create an IP interface at a caller-chosen identifier",
             description = DOC_POST_WITH_ID,
             operationId = "ipInterfacesCreateWithId")
     @Parameters({
@@ -405,11 +405,13 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
     @Override
     @Operation(summary = "Update one IP interface",
             description = """
-                    Not supported here. Both the JSON or XML replacement form and the form-parameter form answer 501; update interfaces under `/nodes/{nodeCriteria}/ipinterfaces/{ipAddress}` instead.""",
+                    Both the JSON or XML replacement form and the form-parameter form answer 501.""",
             operationId = "ipInterfacesUpdate")
     @ApiResponses({
+            @ApiResponse(responseCode = "400", description = """
+                    More than one node holds that IP address, so the lookup is ambiguous. The response has no body."""),
             @ApiResponse(responseCode = "404", description = """
-                    No interface holds that address. The response has no body."""),
+                    No interface holds that address, or the value is not a parseable address. The response has no body."""),
             @ApiResponse(responseCode = "501", description = """
                     This endpoint does not support update. The response has no body.""")
     })
@@ -457,11 +459,13 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
     @Override
     @Operation(summary = "Delete one IP interface",
             description = """
-                    Not supported here.""",
+                    Answered with 501 once the address resolves, and 404 when it does not.""",
             operationId = "ipInterfacesDelete")
     @ApiResponses({
+            @ApiResponse(responseCode = "400", description = """
+                    More than one node holds that IP address, so the lookup is ambiguous. The response has no body."""),
             @ApiResponse(responseCode = "404", description = """
-                    No interface holds that address. The response has no body."""),
+                    No interface holds that address, or the value is not a parseable address. The response has no body."""),
             @ApiResponse(responseCode = "501", description = """
                     This endpoint does not support deletion. The response has no body.""")
     })

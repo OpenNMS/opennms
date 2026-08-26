@@ -160,8 +160,8 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
         narrows within the node rather than across the system. `limit` defaults to 10, and the response
         carries a `Content-Range` header of the form `items <offset>-<last>/<totalCount>`.
 
-        This endpoint declares no search-property set, so its `properties` operation answers 204 and
-        cannot be used to discover names. A `_s` term is still resolved against the bean properties of
+        This endpoint declares no search-property set, so its `properties` operation answers 204. A
+        `_s` term is still resolved against the bean properties of
         the SNMP interface and, under the `node.` prefix, against the joined node, for example
         `_s=ifName==eth0` or `_s=node.label==router-1`. A name that cannot be resolved is answered with
         500.
@@ -286,7 +286,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     @Operation(
             summary = "Get SNMP interface search properties",
             description = """
-        Intended to list the properties usable in `_s` and `orderBy`. This endpoint does not declare a
+        Lists the properties usable in `_s` and `orderBy`. This endpoint does not declare a
         search-property set, so the list is empty and the operation answers 204 for every request,
         including one with a `q` filter. `_s` and `orderBy` still work: they resolve against the bean
         properties of the SNMP interface and of the joined node under the `node.` prefix. The
@@ -306,7 +306,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     @Operation(
             summary = "Get values of an SNMP interface search property",
             description = """
-        Intended to return the distinct values a search property takes. Because this endpoint declares
+        Returns the distinct values a search property takes. Because this endpoint declares
         no search properties, no `propertyId` can match and the operation answers 404 for every
         request. The equivalent operation on `/snmpinterfaces` does return values.""",
             operationId = "NodeSnmpInterfacesRestServiceGETSnmpInterfaceSearchPropertyValues",
@@ -395,7 +395,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     @Path("{id}")
     @Operation(
             summary = "Rejected: create an SNMP interface at a caller-chosen path",
-            description = "Always answered with 404. Post the interface to the collection instead; its `ifIndex` travels in the body.",
+            description = "Always answered with 404, whether or not the `ifIndex` exists.",
             operationId = "NodeSnmpInterfacesRestServicePOSTSnmpInterfaceSpecific",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
@@ -415,8 +415,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     @Operation(
             summary = "Add an SNMP interface to a node",
             description = """
-        Attach an SNMP interface to the node. `ifIndex` is the only required field. No event is sent, so
-        daemons already holding the node's interface list are not notified.
+        Attach an SNMP interface to the node. `ifIndex` is the only required field. No event is sent.
 
         `collectFlag` and `pollFlag` are the stored collection and polling flags. `collectFlag` of `C`
         or `N` records the choice without a source, `UC` and `UN` mark it user specified, and `PC` and
@@ -425,8 +424,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
         the response follow from them. In XML `ifIndex`, `collectFlag` and `pollFlag` are attributes
         rather than elements, and sending them as elements leaves them unset.
 
-        The `Location` header of the 201 addresses the interface by `ifIndex`, matching the identifier
-        the item operations expect.""",
+        The `Location` header of the 201 addresses the interface by `ifIndex`.""",
             operationId = "NodeSnmpInterfacesRestServicePOSTSnmpInterface",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                     description = "Node database id, or `foreignSource:foreignId`.", example = "274"))
@@ -544,11 +542,10 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
         Parameter names are normalised, so the wire names differ from the JSON and XML field names:
         `if-alias` or `if_alias` reaches `ifAlias` while the camel-case `ifAlias` does not, and the
         stored collection and polling flags are reached as `collect` and `poll` rather than as
-        `collectFlag` and `pollFlag`. `ifIndex` is rejected, under any spelling: delete the interface
-        and add it again to change its index.
+        `collectFlag` and `pollFlag`. `ifIndex` is rejected with 400 under any spelling.
 
-        Sending a JSON or XML body to the same path selects a different operation, which answers 501
-        because replacing an SNMP interface from a document is not implemented here.""",
+        Sending a JSON or XML body to the same path selects a different operation, which answers
+        501.""",
             operationId = "NodeSnmpInterfacesRestServicePUTSnmpInterfaceProperties",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                     description = "Node database id, or `foreignSource:foreignId`.", example = "274"))
@@ -605,8 +602,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     @Operation(
             summary = "Delete an SNMP interface",
             description = """
-        Delete one SNMP interface of the node, addressed by `ifIndex`. No event is sent, so daemons
-        already holding the node's interface list are not notified.""",
+        Delete one SNMP interface of the node, addressed by `ifIndex`. No event is sent.""",
             operationId = "NodeSnmpInterfacesRestServiceDELETESnmpInterfaceByIfIndex",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                     description = "Node database id, or `foreignSource:foreignId`.", example = "274"))

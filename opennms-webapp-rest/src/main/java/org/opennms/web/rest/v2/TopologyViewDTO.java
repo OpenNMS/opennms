@@ -53,8 +53,8 @@ public class TopologyViewDTO {
 
     @Schema(description = """
             The canvas, as free-form JSON. The server stores it verbatim as a string and does not
-            validate its shape, so the keys are whatever the client that wrote the view used. Required
-            on create; omitted on update it leaves the stored definition alone.""",
+            validate its shape. Required on create; omitted on update it leaves the stored definition
+            alone.""",
             required = true, type = "object")
     @JsonProperty("definition")
     private JsonNode definition;

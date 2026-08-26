@@ -106,10 +106,7 @@ import org.springframework.transaction.annotation.Transactional;
         Timestamps serialize differently per representation: JSON carries epoch milliseconds
         (`"createTime": 1787727313802`) while XML carries an ISO-8601 offset date-time
         (`<createTime>2026-08-26T02:55:13.802-04:00</createTime>`). The schemas shown here are derived from the
-        Java types and say `date-time` for both. Node `id` is a string in JSON and an attribute in XML.
-
-        Interfaces, services, categories, asset data and hardware inventory hang off `/nodes/{nodeCriteria}/...`
-        and are documented under their own operations.""")
+        Java types and say `date-time` for both. Node `id` is a string in JSON and an attribute in XML.""")
 public class NodeRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
@@ -153,14 +150,12 @@ public class NodeRestService extends OnmsRestService {
                     resolve. A value of `null` or `notnull` becomes an is-null / is-not-null test. Unknown
                     property names are logged and ignored rather than rejected.
 
-                    Restrict by database id with `id`, not with `nodeId`: `nodeId` is not usable as a criteria
-                    property and any request that sends it fails with 500, including the documented
-                    comma-separated form.
+                    The criteria property for the database id is `id`. `nodeId` is not usable as a criteria
+                    property and any request that sends it fails with 500, including the comma-separated form.
 
-                    `filterRule` is evaluated separately, by the filter engine, and is mutually exclusive with the
-                    property restrictions in the sense that it replaces them: matching node ids are resolved
-                    first, then the remaining parameters are re-applied on top of that id set. A rule that matches
-                    nothing returns an empty list with `totalCount` 0 rather than an error.""",
+                    `filterRule` is evaluated by the filter engine: matching node ids are resolved first, then the
+                    remaining query parameters are applied to that id set. A rule that matches nothing returns an
+                    empty list with `totalCount` 0 rather than an error.""",
             operationId = "searchNodes",
             parameters = {
                     @Parameter(in = ParameterIn.QUERY, name = "limit",
@@ -191,10 +186,10 @@ public class NodeRestService extends OnmsRestService {
                             description = "Node type. Sending any value, including `A`, also disables the implicit exclusion of deleted nodes.",
                             schema = @Schema(type = "string", allowableValues = {"A", "D"}), example = "A"),
                     @Parameter(in = ParameterIn.QUERY, name = "id",
-                            description = "Database node id. Use this rather than `nodeId`.",
+                            description = "Database node id.",
                             schema = @Schema(type = "integer"), example = "258"),
                     @Parameter(in = ParameterIn.QUERY, name = "label",
-                            description = "Node label. Example of the generic property-restriction form; pair it with `comparator=contains` for a substring search.",
+                            description = "Node label. One of the generic property restrictions; with `comparator=contains` it matches substrings.",
                             schema = @Schema(type = "string"), example = "core-sw-01"),
                     @Parameter(in = ParameterIn.QUERY, name = "foreignSource",
                             description = "Requisition that owns the node.",
@@ -255,7 +250,7 @@ public class NodeRestService extends OnmsRestService {
                       </node>
                     </nodes>"""))
                     }),
-            @ApiResponse(responseCode = "400", description = "`filterRule` could not be parsed. The parse error is deliberately not echoed, because it can contain the generated SQL.",
+            @ApiResponse(responseCode = "400", description = "`filterRule` could not be parsed. The parse error is not echoed.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid 'filterRule' in request."))),
@@ -346,11 +341,8 @@ public class NodeRestService extends OnmsRestService {
             summary = "Get one node",
             description = """
                     Returns a single node, addressed either by database id or by `foreignSource:foreignId`.
-                    Deleted nodes are not filtered out here, unlike in the search endpoint.
-
-                    The node's asset record is embedded in the response, but the search endpoint's paged result
-                    embeds it too, so `/nodes/{nodeCriteria}/assetRecord` is only needed when the asset record is
-                    all that is wanted.""",
+                    Deleted nodes are not filtered out here, unlike in the search endpoint. The node's asset
+                    record is embedded in the response.""",
             operationId = "getNode"
     )
     @ApiResponses(value = {
@@ -433,9 +425,7 @@ public class NodeRestService extends OnmsRestService {
                     `rescanExisting=true` and returns immediately. The scan itself is asynchronous, so a 204 means
                     the request was queued, not that the node has been rescanned.
 
-                    No request body is read. The method declares `@Consumes(application/x-www-form-urlencoded)`,
-                    so a `Content-Type` is only needed if a body is sent at all; an empty PUT with no
-                    `Content-Type` is accepted.""",
+                    No request body is read; an empty PUT with no `Content-Type` is accepted.""",
             operationId = "rescanNode"
     )
     @ApiResponses(value = {
@@ -566,12 +556,10 @@ public class NodeRestService extends OnmsRestService {
                     comes back 304.
 
                     `id`, `dbId`, `nodeId`, `authorizedGroups`, `foreignSource`, `foreignId` and `type` are
-                    protected and dropped with a log warning, including when reached through a nested path. Node
-                    identity and requisition ownership therefore cannot be changed here.
+                    protected and dropped with a log warning, including when reached through a nested path.
 
-                    No event is published, so daemons are not told about the change.
-
-                    A missing node is reported as 400, not 404, unlike `GET /nodes/{nodeCriteria}`.""",
+                    No event is published. A missing node is reported as 400, not 404, unlike
+                    `GET /nodes/{nodeCriteria}`.""",
             operationId = "updateNode"
     )
     @RequestBody(
@@ -647,7 +635,7 @@ public class NodeRestService extends OnmsRestService {
                     Publishes `deleteNode` and returns immediately. The deletion is carried out asynchronously by
                     provisiond and takes the node's interfaces, services, asset record, hardware inventory and
                     category assignments with it, so the node is normally still readable for a moment after the
-                    202 and the caller has to poll to see the effect.
+                    202.
 
                     Nothing prevents a requisitioned node from being deleted here. The requisition still lists it,
                     so the next import recreates it.""",
@@ -786,8 +774,8 @@ public class NodeRestService extends OnmsRestService {
     @Operation(
             summary = "Check whether a node carries a category",
             description = """
-                    Returns the category if it is assigned to the node, so this doubles as a membership test. A
-                    category that exists but is not on the node is a 404, not a 200.""",
+                    Returns the category if it is assigned to the node. A category that exists but is not on the
+                    node is a 404, not a 200.""",
             operationId = "getNodeCategory"
     )
     @ApiResponses(value = {
@@ -877,9 +865,8 @@ public class NodeRestService extends OnmsRestService {
     @Operation(
             summary = "Assign an existing category to a node, naming it in the path",
             description = """
-                    Adds an already-defined category to the node. No request body is read and none is required, so
-                    this is the simplest of the three ways to assign a category. The category is not created here;
-                    an unknown name is a 400.
+                    Adds an already-defined category to the node. No request body is read. The category is not
+                    created here; an unknown name is a 400.
 
                     The `Location` header of the 201 is built by appending the category name to the request URI,
                     so it comes back with the name repeated (`/nodes/258/categories/Routers/Routers`) and is not a

@@ -93,7 +93,7 @@ public class TopologyAssetRestService {
             "The asset's generated id, as returned by the upload or the listing (a UUID on this build).";
 
     private static final String ASSET_STORE_UNAVAILABLE =
-            "The asset store bean is not present in this deployment, so no asset operation can be served.";
+            "The asset store bean is not present in this deployment.";
 
     @Autowired(required = false)
     private TopologyAssetDao m_dao;
@@ -102,9 +102,8 @@ public class TopologyAssetRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "List topology image assets",
             description = """
-        Metadata for every stored asset, newest-first order not guaranteed. The image bytes are not
-        included; fetch them one at a time from `/topology/assets/{id}`. `created` and `lastModified`
-        are epoch milliseconds.""",
+        Metadata for every stored asset. The image bytes are not included; they are served from
+        `/topology/assets/{id}`. `created` and `lastModified` are epoch milliseconds.""",
             operationId = "listTopologyAssets")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Asset metadata, empty when nothing matches.",
@@ -128,8 +127,8 @@ public class TopologyAssetRestService {
                             examples = @ExampleObject(value = "The topology asset store is not available")))
     })
     public List<TopologyAssetDTO> list(@Parameter(description = """
-                    Restrict the listing to one kind. An unrecognised value is not an error: it simply
-                    matches nothing and yields an empty array.""",
+                    Restrict the listing to one kind. An unrecognised value matches nothing and
+                    yields an empty array.""",
                     example = "icon",
                     schema = @Schema(allowableValues = {"background", "icon"}))
                                        @QueryParam("kind") final String kind) {
@@ -144,8 +143,8 @@ public class TopologyAssetRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Upload a topology image asset",
             description = """
-        The request body is the raw image, not a multipart form, and the `Content-Type` header is what
-        records the stored MIME type. `name` and `kind` travel as query parameters.
+        The request body is the raw image, not a multipart form; the `Content-Type` header records the
+        stored MIME type. `name` and `kind` travel as query parameters.
 
         Size caps are per kind: 10485760 bytes for a `background`, 524288 for an `icon`. Only
         `image/png`, `image/jpeg`, `image/gif` and `image/webp` are accepted; `image/svg+xml` is

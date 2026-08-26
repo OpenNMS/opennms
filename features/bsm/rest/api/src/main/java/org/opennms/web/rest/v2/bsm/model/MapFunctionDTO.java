@@ -35,8 +35,8 @@ import com.google.common.collect.Maps;
 @XmlRootElement(name = "map-function")
 @XmlAccessorType(XmlAccessType.NONE)
 @Schema(description = """
-        A map function applied to one edge's severity before the reduce function sees it. Take `type`
-        and the `properties` keys from `GET /business-services/functions/map`.""")
+        A map function applied to one edge's severity before the reduce function sees it. `type` and
+        the `properties` keys are those reported by `GET /business-services/functions/map`.""")
 public class MapFunctionDTO {
 
     @Schema(description = "Map function name.", example = "Identity", required = true,

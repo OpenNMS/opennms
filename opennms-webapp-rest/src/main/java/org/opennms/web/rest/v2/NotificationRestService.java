@@ -376,7 +376,7 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     @Override
     @Operation(summary = "Create a notification",
             description = """
-                    Not supported: notifications are created by notifd, not through this API.""",
+                    Answered with 501 for every body.""",
             operationId = "notificationsCreate")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
@@ -446,7 +446,7 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     @Override
     @Operation(summary = "Update one notification",
             description = """
-                    Not supported here. Both the JSON or XML replacement form and the form-parameter form answer 501; acknowledge notifications through `/acks` instead.""",
+                    Both the JSON or XML replacement form and the form-parameter form answer 501.""",
             operationId = "notificationsUpdate")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = """
@@ -498,7 +498,7 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     @Override
     @Operation(summary = "Delete one notification",
             description = """
-                    Not supported for notifications.""",
+                    Answered with 501 once the identifier resolves, and 404 when it does not.""",
             operationId = "notificationsDelete")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = """

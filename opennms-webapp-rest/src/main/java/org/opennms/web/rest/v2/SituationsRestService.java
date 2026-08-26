@@ -89,10 +89,8 @@ import java.util.stream.Collectors;
 @Path("situations")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @Tag(name = "Situation", description = """
-        Situations API.
-
-        A situation is an alarm that correlates other alarms. It carries `isSituation` and a
-        `relatedAlarms` list, and it lives in the same table as ordinary alarms, so every alarm
+        Situations API. A situation is an alarm that correlates other alarms: it carries `isSituation`
+        and a `relatedAlarms` list and lives in the same table as ordinary alarms, so every alarm
         operation applies to it as well. This resource narrows the collection reads to alarms where
         `isSituation` is true and adds the membership and workflow actions.
 
@@ -109,11 +107,10 @@ import java.util.stream.Collectors;
         members, so acknowledging or clearing a situation leaves the correlated alarms as they were.
 
         Four operations here are the inherited alarm operations, and they carry the alarm wording and
-        an `_1`-suffixed operationId because a single annotation serves both paths: `GET
-        /situations/{id}` (`getAlarmById_1`), `POST /situations` (`createAlarm_1`), `PUT
-        /situations/{id}` (`updateAlarmProperties_1`) and `DELETE /situations/{id}`
-        (`deleteAlarm_1`). Creating and deleting are not implemented on either path; use
-        `POST /situations/create` and the membership endpoints instead.""")
+        an `_1`-suffixed operationId: `GET /situations/{id}` (`getAlarmById_1`), `POST /situations`
+        (`createAlarm_1`), `PUT /situations/{id}` (`updateAlarmProperties_1`) and
+        `DELETE /situations/{id}` (`deleteAlarm_1`). Creating and deleting are not implemented on
+        either path.""")
 public class SituationsRestService extends AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SituationsRestService.class);
@@ -317,8 +314,7 @@ public class SituationsRestService extends AlarmRestService {
         would change nothing.
 
         The change is applied by publishing an event, so the call returns before the membership is
-        visible. The request body is read from a DELETE, which some HTTP clients will not send.
-        `feedback` is accepted and not used.""",
+        visible. The request body is read from a DELETE. `feedback` is accepted and not used.""",
             operationId = "removeSituationAlarms")
     @RequestBody(required = true, description = "Situation to remove from, and the alarms to remove.",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
@@ -578,11 +574,10 @@ public class SituationsRestService extends AlarmRestService {
     @Operation(
             summary = "List the properties situations can be queried on",
             description = """
-        Return the same property list as `GET /alarms/properties`, because a situation is an alarm. Note
-        that only `alarm.isSituation` is registered as a query behaviour on this resource, so most of
-        the listed properties cannot in fact be used in `_s` here. `q` filters the list by a
-        case-insensitive substring of the name and a `q` that matches nothing yields 200 with an empty
-        list.""",
+        Return the same property list as `GET /alarms/properties`. Only `alarm.isSituation` is
+        registered as a query behaviour on this resource, so most of the listed properties cannot be
+        used in `_s` here. `q` filters the list by a case-insensitive substring of the name and a `q`
+        that matches nothing yields 200 with an empty list.""",
             operationId = "getSituationProperties")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The matching query properties.",
@@ -655,7 +650,7 @@ public class SituationsRestService extends AlarmRestService {
     @Path("{id}")
     @Operation(
             summary = "Rejected: situations cannot be created at a chosen id",
-            description = "Always answers 404. Use `POST /situations/create` to correlate alarms into a situation.",
+            description = "Always answers 404.",
             operationId = "createSituationWithId",
             parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
                     description = "Alarm database id. The value is not read: every request to this path is answered with 404.",
@@ -700,8 +695,7 @@ public class SituationsRestService extends AlarmRestService {
             summary = "Not implemented: delete several situations",
             description = """
         Deleting alarms is not implemented. When `_s` selects at least one situation the handler answers
-        501 without deleting anything; when nothing matches it answers 404 instead. To dissolve a
-        correlation, remove its members with `DELETE /situations/removeAlarm`.
+        501 without deleting anything; when nothing matches it answers 404 instead.
 
         Example query: `_s=alarm.isSituation==true`.""",
             operationId = "deleteSituations")

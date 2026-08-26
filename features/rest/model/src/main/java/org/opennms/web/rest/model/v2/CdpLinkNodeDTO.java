@@ -33,7 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="cdpLinkNode")
 @JsonRootName("cdpLinkNode")
-@Schema(description = "One discovered CDP neighbour of the node. Every field is a display string built for the JSP UI, with ifIndexes embedded in the port labels and the timestamps locale-formatted rather than epoch milliseconds.")
+@Schema(description = "One discovered CDP neighbour of the node. Every field is a display string, with ifIndexes embedded in the port labels and the timestamps locale-formatted rather than epoch milliseconds.")
 public class CdpLinkNodeDTO {
 
     private String  cdpLocalPort;
@@ -152,7 +152,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCachePlatform")
     @JsonProperty("cdpCachePlatform")
-    @Schema(description = "Neighbour platform and software version joined by an arrow, built as cdpCacheDevicePlatform + space-arrow-space + cdpCacheVersion. Both halves come from the neighbour's own advertisement.", example = "cisco WS-C3750G-24TS -> Cisco IOS Software, C3750 Software")
+    @Schema(description = "Neighbour platform and software version joined by an arrow, built as cdpCacheDevicePlatform + space-arrow-space + cdpCacheVersion.", example = "cisco WS-C3750G-24TS -> Cisco IOS Software, C3750 Software")
     public String getCdpCachePlatform() {
         return cdpCachePlatform;
     }
@@ -168,7 +168,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCreateTime")
     @JsonProperty("cdpCreateTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getCdpCreateTime() {
         return cdpCreateTime;
     }
@@ -184,7 +184,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpLastPollTime")
     @JsonProperty("cdpLastPollTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getCdpLastPollTime() {
         return cdpLastPollTime;
     }

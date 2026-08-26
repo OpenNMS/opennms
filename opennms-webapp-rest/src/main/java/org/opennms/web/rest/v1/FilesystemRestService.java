@@ -82,8 +82,8 @@ import com.google.common.collect.ImmutableSet;
 @Component
 @Path("filesystem")
 @Tag(name = "FileSystem", description = """
-        File System API: read and write the configuration files under the OpenNMS `etc` directory, addressed
-        by their path relative to that directory.
+        Read and write the configuration files under the OpenNMS `etc` directory, addressed by their path
+        relative to that directory.
 
         Every operation requires `ROLE_FILESYSTEM_EDITOR`. That is enforced twice, by the servlet security
         configuration and again in each handler, so a caller without the role gets 403 from the container
@@ -95,9 +95,9 @@ import com.google.common.collect.ImmutableSet;
         rejected with 400.
 
         Writing is a whole-file replace, not a patch, and an existing file is overwritten without a version
-        check. `.xml` files are checked for well-formedness before the replace, which catches a truncated
-        upload but not a schema violation: a well-formed file that the daemon cannot load is still written.
-        Writes do not reload anything; the affected daemon has to be told separately.""")
+        check. `.xml` files are checked for well-formedness before the replace; a well-formed file that the
+        daemon cannot load is still written. Writes do not reload anything; the affected daemon has to be
+        told separately.""")
 public class FilesystemRestService {
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemRestService.class);
 
@@ -197,9 +197,8 @@ public class FilesystemRestService {
     @Operation(
             summary = "Get the help text for a configuration file",
             description = """
-        Return the bundled Markdown help for one configuration file, if the distribution ships any. Help is
-        looked up by file name, so a file with no help document produces an empty response body rather than a
-        404.
+        Return the bundled Markdown help for one configuration file. Help is looked up by file name, and a
+        file with no help document produces an empty response body rather than a 404.
 
         The file name still has to pass the same checks as the other operations, so an unsupported extension
         or a path outside `etc` is rejected with 400 even though nothing is read from `etc`.""",
@@ -233,8 +232,7 @@ public class FilesystemRestService {
             summary = "List the file extensions this API will handle",
             description = """
         List the file extensions the other operations accept, sorted. The set is fixed in the code rather
-        than configurable, and a file whose extension is not in it cannot be read or written here whatever
-        its location.""",
+        than configurable, and a file whose extension is not in it cannot be read or written here.""",
             operationId = "getSupportedFileExtensions"
     )
     @ApiResponses(value = {
@@ -273,8 +271,7 @@ public class FilesystemRestService {
         `Last-Modified` carries the file's timestamp.
 
         A name that passes the checks but does not exist yields 204 with no body, so 204 is how a missing file
-        is reported rather than 404. Read the file before writing it back: the write is a whole-file replace
-        with no version check.""",
+        is reported rather than 404.""",
             operationId = "getFileContents"
     )
     @ApiResponses(value = {
@@ -308,7 +305,7 @@ public class FilesystemRestService {
         `upload`. The target file is named by the `f` query parameter, not by the part's own filename.
 
         This is a whole-file replace with no version check: an existing file is overwritten, and a file that
-        does not exist yet is created. Read the current contents first if they matter.
+        does not exist yet is created.
 
         A `.xml` upload is parsed for well-formedness before the replace, and a parse failure is reported as
         400 with the target left untouched. The parse is non-validating and external entities are disabled, so
@@ -374,8 +371,7 @@ public class FilesystemRestService {
     @Operation(
             summary = "Delete a configuration file",
             description = """
-        Delete one configuration file from `etc`. There is no confirmation step and no backup, and deleting a
-        file the running instance depends on will break it at the next reload or restart.
+        Delete one configuration file from `etc`. There is no confirmation step and no backup.
 
         A name that passes the checks but does not exist fails with 500 from the underlying delete, not with
         404.""",

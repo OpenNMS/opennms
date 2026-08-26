@@ -71,12 +71,12 @@ import com.google.common.collect.Maps;
 @Component("graphRestService")
 @Path("graphs")
 @Tag(name = "Graphs", description = """
-        Graphs API: the prefabricated graph definitions from `snmp-graph.properties` and the
-        `snmp-graph.properties.d` directory, and which of them apply to a given resource.
+        The prefabricated graph definitions from `snmp-graph.properties` and the `snmp-graph.properties.d`
+        directory, and which of them apply to a given resource.
 
         A definition is identified by its name and carries the RRDtool command template used to render it,
-        the columns it needs and the resource types it applies to. These operations only report definitions;
-        rendering happens elsewhere.
+        the columns it needs and the resource types it applies to. These operations report definitions and
+        do not render them.
 
         Whether a definition applies to a resource is decided by the attributes the resource actually has, so
         two nodes of the same type can offer different graphs.""")
@@ -98,8 +98,8 @@ public class GraphRestService extends OnmsRestService {
             summary = "List all prefabricated graph names",
             description = """
         List the names of every prefabricated graph definition known to the running instance, sorted. This is
-        the whole catalogue, not the subset that applies to any particular resource, and on a default install
-        it runs to well over a thousand entries.""",
+        the whole catalogue, not the subset that applies to any particular resource; a default install has
+        well over a thousand entries.""",
             operationId = "getGraphNames"
     )
     @ApiResponses(value = {
@@ -256,8 +256,7 @@ public class GraphRestService extends OnmsRestService {
             summary = "Get a node's resource tree with its graph definitions",
             description = """
         Return the node's resource tree with each resource decorated with the graph names that apply to it,
-        alongside the full definitions of every graph named anywhere in the tree. That makes one request
-        enough to draw a node's whole graph page.
+        alongside the full definitions of every graph named anywhere in the tree.
 
         `nodeCriteria` is either the database node id or `foreignSource:foreignId`. A criteria string that is
         neither numeric nor contains a colon fails with 500 while trying to parse it as a number, rather than

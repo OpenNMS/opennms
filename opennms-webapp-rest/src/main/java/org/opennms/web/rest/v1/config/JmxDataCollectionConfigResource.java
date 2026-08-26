@@ -66,11 +66,11 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
             summary = "Get the JMX data collection configuration",
             description = """
                     Returns jmx-datacollection-config.xml as the JMX collection DAO holds it, with every
-                    `import-mbeans` include already resolved into the owning collection. The response is
-                    large: the shipped default is on the order of 100 kB of JSON.
+                    `import-mbeans` include already resolved into the owning collection. The shipped default
+                    serializes to roughly 100 kB of JSON.
 
-                    `rrdRepository` is the absolute path on the OpenNMS server, so it varies per
-                    installation. Each `jmx-collection` carries its own `rrd` step and RRA definitions.""",
+                    `rrdRepository` is an absolute path on the OpenNMS server. Each `jmx-collection` carries
+                    its own `rrd` step and RRA definitions.""",
             operationId = "getJmxDataCollectionConfig")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The current JMX data collection configuration. The example is abbreviated to a single collection, MBean and attribute.",

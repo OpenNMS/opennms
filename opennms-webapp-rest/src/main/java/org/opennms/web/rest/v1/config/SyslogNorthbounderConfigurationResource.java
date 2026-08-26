@@ -209,7 +209,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
             description = """
                     Marshals the request body straight over syslog-northbounder-configuration.xml, then sends a
                     `reloadDaemonConfig` event for `SyslogNBI`. The whole file is replaced, so anything absent
-                    from the body is dropped, including comments. There is no merge and no dry run.
+                    from the body is dropped, including comments.
 
                     The handler declares no `@Consumes`, so the media type is whatever the JAXB and Jackson
                     providers accept for the body type. A body that fails to parse surfaces as a 500 rather
@@ -362,8 +362,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
     @Operation(
             summary = "List the Syslog northbounder destination names",
             description = """
-                    Returns only the destination names, not the destinations themselves. Fetch a single
-                    destination to see its settings.
+                    Returns only the destination names, not the destinations themselves.
 
                     `count` and `totalCount` are always equal here: the listing is not paged and `offset` is
                     always 0.""",
@@ -556,8 +555,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
                     The writable properties are `name` (which is the `destination-name` element), `host`,
                     `port`, `protocol` (the `ip-protocol` element), `charSet`, `maxMessageLength`,
                     `sendLocalName`, `sendLocalTime`, `truncateMessage` and `firstOccurrenceOnly`. `facility`
-                    has a getter but no setter, so a `facility` key is accepted and silently ignored; POST the
-                    destination again to change it.""",
+                    has a getter but no setter, so a `facility` key is accepted and ignored.""",
             operationId = "updateSyslogDestination")
     @RequestBody(required = true, description = "Form-encoded property assignments, keyed by bean property name.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,

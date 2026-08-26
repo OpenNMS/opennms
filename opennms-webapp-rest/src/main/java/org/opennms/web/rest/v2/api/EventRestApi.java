@@ -47,43 +47,37 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Path("events")
 @Tag(name = "Events", description = """
-        Events API V2.
+        Events API V2. Reads events and publishes new ones.
 
-        Events are the immutable record of everything OpenNMS and its agents report. This resource
-        reads them and publishes new ones. It does not modify or delete them: the inherited write
-        operations on `/events` and `/events/{id}` are reachable but fail, see below.
+        JSON carries timestamps as epoch milliseconds (`1787685470949`); XML carries an ISO-8601 string
+        with offset (`2026-08-25T15:17:50.949-04:00`). The generated schema shows the XML form for both.
 
-        Timestamps are rendered differently per representation: JSON carries epoch milliseconds
-        (`1787685470949`), XML carries an ISO-8601 string with offset
-        (`2026-08-25T15:17:50.949-04:00`). The generated schema shows the XML form for both.
-
-        `POST /events` and `POST /events/{tiebreaker}` are the same operation. The tiebreaker template
-        matches the empty string, and CXF resolves `POST /events` to it, so a POST to the collection
-        publishes an event and the `EventDTO` request body the document shows for `POST /events` is not
-        what the handler reads. Publish an `Event` document instead, as shown under
-        `POST /events/{tiebreaker}`.
+        `POST /events` and `POST /events/{tiebreaker}` are the same operation: the tiebreaker template
+        matches the empty string and CXF resolves `POST /events` to it. The handler reads an `Event`
+        document, not the `EventDTO` body this document shows for `POST /events`.
 
         `PUT /events`, `DELETE /events`, `POST /events/{id}`, `PUT /events/{id}` and
         `DELETE /events/{id}` are inherited from the generic DAO resource and answer 500 with
-        `object is not an instance of declaring class`. This implementation is proxied on its interface,
-        so the inherited methods cannot be invoked on the proxy. Do not build against them.
+        `object is not an instance of declaring class`: this implementation is proxied on its interface,
+        and the inherited methods are not on the proxy.
 
-        `GET /events/{id}` is missing from this document but works: it returns one event by database id,
-        200 with the same schema as an element of the `GET /events` list, or 404. The generator drops it
-        because both this interface and the abstract superclass declare that signature, and neither
-        declaration can be removed without breaking the endpoint.
+        `GET /events/{id}` is absent from this document but works: it returns one event by database id,
+        200 with the same schema as an element of the `GET /events` list, or 404.
 
         Collection reads accept a CXF FIQL expression in `_s` together with `limit`, `offset`,
         `orderBy` and `order`. The default page size is 10 and the default sort is `eventTime`
-        descending. Property names usable in `_s` and `orderBy` are listed by
-        `GET /events/properties`; naming a property the entity does not have fails with 500 rather
-        than 400.""")
+        descending. `GET /events/properties` lists the property names usable in `_s` and `orderBy`;
+        naming a property the entity does not have fails with 500 rather than 400.""")
 public interface EventRestApi {
 
     // These five declarations have to stay. <tx:annotation-driven/> proxies this implementation on its
     // interfaces, so a method absent here is absent from the proxy and answers 500 at runtime, which is
     // what already happens to the inherited write operations. Their OpenAPI detail lives on the
     // EventRestService overrides, because swagger resolves annotations from the superclass first.
+    //
+    // GET /events/{id} is dropped from the generated document because this interface and the abstract
+    // superclass both declare that signature; neither declaration can be removed without breaking the
+    // endpoint.
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
@@ -115,13 +109,11 @@ public interface EventRestApi {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(summary = "Publish a new event",
             description = """
-        Hand an event to eventd. `POST /events` resolves to this same handler, so both forms of the path
-        behave alike.
+        Hand an event to eventd. `POST /events` resolves to this same handler.
 
-        `uei` is the only field worth treating as required: `time` defaults to now and `source` defaults
-        to `ReST` when they are absent. Nothing else is validated here. An event whose UEI matches no
-        event configuration is still stored, under `uei.opennms.org/default/event`, so a body as small as
-        `{}` yields 204 and leaves a row behind.
+        `time` defaults to now and `source` defaults to `ReST` when absent. Nothing else is validated
+        here. An event whose UEI matches no event configuration is still stored, under
+        `uei.opennms.org/default/event`, so a body as small as `{}` yields 204 and leaves a row behind.
 
         The 204 says only that eventd accepted the event for processing. Whether it is persisted, and
         whether it raises an alarm, is decided by the matching event configuration afterwards.

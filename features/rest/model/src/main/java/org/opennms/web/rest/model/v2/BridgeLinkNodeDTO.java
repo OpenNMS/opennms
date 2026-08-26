@@ -35,7 +35,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="bridgeLinkNode")
 @JsonRootName("bridgeLinkNode")
-@Schema(description = "One shared bridge segment the node takes part in, with the node's own end in bridgeLocalPort and the other ends in BridgeLinkRemoteNodes. Note that one field name is capitalised where the rest are not.")
+@Schema(description = "One shared bridge segment the node takes part in, with the node's own end in bridgeLocalPort and the other ends in BridgeLinkRemoteNodes.")
 public class BridgeLinkNodeDTO {
     private String bridgeLocalPort;
 
@@ -83,7 +83,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="BridgeLinkRemoteNodes")
     @JsonProperty("BridgeLinkRemoteNodes")
-    @Schema(name = "BridgeLinkRemoteNodes", description = "Other ends of the shared segment. Note the wire name is capitalised: BridgeLinkRemoteNodes, unlike every other field here. Always present, empty when the segment has no resolved remote end.")
+    @Schema(name = "BridgeLinkRemoteNodes", description = "Other ends of the shared segment. The wire name is BridgeLinkRemoteNodes. Always present, empty when the segment has no resolved remote end.")
     public List<BridgeLinkRemoteNodeDTO> getBridgeLinkRemoteNodes() {
         return bridgeLinkRemoteNodes;
     }
@@ -115,7 +115,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="bridgeLinkCreateTime")
     @JsonProperty("bridgeLinkCreateTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeLinkCreateTime() {
         return bridgeLinkCreateTime;
     }
@@ -131,7 +131,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="bridgeLinkLastPollTime")
     @JsonProperty("bridgeLinkLastPollTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeLinkLastPollTime() {
         return bridgeLinkLastPollTime;
     }

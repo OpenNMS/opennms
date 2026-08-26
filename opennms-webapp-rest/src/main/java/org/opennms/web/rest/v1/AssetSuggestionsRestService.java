@@ -161,15 +161,10 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
     @Operation(
             summary = "List distinct asset-record values per field",
             description = """
-                    Returns, for every writable asset-record field, the distinct values already stored across all
-                    nodes. Intended to back type-ahead in asset editors.
-
-                    `class`, `geolocation`, `lastModifiedDate` and `lastModifiedBy` are excluded. Fields with no
-                    stored value still appear, with an empty list. An empty string counts as a value, so lists
-                    often contain "".
-
-                    The cost grows with the number of asset records, since every distinct record is walked once
-                    per field.""",
+                    Returns the distinct values already stored across all nodes, for every asset-record field
+                    except `class`, `geolocation`, `lastModifiedDate` and `lastModifiedBy`. Fields with no stored
+                    value still appear, with an empty list. An empty string counts as a value, so lists often
+                    contain "".""",
             operationId = "getAssetSuggestions"
     )
     @ApiResponses(value = {

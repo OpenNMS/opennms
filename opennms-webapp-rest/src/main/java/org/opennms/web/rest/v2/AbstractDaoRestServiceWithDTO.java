@@ -158,8 +158,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
     protected static final String DOC_LIMIT = """
             Maximum number of entities to return. Defaults to 10, and `0` means no limit. The same \
-            limit bounds how many matching entities the collection-level PUT and DELETE act on, so \
-            those operations touch at most ten entities unless a larger limit is given. A \
+            limit bounds how many matching entities the collection-level PUT and DELETE act on. A \
             non-numeric value is answered with 500.""";
 
     protected static final String DOC_OFFSET = """
@@ -183,12 +182,11 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             count query rejects it). The body is a `text/plain` message.""";
 
     protected static final String DOC_NOT_IMPLEMENTED = """
-            Not supported by this endpoint. The shared implementation answers 501 with no body.""";
+            Not supported by this endpoint: answered with 501 and no body.""";
 
     protected static final String DOC_POST_WITH_ID = """
-            Creating an entity under a caller-chosen identifier is not supported. Every request to \
-            this path is answered with 404 and no body, whether or not the identifier exists. Use \
-            the collection-level POST instead where the endpoint supports creation.""";
+            Every request to this path is answered with 404 and no body, whether or not the \
+            identifier exists.""";
 
     protected static final String DOC_NO_MATCH = """
             No entity matched the query, so nothing was changed. The response has no body.""";

@@ -62,7 +62,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Path("logs")
 @Tag(name = "Logs", description = """
-        Logs API: read access to the `.log` files in the OpenNMS log directory.
+        Read access to the `.log` files in the OpenNMS log directory.
 
         Both operations require `ROLE_ADMIN`, enforced both by the servlet security configuration and again
         in the handler.
@@ -85,8 +85,8 @@ public class LogRestService {
     @Operation(
             summary = "List log files",
             description = """
-        List the names of the `.log` files directly in the OpenNMS log directory, sorted. Rotated and
-        compressed files are not listed, since only the `.log` suffix is matched.""",
+        List the names of the `.log` files directly in the OpenNMS log directory, sorted. Only the `.log`
+        suffix is matched, so rotated and compressed files are not listed.""",
             operationId = "getLogFiles"
     )
     @ApiResponses(value = {
@@ -124,14 +124,13 @@ public class LogRestService {
     @Operation(
             summary = "Read the tail of a log file",
             description = """
-        Return the last `n` lines of a log file as text. The file is always read backwards from the end, so
-        the cost is bounded by `n` rather than by the size of the file.
+        Return the last `n` lines of a log file as text. The file is read backwards from the end.
 
-        `n` defaults to 5000 and is clamped to the range 1 to 10000, so values outside that are quietly
-        adjusted rather than rejected. `reverse` controls only the order the lines are returned in: true, the
-        default, gives newest first.
+        `n` defaults to 5000 and is clamped to the range 1 to 10000, so values outside that are adjusted
+        rather than rejected. `reverse` controls the order the lines are returned in: true, the default,
+        gives newest first.
 
-        The response media type is probed from the file rather than fixed, so it is typically
+        The response media type is probed from the file rather than fixed, and is typically
         `application/octet-stream` for a `.log` file. A name that exists in the directory listing but whose
         file has since gone returns 204 with no body.""",
             operationId = "getLogFileContents"

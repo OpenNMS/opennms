@@ -278,9 +278,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
                     Sets `default-read-config-name` on the root element of javamail-configuration.xml. The name
                     is taken from the path; there is no request body.
 
-                    A name that matches no `readmail-config` entry is silently ignored: the call still returns
-                    204 and the stored default is left unchanged. Check with
-                    `GET /config/javamail/default/readmail` afterwards.
+                    A name that matches no `readmail-config` entry is ignored: the call still returns 204 and
+                    the stored default is left unchanged.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
@@ -310,9 +309,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
                     Sets `default-send-config-name` on the root element of javamail-configuration.xml. The name
                     is taken from the path; there is no request body.
 
-                    A name that matches no `sendmail-config` entry is silently ignored: the call still returns
-                    204 and the stored default is left unchanged. Check with
-                    `GET /config/javamail/default/sendmail` afterwards.
+                    A name that matches no `sendmail-config` entry is ignored: the call still returns 204 and
+                    the stored default is left unchanged.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
@@ -425,8 +423,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             summary = "List the end2end mail configuration names",
             description = """
                     Returns only the names of the `end2end-mail-config` entries. Each pairs a sendmail
-                    configuration with a readmail configuration for the mail transport monitor to send through
-                    one and read back from the other.""",
+                    configuration with a readmail configuration; the mail transport monitor sends through one
+                    and reads back from the other.""",
             operationId = "getEnd2endConfigurationNames")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The end2end configuration names.",
@@ -764,8 +762,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
                     `sendmail-message`, `user-auth` or `javamail-property` blocks: the PUT reaches the scalar
                     fields only.
 
-                    Email northbounder destinations reference these entries by name, so the name is what ties a
-                    destination to its SMTP settings.
+                    Email northbounder destinations reference these entries by name.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
@@ -917,8 +914,9 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
                     the configuration, then saves. Keys are bean property names, not XML element or attribute
                     names, and unrecognised keys are ignored rather than rejected.
 
-                    The writable properties are `name`, `debug`, `attemptInterval`, `deleteAllMail`, `mailFolder`, `javamailProperties`, `readmailHost` and `userAuth`. The ones holding nested objects or lists cannot be
-                    expressed as a form value, so POST the configuration again to change those.
+                    The writable properties are `name`, `debug`, `attemptInterval`, `deleteAllMail`,
+                    `mailFolder`, `javamailProperties`, `readmailHost` and `userAuth`. The ones holding nested
+                    objects or lists cannot be expressed as a form value.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
@@ -969,8 +967,9 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
                     the configuration, then saves. Keys are bean property names, not XML element or attribute
                     names, and unrecognised keys are ignored rather than rejected.
 
-                    The writable properties are `name`, `debug`, `attemptInterval`, `useAuthentication`, `useJmta`, `javamailProperties`, `sendmailHost`, `sendmailProtocol`, `sendmailMessage` and `userAuth`. The ones holding nested objects or lists cannot be
-                    expressed as a form value, so POST the configuration again to change those.
+                    The writable properties are `name`, `debug`, `attemptInterval`, `useAuthentication`,
+                    `useJmta`, `javamailProperties`, `sendmailHost`, `sendmailProtocol`, `sendmailMessage` and
+                    `userAuth`. The ones holding nested objects or lists cannot be expressed as a form value.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
@@ -1021,8 +1020,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
                     the configuration, then saves. Keys are bean property names, not XML element or attribute
                     names, and unrecognised keys are ignored rather than rejected.
 
-                    The writable properties are `name`, `sendmailConfigName` and `readmailConfigName`. The ones holding nested objects or lists cannot be
-                    expressed as a form value, so POST the configuration again to change those.
+                    The writable properties are `name`, `sendmailConfigName` and `readmailConfigName`.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
@@ -1068,7 +1066,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @Operation(
             summary = "Delete a readmail configuration",
             description = """
-                    Removes the entry and saves javamail-configuration.xml. Nothing checks whether an `end2end-mail-config` or the `default-read-config-name` attribute still points at it.
+                    Removes the entry and saves javamail-configuration.xml. Nothing checks whether an
+                    `end2end-mail-config` or the `default-read-config-name` attribute still points at it.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
@@ -1099,7 +1098,9 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @Operation(
             summary = "Delete a sendmail configuration",
             description = """
-                    Removes the entry and saves javamail-configuration.xml. Nothing checks whether an `end2end-mail-config`, the `default-send-config-name` attribute or an Email northbounder destination still points at it.
+                    Removes the entry and saves javamail-configuration.xml. Nothing checks whether an
+                    `end2end-mail-config`, the `default-send-config-name` attribute or an Email northbounder
+                    destination still points at it.
 
                     Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
                     then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the

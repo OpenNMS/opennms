@@ -272,7 +272,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     @Override
     @Operation(summary = "List the queryable properties of outages",
             description = """
-                    The properties an outage query can filter and sort on, including the joined node, interface, service, event and asset properties. The unfiltered list is long, so `q` is usually worth passing.""",
+                    The properties an outage query can filter and sort on, including the joined node, interface, service, event and asset properties.""",
             operationId = "outagesSearchProperties")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The properties this endpoint can search and sort on.",
@@ -370,9 +370,9 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     }
 
     @Override
-    @Operation(summary = "Create a outage",
+    @Operation(summary = "Create an outage",
             description = """
-                    Not supported: outages are created by the poller, not through this API.""",
+                    Answered with 501 for every body.""",
             operationId = "outagesCreate")
     @ApiResponses({
             @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
@@ -393,7 +393,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     }
 
     @Override
-    @Operation(summary = "Rejected: create a outage at a caller-chosen identifier",
+    @Operation(summary = "Rejected: create an outage at a caller-chosen identifier",
             description = DOC_POST_WITH_ID,
             operationId = "outagesCreateWithId")
     @Parameters({
@@ -442,7 +442,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     @Override
     @Operation(summary = "Update one outage",
             description = """
-                    Not supported for outages. Both the JSON or XML replacement form and the form-parameter form answer 501.""",
+                    Both the JSON or XML replacement form and the form-parameter form answer 501.""",
             operationId = "outagesUpdate")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = """
@@ -494,7 +494,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     @Override
     @Operation(summary = "Delete one outage",
             description = """
-                    Not supported for outages.""",
+                    Answered with 501 once the identifier resolves, and 404 when it does not.""",
             operationId = "outagesDelete")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = """

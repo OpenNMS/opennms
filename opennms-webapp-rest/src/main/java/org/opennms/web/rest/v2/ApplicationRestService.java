@@ -330,7 +330,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     }
 
     @Override
-    @Operation(summary = "Create a application",
+    @Operation(summary = "Create an application",
             description = """
                     Creates an application. The identifier is assigned by the database and returned in the `Location` header. An `applicationCreated` event is sent.""",
             operationId = "applicationsCreate")
@@ -363,7 +363,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     }
 
     @Override
-    @Operation(summary = "Rejected: create a application at a caller-chosen identifier",
+    @Operation(summary = "Rejected: create an application at a caller-chosen identifier",
             description = DOC_POST_WITH_ID,
             operationId = "applicationsCreateWithId")
     @Parameters({
@@ -446,7 +446,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     @Override
     @Operation(summary = "Delete the applications matching a query",
             description = """
-                    Deletes every application matching the query. At most `limit` entities are affected, so this touches ten entities per call unless a larger `limit` is given. An `applicationDeleted` event is sent for each one.
+                    Deletes every application matching the query. At most `limit` entities are affected, ten by default. An `applicationDeleted` event is sent for each one.
 
                     For example, `_s=name==Review*` matches every application whose name starts with `Review`.""",
             operationId = "applicationsDeleteMany")

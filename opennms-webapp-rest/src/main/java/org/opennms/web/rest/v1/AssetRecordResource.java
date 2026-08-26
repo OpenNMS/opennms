@@ -73,12 +73,10 @@ import com.google.common.base.Strings;
         Asset Records API.
 
         An asset record holds the inventory and location metadata attached to one node, and is created together
-        with the node. Reach it through the node: `/nodes/{nodeCriteria}/assetRecord`.
+        with the node. The node-scoped path is `/nodes/{nodeCriteria}/assetRecord`.
 
-        The class also carries its own `@Path("assetRecord")`, so the generated document additionally lists
-        `/assetRecord` with no node in the path. Both handlers need a `nodeCriteria` path parameter that the
-        bare path cannot supply, so `GET /assetRecord` and `PUT /assetRecord` fail with HTTP 500 on every
-        request. Use the node-scoped paths.""")
+        The document also lists `/assetRecord` with no node in the path. That path cannot supply the required
+        `nodeCriteria`, so `GET /assetRecord` and `PUT /assetRecord` fail with HTTP 500 on every request.""")
 @Transactional
 public class AssetRecordResource extends OnmsRestService {
 
@@ -113,9 +111,7 @@ public class AssetRecordResource extends OnmsRestService {
                     other fields rather than nested. `dateInstalled`, `lease`, `leaseExpires` and
                     `maintContractExpiration` are free-text strings, not dates. `lastModifiedDate` is a real
                     timestamp and serializes as epoch milliseconds in JSON and as an ISO-8601 offset date-time in
-                    XML.
-
-                    Reached without a node in the path (`GET /assetRecord`) this fails with HTTP 500.""",
+                    XML.""",
             operationId = "getNodeAssetRecord"
     )
     @ApiResponses(value = {
@@ -201,9 +197,7 @@ public class AssetRecordResource extends OnmsRestService {
                     installation and lease fields are plain strings and are stored verbatim.
 
                     A successful write sets `lastModifiedBy` to the authenticated user and `lastModifiedDate` to
-                    now, then publishes `assetInfoChanged`.
-
-                    Reached without a node in the path (`PUT /assetRecord`) this fails with HTTP 500.""",
+                    now, then publishes `assetInfoChanged`.""",
             operationId = "updateNodeAssetRecord"
     )
     @RequestBody(

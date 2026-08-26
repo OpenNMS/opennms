@@ -67,9 +67,9 @@ public class MenuRestService {
             description = """
         The whole menubar for the calling user, assembled from the menu template plus the request's
         roles, so two users can get different `menus` contents from the same call. Alongside the menu
-        trees the response carries the chrome the Vue shell needs: `baseHref`, `username`, `version`,
-        `copyrightDates`, the formatted server date and time, the notification status, and the Zenith
-        Connect and add-node feature flags.
+        trees the response carries `baseHref`, `username`, `version`, `copyrightDates`, the formatted
+        server date and time, the notification status, and the Zenith Connect and add-node feature
+        flags.
 
         `menus` is the top-level bar. `helpMenu`, `selfServiceMenu`, `userNotificationMenu`,
         `provisionMenu` and `configurationMenu` are the fixed right-hand entries, each a single menu

@@ -96,7 +96,7 @@ public class OspfElementNodeDTO {
 
     @XmlElement(name="ospfCreateTime")
     @JsonProperty("ospfCreateTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/17/26, 5:20:39\u202fPM")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfCreateTime() {
         return ospfCreateTime;
     }
@@ -112,7 +112,7 @@ public class OspfElementNodeDTO {
 
     @XmlElement(name="ospfLastPollTime")
     @JsonProperty("ospfLastPollTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/17/26, 5:20:39\u202fPM")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfLastPollTime() {
         return ospfLastPollTime;
     }

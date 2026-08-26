@@ -102,12 +102,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("alarms")
 @Transactional
 @Tag(name = "Alarms", description = """
-        Alarms API.
-
-        An alarm is the deduplicated form of one or more events that share a reduction key. Alarms are
-        not created through this API: they are raised by alarmd when an event whose event configuration
-        carries `alarm-data` is processed. What this API offers is querying, acknowledgement and
-        severity changes, sticky and journal notes, and trouble ticket actions.
+        Alarms API. An alarm is the deduplicated form of one or more events that share a reduction key.
+        This API queries alarms, changes acknowledgement and severity, sets sticky and journal notes and
+        drives trouble ticket actions. Alarms are raised by alarmd from events whose event configuration
+        carries `alarm-data`, not created here.
 
         Timestamps are rendered differently per representation: JSON carries epoch milliseconds
         (`1787685470949`), XML carries an ISO-8601 string with offset
@@ -537,7 +535,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Path("{id}")
     @Operation(
             summary = "Rejected: alarms cannot be created at a chosen id",
-            description = "Always answers 404. Alarms are raised by alarmd from events, not created through this API.",
+            description = "Always answers 404.",
             operationId = "createAlarmWithId",
             parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
                     description = "Alarm database id. The value is not read: every request to this path is answered with 404.",
@@ -553,16 +551,14 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Operation(
             summary = "Not implemented: create an alarm",
             description = """
-        Creating an alarm from a document is not implemented and answers 501. To raise an alarm,
-        publish an event whose event configuration carries `alarm-data`; to correlate existing alarms
-        into a situation, use `POST /situations/create`. This operation also serves `POST /situations`,
-        which behaves identically.
+        Creating an alarm from a document is not implemented and answers 501. This operation also
+        serves `POST /situations`, which behaves identically.
 
         The body is still deserialised and mapped before the 501 is produced, so a body that omits
         `relatedAlarms` fails earlier with 500: the entity setter dereferences the missing collection.
         Sending `"relatedAlarms": []` reaches the 501.""",
             operationId = "createAlarm")
-    @RequestBody(description = "Alarm document. Include `relatedAlarms` to avoid the 500 described above.",
+    @RequestBody(description = "Alarm document. `relatedAlarms` has to be present; without it the call answers 500.",
             content = {
                     @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AlarmDTO.class),
                             examples = @ExampleObject(value = "{ \"relatedAlarms\": [] }")),
@@ -618,9 +614,8 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Operation(
             summary = "Not implemented: replace an alarm",
             description = """
-        Replacing an alarm from a document is not implemented and answers 501. Use the
-        form-encoded variant of `PUT /alarms/{id}` to change acknowledgement, severity or ticket
-        fields.""",
+        Replacing an alarm from a document is not implemented and answers 501. The form-encoded
+        variant of `PUT /alarms/{id}` changes acknowledgement, severity and ticket fields.""",
             operationId = "replaceAlarm")
     @RequestBody(description = "Alarm document. Not applied.",
             content = {
@@ -644,16 +639,16 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Operation(
             summary = "Acknowledge, clear, escalate or ticket one alarm",
             description = """
-        Apply the form parameters to one alarm. Only the parameters present are acted on, so this is
-        the endpoint for acknowledging, un-acknowledging, escalating and clearing an alarm as well as
-        for recording a trouble ticket id and state.
+        Apply the form parameters to one alarm. Only the parameters present are acted on: they cover
+        acknowledging, un-acknowledging, escalating and clearing an alarm, and recording a trouble
+        ticket id and state.
 
         A `ticketState` outside the enumerated names is ignored, and a caller with ROLE_ADMIN may set
         `ackUser` to any name, so neither case is reported as an error.
 
         This operation also serves `PUT /situations/{id}`, where it acts on the situation alarm alone:
-        clearing or acknowledging a situation leaves its member alarms untouched. Use
-        `POST /situations/alarms/clear` to clear members. A body sent as JSON or XML rather than
+        clearing or acknowledging a situation leaves its member alarms untouched.
+        `POST /situations/alarms/clear` clears members. A body sent as JSON or XML rather than
         form-encoded reaches a different handler that answers 501.""",
             operationId = "updateAlarmProperties")
     @RequestBody(required = true, description = "Alarm properties to apply, form-encoded.",
@@ -705,11 +700,9 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             summary = "Not implemented: delete one alarm",
             description = """
         Deleting an alarm is not implemented. An existing alarm answers 501 and an unknown id answers
-        404, so the status code reports whether the alarm exists rather than whether it was
-        deleted.
+        404, so the status code reports whether the alarm exists rather than whether it was deleted.
 
-        This operation also serves `DELETE /situations/{id}`. To dissolve a correlation rather than
-        remove the alarm, drop its members with `DELETE /situations/removeAlarm`.""",
+        This operation also serves `DELETE /situations/{id}`.""",
             operationId = "deleteAlarm")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = "No alarm has that id. No body is returned."),
@@ -806,9 +799,8 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Operation(
             summary = "Remove the sticky memo from an alarm",
             description = """
-        Remove the note attached to the alarm row. Removing one that is not set is not reported as an error: the call still answers
-        204. No request body is read, although the handler declares
-        `application/x-www-form-urlencoded`.""",
+        Remove the note attached to the alarm row. Removing one that is not set still answers 204. No
+        request body is read, although the handler declares `application/x-www-form-urlencoded`.""",
             operationId = "deleteAlarmMemo")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "The sticky memo is gone, whether or not one was set. No body is returned."),
@@ -835,9 +827,8 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Operation(
             summary = "Remove the journal note from an alarm",
             description = """
-        Remove the note keyed on the reduction key. Removing one that is not set is not reported as an error: the call still answers
-        204. No request body is read, although the handler declares
-        `application/x-www-form-urlencoded`.""",
+        Remove the note keyed on the reduction key. Removing one that is not set still answers 204. No
+        request body is read, although the handler declares `application/x-www-form-urlencoded`.""",
             operationId = "deleteAlarmJournal")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "The journal note is gone, whether or not one was set. No body is returned."),
@@ -863,14 +854,14 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Operation(
             summary = "Create the trouble ticket for an alarm",
             description = """
-        Ask the configured ticketer plugin to raise a ticket for the alarm. The authenticated user is passed
-        to the plugin as the `user` parameter.
+        Ask the configured ticketer plugin to raise a ticket for the alarm. The authenticated user is
+        passed to the plugin as the `user` parameter.
 
         The action is asynchronous: the handler hands the request to the ticketer plugin and answers
         202 without waiting for the helpdesk system. Progress shows up in the `troubleTicket` and
         `troubleTicketState` fields of the alarm.
 
-        The whole family is gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
+        The ticket operations are gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
         ticketer disabled every call answers 501, including a call naming an alarm that does not
         exist, because the gate is checked before the alarm is looked up.""",
             operationId = "createAlarmTicket")
@@ -909,7 +900,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         202 without waiting for the helpdesk system. Progress shows up in the `troubleTicket` and
         `troubleTicketState` fields of the alarm.
 
-        The whole family is gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
+        The ticket operations are gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
         ticketer disabled every call answers 501, including a call naming an alarm that does not
         exist, because the gate is checked before the alarm is looked up.""",
             operationId = "updateAlarmTicket")
@@ -945,7 +936,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         202 without waiting for the helpdesk system. Progress shows up in the `troubleTicket` and
         `troubleTicketState` fields of the alarm.
 
-        The whole family is gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
+        The ticket operations are gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
         ticketer disabled every call answers 501, including a call naming an alarm that does not
         exist, because the gate is checked before the alarm is looked up.""",
             operationId = "closeAlarmTicket")

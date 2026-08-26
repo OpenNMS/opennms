@@ -157,7 +157,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="bridgeElementNodes")
     @JsonProperty("bridgeElementNodes")
-    @Schema(name = "bridgeElementNodes", description = "The node's bridge elements, one per VLAN. Always present, empty when there are none.")
+    @Schema(name = "bridgeElementNodes", description = "The node's bridge elements, one per discovered VLAN, with a single null-`vlan` entry when the device has no VLAN table. Always present, empty when there are none.")
     public List<BridgeElementNodeDTO> getBridgeElementNodeDTOS() {
         return bridgeElementNodeDTOS;
     }

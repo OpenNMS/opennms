@@ -93,18 +93,15 @@ import org.springframework.stereotype.Component;
 @Component("scheduledOutagesRestService")
 @Path("sched-outages")
 @Tag(name = "Sched-outages", description = """
-        Scheduled Outages API.
-
         A scheduled outage is a named calendar in `poll-outages.xml` listing time windows plus the nodes and
         interfaces they cover. The calendar has no effect on its own: it has to be attached to a collectd, pollerd
-        or threshd package, or to notifd, through the endpoints below.
+        or threshd package, or to notifd.
 
-        Every write here rewrites the affected configuration file through the JAXB marshaller and then sends
-        `uei.opennms.org/internal/schedOutagesChanged`. The rewrite is semantically faithful but reformats the file
-        and drops its XML comments.
+        Every write rewrites the affected configuration file through the JAXB marshaller, which reformats the file
+        and drops its XML comments, and then sends `uei.opennms.org/internal/schedOutagesChanged`.
 
         A calendar whose window covers the current time suppresses polling, collection, thresholding or
-        notification for whatever it names, so scope test calendars to a window in the past.""")
+        notification for whatever it names.""")
 public class ScheduledOutagesRestService extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduledOutagesRestService.class);
@@ -129,8 +126,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Operation(
             summary = "List scheduled outages",
-            description = "Return every scheduled outage calendar in `poll-outages.xml`. The response says nothing "
-                    + "about which packages or daemons each calendar is attached to.",
+            description = "Return every scheduled outage calendar in `poll-outages.xml`.",
             operationId = "getScheduledOutagesV1"
     )
     @ApiResponses(value = {
@@ -209,8 +205,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                     then fails when the file is marshalled, leaving the invalid calendar in memory until it is
                     deleted again.
                     The XML form needs the `http://xmlns.opennms.org/xsd/config/poller/outages` namespace on the
-                    document element.
-                    A saved calendar has no effect until it is attached to a package or to notifd.""",
+                    document element.""",
             operationId = "saveOrUpdateScheduledOutageV1"
     )
     @RequestBody(required = true, description = "The calendar to store.",
@@ -278,8 +273,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             description = """
                     Detach the calendar from every collectd, pollerd and threshd package and from notifd, then
                     remove it from `poll-outages.xml`. All five configuration files are rewritten.
-                    Because the detach step runs first and validates the name, deleting a calendar that is not
-                    there is a 404 rather than a no-op.""",
+                    The detach step validates the name first, so deleting a calendar that is not there is a 404
+                    rather than a no-op.""",
             operationId = "deleteScheduledOutageV1"
     )
     @ApiResponses(value = {
@@ -519,8 +514,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                     and is idempotent.
                     `threshd-configuration.xml` is rewritten and a configuration-changed event is sent.
                     This handler wraps every failure, including the not-found cases, into a 500, so an unknown
-                    calendar or package is reported here as 500 rather than as the 404 the other detach operations
-                    return.""",
+                    calendar or package is a 500 here rather than the 404 the other detach operations return.""",
             operationId = "removeScheduledOutageFromThreshdV1"
     )
     @ApiResponses(value = {
@@ -628,8 +622,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             summary = "Check a node against one scheduled outage",
             description = """
                     Return `true` when the calendar names the node and the current time falls inside one of its
-                    windows, and `false` otherwise. The answer is about now, not about a window in general, so a
-                    calendar whose window is in the past always answers `false`.""",
+                    windows, and `false` otherwise. A calendar whose window is in the past answers `false`.""",
             operationId = "isNodeInScheduledOutageV1"
     )
     @ApiResponses(value = {

@@ -82,11 +82,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("availabilityRestService")
 @Path("availability")
 @Tag(name = "Availability", description = """
-        Availability API.
-
         Availability figures come from the RTC (real-time console) rolling window rather than from a fresh
-        query, so they lag behind the outage tables and are recomputed on the RTC's own schedule. All
-        percentages are 0 to 100.
+        query, and are recomputed on the RTC's own schedule. All percentages are 0 to 100.
 
         The category groupings and their thresholds come from `categories.xml`. `last-updated` on a category
         is serialised as epoch milliseconds, not as the date-time string the derived schema shows.
@@ -122,9 +119,7 @@ public class AvailabilityRestService extends OnmsRestService {
             summary = "Get availability for every category group",
             description = """
         Return every category group from `categories.xml` with the categories it contains and their current
-        availability figures. This is the whole RTC view in one response, so it grows with the number of
-        categories and with the number of nodes in each of them: the `nodes` array on a category lists every
-        node id in that category.
+        availability figures. The `nodes` array on a category lists every node id in that category.
 
         `last-updated` on each category is epoch milliseconds.""",
             operationId = "getAvailabilityForAllCategories"
@@ -256,8 +251,7 @@ public class AvailabilityRestService extends OnmsRestService {
             summary = "List the nodes in a category with their availability",
             description = """
         Return one entry per node in the category, each with the node's availability and service counts.
-        The `ipinterfaces` array is empty on this operation: interface and service detail is only filled in
-        by the single-node operations.""",
+        The `ipinterfaces` array is empty on this operation.""",
             operationId = "getAvailabilityCategoryNodes"
     )
     @ApiResponses(value = {
@@ -320,8 +314,7 @@ public class AvailabilityRestService extends OnmsRestService {
         The result is the same payload as `GET /availability/nodes/{nodeId}`: the category only acts as a
         membership check and does not restrict which of the node's services are reported.
 
-        A node id that is not in the category, or that does not exist, is reported as 500 rather than 404,
-        because the handler's catch-all wraps the not-found response.""",
+        A node id that is not in the category, or that does not exist, is reported as 500 rather than 404.""",
             operationId = "getAvailabilityCategoryNode"
     )
     @ApiResponses(value = {
@@ -394,8 +387,7 @@ public class AvailabilityRestService extends OnmsRestService {
         Return the node's availability broken down by IP interface and monitored service. `up` on a service
         reflects the current service status, not the availability figure next to it.
 
-        An unknown node id is reported as 500, not 404: the handler dereferences the node before checking it
-        for null, so the null-pointer failure is what reaches the caller.""",
+        An unknown node id is reported as 500, not 404.""",
             operationId = "getAvailabilityNode"
     )
     @ApiResponses(value = {

@@ -67,19 +67,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("timelineRestService")
 @Path("timeline")
 @Tag(name = "Timeline", description = """
-        Timeline API: server-rendered outage strips for the node and service pages.
+        Server-rendered outage strips.
 
         Every operation takes `start`, `end` and `width` as path segments. **`start` and `end` are epoch
-        seconds, not milliseconds**, which is the usual mistake with these endpoints: passing milliseconds
-        produces a strip covering the year 58000 and no drawn outages.
+        seconds, not milliseconds**: passing milliseconds produces a strip covering the year 58000 with no
+        drawn outages.
 
         `width` is the pixel width of the image; the height is always 20. `width` also divides the time
         range, so it must be at least 1 and the range must be at least `width` seconds wide. Passing 0, or a
         range narrower than the width, fails with 500 on the division.
 
         Three of the four operations return a PNG. `html` returns an `<img>` element plus the client-side
-        image map of the outage rectangles, so the caller can render the same strip with links to the outage
-        detail pages.
+        image map of the outage rectangles.
 
         Query parameters other than the path segments are applied as extra criteria on the outage query, the
         same way as elsewhere in v1.""")
@@ -407,9 +406,8 @@ public class TimelineRestService extends OnmsRestService {
     @Operation(
             summary = "Render the timeline time axis",
             description = """
-        Render the labelled time axis that sits above a row of timeline strips: tick marks and date or time
-        labels for the given window, and nothing else. The label granularity is chosen from the window length
-        and the width, so a wider image gets more labels.
+        Render the labelled time axis: tick marks and date or time labels for the given window. The label
+        granularity is chosen from the window length and the width.
 
         `start` and `end` are epoch seconds.""",
             operationId = "getTimelineHeader"
@@ -469,8 +467,7 @@ public class TimelineRestService extends OnmsRestService {
         client-side image map that turns each drawn outage into a link to its outage detail page. Each `area`
         carries the outage id in its `alt` and the lost-service timestamp in its `title`.
 
-        No image is produced here, only the markup; the browser fetches the PNG separately. A node id that
-        does not exist is not an error: the map simply comes back empty.
+        A node id that does not exist is not an error: the map comes back empty.
 
         `start` and `end` are epoch seconds.""",
             operationId = "getTimelineHtml"
@@ -646,8 +643,8 @@ public class TimelineRestService extends OnmsRestService {
     @Operation(
             summary = "Render an empty timeline strip",
             description = """
-        Render a strip with only the vertical grid lines and no outage or node bar, for use as a placeholder
-        where a service has nothing to show. Nothing is read from the database.
+        Render a strip with only the vertical grid lines and no outage or node bar. Nothing is read from the
+        database.
 
         `start` and `end` are epoch seconds. This operation narrows them to `int` before subtracting, so a
         window that does not fit in a signed 32-bit number of seconds produces a wrong or negative range.""",

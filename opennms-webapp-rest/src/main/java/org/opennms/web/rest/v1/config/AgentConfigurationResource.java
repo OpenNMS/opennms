@@ -300,7 +300,7 @@ public class AgentConfigurationResource implements InitializingBean {
             description = """
                     Identical to `/config/agents/{filterName}/{serviceName}.json`, reached by sending
                     `Accept: application/json` to the extensionless path. Two handlers share that path and only
-                    one of them survives into this document, so this entry may not appear.
+                    one of them appears in this document.
 
                     `filterName` is matched first against the `name` attribute of a collectd `filter`, then against
                     the enclosing `package` name, so a package whose filter is unnamed can be addressed by the

@@ -34,7 +34,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 @XmlRootElement(name="bridgeElementNode")
 @XmlAccessorType(XmlAccessType.NONE)
-@Schema(description = "One bridge element of the node, one per VLAN. Most fields carry the raw dot1dBase and dot1dStp values; the two timestamp fields are never populated by the v2 mapper.")
+@Schema(description = "One bridge element of the node, one per discovered VLAN, with a single null-`vlan` entry when the device has no VLAN table. Most fields carry the raw dot1dBase and dot1dStp values; the two timestamp fields are never populated by the v2 mapper.")
 public class BridgeElementNodeDTO {
 
     private String  baseBridgeAddress;
@@ -212,7 +212,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="bridgeNodeCreateTime")
     @JsonProperty("bridgeNodeCreateTime")
-    @Schema(description = "Intended as the create timestamp in the same locale-formatted display form as the other time fields. The v2 mapper never assigns it, so it is absent from every response.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Create timestamp in the same locale-formatted display form as the other time fields. The v2 mapper never assigns it, so it is absent from every response.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeNodeCreateTime() {
         return bridgeNodeCreateTime;
     }
@@ -228,7 +228,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="bridgeNodeLastPollTime")
     @JsonProperty("bridgeNodeLastPollTime")
-    @Schema(description = "Intended as the last-poll timestamp in the same locale-formatted display form as the other time fields. The v2 mapper never assigns it, so it is absent from every response.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Last-poll timestamp in the same locale-formatted display form as the other time fields. The v2 mapper never assigns it, so it is absent from every response.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeNodeLastPollTime() {
         return bridgeNodeLastPollTime;
     }

@@ -52,7 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("minionRestService")
 @Path("minions")
 @Tag(name = "Minions", description = """
-        Minions API: read-only access to the Minions that have registered with this instance.
+        Read-only access to the Minions that have registered with this instance.
 
         Rows appear when a Minion checks in and are not created through this API. An instance with no Minions
         answers with an empty list and a count of 0.
@@ -123,7 +123,7 @@ public class MinionRestService extends OnmsRestService {
             summary = "Get one property of a Minion",
             description = """
         Return a single entry from a Minion's `properties` map as plain text. Which keys exist depends on
-        what the Minion reported, so read the whole Minion first if the key set is not already known.
+        what the Minion reported.
 
         A missing Minion and a missing key are both reported as 404, distinguishable only by the message.""",
             operationId = "getMinionProperty"

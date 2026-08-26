@@ -442,7 +442,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     @Override
     @Operation(summary = "Delete the monitoring locations matching a query",
             description = """
-                    Deletes every monitoring location matching the query. At most `limit` entities are affected, so this touches ten entities per call unless a larger `limit` is given.
+                    Deletes every monitoring location matching the query. At most `limit` entities are affected, ten by default.
 
                     For example, `_s=monitoringArea==localhost`. `_s=id==...` does not parse here; the key property is `locationName`.""",
             operationId = "monitoringLocationsDeleteMany")

@@ -69,11 +69,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("acknowledgmentRestService")
 @Path("acks")
 @Tag(name = "Acknowledgments", description = """
-        Acknowledgments API.
-
-        An acknowledgement is an immutable audit row: acknowledging, unacknowledging, clearing or escalating an
-        alarm or a notification each append a new row rather than changing an existing one. The current state of
-        the alarm or notification is derived from the newest row that refers to it.""")
+        Acknowledging, unacknowledging, clearing or escalating an alarm or a notification appends a new row rather
+        than changing an existing one. The state of the alarm or notification comes from the newest row that
+        refers to it.""")
 public class AcknowledgmentRestService extends OnmsRestService {
     @Autowired
     private AcknowledgmentDao m_ackDao;
@@ -120,7 +118,11 @@ public class AcknowledgmentRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "No acknowledgement with that id, or the path segment is not an integer.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Acknowledgement object 99999999 was not found.")))
+                            examples = @ExampleObject(value = "Acknowledgement object 99999999 was not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "<html>\n<head>\n<title>Error 403 Forbidden</title>\n</head>\n<body><h2>HTTP ERROR 403 Forbidden</h2>\n</body>\n</html>")))
     })
     public OnmsAcknowledgment getAcknowledgment(
             @Parameter(description = "Acknowledgement id.", example = "23632", required = true)
@@ -144,14 +146,18 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Operation(
             summary = "Count all acknowledgements",
             description = "Return the total number of acknowledgement rows as a plain-text integer. Query "
-                    + "parameters are ignored, so this is not a count of a filtered set.",
+                    + "parameters are ignored.",
             operationId = "getAcknowledgmentCountV1"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The acknowledgement count.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "7")))
+                            examples = @ExampleObject(value = "7"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "<html>\n<head>\n<title>Error 403 Forbidden</title>\n</head>\n<body><h2>HTTP ERROR 403 Forbidden</h2>\n</body>\n</html>")))
     })
     public String getCount() {
         return Integer.toString(m_ackDao.countAll());
@@ -209,7 +215,11 @@ public class AcknowledgmentRestService extends OnmsRestService {
             @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the acknowledgement entity.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "<html>\n<head>\n<title>Error 403 Forbidden</title>\n</head>\n<body><h2>HTTP ERROR 403 Forbidden</h2>\n</body>\n</html>")))
     })
     public OnmsAcknowledgmentCollection getAcks(@Context final UriInfo uriInfo) {
         final CriteriaBuilder builder = getQueryFilters(uriInfo.getQueryParameters());

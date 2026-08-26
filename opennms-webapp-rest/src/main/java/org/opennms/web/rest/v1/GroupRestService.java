@@ -213,8 +213,8 @@ public class GroupRestService extends OnmsRestService {
                     Apply form-encoded fields to an existing group. Keys are matched against the writable
                     `OnmsGroup` bean properties; a key that matches none is skipped, and a request that wrote
                     nothing comes back as 304.
-                    `users` is a list property that the conversion fills with a single element, so use the
-                    `/groups/{groupName}/users/{userName}` endpoints to change membership.""",
+                    `users` is a list property that the conversion fills with a single element, so a
+                    comma-separated value becomes one element containing the commas.""",
             operationId = "updateGroupV1"
     )
     @RequestBody(required = true, description = "Fields to apply.",
@@ -294,7 +294,7 @@ public class GroupRestService extends OnmsRestService {
             description = """
                     Add one user to a group. The request takes no body.
                     A user name that is already a member and a user name that does not exist in `users.xml` share
-                    the same 400 response, so the message does not say which of the two applies.""",
+                    the same 400 response.""",
             operationId = "addGroupUserV1"
     )
     @ApiResponses(value = {
@@ -371,7 +371,7 @@ public class GroupRestService extends OnmsRestService {
             description = """
                     Return the full user records for the group's members. Names in the group that have no
                     `users.xml` entry are skipped rather than reported.
-                    Unlike the `/users` endpoints, this one does not mask password hashes for non-admin callers.""",
+                    Password hashes are not masked for non-admin callers.""",
             operationId = "listGroupUsersV1"
     )
     @ApiResponses(value = {
@@ -453,8 +453,8 @@ public class GroupRestService extends OnmsRestService {
             summary = "Authorize a group for a category",
             description = """
                     Add the group to a surveillance category's authorized-groups list. The request takes no body.
-                    An already-authorized category and a category that does not exist share the same 400 response,
-                    so the message does not say which of the two applies.""",
+                    An already-authorized category and a category that does not exist share the same 400
+                    response.""",
             operationId = "addGroupCategoryV1"
     )
     @ApiResponses(value = {

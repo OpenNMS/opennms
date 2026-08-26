@@ -279,7 +279,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
     @Path("{id}")
     @Operation(
             summary = "Rejected: add a category at a caller-chosen path",
-            description = "Always answered with 404. Post the category to the collection instead; its name travels in the body.",
+            description = "Always answered with 404, whether or not the category exists.",
             operationId = "NodeCategoriesRestServicePOSTCategorySpecific",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria", required = true,
@@ -300,9 +300,9 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
             summary = "Add a node to a category",
             description = """
         Add the node to the named surveillance category and send a
-        `nodeCategoryMembershipChanged` event. A category that does not yet exist is created, so a typo
-        silently creates a new category rather than failing. Adding a category the node already has is
-        also a 201. The membership URI is returned in the `Location` header.""",
+        `nodeCategoryMembershipChanged` event. A category that does not yet exist is created. Adding a
+        category the node already has is also a 201. The membership URI is returned in the `Location`
+        header.""",
             operationId = "NodeCategoriesRestServicePOSTCategory",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                     description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -346,8 +346,8 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
         Apply the form parameters as bean properties to a set of category rows. The criteria for this
         resource are not restricted to the node in the path, so the selection is every category in the
         system, capped by the default `limit` of 10. The node in the path affects only the 404 check.
-        `name` is rejected, so in practice this reaches `description`, and it edits the shared category
-        definition rather than anything belonging to this node. Prefer the single-category form.""",
+        `name` is rejected with 400, so the writable property is `description`, and it is written on
+        the shared category definition rather than on anything belonging to this node.""",
             operationId = "NodeCategoriesRestServicePUTCategories",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -378,10 +378,8 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
     @Operation(
             summary = "Not implemented: replace a category from a document",
             description = """
-        `AbstractDaoRestServiceWithDTO.doUpdate` is not overridden for categories, so this variant
-        cannot succeed. It also binds `{id}` as an integer while the collection addresses categories by
-        name, so a name in the path is answered with 404 before the handler runs. Use the form-encoded
-        `PUT` on the same path to change the description.""",
+        Answered with 501. This variant binds `{id}` as an integer while the collection addresses
+        categories by name, so a name in the path is answered with 404 before the handler runs.""",
             operationId = "NodeCategoriesRestServicePUTCategoryDocument",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -453,8 +451,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
         Delete category rows outright. The criteria for this resource are not restricted to the node in
         the path, so the selection is every category in the system, capped by the default `limit` of 10.
         Each deletion removes the shared category definition and therefore its membership on every node,
-        not only on the node in the path. There is no confirmation step and no filter that narrows this
-        to one node, so prefer the single-category form.""",
+        not only on the node in the path.""",
             operationId = "NodeCategoriesRestServiceDELETECategories",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))

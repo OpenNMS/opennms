@@ -1,21 +1,21 @@
 /*
  * Licensed to The OpenNMS Group, Inc (TOG) under one or more
- * contributor license agreements.  See the LICENSE.md file
+ * contributor license agreements. See the LICENSE.md file
  * distributed with this work for additional information
  * regarding copyright ownership.
  *
  * TOG licenses this file to You under the GNU Affero General
  * Public License Version 3 (the "License") or (at your option)
- * any later version.  You may not use this file except in
- * compliance with the License.  You may obtain a copy of the
+ * any later version. You may not use this file except in
+ * compliance with the License. You may obtain a copy of the
  * License at:
  *
- *      https://www.gnu.org/licenses/agpl-3.0.txt
+ * https://www.gnu.org/licenses/agpl-3.0.txt
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied.  See the License for the specific
+ * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
  * License.
  */
@@ -57,22 +57,17 @@ import com.google.common.collect.Lists;
 @Component("heatMapRestService")
 @Path("heatmap")
 @Tag(name = "Heatmap", description = """
-        Heatmap API.
-
         Every operation returns the same envelope: a `children` array of boxes, each with an `id` (the
         entity name), an `elementId` (the numeric id of the entity, or 0 when the grouping column has no
-        id), a single-element `color` array and a single-element `size` array. `color` and `size` are
-        arrays only because of the wire format; one value per box is all that is ever produced.
+        id), a `color` array and a `size` array. Each of those two arrays holds exactly one value.
 
         `size` is the box's share of the total number of monitored services across the boxes that survived
-        filtering, so the sizes in one response sum to 1. Entities with no monitored services are omitted
-        entirely, which means an empty `children` array is the normal answer for an entity that exists but
-        carries nothing monitored.
+        filtering, so the sizes in one response sum to 1. Entities with no monitored services are omitted.
 
-        `color` differs between the two families. For the `outages` operations it is the fraction of
-        services currently down, from 0.0 to 1.0. For the `alarms` operations it is a step value derived
-        from the highest unresolved alarm severity on the entity: 0.0 for normal, cleared, indeterminate or
-        no alarm, 0.1 warning, 0.2 minor, 0.4 major, 1.0 critical.
+        For the `outages` operations `color` is the fraction of services currently down, from 0.0 to 1.0.
+        For the `alarms` operations it is a step value derived from the highest unresolved alarm severity on
+        the entity: 0.0 for normal, cleared, indeterminate or no alarm, 0.1 warning, 0.2 minor, 0.4 major,
+        1.0 critical.
 
         The three top-level groupings honour regular-expression filters taken from system properties, each
         defaulting to `.*`: `org.opennms.heatmap.categoryFilter`, `org.opennms.heatmap.foreignSourceFilter`
@@ -181,7 +176,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Outage heatmap by surveillance category",
             description = """
-        One box per surveillance category that has at least one monitored service, coloured by the fraction of\n        services in the category that are currently down. Filtered by `org.opennms.heatmap.categoryFilter`.""",
+        One box per surveillance category that has at least one monitored service, coloured by the fraction of services in the category that are currently down. Filtered by `org.opennms.heatmap.categoryFilter`.""",
             operationId = "getOutageHeatMapByCategory"
     )
     @ApiResponses(value = {
@@ -220,7 +215,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Outage heatmap by foreign source",
             description = """
-        One box per requisition (foreign source) that has at least one monitored service, coloured by the\n        fraction of services in it that are currently down. `elementId` is 0 because a foreign source has no\n        numeric id. Filtered by `org.opennms.heatmap.foreignSourceFilter`.""",
+        One box per requisition (foreign source) that has at least one monitored service, coloured by the fraction of services in it that are currently down. `elementId` is 0 because a foreign source has no numeric id. Filtered by `org.opennms.heatmap.foreignSourceFilter`.""",
             operationId = "getOutageHeatMapByForeignSource"
     )
     @ApiResponses(value = {
@@ -259,7 +254,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Outage heatmap by monitored service",
             description = """
-        One box per service type that is monitored somewhere, coloured by the fraction of instances of that\n        service that are currently down. Filtered by `org.opennms.heatmap.serviceFilter`.""",
+        One box per service type that is monitored somewhere, coloured by the fraction of instances of that service that are currently down. Filtered by `org.opennms.heatmap.serviceFilter`.""",
             operationId = "getOutageHeatMapByMonitoredService"
     )
     @ApiResponses(value = {
@@ -298,7 +293,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Outage heatmap of the nodes in a category",
             description = """
-        One box per node in the given surveillance category, coloured by the fraction of that node's monitored\n        services which are currently down. A category that does not exist, or whose nodes have nothing\n        monitored, yields an empty `children` array rather than a 404.""",
+        One box per node in the given surveillance category, coloured by the fraction of that node's monitored services which are currently down. A category that does not exist, or whose nodes have nothing monitored, yields an empty `children` array rather than a 404.""",
             operationId = "getOutageHeatMapForNodesByCategory"
     )
     @ApiResponses(value = {
@@ -338,7 +333,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Outage heatmap of the nodes in a foreign source",
             description = """
-        One box per node in the given requisition, coloured by the fraction of that node's monitored services\n        which are currently down. A foreign source that does not exist yields an empty `children` array\n        rather than a 404.""",
+        One box per node in the given requisition, coloured by the fraction of that node's monitored services which are currently down. A foreign source that does not exist yields an empty `children` array rather than a 404.""",
             operationId = "getOutageHeatMapForNodesByForeignSource"
     )
     @ApiResponses(value = {
@@ -378,7 +373,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Outage heatmap of the nodes running a service",
             description = """
-        One box per node on which the given service type is monitored, coloured by the fraction of that node's\n        monitored services which are currently down. A service name that is not monitored anywhere yields an\n        empty `children` array rather than a 404.""",
+        One box per node on which the given service type is monitored, coloured by the fraction of that node's monitored services which are currently down. A service name that is not monitored anywhere yields an empty `children` array rather than a 404.""",
             operationId = "getOutageHeatMapForNodesByMonitoredService"
     )
     @ApiResponses(value = {
@@ -418,7 +413,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Alarm heatmap by surveillance category",
             description = """
-        One box per surveillance category that has at least one monitored service, coloured by the highest\n        unresolved alarm severity in the category. Filtered by `org.opennms.heatmap.categoryFilter`.""",
+        One box per surveillance category that has at least one monitored service, coloured by the highest unresolved alarm severity in the category. Filtered by `org.opennms.heatmap.categoryFilter`.""",
             operationId = "getAlarmHeatMapByCategory"
     )
     @ApiResponses(value = {
@@ -458,7 +453,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Alarm heatmap by foreign source",
             description = """
-        One box per requisition (foreign source) that has at least one monitored service, coloured by the\n        highest unresolved alarm severity in it. `elementId` is 0 because a foreign source has no numeric id.\n        Filtered by `org.opennms.heatmap.foreignSourceFilter`.""",
+        One box per requisition (foreign source) that has at least one monitored service, coloured by the highest unresolved alarm severity in it. `elementId` is 0 because a foreign source has no numeric id. Filtered by `org.opennms.heatmap.foreignSourceFilter`.""",
             operationId = "getAlarmHeatMapByForeignSource"
     )
     @ApiResponses(value = {
@@ -498,7 +493,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Alarm heatmap by monitored service",
             description = """
-        One box per service type that is monitored somewhere, coloured by the highest unresolved alarm severity\n        recorded against it. Filtered by `org.opennms.heatmap.serviceFilter`.""",
+        One box per service type that is monitored somewhere, coloured by the highest unresolved alarm severity recorded against it. Filtered by `org.opennms.heatmap.serviceFilter`.""",
             operationId = "getAlarmHeatMapByMonitoredService"
     )
     @ApiResponses(value = {
@@ -538,7 +533,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Alarm heatmap of the nodes in a category",
             description = """
-        One box per node in the given surveillance category, coloured by the highest unresolved alarm severity\n        on that node. A category that does not exist, or whose nodes have nothing monitored, yields an empty\n        `children` array rather than a 404.""",
+        One box per node in the given surveillance category, coloured by the highest unresolved alarm severity on that node. A category that does not exist, or whose nodes have nothing monitored, yields an empty `children` array rather than a 404.""",
             operationId = "getAlarmHeatMapForNodesByCategory"
     )
     @ApiResponses(value = {
@@ -579,7 +574,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Alarm heatmap of the nodes in a foreign source",
             description = """
-        One box per node in the given requisition, coloured by the highest unresolved alarm severity on that\n        node. A foreign source that does not exist yields an empty `children` array rather than a 404.""",
+        One box per node in the given requisition, coloured by the highest unresolved alarm severity on that node. A foreign source that does not exist yields an empty `children` array rather than a 404.""",
             operationId = "getAlarmHeatMapForNodesByForeignSource"
     )
     @ApiResponses(value = {
@@ -620,7 +615,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Operation(
             summary = "Alarm heatmap of the nodes running a service",
             description = """
-        One box per node on which the given service type is monitored, coloured by the highest unresolved alarm\n        severity on that node. A service name that is not monitored anywhere yields an empty `children` array\n        rather than a 404.""",
+        One box per node on which the given service type is monitored, coloured by the highest unresolved alarm severity on that node. A service name that is not monitored anywhere yields an empty `children` array rather than a 404.""",
             operationId = "getAlarmHeatMapForNodesByMonitoredService"
     )
     @ApiResponses(value = {

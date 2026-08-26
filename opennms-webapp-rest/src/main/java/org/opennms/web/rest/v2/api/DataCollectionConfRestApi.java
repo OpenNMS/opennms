@@ -74,13 +74,11 @@ import java.util.List;
         `sourceNames` list is the set of `<include-collection>` entries. Only enabled profiles reach
         collectd, so a source that no enabled profile references is never scheduled.
 
-        Every write schedules a reload of the in-memory data collection config, so changes take effect
-        without a restart.
+        Every write schedules a reload of the in-memory data collection config.
 
-        Two wire-format details apply across the family. `createdTime` and `lastModified` serialize as
-        epoch milliseconds, not as the date-time strings the generated schema shows. Ids that do not
-        exist are usually ignored rather than reported: the bulk delete and the enable/disable endpoints
-        answer 200 for an unknown id.
+        `createdTime` and `lastModified` serialize as epoch milliseconds, not as the date-time strings
+        the generated schema shows. Ids that do not exist are usually ignored rather than reported: the
+        bulk delete and the enable/disable endpoints answer 200 for an unknown id.
 
         `GET /datacollectionconf/config/download` plus one
         `GET /datacollectionconf/collectsources/{id}/download` per source reproduce the on-disk file set,
@@ -169,13 +167,12 @@ public interface DataCollectionConfRestApi {
         How `profileNames` is applied depends on the batch composition:
         - **Pure-new batch** (every source is new): `profileNames` is required; new sources are attached
           to those profiles.
-        - **Pure-update batch** (every source already exists in the DB): `profileNames` is optional.
-          If non-empty, it is applied additively to every source, taken as an explicit "also associate
-          these updates with these profiles" intent.
-        - **Mixed batch** (at least one new and at least one update): `profileNames` is required (for the
-          new sources) and is applied **only to the new sources**. Updates keep their existing profile
-          memberships untouched. To change an existing source's memberships in this case, use the
-          dedicated `/profiles/{profileId}/sources` endpoints.
+        - **Pure-update batch** (every source already exists in the DB): `profileNames` is optional, and
+          when non-empty is applied additively to every source.
+        - **Mixed batch** (at least one new and at least one update): `profileNames` is required for the
+          new sources and is applied **only to the new sources**. Updates keep their existing profile
+          memberships. The `/profiles/{profileId}/sources` endpoints change an existing source's
+          memberships.
         - **`<datacollection-config>` present**: `profileNames` is ignored; the `<include-collection>`
           entries in the config drive attachment, and profiles named by `<snmp-collection>` are created
           or updated.
@@ -947,9 +944,9 @@ public interface DataCollectionConfRestApi {
             summary = "Add a new System Definition to an SnmpCollectionSources",
             description = """
         Create a system definition under the given source, the equivalent of one `<systemDef>` in a
-        `<datacollection-group>`. Supply either `sysoid` for an exact match or `sysoidMask` for a prefix
-        match. `mibGroupNames` is a JSON array carried as a string and names the MIB groups the
-        definition collects. The response body is the new system definition id as a bare integer.""",
+        `<datacollection-group>`. `sysoid` gives an exact match, `sysoidMask` a prefix match.
+        `mibGroupNames` is a JSON array carried as a string and names the MIB groups the definition
+        collects. The response body is the new system definition id as a bare integer.""",
             operationId = "addSystemDefToSnmpCollectionSources")
     @RequestBody(
             required = true,
@@ -1064,9 +1061,8 @@ public interface DataCollectionConfRestApi {
     @Operation(
             summary = "Update a System Definition in an SnmpCollectionSources",
             description = """
-        Replace the fields of an existing system definition. The body is a whole system definition, not a
-        patch: a field left out is written as null, so switching from `sysoid` to `sysoidMask` means
-        sending only the one that should survive. The system definition has to belong to the given
+        Replace the fields of an existing system definition. The body is a whole system definition, not
+        a patch: a field left out is written as null. The system definition has to belong to the given
         source.""",
             operationId = "updateSystemDefInSnmpCollectionSources")
     @RequestBody(
@@ -1108,9 +1104,9 @@ public interface DataCollectionConfRestApi {
             description = """
         Create an empty SNMP data collection source and attach it to one or more existing profiles.
         `name` and at least one entry in `profiles` are both required, every profile name has to already
-        exist, and the source name has to be unused. The source starts with no MIB groups, resource types
-        or system definitions: add those through the `/collectsources/{id}/mibgroups`,
-        `/resourcetypes` and `/systemdefs` endpoints, or upload a `<datacollection-group>` file.
+        exist, and the source name has to be unused. The source starts with no MIB groups, resource
+        types or system definitions; those are added through `/collectsources/{id}/mibgroups`,
+        `/resourcetypes` and `/systemdefs`, or by uploading a `<datacollection-group>` file.
         `vendor` is set to the source name. The response body is the new source id as a bare integer.""",
             operationId = "createSnmpDataCollectionSource"
     )
@@ -1152,7 +1148,7 @@ public interface DataCollectionConfRestApi {
             description = """
         Delete one or more sources and everything under them. Ids that do not exist are ignored, so a
         request naming only unknown ids still answers 200. The source name is left behind in any
-        profile's `sourceNames`, so remove it from the profiles as well if the reference should go.""",
+        profile's `sourceNames`.""",
             operationId = "deleteSnmpDataCollectionSources"
     )
     @ApiResponses(value = {
@@ -1526,8 +1522,8 @@ public interface DataCollectionConfRestApi {
         `sourceNames`. Disabled profiles are omitted, matching what collectd loads. The `rrdRepository`
         attribute is copied from the live in-memory config, and the upload path does not read it back.
 
-        Pair it with `/collectsources/{id}/download` to obtain the matching `<datacollection-group>`
-        files; the whole set is re-uploadable as one multipart batch via `/upload`. Defaults to XML;
+        `/collectsources/{id}/download` returns the matching `<datacollection-group>` files; the whole
+        set is re-uploadable as one multipart batch via `/upload`. Defaults to XML;
         `format=json` returns the same document using the JAXB bean field names. Error responses are
         `<error>` XML regardless of `format`.""",
             operationId = "downloadDatacollectionConfig"

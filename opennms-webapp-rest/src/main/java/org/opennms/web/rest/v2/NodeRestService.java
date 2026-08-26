@@ -509,9 +509,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         a 200. Nodes with `type` of `D` (deleted) are not excluded.
 
         In JSON, `id` is a string and `createTime`, `lastIngressFlow`, `lastEgressFlow` and the asset
-        record timestamps are epoch milliseconds; the auto-derived `string/date-time` schema for those
-        fields does not describe the JSON wire format. The XML representation of the same fields is
-        ISO-8601 with an offset.
+        record timestamps are epoch milliseconds, although the derived schema for those fields shows
+        `string`/`date-time`. The XML representation of the same fields is ISO-8601 with an offset.
 
         Example query: `_s=node.foreignSource==Servers;category.name==Production&orderBy=label`.""",
             operationId = "NodeRestServiceGETNodes")
@@ -747,7 +746,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Path("{id}")
     @Operation(
             summary = "Rejected: create a node at a caller-chosen id",
-            description = "Always answered with 404. Node ids are assigned by the server; post to `/nodes` instead.",
+            description = "Always answered with 404, whether or not the id exists.",
             operationId = "NodeRestServicePOSTNodeSpecific",
             parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
                     description = "Node database id, or `foreignSource:foreignId`. The value is not read: every request to this path is answered with 404.",
@@ -763,14 +762,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Operation(
             summary = "Create a node",
             description = """
-        Create a node and send a `nodeAdded` event. `label` is the only field worth supplying in
-        practice; when `location` is omitted the default monitoring location is used. The new node's
-        URI is returned in the `Location` header. Provisiond does not own a node created this way, so a
-        requisition synchronisation will not preserve it unless the matching `foreignSource` and
-        `foreignId` also exist in a requisition.
-
-        JSON is read by Jackson with a JAXB introspector and XML by JAXB; the two representations are
-        not interchangeable. A body that fails to parse is answered with 500, not 400.""",
+        Create a node and send a `nodeAdded` event. When `location` is omitted the default monitoring
+        location is used, and the new node's URI is returned in the `Location` header. A requisition
+        synchronisation does not preserve the node unless the matching `foreignSource` and `foreignId`
+        also exist in a requisition. A body that fails to parse is answered with 500, not 400.""",
             operationId = "NodeRestServicePOSTNode")
     @RequestBody(required = true, description = "The node to create.",
             content = {
@@ -819,9 +814,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             summary = "Update properties of several nodes",
             description = """
         Apply the form parameters as bean properties to every node matching `_s`. The default `limit`
-        of 10 applies to the selection, so a call without an explicit `limit` updates at most 10 nodes;
-        pass a filter narrow enough to describe the set you mean. The whole call runs in one
-        transaction, so a per-node failure aborts the batch.
+        of 10 applies to the selection, so a call without an explicit `limit` updates at most 10 nodes.
+        The whole call runs in one transaction, so a per-node failure aborts the batch.
 
         Example query: `_s=node.foreignSource==ApiDoc&limit=100`.""",
             operationId = "NodeRestServicePUTNodes")
@@ -848,10 +842,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Operation(
             summary = "Not implemented: replace a node from a document",
             description = """
-        Answered with 501. `AbstractDaoRestServiceWithDTO.doUpdate` is not overridden for nodes. Use
-        the form-encoded `PUT /nodes/{id}` to change individual properties. Because this variant binds
-        `{id}` as an integer, a non-numeric path segment is answered with 404 before the handler
-        runs.""",
+        Answered with 501. This variant binds `{id}` as an integer, so a non-numeric path segment is
+        answered with 404 before the handler runs.""",
             operationId = "NodeRestServicePUTNodeDocument")
     @RequestBody(description = "Ignored.",
             content = {
@@ -881,7 +873,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             summary = "Update properties of a node",
             description = """
         Apply the form parameters as bean properties to one node. Only the properties present in the
-        body are touched. No event is sent, so daemons holding the previous value are not notified.""",
+        body are touched. No event is sent.""",
             operationId = "NodeRestServicePUTNodeProperties")
     @RequestBody(required = true, description = "Node bean properties to set, form-encoded.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
@@ -912,7 +904,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             description = """
         Delete every node matching `_s` and send a `deleteNode` event for each. The default `limit` of
         10 applies to the selection, so a call without an explicit `limit` deletes at most 10 nodes.
-        There is no confirmation step: pass a filter that describes exactly the nodes you mean.
 
         Example query: `_s=node.foreignSource==ApiDoc&limit=100`.""",
             operationId = "NodeRestServiceDELETENodes")
@@ -970,16 +961,22 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         and falls through to `GET /nodes/{id}` with an id of `service-types`, which is answered with
         500.""",
             operationId = "NodeRestServiceGETServiceTypes")
-    @ApiResponse(responseCode = "200", description = "All service types, sorted by name.",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                    array = @ArraySchema(schema = @Schema(implementation = NodeServiceTypeDto.class)),
-                    examples = @ExampleObject(value = """
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "All service types, sorted by name.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = NodeServiceTypeDto.class)),
+                            examples = @ExampleObject(value = """
                     [
                       {"name": "DNS", "id": 4},
                       {"name": "HTTP-8080", "id": 2},
                       {"name": "ICMP", "id": 1},
                       {"name": "SNMP", "id": 3}
-                    ]""")))
+                    ]"""))),
+            @ApiResponse(responseCode = "500", description = "The request asked for `application/xml`, so it matched `GET /nodes/{id}` with an id of `service-types` instead.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"service-types\"")))
+    })
     public Response getServiceTypes() {
         final List<Map<String,Object>> result = m_serviceTypeDao.findAll().stream()
             .sorted(Comparator.comparing(OnmsServiceType::getName))
@@ -1026,9 +1023,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             summary = "Request a rescan of a node",
             description = """
         Send a `forceRescan` event for the node and return as soon as the event is queued. The 200 says
-        the event was accepted, not that the scan has run or succeeded; watch provisiond for the
-        outcome. The request body is not read, although the operation is declared as consuming
-        `application/x-www-form-urlencoded`.""",
+        the event was accepted, not that the scan has run or succeeded. The request body is not read,
+        although the operation is declared as consuming `application/x-www-form-urlencoded`.""",
             operationId = "NodeRestServicePUTRescanNodeByNodeId")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The rescan event was sent. No body is returned."),
@@ -1317,7 +1313,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             summary = "Add or replace a metadata entry of a node",
             description = """
         Set one metadata entry from the request body. An existing entry with the same context and key is
-        overwritten, so this is an upsert rather than an append. No `@Consumes` is declared, so both
+        overwritten. No `@Consumes` is declared, so both
         JSON and XML bodies are accepted; the XML root element is `meta-data`. The context is checked
         before the node is looked up, so a non-`X-` context is answered with 403 even for a node that
         does not exist.""",
@@ -1377,7 +1373,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             description = """
         Set one metadata entry with context, key and value all taken from the path. An existing entry
         with the same context and key is overwritten. A value containing `/` has to be percent-encoded,
-        and an empty value cannot be expressed this way; use the `POST` form for those.""",
+        and an empty value cannot be expressed this way.""",
             operationId = "NodeRestServicePUTMetaDataByNodeId")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "The entry was stored."),

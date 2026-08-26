@@ -139,8 +139,7 @@ public class Source {
 
     // Wire name is "fallback-attribute", not the bean name: a body using "fallbackAttribute" is rejected.
     @Schema(name = "fallback-attribute",
-            description = "Attribute tried when attribute is absent on the resource, which helps when a metric has "
-                    + "been renamed.",
+            description = "Attribute tried when attribute is absent on the resource.",
             example = "icmp")
     @XmlAttribute(name = "fallback-attribute")
     public String getFallbackAttribute() {
@@ -153,8 +152,8 @@ public class Source {
 
     // Wire name is "datasource", not the bean name: a body using "dataSource" is rejected.
     @Schema(name = "datasource",
-            description = "Data source within the attribute. Defaults to the attribute name, and only needs setting "
-                    + "when one attribute holds several data sources.",
+            description = "Data source within the attribute. Defaults to the attribute name; an attribute holding "
+                    + "several data sources needs it set explicitly.",
             example = "http-8080")
     @XmlAttribute(name = "datasource")
     public String getDataSource() {

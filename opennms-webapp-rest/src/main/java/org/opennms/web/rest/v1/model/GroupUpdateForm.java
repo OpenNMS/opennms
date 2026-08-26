@@ -36,8 +36,7 @@ public class GroupUpdateForm {
     public String comments;
 
     @Schema(description = "Member user name. Stored as a single list element, which replaces the whole member "
-            + "list, so a comma-separated string becomes one malformed entry. The "
-            + "`/groups/{groupName}/users/{userName}` endpoints are the additive way to change membership.",
+            + "list, so a comma-separated string becomes one element containing the commas.",
             example = "admin")
     public String users;
 }

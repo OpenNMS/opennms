@@ -48,8 +48,8 @@ public class InfoPanelItem {
     private int order;
 
     @Schema(description = """
-            The template's rendered output. Operator-authored markup, so the consuming client is
-            responsible for sanitizing it before injecting it into the DOM.""",
+            The template's rendered output. Operator-authored markup, served without
+            sanitization.""",
             example = "<table><tr><td>sysName</td><td>loopback-001</td></tr></table>")
     @JsonProperty("html")
     private String html;

@@ -75,12 +75,9 @@ public class DataCollectionConfigResource implements InitializingBean {
             summary = "Get the SNMP data collection configuration",
             description = """
                     Returns datacollection-config.xml with every `datacollection-group` include already
-                    resolved and flattened into the owning `snmp-collection`. The response is very large:
-                    on a stock installation it is several hundred kilobytes of JSON, because it carries
-                    every shipped MIB group, table, resource type and systemDef.
-
-                    Prefer `/config/datacollection/status` for a summary, or
-                    `/config/datacollection/lookup` to see what a single agent would be collected for.""",
+                    resolved and flattened into the owning `snmp-collection`. On a stock installation the
+                    response is several hundred kilobytes of JSON, carrying every shipped MIB group, table,
+                    resource type and systemDef.""",
             operationId = "getDataCollectionConfiguration")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The resolved data collection configuration. The example is abbreviated to one group and one MIB group.",
@@ -144,14 +141,14 @@ public class DataCollectionConfigResource implements InitializingBean {
     @Operation(
             summary = "Resolve the MIB objects for one agent",
             description = """
-                    Diagnostic endpoint. Resolves `sysoid`, `address`, `collection` and `ifType` through the
-                    same systemDef matching that collectd uses, and returns the MIB objects that would be
-                    collected. Nothing is queried over SNMP and no node has to exist: the address is used
-                    only for the address-range tests inside the systemDef rules.
+                    Resolves `sysoid`, `address`, `collection` and `ifType` through the same systemDef
+                    matching that collectd uses, and returns the MIB objects that would be collected. Nothing
+                    is queried over SNMP and no node has to exist: the address is used only for the
+                    address-range tests inside the systemDef rules.
 
-                    Leave `ifType` at its default of -1 for the node-level objects. Pass a positive IANA
-                    interface type (6 for ethernetCsmacd, for example) to also include the interface-level
-                    objects that apply to that type.""",
+                    `ifType` defaults to -1, which returns the node-level objects. A positive IANA interface
+                    type (6 for ethernetCsmacd) also includes the interface-level objects that apply to that
+                    type.""",
             operationId = "lookupDataCollectionMibObjects")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The resolved MIB objects. The example is abbreviated to one object.",
@@ -223,9 +220,8 @@ public class DataCollectionConfigResource implements InitializingBean {
     @Operation(
             summary = "Summarize the loaded data collection configuration",
             description = """
-                    Diagnostic endpoint. Returns counts drawn from the data collection configuration
-                    currently held in memory, without serializing the configuration itself. Useful for
-                    confirming that a datacollection.d file was picked up after a reload.
+                    Returns counts drawn from the data collection configuration currently held in memory,
+                    without serializing the configuration itself.
 
                     `lastUpdate` is epoch milliseconds. The internal `__resource_type_collection` entry is
                     filtered out of `snmpCollections` but is still counted by the `available*` totals.""",

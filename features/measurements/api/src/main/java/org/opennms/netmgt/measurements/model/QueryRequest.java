@@ -126,8 +126,8 @@ public class QueryRequest {
 
     // Wire name is "maxrows", not the bean name: a body using "maxRows" is rejected.
     @Schema(name = "maxrows",
-            description = "Upper bound on the number of rows returned, typically the pixel width of the graph being "
-                    + "drawn. 0 leaves the row count to the step size.",
+            description = "Upper bound on the number of rows returned. The step is widened until the window fits "
+                    + "rather than the series being truncated. 0 leaves the row count to the step size.",
             example = "0")
     @XmlAttribute(name = "maxrows")
     public int getMaxRows() {
@@ -139,8 +139,8 @@ public class QueryRequest {
     }
 
     @Schema(name = "interval",
-            description = "Collection interval in milliseconds. Used by the Newts-style fetch strategies when "
-                    + "deciding how to align samples.",
+            description = "Collection interval in milliseconds, used by the Newts-style fetch strategies to align "
+                    + "samples.",
             example = "300000")
     @XmlAttribute(name = "interval")
     public Long getInterval() {
@@ -152,8 +152,7 @@ public class QueryRequest {
     }
 
     @Schema(name = "heartbeat",
-            description = "Heartbeat in milliseconds, the age at which a sample is treated as stale. Usually a small "
-                    + "multiple of interval.",
+            description = "Heartbeat in milliseconds, the age at which a sample is treated as stale.",
             example = "600000")
     @XmlAttribute(name = "heartbeat")
     public Long getHeartbeat() {

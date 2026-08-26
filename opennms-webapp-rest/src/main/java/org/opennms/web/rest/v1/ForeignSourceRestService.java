@@ -137,9 +137,9 @@ import org.springframework.transaction.annotation.Transactional;
 
         Reads resolve pending first and fall back to deployed. A name with no definition in either
         repository is **not** a 404: the repository synthesizes a copy of the default definition under the
-        requested name, so `GET /foreignSources/{name}` answers 200 for any name. Compare the returned
-        `detectors` and `policies` against `GET /foreignSources/default` if you need to know whether a
-        definition of your own exists.
+        requested name, so `GET /foreignSources/{name}` answers 200 for any name. A response whose
+        `detectors` and `policies` match `GET /foreignSources/default` is a synthesized default rather
+        than a stored definition.
 
         `date-stamp` is epoch milliseconds in JSON and an ISO-8601 timestamp in XML.""")
 public class ForeignSourceRestService extends OnmsRestService {
@@ -219,8 +219,8 @@ public class ForeignSourceRestService extends OnmsRestService {
             description = """
                     Only definitions in the deployed repository, that is, definitions provisiond has written
                     out because the matching requisition was imported. A definition that has been `POST`ed but
-                    whose requisition has not been imported yet does not appear here; use `GET /foreignSources`
-                    for the pending-and-deployed view.
+                    whose requisition has not been imported yet does not appear here; `GET /foreignSources`
+                    returns the pending-and-deployed view.
 
                     The handler declares no `@Produces`, so the response media type is negotiated from the
                     `Accept` header. In JSON the list appears twice, once under `foreignSources` and once under
@@ -417,8 +417,8 @@ public class ForeignSourceRestService extends OnmsRestService {
             summary = "Get a foreign source definition",
             description = """
                     Resolves the pending repository first and falls back to deployed. An unknown name answers
-                    200 with a copy of the default definition renamed to the requested name, so a 200 here is
-                    not evidence that a definition of your own exists.""",
+                    200 with a copy of the default definition renamed to the requested name, so a 200 does not
+                    mean a stored definition exists.""",
             operationId = "getForeignSource")
     @ApiResponse(responseCode = "200", description = "The definition, or the default definition renamed, when the name has none of its own.",
             content = {
@@ -577,8 +577,8 @@ public class ForeignSourceRestService extends OnmsRestService {
             summary = "List the policies on a foreign source definition",
             description = """
                     The `policies` element of the resolved definition. An unknown foreign source name answers
-                    200 with the default definition's policies, which is normally an empty list. In JSON the
-                    list is repeated under `policies` and `policy`.""",
+                    200 with the default definition's policies, an empty list in the shipped default. In JSON
+                    the list is repeated under `policies` and `policy`.""",
             operationId = "getForeignSourcePolicies")
     @ApiResponse(responseCode = "200", description = "The policies.",
             content = {
@@ -875,11 +875,11 @@ public class ForeignSourceRestService extends OnmsRestService {
                     Form-encoded key/value pairs, applied to the resolved definition and saved to the pending
                     repository. Keys are matched against **bean property names**, not the hyphenated XML
                     attribute names: `scanInterval=2d` is applied, `scan-interval=2d` is not. Unrecognized keys
-                    are silently ignored.
+                    are ignored.
 
                     If no key matched a writable property, or the body was empty, nothing is saved and the
                     response is 304 with no body. Detectors and policies are collections and are not settable
-                    this way; use the `/detectors` and `/policies` sub-resources.""",
+                    this way.""",
             operationId = "updateForeignSource")
     @RequestBody(required = true, description = "Form-encoded bean property names and values.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,

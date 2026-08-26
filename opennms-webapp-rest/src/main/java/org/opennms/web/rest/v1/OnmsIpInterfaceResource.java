@@ -108,10 +108,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
 
                     `isManaged` is a one-character code: `M` is managed, and only `M` counts as managed. `U`, `F`
                     and `N` are the unmanaged, forced-unmanaged and not-polled variants; `D` marks a deleted row.
-                    `snmpPrimary` is `P` for the primary SNMP interface, `S` for secondary and `N` for none.
-
-                    The node lookup is not guarded, so an unknown `nodeCriteria` fails with HTTP 500 rather than
-                    400 or 404.""",
+                    `snmpPrimary` is `P` for the primary SNMP interface, `S` for secondary and `N` for none.""",
             operationId = "listNodeIpInterfaces",
             parameters = {
                     @Parameter(in = ParameterIn.QUERY, name = "limit",
@@ -136,7 +133,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
                             schema = @Schema(type = "string", defaultValue = "all", allowableValues = {"all", "any"}),
                             example = "any"),
                     @Parameter(in = ParameterIn.QUERY, name = "ipAddress",
-                            description = "Restrict to this address. Example of the generic property-restriction form; pair it with `comparator=iplike` for a range.",
+                            description = "Restrict to this address. One of the generic property restrictions; with `comparator=iplike` it matches a range.",
                             schema = @Schema(type = "string"), example = "192.0.2.10"),
                     @Parameter(in = ParameterIn.QUERY, name = "snmpPrimary",
                             description = "Restrict by SNMP primary role.",
@@ -180,7 +177,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
                       </ipInterface>
                     </ipInterfaces>"""))
                     }),
-            @ApiResponse(responseCode = "500", description = "No node matches `nodeCriteria`. The node is dereferenced without a null check, so this is a null-pointer failure rather than a 400.",
+            @ApiResponse(responseCode = "500", description = "No node matches `nodeCriteria`. This path reports a missing node as a null-pointer failure, not as 400 or 404.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Cannot invoke \"org.opennms.netmgt.model.OnmsNode.getId()\" because \"node\" is null")))
@@ -224,9 +221,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             description = """
                     Returns a single IP interface, addressed by its literal address. The address is parsed before
                     the lookup, so an unparseable address behaves the same as an address the node does not have.
-
-                    Unlike the list endpoint, this one does look at interfaces flagged deleted, since it reads the
-                    node's own interface set rather than running a query.""",
+                    Unlike the list endpoint, interfaces flagged deleted are returned here.""",
             operationId = "getNodeIpInterface"
     )
     @ApiResponses(value = {
@@ -293,8 +288,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Operation(
             summary = "Add an IP interface to a node",
             description = """
-                    Attaches a new IP interface to the node and publishes `nodeGainedInterface`, which is what
-                    makes pollerd and collectd pick it up.
+                    Attaches a new IP interface to the node and publishes `nodeGainedInterface`.
 
                     XML only. A JSON or form-encoded body is rejected with 415.
 
@@ -375,15 +369,14 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             summary = "Update one IP interface of a node",
             description = """
                     Applies form-encoded fields to an existing IP interface. Keys are bean property names on
-                    `OnmsIpInterface`, which do not always match the names in the XML representation, so check the
-                    property name rather than copying the attribute name out of a GET response.
+                    `OnmsIpInterface`, which do not always match the names in the XML representation.
 
                     `nodeId` is skipped so the interface cannot be moved between nodes, and `id`, `dbId`,
                     `authorizedGroups`, `foreignSource`, `foreignId` and `type` are protected and dropped with a
                     log warning. Keys that resolve to nothing writable are ignored, so a request naming only such
                     keys comes back 304.
 
-                    No event is published, so changing `isManaged` here does not by itself tell pollerd.""",
+                    No event is published.""",
             operationId = "updateNodeIpInterface"
     )
     @RequestBody(
@@ -471,13 +464,13 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             description = """
                     Publishes `deleteInterface` and returns immediately. The deletion is carried out
                     asynchronously by provisiond, so the interface is normally still readable for a moment after
-                    the 202 and the caller has to poll to see the effect.
+                    the 202.
 
-                    Only the node is checked. Whether the node actually has that interface is not, so a request
-                    naming an address the node does not have is accepted and simply has no effect.
+                    Only the node is checked, not whether it has that interface, so a request naming an address
+                    the node does not have is accepted and has no effect.
 
-                    Removing a node's last IP interface has been observed to take the node with it: provisiond
-                    deletes a node left with no interfaces, so a following request for the node returns 404.""",
+                    Removing a node's last IP interface has been observed to delete the node as well: a following
+                    request for the node returns 404.""",
             operationId = "deleteNodeIpInterface"
     )
     @ApiResponses(value = {

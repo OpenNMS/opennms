@@ -307,7 +307,7 @@ public class QueryResponse {
         @Schema(name = "values",
                 description = "Values of this series, one per entry in the response's timestamps array and in the "
                         + "same order. A sample with no data appears as the JSON string \"NaN\" rather than a "
-                        + "number or null, so a strict numeric decoder will reject it.",
+                        + "number or null.",
                 example = "[9.85957792, 11.960674583333336, \"NaN\"]")
         @XmlElement(name="values")
         @JsonProperty("values")

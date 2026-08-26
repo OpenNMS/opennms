@@ -40,7 +40,7 @@ public class GeolocationQueryDTO {
     @Schema(description = """
             How to calculate each node's status. Matched case-insensitively. `Alarms` and `Outages` are \
             the values the endpoint can act on; `None` is accepted by validation and then rejected with \
-            500, so omit the member to skip the calculation.""",
+            500. Omitting the member skips the calculation.""",
             allowableValues = {"Alarms", "Outages"}, example = "Alarms")
     private String strategy;
 

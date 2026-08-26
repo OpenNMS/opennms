@@ -86,8 +86,7 @@ public class DiscoveryRestService {
 
     private static final String URL_CONTENT = """
             Location of a newline-separated address list, as a URL. `file:` URLs read from the OpenNMS
-            host's filesystem and `http:`/`https:` URLs are fetched by the OpenNMS host, which is why
-            this operation is restricted to the provisioning and admin roles.""";
+            host's filesystem and `http:`/`https:` URLs are fetched by the OpenNMS host.""";
 
     @XmlRootElement(name = "discoveryConfiguration")
     public static class DiscoveryConfigurationDTO {
@@ -480,22 +479,19 @@ public class DiscoveryRestService {
 
         The call returns as soon as the sweep has been handed to the discovery task executor, so a 200
         means the request was accepted, not that any address answered. Addresses that respond raise
-        `newSuspect` events, which is what turns them into nodes; watch those events or the node list
-        for the outcome. There is no job id and no way to poll this operation for progress.
+        `newSuspect` events. There is no job id and no way to poll this operation for progress.
 
-        Targets come from four collections, all optional: `specifics` (single addresses), `includeRanges`
+        Targets come from five collections, all optional: `specifics` (single addresses), `includeRanges`
         and `excludeRanges` (inclusive address ranges), and `includeUrls`/`excludeUrls` (addresses read
         from a URL). Each entry may override the top-level `location`, `retries`, `timeout` and
         `foreignSource`. A body with no targets at all is accepted and sweeps nothing.
 
         Requires `ROLE_PROVISION` or `ROLE_ADMIN`, checked in the handler on top of the Spring Security
-        rule for `/api/v2/**`, because the URL forms can read local files and reach arbitrary hosts from
-        the OpenNMS server.
+        rule for `/api/v2/**`.
 
         The JSON member names are the wrapper names (`specifics`, `includeRanges`, `excludeRanges`,
         `includeUrls`, `excludeUrls`), not the Java property names. An unrecognised JSON member is
-        rejected with a 500 carrying the Jackson message, so a misspelling fails loudly rather than
-        being ignored.""",
+        rejected with a 500 carrying the Jackson message.""",
             operationId = "submitDiscoveryScan")
     @RequestBody(required = true, description = "The one-off discovery configuration to run.",
             content = {
@@ -548,10 +544,10 @@ public class DiscoveryRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The sweep was handed to the discovery task executor. No body."),
             @ApiResponse(responseCode = "403", description = """
-                    The caller holds neither `ROLE_PROVISION` nor `ROLE_ADMIN`. Two layers can produce
-                    this: a caller that fails the Spring Security rule for `/api/v2/**` never reaches
-                    the resource and gets the container's HTML error page, while a caller that passes
-                    that rule but lacks the two roles gets the plain-text message below.""",
+                    The caller holds neither `ROLE_PROVISION` nor `ROLE_ADMIN`. A caller that fails the
+                    Spring Security rule for `/api/v2/**` never reaches the resource and gets the
+                    container's HTML error page; one that passes that rule but lacks both roles gets the
+                    plain-text message below.""",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "The PROVISION or ADMIN role is required to submit a discovery scan."))),
             @ApiResponse(responseCode = "500", description = """

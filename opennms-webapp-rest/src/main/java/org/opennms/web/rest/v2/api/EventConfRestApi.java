@@ -65,9 +65,8 @@ import java.util.List;
         matches is the one applied. Neither the source id nor its name enters into it.
 
         `fileOrder` carries no unique constraint, so two sources can hold the same value. Sources that
-        tie fall back to the order their events were inserted, lowest event id first. That is where the
-        ordering stops being defined by anything but the row ids, so treat a tie as unresolved rather
-        than as a rule to build on, and give a source that has to win a `fileOrder` of its own.""")
+        tie fall back to the order their events were inserted, lowest event id first, an ordering
+        nothing but the row ids defines.""")
 public interface EventConfRestApi {
 
     @POST
@@ -77,7 +76,7 @@ public interface EventConfRestApi {
     @Operation(
             summary = "Upload eventconf files",
             description = """
-        Upload one or more eventconf files including optional eventconf.xml to determine file order.
+        Upload one or more eventconf files, optionally including `eventconf.xml` to set file order.
         Every part must be named `upload`. A part named `eventconf.xml` is not stored as a source: its
         `<event-file>` entries set the search order of the remaining sources instead.
         Files that fail to parse are reported in `errors` while the rest are still stored, so a 200 does
@@ -227,7 +226,7 @@ public interface EventConfRestApi {
         - `eventOrder`: `asc` or `desc` (default: `desc`).
         - `offset` and `limit`: for pagination.
 
-        The response wraps the page in `eventConfSourceList` despite carrying events rather than sources.
+        The response wraps the page in `eventConfSourceList`; the entries are events, not sources.
         `createdTime` and `lastModified` come back as epoch milliseconds, not as the date-time strings the schema shows.""",
             operationId = "filterConfEventBySourceId"
     )
@@ -276,7 +275,7 @@ public interface EventConfRestApi {
             @Parameter(description = "Sort direction.", example = "asc",
                     schema = @Schema(allowableValues = {"asc", "desc"}, defaultValue = "desc"))
             @QueryParam("eventOrder") String eventOrder,
-            @Parameter(description = "Total matching records as already known to the caller. Supply it to skip the count query on subsequent pages.",
+            @Parameter(description = "Total matching records as already known to the caller. When present, the count query is not run.",
                     example = "132")
             @QueryParam("totalRecords") Integer totalRecords,
             @Parameter(description = "Zero-based index of the first record to return.", example = "0")
@@ -327,7 +326,6 @@ public interface EventConfRestApi {
     @Operation(
             summary = "Update EventConf Sources events",
             description = """
-        Update one or more eventConf sources  by their events IDs.
         Sets the enabled flag on the listed events of one source and reloads the event definitions.
         eventsIds that do not exist are ignored rather than reported.""",
             operationId = "enableDisableConfSourcesEvents"
@@ -368,8 +366,8 @@ public interface EventConfRestApi {
             description = """
         Fetch EventConfSource records based on provided filters such as name, vendor, description, fileOrder and eventCount.
         `filter` is a single case-insensitive term matched across those fields.
-        `sortBy` has to be supplied: without it the response carries the right `totalRecords`
-        and an empty `eventConfSourceList`. Any value works, valid or not.""",
+        `sortBy` has to be supplied: without it the response carries the correct `totalRecords` and an
+        empty `eventConfSourceList`. Any value is accepted; an unrecognised one sorts by `createdTime`.""",
             operationId = "filterEventConfSource"
     )
     @ApiResponses(value = {
@@ -404,14 +402,14 @@ public interface EventConfRestApi {
     Response filterEventConfSource(
             @Parameter(description = "Case-insensitive term matched against name, vendor, and description.", example = "cisco")
             @QueryParam("filter") String filter,
-            @Parameter(description = "Sort field: `name`, `vendor`, `description`, `fileOrder`, or `eventCount`. Anything else sorts by `createdTime`, but the parameter cannot be left out.",
+            @Parameter(description = "Sort field: `name`, `vendor`, `description`, `fileOrder`, or `eventCount`. Anything else sorts by `createdTime`.",
                     example = "name", required = true,
                     schema = @Schema(allowableValues = {"name", "vendor", "description", "fileOrder", "eventCount"}))
             @QueryParam("sortBy") String sortBy,
             @Parameter(description = "Sort direction.", example = "asc",
                     schema = @Schema(allowableValues = {"asc", "desc"}, defaultValue = "desc"))
             @QueryParam("order") String order,
-            @Parameter(description = "Total matching records as already known to the caller. Supply it to skip the count query on subsequent pages.",
+            @Parameter(description = "Total matching records as already known to the caller. When present, the count query is not run.",
                     example = "41")
             @QueryParam("totalRecords") Integer totalRecords,
             @Parameter(description = "Zero-based index of the first record to return.", example = "0")
@@ -535,10 +533,10 @@ public interface EventConfRestApi {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces("application/json")
     @Operation(
-            summary = "Update EventConf  Event",
+            summary = "Update EventConf Event",
             description = """
-        Update  eventConf event by sourceId and eventId.
-        `event` is required: the whole definition is replaced from it, and `enabled` rides along.
+        Update an eventConf event by sourceId and eventId.
+        `event` is required: the whole definition is replaced from it, and `enabled` is applied with it.
         A body carrying only `enabled` fails with a 500, as does an unknown sourceId or eventId.""",
             operationId = "updateEventConfEvent"
     )
@@ -753,9 +751,9 @@ public interface EventConfRestApi {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
-            summary = "Add a new  EventConfSource",
+            summary = "Add a new EventConfSource",
             description = """
-        Creates and adds a new  EventConfSource.
+        Creates and adds a new EventConfSource.
         The source starts empty and enabled, and is assigned the highest `fileOrder` so it is searched first.""",
             operationId = "addEventConfSource")
     @ApiResponses(value = {

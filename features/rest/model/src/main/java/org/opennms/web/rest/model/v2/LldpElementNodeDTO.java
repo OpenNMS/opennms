@@ -33,7 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="lldpElementNode")
 @JsonRootName("lldpElementNode")
-@Schema(description = "The LLDP agent on the node itself. Omitted from EnlinkdDTO entirely, not serialized as null, when the node has no LLDP element. Every field is a display string built for the JSP UI.")
+@Schema(description = "The LLDP agent on the node itself. Omitted from EnlinkdDTO entirely, not serialized as null, when the node has no LLDP element. Every field is a display string.")
 public class LldpElementNodeDTO {
 
     private String lldpChassisId;
@@ -78,7 +78,7 @@ public class LldpElementNodeDTO {
 
     @XmlElement(name="lldpCreateTime")
     @JsonProperty("lldpCreateTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getLldpCreateTime() {
         return lldpCreateTime;
     }
@@ -94,7 +94,7 @@ public class LldpElementNodeDTO {
 
     @XmlElement(name="lldpLastPollTime")
     @JsonProperty("lldpLastPollTime")
-    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getLldpLastPollTime() {
         return lldpLastPollTime;
     }

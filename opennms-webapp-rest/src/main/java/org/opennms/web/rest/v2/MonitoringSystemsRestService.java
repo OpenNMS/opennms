@@ -80,7 +80,7 @@ public class MonitoringSystemsRestService {
     @Operation(summary = "Get main monitoring system",
             description = """
         Identity of the core OpenNMS instance itself, as opposed to the Minions and Sentinels that also
-        register as monitoring systems. Four fields only: no capabilities or status.""",
+        register as monitoring systems. The response carries `id`, `label`, `location` and `type`.""",
             operationId = "MonitoringSystemsRestServiceGetMainMonitoringSystem")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The main monitoring system.",
@@ -93,7 +93,7 @@ public class MonitoringSystemsRestService {
                       "location": "Default",
                       "type": "OpenNMS"
                     }"""))),
-            @ApiResponse(responseCode = "204", description = "No main monitoring system is registered, which normally means the core has not started fully."),
+            @ApiResponse(responseCode = "204", description = "No main monitoring system is registered."),
             @ApiResponse(responseCode = "500", description = "The lookup failed. The cause is logged, not returned.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Error getting monitoring system.")))

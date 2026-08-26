@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Schema(description = """
-        Request body for creating an empty SNMP data collection source. Both fields are required: a
-        source that no profile references would never be scheduled by collectd.""")
+        Request body for creating an empty SNMP data collection source. Both fields are required.""")
 public class SnmpCollectionCreateSourceDto {
     @Schema(description = "Source name, unique across sources. Surrounding whitespace is trimmed. This "
             + "becomes the `<datacollection-group name=...>` of the source and the value profiles "

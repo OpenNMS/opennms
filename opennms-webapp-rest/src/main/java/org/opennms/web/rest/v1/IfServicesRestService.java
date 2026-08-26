@@ -146,7 +146,7 @@ public class IfServicesRestService extends OnmsRestService {
                             schema = @Schema(type = "string", defaultValue = "all", allowableValues = {"all", "any"}),
                             example = "any"),
                     @Parameter(in = ParameterIn.QUERY, name = "node.label",
-                            description = "Restrict to services on nodes with this label. Example of the generic property-restriction form.",
+                            description = "Restrict to services on nodes with this label. One of the generic property restrictions.",
                             schema = @Schema(type = "string"), example = "core-sw-01"),
                     @Parameter(in = ParameterIn.QUERY, name = "ipInterface.ipAddress",
                             description = "Restrict to services on this IP address.",
@@ -229,8 +229,8 @@ public class IfServicesRestService extends OnmsRestService {
                     Looks the monitored service up by its `ifservices` primary key, which is the `id` reported by
                     the search endpoint. This is the numeric service id, not a node id and not a service name.
 
-                    The method carries no `@Produces`, so the representation follows the request `Accept` header
-                    and defaults to XML when none is sent.""",
+                    The representation follows the request `Accept` header and defaults to XML when none is
+                    sent.""",
             operationId = "getIfServiceById"
     )
     @ApiResponses(value = {
@@ -279,8 +279,7 @@ public class IfServicesRestService extends OnmsRestService {
                     works exactly as it does for GET /ifservices, and `limit` and `offset` are cleared before the
                     update, so every match is affected, not just the first page.
 
-                    With no query parameters the selection is every monitored service in the system. Scope the
-                    request with something like `node.label` or `category.name` unless that is what is wanted.
+                    With no query parameters the selection is every monitored service in the system.
 
                     `status=S` and a transition from `A` to `F` store `F` and send both
                     `serviceUnmanaged` and `suspendPollingService`. `status=R` and a transition from `F` to `A`
@@ -305,8 +304,8 @@ public class IfServicesRestService extends OnmsRestService {
                     comma-separated list of service names within the selection; names that match nothing simply
                     leave the selection untouched.
 
-                    The method declares no `@Consumes`, so it will accept any content type, but only a
-                    form-encoded body deserializes. A JSON body fails with HTTP 500.""",
+                    Any content type is accepted, but only a form-encoded body deserializes; a JSON body fails
+                    with HTTP 500.""",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
                     schema = @Schema(type = "string"),
                     examples = {

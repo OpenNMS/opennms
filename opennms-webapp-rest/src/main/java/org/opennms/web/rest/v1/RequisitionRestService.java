@@ -127,21 +127,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Tag(name = "Requisitions", description = """
         Requisitions API.
 
-        A requisition is the declarative model of a group of nodes: the nodes, their IP interfaces, the
-        monitored services on those interfaces, and the surveillance categories and asset fields on the
-        nodes. Editing a requisition changes nothing in the monitored inventory. The nodes are only created,
-        updated and deleted when the requisition is imported.
+        A requisition declares a group of nodes, their IP interfaces, the monitored services on those
+        interfaces, and the surveillance categories and asset fields on the nodes. Editing a requisition
+        changes no monitored inventory: nodes are created, updated and deleted when the requisition is
+        imported.
 
-        Requisitions live in two repositories. Writes land in *pending*
-        (`etc/imports/pending/{foreignSource}.xml`); `PUT /requisitions/{foreignSource}/import` hands the
-        pending document to provisiond, which reconciles the database against it and moves the document to
-        *deployed* (`etc/imports/{foreignSource}.xml`). `GET /requisitions` and
-        `GET /requisitions/{foreignSource}` read the pending document when there is one and fall back to the
-        deployed document, so a read after an edit shows the edit whether or not it has been imported.
-        `/requisitions/count` counts pending documents and drops back to zero once an import completes;
-        `/requisitions/deployed/count` counts deployed documents.
-
-        The URL tree mirrors the document, and every level can be read, replaced and deleted on its own:
+        Writes land in `etc/imports/pending/{foreignSource}.xml`.
+        `PUT /requisitions/{foreignSource}/import` hands that document to provisiond, which reconciles the
+        database against it and moves it to `etc/imports/{foreignSource}.xml`. Reads resolve pending first
+        and fall back to deployed, so a read after an edit shows the edit whether or not it was imported.
+        `POST /requisitions` replaces the whole document; the nested paths replace one level:
 
             /requisitions/{foreignSource}
             /requisitions/{foreignSource}/nodes/{foreignId}
@@ -150,12 +145,9 @@ import org.springframework.transaction.annotation.Transactional;
             /requisitions/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}
             /requisitions/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}
 
-        Editing one node or one interface is the cheaper path for a large requisition, since a `POST` to
-        `/requisitions` replaces the whole document.
-
-        Two wire-format points. Dates (`date-stamp`, `last-import`, `last-imported`) are epoch milliseconds
-        in JSON and ISO-8601 timestamps in XML, whatever the derived schema says. The `PUT` handlers consume
-        `application/x-www-form-urlencoded` only, not JSON or XML.""")
+        Dates (`date-stamp`, `last-import`, `last-imported`) are epoch milliseconds in JSON and ISO-8601
+        timestamps in XML; the derived schema shows `date-time`. The `PUT` handlers consume
+        `application/x-www-form-urlencoded` only.""")
 public class RequisitionRestService extends OnmsRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionRestService.class);
@@ -268,9 +260,7 @@ public class RequisitionRestService extends OnmsRestService {
                     import time of its deployed requisition.
 
                     A foreign source with no deployed requisition fails with 500 rather than 404, including one
-                    whose nodes still exist after the requisition was deleted. Check
-                    `GET /requisitions/deployed/count` or the list from `GET /requisitions/deployed/stats`
-                    before calling this for a name you are not sure of.""",
+                    whose nodes still exist after the requisition was deleted.""",
             operationId = "getDeployedRequisitionStatsForForeignSource")
     @ApiResponse(responseCode = "200", description = "Statistics for the foreign source.",
             content = {
@@ -341,7 +331,7 @@ public class RequisitionRestService extends OnmsRestService {
             summary = "List the deployed requisitions",
             description = """
                     Every document in the deployed repository, in full. A requisition that has been written but
-                    not imported yet does not appear here; use `GET /requisitions` for the pending-and-deployed
+                    not imported yet does not appear here; `GET /requisitions` returns the pending-and-deployed
                     view. `totalCount` and `count` come back as `null` when the list is empty.""",
             operationId = "getDeployedRequisitions")
     @ApiResponse(responseCode = "200", description = "Deployed requisitions.",
@@ -422,7 +412,7 @@ public class RequisitionRestService extends OnmsRestService {
             description = """
                     One document per foreign source, resolved pending-first, so a requisition edited but not yet
                     imported appears here in its edited form. `totalCount` and `count` come back as `null` when
-                    the list is empty. For the names alone, `GET /requisitionNames` is the cheaper call.""",
+                    the list is empty. `GET /requisitionNames` returns the names alone.""",
             operationId = "getRequisitions")
     @ApiResponse(responseCode = "200", description = "All requisitions, pending documents preferred over deployed.",
             content = {
@@ -500,7 +490,7 @@ public class RequisitionRestService extends OnmsRestService {
             description = """
                     Plain-text decimal count of the documents in the pending repository, that is, of
                     requisitions with edits that have not been imported. A requisition drops out of this count
-                    once its import completes, so a healthy steady state is `0`.""",
+                    once its import completes.""",
             operationId = "getPendingRequisitionCount")
     @ApiResponse(responseCode = "200", description = "The count.",
             content = @Content(mediaType = MediaType.TEXT_PLAIN,
@@ -677,9 +667,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Operation(
             summary = "Get one node of a requisition",
             description = """
-                    Looked up by foreign ID, which is the node's identity within the requisition and is what
-                    ties the requisitioned node to the provisioned one. The node label is not an identifier
-                    here.""",
+                    Looked up by foreign ID, the node's identity within the requisition. The node label is not
+                    an identifier here.""",
             operationId = "getRequisitionNode")
     @ApiResponse(responseCode = "200", description = "The node.",
             content = {
@@ -1038,9 +1027,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Operation(
             summary = "List the asset fields set on a requisitioned node",
             description = """
-                    Only the fields the requisition sets, not the node's full asset record. `name` must be one
-                    of the field names `GET /foreignSourcesConfig/assets` returns; an unrecognized name is
-                    accepted into the requisition but has no effect at import.""",
+                    Only the fields the requisition sets, not the node's full asset record.
+                    `GET /foreignSourcesConfig/assets` lists the recognized `name` values; an unrecognized name
+                    is accepted into the requisition and has no effect at import.""",
             operationId = "getRequisitionNodeAssets")
     @ApiResponse(responseCode = "200", description = "The asset fields.",
             content = {
@@ -1126,16 +1115,16 @@ public class RequisitionRestService extends OnmsRestService {
             description = """
                     Writes the document to the pending repository under the `foreign-source` carried in the
                     body, not in the URL. The previous pending document is replaced outright rather than merged,
-                    so anything absent from the body is dropped. To edit part of a large requisition, post to the
-                    node, interface, service, category or asset sub-resource instead.
+                    so anything absent from the body is dropped. The node, interface, service, category and asset
+                    sub-resources replace one level instead.
 
                     Nothing is provisioned until `PUT /requisitions/{foreignSource}/import` runs.
 
                     The body is validated before it is written: `foreign-source` must be present and must not
                     contain any of `: / \\ ? & * ' "`, every node needs a `foreign-id`, foreign IDs must be
-                    unique within the document, and each interface needs an `ip-addr`. Note that `foreign-source`
-                    has a default of `imported-`, so a body that omits it is accepted and stored under that name
-                    rather than rejected. `date-stamp` and `last-import` in the body are ignored.""",
+                    unique within the document, and each interface needs an `ip-addr`. `foreign-source` has a
+                    default of `imported-`, so a body that omits it is accepted and stored under that name.
+                    `date-stamp` and `last-import` in the body are ignored.""",
             operationId = "addOrReplaceRequisition")
     @RequestBody(required = true, description = "The complete requisition document.",
             content = {
@@ -1210,8 +1199,7 @@ public class RequisitionRestService extends OnmsRestService {
             summary = "Add or replace one node in a requisition",
             description = """
                     Keyed on the `foreign-id` in the body: an existing node with that foreign ID is replaced
-                    outright, otherwise the node is appended. The rest of the requisition is left alone, which is
-                    what makes this the practical way to edit a large requisition.
+                    outright, otherwise the node is appended. The rest of the requisition is left alone.
 
                     If the requisition does not exist it is created with this node as its only member. Nothing is
                     provisioned until an import runs.""",
@@ -1290,7 +1278,7 @@ public class RequisitionRestService extends OnmsRestService {
                     Validation rejects a second interface marked `P` on the same node, two services with the
                     same `service-name` on this interface, and an `ip-addr` that does not parse.""",
             operationId = "addOrReplaceRequisitionInterface")
-    @RequestBody(required = true, description = "The interface, with the monitored services it should carry.",
+    @RequestBody(required = true, description = "The interface and its monitored services.",
             content = {
                     @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = RequisitionInterface.class),
@@ -1443,9 +1431,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Operation(
             summary = "Add or replace one asset field on a requisitioned node",
             description = """
-                    Keyed on `name`, which should be one of the field names
-                    `GET /foreignSourcesConfig/assets` returns. An unrecognized name is stored without complaint
-                    and then has no effect at import.""",
+                    Keyed on `name`. `GET /foreignSourcesConfig/assets` lists the recognized names; an
+                    unrecognized name is stored and has no effect at import.""",
             operationId = "addOrReplaceRequisitionNodeAsset")
     @RequestBody(required = true, description = "The asset field and its value.",
             content = {
@@ -1496,17 +1483,14 @@ public class RequisitionRestService extends OnmsRestService {
                     from the pending repository to the deployed one, `last-import` is stamped, and
                     `/requisitions/count` drops back to zero.
 
-                    **This is asynchronous.** The 202 means the event was accepted, not that any node exists yet.
-                    A large requisition can take minutes, and the request can succeed while the import then
-                    fails. Poll `GET /requisitions/deployed/stats/{foreignSource}`, or the node list, rather than
-                    treating the 202 as completion. Firing several imports for the same foreign source in quick
-                    succession queues them all; they are not coalesced.
+                    The import is asynchronous. The 202 means the event was accepted, not that any node exists
+                    yet, and the request can succeed while the import then fails. Several imports fired for the
+                    same foreign source in quick succession are all queued; they are not coalesced.
 
                     If there is no pending document, the already-deployed document is re-imported.
 
                     Deleting a requisition does not undo an import: `DELETE /requisitions/deployed/{foreignSource}`
-                    removes the document and leaves the provisioned nodes in place. To remove the nodes, empty
-                    the requisition and import it, or delete the nodes through the nodes API.""",
+                    removes the document and leaves the provisioned nodes in place.""",
             operationId = "importRequisition")
     @ApiResponse(responseCode = "202", description = "The import event was sent. No body. The import itself has not necessarily started, let alone finished.",
             headers = @Header(name = "Location", description = "URI of the requisition that is being imported.",
@@ -1549,8 +1533,7 @@ public class RequisitionRestService extends OnmsRestService {
                     same property. `id`, `dbId`, `nodeId` and `authorizedGroups` are protected and skipped with a
                     log line; any other key that does not name a writable property is ignored.
 
-                    The response is 202 whether or not a key matched. Read the resource back to confirm the
-                    change.""",
+                    The response is 202 whether or not a key matched.""",
             operationId = "updateRequisition")
     @RequestBody(required = true, description = "Form-encoded field names and values.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
@@ -1586,9 +1569,8 @@ public class RequisitionRestService extends OnmsRestService {
                     that name no writable property are ignored, and `id`, `dbId`, `nodeId` and `authorizedGroups`
                     are protected and skipped.
 
-                    Interfaces, categories and assets are collections and are not settable this way; use their
-                    sub-resources. The response is 202 whether or not a key matched, so read the node back to
-                    confirm.""",
+                    Interfaces, categories and assets are collections and are not settable this way. The
+                    response is 202 whether or not a key matched.""",
             operationId = "updateRequisitionNode")
     @RequestBody(required = true, description = "Form-encoded field names and values.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
@@ -1679,12 +1661,11 @@ public class RequisitionRestService extends OnmsRestService {
             summary = "Delete the deployed requisition",
             description = """
                     Removes the deployed document. The **nodes stay provisioned**: they keep their foreign source
-                    and foreign ID and continue to be polled, they simply no longer have a requisition behind
+                    and foreign ID and continue to be polled, they no longer have a requisition behind
                     them. `GET /requisitions/deployed/stats` still lists the foreign source, with `last-imported`
                     null, and `GET /requisitions/deployed/stats/{foreignSource}` starts failing with a 500 for
                     that name.
 
-                    To retire a group of nodes, empty the requisition and import it, then delete the requisition.
                     A foreign source with no deployed document is not reported as an error, the response is still
                     202.""",
             operationId = "deleteDeployedRequisition")
@@ -1810,9 +1791,7 @@ public class RequisitionRestService extends OnmsRestService {
             summary = "Remove one asset field from a requisitioned node",
             description = """
                     Removes the field from the pending requisition, which stops the requisition from setting it.
-                    Whether the value already written to the node's asset record is cleared at the next import
-                    depends on the import behaviour rather than on this call. An asset name that is not on the
-                    node is not reported as an error.""",
+                    An asset name that is not on the node is not reported as an error.""",
             operationId = "deleteRequisitionNodeAsset")
     @ApiResponse(responseCode = "202", description = "Delete attempted. No body. Returned whether or not the asset field was present.")
     public Response deleteAssetParameter(@Context final UriInfo uriInfo, @Parameter(required = true, description = "Foreign source name of the requisition.", example = "datacenter-east") @PathParam("foreignSource") final String foreignSource, @Parameter(required = true, description = "Foreign ID of the node within the requisition.", example = "node-1") @PathParam("foreignId") final String foreignId, @Parameter(required = true, description = "Asset field name.", example = "city") @PathParam("parameter") final String parameter) {

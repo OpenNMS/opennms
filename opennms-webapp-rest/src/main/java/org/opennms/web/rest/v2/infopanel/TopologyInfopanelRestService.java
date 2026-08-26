@@ -89,9 +89,8 @@ public class TopologyInfopanelRestService {
             ]""";
 
     private static final String EMPTY_RESULT_NOTE = """
-            An empty array is the normal answer when `$OPENNMS_HOME/etc/infopanel/` holds no `*.html`
-            templates, or when every template set `visible` to false for this subject. It does not
-            indicate an error.""";
+            An empty array is returned when `$OPENNMS_HOME/etc/infopanel/` holds no `*.html`
+            templates, or when every template set `visible` to false for this subject.""";
 
     @GET
     @Transactional(readOnly = true)
@@ -145,8 +144,7 @@ public class TopologyInfopanelRestService {
         resolved to, and the discovery protocol.
 
         Port labels are matched against each node's SNMP interfaces by `ifName` first, then `ifDescr`.
-        A port that matches nothing leaves the endpoint's `snmpInterface` and `ifIndex` null, which
-        templates are expected to handle.
+        A port that matches nothing leaves the endpoint's `snmpInterface` and `ifIndex` null.
 
         """ + EMPTY_RESULT_NOTE,
             operationId = "getTopologyInfopanelForEdge")

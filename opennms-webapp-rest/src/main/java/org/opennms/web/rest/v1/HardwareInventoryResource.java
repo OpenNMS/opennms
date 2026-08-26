@@ -91,18 +91,16 @@ import org.springframework.transaction.annotation.Transactional;
         Hardware Inventory API.
 
         A node's hardware inventory is the ENTITY-MIB physical tree: one root entity per node, each entity
-        addressed by its `entPhysicalIndex`, with vendor-specific values hanging off each entity as
-        `vendorAttributes`. Reach it through the node: `/nodes/{nodeCriteria}/hardwareInventory`.
+        addressed by its `entPhysicalIndex`, with vendor-specific values on each entity as `vendorAttributes`.
+        The node-scoped path is `/nodes/{nodeCriteria}/hardwareInventory`.
 
-        The class also carries a root `@Path` of its own, so the V1 document additionally lists these
-        operations with no node in the path. Every handler needs a `nodeCriteria` path parameter that a
-        path without a node cannot supply, so all six of them fail with HTTP 500 on every such request.
-        Use the node-scoped paths.
+        The document also lists all six operations at paths with no node in them. Those paths cannot supply the
+        required `nodeCriteria`, and every such request returns HTTP 500.
 
         In the request and response bodies `entPhysicalIndex`, `parentPhysicalIndex`, `entityId` and `nodeId` are
         XML *attributes*, while `entPhysicalDescr` and the other `entPhysical*` values are XML *elements*. An
-        `entPhysical*` value sent as the wrong kind of node is dropped silently. Sending `nodeId` is unnecessary;
-        it is taken from the path.""")
+        `entPhysical*` value sent as the wrong kind of node is dropped silently. `nodeId` in the body is
+        overwritten with the node from the path.""")
 @Transactional
 public class HardwareInventoryResource extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryResource.class);
@@ -132,9 +130,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             description = """
                     Returns the root hardware entity for the node with its descendants nested under `children`.
                     A node that has never been scanned for ENTITY-MIB data, or whose inventory has been deleted,
-                    has no root entity and returns 404.
-
-                    Reached with no node in the path this fails with HTTP 500.""",
+                    has no root entity and returns 404.""",
             operationId = "getNodeHardwareInventory"
     )
     @ApiResponses(value = {
@@ -236,9 +232,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             description = """
                     Returns a single entity from the node's inventory, with its own subtree nested under
                     `children`. The index is the ENTITY-MIB `entPhysicalIndex`, unique per node, not a database
-                    key.
-
-                    Reached with no node in the path this fails with HTTP 500.""",
+                    key.""",
             operationId = "getNodeHardwareEntity"
     )
     @ApiResponses(value = {
@@ -314,11 +308,8 @@ public class HardwareInventoryResource extends OnmsRestService {
                     `class` given, and are keyed by name, so an existing type keeps its stored OID and class.
                     A new type whose `oid` is not a dotted-numeric string is rejected with 400.
 
-                    The handler tests `isRoot()` on the deserialized entity and that test passes whenever the
-                    parent reference is unset, which a request body cannot set, so the "not a root entity"
-                    rejection is not reachable over ReST.
-
-                    Reached with no node in the path this fails with HTTP 500.""",
+                    The "not a root entity" 400 is unreachable: the check passes whenever the parent reference is
+                    unset, and a request body cannot set it.""",
             operationId = "setNodeHardwareInventory"
     )
     @RequestBody(
@@ -432,9 +423,7 @@ public class HardwareInventoryResource extends OnmsRestService {
                     index is in the path. If the parent already has a child with the same `entPhysicalIndex`, that
                     child and its subtree are removed first, so posting twice replaces rather than duplicates.
 
-                    Attribute types are created on demand exactly as for the root POST.
-
-                    Reached with no node in the path this fails with HTTP 500.""",
+                    Attribute types are created on demand exactly as for the root POST.""",
             operationId = "addNodeHardwareChildEntity"
     )
     @RequestBody(
@@ -519,18 +508,14 @@ public class HardwareInventoryResource extends OnmsRestService {
                     Applies form-encoded fields to a single entity. Keys are routed by their prefix: a key that
                     starts with `entPhysical` is set as a bean property on the entity, and any other key is
                     matched against the names of the entity's existing `vendorAttributes` and sets that
-                    attribute's value. A vendor attribute the entity does not already carry cannot be added here;
-                    post the entity again instead.
+                    attribute's value. A vendor attribute the entity does not already carry cannot be added here.
 
-                    Two consequences of that routing are worth knowing. A vendor attribute whose type name itself
-                    begins with `entPhysical` is unreachable, because the key is taken as a bean property. And
-                    `entPhysicalMfgDate` is a `Date` property with no registered string converter, so sending it
-                    fails with 500.
+                    A vendor attribute whose type name itself begins with `entPhysical` is unreachable, because
+                    the key is taken as a bean property. `entPhysicalMfgDate` is a `Date` property with no
+                    registered string converter, so sending it fails with 500.
 
-                    The handler's modified flag starts out true, so a request whose keys match nothing still
-                    returns 204 and rewrites the entity unchanged. It never returns 304.
-
-                    Reached with no node in the path this fails with HTTP 500.""",
+                    The modified flag starts out true, so a request whose keys match nothing still returns 204 and
+                    rewrites the entity unchanged. It never returns 304.""",
             operationId = "updateNodeHardwareEntity"
     )
     @RequestBody(
@@ -613,13 +598,10 @@ public class HardwareInventoryResource extends OnmsRestService {
             summary = "Delete one hardware entity",
             description = """
                     Deletes the entity with the given index. Deleting the root entity clears the node's whole
-                    inventory, which is the supported way to reset it.
+                    inventory.
 
                     Deleting a non-root entity has been observed to remove the entire tree, root included, rather
-                    than just that entity and its descendants. Re-read the inventory after such a delete instead
-                    of assuming the rest of the tree survived.
-
-                    Reached with no node in the path this fails with HTTP 500.""",
+                    than just that entity and its descendants.""",
             operationId = "deleteNodeHardwareEntity"
     )
     @ApiResponses(value = {

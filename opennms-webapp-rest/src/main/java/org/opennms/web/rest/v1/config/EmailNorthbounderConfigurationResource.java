@@ -201,7 +201,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
             description = """
                     Marshals the request body straight over email-northbounder-configuration.xml, then sends a
                     `reloadDaemonConfig` event for `EmailNBI`. The whole file is replaced, so anything absent
-                    from the body is dropped, including comments. There is no merge and no dry run.
+                    from the body is dropped, including comments.
 
                     The handler declares no `@Consumes`, so the media type is whatever the JAXB and Jackson
                     providers accept for the body type. A body that fails to parse surfaces as a 500 rather
@@ -343,8 +343,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @Operation(
             summary = "List the Email northbounder destination names",
             description = """
-                    Returns only the destination names, not the destinations themselves. Fetch a single
-                    destination to see its filters.
+                    Returns only the destination names, not the destinations themselves.
 
                     `count` and `totalCount` are always equal here: the listing is not paged and `offset` is
                     always 0.""",
@@ -530,8 +529,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
                     ignored rather than rejected.
 
                     `EmailDestination` exposes only `name` and `filters` as writable properties, and a form
-                    value cannot express a filter list, so in practice this operation can only rename a
-                    destination. POST the destination again to change its filters.""",
+                    value cannot express a filter list, so this operation can only rename a destination.""",
             operationId = "updateEmailDestination")
     @RequestBody(required = true, description = "Form-encoded property assignments. `name` is the only property a form value can usefully set.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,

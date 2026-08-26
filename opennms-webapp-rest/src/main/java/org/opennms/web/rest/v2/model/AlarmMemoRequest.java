@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "AlarmMemoRequest",
         description = """
                 Form parameters accepted by the sticky memo and journal (reduction key memo) updates.
-                Each call replaces the whole note; there is no append.""")
+                Each call replaces the whole note.""")
 public class AlarmMemoRequest {
 
     @Schema(description = "Memo text. Required: a request without it is rejected with 400.",

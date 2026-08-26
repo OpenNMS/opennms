@@ -80,12 +80,12 @@ import com.google.common.collect.Lists;
 @Tag(name = "ForeignSourcesConfig", description = """
         Foreign Sources Config API.
 
-        Read-only lookups that back the provisioning UI: the detector and policy plugin classes this
-        installation can load, the parameters each one accepts, the service names a detector may be bound
-        to, the surveillance categories that exist, and the asset field names a requisition may set.
+        Read-only lookups: the detector and policy plugin classes this installation can load, the parameters
+        each one accepts, the service names a detector may be bound to, the surveillance categories that
+        exist, and the asset field names a requisition may set.
 
-        These describe what is *available*, not what any one foreign source is configured with. For the
-        configured detectors and policies of a foreign source, use `/foreignSources/{foreignSource}`.""")
+        These list what is available, not what any one foreign source is configured with. The configured
+        detectors and policies of a foreign source are on `/foreignSources/{foreignSource}`.""")
 public class ForeignSourceConfigRestService extends OnmsRestService implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceConfigRestService.class);
 
@@ -460,7 +460,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
                     de-duplicated.
 
                     An unknown `groupName` is not reported as an error: the foreign source lookup falls back to
-                    the default definition, so the response is still a 200 and simply carries the default
+                    the default definition, so the response is still a 200 and carries the default
                     definition's detector names.""",
             operationId = "getForeignSourceConfigServices")
     @ApiResponse(responseCode = "200", description = "Service names, sorted.",

@@ -175,10 +175,9 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     `ip-address`; only `port` and `version` are overridable on the sink, and the version has to
                     agree with what snmp-config.xml declares for that address.
 
-                    `version` and `varbind[].type` are JAXB enums whose `@XmlEnumValue` spelling differs from the
-                    constant name, and only XML honours the `@XmlEnumValue`. In XML write `v2c` and `Int32`; in
-                    JSON write the constant names `V2c` and `TYPE_SNMP_INT32`. Getting that the wrong way round
-                    produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
+                    `version` and `varbind[].type` are JAXB enums; only XML honours their `@XmlEnumValue`
+                    spelling. XML spells them `v2c` and `Int32`, JSON the constant names `V2c` and
+                    `TYPE_SNMP_INT32`; the wrong spelling for the media type produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
                     (`v1`, `v2c`, `v3`, `v2-inform`, `v3-inform` in XML); the varbind types are
                     `TYPE_SNMP_OCTET_STRING`, `TYPE_SNMP_INT32`, `TYPE_SNMP_NULL`,
                     `TYPE_SNMP_OBJECT_IDENTIFIER`, `TYPE_SNMP_IPADDRESS`, `TYPE_SNMP_TIMETICKS`,
@@ -234,10 +233,9 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     than a 400: the null check that would produce the 400 is unreachable through those
                     providers.
 
-                    `version` and `varbind[].type` are JAXB enums whose `@XmlEnumValue` spelling differs from the
-                    constant name, and only XML honours the `@XmlEnumValue`. In XML write `v2c` and `Int32`; in
-                    JSON write the constant names `V2c` and `TYPE_SNMP_INT32`. Getting that the wrong way round
-                    produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
+                    `version` and `varbind[].type` are JAXB enums; only XML honours their `@XmlEnumValue`
+                    spelling. XML spells them `v2c` and `Int32`, JSON the constant names `V2c` and
+                    `TYPE_SNMP_INT32`; the wrong spelling for the media type produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
                     (`v1`, `v2c`, `v3`, `v2-inform`, `v3-inform` in XML); the varbind types are
                     `TYPE_SNMP_OCTET_STRING`, `TYPE_SNMP_INT32`, `TYPE_SNMP_NULL`,
                     `TYPE_SNMP_OBJECT_IDENTIFIER`, `TYPE_SNMP_IPADDRESS`, `TYPE_SNMP_TIMETICKS`,
@@ -364,8 +362,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @Operation(
             summary = "List the SNMP trap sink names",
             description = """
-                    Returns only the trap sink names, not the sinks themselves. Fetch a single sink to see its
-                    mappings.
+                    Returns only the trap sink names, not the sinks themselves.
 
                     `count` and `totalCount` are always equal here: the listing is not paged and `offset` is
                     always 0.""",
@@ -411,10 +408,9 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     Returns the sink with its inline mapping groups. `import-mappings` lists the paths of
                     mapping groups held in separate files; their contents are not inlined here.
 
-                    `version` and `varbind[].type` are JAXB enums whose `@XmlEnumValue` spelling differs from the
-                    constant name, and only XML honours the `@XmlEnumValue`. In XML write `v2c` and `Int32`; in
-                    JSON write the constant names `V2c` and `TYPE_SNMP_INT32`. Getting that the wrong way round
-                    produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
+                    `version` and `varbind[].type` are JAXB enums; only XML honours their `@XmlEnumValue`
+                    spelling. XML spells them `v2c` and `Int32`, JSON the constant names `V2c` and
+                    `TYPE_SNMP_INT32`; the wrong spelling for the media type produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
                     (`v1`, `v2c`, `v3`, `v2-inform`, `v3-inform` in XML); the varbind types are
                     `TYPE_SNMP_OCTET_STRING`, `TYPE_SNMP_INT32`, `TYPE_SNMP_NULL`,
                     `TYPE_SNMP_OBJECT_IDENTIFIER`, `TYPE_SNMP_IPADDRESS`, `TYPE_SNMP_TIMETICKS`,
@@ -516,8 +512,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     configuration directory, of the files holding the sink's external mapping groups. The
                     mapping group named `X` lives in `snmptrap-northbounder-mappings.d/X.xml`.
 
-                    Unlike the other list endpoints here, `count` and `totalCount` come back as null when the
-                    list is empty.""",
+                    `count` and `totalCount` come back as null when the list is empty.""",
             operationId = "getSnmpTrapSinkImportMappings")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The imported mapping-group file paths.",
@@ -568,10 +563,9 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     replaced outright, which is the only way to change its inline mapping groups: the PUT
                     reaches the scalar fields only.
 
-                    `version` and `varbind[].type` are JAXB enums whose `@XmlEnumValue` spelling differs from the
-                    constant name, and only XML honours the `@XmlEnumValue`. In XML write `v2c` and `Int32`; in
-                    JSON write the constant names `V2c` and `TYPE_SNMP_INT32`. Getting that the wrong way round
-                    produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
+                    `version` and `varbind[].type` are JAXB enums; only XML honours their `@XmlEnumValue`
+                    spelling. XML spells them `v2c` and `Int32`, JSON the constant names `V2c` and
+                    `TYPE_SNMP_INT32`; the wrong spelling for the media type produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
                     (`v1`, `v2c`, `v3`, `v2-inform`, `v3-inform` in XML); the varbind types are
                     `TYPE_SNMP_OCTET_STRING`, `TYPE_SNMP_INT32`, `TYPE_SNMP_NULL`,
                     `TYPE_SNMP_OBJECT_IDENTIFIER`, `TYPE_SNMP_IPADDRESS`, `TYPE_SNMP_TIMETICKS`,
@@ -683,10 +677,9 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     `reloadDaemonConfig` event for `SnmpTrapNBI`. The file name is derived from the group's
                     `name`, not from anything in the URL, and an existing file of that name is overwritten.
 
-                    `version` and `varbind[].type` are JAXB enums whose `@XmlEnumValue` spelling differs from the
-                    constant name, and only XML honours the `@XmlEnumValue`. In XML write `v2c` and `Int32`; in
-                    JSON write the constant names `V2c` and `TYPE_SNMP_INT32`. Getting that the wrong way round
-                    produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
+                    `version` and `varbind[].type` are JAXB enums; only XML honours their `@XmlEnumValue`
+                    spelling. XML spells them `v2c` and `Int32`, JSON the constant names `V2c` and
+                    `TYPE_SNMP_INT32`; the wrong spelling for the media type produces a 500. The versions are `V1`, `V2c`, `V3`, `V2_INFORM` and `V3_INFORM`
                     (`v1`, `v2c`, `v3`, `v2-inform`, `v3-inform` in XML); the varbind types are
                     `TYPE_SNMP_OCTET_STRING`, `TYPE_SNMP_INT32`, `TYPE_SNMP_NULL`,
                     `TYPE_SNMP_OBJECT_IDENTIFIER`, `TYPE_SNMP_IPADDRESS`, `TYPE_SNMP_TIMETICKS`,
@@ -784,9 +777,8 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
 
                     The writable properties are `name`, `ipAddress`, `port`, `v1AgentIpAddress`, `version`,
                     `community`, `mappings` and `importMappings`. `firstOccurrenceOnly` has a getter but no
-                    setter, so a key of that name is accepted and silently ignored. `version` takes the
-                    constant name, for example `V2c`. The collection properties cannot be expressed as a form
-                    value, so POST the sink again to change its mapping groups.""",
+                    setter, so a key of that name is accepted and ignored. `version` takes the constant name,
+                    for example `V2c`. The collection properties cannot be expressed as a form value.""",
             operationId = "updateSnmpTrapSink")
     @RequestBody(required = true, description = "Form-encoded property assignments, keyed by bean property name.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
@@ -845,8 +837,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     `reloadDaemonConfig` event for `SnmpTrapNBI`.
 
                     The writable properties are `name` and `rule`, plus `mappings`, which a form value cannot
-                    express. Renaming through `name` writes a new file rather than moving the old one, so POST
-                    the mapping group again if you need to rename it.""",
+                    express. Renaming through `name` writes a new file rather than moving the old one.""",
             operationId = "updateSnmpTrapSinkImportMapping")
     @RequestBody(required = true, description = "Form-encoded property assignments, keyed by bean property name.",
             content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,

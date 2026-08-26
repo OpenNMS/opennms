@@ -36,7 +36,7 @@ public class EventConfSourceDto {
     @Schema(description = "Database identifier of the source.", example = "17")
     private Long id;
 
-    @Schema(description = "Source name, normally the event file basename without the '.xml' extension.",
+    @Schema(description = "Source name.",
             example = "Cisco.syslog.events")
     private String name;
 

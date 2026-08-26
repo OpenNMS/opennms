@@ -123,8 +123,7 @@ public class ProvisiondStatusRestService {
 
         Real job ids are metric names derived from the requisition URL and so contain `/` characters.
         A JAX-RS path template does not match across `/`, and percent-encoding the separator as `%2F`
-        does not reach the handler either, so such an id cannot be addressed here. Read the job out of
-        the map returned by `GET /provisiond/status` instead.""",
+        does not reach the handler either, so such an id cannot be addressed here.""",
             operationId = "ProvisiondStatusRestServiceGETStatusOfJobByJobId")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The job monitor. Same shape as one value of the all-jobs map.",

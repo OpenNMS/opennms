@@ -33,9 +33,9 @@ import org.opennms.web.rest.support.MaskedCredential;
         when `securityLevel` is present it has to agree with which of those pairs are set.
         Passphrases must be at least 8 bytes and must not begin with `*`.""")
 public class Snmpv3UserDto {
-    @Schema(description = "Stable identifier for this user, assigned on first persist. Carry it back on "
-            + "an update so a masked passphrase can be resolved against the stored value. Leave it out "
-            + "for a new user.",
+    @Schema(description = "Stable identifier for this user, assigned on first persist. When it is "
+            + "present on an update, a masked passphrase resolves against the stored value. A new user "
+            + "has none.",
             example = "b0019905-75f8-4856-8c0b-84381e9485a3")
     private String id;
 
@@ -55,8 +55,8 @@ public class Snmpv3UserDto {
             allowableValues = {"MD5", "SHA", "SHA-224", "SHA-256", "SHA-512"})
     private String authProtocol;
 
-    @Schema(description = "Authentication passphrase, at least 8 bytes. Read back as `******`; send that "
-            + "masked value unchanged to keep the stored passphrase.",
+    @Schema(description = "Authentication passphrase, at least 8 bytes. Read back as `******`; that "
+            + "masked value sent back unchanged keeps the stored passphrase.",
             example = "******")
     @MaskedCredential
     private String authPassphrase;
@@ -65,8 +65,8 @@ public class Snmpv3UserDto {
             allowableValues = {"DES", "AES", "AES192", "AES256"})
     private String privacyProtocol;
 
-    @Schema(description = "Privacy passphrase, at least 8 bytes. Read back as `******`; send that masked "
-            + "value unchanged to keep the stored passphrase.",
+    @Schema(description = "Privacy passphrase, at least 8 bytes. Read back as `******`; that masked "
+            + "value sent back unchanged keeps the stored passphrase.",
             example = "******")
     @MaskedCredential
     private String privacyPassphrase;

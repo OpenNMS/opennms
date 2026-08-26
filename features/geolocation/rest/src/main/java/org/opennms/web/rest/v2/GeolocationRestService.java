@@ -65,14 +65,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Tag(name = "Geolocation", description = """
         Geolocation API.
 
-        Backs the geographical map. `POST /geolocation` returns the nodes that have usable coordinates,
-        optionally with a status derived from their alarms or outages, and `GET /geolocation/config`
-        returns the tile-server settings the map front end needs.
+        `POST /geolocation` returns the nodes that have usable coordinates, optionally with a status
+        derived from their alarms or outages. `GET /geolocation/config` returns the tile-server settings
+        the geographical map uses.
 
         Both operations are served by whatever provider is registered in the OSGi service registry, and
         both answer 503 while none is. The class declares XML and Atom alongside JSON, but no XML writer
-        is registered for either response type, so a request that asks for XML fails with 500. Send and
-        accept JSON.""")
+        is registered for either response type, so a request that asks for XML fails with 500.""")
 public class GeolocationRestService {
 
     /**
@@ -94,7 +93,7 @@ public class GeolocationRestService {
                     Validation accepts `None`, `Alarms` and `Outages`, but the value is then converted
                     against a narrower set of `Alarms` and `Outages`, so `None` passes validation and
                     fails afterwards with 500. Omitting `strategy` skips the calculation and leaves
-                    `severityInfo` null, which is the supported way to ask for no status.
+                    `severityInfo` null.
 
                     `severityFilter` keeps only the nodes whose calculated severity is at least the one
                     named. Validation accepts every `OnmsSeverity` name, but conversion accepts only
@@ -163,7 +162,7 @@ public class GeolocationRestService {
             @ApiResponse(responseCode = "204", description = "No node matched. No body is returned."),
             @ApiResponse(responseCode = "400", description = """
                     `strategy` or `severityFilter` is not one of the accepted names. The body is the \
-                    message as a bare string, even though the response is labelled JSON.""",
+                    message as a bare string under a JSON content type.""",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
                             examples = {
@@ -212,7 +211,7 @@ public class GeolocationRestService {
             description = """
                     Return the tile-server settings the geographical map uses: the tile URL template, a
                     display name for the server, and the Leaflet tile-layer options, which carry the
-                    attribution the tile provider requires.
+                    tile provider's attribution string.
 
                     The values come from `opennms.properties`; the response shows the built-in defaults
                     when none are set.

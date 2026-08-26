@@ -69,16 +69,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("monitoringLocationsRestService")
 @Path("monitoringLocations")
 @Tag(name = "MonitoringLocations", description = """
-        Monitoring Locations API. A location is what ties a Minion, a node and a polling package together;
-        every installation has a `Default` location.
+        A location ties a Minion, a node and a polling package together; every installation has a `Default`
+        location.
 
-        The primary key is the location name, chosen by the caller. That has two consequences worth knowing
-        before writing: `POST` with a name that already exists overwrites the existing row and still answers
-        201, and a body with no `location-name` fails with 500 rather than 400.
+        The primary key is the location name, chosen by the caller: `POST` with a name that already exists
+        overwrites the existing row and still answers 201, and a body with no `location-name` fails with 500
+        rather than 400.
 
-        JSON and XML bodies are not interchangeable here. In JSON, `tags` is a plain array of strings. In
-        XML, a `<tags>` element cannot be unmarshalled at all and fails with 500, so XML bodies have to omit
-        it; the rest of the fields are attributes, spelled `location-name` and `monitoring-area`.
+        In JSON, `tags` is a plain array of strings. In XML, a `<tags>` element cannot be unmarshalled at all
+        and fails with 500, so XML bodies have to omit it; the rest of the fields are attributes, spelled
+        `location-name` and `monitoring-area`.
 
         `PUT` is separate again: it takes form-encoded parameters, not a JSON or XML body, and the parameter
         names are the Java bean property names (`monitoringArea`, `priority`, `geolocation`, `latitude`,
@@ -102,8 +102,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			summary = "Get the default monitoring location",
 			description = """
         Return the first monitoring location in the table's natural order, which on an untouched installation
-        is `Default`. The choice is not tied to the name `Default`, so on a system whose locations have been
-        edited this can return something else.""",
+        is `Default`. The choice is not tied to the name `Default`.""",
 			operationId = "getDefaultMonitoringLocation"
 	)
 	@ApiResponses(value = {
@@ -249,11 +248,11 @@ public class MonitoringLocationsRestService extends OnmsRestService {
         Create a monitoring location. `location-name` is the primary key and has to be supplied in the body;
         a body without it fails with 500 on the missing identifier rather than with 400.
 
-        This is a save, not an insert. Posting a name that already exists overwrites that location and still
-        answers 201, so it is worth checking with `GET` first if that is not the intent.
+        This is a save, not an insert: posting a name that already exists overwrites that location and still
+        answers 201.
 
-        The XML form differs from the JSON form: XML fields are attributes and a `<tags>` element cannot be
-        unmarshalled, so it has to be omitted. Use JSON when tags are needed.
+        In the XML form the fields are attributes and a `<tags>` element cannot be unmarshalled, so it has to
+        be omitted. `tags` can only be set from a JSON body.
 
         `Location` on the 201 points at `GET /monitoringLocations/{monitoringLocation}` for the new
         location.""",
@@ -321,8 +320,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
         Parameters that do not match a writable property are ignored. If nothing matched, or the body was
         empty, the answer is 304 and nothing is written. The location name itself cannot be changed this way.
 
-        A name that does not exist fails with 500, not 404: the handler does not check the lookup result
-        before writing to it.""",
+        A name that does not exist fails with 500, not 404.""",
 			operationId = "updateMonitoringLocation"
 	)
 	@RequestBody(
@@ -380,8 +378,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@Operation(
 			summary = "Delete a monitoring location",
 			description = """
-        Delete a monitoring location by name. Nodes and Minions still referencing it are not checked for, so
-        deleting a location that is in use leaves those references dangling.
+        Delete a monitoring location by name. Nodes and Minions still referencing it are not checked for.
 
         A name that does not exist fails with 500, not 404.""",
 			operationId = "deleteMonitoringLocation"

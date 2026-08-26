@@ -55,17 +55,14 @@ import org.springframework.stereotype.Component;
 
         Every write re-marshals the whole target file from the in-memory model and then sends a
         `reloadDaemonConfig` event, so comments and formatting in the file are lost even when the change is
-        confined to one named entry. There is no dry run and no versioning; take a copy of the file first if
-        you need one.
+        confined to one named entry.
 
         The `POST` on `/config/email-nbi`, `/config/syslog-nbi` and `/config/snmptrap-nbi` replaces the
-        entire file rather than merging, so anything absent from the body is dropped. Prefer the
-        per-destination and per-sink operations for incremental changes.
+        entire file rather than merging, so anything absent from the body is dropped.
 
         The `PUT` operations that take `application/x-www-form-urlencoded` address bean property names, not
-        the XML element or attribute names the GET returns, and quietly ignore keys that do not resolve to a
-        writable property. Nested blocks and lists are not reachable that way; re-POST the whole entry
-        instead.""")
+        the XML element or attribute names the GET returns, and ignore keys that do not resolve to a writable
+        property. Nested blocks and lists are not reachable that way.""")
 public class ConfigRestService extends OnmsRestService {
 
     @Path("datacollection")

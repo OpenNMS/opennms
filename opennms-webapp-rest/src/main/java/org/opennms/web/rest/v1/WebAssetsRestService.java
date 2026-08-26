@@ -66,11 +66,7 @@ import org.springframework.util.FileCopyUtils;
         web UI loads, addressed by the logical asset name the build assigned them.
 
         An asset name usually maps to more than one file, one per type: `opennms` covers both `opennms.css`
-        and `opennms.min.js`. The listing operations report that mapping; the third operation serves the file
-        itself.
-
-        These endpoints exist for the UI's own use, and the asset names are a build artefact rather than a
-        stable interface.""")
+        and `opennms.min.js`.""")
 public class WebAssetsRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(WebAssetsRestService.class);
 
@@ -83,8 +79,7 @@ public class WebAssetsRestService extends OnmsRestService {
     @Operation(
             summary = "List asset names",
             description = """
-        List every known asset name. The list is unsorted and, on the builds checked, includes one empty
-        string, so callers should not assume every entry addresses a real asset.""",
+        List every known asset name. The list is unsorted and includes one empty string.""",
             operationId = "listWebAssets"
     )
     @ApiResponses(value = {
@@ -159,8 +154,8 @@ public class WebAssetsRestService extends OnmsRestService {
         name is dropped and, if that shorter name registers a file whose path is the originally requested
         one, that file is served.
 
-        This operation depends on the built asset files being present on the classpath. Where they are not,
-        the request fails with 500 even though the asset is listed.""",
+        When the registered file is not present on the classpath the request fails with 500 even though the
+        asset is listed.""",
             operationId = "getWebAssetFile"
     )
     @ApiResponses(value = {

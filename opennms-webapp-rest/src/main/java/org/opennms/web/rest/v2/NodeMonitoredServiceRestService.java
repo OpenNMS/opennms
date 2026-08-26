@@ -461,7 +461,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @Path("{id}")
     @Operation(
             summary = "Rejected: create a monitored service at a caller-chosen path",
-            description = "Always answered with 404. Post the service to the collection instead; its name travels in the body.",
+            description = "Always answered with 404, whether or not the service exists.",
             operationId = "NodeMonitoredServiceRestServicePOSTServiceSpecific",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria", required = true,
@@ -483,11 +483,9 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             description = """
         Attach a monitored service to the interface and send a `nodeGainedService` event, plus an
         application-changed event for each application named in the body. `serviceType.name` is
-        required; a service type that does not yet exist is created, so a typo silently adds a new type
-        rather than failing. `status` in the body is not applied: the service is stored with no status,
-        and a daemon reacting to the `nodeGainedService` event sets it shortly afterwards, so an
-        immediate read-back can show `status` and `statusLong` as `null`. The new service's URI is
-        returned in the `Location` header.""",
+        required, and a service type that does not yet exist is created. `status` in the body is not
+        applied: the service is stored with no status, so an immediate read-back can show `status` and
+        `statusLong` as `null`. The new service's URI is returned in the `Location` header.""",
             operationId = "NodeMonitoredServiceRestServicePOSTService",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
@@ -568,10 +566,8 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @Operation(
             summary = "Not implemented: replace a monitored service from a document",
             description = """
-        `AbstractDaoRestServiceWithDTO.doUpdate` is not overridden for monitored services, so this
-        variant cannot succeed. It also binds `{id}` as an integer while the collection addresses
-        services by name, so a name in the path is answered with 404 before the handler runs. Use the
-        form-encoded `PUT` on the same path to change properties.""",
+        Answered with 501. This variant binds `{id}` as an integer while the collection addresses
+        services by name, so a name in the path is answered with 404 before the handler runs.""",
             operationId = "NodeMonitoredServiceRestServicePUTServiceDocument",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -605,8 +601,8 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             description = """
         Apply the form parameters as bean properties to one service of the interface. Setting `status`
         to `A` resumes polling and `F` forces the service out of service. A body that leaves the status
-        unchanged is answered with 304, so a 204 is the signal that the status actually moved. A change
-        to `applications` sends an application-changed event.""",
+        unchanged is answered with 304. A change to `applications` sends an application-changed
+        event.""",
             operationId = "NodeMonitoredServiceRestServicePUTServiceProperties",
             parameters = @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
                             description = "Node database id, or `foreignSource:foreignId`.", example = "257"))
@@ -956,8 +952,8 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             summary = "Add or replace a metadata entry of a monitored service",
             description = """
         Set one metadata entry on the service from the request body. An existing entry with the same
-        context and key is overwritten, so this is an upsert rather than an append. No `@Consumes` is
-        declared, so both JSON and XML bodies are accepted; the XML root element is `meta-data`.""",
+        context and key is overwritten. No `@Consumes` is declared, so both JSON and XML bodies are
+        accepted; the XML root element is `meta-data`.""",
             operationId = "NodeMonitoredServiceRestServicePOSTMetaDataByService",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
@@ -1018,8 +1014,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             description = """
         Set one metadata entry on the service with context, key and value all taken from the path. An
         existing entry with the same context and key is overwritten. A value containing `/` has to be
-        percent-encoded, and an empty value cannot be expressed this way; use the `POST` form for
-        those.""",
+        percent-encoded, and an empty value cannot be expressed this way.""",
             operationId = "NodeMonitoredServiceRestServicePUTMetaDataByService",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
