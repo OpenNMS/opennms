@@ -200,6 +200,11 @@ const router = createRouter({
       component: () => import('@/containers/Nodes.vue')
     },
     {
+      path: '/inventory-search',
+      name: 'Search Inventory',
+      component: () => import('@/containers/InventorySearch.vue')
+    },
+    {
       // Constrain :id to a positive integer (1+, no leading zeros). Non-matching
       // paths (e.g. /node/abc, /node/0) fall through to the catch-all redirect.
       path: '/node/:id([1-9]\\d*)',
