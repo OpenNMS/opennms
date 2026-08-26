@@ -122,11 +122,23 @@
                                 </restriction>
                             </simpleType>
                         </attribute>
+                        <attribute name="ordered" type="boolean" use="optional" default="false">
+                            <annotation>
+                                <documentation>Whether messages from one connection are
+                                               guaranteed to reach the consumer in the order they
+                                               arrived. Off by default, matching what syslog over
+                                               UDP offers. Guaranteeing order holds one message
+                                               per connection in flight and waits for the sink to
+                                               confirm it, which costs roughly two orders of
+                                               magnitude of throughput on that connection.
+                                </documentation>
+                            </annotation>
+                        </attribute>
                         <attribute name="dispatch-timeout" use="optional" default="30">
                             <annotation>
-                                <documentation>Seconds to wait for the sink to confirm a message
-                                               before this connection stops waiting for
-                                               confirmation, which costs in-order delivery and
+                                <documentation>Only consulted when ordered is set. Seconds to wait
+                                               for the sink to confirm a message before this
+                                               connection stops waiting for confirmation, which costs in-order delivery and
                                                read backpressure for the rest of its life. Zero
                                                waits indefinitely.
                                 </documentation>

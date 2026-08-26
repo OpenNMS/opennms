@@ -116,10 +116,10 @@ public class SyslogdReceiverNettyTcpIT {
 
     @Test(timeout = 60 * 1000)
     public void preservesMessageOrderWithinAConnection() throws Exception {
-        // A sender that chose TCP is entitled to assume ordering, so a burst arriving in
-        // one read must not be reordered by concurrent dispatch.
+        // Only guaranteed when asked for: the sink reorders pairs on its own, so ordered
+        // holds one message in flight per connection to keep it out of that race.
         final int count = 200;
-        final int port = startReceiver("auto");
+        final int port = startReceiver("auto", true);
 
         final StringBuilder burst = new StringBuilder();
         for (int i = 0; i < count; i++) {
@@ -138,7 +138,7 @@ public class SyslogdReceiverNettyTcpIT {
     @Test(timeout = 60 * 1000)
     public void preservesMessageOrderForOctetCountedBursts() throws Exception {
         final int count = 200;
-        final int port = startReceiver("octet-counting");
+        final int port = startReceiver("octet-counting", true);
 
         final StringBuilder burst = new StringBuilder();
         for (int i = 0; i < count; i++) {
@@ -251,6 +251,10 @@ public class SyslogdReceiverNettyTcpIT {
     private LinkedBlockingQueue<InetSocketAddress> m_sourceSink;
 
     private int startReceiver(final String framing) throws Exception {
+        return startReceiver(framing, false);
+    }
+
+    private int startReceiver(final String framing, final boolean ordered) throws Exception {
         final int port = findFreePort();
 
         final String xml = "<syslogd-configuration>\n"
@@ -258,7 +262,8 @@ public class SyslogdReceiverNettyTcpIT {
                 + "                 batch-size=\"1\"\n"
                 + "                 batch-interval=\"10\"\n"
                 + "                 parser=\"org.opennms.netmgt.syslogd.RadixTreeSyslogParser\">\n"
-                + "    <tcp port=\"" + port + "\" listen-address=\"127.0.0.1\" framing=\"" + framing + "\"/>\n"
+                + "    <tcp port=\"" + port + "\" listen-address=\"127.0.0.1\" framing=\"" + framing + "\""
+                + " ordered=\"" + ordered + "\"/>\n"
                 + "  </configuration>\n"
                 + "</syslogd-configuration>\n";
 

@@ -81,13 +81,40 @@ A connection is not considered idle while a message it sent is still being hande
 Zero disables the timeout.
 | 0
 
+| ordered
+| Whether messages from one connection are guaranteed to become events in the order they arrived.
+Off by default, which is what syslog over UDP has always offered.
+See <<_message_ordering, Message ordering>> before switching it on, because it costs a great deal of throughput.
+| false
+
 | dispatch-timeout
-| Seconds to wait for the sink to confirm a message before this connection stops waiting for confirmation.
+| Only consulted when `ordered` is set.
+Seconds to wait for the sink to confirm a message before this connection stops waiting for confirmation.
 Messages from one connection are handed to the sink one at a time so that they stay in order, and reads are paused while that is outstanding.
 If the sink does not confirm within this window, the connection keeps delivering but loses both the ordering guarantee and read backpressure for the rest of its life, and says so in `syslogd.log`.
 Raising it suits a sink that is merely slow; zero waits indefinitely.
 | 30
 |===
+
+[[_message_ordering]]
+=== Message ordering
+
+TCP guarantees the order of bytes on the wire, and the listener reads and decodes messages in that order.
+It does not follow that two messages become events in that order.
+Messages are handed to the sink, which aggregates them into batches and dispatches those with a pool of threads, appending under a lock that does not preserve arrival order.
+Two messages sent back to back can therefore be inverted, and because syslog carries no sequence number and its timestamps are second-granularity, nothing downstream can detect or repair it.
+
+This is not specific to TCP.
+The UDP listener shares the same sink and has always had the same behavior, on top of whatever reordering the network itself introduces.
+
+Setting `ordered` on the `tcp` element removes the exposure for that listener, by keeping only one message per connection at the sink at a time so that no pair of a connection's messages is ever in the race.
+That costs a great deal: on a test system a single connection carrying the shipped `batch-size` moved roughly 50 messages a second with `ordered` set, against roughly 21,000 without it, because each message waits for the sink to confirm the last one and a batch that is not full waits for `batch-interval`.
+
+Leave it off unless a sender's messages have to be correlated in sequence, and if you do switch it on:
+
+* Give that sender its own connection, since the guarantee is per connection rather than per device.
+* Consider lowering `batch-interval`, which is what the waiting is mostly spent on.
+* Expect the per-connection ceiling to be roughly one message per confirmation, so spread senders across connections rather than funnelling them.
 
 === TCP with TLS
 
