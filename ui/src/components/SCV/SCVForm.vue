@@ -98,7 +98,7 @@
 import { computed, ref } from 'vue'
 
 import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import Add from '@/components/icons/action/Add.vue'
+import Add from '@opennms/onms-ui/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
@@ -174,7 +174,12 @@ const addAttribute = () => scvStore.addAttribute()
 .form-container {
   @include onms-elevation(1);
   background: var(--p-content-background);
-  height: calc(100vh - 149px);
+  // Fit the height the app shell leaves for page content, or the page pushes the
+  // footer past the bottom of the window and clips it: the masthead
+  // (--onms-header-height) off the top, the footer band (--onms-footer-height) off
+  // the bottom, then this page's breadcrumb row (51px) and .scv-container's 2px
+  // padding.
+  height: calc(100vh - var(--onms-header-height, 3.75rem) - var(--onms-footer-height, 41px) - 51px - 4px);
   display: flex;
   flex-direction: column;
   padding: 0px 15px 15px 15px;

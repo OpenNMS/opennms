@@ -65,7 +65,7 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { Minion } from '@/types/minionAdmin'
 import { MinionEdit } from '@/services/minionAdminService'

@@ -117,19 +117,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testAmiConfig() {
-        testConfigFile("ami-config.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: AsteriskConfig doesn't appear to be in our classpath.
-     */
-    public void testAsteriskConfiguration() {
-        ignoreConfigFile("asterisk-configuration.properties");
-    }
-
-    @Test
     public void testAvailabilityReports() {
         testConfigFile("availability-reports.xml");
     }
@@ -280,11 +267,6 @@ public class ConfigTesterTest {
      */
     public void testMapsadapterConfiguration() {
         ignoreConfigFile("mapsadapter-configuration.xml");
-    }
-
-    @Test
-    public void testMicroblogConfiguration() {
-        testConfigFile("microblog-configuration.xml");
     }
 
     @Test

@@ -1,0 +1,151 @@
+
+= High Availability
+ifeval::["{page-component-title}" == "Meridian"]
+:description: Configure an active/passive {page-component-title} pair coordinated through the shared PostgreSQL database.
+endif::[]
+ifeval::["{page-component-title}" != "Meridian"]
+:description: High availability is not included in {page-component-title}.
+endif::[]
+
+ifeval::["{page-component-title}" != "Meridian"]
+This feature is not included in {page-component-title}.
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+Two {page-component-title} nodes form an active/passive pair coordinated through their shared PostgreSQL database: one node runs all services (ACTIVE), the other waits fully installed but with services stopped (STANDBY) and promotes itself if the active node fails.
+All liveness decisions use the database clock; node clocks never participate.
+
+[caption=]
+.HA pair (coordinator mode)
+[source]
+----
+     Node A [ACTIVE]                      Node B [STANDBY]
+  runs all services                blocked at the startup gate
+  writes heartbeat ──────┐         monitors partner heartbeat ──┐
+  serves /rest/ha/*      ▼                                      │
+                 shared PostgreSQL  ◄───────────────────────────┘
+                  ha_instance_status
+         ▲
+         └── /rest/ha/sync/* ────► standby pulls etc/ from active
+----
+
+== Requirements
+
+* Two identically installed nodes (same version, same install path) sharing one PostgreSQL database.
+* Network access between the nodes' web ports (config sync, REST status) and from both nodes to PostgreSQL.
+* The HA feature artifacts present in the distribution (`lib/` and `system/`).
+
+== Install the second node
+
+Install the second node exactly as you installed the first (see xref:deployment:core/install.adoc[]), with two differences:
+
+* Point its `$OPENNMS_HOME/etc/opennms-datasources.xml` at the *same* database as the first node: the pair coordinates through that shared database, and neither node holds HA state locally.
+* Run `$OPENNMS_HOME/bin/install -dis` before the node joins the pair — ideally with the first node stopped, or during a maintenance window, since it touches the shared database.
+The schema is already initialized, so the run changes nothing there, but it creates the `etc/configured` marker; without it `bin/opennms start` refuses to start.
+
+Do not hand-copy `$OPENNMS_HOME/etc` from the first node: config sync populates it once HA is enabled, and the per-node files (`ha-configuration.xml`, plus anything in `<sync-excludes>`) must stay local.
+
+== Enable
+
+On each node:
+
+. Activate the HA shell and REST features once:
++
+[source, console]
+----
+echo "opennms-ha-rest" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/ha.boot
+echo "opennms-ha-shell" | sudo tee -a ${OPENNMS_HOME}/etc/featuresBoot.d/ha.boot
+----
+
+. Edit `$OPENNMS_HOME/etc/ha-configuration.xml`: set `enabled=true`, a unique `instance-id`, the `role` (one PRIMARY, one SECONDARY), the partner's `instance-id` and REST URL.
+Use HTTPS for `partner-rest-url` in production; sync transfers credential stores.
+
+. Create the config-sync service account on the active node: add a user (see xref:deep-dive/user-management/user-config.adoc[]) and assign it the `ROLE_ADMIN` xref:deep-dive/user-management/security-roles.adoc[security role].
+The standby authenticates to the active node with this account to pull configuration; any user name works.
+Creating it on one node is enough, because `users.xml` is itself synced.
+
+. Store that password in each node's vault so it never appears in a configuration file:
++
+[source, console]
+----
+$OPENNMS_HOME/bin/scvcli set hasync hasync <password>
+----
++
+Then set `<sync-username>hasync</sync-username>` and `<sync-password>${scv:hasync:password}</sync-password>` in `ha-configuration.xml` on both nodes.
+
+. Using `systemctl edit`, uncomment the lines for `Restart=` and `RestartSec=` in the shipped `opennms.service` systemd unit.
+
+. Restart both nodes.
+The PRIMARY claims ACTIVE; the SECONDARY blocks before starting services and monitors the primary's heartbeat.
+
+== States
+
+[options="header"]
+[cols="1,3"]
+|===
+| State     | Meaning
+| ACTIVE    | Runs all services; writes its heartbeat every `heartbeat-interval-seconds`.
+| STANDBY   | A SECONDARY waiting to take over: alive and heartbeating, services blocked. Promotes when the PRIMARY's state becomes non-ACTIVE or its heartbeat exceeds `failover-threshold-seconds` (verified twice, one interval apart). Also the state a stepped-down node publishes as it stops.
+| DEGRADED  | A PRIMARY that started while the SECONDARY was serving: alive and heartbeating, services blocked, and it reclaims ACTIVE automatically as soon as the SECONDARY stops being ACTIVE. Both states mean "not serving"; they differ in which node is waiting and what it is waiting for.
+| FAILED    | The node stopped while holding an active role, without a handover. Published only after its services finished stopping.
+|===
+
+A node that cannot load its HA configuration, prove its partner's state, or persist its own refuses to start services rather than run unsupervised.
+
+== Operate
+
+[options="header"]
+[cols="2,3"]
+|===
+| Action | How
+| Status | `opennms:ha-status` (Karaf shell) or `GET /rest/ha/status`
+| Failover (step the active down) | `opennms:ha-failover --force` or `POST /rest/ha/failover`, *on the active node*. Its services stop, STANDBY is published when the stop completes, and the partner promotes within one heartbeat interval. With a restart policy set the stepped-down node returns on its own and rejoins as DEGRADED, awaiting failback; otherwise start it manually.
+To take a node out of service for maintenance, use `systemctl stop` instead — a restart policy would bring a failed-over node straight back.
+| Failback | Start the repaired primary (it parks DEGRADED), let one sync cycle complete, then run failover on the serving secondary. The primary reclaims ACTIVE automatically.
+| Planned restart without failover | Stop the standby first, restart the active, start the standby again.
+| Change settings at runtime | Edit the file (re-read every 60 seconds), `PUT /rest/ha/config`, or `opennms:ha-config`. `enabled`, `instance-id`, `role`, `mode`, and `partner-rest-url` require a restart.
+|===
+
+Failure detection: a hard failure (power loss, `kill -9`) leaves the row ACTIVE with an aging heartbeat; the standby promotes after `failover-threshold-seconds` plus one verification interval.
+A graceful stop publishes its terminal state after the service drain, and the partner promotes on it immediately.
+If both nodes ever consider themselves ACTIVE (split brain), the node that took the role earlier halts itself; arbitration only counts a partner whose heartbeat is live.
+
+== Timing and tuning
+
+Defaults are a heartbeat every 10 seconds, a failover threshold of 60 seconds, and a config sync every 60 seconds.
+The minimum values are a 5-second heartbeat interval, a 20-second failover threshold, and a 5-second sync interval; the threshold must also be at least twice the heartbeat interval.
+Values below a minimum are raised rather than rejected, and the change is logged: a 60-second heartbeat forces the threshold to at least 120 seconds, whatever you configured.
+
+Approximate handover times with the default settings:
+
+[options="header"]
+[cols="2,3"]
+|===
+| Event | The standby begins starting services after
+| Operator failover, or a graceful stop of the active node | the active node's service drain completes, plus up to one heartbeat interval
+| Hard failure (power loss, `kill -9`, frozen host) | the failover threshold plus one verification interval — about 70 seconds
+|===
+
+The promoted node then needs its normal service startup time before it is fully serving.
+Both nodes need a database round-trip well inside the heartbeat interval; node clock skew is irrelevant, since every timing decision uses the database clock.
+
+== Configuration sync
+
+While non-ACTIVE, a node replicates `etc/` from the active node every `sync-interval-seconds`: binary-safe (keystores, `users.xml`, `scv.jce`), hash-compared, applied atomically, with deletions propagated.
+`ha-configuration.xml` and `examples/` are never synced.
+
+On identically installed nodes leave `<sync-excludes>` empty; list only files that genuinely differ per node (for example a host-specific certificate store).
+A file excluded on either node is neither overwritten nor deleted by sync.
+
+== Supervision modes
+
+`<mode>coordinator</mode>` (default) — the node runs the HA state machine described above itself.
+
+`<mode>heartbeat-only</mode>` — an external supervisor (HA agent, cluster manager) owns all decisions and the node's only HA duty is publishing its heartbeat; startup is never gated and config sync is not run.
+Use this when a third-party tool manages failover.
+
+== Security notes
+
+The `/rest/ha/config`, `/rest/ha/failover`, and `/rest/ha/sync/*` endpoints require ROLE_ADMIN; the sync endpoints serve raw credential stores.
+Because sync replicates keystores and `users.xml`, the two nodes form a single secret domain: protect `etc/` and the sync account credential accordingly, and prefer HTTPS between the nodes.
+endif::[]

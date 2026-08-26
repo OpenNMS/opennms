@@ -33,7 +33,7 @@
         <OnmsIconButton
           class="delete-icon"
           aria-label="Delete"
-          v-tooltip="'Delete'"
+          tooltip="Delete"
           :icon="Delete"
           @click="() => deleteAdvancedOption(index)"
         />
@@ -54,7 +54,7 @@
 >
 import { PropType, computed, reactive, ref } from 'vue'
 import { OnmsAutoComplete, OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
-import Delete from '@/components/icons/action/Delete.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { orderBy } from 'lodash'

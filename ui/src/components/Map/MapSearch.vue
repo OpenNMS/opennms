@@ -1,7 +1,11 @@
 <template>
   <div class="map-search">
-    <i class="pi pi-search map-search__icon" aria-hidden="true" />
+    <OnmsIcon
+      :icon="IconSearch"
+      class="map-search__icon"
+    />
     <OnmsAutoComplete
+      ref="autoCompleteRef"
       v-model="searchStr"
       multiple
       :suggestions="results"
@@ -11,11 +15,25 @@
       placeholder="Search"
       @complete="resetLabelsAndSearch"
       @update:modelValue="selectItem"
+      @input="onQueryInput"
     >
       <template #empty>
         <div class="autocomplete-empty">{{ labels.noResults }}</div>
       </template>
     </OnmsAutoComplete>
+    <!-- The slot is always rendered so the panel does not resize on the first
+         keystroke; the button only exists when there is something to clear. -->
+    <span class="map-search__clear-slot">
+      <button
+        v-if="hasContent"
+        type="button"
+        class="map-search__clear"
+        aria-label="Clear search"
+        @click="clearSearch"
+      >
+        <OnmsIcon :icon="IconCancel" />
+      </button>
+    </span>
   </div>
 </template>
 
@@ -26,7 +44,9 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 
 import { debounce } from 'lodash'
-import { OnmsAutoComplete } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsIcon } from '@opennms/onms-ui'
+import IconCancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
+import IconSearch from '@opennms/onms-ui/icons/action/Search.vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useSearchStore } from '@/stores/searchStore'
 
@@ -34,6 +54,7 @@ const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
 const mapStore = useMapStore()
 const searchStore = useSearchStore()
+const autoCompleteRef = ref<InstanceType<typeof OnmsAutoComplete> | null>(null)
 const searchStr = ref()
 const loading = ref(false)
 const outsideSearch = ref(false)
@@ -72,6 +93,50 @@ const search = debounce(async (value: string) => {
   labels.value = { noResults: 'No results found' }
   loading.value = false
 }, 1000)
+
+// The AutoComplete's inner input is uncontrolled in `multiple` mode, so text
+// typed but not yet turned into a chip exists only in the DOM. Native events
+// fall through to the seam component's root element and `input` bubbles there,
+// so the query can be tracked without reaching into the DOM.
+const typedText = ref('')
+
+const onQueryInput = (event: Event) => {
+  if (event.target instanceof HTMLInputElement) {
+    typedText.value = event.target.value
+  }
+}
+
+const selectedCount = computed(() => Array.isArray(searchStr.value) ? searchStr.value.length : 0)
+
+// Something to clear: a selected chip, or text typed but not yet selected.
+const hasContent = computed(() => typedText.value !== '' || selectedCount.value > 0)
+
+watch(selectedCount, (count, previous) => {
+  // Taking a suggestion consumes the typed query: PrimeVue empties its inner
+  // input directly, without firing `input`. Removing a chip leaves it alone.
+  if (count > previous) {
+    typedText.value = ''
+  }
+})
+
+/**
+ * Resets the field and everything a search left behind: the selected chips, the
+ * map's node filter, and the text typed but not yet selected (which lives in the
+ * DOM, not the model — see OnmsAutoComplete.clearInput).
+ */
+const clearSearch = () => {
+  search.cancel()
+  autoCompleteRef.value?.clearInput()
+  typedText.value = ''
+  searchStr.value = []
+  labels.value = defaultLabels
+  outsideSearch.value = false
+  mapStore.setSearchedNodeLabels([])
+  // Also clear the term an outside component (MapNodesGrid) may have set:
+  // leaving it in place would stop a repeat click on that same node from
+  // re-running the search, since the watchEffect below only reacts to changes.
+  mapStore.setNodeSearchTerm('')
+}
 
 const results = computed(() => {
   if (searchStore.searchResults.length > 0 && searchStore.searchResults[0]) {
@@ -133,10 +198,44 @@ watch(results, (newResults) => {
   background-color: rgba(211, 211, 211, 0.8);
   border-radius: 4px;
 }
-.map-search__icon {
+.map-search__icon,
+.map-search__clear-slot {
   flex: 0 0 auto;
   color: var(--p-text-color);
   font-size: 1.1rem;
+}
+// Holds the button's footprint open while it is absent, so showing and hiding
+// it does not resize the panel.
+.map-search__clear-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+}
+// A real <button>, so Enter/Space activation and focus come from the platform
+// rather than from hand-rolled key handling on a non-interactive element.
+.map-search__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--p-primary-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 .map-search__input {
   width: 290px !important;

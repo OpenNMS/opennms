@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import MoreVert from '@/components/icons/navigation/MoreVert.vue'
+import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
 import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { Node } from '@/types'

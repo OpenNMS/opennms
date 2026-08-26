@@ -255,6 +255,7 @@ export interface SnmpInterface {
   lastEgressFlow: any
   lastIngressFlow: any
   lastSnmpPoll: number
+  nodeId: number
   physAddr: any
   poll: boolean
 }
@@ -422,10 +423,24 @@ export interface AppInfo {
   version: string
 }
 
+/**
+ * A window anchored to "now" rather than to fixed instants — the thing a user
+ * actually picks when they choose "Last two days". Carried alongside the resolved
+ * timestamps so the window can be recomputed later: a bookmarked link, or a
+ * Refresh minutes after the selection, both need the LATEST two days, not the two
+ * days that were current when the choice was made.
+ */
+export interface RelativeTimeRange {
+  unit: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years'
+  amount: number
+}
+
 export interface StartEndTime {
   startTime: string | number
   endTime: string | number
   format: string
+  /** Present when the window came from a relative range and can be re-resolved. */
+  range?: RelativeTimeRange
 }
 
 export interface ResourceDefinitionsApiResponse extends ApiResponse {
@@ -481,6 +496,10 @@ export interface GraphMetricsPayload {
   step: number
   source: Metric[]
   expression?: { label: string; transient: boolean; value: string }[]
+  /** Cap on returned rows; the server downsamples further if the step would exceed it. */
+  maxrows?: number
+  /** When true a missing/unknown source yields NaNs instead of failing the whole query. */
+  relaxed?: boolean
 }
 
 export interface GraphDefinition {
@@ -617,7 +636,7 @@ export interface AssetFilter {
   value: string
 }
 
-/** All components of a node structure query */
+/** All components of a node list query */
 export interface NodeQueryFilter {
   searchTerm: string
   categoryMode: SetOperator
@@ -631,6 +650,7 @@ export interface NodeQueryFilter {
   topology?: string
   nodesWithDownAggregateStatus?: boolean
   nodesWithAssets?: boolean
+  nodesWithOutages?: boolean
   assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }

@@ -123,7 +123,7 @@ import { ref, watch } from 'vue'
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
-import Refresh from '@/components/icons/navigation/Refresh.vue'
+import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import MinionEditorDialog from '@/components/ManageMinions/MinionEditorDialog.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
