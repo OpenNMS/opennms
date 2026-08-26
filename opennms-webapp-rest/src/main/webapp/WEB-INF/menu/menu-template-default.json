@@ -321,9 +321,9 @@
         {
           "id": "manageMinions",
           "name": "Manage Minions",
-          "url": "minion/index.jsp",
+          "url": "ui/index.html#/admin/minions",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "manageApplications",
