@@ -48,8 +48,6 @@ import org.opennms.features.deviceconfig.tftp.TftpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 import io.vavr.control.Either;
 
 /**
@@ -74,7 +72,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     public RetrieverImpl(SshScriptingService sshScriptingService, TftpServer tftpServer) {
         this.sshScriptingService = sshScriptingService;
         this.tftpServer = tftpServer;
-        this.executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("device-config-retriever-%d").build());
+        this.executor = Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("device-config-retriever-", 0).factory());
     }
 
     @Override

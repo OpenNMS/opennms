@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PreDestroy;
 
@@ -40,15 +39,11 @@ import org.opennms.netmgt.provision.support.AgentBasedSyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.stereotype.Component;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 @Component
 public class SnmpDetectorFactory extends GenericSnmpDetectorFactory<SnmpDetector> {
 
-    private final ThreadFactory snmpDetectorThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("snmp-detector-%d")
-            .build();
-    private final ExecutorService snmpDetectorExecutor = Executors.newCachedThreadPool(snmpDetectorThreadFactory);
+    private final ExecutorService snmpDetectorExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("snmp-detector-", 0).factory());
 
     private SecureCredentialsVault m_scv;
 

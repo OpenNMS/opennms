@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -114,12 +113,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 public class Snmp4JStrategy implements SnmpStrategy {
     private static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JStrategy.class);
 
-    private static final ExecutorService REAPER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "SNMP4J-Session-Reaper");
-        }
-    });
+    private static final ExecutorService REAPER_EXECUTOR = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("SNMP4J-Session-Reaper-", 0).factory());
 
     private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<>();
 

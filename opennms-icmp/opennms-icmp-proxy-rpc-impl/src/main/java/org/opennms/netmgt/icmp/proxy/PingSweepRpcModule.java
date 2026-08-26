@@ -30,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -49,18 +48,14 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.RateLimiter;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 @Component
 public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO, PingSweepResponseDTO> {
 
     public static final String RPC_MODULE_ID = "PING-SWEEP";
 
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("ping-sweep-%d")
-            .build();
-
-    private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
+    private final ExecutorService executor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("ping-sweep-", 0).factory());
 
     @Autowired
     private PingerFactory pingerFactory;
