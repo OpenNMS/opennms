@@ -80,6 +80,13 @@ A sender that holds one connection open avoids this entirely.
 A connection is not considered idle while a message it sent is still being handed to the sink, so a slow consumer should not cause connections to be dropped.
 Zero disables the timeout.
 | 0
+
+| dispatch-timeout
+| Seconds to wait for the sink to confirm a message before this connection stops waiting for confirmation.
+Messages from one connection are handed to the sink one at a time so that they stay in order, and reads are paused while that is outstanding.
+If the sink does not confirm within this window, the connection keeps delivering but loses both the ordering guarantee and read backpressure for the rest of its life, and says so in `syslogd.log`.
+Raising it suits a sink that is merely slow; zero waits indefinitely.
+| 30
 |===
 
 === TCP with TLS

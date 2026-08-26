@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.TimeoutException;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
@@ -73,7 +74,7 @@ public class SyslogTcpListener {
 
     private static final int SHUTDOWN_TIMEOUT_SECONDS = 15;
 
-    private static final long DEFAULT_DISPATCH_TIMEOUT_MS = 30_000;
+    private static final long REFUSAL_WARNING_INTERVAL_NS = TimeUnit.MINUTES.toNanos(1);
 
     private final SyslogTcpConfig m_config;
 
@@ -97,11 +98,13 @@ public class SyslogTcpListener {
 
     private volatile SyslogTcpFraming m_framing;
 
+    private final AtomicLong m_lastRefusalWarning = new AtomicLong();
+
     /** Runs the calls into the sink dispatcher, which block and so must stay off the event loops. */
     private volatile ExecutorService m_dispatchPool;
 
-    /** Overridden only by tests, which cannot afford to wait out the real timeout. */
-    private long m_dispatchTimeoutMs = DEFAULT_DISPATCH_TIMEOUT_MS;
+    /** Milliseconds, from the configuration. Tests override it to avoid waiting it out. */
+    private long m_dispatchTimeoutMs;
 
     public SyslogTcpListener(final SyslogTcpConfig config, final AsyncDispatcher<SyslogConnection> dispatcher) {
         this(config, null, dispatcher);
@@ -112,6 +115,7 @@ public class SyslogTcpListener {
         m_config = Objects.requireNonNull(config);
         m_fallbackListenAddress = fallbackListenAddress;
         m_dispatcher = Objects.requireNonNull(dispatcher);
+        m_dispatchTimeoutMs = TimeUnit.SECONDS.toMillis(config.getDispatchTimeoutSeconds());
     }
 
     private String listenAddress() {
@@ -148,6 +152,7 @@ public class SyslogTcpListener {
         // the listener, not leave a port that accepts and then drops every connection, or one
         // serving plaintext where operators believe it is encrypted.
         try {
+            m_config.validate();
             m_framing = m_config.resolveFraming();
             if (m_config.isTlsEnabled()) {
                 m_sslContext = SyslogTcpSslContextFactory.create(m_config);
@@ -179,9 +184,20 @@ public class SyslogTcpListener {
                             // their close completes, so a connection-per-message sender can be
                             // refused below its apparent concurrency.
                             if (m_channels.size() >= m_config.getMaxConnections()) {
-                                // Debug: a client retrying in a loop would fill the log.
-                                LOG.debug("Refusing syslog TCP connection from {}: already at the {} connection limit",
-                                        ch.remoteAddress(), m_config.getMaxConnections());
+                                // Warned about once a minute rather than per refusal, because a
+                                // client retrying in a loop would fill the log, and debug-only
+                                // left an operator at the cap with nothing to see.
+                                final long now = System.nanoTime();
+                                final long last = m_lastRefusalWarning.get();
+                                if (now - last > REFUSAL_WARNING_INTERVAL_NS
+                                        && m_lastRefusalWarning.compareAndSet(last, now)) {
+                                    LOG.warn("Refusing syslog TCP connections on {}: already at the {} connection"
+                                            + " limit. Raise max-connections, or expect senders to be turned away.",
+                                            describeAddress(), m_config.getMaxConnections());
+                                } else {
+                                    LOG.debug("Refusing syslog TCP connection from {}: at the {} connection limit",
+                                            ch.remoteAddress(), m_config.getMaxConnections());
+                                }
                                 ch.close();
                                 return;
                             }
@@ -292,17 +308,25 @@ public class SyslogTcpListener {
                     Throwable failure = null;
                     try {
                         final CompletableFuture<?> dispatched = m_dispatcher.send(next);
-                        if (waitForDispatch) {
+                        if (waitForDispatch && m_dispatchTimeoutMs <= 0) {
+                            dispatched.get();
+                        } else if (waitForDispatch) {
                             try {
                                 dispatched.get(m_dispatchTimeoutMs, TimeUnit.MILLISECONDS);
                             } catch (TimeoutException e) {
-                                // Paying this per message is worse than losing the ordering
-                                // guarantee, so stop waiting for the rest of the connection.
+                                // Any sink slow enough to leave a future uncompleted for this
+                                // long would otherwise stall the connection, since reads stay
+                                // off until the dispatch returns. A Minion after a reload is
+                                // the case that never recovers, because the sink completes the
+                                // wrong futures, but a merely busy sink reaches it too. Paying
+                                // the timeout per message is worse than losing ordering, so
+                                // stop waiting for the rest of this connection.
                                 waitForDispatch = false;
                                 LOG.warn("The sink took a syslog message from {} but did not report it dispatched"
-                                        + " within {}ms. No longer waiting for confirmation on this connection,"
-                                        + " so its messages may reach the consumer out of order.",
-                                        next.getSource(), m_dispatchTimeoutMs);
+                                        + " within {}ms. This connection will no longer wait for confirmation, so"
+                                        + " its messages may reach the consumer out of order and are no longer"
+                                        + " subject to read backpressure. Raise dispatch-timeout if the sink is"
+                                        + " merely slow.", next.getSource(), m_dispatchTimeoutMs);
                             }
                         }
                     } catch (InterruptedException e) {

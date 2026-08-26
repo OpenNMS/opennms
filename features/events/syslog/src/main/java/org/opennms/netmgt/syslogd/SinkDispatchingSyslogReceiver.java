@@ -68,10 +68,9 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
         final SyslogSinkModule syslogSinkModule = new SyslogSinkModule(m_config, m_distPollerDao);
         m_dispatcher = m_messageDispatcherFactory.createAsyncDispatcher(syslogSinkModule);
 
-        // Nothing about resolving the TCP configuration may take the receiver down, because
-        // the UDP loop below it is what installs already depend on. getTcpConfig() returns
-        // null on a mock or an older SyslogdConfig, and throws on an unparseable framing or
-        // client-auth value, which XSD validation only catches when it is switched on.
+        // Nothing about the TCP configuration may take the receiver down, because the UDP
+        // loop below it is what installs already depend on. Still null-tolerant despite the
+        // interface default, since a mock does not run default methods.
         try {
             final SyslogTcpConfig tcpConfig = m_config.getTcpConfig();
             if (tcpConfig != null && tcpConfig.isEnabled()) {

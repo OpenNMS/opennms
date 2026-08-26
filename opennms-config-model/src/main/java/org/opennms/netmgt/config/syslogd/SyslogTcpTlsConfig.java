@@ -100,8 +100,15 @@ public class SyslogTcpTlsConfig {
         return clientAuth != null ? clientAuth : SyslogTcpClientAuth.NONE.getConfigValue();
     }
 
+    
+
+    /**
+     * Deliberately does not validate. On a Minion this is a Blueprint property injection,
+     * and a bean that throws fails the container that also owns the UDP listener, so the
+     * check lives in {@link SyslogTcpConfig#validate()} instead.
+     */
     public void setClientAuth(final String clientAuth) {
-        this.clientAuth = SyslogTcpClientAuth.fromConfigValue(clientAuth).getConfigValue();
+        this.clientAuth = clientAuth;
     }
 
     public SyslogTcpClientAuth resolveClientAuth() {

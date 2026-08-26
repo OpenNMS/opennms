@@ -195,10 +195,12 @@ public class SyslogTcpFrameDecoderTest {
     }
 
     @Test
-    public void lfDelimitedFrameOverMaximumIsRejected() {
+    public void lfDelimitedFrameOverMaximumIsDiscardedRatherThanFatal() {
         final EmbeddedChannel channel = channel(SyslogTcpFraming.AUTO, 32);
 
-        assertThrows(TooLongFrameException.class, () -> channel.writeInbound(buf(MESSAGE + "\n")));
+        channel.writeInbound(buf(MESSAGE + "\n"));
+
+        assertEquals(List.of(), drain(channel));
     }
 
     @Test
@@ -227,10 +229,11 @@ public class SyslogTcpFrameDecoderTest {
     // --- pipeline behaviour on a framing error ------------------------------
 
     @Test
-    public void oversizeFrameClosesTheConnection() {
+    public void oversizeOctetCountedFrameClosesTheConnection() {
         final EmbeddedChannel channel = guardedChannel(SyslogTcpFraming.AUTO, 32);
 
-        channel.writeInbound(buf(MESSAGE + "\n"));
+        // A length prefix past the maximum leaves the next message nowhere in particular.
+        channel.writeInbound(buf(octetCounted(MESSAGE)));
 
         assertFalse(channel.isActive());
         assertEquals(List.of(), drain(channel));
@@ -366,6 +369,30 @@ public class SyslogTcpFrameDecoderTest {
 
         channel.writeInbound(buf(MESSAGE.substring(20) + "\0"));
         assertEquals(List.of(MESSAGE), drain(channel));
+    }
+
+    @Test
+    public void skipsAnOversizedLineAndKeepsTheConnection() {
+        final EmbeddedChannel channel = guardedChannel(SyslogTcpFraming.NON_TRANSPARENT, 64);
+        final String tooLong = "<34>" + "x".repeat(200);
+        final String short_ = "<34>Oct 11 22:14:15 h a: ok";
+
+        channel.writeInbound(buf(tooLong + "\n" + short_ + "\n"));
+
+        // The trailer is known, so only the offending message is lost.
+        assertEquals(List.of(short_), drain(channel));
+        assertTrue("the connection must survive one overlong line", channel.isOpen());
+    }
+
+    @Test
+    public void stillClosesWhenNoTrailerArrivesWithinTheLimit() {
+        final EmbeddedChannel channel = guardedChannel(SyslogTcpFraming.NON_TRANSPARENT, 64);
+
+        // No delimiter anywhere, so the position of the next message is unknown.
+        channel.writeInbound(buf("<34>" + "x".repeat(200)));
+
+        assertEquals(List.of(), drain(channel));
+        assertFalse(channel.isOpen());
     }
 
     private static EmbeddedChannel channel(final SyslogTcpFraming framing, final int maxMessageSize) {

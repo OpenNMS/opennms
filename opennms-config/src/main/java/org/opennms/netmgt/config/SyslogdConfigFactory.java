@@ -123,7 +123,10 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     /** {@inheritDoc} */
     @Override
     public synchronized SyslogTcpConfig getTcpConfig() {
-        return m_config.getConfiguration().getTcpConfig();
+        // An absent tcp element is the UDP-only default, reported as a disabled config so
+        // that the interface can promise a non-null return.
+        final SyslogTcpConfig tcpConfig = m_config.getConfiguration().getTcpConfig();
+        return tcpConfig != null ? tcpConfig : new SyslogTcpConfig();
     }
     
     /**

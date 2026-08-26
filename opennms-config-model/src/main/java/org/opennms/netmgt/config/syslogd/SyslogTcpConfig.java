@@ -47,6 +47,7 @@ public class SyslogTcpConfig {
     public static final int DEFAULT_MAX_MESSAGE_SIZE = 65536;
     public static final int DEFAULT_MAX_CONNECTIONS = 1024;
     public static final int DEFAULT_IDLE_TIMEOUT_SECONDS = 0;
+    public static final int DEFAULT_DISPATCH_TIMEOUT_SECONDS = 30;
 
     /**
      * Required in the XML, where the presence of the element is what asks for a listener.
@@ -70,6 +71,9 @@ public class SyslogTcpConfig {
     @XmlAttribute(name = "idle-timeout")
     private Integer idleTimeoutSeconds;
 
+    @XmlAttribute(name = "dispatch-timeout")
+    private Integer dispatchTimeoutSeconds;
+
     @XmlElement(name = "tls")
     private SyslogTcpTlsConfig tls;
 
@@ -85,14 +89,8 @@ public class SyslogTcpConfig {
         return port;
     }
 
-    /**
-     * Zero and null both mean disabled, because the Minion .cfg always carries the key and
-     * needs a value that switches TCP off. Anything else out of range is a mistake.
-     */
+    /** Zero and null both mean disabled: the Minion .cfg always carries the key. */
     public void setPort(final Integer port) {
-        if (port != null && port != 0 && (port < 1 || port > 65535)) {
-            throw new IllegalArgumentException("syslog TCP port must be between 1 and 65535, or 0 to disable, got " + port);
-        }
         this.port = port;
     }
 
@@ -109,9 +107,7 @@ public class SyslogTcpConfig {
     }
 
     public void setFraming(final String framing) {
-        // Normalized through the enum, so an unsupported value is rejected here rather than
-        // on the first message of the first connection.
-        this.framing = SyslogTcpFraming.fromConfigValue(framing).getConfigValue();
+        this.framing = framing;
     }
 
     public SyslogTcpFraming resolveFraming() {
@@ -123,9 +119,6 @@ public class SyslogTcpConfig {
     }
 
     public void setMaxMessageSize(final int maxMessageSize) {
-        if (maxMessageSize < 1) {
-            throw new IllegalArgumentException("syslog TCP maximum message size must be positive, got " + maxMessageSize);
-        }
         this.maxMessageSize = maxMessageSize;
     }
 
@@ -134,9 +127,6 @@ public class SyslogTcpConfig {
     }
 
     public void setMaxConnections(final int maxConnections) {
-        if (maxConnections < 1) {
-            throw new IllegalArgumentException("syslog TCP maximum connection count must be positive, got " + maxConnections);
-        }
         this.maxConnections = maxConnections;
     }
 
@@ -145,10 +135,20 @@ public class SyslogTcpConfig {
     }
 
     public void setIdleTimeoutSeconds(final int idleTimeoutSeconds) {
-        if (idleTimeoutSeconds < 0) {
-            throw new IllegalArgumentException("syslog TCP idle timeout cannot be negative, got " + idleTimeoutSeconds);
-        }
         this.idleTimeoutSeconds = idleTimeoutSeconds;
+    }
+
+    /**
+     * How long to wait for the sink to confirm a message before giving up on confirmation for
+     * the rest of that connection. Zero waits forever, which keeps ordering but stalls a
+     * connection whenever the sink never confirms.
+     */
+    public int getDispatchTimeoutSeconds() {
+        return dispatchTimeoutSeconds != null ? dispatchTimeoutSeconds : DEFAULT_DISPATCH_TIMEOUT_SECONDS;
+    }
+
+    public void setDispatchTimeoutSeconds(final int dispatchTimeoutSeconds) {
+        this.dispatchTimeoutSeconds = dispatchTimeoutSeconds;
     }
 
     /** Null when the element carries no tls child, which is plaintext. */
@@ -164,9 +164,43 @@ public class SyslogTcpConfig {
         return tls != null && tls.isEnabled();
     }
 
+    /**
+     * Checks everything the setters deliberately accept.
+     *
+     * The setters cannot throw: on a Minion they are Blueprint property injections, and a
+     * bean that throws fails the whole container, which is also the one that owns the UDP
+     * listener. So a typo in one TCP property used to take UDP ingestion down with it. The
+     * listener calls this instead and refuses to bind, leaving UDP alone.
+     *
+     * The XML path still fails early, because the schema rejects these values on load.
+     */
+    public void validate() {
+        if (port != null && port != 0 && (port < 1 || port > 65535)) {
+            throw new IllegalArgumentException("syslog TCP port must be between 1 and 65535, or 0 to disable, got " + port);
+        }
+        if (maxMessageSize != null && maxMessageSize < 1) {
+            throw new IllegalArgumentException("syslog TCP max-message-size must be positive, got " + maxMessageSize);
+        }
+        if (maxConnections != null && maxConnections < 1) {
+            throw new IllegalArgumentException("syslog TCP max-connections must be positive, got " + maxConnections);
+        }
+        if (idleTimeoutSeconds != null && idleTimeoutSeconds < 0) {
+            throw new IllegalArgumentException("syslog TCP idle-timeout cannot be negative, got " + idleTimeoutSeconds);
+        }
+        if (dispatchTimeoutSeconds != null && dispatchTimeoutSeconds < 0) {
+            throw new IllegalArgumentException("syslog TCP dispatch-timeout cannot be negative, got " + dispatchTimeoutSeconds);
+        }
+        // Both throw a message naming the supported values.
+        resolveFraming();
+        if (tls != null) {
+            tls.resolveClientAuth();
+        }
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(port, listenAddress, framing, maxMessageSize, maxConnections, idleTimeoutSeconds, tls);
+        return Objects.hash(port, listenAddress, framing, maxMessageSize, maxConnections, idleTimeoutSeconds,
+                dispatchTimeoutSeconds, tls);
     }
 
     @Override
@@ -184,6 +218,7 @@ public class SyslogTcpConfig {
                 && Objects.equals(maxMessageSize, other.maxMessageSize)
                 && Objects.equals(maxConnections, other.maxConnections)
                 && Objects.equals(idleTimeoutSeconds, other.idleTimeoutSeconds)
+                && Objects.equals(dispatchTimeoutSeconds, other.dispatchTimeoutSeconds)
                 && Objects.equals(tls, other.tls);
     }
 
@@ -195,6 +230,7 @@ public class SyslogTcpConfig {
                 + ", maxMessageSize=" + getMaxMessageSize()
                 + ", maxConnections=" + getMaxConnections()
                 + ", idleTimeoutSeconds=" + getIdleTimeoutSeconds()
+                + ", dispatchTimeoutSeconds=" + getDispatchTimeoutSeconds()
                 + ", tls=" + tls + "]";
     }
 }

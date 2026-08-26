@@ -40,6 +40,10 @@
           closed, since the position of the next message is then unknown.
         * max-connections: default 1024.
         * idle-timeout: seconds before a silent connection is closed. 0 disables.
+        * dispatch-timeout: seconds to wait for the sink to confirm a message. Messages from
+          one connection go to the sink one at a time to keep them in order, with reads paused
+          in between. Past this window the connection keeps delivering but gives up ordering
+          and backpressure, and logs that it has. Default 30, 0 waits indefinitely.
 
         A nested "tls" element switches on TLS, per RFC 5425. Certificates and keys are PEM
         encoded and the private key must not be password protected:
