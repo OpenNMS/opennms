@@ -69,6 +69,10 @@ public class DataBlocksOffHeapQueue<T> implements DispatchQueue<T> {
 
     private final Lock headLock = new ReentrantLock(true);
     private final Lock tailLock = new ReentrantLock(true);
+    // dedicated lock for the isFull() backpressure wait in enqueue(); must NOT be a DataBlock's own
+    // monitor, since DataBlock.enqueue()/dequeue() are themselves synchronized(this) and dequeue()
+    // can otherwise deadlock while holding that monitor waiting for data the producer can't add.
+    private final Object backpressureLock = new Object();
 
     private final Function<T, byte[]> serializer;
     private final Function<byte[], T> deserializer;
@@ -237,9 +241,9 @@ public class DataBlocksOffHeapQueue<T> implements DispatchQueue<T> {
     @Override
     public EnqueueResult enqueue(T message, String key) throws WriteFailedException {
         try {
-            synchronized (tailBlock) {
+            synchronized (backpressureLock) {
                 while (isFull()) {
-                    tailBlock.wait(10);
+                    backpressureLock.wait(10);
                 }
             }
         } catch (InterruptedException e) {
