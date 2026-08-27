@@ -1,6 +1,6 @@
 = MCP Server
 
-The MCP server exposes {page-component-title} to clients that speak the https://modelcontextprotocol.io[Model Context Protocol] (MCP), the open standard that AI agents such as Claude Code and Claude Desktop use to interact with external systems.
+The MCP server exposes {page-component-title} to clients that speak the https://modelcontextprotocol.io[Model Context Protocol] (MCP), the open standard that AI agents use to interact with external systems.
 Once installed, an AI agent can inventory nodes, inspect alarms, resolve IP addresses, acknowledge or clear alarms, and send events — all through the regular {page-component-title} security layer.
 
 The server implements the stateless MCP specification revision `2026-07-28` (Streamable HTTP, plain JSON request/response) and additionally serves legacy `2025-03-26` through `2025-11-25` clients through a stateless `initialize` handshake, so both current and older MCP clients work against the same endpoint.
