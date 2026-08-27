@@ -194,7 +194,7 @@
       "url": "ui/index.html#/topology",
       "action": "link",
       "locationMatch": "topology-preview",
-      "icon": "network/Instances",
+      "icon": "network/Nodes",
       "roles": null,
       "items": null
     },
