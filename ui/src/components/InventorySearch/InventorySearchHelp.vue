@@ -2,8 +2,8 @@
   <div class="search-help" data-test="search-help">
     <p>
       Searching by name is a case-insensitive, inclusive search. For example, searching on <em>serv</em> would find any of
-      <em>serv</em>, <em>Service</em>, <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore character
-      acts as a single character wildcard. The percent character acts as a multiple character wildcard.
+      <em>serv</em>, <em>Service</em>, <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. Use the asterisk
+      (<em>*</em>) as a multi-character wildcard to anchor the match (e.g. <em>core*</em> or <em>*sw*</em>).
     </p>
     <p>
       Searching by TCP/IP address uses a very flexible search format, allowing you to separate the four or eight (in case of
@@ -34,8 +34,8 @@
     </p>
     <p>
       Searching for assets allows you to search for all assets which have been associated with a particular category, as well
-      as to select a specific asset field (with all available fields listed in the drop-down list box) and search for text
-      which matches its current value. The latter search is very similar to the text search for node names described above.
+      as to select a specific asset field (with all available fields listed in the drop-down list box) and search for its
+      value. The asset field and category searches match the value exactly, unlike the wildcard node-name search above.
     </p>
   </div>
 </template>

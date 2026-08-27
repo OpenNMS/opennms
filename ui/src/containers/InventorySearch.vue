@@ -21,7 +21,7 @@
           label="Name containing"
           for="search-nodename"
           testId="name"
-          help="Case-insensitive substring match on the node label. Use _ to match a single character and % to match any number."
+          help="Substring match on the node label; use * as a wildcard (e.g. core* or *sw*)."
           @search="goToNodes({ nodename: form.nodename })"
         >
           <OnmsInputText id="search-nodename" v-model="form.nodename" fluid data-test="nodename-input" />
@@ -117,10 +117,10 @@
 
         <SearchField
           class="criterion"
-          label="Foreign Source name like"
+          label="Foreign Source name"
           for="search-fs"
           testId="fs"
-          help="Substring match on the provisioning foreign source name."
+          help="Exact match on the provisioning foreign source name."
           @search="goToNodes({ foreignSource: form.foreignSource })"
         >
           <OnmsInputText id="search-fs" v-model="form.foreignSource" fluid data-test="fs-input" />
@@ -163,12 +163,17 @@
           label="Asset field"
           for="search-field-value"
           testId="field"
-          help="Search any asset inventory field; the value is matched as a case-insensitive substring."
+          help="Search any asset inventory field by its exact value (no wildcards)."
           @search="goToNodes({ assetColumn: form.assetField, assetValue: form.assetFieldValue })"
         >
           <OnmsSelect v-model="form.assetField" :options="ASSET_FIELDS" optionLabel="label" optionValue="value" filter data-test="field-select" />
-          <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" placeholder="Containing text" fluid data-test="field-value" />
+          <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" placeholder="Exact value" fluid data-test="field-value" />
         </SearchField>
+      </div>
+
+      <div class="quick-links">
+        <router-link :to="{ path: '/nodes' }" data-test="link-all-nodes">All nodes</router-link>
+        <router-link :to="{ path: '/nodes', query: { nodesWithAssets: 'true' } }" data-test="link-all-assets">All nodes with asset info</router-link>
       </div>
     </div>
   </div>
@@ -287,6 +292,14 @@ onMounted(async () => {
 
   .criterion {
     min-width: 0;
+  }
+
+  .quick-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--p-content-border-color, rgba(127, 127, 127, 0.2));
   }
 
   // collapse to one column once two would crowd the multi-control searches

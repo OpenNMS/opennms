@@ -75,4 +75,42 @@ describe('InventorySearch.vue', () => {
       query: { assetColumn: 'category', assetValue: 'Unspecified' }
     })
   })
+
+  it('routes the interface-attribute search with the snmp query keys', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="snmp-value"]').setValue('Gig0/1')
+    await wrapper.find('[data-test="criterion-interface"]').trigger('submit')
+
+    expect(push).toHaveBeenCalledWith({
+      path: '/nodes',
+      query: { snmpParm: 'ifAlias', snmpParmMatchType: 'contains', snmpParmValue: 'Gig0/1' }
+    })
+  })
+
+  it('routes an asset-field search with an asset column the Node list accepts', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="field-value"]').setValue('Dell')
+    await wrapper.find('[data-test="criterion-field"]').trigger('submit')
+
+    const call = push.mock.calls.at(-1)![0]
+    expect(call.path).toBe('/nodes')
+    expect(call.query.assetValue).toBe('Dell')
+    // the column must be a real assetRecord property key, not a made-up label value
+    expect(typeof call.query.assetColumn).toBe('string')
+    expect(call.query.assetColumn.length).toBeGreaterThan(0)
+  })
+
+  it('routes foreign source, mac and flows to their tracked query keys', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="fs-input"]').setValue('acme')
+    await wrapper.find('[data-test="criterion-fs"]').trigger('submit')
+    expect(push).toHaveBeenLastCalledWith({ path: '/nodes', query: { foreignSource: 'acme' }})
+
+    await wrapper.find('[data-test="mac-input"]').setValue('00:11:22')
+    await wrapper.find('[data-test="criterion-mac"]').trigger('submit')
+    expect(push).toHaveBeenLastCalledWith({ path: '/nodes', query: { maclike: '00:11:22' }})
+
+    await wrapper.find('[data-test="criterion-flows"]').trigger('submit')
+    expect(push).toHaveBeenLastCalledWith({ path: '/nodes', query: { flows: 'true' }})
+  })
 })
