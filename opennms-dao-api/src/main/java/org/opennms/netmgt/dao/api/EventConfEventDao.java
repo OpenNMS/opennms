@@ -58,4 +58,15 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     void deleteByEventIds(Long sourceId,List<Long> eventIds);
 
     List<EventConfEvent> findEventsByVendor(final String vendor);
+
+    /**
+     * @return the highest {@code eventOrder} within the given source, or 0 when the source has no events.
+     */
+    Integer findMaxEventOrder(Long sourceId);
+
+    /**
+     * Renumbers the events of the given source so that {@code eventOrder} is dense 1..N,
+     * preserving the current relative order (by eventOrder, then id).
+     */
+    void compactEventOrder(Long sourceId);
 }

@@ -750,6 +750,7 @@ public class EventConfPersistenceServiceIT {
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setEventOrder(eventConfEventDao.findMaxEventOrder(m_source.getId()) + 1);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
         event.setModifiedBy("JUnitTest");

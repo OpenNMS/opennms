@@ -202,6 +202,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             jpaEvent.setEnabled(true);
             jpaEvent.setSeverity(xmlEvent.getSeverity());
             jpaEvent.setCreatedTime(new Date());
+            jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
             jpaEvent.setLastModified(new Date());
             jpaEvent.setModifiedBy("XMLTest");
             jpaEvent.setSource(m_source1);
@@ -264,6 +265,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
                 jpaEvent.setSource(source);
@@ -330,6 +332,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
                 jpaEvent.setSource(source);
@@ -387,6 +390,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
                 jpaEvent.setSource(source);
@@ -588,6 +592,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setEventOrder(m_eventDao.findMaxEventOrder(m_source.getId()) + 1);
         event.setSeverity(severity);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());

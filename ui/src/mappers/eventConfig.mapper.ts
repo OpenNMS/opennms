@@ -76,7 +76,8 @@ export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
     modifiedBy: event.modifiedBy,
     sourceName: event.sourceName,
     vendor: event.vendor,
-    fileOrder: event.fileOrder
+    fileOrder: event.fileOrder,
+    eventOrder: event.eventOrder
   }
 }
 

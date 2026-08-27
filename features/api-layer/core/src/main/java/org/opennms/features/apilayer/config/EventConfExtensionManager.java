@@ -173,8 +173,9 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
                 List<EventConfEvent> allEventsToSave = new ArrayList<>();
 
                 if (!newEvents.isEmpty()) {
+                    // New plugin events are appended after the existing ones of the source
                     List<EventConfEvent> newEntities = EventConfServiceHelper.createEventConfEventEntities(
-                            source, newEvents, USERNAME, now
+                            source, newEvents, USERNAME, now, eventConfEventDao.findMaxEventOrder(source.getId()) + 1
                     );
                     allEventsToSave.addAll(newEntities);
                 }

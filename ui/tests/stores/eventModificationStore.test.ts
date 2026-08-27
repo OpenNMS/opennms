@@ -38,7 +38,8 @@ describe('eventModificationStore', () => {
     modifiedBy: 'user1',
     sourceName: 'Test Source',
     vendor: 'Test Vendor',
-    fileOrder: 1
+    fileOrder: 1,
+    eventOrder: 1
   }
 
   beforeEach(() => {

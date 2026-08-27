@@ -66,7 +66,7 @@ describe('EventConfigSourceTable.vue', () => {
     store.sources = []
     store.sourcesSearchTerm = ''
     store.sourcesPagination = { page: 1, pageSize: 10, total: 0 }
-    store.sourcesSorting = { sortKey: 'createdTime', sortOrder: 'desc' }
+    store.sourcesSorting = { sortKey: 'fileOrder', sortOrder: 'desc' }
     store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
     store.refreshSourcesFilters = vi.fn().mockResolvedValue(undefined)
     store.onChangeSourcesSearchTerm = vi.fn().mockResolvedValue(undefined)
@@ -124,6 +124,14 @@ describe('EventConfigSourceTable.vue', () => {
       expect(wrapper.text()).toContain('TestSource')
       expect(wrapper.text()).toContain('Cisco')
       expect(wrapper.text()).toContain('5')
+    })
+
+    it('renders a sortable Priority column showing fileOrder', () => {
+      const header = wrapper.find('[data-test="priority-header"]')
+      expect(header.exists()).toBe(true)
+      expect(header.text()).toBe('Priority')
+      expect(header.attributes('title')).toContain('evaluated first')
+      expect(wrapper.findAll('tbody tr')[0].text()).toContain(String(mockSource.fileOrder))
     })
 
     it.each([
@@ -184,7 +192,7 @@ describe('EventConfigSourceTable.vue', () => {
 
     it('falls back to default sort when no field is present', () => {
       wrapper.vm.onSort({ sortField: null, sortOrder: 1 })
-      expect(store.onSourcesSortChange).toHaveBeenCalledWith('createdTime', 'desc')
+      expect(store.onSourcesSortChange).toHaveBeenCalledWith('fileOrder', 'desc')
     })
 
     it('maps a page event to onSourcePageChange (1-based)', () => {

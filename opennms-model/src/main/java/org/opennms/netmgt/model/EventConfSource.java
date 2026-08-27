@@ -42,6 +42,9 @@ public class EventConfSource implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /** The source that is always evaluated last; it is pinned at {@code fileOrder} 1. */
+    public static final String CATCH_ALL_SOURCE_NAME = "opennms.catch-all.events";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "source_seq")
     @SequenceGenerator(name = "source_seq", sequenceName = "eventconf_sources_id_seq", allocationSize = 1)

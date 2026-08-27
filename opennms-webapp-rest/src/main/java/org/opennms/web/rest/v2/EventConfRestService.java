@@ -231,7 +231,7 @@ public class EventConfRestService implements EventConfRestApi {
 
             final Map<String, Integer> fileOrderMap = new HashMap<>();
             // Reserve fileOrder 1 for catch-all (always searched last)
-            final String CATCH_ALL = "opennms.catch-all.events";
+            final String CATCH_ALL = EventConfSource.CATCH_ALL_SOURCE_NAME;
             int nextOrder = 2;
 
             // Referenced sources in eventconf.xml order: last entry gets lowest fileOrder (searched last)

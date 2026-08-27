@@ -45,7 +45,8 @@ describe('useEventConfigDetailStore', () => {
       modifiedBy: 'user1',
       sourceName: 'Test Source',
       vendor: 'Test Vendor',
-      fileOrder: 1
+      fileOrder: 1,
+      eventOrder: 1
     },
     {
       id: 2,
@@ -60,7 +61,8 @@ describe('useEventConfigDetailStore', () => {
       modifiedBy: 'user2',
       sourceName: 'Test Source',
       vendor: 'Test Vendor',
-      fileOrder: 2
+      fileOrder: 2,
+      eventOrder: 1
     }
   ]
 
@@ -88,8 +90,8 @@ describe('useEventConfigDetailStore', () => {
     })
     expect(store.eventsSearchTerm).toBe('')
     expect(store.eventsSorting).toEqual({
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
+      sortOrder: 'asc',
+      sortKey: 'eventOrder'
     })
     expect(store.selectedSource).toBeNull()
     expect(store.isLoading).toBe(false)
@@ -117,7 +119,7 @@ describe('useEventConfigDetailStore', () => {
 
     await store.fetchEventsBySourceId()
 
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'eventOrder', 'asc')
     expect(store.events).toEqual(mockEvents)
     expect(store.eventsPagination.total).toBe(2)
     expect(store.isLoading).toBe(false)
@@ -142,7 +144,7 @@ describe('useEventConfigDetailStore', () => {
 
     await store.fetchEventsBySourceId()
 
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 40, 20, '', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 40, 20, '', 'eventOrder', 'asc')
   })
 
   it('should fetch with search term', async () => {
@@ -152,7 +154,7 @@ describe('useEventConfigDetailStore', () => {
 
     await store.fetchEventsBySourceId()
 
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, 'test search', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, 'test search', 'eventOrder', 'asc')
   })
 
   it('should handle errors when fetching events', async () => {
@@ -256,10 +258,10 @@ describe('useEventConfigDetailStore', () => {
     expect(store.eventsPagination.total).toBe(2)
     expect(store.eventsSearchTerm).toBe('')
     expect(store.eventsSorting).toEqual({
-      sortKey: 'createdTime',
-      sortOrder: 'desc'
+      sortKey: 'eventOrder',
+      sortOrder: 'asc'
     })
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'eventOrder', 'asc')
   })
 
   it('should show delete event dialog', () => {
@@ -538,7 +540,7 @@ describe('useEventConfigDetailStore', () => {
 
     store.refreshEventConfigEvents()
 
-    expect(store.eventsSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
+    expect(store.eventsSorting).toEqual({ sortKey: 'eventOrder', sortOrder: 'asc' })
     expect(store.eventsSearchTerm).toBe('')
     expect(store.eventsPagination).toEqual({ page: 1, pageSize: 10, total: 0 })
   })

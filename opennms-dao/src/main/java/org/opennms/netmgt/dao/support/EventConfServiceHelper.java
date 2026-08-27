@@ -40,6 +40,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +66,8 @@ public class EventConfServiceHelper {
                                   Event event, String username, Date timestamp) {
         EventConfEvent eventConfEvent = new EventConfEvent();
         eventConfEvent.setSource(source);
+        // Appended events are evaluated last within their source
+        eventConfEvent.setEventOrder(eventConfEventDao.findMaxEventOrder(source.getId()) + 1);
         eventConfEvent.setUei(event.getUei());
         eventConfEvent.setEventLabel(event.getEventLabel());
         eventConfEvent.setDescription(event.getDescr());
@@ -127,15 +130,21 @@ public class EventConfServiceHelper {
      * @param events The list of Event XML objects to convert
      * @param username The username of the user creating these events
      * @param timestamp The timestamp for creation and modification
+     * @param startOrder The {@code eventOrder} assigned to the first event; subsequent events get
+     *                   consecutive values in list order (1 when replacing all events of a source,
+     *                   {@code findMaxEventOrder(sourceId) + 1} when appending)
      * @return A list of EventConfEvent entities ready to be persisted
      */
     public static List<EventConfEvent> createEventConfEventEntities(EventConfSource source,
                                                                       List<Event> events,
                                                                       String username,
-                                                                      Date timestamp) {
+                                                                      Date timestamp,
+                                                                      int startOrder) {
+        final AtomicInteger nextOrder = new AtomicInteger(startOrder);
         return events.stream().map(parsed -> {
             EventConfEvent event = new EventConfEvent();
             event.setSource(source);
+            event.setEventOrder(nextOrder.getAndIncrement());
             event.setUei(parsed.getUei());
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());

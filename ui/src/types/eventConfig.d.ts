@@ -48,7 +48,10 @@ export type EventConfigEvent = {
   modifiedBy: string
   sourceName: string
   vendor: string
+  /** Priority of the owning source: higher = evaluated first */
   fileOrder: number
+  /** Evaluation position within the source: 1 = evaluated first */
+  eventOrder: number
 }
 
 export type EventConfigStoreState = {

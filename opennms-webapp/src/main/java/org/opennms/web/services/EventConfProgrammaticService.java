@@ -96,7 +96,7 @@ public class EventConfProgrammaticService {
             source.setCreatedTime(now);
             source.setLastModified(now);
 
-            // Get max file order and add 1 to ensure programmatic events are loaded last
+            // Higher fileOrder is evaluated first, so max + 1 puts programmatic events ahead of all other sources
             Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
             source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
 

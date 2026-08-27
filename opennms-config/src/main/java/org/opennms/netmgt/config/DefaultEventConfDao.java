@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -250,7 +251,12 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	private Events buildEventsForSource(List<EventConfEvent> sourceEvents) {
 		Events eventsForSource = new Events();
-		for (EventConfEvent dbEvent : sourceEvents) {
+		// Within a source, lower eventOrder is evaluated first (id breaks ties / covers null)
+		final List<EventConfEvent> ordered = sourceEvents.stream()
+				.sorted(Comparator.comparing((EventConfEvent e) -> e.getEventOrder() != null ? e.getEventOrder() : Integer.MAX_VALUE)
+						.thenComparing(e -> e.getId() != null ? e.getId() : Long.MAX_VALUE))
+				.toList();
+		for (EventConfEvent dbEvent : ordered) {
 			parseAndAddEvent(eventsForSource, dbEvent);
 		}
 		return eventsForSource;

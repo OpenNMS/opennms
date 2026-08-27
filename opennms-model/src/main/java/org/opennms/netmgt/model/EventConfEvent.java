@@ -80,6 +80,13 @@ public class EventConfEvent implements Serializable {
     @Column(name="severity", nullable = false)
     private String severity;
 
+    /**
+     * Evaluation position of this event within its source: ascending, 1 = evaluated first.
+     * (Source precedence is {@link EventConfSource#getFileOrder()}, where higher = evaluated first.)
+     */
+    @Column(name = "event_order", nullable = false)
+    private Integer eventOrder;
+
     public Long getId() {
         return id;
     }
@@ -163,4 +170,8 @@ public class EventConfEvent implements Serializable {
     public String getSeverity() { return severity; }
 
     public void setSeverity(String severity) { this.severity = severity; }
+
+    public Integer getEventOrder() { return eventOrder; }
+
+    public void setEventOrder(Integer eventOrder) { this.eventOrder = eventOrder; }
 }

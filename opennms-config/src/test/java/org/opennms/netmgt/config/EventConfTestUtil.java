@@ -119,6 +119,7 @@ public final class EventConfTestUtil {
             EventConfEvent event = new EventConfEvent();
             event.setId(eventIdGenerator.incrementAndGet());
             event.setSource(source);
+            event.setEventOrder((int) eventIdGenerator.get());
             event.setUei(parsed.getUei());
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());

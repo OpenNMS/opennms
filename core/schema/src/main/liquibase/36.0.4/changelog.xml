@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Event definitions inside a source were only ordered by their primary key, which is
+         insertion order and cannot be changed. event_order makes the within-source evaluation
+         order explicit: ascending, 1 = evaluated first. Sources keep their existing file_order
+         (descending: higher = evaluated first).
+
+         Any later changeset that inserts into eventconf_events must set event_order, e.g.
+         (SELECT COALESCE(MAX(event_order), 0) + 1 FROM eventconf_events WHERE source_id = ...). -->
+
+    <changeSet author="cgorantla" id="36.0.4-eventconf-events-event-order-column">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+            <not>
+                <columnExists tableName="eventconf_events" columnName="event_order"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="eventconf_events">
+            <column name="event_order" type="integer"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="cgorantla" id="36.0.4-eventconf-events-event-order-backfill">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="eventconf_events" columnName="event_order"/>
+        </preConditions>
+        <sql>
+            UPDATE eventconf_events e
+            SET event_order = r.rn
+            FROM (
+                SELECT id, ROW_NUMBER() OVER (PARTITION BY source_id ORDER BY id) AS rn
+                FROM eventconf_events
+            ) r
+            WHERE e.id = r.id
+              AND e.event_order IS NULL;
+        </sql>
+        <addNotNullConstraint tableName="eventconf_events" columnName="event_order" columnDataType="integer" defaultNullValue="0"/>
+    </changeSet>
+
+    <changeSet author="cgorantla" id="36.0.4-eventconf-events-source-order-index">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="eventconf_events" columnName="event_order"/>
+            <not>
+                <indexExists indexName="idx_eventconf_events_source_order"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="eventconf_events" indexName="idx_eventconf_events_source_order">
+            <column name="source_id"/>
+            <column name="event_order"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

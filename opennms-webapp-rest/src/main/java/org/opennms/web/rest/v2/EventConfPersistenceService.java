@@ -176,8 +176,9 @@ public class EventConfPersistenceService {
     }
 
     private void saveEvents(EventConfSource source, Events events, String username, Date now) {
+        // All events of the source were just deleted, so numbering restarts at 1 in file order
         List<EventConfEvent> eventEntities = EventConfServiceHelper.createEventConfEventEntities(
-                source, events.getEvents(), username, now);
+                source, events.getEvents(), username, now, 1);
         eventConfEventDao.saveAll(eventEntities);
     }
 
@@ -255,6 +256,7 @@ public class EventConfPersistenceService {
         } else {
             LOG.info("Deleting {} events from sourceId={} (remaining count={})", deleteCount, sourceId, currentCount - deleteCount);
             eventConfEventDao.deleteByEventIds(sourceId, existingEventIds);
+            eventConfEventDao.compactEventOrder(sourceId);
             source.setEventCount(currentCount - deleteCount);
             eventConfSourceDao.saveOrUpdate(source);
         }
