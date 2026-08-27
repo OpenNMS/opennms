@@ -51,7 +51,7 @@ import ConfigureNotificationsDialog from '@/components/AdminNotifications/Config
 import NoticesTable from '@/components/AdminNotifications/NoticesTable.vue'
 import NotificationExplanationsCard from '@/components/AdminNotifications/NotificationExplanationsCard.vue'
 import NotificationQueriesCard from '@/components/AdminNotifications/NotificationQueriesCard.vue'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useRole from '@/composables/useRole'
 import { useAuthStore } from '@/stores/authStore'

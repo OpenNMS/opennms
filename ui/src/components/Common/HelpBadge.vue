@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { OnmsIconButton, OnmsPopover } from '@opennms/onms-ui'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 // An info affordance that opens its help text in a click-anchored popover (the
 // native title attribute only shows on hover and never on click/touch).

@@ -140,8 +140,8 @@ import { OnmsIconButton, OnmsButton, OnmsColumn, OnmsTable, OnmsTag, type OnmsTa
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import DownloadFileIcon from '@/components/icons/action/DownloadFile.vue'
-import PrintIcon from '@/components/icons/action/Print.vue'
+import DownloadFileIcon from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import PrintIcon from '@opennms/onms-ui/icons/action/Print.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'

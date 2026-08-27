@@ -317,7 +317,7 @@ import { computed, nextTick, reactive, ref, watch } from 'vue'
 
 import { OnmsAutoComplete, OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsSelect, OnmsTextarea, OnmsToggleSwitch } from '@opennms/onms-ui'
 
-import Delete from '@/components/icons/action/Delete.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'

@@ -75,7 +75,7 @@ import IftaLabel from 'primevue/iftalabel'
 import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
 import TableCard from '@/components/Common/TableCard.vue'
-import Search from '@/components/icons/action/Search.vue'
+import Search from '@opennms/onms-ui/icons/action/Search.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNoticesStore } from '@/stores/noticesStore'
 

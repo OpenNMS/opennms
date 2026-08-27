@@ -122,7 +122,7 @@ import { computed } from 'vue'
 
 import { OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsSelect } from '@opennms/onms-ui'
 
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 
