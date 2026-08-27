@@ -2354,19 +2354,40 @@ const onShapeDrawEnd = () => {
   window.removeEventListener('mousemove', onShapeDrawMove)
   window.removeEventListener('mouseup', onShapeDrawEnd)
   const d = shapeDraft.value
-  shapeDraft.value = null
-  shapeDrawOverlayRect = null
   if (!d || !sigma || !canvasEl.value) {
+    shapeDraft.value = null
+    shapeDrawOverlayRect = null
     return
   }
   if (Math.abs(d.x2 - d.x1) < SHAPE_MIN_DRAW_PX || Math.abs(d.y2 - d.y1) < SHAPE_MIN_DRAW_PX) {
     // Too small to be a deliberate shape; treat as a cancel.
+    shapeDraft.value = null
+    shapeDrawOverlayRect = null
     store.setShapeDrawMode(false)
     return
   }
+  shapeDraft.value = null
+  shapeDrawOverlayRect = null
   const canvasRect = canvasEl.value.getBoundingClientRect()
-  const toGraph = (clientX: number, clientY: number) =>
-    sigma!.viewportToGraph({ x: clientX - canvasRect.left, y: clientY - canvasRect.top })
+  // Inverted from graphToViewport rather than using sigma's viewportToGraph.
+  // The two are not inverses of each other with a custom bounding box and no
+  // nodes: viewportToGraph scales both axes by the box-to-viewport ratio, while
+  // graphToViewport stretches each axis independently, so a box drawn on a
+  // blank canvas was stored at a size and position the renderer then drew
+  // somewhere else. Deriving the mapping from the projection the renderer
+  // actually uses makes the round trip exact by construction.
+  const origin = sigma.graphToViewport({ x: 0, y: 0 })
+  const unitX = sigma.graphToViewport({ x: 1000, y: 0 })
+  const unitY = sigma.graphToViewport({ x: 0, y: 1000 })
+  const pxPerUnitX = (unitX.x - origin.x) / 1000
+  const pxPerUnitY = (unitY.y - origin.y) / 1000
+  if (!pxPerUnitX || !pxPerUnitY) {
+    return
+  }
+  const toGraph = (clientX: number, clientY: number) => ({
+    x: (clientX - canvasRect.left - origin.x) / pxPerUnitX,
+    y: (clientY - canvasRect.top - origin.y) / pxPerUnitY
+  })
   const g1 = toGraph(d.x1, d.y1)
   const g2 = toGraph(d.x2, d.y2)
   const shape: CanvasShape = {
@@ -2658,6 +2679,7 @@ defineExpose({
 </script>
 
 <style scoped>
+
 /* An SVG presentation attribute cannot take a CSS variable, so the link-draw
    preview is styled here instead. */
 .topology-link-preview {
