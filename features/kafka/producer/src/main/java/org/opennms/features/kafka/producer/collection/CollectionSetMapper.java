@@ -24,6 +24,9 @@ package org.opennms.features.kafka.producer.collection;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -56,6 +59,11 @@ public class CollectionSetMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectionSetMapper.class);
 
+    /**
+     * Stand-in topic used by the un-routed entry point, which discards the grouping again.
+     */
+    private static final String DEFAULT_TOPIC_PLACEHOLDER = "";
+
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.ofSeconds(30))
@@ -75,12 +83,38 @@ public class CollectionSetMapper {
         this.resourceDao = Objects.requireNonNull(resourceDao);
     }
 
+    /**
+     * Maps a CollectionSet to a single protobuf CollectionSet, without metric routing.
+     */
     public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet, ServiceParameters params) {
-        CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
+        final Map<String, CollectionSetProtos.CollectionSet> byTopic =
+                buildCollectionSetProtosByTopic(collectionSet, params, null, DEFAULT_TOPIC_PLACEHOLDER);
+        final CollectionSetProtos.CollectionSet result = byTopic.get(DEFAULT_TOPIC_PLACEHOLDER);
+        return result != null ? result : CollectionSetProtos.CollectionSet.newBuilder().build();
+    }
+
+    /**
+     * Maps a CollectionSet to one protobuf CollectionSet per destination topic.
+     *
+     * Every resource is attributed to the topic the given router resolves for it. With a
+     * {@code null} router - or a router with routing disabled - every resource resolves to
+     * {@code defaultTopic} and the result is a single entry, which is what keeps the
+     * routing-disabled path identical to the un-routed behaviour.
+     *
+     * @param router       resolves the topic per resource, or {@code null} to use the default topic throughout
+     * @param defaultTopic the topic to attribute resources to when nothing else applies
+     */
+    public Map<String, CollectionSetProtos.CollectionSet> buildCollectionSetProtosByTopic(
+            CollectionSet collectionSet, ServiceParameters params, MetricTopicRouter router, String defaultTopic) {
+
+        // Insertion-ordered so that, for a set which does not actually span topics, the single
+        // group is emitted in the order the resources were visited.
+        final Map<String, CollectionSetProtos.CollectionSet.Builder> buildersByTopic = new LinkedHashMap<>();
 
         collectionSet.visit(new CollectionSetVisitor() {
             CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder;
             String lastGroupName = null;
+            int currentNodeId;
 
             @Override
             public void visitCollectionSet(CollectionSet set) {
@@ -90,24 +124,38 @@ public class CollectionSetMapper {
             @Override
             public void visitResource(CollectionResource resource) {
                 collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
-                long nodeId = 0;
-                if (!resource.shouldPersist(params)) {
+                currentNodeId = 0;
+                // Only node, interface and generic resources carry resource-id info; response
+                // time resources never have. Kept separate from the routing node id below.
+                long resourceIdNodeId = 0;
+
+                final boolean shouldPersist = resource.shouldPersist(params);
+                final String nodeCriteria = shouldPersist ? getNodeCriteriaFromResource(resource) : null;
+                final boolean isNodeResource = CollectionResource.RESOURCE_TYPE_NODE
+                        .equals(resource.getResourceTypeName());
+
+                // Resolve the node once, up front, so that every resource type - response time
+                // resources included - can see the node id. buildResponseTimeResource used to
+                // resolve it a second time and then discard it, which left latency resources
+                // with no node id to route on.
+                CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = null;
+                if (shouldPersist && (isNodeResource || !Strings.isNullOrEmpty(nodeCriteria))) {
+                    // Node resources are built even from an unparseable criteria, so that they
+                    // are still emitted (with node id 0) exactly as before.
+                    nodeResourceBuilder = buildNodeLevelResourceForProto(nodeCriteria);
+                }
+
+                if (!shouldPersist) {
                     // DO NOTHING, do not persist this resource
                 }
-                else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
-                    String nodeCriteria = getNodeCriteriaFromResource(resource);
-                    CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                            nodeCriteria);
-                    nodeId = nodeResourceBuilder.getNodeId();
+                else if (isNodeResource) {
+                    resourceIdNodeId = nodeResourceBuilder.getNodeId();
                     collectionSetResourceBuilder.setNode(nodeResourceBuilder);
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
                     CollectionSetProtos.InterfaceLevelResource.Builder interfaceResourceBuilder = CollectionSetProtos.InterfaceLevelResource
                             .newBuilder();
-                    String nodeCriteria = getNodeCriteriaFromResource(resource);
-                    if (!Strings.isNullOrEmpty(nodeCriteria)) {
-                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                                nodeCriteria);
-                        nodeId = nodeResourceBuilder.getNodeId();
+                    if (nodeResourceBuilder != null) {
+                        resourceIdNodeId = nodeResourceBuilder.getNodeId();
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
                         Optional.ofNullable(resource.getInterfaceLabel()).ifPresent(interfaceResourceBuilder::setInstance);
                         // Skip Aliased Resources which doesn't have instance.
@@ -119,27 +167,28 @@ public class CollectionSetMapper {
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
                     CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
-                            resource);
+                            resource, nodeResourceBuilder);
                     if (responseTimeResource != null) {
                         collectionSetResourceBuilder.setResponse(responseTimeResource);
                     }
                 } else {
                     CollectionSetProtos.GenericTypeResource.Builder genericResourceBuilder = CollectionSetProtos.GenericTypeResource
                             .newBuilder();
-                    String nodeCriteria = getNodeCriteriaFromResource(resource);
-                    if (!Strings.isNullOrEmpty(nodeCriteria)) {
-                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                                nodeCriteria);
-                        nodeId = nodeResourceBuilder.getNodeId();
+                    if (nodeResourceBuilder != null) {
+                        resourceIdNodeId = nodeResourceBuilder.getNodeId();
                         genericResourceBuilder.setNode(nodeResourceBuilder);
                     }
                     genericResourceBuilder.setType(resource.getResourceTypeName());
                     genericResourceBuilder.setInstance(resource.getInstance());
                     collectionSetResourceBuilder.setGeneric(genericResourceBuilder);
                 }
+
+                if (nodeResourceBuilder != null) {
+                    currentNodeId = (int) nodeResourceBuilder.getNodeId();
+                }
                 // Response time resources doesn't embed any node info, they will not have any resource-id info.
-                if (nodeId > 0) {
-                    populateResourceIdFields(resource, nodeId);
+                if (resourceIdNodeId > 0) {
+                    populateResourceIdFields(resource, resourceIdNodeId);
                 }
             }
 
@@ -207,19 +256,43 @@ public class CollectionSetMapper {
 
             @Override
             public void completeResource(CollectionResource resource) {
-                if(hasResource(collectionSetResourceBuilder)) {
-                    builder.addResource(collectionSetResourceBuilder);
+                // Only resources that actually survive the visitor are worth resolving a topic
+                // for: anything dropped above never reaches Kafka, so routing it would only cost
+                // a database lookup and skew the counters.
+                //
+                // Routing keys off the collecting node, interface and service, all of which are
+                // constant across a CollectionSet, so in practice every resource here resolves to
+                // the same topic and the grouping below yields a single group. It still has to
+                // group, because a resource whose node cannot be resolved falls back to the
+                // default topic, and must not drag the rest of the collection along with it.
+                if (hasResource(collectionSetResourceBuilder)) {
+                    final String topic = router != null
+                            ? router.resolveTopic(resource, currentNodeId, params) : defaultTopic;
+                    buildersByTopic
+                            .computeIfAbsent(topic, t -> CollectionSetProtos.CollectionSet.newBuilder())
+                            .addResource(collectionSetResourceBuilder);
                 }
             }
 
             @Override
             public void completeCollectionSet(CollectionSet set) {
-                builder.setTimestamp(collectionSet.getCollectionTimestamp().getTime());
+                final long timestamp = collectionSet.getCollectionTimestamp().getTime();
+                buildersByTopic.values().forEach(b -> b.setTimestamp(timestamp));
             }
 
         });
 
-        return builder.build();
+        if (buildersByTopic.isEmpty()) {
+            // Preserve the previous behaviour of always returning a CollectionSet, even an empty
+            // one: callers check getResourceCount().
+            return Collections.singletonMap(defaultTopic,
+                    CollectionSetProtos.CollectionSet.newBuilder()
+                            .setTimestamp(collectionSet.getCollectionTimestamp().getTime()).build());
+        }
+
+        final Map<String, CollectionSetProtos.CollectionSet> result = new LinkedHashMap<>();
+        buildersByTopic.forEach((topic, b) -> result.put(topic, b.build()));
+        return result;
     }
 
     private boolean hasResource(CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder) {
@@ -253,7 +326,8 @@ public class CollectionSetMapper {
         return nodeCriteria;
     }
 
-    private CollectionSetProtos.ResponseTimeResource.Builder buildResponseTimeResource(CollectionResource resource) {
+    private CollectionSetProtos.ResponseTimeResource.Builder buildResponseTimeResource(CollectionResource resource,
+            CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder) {
         boolean validIp = false;
         // Check if resource parent is an IpAddress.
         if (resource.getParent() != null && resource.getParent().elements().length == 1) {
@@ -274,9 +348,8 @@ public class CollectionSetMapper {
             } else if (resourcePathArray.length == 1) {
                 responseTimeResourceBuilder.setInstance(resourcePathArray[0]);
             }
-            String nodeCriteria = getNodeCriteriaFromResource(resource);
-            if (!Strings.isNullOrEmpty(nodeCriteria)) {
-                responseTimeResourceBuilder.setNode(buildNodeLevelResourceForProto(nodeCriteria));
+            if (nodeResourceBuilder != null) {
+                responseTimeResourceBuilder.setNode(nodeResourceBuilder);
             }
             return responseTimeResourceBuilder;
         }
