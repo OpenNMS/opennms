@@ -55,9 +55,19 @@ const range = (start: number, end: number, width = 2): Option[] => {
   return out
 }
 
+// Unpadded 1..31 for the monthly 'day' attribute (parsed with Integer.parseInt;
+// legacy chooseDayOfMonth emitted the bare integer).
 export const DAYS_OF_MONTH: Option[] = Array.from({ length: 31 }, (_, i) => ({
   value: String(i + 1),
   label: String(i + 1)
+}))
+
+// Zero-padded 01..31 for the specific-date 'dd' field. The 'dd-MMM-yyyy HH:mm:ss'
+// string MUST be exactly 20 chars — BasicScheduleUtils keys the parser on length,
+// so an unpadded single-digit day (19 chars) is silently misread as a daily span.
+export const DAYS_OF_MONTH_PADDED: Option[] = Array.from({ length: 31 }, (_, i) => ({
+  value: pad(i + 1),
+  label: pad(i + 1)
 }))
 
 export const HOURS = range(0, 23)

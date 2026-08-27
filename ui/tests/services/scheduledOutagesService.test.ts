@@ -99,4 +99,11 @@ describe('scheduledOutagesService', () => {
     expect(v2.get).toHaveBeenCalledWith('/nodes?limit=200&_s=node.label==*core*')
     expect(nodes).toEqual([{ id: 7, label: 'core-sw' }])
   })
+
+  it('strips FIQL/URL metacharacters from the autocomplete query', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: { node: [] } })
+    await searchOutageNodes('a*b);node.id==1&x=2')
+    // metacharacters that could break out of the FIQL term or inject params are removed
+    expect(v2.get).toHaveBeenCalledWith('/nodes?limit=200&_s=node.label==*abnode.id1x2*')
+  })
 })

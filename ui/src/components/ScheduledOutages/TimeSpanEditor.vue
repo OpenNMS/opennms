@@ -7,7 +7,7 @@
       <template v-if="type === 'specific'">
         <div class="span-row">
           <span class="span-label">Start</span>
-          <OnmsSelect v-model="fields.startDay" :options="DAYS_OF_MONTH" optionLabel="label" optionValue="value" data-test="specific-start-day" />
+          <OnmsSelect v-model="fields.startDay" :options="DAYS_OF_MONTH_PADDED" optionLabel="label" optionValue="value" data-test="specific-start-day" />
           <OnmsSelect v-model="fields.startMonth" :options="MONTHS" optionLabel="label" optionValue="value" data-test="specific-start-month" />
           <OnmsSelect v-model="fields.startYear" :options="years" optionLabel="label" optionValue="value" data-test="specific-start-year" />
           <OnmsSelect v-model="fields.startHour" :options="HOURS" optionLabel="label" optionValue="value" />
@@ -16,7 +16,7 @@
         </div>
         <div class="span-row">
           <span class="span-label">End</span>
-          <OnmsSelect v-model="fields.endDay" :options="DAYS_OF_MONTH" optionLabel="label" optionValue="value" data-test="specific-end-day" />
+          <OnmsSelect v-model="fields.endDay" :options="DAYS_OF_MONTH_PADDED" optionLabel="label" optionValue="value" data-test="specific-end-day" />
           <OnmsSelect v-model="fields.endMonth" :options="MONTHS" optionLabel="label" optionValue="value" />
           <OnmsSelect v-model="fields.endYear" :options="years" optionLabel="label" optionValue="value" />
           <OnmsSelect v-model="fields.endHour" :options="HOURS" optionLabel="label" optionValue="value" />
@@ -74,6 +74,7 @@ import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import { OutageTime, OutageType } from '@/types/scheduledOutage'
 import {
   DAYS_OF_MONTH,
+  DAYS_OF_MONTH_PADDED,
   DAYS_OF_WEEK,
   HOURS,
   MINUTES,

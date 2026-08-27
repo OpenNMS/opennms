@@ -63,6 +63,7 @@
             <p v-if="showTimeError" class="field-error" data-test="time-error">
               You must have at least one time span defined.
             </p>
+            <p v-if="timeSpanNote" class="field-note" data-test="time-note">{{ timeSpanNote }}</p>
           </section>
 
           <section class="applies">
@@ -111,6 +112,7 @@ import {
   OutageInterface,
   OutageNode,
   OutageTime,
+  OutageType,
   PackageRef,
   ScheduledOutage
 } from '@/types/scheduledOutage'
@@ -141,6 +143,10 @@ const loading = ref(true)
 const saving = ref(false)
 const submitted = ref(false)
 const errorMessage = ref('')
+const timeSpanNote = ref('')
+// the type currently reflected by outage.time, so a type change can warn before
+// discarding spans that were entered under the previous type
+const lastType = ref<OutageType | undefined>(undefined)
 
 const outage = reactive<ScheduledOutage>({
   name,
@@ -181,6 +187,7 @@ onMounted(async () => {
       outage.time = loaded.time ?? []
       outage.node = loaded.node ?? []
       outage.interface = loaded.interface ?? []
+      lastType.value = loaded.type
     }
   }
   const appl = await getOutageApplicability(isNew ? undefined : name)
@@ -216,22 +223,41 @@ const removeInterface = (index: number) => {
 }
 
 const selectAll = () => {
+  // this replaces any curated node/interface list with "all"; confirm first so a
+  // stray click can't silently discard an existing selection
+  const hasExisting = (outage.node ?? []).length > 0 ||
+    (outage.interface ?? []).some(i => i.address !== MATCH_ANY)
+  if (hasExisting && !window.confirm('Apply to all nodes and interfaces? This clears the specific nodes and interfaces you selected.')) {
+    return
+  }
   outage.node = []
   outage.interface = [{ address: MATCH_ANY }]
 }
 
 const onTypeChange = () => {
-  // begins/ends are formatted per type, so existing spans no longer apply
-  outage.time = []
+  // begins/ends are formatted per type, so spans entered under the old type no
+  // longer apply; confirm before discarding them so a stray change can't lose data
+  if ((outage.time ?? []).length > 0) {
+    if (!window.confirm('Changing the outage type clears the time spans you already added. Continue?')) {
+      outage.type = lastType.value
+      return
+    }
+    outage.time = []
+  }
+  lastType.value = outage.type
+  timeSpanNote.value = ''
 }
 
 const addTime = (time: OutageTime) => {
   const exists = (outage.time ?? []).some(
     t => t.begins === time.begins && t.ends === time.ends && (t.day ?? '') === (time.day ?? '')
   )
-  if (!exists) {
-    outage.time = [...(outage.time ?? []), time]
+  if (exists) {
+    timeSpanNote.value = 'That time span is already in the list.'
+    return
   }
+  timeSpanNote.value = ''
+  outage.time = [...(outage.time ?? []), time]
 }
 const removeTime = (index: number) => {
   outage.time = (outage.time ?? []).filter((_, i) => i !== index)
@@ -265,6 +291,7 @@ const save = async () => {
     return
   }
   saving.value = true
+  let outageSaved = false
   try {
     await saveScheduledOutage({
       name: outage.name,
@@ -273,12 +300,32 @@ const save = async () => {
       node: outage.node,
       interface: outage.interface
     })
+    outageSaved = true
     await applyMembershipChanges()
     goBack()
   } catch (err: any) {
-    errorMessage.value = scheduledOutageErrorMessage(err, 'Failed to save the scheduled outage.')
+    if (outageSaved) {
+      // The outage persisted but a subsystem membership call failed partway.
+      // Re-read the actual state so the matrix reflects what really got applied.
+      errorMessage.value = scheduledOutageErrorMessage(
+        err, 'The outage was saved, but applying some subsystem settings failed. The list below now shows the settings that were actually applied — review and Save again.')
+      await reloadApplicability()
+    } else {
+      errorMessage.value = scheduledOutageErrorMessage(err, 'Failed to save the scheduled outage.')
+    }
   } finally {
     saving.value = false
+  }
+}
+
+const reloadApplicability = async () => {
+  const appl = await getOutageApplicability(outage.name)
+  if (appl) {
+    applicability.notifications = appl.notifications
+    applicability.pollers = appl.pollers
+    applicability.thresholders = appl.thresholders
+    applicability.collectors = appl.collectors
+    originalApplicability = clone(appl)
   }
 }
 
@@ -365,6 +412,11 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
   .field-error,
   .error {
     color: var(--p-red-500, #d32f2f);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .field-note {
+    color: var(--p-text-muted-color);
     margin: 0.5rem 0 0 0;
   }
 

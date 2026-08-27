@@ -21,7 +21,12 @@
 ///
 
 import { describe, expect, it } from 'vitest'
-import { buildOutageTime, defaultTimeSpanFields } from '@/components/ScheduledOutages/outageTime'
+import {
+  DAYS_OF_MONTH,
+  DAYS_OF_MONTH_PADDED,
+  buildOutageTime,
+  defaultTimeSpanFields
+} from '@/components/ScheduledOutages/outageTime'
 
 // BasicScheduleUtils selects the parser by the exact string length: 20 for the
 // 'dd-MMM-yyyy HH:mm:ss' (specific) format, 8 for 'HH:mm:ss' (recurring).
@@ -69,5 +74,24 @@ describe('buildOutageTime', () => {
     const t = buildOutageTime('monthly', { ...base(), day: '15' })
     expect(t.begins).toBe('01:02:03')
     expect(t.day).toBe('15')
+  })
+
+  // Regression: the specific-date day dropdown must feed PADDED day values, or a
+  // single-digit day yields a 19-char string the length-keyed Java parser misreads.
+  it('keeps a specific span at 20 chars for the default (day 01) selection', () => {
+    const t = buildOutageTime('specific', defaultTimeSpanFields(2026))
+    expect(t.begins.length).toBe(20)
+    expect(t.ends.length).toBe(20)
+  })
+
+  it('exposes padded 01..31 day-of-month values for the specific-date field', () => {
+    expect(DAYS_OF_MONTH_PADDED[0].value).toBe('01')
+    expect(DAYS_OF_MONTH_PADDED[8].value).toBe('09')
+    expect(DAYS_OF_MONTH_PADDED.every(o => o.value.length === 2)).toBe(true)
+  })
+
+  it('keeps unpadded 1..31 day-of-month values for the monthly attribute', () => {
+    expect(DAYS_OF_MONTH[0].value).toBe('1')
+    expect(DAYS_OF_MONTH[8].value).toBe('9')
   })
 })

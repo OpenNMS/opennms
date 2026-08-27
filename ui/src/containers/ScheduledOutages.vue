@@ -29,6 +29,7 @@
       </div>
 
       <p v-if="createError" class="error" data-test="create-error">{{ createError }}</p>
+      <p v-if="loadError" class="error" data-test="load-error">{{ loadError }}</p>
 
       <OnmsTable
         v-if="outages.length"
@@ -123,7 +124,8 @@ import ScheduledOutagesAbout from '@/components/ScheduledOutages/ScheduledOutage
 import {
   deleteScheduledOutage,
   getOutageApplicability,
-  getScheduledOutages
+  getScheduledOutages,
+  scheduledOutageErrorMessage
 } from '@/services/scheduledOutagesService'
 import { ScheduledOutage } from '@/types/scheduledOutage'
 import { BreadCrumb } from '@/types'
@@ -147,6 +149,7 @@ const outages = ref<OutageRow[]>([])
 const loading = ref(true)
 const newName = ref('')
 const createError = ref('')
+const loadError = ref('')
 const outageToDelete = ref('')
 
 const emptyContent = computed(() => ({
@@ -156,8 +159,15 @@ const emptyContent = computed(() => ({
 
 const load = async () => {
   loading.value = true
+  loadError.value = ''
   const list = await getScheduledOutages()
-  const rows: OutageRow[] = (list ?? []).map(o => ({ ...o }))
+  // null signals a fetch failure — keep the rows already on screen (service contract)
+  if (list === null) {
+    loadError.value = 'Failed to load scheduled outages. Showing the last known list.'
+    loading.value = false
+    return
+  }
+  const rows: OutageRow[] = list.map(o => ({ ...o }))
   // membership booleans come from the per-outage applies-to summary
   await Promise.all(rows.map(async (row) => {
     const appl = await getOutageApplicability(row.name)
@@ -210,8 +220,11 @@ const askDelete = (name: string) => {
 const confirmDelete = async () => {
   const name = outageToDelete.value
   outageToDelete.value = ''
+  loadError.value = ''
   try {
     await deleteScheduledOutage(name)
+  } catch (err: any) {
+    loadError.value = scheduledOutageErrorMessage(err, `Failed to delete the scheduled outage "${name}".`)
   } finally {
     await load()
   }

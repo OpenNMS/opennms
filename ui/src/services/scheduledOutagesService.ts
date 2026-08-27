@@ -40,6 +40,11 @@ export const scheduledOutageErrorMessage = (err: any, fallback: string): string 
 
 const seg = (value: string): string => encodeURIComponent(value)
 
+// Strip FIQL/URL metacharacters so a typed query can't break out of the
+// `node.label==*<term>*` filter or inject extra query params. Node labels and
+// IP addresses only contain these characters anyway.
+const sanitizeSearchTerm = (query: string): string => query.replace(/[^a-zA-Z0-9._:-]/g, '')
+
 // null (not []) on failure so the list page can keep the previous rows
 export const getScheduledOutages = async (): Promise<ScheduledOutage[] | null> => {
   try {
@@ -111,7 +116,8 @@ export const setNotificationMembership = async (outageName: string, applied: boo
 // Node label autocomplete for the node picker (id + label).
 export const searchOutageNodes = async (query: string): Promise<{ id: number, label: string }[]> => {
   try {
-    const filter = query ? `&_s=node.label==*${query}*` : ''
+    const term = sanitizeSearchTerm(query)
+    const filter = term ? `&_s=node.label==*${term}*` : ''
     const resp = await v2.get(`/nodes?limit=200${filter}`)
     return asArray<any>(resp.data?.node)
       .map(n => ({ id: Number(n.id), label: n.label as string }))
@@ -124,7 +130,8 @@ export const searchOutageNodes = async (query: string): Promise<{ id: number, la
 // IP interface autocomplete for the interface picker.
 export const searchOutageInterfaces = async (query: string): Promise<{ address: string, nodeLabel: string }[]> => {
   try {
-    const filter = query ? `&_s=ipInterface.ipAddress==*${query}*` : ''
+    const term = sanitizeSearchTerm(query)
+    const filter = term ? `&_s=ipInterface.ipAddress==*${term}*` : ''
     const resp = await v2.get(`/ipinterfaces?limit=200${filter}`)
     return asArray<any>(resp.data?.ipInterface)
       .map(i => ({ address: i.ipAddress as string, nodeLabel: i.nodeLabel ?? '' }))
