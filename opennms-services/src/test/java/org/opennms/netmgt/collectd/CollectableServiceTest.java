@@ -61,6 +61,8 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -69,6 +71,7 @@ import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.FileAnticipator;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -243,6 +246,45 @@ public class CollectableServiceTest {
         createCollectableService(paramsMap);
 
         verify(thresholdingService, times(1)).createSession(anyInt(), any(), any(), any());
+    }
+
+    /**
+     * A CollectableService starts with no known status, so the first successful collection is a transition
+     * and emits dataCollectionSucceeded. That is what clears a dataCollectionFailed alarm raised before a
+     * restart or a collectd reload, both of which rebuild every CollectableService. See NMS-19979.
+     */
+    @Test
+    public void sendsSucceededEventOnFirstSuccessfulCollection() throws CollectionInitializationException, CollectionException, IOException {
+        EventIpcManager eventIpcManager = mock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(eventIpcManager);
+
+        createCollectableService();
+        when(spec.collect(any())).thenReturn(null);
+
+        service.run();
+
+        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(eventIpcManager, times(1)).sendNow(eventCaptor.capture());
+        assertEquals(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI, eventCaptor.getValue().getUei());
+    }
+
+    /**
+     * Only the transition emits, so a service that keeps collecting successfully stays quiet after the
+     * first pass rather than sending an event per collection cycle.
+     */
+    @Test
+    public void sendsNoFurtherEventWhileCollectionKeepsSucceeding() throws CollectionInitializationException, CollectionException, IOException {
+        EventIpcManager eventIpcManager = mock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(eventIpcManager);
+
+        createCollectableService();
+        when(spec.collect(any())).thenReturn(null);
+
+        service.run();
+        service.run();
+        service.run();
+
+        verify(eventIpcManager, times(1)).sendNow(any(Event.class));
     }
 
     private void createCollectableService() throws CollectionInitializationException, IOException {
