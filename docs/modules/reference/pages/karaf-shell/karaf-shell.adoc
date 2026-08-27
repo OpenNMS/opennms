@@ -391,6 +391,9 @@ This list is not exhaustive and only covers the most commonly used commands.
 |opennms:kafka-list-alarms
 |Enumerates the alarms that are currently in the Kafka data store
 |opennms-kafka-producer
+|opennms:kafka-metric-routing-test
+|Show the Kafka topic that metrics for the given node, interface or service are routed to
+|opennms-kafka-producer
 |opennms:kafka-sync-alarms
 |Triggers a syncrhonization of the alarms topic against the database
 |opennms-kafka-producer

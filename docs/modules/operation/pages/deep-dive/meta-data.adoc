@@ -262,6 +262,12 @@ The following {page-component-title} components allow the use of the Metadata DS
 
 Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scope `scv` in order to reference credentials in the Secure Credentials Vault:
 
+The Kafka Producer additionally uses metadata directly, rather than through the DSL, to decide which topic to publish collected metrics to.
+Define `metricRouting.package` in the `requisition` context on a node, interface, or service, and its metrics are published to the topic of that name -- see <<deep-dive/kafka-producer/configure-kafka.adoc#metric-routing, Route metrics to multiple topics>>.
+The value is used verbatim as the topic name and is not interpolated.
+
+Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scopes `scv` and `env`:
+
 * xref:operation:deep-dive/elasticsearch/introduction.adoc[Elasticsearch integration]: elastic-configuration.xml
 * xref:reference:performance-data-collection/collectors/http.adoc[HTTP/HTTPS collector]: http-datacollection-config.xml
 * xref:operation:deep-dive/alarms/ifttt-integration.adoc[IFTTT integration]: ifttt-config.xml
