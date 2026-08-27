@@ -275,6 +275,10 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
 * <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.
 
+The Kafka Producer additionally uses metadata directly, rather than through the DSL, to decide which topic to publish collected metrics to.
+Define `metricRouting.package` in the `requisition` context on a node, interface, or service, and its metrics are published to the topic of that name -- see <<deep-dive/kafka-producer/configure-kafka.adoc#metric-routing, Route metrics to multiple topics>>.
+The value is used verbatim as the topic name and is not interpolated.
+
 Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scopes `scv` and `env`:
 
 * xref:reference:configuration/core-docker.adoc[Database configuration]: opennms-datasources.xml

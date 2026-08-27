@@ -58,6 +58,18 @@ Set this to an empty string to disable filtering, and forward all alarms.
 Set this to an empty string to disable filtering, and forward all metrics.
 | none
 
+| metricRouting.enabled
+| Set this to `true` to route metrics to different topics based on meta-data (see <<metric-routing>>).
+| false
+
+| metricRouting.contextKey
+| The meta-data key that names the destination topic, as `context:key`.
+| requisition:metricRouting.package
+
+| metricRouting.cacheTimeoutMs
+| Number of milliseconds a resolved topic is cached before the meta-data is read from the database again.
+| 300000 (5 minutes)
+
 | forward.metrics
 | Set this value to `true` to enable forwarding of metrics.
 | false
@@ -184,6 +196,136 @@ Or add following line at `$OPENNMS_HOME/etc/org.opennms.features.kafka.producer.
 ```
 disable.metrics.splitting = true
 ```
+
+[[metric-routing]]
+=== Route metrics to multiple topics
+
+By default, every collected metric goes to `metricTopic`.
+Metric routing sends metrics to a topic named by xref:operation:deep-dive/meta-data.adoc[meta-data] on the node, interface, or service they were collected from, so that (for example) each tenant's metrics can be separated at the broker instead of at the consumer.
+
+To enable it, set `metricRouting.enabled` to `true` (metric forwarding must be enabled as well):
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set forward.metrics true
+admin@opennms()> config:property-set metricRouting.enabled true
+admin@opennms()> config:update
+----
+
+Then define the meta-data named by `metricRouting.contextKey`, by default `requisition:metricRouting.package`.
+Its value is the topic name.
+For example, to send everything collected on one interface to the topic `foobar`:
+
+[source, xml]
+----
+<node foreign-id="node1" node-label="node1">
+  <interface ip-addr="10.0.0.1" status="1" snmp-primary="P">
+    <meta-data context="requisition" key="metricRouting.package" value="foobar"/>
+    <monitored-service service-name="SNMP"/>
+  </interface>
+</node>
+----
+
+Meta-data can be set on nodes, interfaces, and services, in the requisition, through the web UI, or through the REST API.
+A metric whose node, interface, and service all lack the key goes to `metricTopic`, so enabling routing never drops metrics.
+
+Data collection is always triggered by a monitored service on an interface of a node, and routing follows that collection rather than the individual metric.
+The topic is determined by the first of the following that carries the key:
+
+. the meta-data of the collecting service
+. the meta-data of the interface the collecting service is assigned to
+. the meta-data of the node the collecting service belongs to
+. otherwise, the default `metricTopic`
+
+For SNMP collected through `10.0.0.1` on a node:
+
+[options="header" cols="1,2"]
+|===
+| Meta-data set on
+| What is routed
+
+| the `SNMP` service on `10.0.0.1`
+| everything that SNMP collection produces, overriding the interface and the node
+
+| interface `10.0.0.1`
+| the same, unless the `SNMP` service itself is tagged
+
+| the node
+| every metric collected from the node, unless a collecting service or its interface is tagged
+|===
+
+[IMPORTANT]
+====
+Meta-data on an interface only affects routing when a monitored service is assigned to that interface, because it is the collecting service's interface that is consulted.
+Meta-data on the other interfaces of a node -- including the SNMP interfaces the metrics actually describe -- is *not* consulted.
+So you cannot move a single interface's traffic metrics into their own topic by tagging that interface; tag the service, its interface, or the node to move a whole collection.
+You can use different collection packages bound to different service names to split interface metrics.
+====
+
+Response time metrics carry their own address and service, so they are routed by the polled service, then its interface, then the node.
+
+Streaming telemetry, flows, and collections submitted through the integration API are not triggered by a monitored service, so only the exporter's interface and the node apply to them.
+
+Use `opennms:kafka-metric-routing-test` to check what a given node, interface, or service resolves to before relying on it -- see xref:operation:deep-dive/kafka-producer/shell-commands.adoc[Shell Commands].
+
+==== Topic names
+
+The meta-data value is used *verbatim* as the topic name.
+It is not interpolated, so a value such as `${requisition:tenant}` is taken literally and rejected.
+
+A value is only used if it is a legal Kafka topic name: at most 249 characters, made up of `a-z`, `A-Z`, `0-9`, `.`, `_`, and `-`, and not `.` or `..`.
+Values that fail are logged and the metrics go to `metricTopic` instead; they are never renamed automatically, because a rewritten name could silently collide with a different topic (Kafka treats `.` and `_` as equivalent in its own metric names).
+
+[CAUTION]
+====
+Routed topics must already exist, or the broker must be configured to create topics automatically.
+Sending to an unknown topic blocks the collection thread for up to `max.block.ms` (60 seconds by default) before failing, which delays collection.
+If you cannot pre-create topics, consider lowering `max.block.ms` in `org.opennms.features.kafka.producer.client.metrics`.
+====
+
+==== What consumers need to know
+
+Because routing is decided per collection, a collection is still sent as a single message, keyed as it always was.
+Different services of the same node can nevertheless resolve to different topics, and Kafka provides no ordering guarantee *across* topics.
+A consumer that reconstructs per-node state therefore has to merge the topics it reads.
+
+==== Monitoring
+
+Metric routing exposes counters over JMX, and through the shell:
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms:metrics-display -m org.opennms.features.kafka.producer
+----
+
+[options="header" cols="1,3"]
+|===
+| Counter
+| Description
+
+| metricRouting.routed._topic_
+| Resources published to _topic_.
+
+| metricRouting.unmapped
+| Resources whose meta-data key was not set, or was blank.
+
+| metricRouting.sanitizeRejected
+| Resources whose meta-data value was not a legal topic name.
+
+| metricRouting.unresolvedNode
+| Resources for which no node could be determined, so no meta-data could be read.
+
+| cache.kafkaMetricRouting.hitRate
+| Hit rate of the resolved-topic cache.
+|===
+
+A resolved topic is cached for `metricRouting.cacheTimeoutMs`, so a meta-data change made through a requisition import or the REST API takes up to that long to take effect.
+Run `opennms:kafka-metric-routing-test --clear-cache` to apply it immediately.
 
 === Enable exclusive metric forwarding
 

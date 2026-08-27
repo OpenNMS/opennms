@@ -52,6 +52,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
     private String topicName;
     private boolean disableMetricsSplitting = false;
     private String metricFilter;
+    private MetricTopicRouter metricTopicRouter;
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
@@ -67,6 +68,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
         persister.setTopicName(topicName);
         persister.setDisableMetricsSplitting(disableMetricsSplitting);
         persister.setMetricFilter(metricFilter);
+        persister.setMetricTopicRouter(metricTopicRouter);
         return persister;
     }
 
@@ -136,5 +138,9 @@ public class KafkaPersisterFactory implements PersisterFactory {
 
     public void setMetricFilter(String metricFilter) {
         this.metricFilter = metricFilter;
+    }
+
+    public void setMetricTopicRouter(MetricTopicRouter metricTopicRouter) {
+        this.metricTopicRouter = metricTopicRouter;
     }
 }

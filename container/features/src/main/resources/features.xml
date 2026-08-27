@@ -987,8 +987,11 @@
         <feature>rate-limited-logger</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-situation-feedback-api</feature>
+        <feature>opennms-mate-api</feature>
+        <feature>dropwizard-metrics</feature>
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:at.yawk.lz4/lz4-java/${lz4JavaVersion}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>

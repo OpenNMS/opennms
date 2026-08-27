@@ -21,6 +21,8 @@
  */
 package org.opennms.features.kafka.producer;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
@@ -30,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import org.hamcrest.Matchers;
@@ -37,8 +40,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.features.kafka.producer.collection.CollectionSetMapper;
+import org.opennms.features.kafka.producer.collection.MetricTopicRouter;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -167,5 +172,114 @@ public class CollectionSetMapperTest {
         assertTrue(collectionSetResource.hasResponse());
         assertThat(collectionSetResource.getResponse().getNode().getNodeId(), Matchers.is(14L));
         assertThat(collectionSetResource.getResponse().getNode().getNodeLabel(), Matchers.is("SnmpNode"));
+    }
+
+    /**
+     * The routing-disabled path has to be indistinguishable from the un-routed behaviour, down to
+     * the serialized bytes. Both entry points share one visitor, so this is what actually holds
+     * that guarantee - rather than a duplicated code path.
+     */
+    @Test
+    public void testRoutingDisabledIsByteIdenticalToTheUnroutedMapping() throws UnknownHostException {
+        final CollectionSetMapper collectionSetMapper = mapperForNodes(1);
+        final ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        final CollectionSet collectionSet = mixedCollectionSet();
+
+        final CollectionSetProtos.CollectionSet unrouted =
+                collectionSetMapper.buildCollectionSetProtos(collectionSet, params);
+
+        // A null router means "no routing at all"; the default topic is the only group.
+        final Map<String, CollectionSetProtos.CollectionSet> byTopic = collectionSetMapper
+                .buildCollectionSetProtosByTopic(mixedCollectionSet(), params, null, "metrics");
+
+        assertThat(byTopic.keySet(), Matchers.contains("metrics"));
+        assertArrayEquals(unrouted.toByteArray(), byTopic.get("metrics").toByteArray());
+        assertThat(unrouted.getResourceList(), Matchers.hasSize(3));
+    }
+
+    @Test
+    public void testResourcesAreGroupedByResolvedTopicKeepingTimestampAndOrder() throws UnknownHostException {
+        final CollectionSetMapper collectionSetMapper = mapperForNodes(1);
+        final ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+
+        // Route interface resources elsewhere, everything else to the default topic.
+        final MetricTopicRouter router = Mockito.mock(MetricTopicRouter.class);
+        when(router.resolveTopic(any(CollectionResource.class), Mockito.anyInt(), any(ServiceParameters.class)))
+                .thenAnswer(invocation -> {
+                    final CollectionResource resource = invocation.getArgument(0);
+                    return CollectionResource.RESOURCE_TYPE_IF.equals(resource.getResourceTypeName())
+                            ? "routed" : "metrics";
+                });
+
+        final Map<String, CollectionSetProtos.CollectionSet> byTopic = collectionSetMapper
+                .buildCollectionSetProtosByTopic(mixedCollectionSet(), params, router, "metrics");
+
+        assertThat(byTopic.keySet(), Matchers.containsInAnyOrder("metrics", "routed"));
+        assertThat(byTopic.get("routed").getResourceList(), Matchers.hasSize(1));
+        assertTrue(byTopic.get("routed").getResource(0).hasInterface());
+        // node level + latency
+        assertThat(byTopic.get("metrics").getResourceList(), Matchers.hasSize(2));
+        // Every group carries the timestamp of the CollectionSet it came from
+        assertEquals(2L, byTopic.get("metrics").getTimestamp());
+        assertEquals(2L, byTopic.get("routed").getTimestamp());
+    }
+
+    /**
+     * Response time resources used to reach the router with node id 0, because the node was
+     * resolved inside buildResponseTimeResource and then discarded.
+     */
+    @Test
+    public void testLatencyResourcesAreRoutedWithTheirNodeId() throws UnknownHostException {
+        final CollectionSetMapper collectionSetMapper = mapperForNodes(1);
+        final ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+
+        final MetricTopicRouter router = Mockito.mock(MetricTopicRouter.class);
+        when(router.resolveTopic(any(CollectionResource.class), Mockito.anyInt(), any(ServiceParameters.class)))
+                .thenReturn("metrics");
+
+        final CollectionAgent agent = new MockCollectionAgent(1, "TestNode", InetAddress.getLocalHost());
+        final LatencyTypeResource latencyTypeResource = new LatencyTypeResource("ICMP",
+                InetAddress.getLocalHost().getHostAddress(), "Default");
+        latencyTypeResource.addTag("node_id", "1");
+        final CollectionSet collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withGauge(latencyTypeResource, "icmp", "icmp", 1.0).build();
+
+        collectionSetMapper.buildCollectionSetProtosByTopic(collectionSet, params, router, "metrics");
+
+        // The collecting service reaches the router through the ServiceParameters, and the node id
+        // now survives for latency resources as well.
+        Mockito.verify(router).resolveTopic(any(CollectionResource.class), Mockito.eq(1), Mockito.same(params));
+    }
+
+    /** A node level, an SNMP interface and a response time resource in one CollectionSet. */
+    private static CollectionSet mixedCollectionSet() throws UnknownHostException {
+        final CollectionAgent agent = new MockCollectionAgent(1, "TestNode", InetAddress.getLocalHost());
+        final NodeLevelResource nodeResource = new NodeLevelResource(1);
+        final InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeResource, "25");
+        final LatencyTypeResource latencyTypeResource = new LatencyTypeResource("ICMP",
+                InetAddress.getLocalHost().getHostAddress(), "Default");
+        latencyTypeResource.addTag("node_id", "1");
+
+        return new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withGauge(nodeResource, "group1", "cpu", 1.0)
+                .withNumericAttribute(interfaceResource, "group2", "ifInOctets", 105, AttributeType.GAUGE)
+                .withGauge(latencyTypeResource, "icmp", "icmp", 1.0)
+                .build();
+    }
+
+    private static CollectionSetMapper mapperForNodes(final int... nodeIds) {
+        final NodeDao nodeDao = Mockito.mock(NodeDao.class);
+        for (final int nodeId : nodeIds) {
+            final OnmsNode node = new OnmsNode();
+            node.setId(nodeId);
+            node.setLabel("TestNode" + nodeId);
+            when(nodeDao.get(Integer.toString(nodeId))).thenReturn(node);
+        }
+
+        final SessionUtils sessionUtils = Mockito.mock(SessionUtils.class);
+        when(sessionUtils.withReadOnlyTransaction(any(Supplier.class)))
+                .thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(0)).get());
+
+        return new CollectionSetMapper(nodeDao, sessionUtils, Mockito.mock(ResourceDao.class));
     }
 }
