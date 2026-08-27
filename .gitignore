@@ -47,6 +47,8 @@ ui/packages/*/node_modules/
 ui/packages/onms-ui-example-plugin/dist/
 ui/package-lock.json
 ui/devConfig.ts
+# Vite local env overrides (.env.local, .env.development.local, ...)
+ui/*.local
 .circleci/main.yml
 built_dependencies
 

@@ -72,5 +72,9 @@
        <argument streamed="false">
            <switch>-tm</switch>
        </argument>
+       <!-- Lets a clicked notification open the notice. -->
+       <argument streamed="false">
+           <switch>noticeid</switch>
+       </argument>
    </command>
 </notification-commands>

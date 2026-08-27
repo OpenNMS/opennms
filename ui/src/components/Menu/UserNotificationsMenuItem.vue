@@ -131,12 +131,12 @@
 import { computed, markRaw, ref, watch } from 'vue'
 
 import { OnmsIcon, OnmsButton, OnmsPopover } from '@opennms/onms-ui'
-import IconArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
-import IconCalendar from '@/components/icons/action/Calendar.vue'
-import IconGroup from '@/components/icons/action/Group.vue'
-import IconNotificationsOff from '@/components/icons/notification/NotificationsOff.vue'
-import IconNotificationSelected from '@/components/icons/notification/NotificationSelected.vue'
-import IconPerson from '@/components/icons/action/Person.vue'
+import IconArrowDropDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
+import IconCalendar from '@opennms/onms-ui/icons/action/Calendar.vue'
+import IconGroup from '@opennms/onms-ui/icons/action/Group.vue'
+import IconNotificationsOff from '@opennms/onms-ui/icons/notification/NotificationsOff.vue'
+import IconNotificationSelected from '@opennms/onms-ui/icons/notification/NotificationSelected.vue'
+import IconPerson from '@opennms/onms-ui/icons/action/Person.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,

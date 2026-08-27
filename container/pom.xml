@@ -3,16 +3,22 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.3-SNAPSHOT</version>
+    <version>37.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.container</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: OSGi Container</name>
   <modules>
+    <!-- these must come before "karaf" and "shared": they patch Karaf bundles
+         both assemblies pull into their system/ directory -->
+    <module>plexus-utils-relocated</module>
+    <module>pax-url-aether-patch</module>
+    <module>karaf-features-core-patch</module>
     <module>branding</module>
     <module>features</module>
     <module>karaf</module>
+    <module>daemon</module>
     <module>servlet</module>
     <module>bridge</module>
     <module>jaas-login-module</module>

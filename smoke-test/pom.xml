@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>36.0.3-SNAPSHOT</version>
+  <version>37.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -51,7 +51,9 @@
     <camelVersion>2.21.5</camelVersion>
     <groovyVersion>3.0.21</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.18.6</jackson2Version>
+    <jackson2Version>2.22.1</jackson2Version>
+    <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
+    <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
     <jersey.version>2.46</jersey.version>
     <jestVersion>5.3.4</jestVersion>
     <junit5Version>5.9.2</junit5Version>
@@ -65,7 +67,7 @@
     <testcontainers.version>1.20.6</testcontainers.version>
     <netty4Version>4.1.99.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
-    <okhttpVersion>3.10.0</okhttpVersion>
+    <okhttpVersion>4.9.3</okhttpVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
@@ -404,7 +406,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson2Version}</version>
+        <version>${jackson2AnnotationsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -817,7 +819,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.15.3</version>
+      <version>1.23.1</version>
     </dependency>
     <dependency>
       <groupId>com.github.mwiede</groupId>

@@ -31,6 +31,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -196,6 +197,50 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
     public void testLoadResponseTimeAdhocGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-adhoc-graph.properties"));
+    }
+
+    @Test
+    public void testMissingConfiguredGraphResourcesDoNotPreventInitialization() throws Exception {
+        m_testSpecificLoggingTest = true;
+        final File missingConfigDirectory = m_fileAnticipator.tempDir("missing-graph-configs");
+
+        final Map<String, Resource> prefabConfigs = new HashMap<>();
+        prefabConfigs.put("performance", new FileSystemResource(new File(missingConfigDirectory, "snmp-graph.properties")));
+
+        final Map<String, Resource> adhocConfigs = new HashMap<>();
+        adhocConfigs.put("performance", new FileSystemResource(new File(missingConfigDirectory, "snmp-adhoc-graph.properties")));
+
+        final PropertiesGraphDao dao = createPropertiesGraphDao(prefabConfigs, adhocConfigs);
+
+        assertTrue(dao.getAllPrefabGraphs().isEmpty());
+        MockLogAppender.assertLogAtLevel(Level.WARN);
+    }
+
+    /**
+     * A graph configuration that exists but cannot be parsed must not prevent
+     * initialization either, otherwise the Spring context that holds this DAO
+     * fails to start and takes the rest of OpenNMS with it.
+     */
+    @Test
+    public void testUnparseableConfiguredGraphResourcesDoNotPreventInitialization() throws Exception {
+        m_testSpecificLoggingTest = true;
+        final File borkedFile = m_fileAnticipator.tempFile("snmp-graph.properties");
+
+        // 'command.prefix' and 'output.mime' are required, so this fails with a
+        // DataAccessResourceFailureException rather than an IOException.
+        m_outputStream = new FileOutputStream(borkedFile);
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
+        m_writer.write("reports=mib2.bits\n");
+        m_writer.close();
+        m_outputStream.close();
+
+        final Map<String, Resource> prefabConfigs = new HashMap<>();
+        prefabConfigs.put("performance", new FileSystemResource(borkedFile));
+
+        final PropertiesGraphDao dao = createPropertiesGraphDao(prefabConfigs, s_emptyMap);
+
+        assertTrue(dao.getAllPrefabGraphs().isEmpty());
+        MockLogAppender.assertLogAtLevel(Level.ERROR);
     }
     
     @Test

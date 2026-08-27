@@ -8,7 +8,6 @@
 	">
 
     <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory" />
-    <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" />
 
     <!-- Resolve ${karaf.etc} in the jaas:module options below. -->
     <ext:property-placeholder system-properties="override" />
@@ -26,4 +25,3 @@
         <bean class="org.opennms.container.jaas.OpenNMSBackingEngineFactory"/>
     </service>
 </blueprint>
-

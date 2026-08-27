@@ -7,9 +7,10 @@
          class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
-         <value>META-INF/opennms/component-reporting.xml</value>
+         <!-- Availability reporting is initialized by daoContext. -->
        </list>
      </constructor-arg>
+     <constructor-arg ref="daoContext" />
    </bean>
 
 </beans>

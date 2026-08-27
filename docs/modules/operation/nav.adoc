@@ -127,10 +127,9 @@
 *** xref:deep-dive/notifications/configuration.adoc[]
 *** xref:deep-dive/notifications/commands.adoc[]
 *** xref:deep-dive/notifications/bonus-strategies.adoc[]
-**** xref:deep-dive/notifications/strategies/mattermost.adoc[]
 **** xref:deep-dive/notifications/strategies/scripting.adoc[]
-**** xref:deep-dive/notifications/strategies/slack.adoc[]
 **** xref:deep-dive/notifications/strategies/ticket.adoc[]
+**** xref:deep-dive/notifications/strategies/webhook.adoc[]
 *** xref:deep-dive/notifications/shell.adoc[]
 
 ** xref:deep-dive/bsm/introduction.adoc[]

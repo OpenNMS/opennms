@@ -74,7 +74,7 @@ describe('Menu utils', () => {
       expect(inventory.topLevel).toBe(true)
 
       const inventoryItems = childItems(inventory)
-      expect(inventoryItems).toHaveLength(3)
+      expect(inventoryItems).toHaveLength(2)
       expect(inventoryItems[0]).toMatchObject({
         key: 'nodes',
         label: 'Nodes',
@@ -84,12 +84,6 @@ describe('Menu utils', () => {
       expect(inventoryItems[0].iconComponent).toBeUndefined()
       expect(inventoryItems[0].topLevel).toBeUndefined()
       expect(inventoryItems[1]).toMatchObject({
-        key: 'legacyNodes',
-        label: 'Nodes (Legacy)',
-        url: `${baseHref}element/nodeList.htm`,
-        target: '_self'
-      })
-      expect(inventoryItems[2]).toMatchObject({
         key: 'deviceConfigs',
         label: 'Device Configs',
         url: `${baseHref}ui/index.html#/device-config-backup`,

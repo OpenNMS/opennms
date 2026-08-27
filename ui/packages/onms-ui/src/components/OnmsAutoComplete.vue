@@ -1,5 +1,6 @@
 <template>
   <AutoComplete
+    ref="autoCompleteRef"
     :modelValue="modelValue"
     :suggestions="suggestions"
     :optionLabel="optionLabel"
@@ -43,10 +44,12 @@
 
 <script setup lang="ts">
 import AutoComplete from 'primevue/autocomplete'
+import { ref } from 'vue'
 
 // Seam wrapper around PrimeVue AutoComplete. `complete` fires with
 // the raw query string (the seam does not expose PrimeVue's event object);
-// `optionSelect` fires with the selected value.
+// `optionSelect` fires with the selected value. `clearInput()` is exposed for
+// callers that offer their own clear affordance.
 withDefaults(defineProps<{
   modelValue?: unknown
   suggestions?: unknown[]
@@ -88,4 +91,38 @@ const emit = defineEmits<{
   complete: [query: string]
   optionSelect: [value: unknown]
 }>()
+
+// PrimeVue's AutoComplete type doesn't declare $el, so narrow to what's used.
+const autoCompleteRef = ref<{ $el?: HTMLElement } | null>(null)
+
+const inputElement = () => {
+  const el = autoCompleteRef.value?.$el
+
+  return el instanceof HTMLInputElement ? el : el?.querySelector('input') ?? null
+}
+
+// Clears the text the user has typed but not yet turned into a selection.
+// In `multiple` mode that text has no model to reset — PrimeVue's inner input is
+// uncontrolled there (it binds `value` only in single mode), so the query lives
+// in the DOM and a caller cannot reach it through `modelValue`. Resetting the
+// selection is still the caller's job, via `modelValue`.
+//
+// The input event is dispatched rather than just assigning `value`: PrimeVue
+// schedules its own suggestion fetch on a `delay` timer (300ms) from its `onInput`
+// handler, and only that handler cancels it. A silent assignment leaves the timer
+// armed, so a clear within the delay window still fires `complete` with the stale
+// query and the caller re-runs the search it just cancelled. Going through
+// `onInput` with an empty value clears the timer and closes the overlay too.
+const clearInput = () => {
+  const input = inputElement()
+
+  if (input) {
+    input.value = ''
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+}
+
+const focus = () => inputElement()?.focus()
+
+defineExpose({ clearInput, focus })
 </script>

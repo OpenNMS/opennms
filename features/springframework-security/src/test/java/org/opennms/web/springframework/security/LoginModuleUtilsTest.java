@@ -24,6 +24,8 @@ package org.opennms.web.springframework.security;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Locale;
+
 import org.junit.Test;
 
 public class LoginModuleUtilsTest {
@@ -56,9 +58,23 @@ public class LoginModuleUtilsTest {
     }
 
     @Test
+    public void testMatchingIsDefaultLocaleIndependent() {
+        // Under a Turkish default locale, locale-sensitive toLowerCase() turns
+        // "I" into a dotless ı, so "/API" would slip past the "/api" prefix.
+        final Locale defaultLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(new Locale("tr", "TR"));
+            assertTrue(LoginModuleUtils.isInvalidSavedRequestUrl("/API/v2/nodes"));
+            assertTrue(LoginModuleUtils.isInvalidSavedRequestUrl("/API"));
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
+    }
+
+    @Test
     public void testPageUrlsAreValid() {
         assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/index.jsp"));
-        assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/element/nodeList.htm"));
+        assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/element/node.jsp?node=1"));
         assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/alarm/detail.htm"));
         // prefix matching must not reject pages that merely start with "rest"/"api"
         assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/restrictedPage.jsp"));

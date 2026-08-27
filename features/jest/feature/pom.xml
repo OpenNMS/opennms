@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.jest</artifactId>
-        <version>36.0.3-SNAPSHOT</version>
+        <version>37.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.jest</groupId>
     <artifactId>opennms-jest</artifactId>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>${guavaVersion}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
