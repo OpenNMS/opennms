@@ -115,6 +115,17 @@ License.
             </OnmsAutoComplete>
           </span>
           <template v-if="isDiscovered">
+            <!-- Discovered graphs regenerate and cannot be edited. This keeps
+                 what is on screen as a view that can be. -->
+            <OnmsIconButton
+              :icon="ContentCopy"
+              title="Copy into a custom view"
+              tooltip="Keep this graph, as laid out now, as an editable custom view"
+              tooltip-position="bottom"
+              variant="outlined"
+              :disabled="store.isSaving || store.isDiscoveredLoading"
+              @click="onSaveAsCustom"
+            />
             <OnmsButton
               v-if="!store.focusNodeId"
               label="Focus"
@@ -294,6 +305,7 @@ import Fullscreen from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import Options from '@opennms/onms-ui/icons/action/Options.vue'
 import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
+import ContentCopy from '@opennms/onms-ui/icons/action/ContentCopy.vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
 import TopologyToolStrip from '@/components/Topology/TopologyToolStrip.vue'
@@ -1006,7 +1018,7 @@ const onSave = () => saveCurrent()
 // New, Save As and Rename all ask for one view name under the same rules, so
 // they share a single dialog. The mode decides the wording, what the field is
 // seeded with, and what the answer does.
-type NameDialogMode = 'new' | 'saveAs' | 'rename'
+type NameDialogMode = 'new' | 'saveAs' | 'rename' | 'adoptDiscovered'
 
 const nameDialogVisible = ref(false)
 const nameDialogMode = ref<NameDialogMode>('new')
@@ -1018,6 +1030,12 @@ const nameDialogConfig = computed(() => {
       return { title: 'Save view as', actionLabel: 'Save', initialName: current }
     case 'rename':
       return { title: 'Rename view', actionLabel: 'Rename', initialName: current }
+    case 'adoptDiscovered':
+      return {
+        title: 'Copy into a custom view',
+        actionLabel: 'Save',
+        initialName: currentSourceShort.value
+      }
     default:
       return { title: 'New view', actionLabel: 'Create', initialName: '' }
   }
@@ -1045,6 +1063,8 @@ const onNew = async () => {
   }
 }
 
+const onSaveAsCustom = () => openNameDialog('adoptDiscovered')
+
 const onSaveAs = () => {
   if (store.currentView) {
     openNameDialog('saveAs')
@@ -1065,6 +1085,9 @@ const onNameSubmit = async (name: string) => {
     case 'rename':
       await renameCurrentView(name)
       break
+    case 'adoptDiscovered':
+      await saveDiscoveredAsCustom(name)
+      break
     default:
       await createView(name)
   }
@@ -1080,6 +1103,35 @@ const createView = async (name: string) => {
   markSaved()
   await saveCurrent()
   syncRouteToView()
+}
+
+/**
+ * Keep the discovered graph as it stands as an editable view. What is on screen
+ * is what is kept: a discovered container here runs to thousands of vertices,
+ * and the focused subgraph is both what the operator means and what a canvas
+ * can carry.
+ */
+const saveDiscoveredAsCustom = async (name: string) => {
+  const snapshot = canvasRef.value?.serialize()
+  if (!snapshot) {
+    return
+  }
+  const ok = await store.saveDiscoveredAsView(name, snapshot)
+  showToast(
+    ok
+      ? { message: `View "${name}" saved`, severity: 'success', timeout: 3000 }
+      : { message: 'Could not save the view; the name may already be in use.', severity: 'error', timeout: 5000 }
+  )
+  if (ok) {
+    // Straight into the copy, in Edit mode: this is only ever pressed by
+    // someone who wants to start moving things.
+    store.setEditMode(true)
+    router.push({
+      name: 'Topology',
+      params: { source: CUSTOM_SOURCE_SLUG },
+      query: { view: name }
+    })
+  }
 }
 
 const saveViewAs = async (name: string) => {

@@ -562,6 +562,42 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * view untouched, rather than detaching it (losing its id) and renaming it
    * to the conflicting name.
    */
+  /**
+   * Keep a discovered graph as a custom view: the nodes and links as they are
+   * laid out right now, under a new name.
+   *
+   * Not saveCurrentViewAs, which spreads the open view. On a discovered source
+   * currentView still names whichever custom view was open last, so spreading
+   * it would carry that view's background and style onto this one.
+   *
+   * The links keep the bindings discovery gave them, which is what lets the
+   * copy still color and report counters; nothing else in a custom view could
+   * have supplied them.
+   */
+  const saveDiscoveredAsView = async (name: string, snapshot: CanvasSnapshot): Promise<boolean> => {
+    isSaving.value = true
+    try {
+      const candidate: TopologyView = {
+        name,
+        nodes: snapshot.nodes,
+        links: snapshot.links,
+        labels: [],
+        viewport: snapshot.viewport
+      }
+      const saved = await saveView(candidate)
+      if (saved === false) {
+        return false
+      }
+      currentView.value = saved
+      setLabels([])
+      setShapes([])
+      await refreshCatalog()
+      return true
+    } finally {
+      isSaving.value = false
+    }
+  }
+
   const saveCurrentViewAs = async (name: string, snapshot: CanvasSnapshot): Promise<boolean> => {
     if (!currentView.value) {
       return false
@@ -801,6 +837,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     renameCurrent,
     saveCurrentView,
     saveCurrentViewAs,
+    saveDiscoveredAsView,
     openView,
     removeView,
     renameView,
