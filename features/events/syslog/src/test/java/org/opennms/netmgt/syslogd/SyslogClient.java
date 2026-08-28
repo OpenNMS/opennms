@@ -31,15 +31,21 @@
 package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.syslogd.SyslogTcpFraming;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +100,9 @@ public class SyslogClient {
 
     private InetAddress address;
     private DatagramSocket socket;
+
+    private Socket tcpSocket;
+    private SyslogTcpFraming tcpFraming = SyslogTcpFraming.NON_TRANSPARENT;
 
     /// Creating a Syslog instance is equivalent of the Unix openlog() call.
     // @exception SyslogException if there was a problem
@@ -161,5 +170,74 @@ public class SyslogClient {
 
     public void setSyslogPort(int syslogPort) {
         this.syslogPort = syslogPort;
+    }
+
+    // --- TCP -----------------------------------------------------------------
+
+    /**
+     * Opens a plaintext TCP connection. Held open across calls so that a test can check
+     * how several messages on one connection behave, which is where framing and ordering
+     * actually matter.
+     */
+    public void openTcp(final int port) throws IOException {
+        closeTcp();
+        tcpSocket = new Socket(address, port);
+    }
+
+    /**
+     * Opens a TLS connection. The factory is supplied by the caller so that this class
+     * stays out of the business of loading certificates.
+     */
+    public void openTcp(final int port, final SSLSocketFactory socketFactory) throws IOException {
+        closeTcp();
+        final SSLSocket sslSocket = (SSLSocket) socketFactory.createSocket(address, port);
+        sslSocket.startHandshake();
+        tcpSocket = sslSocket;
+    }
+
+    public void closeTcp() throws IOException {
+        if (tcpSocket != null) {
+            tcpSocket.close();
+            tcpSocket = null;
+        }
+    }
+
+    public SyslogTcpFraming getTcpFraming() {
+        return tcpFraming;
+    }
+
+    public void setTcpFraming(final SyslogTcpFraming tcpFraming) {
+        this.tcpFraming = tcpFraming;
+    }
+
+    /**
+     * Sends one message on the open TCP connection, framed per {@link #getTcpFraming()}.
+     * AUTO is treated as non-transparent, since a sender has to pick one.
+     */
+    public void syslogTcp(final int priority, final String msg) throws IOException {
+        if (tcpSocket == null) {
+            throw new IllegalStateException("openTcp() must be called before syslogTcp()");
+        }
+
+        final byte[] payload = getTcpPayload(facility, ident, priority, msg);
+        final OutputStream out = tcpSocket.getOutputStream();
+        if (tcpFraming == SyslogTcpFraming.OCTET_COUNTING) {
+            out.write((payload.length + " ").getBytes(StandardCharsets.US_ASCII));
+            out.write(payload);
+        } else {
+            out.write(payload);
+            out.write('\n');
+        }
+        out.flush();
+    }
+
+    /**
+     * Like {@link #getPacketPayload} without the trailing NUL. Under octet counting the
+     * NUL would be inside the counted message rather than a trailer, so it would reach
+     * the event body instead of being stripped.
+     */
+    public static byte[] getTcpPayload(final int facility, final String ident, final int priority, final String msg) {
+        final int pricode = makePriorityCode(facility, priority);
+        return ("<" + pricode + ">" + ident + ": " + msg).getBytes(StandardCharsets.UTF_8);
     }
 }

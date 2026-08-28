@@ -31,6 +31,7 @@ import java.util.TimeZone;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
@@ -147,6 +148,12 @@ public class Configuration implements Serializable {
 
     @XmlAttribute(name = "includeRawSyslogmessage")
     private Boolean includeRawSyslogmessage;
+    /**
+     * The optional TCP listener. Leaving the element out is what keeps an install on UDP
+     * alone, so its absence is the switch rather than a sentinel value in an attribute.
+     */
+    @XmlElement(name = "tcp")
+    private SyslogTcpConfig m_tcpConfig;
 
     public Optional<String> getListenAddress() {
         return Optional.ofNullable(m_listenAddress);
@@ -268,6 +275,17 @@ public class Configuration implements Serializable {
         this.includeRawSyslogmessage = includeRawSyslogmessage;
     }
 
+    /**
+     * Null when the file has no tcp element, which is the UDP-only default.
+     */
+    public SyslogTcpConfig getTcpConfig() {
+        return m_tcpConfig;
+    }
+
+    public void setTcpConfig(final SyslogTcpConfig tcpConfig) {
+        m_tcpConfig = tcpConfig;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_listenAddress, 
@@ -283,7 +301,8 @@ public class Configuration implements Serializable {
                             m_batchSize, 
                             m_batchInterval,
                             timeZone,
-                            includeRawSyslogmessage);
+                            includeRawSyslogmessage,
+                            m_tcpConfig);
     }
 
     /**
@@ -313,7 +332,8 @@ public class Configuration implements Serializable {
                     && Objects.equals(this.m_batchSize, that.m_batchSize)
                     && Objects.equals(this.m_batchInterval, that.m_batchInterval)
                     && Objects.equals(this.timeZone, that.timeZone)
-                    && Objects.equals(this.includeRawSyslogmessage, that.includeRawSyslogmessage);
+                    && Objects.equals(this.includeRawSyslogmessage, that.includeRawSyslogmessage)
+                    && Objects.equals(this.m_tcpConfig, that.m_tcpConfig);
         }
         return false;
     }
