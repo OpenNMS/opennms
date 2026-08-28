@@ -23,7 +23,7 @@
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, PathOutage, PathOutagePreview, PathOutageRequest, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
-import { v2 } from './axiosInstances'
+import { rest, v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -179,7 +179,8 @@ const deleteDestinationPath = async (name: string): Promise<boolean> => {
 const testDestinationPath = async (name: string): Promise<boolean> => {
   try {
     startSpinner()
-    await v2.post(`/notifications/destination-paths/${encodeURIComponent(name)}/trigger`)
+    // the trigger endpoint lives on the v1 resource (NotificationRestService), not v2
+    await rest.post(`/notifications/destination-paths/${encodeURIComponent(name)}/trigger`)
     showSnackBar({ msg: `Test notification triggered for '${name}'.` })
     return true
   } catch (_err) {

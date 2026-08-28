@@ -258,6 +258,35 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     }
 
     @Test
+    public void testEventNotificationUpdateCarriesEventSeverity() throws Exception {
+        // replaceNotification copies field-by-field; a missing setEventSeverity made
+        // severity edits a silent no-op on PUT while POST persisted them.
+        final String withSeverity = "{\"name\":\"junit-severity\",\"status\":\"off\","
+                + "\"uei\":\"uei.opennms.org/nodes/nodeUp\","
+                + "\"rule\":{\"value\":\"IPADDR IPLIKE *.*.*.*\"},"
+                + "\"destinationPath\":\"Email-Admin\","
+                + "\"text-message\":\"node up\","
+                + "\"event-severity\":\"Minor\"}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications", withSeverity, 204);
+
+        JSONObject added = new JSONObject(getJson("/notification-config/event-notifications/junit-severity"));
+        Assert.assertEquals("Minor", added.getString("event-severity"));
+
+        final String changedSeverity = withSeverity.replace("\"Minor\"", "\"Major\"");
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/event-notifications/junit-severity", changedSeverity, 204);
+        JSONObject updated = new JSONObject(getJson("/notification-config/event-notifications/junit-severity"));
+        Assert.assertEquals("Major", updated.getString("event-severity"));
+
+        // clearing severity on update must also stick
+        final String noSeverity = withSeverity.replace(",\"event-severity\":\"Minor\"", "");
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/event-notifications/junit-severity", noSeverity, 204);
+        updated = new JSONObject(getJson("/notification-config/event-notifications/junit-severity"));
+        Assert.assertFalse(updated.has("event-severity"));
+
+        sendRequest(DELETE, "/notification-config/event-notifications/junit-severity", 204);
+    }
+
+    @Test
     public void testEventNotificationValidation() throws Exception {
         // missing text-message must be rejected before it can poison the config
         sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications",

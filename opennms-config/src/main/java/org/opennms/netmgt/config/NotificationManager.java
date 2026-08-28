@@ -1105,6 +1105,7 @@ public abstract class NotificationManager {
                 notice.setSubject(newNotice.getSubject().orElse(null));
                 notice.setNumericMessage(newNotice.getNumericMessage().orElse(null));
                 notice.setStatus(newNotice.getStatus());
+                notice.setEventSeverity(newNotice.getEventSeverity().orElse(null));
                 notice.setVarbind(newNotice.getVarbind());
                 notice.getParameters().clear(); // Required to avoid NMS-5948
                 for (Parameter parameter : newNotice.getParameters()) {
