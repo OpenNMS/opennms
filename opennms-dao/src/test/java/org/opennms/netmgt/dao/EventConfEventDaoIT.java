@@ -72,6 +72,7 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Autowired
     private SessionFactory sessionFactory;
 
+
     private int defaultEventConfEventCount;
     @Before
     @Transactional
@@ -399,6 +400,15 @@ public class EventConfEventDaoIT implements InitializingBean {
 
         assertEquals(Integer.valueOf(0), m_eventDao.findMaxEventOrder(empty.getId()));
         assertEquals(Integer.valueOf(0), m_eventDao.findMaxEventOrder(-1L));
+    }
+
+    @Test
+    @Transactional
+    public void testNextEventOrderIsMaxPlusOne() {
+        m_eventDao.flush();
+        assertEquals(Integer.valueOf(5), m_eventDao.nextEventOrder(m_source.getId()));
+        // nothing was inserted, so the value is stable until someone appends
+        assertEquals(Integer.valueOf(5), m_eventDao.nextEventOrder(m_source.getId()));
     }
 
     @Test

@@ -46,15 +46,15 @@
       data-test="event-config-source-table"
     >
       <OnmsColumn
-        field="fileOrder"
+        field="evaluationOrder"
         sortable
-        style="width: 7rem"
+        style="width: 6rem"
       >
         <template #header>
           <span
-            title="Sources with a higher priority are evaluated first when matching events. The catch-all source is always evaluated last."
-            data-test="priority-header"
-          >Priority</span>
+            title="Order in which sources are evaluated when matching events: 1 is evaluated first. The catch-all source is always evaluated last."
+            data-test="order-header"
+          >Order</span>
         </template>
       </OnmsColumn>
       <OnmsColumn
@@ -201,7 +201,7 @@ const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
-    store.onSourcesSortChange('fileOrder', 'desc')
+    store.onSourcesSortChange('evaluationOrder', 'asc')
   }
 }
 

@@ -32,6 +32,7 @@ describe('useEventConfigStore', () => {
       enabled: true,
       eventCount: 5,
       fileOrder: 1,
+      evaluationOrder: 1,
       uploadedBy: 'user1',
       createdTime: new Date('2024-01-01'),
       lastModified: new Date('2024-01-02')
@@ -44,6 +45,7 @@ describe('useEventConfigStore', () => {
       enabled: false,
       eventCount: 10,
       fileOrder: 2,
+      evaluationOrder: 2,
       uploadedBy: 'user2',
       createdTime: new Date('2024-01-03'),
       lastModified: new Date('2024-01-04')
@@ -74,8 +76,8 @@ describe('useEventConfigStore', () => {
     })
     expect(store.sourcesSearchTerm).toBe('')
     expect(store.sourcesSorting).toEqual({
-      sortOrder: 'desc',
-      sortKey: 'fileOrder'
+      sortOrder: 'asc',
+      sortKey: 'evaluationOrder'
     })
     expect(store.isLoading).toBe(false)
     expect(store.activeTab).toBe(0)
@@ -132,7 +134,7 @@ describe('useEventConfigStore', () => {
 
     await store.fetchEventConfigs()
 
-    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'fileOrder', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'evaluationOrder', 'asc')
     expect(getAllSourceNames).toHaveBeenCalledTimes(1)
     expect(store.sources).toEqual(mockSources)
     expect(store.sourcesPagination.total).toBe(2)
@@ -149,7 +151,7 @@ describe('useEventConfigStore', () => {
 
     await store.fetchEventConfigs()
 
-    expect(filterEventConfigSources).toHaveBeenCalledWith(40, 20, '', 'fileOrder', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(40, 20, '', 'evaluationOrder', 'asc')
   })
 
   it('should fetch with search term', async () => {
@@ -160,7 +162,7 @@ describe('useEventConfigStore', () => {
 
     await store.fetchEventConfigs()
 
-    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, 'test search', 'fileOrder', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, 'test search', 'evaluationOrder', 'asc')
   })
 
   it('should fetch with custom sorting', async () => {
@@ -376,10 +378,10 @@ describe('useEventConfigStore', () => {
     expect(store.sourcesPagination.total).toBe(2)
     expect(store.sourcesSearchTerm).toBe('')
     expect(store.sourcesSorting).toEqual({
-      sortKey: 'fileOrder',
-      sortOrder: 'desc'
+      sortKey: 'evaluationOrder',
+      sortOrder: 'asc'
     })
-    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'fileOrder', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'evaluationOrder', 'asc')
   })
 
   it('should handle multiple consecutive fetches correctly', async () => {
@@ -453,8 +455,8 @@ describe('useEventConfigStore', () => {
     await store.onSourcesSortChange('name', 'asc')
     expect(store.sourcesSorting).toEqual({ sortKey: 'name', sortOrder: 'asc' })
 
-    await store.onSourcesSortChange('fileOrder', 'desc')
-    expect(store.sourcesSorting).toEqual({ sortKey: 'fileOrder', sortOrder: 'desc' })
+    await store.onSourcesSortChange('evaluationOrder', 'asc')
+    expect(store.sourcesSorting).toEqual({ sortKey: 'evaluationOrder', sortOrder: 'asc' })
   })
 
   it('should reset active tab to 0', () => {

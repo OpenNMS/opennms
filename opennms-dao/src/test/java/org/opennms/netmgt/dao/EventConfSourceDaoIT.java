@@ -131,6 +131,31 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
     @Test
     @Transactional
+    public void testEvaluationOrderIsDerivedFromFileOrder() {
+        m_dao.flush();
+        m_dao.clear();
+        // fileOrder 42 beats every seeded source (23..1), so it is evaluated first
+        EventConfSource junit = m_dao.findByName("JUnit Source");
+        assertEquals(Integer.valueOf(1), junit.getEvaluationOrder());
+
+        // the catch-all is pinned at fileOrder 1 and therefore evaluated last
+        EventConfSource catchAll = m_dao.findByName(EventConfSource.CATCH_ALL_SOURCE_NAME);
+        assertNotNull(catchAll);
+        assertEquals(Integer.valueOf(1), catchAll.getFileOrder());
+        assertEquals(Integer.valueOf(m_dao.findAll().size()), catchAll.getEvaluationOrder());
+
+        // sortable through the paged filter, ascending = evaluation order
+        @SuppressWarnings("unchecked")
+        List<EventConfSource> page = (List<EventConfSource>) m_dao
+                .filterEventConfSource("", "evaluationOrder", "asc", 0, 0, 5).get("eventConfSourceList");
+        assertEquals("JUnit Source", page.get(0).getName());
+        for (int i = 1; i < page.size(); i++) {
+            assertTrue(page.get(i - 1).getFileOrder() >= page.get(i).getFileOrder());
+        }
+    }
+
+    @Test
+    @Transactional
     public void testFileOrderIsPersisted() {
         EventConfSource found = m_dao.findByName("JUnit Source");
         assertNotNull(found);

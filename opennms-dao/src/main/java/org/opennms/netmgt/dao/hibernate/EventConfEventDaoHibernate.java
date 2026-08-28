@@ -23,6 +23,9 @@ package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
+import org.opennms.netmgt.model.EventConfSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +151,7 @@ public class EventConfEventDaoHibernate
                         " when 'MINOR' then 5 " +
                         " when 'MAJOR' then 6 " +
                         " when 'CRITICAL' then 7 " +
-                        " else 999 end " + sortOrder;
+                        " else 999 end " + sortOrder + ", e.id " + sortOrder;
             } else {
                 orderBy = " order by e." + sortField + " " + sortOrder + ", e.id " + sortOrder;
             }
@@ -265,6 +268,18 @@ public class EventConfEventDaoHibernate
                 .setParameter("sourceId", sourceId)
                 .uniqueResult();
         return maxOrder != null ? maxOrder : 0;
+    }
+
+    @Override
+    public Integer nextEventOrder(Long sourceId) {
+        // Serialize concurrent appenders: take a row lock on the parent source (SELECT ... FOR UPDATE)
+        // so the max() below cannot be read by two transactions before either has inserted.
+        // Flush first: the source may have been created in this very transaction and the lock
+        // query needs its row to exist.
+        final var session = getSessionFactory().getCurrentSession();
+        session.flush();
+        session.get(EventConfSource.class, sourceId, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+        return findMaxEventOrder(sourceId) + 1;
     }
 
     @Override

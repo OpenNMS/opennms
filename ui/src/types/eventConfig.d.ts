@@ -29,7 +29,10 @@ export type EventConfigSource = {
   description: string
   enabled: boolean
   eventCount: number
+  /** Stored priority: higher = evaluated first */
   fileOrder: number
+  /** Derived position: 1 = evaluated first */
+  evaluationOrder: number
   uploadedBy: string
   createdTime: Date
   lastModified: Date

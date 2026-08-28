@@ -156,9 +156,9 @@ public class EventConfSourceDaoHibernate
 
                 String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
 
-                Set<String> allowedSortFields = Set.of("name", "vendor", "description", "fileOrder", "eventCount");
+                Set<String> allowedSortFields = Set.of("name", "vendor", "description", "fileOrder", "evaluationOrder", "eventCount");
 
-                if (!allowedSortFields.contains(sortBy)) {
+                if (sortBy == null || !allowedSortFields.contains(sortBy)) {
                     sortField = "createdTime";
                 }
 

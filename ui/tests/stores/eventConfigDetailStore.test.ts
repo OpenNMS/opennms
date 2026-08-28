@@ -26,6 +26,7 @@ describe('useEventConfigDetailStore', () => {
     enabled: true,
     eventCount: 10,
     fileOrder: 1,
+    evaluationOrder: 1,
     uploadedBy: 'testuser',
     createdTime: new Date('2024-01-01'),
     lastModified: new Date('2024-01-02')

@@ -32,6 +32,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       enabled: true,
       eventCount: 5,
       fileOrder: 1,
+      evaluationOrder: 1,
       uploadedBy: 'user',
       createdTime: new Date(),
       lastModified: new Date()
@@ -87,6 +88,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
         enabled: false,
         eventCount: 5,
         fileOrder: 1,
+        evaluationOrder: 1,
         uploadedBy: 'user',
         createdTime: new Date(),
         lastModified: new Date()

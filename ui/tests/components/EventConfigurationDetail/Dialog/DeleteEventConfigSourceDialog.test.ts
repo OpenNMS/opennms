@@ -38,6 +38,7 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
     enabled: true,
     eventCount: 5,
     fileOrder: 1,
+    evaluationOrder: 1,
     uploadedBy: 'Admin',
     createdTime: new Date(),
     lastModified: new Date()

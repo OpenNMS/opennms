@@ -66,8 +66,8 @@ public class EventConfServiceHelper {
                                   Event event, String username, Date timestamp) {
         EventConfEvent eventConfEvent = new EventConfEvent();
         eventConfEvent.setSource(source);
-        // Appended events are evaluated last within their source
-        eventConfEvent.setEventOrder(eventConfEventDao.findMaxEventOrder(source.getId()) + 1);
+        // Appended events are evaluated last within their source (allocation locks the source row)
+        eventConfEvent.setEventOrder(eventConfEventDao.nextEventOrder(source.getId()));
         eventConfEvent.setUei(event.getUei());
         eventConfEvent.setEventLabel(event.getEventLabel());
         eventConfEvent.setDescription(event.getDescr());

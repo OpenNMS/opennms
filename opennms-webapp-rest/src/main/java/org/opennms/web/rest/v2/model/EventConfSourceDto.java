@@ -35,7 +35,10 @@ public class EventConfSourceDto {
     private String name;
     private String description;
     private String vendor;
+    /** Stored priority: higher is evaluated first (catch-all is pinned at 1). */
     private Integer fileOrder;
+    /** Derived position: 1 = evaluated first. Sort key for the UI. */
+    private Integer evaluationOrder;
     private Boolean enabled;
     private Integer eventCount;
     private Date createdTime;
@@ -44,13 +47,14 @@ public class EventConfSourceDto {
 
     // All-args constructor
     public EventConfSourceDto(Long id, String name, String description, String vendor,
-                              Integer fileOrder, Boolean enabled, Integer eventCount,
+                              Integer fileOrder, Integer evaluationOrder, Boolean enabled, Integer eventCount,
                               Date createdTime, Date lastModified, String uploadedBy) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.vendor = vendor;
         this.fileOrder = fileOrder;
+        this.evaluationOrder = evaluationOrder;
         this.enabled = enabled;
         this.eventCount = eventCount;
         this.createdTime = createdTime;
@@ -73,6 +77,9 @@ public class EventConfSourceDto {
 
     public Integer getFileOrder() { return fileOrder; }
     public void setFileOrder(Integer fileOrder) { this.fileOrder = fileOrder; }
+
+    public Integer getEvaluationOrder() { return evaluationOrder; }
+    public void setEvaluationOrder(Integer evaluationOrder) { this.evaluationOrder = evaluationOrder; }
 
     public Boolean getEnabled() { return enabled; }
     public void setEnabled(Boolean enabled) { this.enabled = enabled; }
@@ -97,6 +104,7 @@ public class EventConfSourceDto {
                 entity.getDescription(),
                 entity.getVendor(),
                 entity.getFileOrder(),
+                entity.getEvaluationOrder(),
                 entity.getEnabled(),
                 entity.getEventCount(),
                 entity.getCreatedTime(),

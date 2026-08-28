@@ -57,7 +57,7 @@
       >
         <template #header>
           <span
-            title="Position in which events of this source are evaluated: 1 is evaluated first."
+            title="Order in which the events of this source are evaluated: 1 is evaluated first."
             data-test="order-header"
           >Order</span>
         </template>

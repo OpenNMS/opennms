@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.model;
 
+import org.hibernate.annotations.Formula;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,6 +63,14 @@ public class EventConfSource implements Serializable {
 
     @Column(name = "file_order", nullable = false)
     private Integer fileOrder;
+
+    /**
+     * Position in which this source is evaluated when matching events: 1 = evaluated first.
+     * Derived from {@link #fileOrder} (higher fileOrder is evaluated first); sources sharing a
+     * fileOrder share a position. Read-only.
+     */
+    @Formula("(SELECT COUNT(*) + 1 FROM eventconf_sources o WHERE o.file_order > file_order)")
+    private Integer evaluationOrder;
 
     @Column(nullable = false)
     private Boolean enabled = true;
@@ -120,6 +130,10 @@ public class EventConfSource implements Serializable {
 
     public void setFileOrder(Integer fileOrder) {
         this.fileOrder = fileOrder;
+    }
+
+    public Integer getEvaluationOrder() {
+        return evaluationOrder;
     }
 
     public Boolean getEnabled() {

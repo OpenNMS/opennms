@@ -1233,4 +1233,42 @@ public class EventConfRestServiceIT {
         assertEquals("uei.opennms.org/alarms/trigger", downloaded.getEvents().get(1).getUei());
     }
 
+    @Test
+    @Transactional
+    public void testFilterSources_ExposesAndSortsByEvaluationOrder() throws Exception {
+        eventConfRestApi.uploadEventConfFiles(List.of(
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml"),
+                mockAttachment("Cisco.airespace.xml", "/EVENTS-CONF/Cisco.airespace.xml")), securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Response resp = eventConfRestApi.filterEventConfSource("", "evaluationOrder", "asc", 0, 0, 100, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        @SuppressWarnings("unchecked") List<EventConfSourceDto> dtos = (List<EventConfSourceDto>) entity.get("eventConfSourceList");
+
+        // Sorted ascending by evaluationOrder == descending by fileOrder. The value is the 1-based rank:
+        // (number of sources with a strictly higher fileOrder) + 1, so sources sharing a fileOrder share a rank.
+        // Other tests in this class may leave sources behind, so derive expectations from the list itself.
+        for (int i = 0; i < dtos.size(); i++) {
+            EventConfSourceDto dto = dtos.get(i);
+            long higher = dtos.stream().filter(d -> d.getFileOrder() > dto.getFileOrder()).count();
+            assertEquals("rank of " + dto.getName(), Integer.valueOf((int) higher + 1), dto.getEvaluationOrder());
+            if (i > 0) {
+                assertTrue(dtos.get(i - 1).getFileOrder() >= dto.getFileOrder());
+            }
+        }
+        // the catch-all (fileOrder 1) is never evaluated before anything else
+        EventConfSourceDto catchAll = dtos.stream()
+                .filter(d -> EventConfSource.CATCH_ALL_SOURCE_NAME.equals(d.getName())).findFirst().orElseThrow();
+        assertEquals(Integer.valueOf(1), catchAll.getFileOrder());
+        int maxRank = dtos.stream().mapToInt(EventConfSourceDto::getEvaluationOrder).max().orElseThrow();
+        assertEquals(Integer.valueOf(maxRank), catchAll.getEvaluationOrder());
+
+        // single-source endpoint carries it too
+        EventConfSourceDto cisco = dtos.stream().filter(d -> "Cisco.airespace".equals(d.getName())).findFirst().orElseThrow();
+        Response one = eventConfRestApi.getEventConfSourceById(cisco.getId(), securityContext);
+        assertEquals(cisco.getEvaluationOrder(), ((EventConfSourceDto) one.getEntity()).getEvaluationOrder());
+    }
+
 }
