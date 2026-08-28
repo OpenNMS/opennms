@@ -286,6 +286,25 @@ const router = createRouter({
       }
     },
     {
+      path: '/system-report',
+      name: 'Generate System Report',
+      component: () => import('@/containers/SystemReport.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to generate a system report.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/snmp-config',
       name: 'SNMP Config',
       component: () => import('@/containers/SnmpConfiguration.vue'),
