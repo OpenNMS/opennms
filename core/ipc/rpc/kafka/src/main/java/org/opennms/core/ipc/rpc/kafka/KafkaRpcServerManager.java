@@ -120,11 +120,9 @@ public class KafkaRpcServerManager {
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-server-kafka-consumer-%d")
             .build();
-    private final ThreadFactory requestExecutorThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-request-executor-%d")
-            .build();
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
-    private final ExecutorService requestExecutor = Executors.newCachedThreadPool(requestExecutorThreadFactory);
+    private final ExecutorService requestExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-request-executor-", 0).factory());
     private Map<String, KafkaConsumerRunner> kafkaConsumersByTopic = new ConcurrentHashMap<>();
     private Map<String, RpcModule<RpcRequest, RpcResponse>> rpcModulesById = new ConcurrentHashMap<>();
     // cache to hold rpcId and ByteString when there are multiple chunks for the message.

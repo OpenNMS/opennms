@@ -37,8 +37,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.ArrayList;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonArray;
@@ -75,22 +73,11 @@ public class DefaultElasticRestClient implements ElasticRestClient {
     private int readTimeout;
     private int retryCooldown;
 
-    private final AtomicInteger threadCountForBulk = new AtomicInteger(1);
-    private final ThreadFactory bulkExecuteThreadFactory = runnable -> {
-        Thread thread = new Thread(runnable);
-        thread.setName("elastic-client-async-bulk-execute-" + threadCountForBulk.getAndIncrement());
-        return thread;
-    };
-    private final ExecutorService executor = Executors.newCachedThreadPool(bulkExecuteThreadFactory);
+    private final ExecutorService executor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("elastic-client-async-bulk-execute-", 0).factory());
 
-    private final AtomicInteger threadCountForSearch = new AtomicInteger(1);
-    private final ThreadFactory bulkSearchThreadFactory = runnable -> {
-        Thread thread = new Thread(runnable);
-        thread.setName("elastic-client-search-async-" + threadCountForSearch.getAndIncrement());
-        return thread;
-    };
-
-    private final ExecutorService searchExecutor = Executors.newCachedThreadPool(bulkSearchThreadFactory);
+    private final ExecutorService searchExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("elastic-client-search-async-", 0).factory());
 
     private final String[] hosts;
     private final String username;

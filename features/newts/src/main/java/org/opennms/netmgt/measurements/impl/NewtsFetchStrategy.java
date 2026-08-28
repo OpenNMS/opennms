@@ -33,7 +33,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
@@ -73,7 +72,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Used to retrieve measurements from {@link org.opennms.newts.api.SampleRepository}.
@@ -110,9 +108,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     @Autowired
     private SampleRepository m_sampleRepository;
 
-    private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("NewtsFetchStrateg-%d").build();
-
-    private final ExecutorService threadPool = Executors.newCachedThreadPool(namedThreadFactory);
+    private final ExecutorService threadPool = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("NewtsFetchStrateg-", 0).factory());
 
     // Used to limit the number of threads that are performing aggregation calculations in parallel
     private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);

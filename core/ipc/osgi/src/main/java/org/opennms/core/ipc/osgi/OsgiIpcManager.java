@@ -24,7 +24,6 @@ package org.opennms.core.ipc.osgi;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -44,16 +43,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class OsgiIpcManager extends AbstractMessageConsumerManager implements RpcClientFactory, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiIpcManager.class);
 
-    private final ThreadFactory sinkRegisterConsumerThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("sink-register-consumer-delegate-%d")
-            .build();
-    private final ExecutorService sinkRegisterConsumerExecutor = Executors.newCachedThreadPool(sinkRegisterConsumerThreadFactory);
+    private final ExecutorService sinkRegisterConsumerExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("sink-register-consumer-delegate-", 0).factory());
 
     private final ServiceLookup<Class<?>, String> blockingServiceLookup;
 

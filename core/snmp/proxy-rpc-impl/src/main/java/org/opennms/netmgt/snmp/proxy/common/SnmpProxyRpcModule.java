@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
@@ -65,12 +64,8 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
 
     public static final String RPC_MODULE_ID = "SNMP";
 
-    private static final ExecutorService REAPER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "SNMP-Proxy-RPC-Session-Reaper");
-        }
-    });
+    private static final ExecutorService REAPER_EXECUTOR = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("SNMP-Proxy-RPC-Session-Reaper-", 0).factory());
 
     public SnmpProxyRpcModule() {
         super(SnmpRequestDTO.class, SnmpMultiResponseDTO.class);

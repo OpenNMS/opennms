@@ -48,7 +48,6 @@ import org.opennms.features.distributed.cassandra.api.CassandraSessionFactory;
 import org.opennms.features.distributed.kvstore.api.AbstractKeyValueStore;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * A {@link BlobStore} that is backed by Cassandra.
@@ -76,10 +75,8 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     private final PreparedStatement enumerateStatement;
     private final PreparedStatement deleteStatement;
     
-    // The cardinality of this thread pool will be limited by the limited number (expected) of requests that end up
-    // using it
-    private final Executor asyncDeleteExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-            .setNameFormat("cassandra-async-delete-%d").build());
+    private final Executor asyncDeleteExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("cassandra-async-delete-", 0).factory());
 
     public CassandraBlobStore(CassandraSessionFactory sessionFactory,
                               CassandraSchemaManagerFactory cassandraSchemaManagerFactory) throws IOException {

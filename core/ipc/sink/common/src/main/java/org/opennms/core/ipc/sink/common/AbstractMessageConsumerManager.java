@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -40,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public abstract class AbstractMessageConsumerManager implements MessageConsumerManager {
 
@@ -48,11 +46,8 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
 
     public static final String SINK_INITIAL_SLEEP_TIME = "org.opennms.core.ipc.sink.initialSleepTime";
 
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("consumer-starter-%d")
-            .build();
-
-    protected final ExecutorService startupExecutor = Executors.newCachedThreadPool(threadFactory);
+    protected final ExecutorService startupExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("consumer-starter-", 0).factory());
 
     private final Multimap<SinkModule<?, Message>, MessageConsumer<?, Message>> consumersByModule = LinkedListMultimap.create();
 

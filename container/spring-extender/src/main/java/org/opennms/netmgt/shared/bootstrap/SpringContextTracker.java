@@ -35,7 +35,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.osgi.framework.Bundle;
@@ -90,7 +89,6 @@ class SpringContextTracker extends BundleTracker<Bundle> {
     // Guards the compound check-then-act on contexts/generations. NOT held across refresh() (which can block on
     // an osgi:reference), only across the short install/close critical sections, so it cannot deadlock a task.
     private final Object lifecycleLock = new Object();
-    private final AtomicInteger threadIndex = new AtomicInteger();
     private final ExecutorService executor;
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
         final Thread thread = new Thread(runnable, "spring-context-extender-retry");
@@ -106,11 +104,8 @@ class SpringContextTracker extends BundleTracker<Bundle> {
     SpringContextTracker(BundleContext context, NamespaceProviderRegistry namespaceProviderRegistry, ExecutorService executor) {
         super(context, Bundle.ACTIVE, null);
         this.namespaceProviderRegistry = namespaceProviderRegistry;
-        this.executor = executor != null ? executor : Executors.newCachedThreadPool(runnable -> {
-            final Thread thread = new Thread(runnable, "spring-context-extender-" + threadIndex.incrementAndGet());
-            thread.setDaemon(true);
-            return thread;
-        });
+        this.executor = executor != null ? executor : Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("spring-context-extender-", 0).factory());
     }
 
     @Override
