@@ -159,8 +159,8 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
         if (future != null) {
             return;
         }
-        diskLock.lock();
-        // it will return the size of the bytes
+        // Do not take diskLock here: the submitted task acquires it itself, and enableQueue()
+        // must be able to observe the future without contending for the lock the task needs.
         future = executorService.submit(() -> {
             diskLock.lock();
             long start = System.currentTimeMillis();
@@ -186,25 +186,20 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
                 diskLock.unlock();
             }
         });
-        diskLock.unlock();
     }
 
     // make sure data is in memory queue
     public synchronized void enableQueue() throws ReadFailedException, InterruptedException {
+        // Wait for an in-flight flush before taking diskLock. The flush task acquires diskLock
+        // itself, so holding it while waiting on the future deadlocks the two against each other.
+        while (future != null && !future.isDone()) {
+            this.wait(10);
+        }
+        if (!restore && queue != null) {
+            return;
+        }
+        diskLock.lock();
         try {
-            if (!restore) {
-                while (!diskLock.tryLock()) {
-                    this.wait(10);
-                }
-                while ((future != null && !future.isDone())) {
-                    this.wait(10);
-                }
-                if (queue != null) {
-                    return;
-                }
-            } else {
-                diskLock.lock();
-            }
             toMemory();
             future = null;
             restore = false;

@@ -293,15 +293,14 @@ public class DataBlocksOffHeapQueue<T> implements DispatchQueue<T> {
         var head = mainQueue.peek();
         if (head.size() > 0) {
             data = head.dequeue();
-            if (headTailEqual) {
-                tailLock.unlock();
-            } else {
-                removeHeadBlockIfNeeded();
-            }
+        }
+        if (headTailEqual) {
+            tailLock.unlock();
         } else {
-            if (headTailEqual) {
-                tailLock.unlock();
-            }
+            // Also runs when the head was already empty: a block drained while it was still the
+            // tail is never evicted at drain time, so without this it stays head forever and
+            // every dequeue() spins on it.
+            removeHeadBlockIfNeeded();
         }
         return data;
     }
