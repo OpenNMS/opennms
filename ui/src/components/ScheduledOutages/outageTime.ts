@@ -74,8 +74,10 @@ export const HOURS = range(0, 23)
 export const MINUTES = range(0, 59)
 export const SECONDS = range(0, 59)
 
+// include the previous year (as the legacy form did) so a span that started
+// last year can still be re-entered
 export const yearOptions = (currentYear: number): Option[] =>
-  range(currentYear, currentYear + 10, 4)
+  range(currentYear - 1, currentYear + 10, 4)
 
 // One time-span row in the editor, independent of the wire format.
 export interface TimeSpanFields {

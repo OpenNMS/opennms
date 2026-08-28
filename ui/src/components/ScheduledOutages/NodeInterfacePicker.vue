@@ -54,17 +54,20 @@ import FormField from '@/components/Common/FormField.vue'
 import { OutageInterface, OutageNode } from '@/types/scheduledOutage'
 import { searchOutageInterfaces, searchOutageNodes } from '@/services/scheduledOutagesService'
 
-interface NodeSuggestion { label: string, id: number }
+interface NodeSuggestion { label: string, id: number, nodeLabel: string }
 interface InterfaceSuggestion { label: string, address: string }
 type Suggestion = NodeSuggestion | InterfaceSuggestion
 
 const props = defineProps<{
   mode: 'node' | 'interface'
   items: (OutageNode | OutageInterface)[]
+  // node id -> label, resolved by the editor; ids without an entry are shown
+  // as not-found (deleted nodes still referenced by the outage config)
+  nodeLabels?: Record<number, string>
 }>()
 
 const emit = defineEmits<{
-  add: [value: OutageNode | OutageInterface]
+  add: [value: OutageNode | OutageInterface, label?: string]
   remove: [index: number]
 }>()
 
@@ -74,7 +77,7 @@ const suggestions = ref<Suggestion[]>([])
 const onComplete = async (query: string) => {
   if (props.mode === 'node') {
     const nodes = await searchOutageNodes(query)
-    suggestions.value = nodes.map(n => ({ label: `${n.label} (id ${n.id})`, id: n.id }))
+    suggestions.value = nodes.map(n => ({ label: `${n.label} (id ${n.id})`, id: n.id, nodeLabel: n.label }))
   } else {
     const interfaces = await searchOutageInterfaces(query)
     suggestions.value = interfaces.map(i => ({
@@ -90,15 +93,20 @@ const addSelection = () => {
     return
   }
   if (props.mode === 'node' && 'id' in sel) {
-    emit('add', { id: sel.id })
+    emit('add', { id: sel.id }, sel.nodeLabel)
   } else if (props.mode === 'interface' && 'address' in sel) {
     emit('add', { address: sel.address })
   }
   selection.value = null
 }
 
-const labelFor = (item: OutageNode | OutageInterface): string =>
-  'id' in item ? `Node id ${item.id}` : item.address
+const labelFor = (item: OutageNode | OutageInterface): string => {
+  if (!('id' in item)) {
+    return item.address
+  }
+  const label = props.nodeLabels?.[item.id]
+  return label ? `${label} (id ${item.id})` : `Node id ${item.id} (not found)`
+}
 </script>
 
 <style scoped lang="scss">

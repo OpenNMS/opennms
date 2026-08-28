@@ -56,11 +56,15 @@ export interface ScheduledOutage {
 export interface PackageRef {
   name: string
   applied: boolean
+  // every outage-calendar name the package references; lets the list page
+  // compute per-outage membership from a single name-less applies-to call
+  calendars: string[]
 }
 
 // GET /sched-outages/{name}/applies-to (or /applies-to for a new outage)
 export interface OutageApplicability {
   notifications: boolean
+  notificationCalendars: string[]
   pollers: PackageRef[]
   collectors: PackageRef[]
   thresholders: PackageRef[]

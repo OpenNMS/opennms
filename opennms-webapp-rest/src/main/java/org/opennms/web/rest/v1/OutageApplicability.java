@@ -44,6 +44,11 @@ public class OutageApplicability {
     @XmlElement(name = "notifications")
     private boolean notifications;
 
+    // every outage name notifd references; with the per-package calendars this
+    // lets the list page derive all memberships from one name-less call
+    @XmlElement(name = "notification-calendars")
+    private List<String> notificationCalendars = new ArrayList<>();
+
     // bare @XmlElement (no wrapper) so the v1 stack renders each list as a JSON
     // array under its own key, matching the Outages model the UI already reads
     @XmlElement(name = "pollers")
@@ -61,6 +66,14 @@ public class OutageApplicability {
 
     public void setNotifications(boolean notifications) {
         this.notifications = notifications;
+    }
+
+    public List<String> getNotificationCalendars() {
+        return notificationCalendars;
+    }
+
+    public void setNotificationCalendars(List<String> notificationCalendars) {
+        this.notificationCalendars = notificationCalendars;
     }
 
     public List<PackageRef> getPollers() {
@@ -97,12 +110,18 @@ public class OutageApplicability {
         @XmlAttribute(name = "applied")
         private boolean applied;
 
+        @XmlElement(name = "calendars")
+        private List<String> calendars = new ArrayList<>();
+
         public PackageRef() {
         }
 
-        public PackageRef(String name, boolean applied) {
+        public PackageRef(String name, boolean applied, List<String> calendars) {
             this.name = name;
             this.applied = applied;
+            if (calendars != null) {
+                this.calendars = new ArrayList<>(calendars);
+            }
         }
 
         public String getName() {
@@ -119,6 +138,14 @@ public class OutageApplicability {
 
         public void setApplied(boolean applied) {
             this.applied = applied;
+        }
+
+        public List<String> getCalendars() {
+            return calendars;
+        }
+
+        public void setCalendars(List<String> calendars) {
+            this.calendars = calendars;
         }
     }
 }

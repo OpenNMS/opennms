@@ -45,7 +45,9 @@
           <template #body="{ data }">{{ data.type ?? '--' }}</template>
         </OnmsColumn>
         <OnmsColumn header="Nodes/Interfaces">
-          <template #body="{ data }">{{ selectionSummary(data) }}</template>
+          <template #body="{ data }">
+            <span :title="selectionTitle(data)">{{ selectionSummary(data) }}</span>
+          </template>
         </OnmsColumn>
         <OnmsColumn header="Times">
           <template #body="{ data }">{{ (data.time ?? []).length }}</template>
@@ -123,6 +125,7 @@ import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import ScheduledOutagesAbout from '@/components/ScheduledOutages/ScheduledOutagesAbout.vue'
 import {
   deleteScheduledOutage,
+  getNodeLabels,
   getOutageApplicability,
   getScheduledOutages,
   scheduledOutageErrorMessage
@@ -136,7 +139,12 @@ interface OutageRow extends ScheduledOutage {
 
 // small inline green-check / muted-dash cell
 const AppliedMark = (props: { on?: boolean }) =>
-  h('span', { class: props.on ? 'mark on' : 'mark off', 'data-test': 'applied-mark' }, props.on ? '✓' : '—')
+  h('span', {
+    class: props.on ? 'mark on' : 'mark off',
+    'data-test': 'applied-mark',
+    role: 'img',
+    'aria-label': props.on ? 'applied' : 'not applied'
+  }, props.on ? '✓' : '—')
 
 const router = useRouter()
 
@@ -146,6 +154,7 @@ const breadcrumbs: BreadCrumb[] = [
 ]
 
 const outages = ref<OutageRow[]>([])
+const nodeLabels = ref<Record<number, string>>({})
 const loading = ref(true)
 const newName = ref('')
 const createError = ref('')
@@ -161,40 +170,57 @@ const load = async () => {
   loading.value = true
   loadError.value = ''
   const list = await getScheduledOutages()
-  // null signals a fetch failure — keep the rows already on screen (service contract)
+  // null signals a fetch failure — keep any rows already on screen (service contract)
   if (list === null) {
-    loadError.value = 'Failed to load scheduled outages. Showing the last known list.'
+    loadError.value = outages.value.length
+      ? 'Failed to load scheduled outages. Showing the last known list.'
+      : 'Failed to load scheduled outages.'
     loading.value = false
     return
   }
   const rows: OutageRow[] = list.map(o => ({ ...o }))
-  // membership booleans come from the per-outage applies-to summary
-  await Promise.all(rows.map(async (row) => {
-    const appl = await getOutageApplicability(row.name)
+  // One name-less applies-to call exposes every package's outage calendars, so
+  // per-row membership is derived here instead of one request per outage.
+  const appl = await getOutageApplicability()
+  const referencedBy = (packages: { calendars: string[] }[] | undefined, outageName: string) =>
+    !!packages?.some(p => p.calendars.includes(outageName))
+  for (const row of rows) {
     row.applies = {
-      notifications: !!appl?.notifications,
-      polling: !!appl?.pollers.some(p => p.applied),
-      thresholds: !!appl?.thresholders.some(p => p.applied),
-      collection: !!appl?.collectors.some(p => p.applied)
+      notifications: !!appl?.notificationCalendars.includes(row.name),
+      polling: referencedBy(appl?.pollers, row.name),
+      thresholds: referencedBy(appl?.thresholders, row.name),
+      collection: referencedBy(appl?.collectors, row.name)
     }
-  }))
+  }
+  // resolve node labels for the selection column in a single OR query
+  const nodeIds = [...new Set(rows.flatMap(row => (row.node ?? []).map(n => n.id)))]
+  nodeLabels.value = await getNodeLabels(nodeIds)
   outages.value = rows
   loading.value = false
 }
 
 onMounted(load)
 
+// Node labels and interface addresses, as the legacy list showed them; nodes
+// no longer in inventory are flagged, long selections truncated with a title.
 const selectionSummary = (o: ScheduledOutage): string => {
   if ((o.interface ?? []).some(i => i.address === 'match-any')) {
     return 'All nodes and interfaces'
   }
-  const nodes = (o.node ?? []).length
-  const ifaces = (o.interface ?? []).length
-  if (!nodes && !ifaces) {
+  const parts = [
+    ...(o.node ?? []).map(n => nodeLabels.value[n.id] ?? `Node ${n.id} (not found)`),
+    ...(o.interface ?? []).map(i => i.address)
+  ]
+  if (!parts.length) {
     return '--'
   }
-  return `${nodes} node(s), ${ifaces} interface(s)`
+  return parts.length > 4 ? `${parts.slice(0, 4).join(', ')}, +${parts.length - 4} more` : parts.join(', ')
 }
+
+const selectionTitle = (o: ScheduledOutage): string => [
+  ...(o.node ?? []).map(n => nodeLabels.value[n.id] ?? `Node ${n.id} (not found)`),
+  ...(o.interface ?? []).map(i => i.address)
+].join(', ')
 
 const createOutage = () => {
   const name = newName.value.trim()

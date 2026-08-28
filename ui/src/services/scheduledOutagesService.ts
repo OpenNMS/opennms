@@ -77,11 +77,18 @@ export const getOutageApplicability = async (name?: string): Promise<OutageAppli
   try {
     const path = name ? `${endpoint}/${seg(name)}/applies-to` : `${endpoint}/applies-to`
     const resp = await rest.get(path)
+    const packages = (value: unknown): PackageRef[] =>
+      asArray<any>(value).map(p => ({
+        name: p?.name,
+        applied: !!p?.applied,
+        calendars: asArray<string>(p?.calendars)
+      }))
     return {
       notifications: !!resp.data?.notifications,
-      pollers: asArray<PackageRef>(resp.data?.pollers),
-      collectors: asArray<PackageRef>(resp.data?.collectors),
-      thresholders: asArray<PackageRef>(resp.data?.thresholders)
+      notificationCalendars: asArray<string>(resp.data?.['notification-calendars']),
+      pollers: packages(resp.data?.pollers),
+      collectors: packages(resp.data?.collectors),
+      thresholders: packages(resp.data?.thresholders)
     }
   } catch (_err) {
     return null
@@ -127,17 +134,53 @@ export const searchOutageNodes = async (query: string): Promise<{ id: number, la
   }
 }
 
-// IP interface autocomplete for the interface picker.
+// A complete IPv4 or IPv6 address, i.e. something ipAddress== can match exactly.
+export const isCompleteIpAddress = (s: string): boolean => {
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(s)) {
+    return s.split('.').every(octet => Number(octet) <= 255)
+  }
+  return s.includes(':') && s.length >= 3 && /^[0-9a-fA-F:]+$/.test(s)
+}
+
+// IP interface autocomplete for the interface picker. The v2 API has no
+// substring search on ipAddress (it is IP_ADDRESS-typed, so wildcards 500) and
+// no ipLike param; ipHostName does accept wildcards and holds the address text
+// whenever DNS did not resolve. A complete IP queries ipAddress exactly and is
+// always offered as a suggestion itself, since poll-outages accepts any valid
+// address whether or not it is in inventory.
 export const searchOutageInterfaces = async (query: string): Promise<{ address: string, nodeLabel: string }[]> => {
+  const term = sanitizeSearchTerm(query)
+  const isExactIp = isCompleteIpAddress(term)
   try {
-    const term = sanitizeSearchTerm(query)
-    const filter = term ? `&_s=ipInterface.ipAddress==*${term}*` : ''
+    const filter = term ? (isExactIp ? `&_s=ipAddress==${term}` : `&_s=ipHostName==*${term}*`) : ''
     const resp = await v2.get(`/ipinterfaces?limit=200${filter}`)
-    return asArray<any>(resp.data?.ipInterface)
+    const found = asArray<any>(resp.data?.ipInterface)
       .map(i => ({ address: i.ipAddress as string, nodeLabel: i.nodeLabel ?? '' }))
       .filter(i => !!i.address)
+    if (isExactIp && !found.some(i => i.address === term)) {
+      found.unshift({ address: term, nodeLabel: '' })
+    }
+    return found
   } catch (_err) {
-    return []
+    return isExactIp ? [{ address: term, nodeLabel: '' }] : []
+  }
+}
+
+// Resolve node labels for the ids referenced by outages (single OR query).
+export const getNodeLabels = async (ids: number[]): Promise<Record<number, string>> => {
+  if (!ids.length) {
+    return {}
+  }
+  try {
+    const filter = ids.map(id => `id==${id}`).join(',')
+    const resp = await v2.get(`/nodes?limit=${ids.length}&_s=${filter}`)
+    const labels: Record<number, string> = {}
+    for (const n of asArray<any>(resp.data?.node)) {
+      labels[Number(n.id)] = n.label
+    }
+    return labels
+  } catch (_err) {
+    return {}
   }
 }
 

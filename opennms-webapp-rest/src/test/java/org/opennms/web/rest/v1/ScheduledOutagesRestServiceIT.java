@@ -325,6 +325,13 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         Assert.assertTrue(applies.getBoolean("notifications"));
         Assert.assertTrue(appliedFor(applies, "pollers", "example1"));
         Assert.assertFalse(appliedFor(applies, "collectors", "example1"));
+
+        // the name-less variant exposes the raw calendars, so the list page can
+        // derive every outage's memberships from a single call
+        JSONObject all = getApplicability("/sched-outages/applies-to");
+        Assert.assertTrue(calendarsFor(all, "pollers", "example1").contains("my-junit-test"));
+        // single-element JAXB lists may collapse to a bare string in JSON
+        Assert.assertTrue(all.get("notification-calendars").toString().contains("my-junit-test"));
         verify(m_filterDao, atLeastOnce()).validateRule(anyString());
     }
 
@@ -343,16 +350,27 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     }
 
     private static boolean appliedFor(JSONObject root, String subsystem, String packageName) {
+        JSONObject pkg = packageFor(root, subsystem, packageName);
+        return pkg != null && pkg.getBoolean("applied");
+    }
+
+    private static String calendarsFor(JSONObject root, String subsystem, String packageName) {
+        JSONObject pkg = packageFor(root, subsystem, packageName);
+        // a single-element JAXB list may serialize as a bare string, so compare on toString
+        return pkg == null || !pkg.has("calendars") ? "" : pkg.get("calendars").toString();
+    }
+
+    private static JSONObject packageFor(JSONObject root, String subsystem, String packageName) {
         org.json.JSONArray packages = root.optJSONArray(subsystem);
         if (packages == null) {
-            return false;
+            return null;
         }
         for (int i = 0; i < packages.length(); i++) {
             JSONObject pkg = packages.getJSONObject(i);
             if (packageName.equals(pkg.getString("name"))) {
-                return pkg.getBoolean("applied");
+                return pkg;
             }
         }
-        return false;
+        return null;
     }
 }

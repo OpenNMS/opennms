@@ -157,7 +157,7 @@
     <!-- Service Monitoring Card -->
     <action>
         <label>Configure Scheduled Outages</label>
-        <url>admin/sched-outages/index.jsp</url>
+        <url>ui/index.html#/scheduled-outages</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

@@ -7,6 +7,7 @@
 
   <div class="outage-editor">
     <OnmsCard>
+      <template #content>
       <div class="page-header">
         <h2 class="headline3" data-test="editor-title">Editing Outage: {{ name }}</h2>
         <OnmsButton variant="text" label="Cancel" data-test="cancel" @click="goBack" />
@@ -17,11 +18,15 @@
       <template v-else>
         <p v-if="errorMessage" class="error" data-test="editor-error">{{ errorMessage }}</p>
 
-        <div class="editor-grid">
+        <div v-if="loadFailed" class="load-failed" data-test="editor-load-failed">
+          <OnmsButton variant="outlined" label="Back to Scheduled Outages" @click="goBack" />
+        </div>
+
+        <div v-else class="editor-grid">
           <section class="selection">
             <h3 class="section-title">Nodes and Interfaces</h3>
             <div class="pickers">
-              <NodeInterfacePicker mode="node" :items="outage.node ?? []" @add="addNode" @remove="removeNode" />
+              <NodeInterfacePicker mode="node" :items="outage.node ?? []" :nodeLabels="nodeLabels" @add="addNode" @remove="removeNode" />
               <NodeInterfacePicker mode="interface" :items="outage.interface ?? []" @add="addInterface" @remove="removeInterface" />
             </div>
             <div class="match-any-row">
@@ -79,12 +84,37 @@
           </section>
         </div>
 
-        <div class="actions">
+        <div v-if="!loadFailed" class="actions">
           <OnmsButton label="Save Outage" data-test="save" :disabled="saving" @click="save" />
           <OnmsButton variant="text" label="Cancel" data-test="cancel-bottom" @click="goBack" />
         </div>
       </template>
+      </template>
     </OnmsCard>
+
+    <OnmsConfirmationDialog
+      :visible="showSelectAllConfirm"
+      title="Apply to All Nodes and Interfaces"
+      actionButtonText="Apply to all"
+      @ok="confirmSelectAll"
+      @cancel="showSelectAllConfirm = false"
+    >
+      <template #content>
+        <p>This clears the specific nodes and interfaces you selected and applies the outage everywhere. Continue?</p>
+      </template>
+    </OnmsConfirmationDialog>
+
+    <OnmsConfirmationDialog
+      :visible="showTypeChangeConfirm"
+      title="Change Outage Type"
+      actionButtonText="Change type"
+      @ok="confirmTypeChange"
+      @cancel="cancelTypeChange"
+    >
+      <template #content>
+        <p>Time spans are entered per outage type, so changing the type clears the time spans you already added. Continue?</p>
+      </template>
+    </OnmsConfirmationDialog>
   </div>
 </template>
 
@@ -92,7 +122,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsCard, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard, OnmsConfirmationDialog, OnmsSelect } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -100,6 +130,7 @@ import AppliesToMatrix, { Subsystem } from '@/components/ScheduledOutages/Applie
 import NodeInterfacePicker from '@/components/ScheduledOutages/NodeInterfacePicker.vue'
 import TimeSpanEditor from '@/components/ScheduledOutages/TimeSpanEditor.vue'
 import {
+  getNodeLabels,
   getOutageApplicability,
   getScheduledOutage,
   saveScheduledOutage,
@@ -136,14 +167,20 @@ const isNew = route.query.new === 'true'
 const breadcrumbs: BreadCrumb[] = [
   { label: 'Home', to: '/' },
   { label: 'Scheduled Outages', to: '/scheduled-outages' },
-  { label: name, to: '' }
+  { label: name, to: route.fullPath }
 ]
 
 const loading = ref(true)
+// the outage exists but could not be read; saving would overwrite it blind
+const loadFailed = ref(false)
 const saving = ref(false)
 const submitted = ref(false)
 const errorMessage = ref('')
 const timeSpanNote = ref('')
+const showSelectAllConfirm = ref(false)
+const showTypeChangeConfirm = ref(false)
+// node id -> label for the picker chips; missing entries render as not-found
+const nodeLabels = reactive<Record<number, string>>({})
 // the type currently reflected by outage.time, so a type change can warn before
 // discarding spans that were entered under the previous type
 const lastType = ref<OutageType | undefined>(undefined)
@@ -158,6 +195,7 @@ const outage = reactive<ScheduledOutage>({
 
 const applicability = reactive<OutageApplicability>({
   notifications: false,
+  notificationCalendars: [],
   pollers: [],
   thresholders: [],
   collectors: []
@@ -180,6 +218,10 @@ const showSelectionError = computed(() => submitted.value && !hasSelection.value
 const showTimeError = computed(() => submitted.value && !hasTimes.value)
 
 onMounted(async () => {
+  if (!name) {
+    router.replace({ path: '/scheduled-outages' })
+    return
+  }
   if (!isNew) {
     const loaded = await getScheduledOutage(name)
     if (loaded) {
@@ -188,6 +230,14 @@ onMounted(async () => {
       outage.node = loaded.node ?? []
       outage.interface = loaded.interface ?? []
       lastType.value = loaded.type
+      await resolveNodeLabels()
+    } else {
+      // Distinguish "could not read the existing outage" from a new one: with
+      // an empty form, Save would POST a whole-object replace and wipe it.
+      loadFailed.value = true
+      errorMessage.value = `Failed to load scheduled outage "${name}". It may have been deleted, or the server did not respond. Editing is disabled so the existing configuration is not overwritten.`
+      loading.value = false
+      return
     }
   }
   const appl = await getOutageApplicability(isNew ? undefined : name)
@@ -201,10 +251,18 @@ onMounted(async () => {
   loading.value = false
 })
 
-const addNode = (value: OutageNode | OutageInterface) => {
+const resolveNodeLabels = async () => {
+  const labels = await getNodeLabels((outage.node ?? []).map(n => n.id))
+  Object.assign(nodeLabels, labels)
+}
+
+const addNode = (value: OutageNode | OutageInterface, label?: string) => {
   const node = value as OutageNode
   if (!(outage.node ?? []).some(n => n.id === node.id)) {
-    outage.node = [...(outage.node ?? []), node]
+    outage.node = [...(outage.node ?? []), { id: node.id }]
+    if (label) {
+      nodeLabels[node.id] = label
+    }
   }
 }
 const removeNode = (index: number) => {
@@ -227,9 +285,19 @@ const selectAll = () => {
   // stray click can't silently discard an existing selection
   const hasExisting = (outage.node ?? []).length > 0 ||
     (outage.interface ?? []).some(i => i.address !== MATCH_ANY)
-  if (hasExisting && !window.confirm('Apply to all nodes and interfaces? This clears the specific nodes and interfaces you selected.')) {
+  if (hasExisting) {
+    showSelectAllConfirm.value = true
     return
   }
+  applyMatchAny()
+}
+
+const confirmSelectAll = () => {
+  showSelectAllConfirm.value = false
+  applyMatchAny()
+}
+
+const applyMatchAny = () => {
   outage.node = []
   outage.interface = [{ address: MATCH_ANY }]
 }
@@ -237,15 +305,24 @@ const selectAll = () => {
 const onTypeChange = () => {
   // begins/ends are formatted per type, so spans entered under the old type no
   // longer apply; confirm before discarding them so a stray change can't lose data
-  if ((outage.time ?? []).length > 0) {
-    if (!window.confirm('Changing the outage type clears the time spans you already added. Continue?')) {
-      outage.type = lastType.value
-      return
-    }
-    outage.time = []
+  if ((outage.time ?? []).length > 0 && outage.type !== lastType.value) {
+    showTypeChangeConfirm.value = true
+    return
   }
   lastType.value = outage.type
   timeSpanNote.value = ''
+}
+
+const confirmTypeChange = () => {
+  showTypeChangeConfirm.value = false
+  outage.time = []
+  lastType.value = outage.type
+  timeSpanNote.value = ''
+}
+
+const cancelTypeChange = () => {
+  showTypeChangeConfirm.value = false
+  outage.type = lastType.value
 }
 
 const addTime = (time: OutageTime) => {
@@ -359,6 +436,7 @@ const goBack = () => {
 
 const clone = (a: OutageApplicability): OutageApplicability => ({
   notifications: a.notifications,
+  notificationCalendars: [...a.notificationCalendars],
   pollers: a.pollers.map(p => ({ ...p })),
   thresholders: a.thresholders.map(p => ({ ...p })),
   collectors: a.collectors.map(p => ({ ...p }))
@@ -418,6 +496,10 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
   .field-note {
     color: var(--p-text-muted-color);
     margin: 0.5rem 0 0 0;
+  }
+
+  .load-failed {
+    margin-top: 0.75rem;
   }
 
   .actions {
