@@ -10,7 +10,7 @@ vi.mock('@/services/axiosInstances', () => ({
 
 const axios404 = () => {
   const err = new AxiosError('not found')
-  err.response = { status: 404, data: null, statusText: '', headers: {}, config: { headers: new AxiosHeaders() } }
+  err.response = { status: 404, data: null, statusText: '', headers: {}, config: { headers: new AxiosHeaders() }}
   return err
 }
 
@@ -24,7 +24,7 @@ describe('dashboardService', () => {
   })
 
   it('normalizes a partial document by filling missing blocks from defaults', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [] } })
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [] }})
     const result = await getSystemDashboard()
     // missing refresh/globalTimeframe/globalFilter must be present so store
     // getters never dereference undefined
@@ -38,7 +38,7 @@ describe('dashboardService', () => {
   })
 
   it('preserves a stored autoCompact=false (free-form) layout', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [], autoCompact: false } })
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [], autoCompact: false }})
     const result = await getSystemDashboard()
     expect(result.autoCompact).toBe(false)
   })
@@ -49,11 +49,11 @@ describe('dashboardService', () => {
       { id: 'bad-type', type: 'no-such-panel', x: 0, y: 0, w: 3, h: 100 },
       { id: 'no-geometry', type: 'notes' },
       'garbage'
-    ] } })
+    ] }})
     const result = await getSystemDashboard()
     // unknown type is preserved so it isn't silently pruned and lost on the next save;
     // the structurally-malformed ones (missing geometry / non-object) are still dropped
-    expect(result.panels.map((p) => p.id)).toEqual(['ok', 'bad-type'])
+    expect(result.panels.map(p => p.id)).toEqual(['ok', 'bad-type'])
   })
 
   it('falls back to the (empty) default on 404 (nothing saved yet)', async () => {

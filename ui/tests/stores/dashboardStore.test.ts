@@ -26,11 +26,13 @@ describe('useDashboardStore', () => {
   })
 
   // seed a panel so the per-panel operations below have something to act on
-  const seed = () => { store.addPanel('notes'); store.isDirty = false; return store.layout.panels[0] }
+  const seed = () => {
+    store.addPanel('notes'); store.isDirty = false; return store.layout.panels[0]
+  }
 
   it('load replaces the layout and clears dirty', async () => {
     const layout = createDefaultLayout()
-    layout.panels = [{ id: 'x', type: 'notes', x: 0, y: 0, w: 3, h: 100, collapsed: false, titleOverride: null, filterOverride: null, timeframeOverride: null, refreshSeconds: null, options: {} }]
+    layout.panels = [{ id: 'x', type: 'notes', x: 0, y: 0, w: 3, h: 100, collapsed: false, titleOverride: null, filterOverride: null, timeframeOverride: null, refreshSeconds: null, options: {}}]
     vi.mocked(getSystemDashboard).mockResolvedValue(layout)
     store.isDirty = true
 
@@ -106,7 +108,7 @@ describe('useDashboardStore', () => {
     seed()
     const id = store.layout.panels[0].id
     store.removePanel(id)
-    expect(store.layout.panels.find((p) => p.id === id)).toBeUndefined()
+    expect(store.layout.panels.find(p => p.id === id)).toBeUndefined()
     expect(store.isDirty).toBe(true)
   })
 

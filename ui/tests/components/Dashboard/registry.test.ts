@@ -15,7 +15,7 @@ describe('panel registry', () => {
   })
 
   it('hidden panels stay registered but are not offered in the picker', () => {
-    const listed = listPanelDefinitions().map((d) => d.type)
+    const listed = listPanelDefinitions().map(d => d.type)
     for (const [type, def] of Object.entries(panelRegistry)) {
       if (def.hidden) {
         expect(listed, type).not.toContain(type)
