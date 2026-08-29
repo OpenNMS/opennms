@@ -13,8 +13,8 @@ const tf = { preset: TimeframePreset.Last24h, from: null, to: null }
 const resourceTree = {
   data: {
     resource: [
-      { id: 'node[1]', label: 'node-A', children: { resource: [{ id: 'node[1].responseTime[10.0.0.1]', rrdGraphAttributes: { icmp: {} } }] } },
-      { id: 'node[2]', label: 'node-B', children: { resource: [{ id: 'node[2].responseTime[10.0.0.2]', rrdGraphAttributes: { icmp: {} } }] } }
+      { id: 'node[1]', label: 'node-A', children: { resource: [{ id: 'node[1].responseTime[10.0.0.1]', rrdGraphAttributes: { icmp: {}}}] }},
+      { id: 'node[2]', label: 'node-B', children: { resource: [{ id: 'node[2].responseTime[10.0.0.2]', rrdGraphAttributes: { icmp: {}}}] }}
     ]
   }
 }
@@ -40,7 +40,7 @@ describe('queryTopn column-to-source mapping', () => {
 
     const rows = await queryTopn('response-time', tf, 5, 'desc')
 
-    const byLabel = Object.fromEntries(rows.map((r) => [r.label, Math.round(r.value)]))
+    const byLabel = Object.fromEntries(rows.map(r => [r.label, Math.round(r.value)]))
     expect(byLabel['node-A']).toBe(50)
     expect(byLabel['node-B']).toBe(200)
   })
@@ -55,7 +55,7 @@ describe('queryTopn column-to-source mapping', () => {
   })
 
   it('returns empty when there are no sources', async () => {
-    vi.mocked(rest.get).mockResolvedValue({ data: { resource: [] } })
+    vi.mocked(rest.get).mockResolvedValue({ data: { resource: [] }})
     expect(await queryTopn('response-time', tf, 5, 'desc')).toEqual([])
   })
 })
