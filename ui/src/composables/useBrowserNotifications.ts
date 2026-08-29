@@ -37,7 +37,6 @@ interface BrowserNotificationMessage {
 
 const { showSnackBar } = useSnackbar()
 
-let socket: WebSocket | null = null
 let started = false
 
 // the stream serializes each field as a single-element array
@@ -61,10 +60,27 @@ const display = (message: BrowserNotificationMessage) => {
   }
 }
 
-const connect = (baseHref: string) => {
-  socket = new WebSocket(`${baseHref}notification/stream`.replace(/^http/, 'ws'))
+// Bounded backoff: a session that keeps being rejected (expired auth, a proxy
+// that blocks WebSockets) must not retry every 5s forever. A successful open
+// resets the counter, so ordinary server restarts keep reconnecting.
+const MAX_RECONNECT_ATTEMPTS = 10
+let reconnectAttempts = 0
 
-  socket.onmessage = (event: MessageEvent) => {
+const connect = (baseHref: string) => {
+  let ws: WebSocket
+  try {
+    ws = new WebSocket(`${baseHref}notification/stream`.replace(/^http/, 'ws'))
+  } catch {
+    // a base-url without a scheme makes the URL invalid; there is nothing to
+    // reconnect to, and throwing would escape the caller's watcher
+    return
+  }
+
+  ws.onopen = () => {
+    reconnectAttempts = 0
+  }
+
+  ws.onmessage = (event: MessageEvent) => {
     try {
       display(JSON.parse(event.data))
     } catch {
@@ -72,9 +88,12 @@ const connect = (baseHref: string) => {
     }
   }
 
-  socket.onclose = () => {
-    socket = null
-    setTimeout(() => connect(baseHref), 5000)
+  ws.onclose = () => {
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      return
+    }
+    reconnectAttempts++
+    setTimeout(() => connect(baseHref), Math.min(5000 * reconnectAttempts, 30000))
   }
 }
 

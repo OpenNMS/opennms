@@ -40,8 +40,8 @@
   <!--
     Acknowledging a notification is a read-write action a normal ROLE_USER may
     perform (as the legacy /notification/acknowledge did), but a ROLE_READONLY user
-    may not. Notice config editing lives under /rest/notification-config and is left
-    to the /rest/** rules below, so it stays REST/ADMIN-only. Kept in its own
+    may not. Notice config editing lives under /api/v2/notification-config and is
+    pinned to ROLE_ADMIN by its own rules below. Kept in its own
     use-expressions block so ROLE_READONLY can be excluded, mirroring the alarms rules.
   -->
   <http pattern="/rest/notifications/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
@@ -245,6 +245,14 @@
     <intercept-url pattern="/api/v2/groups/**" method="DELETE" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/groups/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/groups/**" method="PUT" access="ROLE_ADMIN" />
+
+    <!-- Notification config (event notifications, destination paths, path outages)
+         is admin surface; pin every method rather than relying on the in-code check -->
+    <intercept-url pattern="/api/v2/notification-config/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="HEAD" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="PUT" access="ROLE_ADMIN" />
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 

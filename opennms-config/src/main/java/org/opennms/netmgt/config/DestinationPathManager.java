@@ -204,12 +204,10 @@ public abstract class DestinationPathManager {
             change.apply();
             saveCurrent();
         } catch (final RuntimeException | IOException e) {
-            try {
-                m_destinationPaths.clear();
-                m_destinationPaths.putAll(snapshot);
-            } catch (final RuntimeException restoreFailure) {
-                e.addSuppressed(restoreFailure);
-            }
+            // Restore by swapping the reference: clear()+putAll() would expose a
+            // transient empty map to readers holding the unmodifiable view, which
+            // is exactly what initializeDestinationPaths() swaps references to avoid.
+            m_destinationPaths = snapshot;
             throw e;
         }
     }

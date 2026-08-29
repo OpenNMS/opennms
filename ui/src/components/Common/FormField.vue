@@ -6,6 +6,7 @@
     <div
       v-if="label || $slots['label-suffix'] || reserveLabelSpace"
       class="form-field__label-row"
+      :class="{ 'form-field__label-row--with-suffix': $slots['label-suffix'] }"
     >
       <label
         v-if="label"
@@ -132,8 +133,12 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   align-items: center;
   gap: 0.35rem;
   margin-bottom: 0.375rem;
-  // Fixed height so fields with a help icon in the label align, row-for-row,
-  // with plain-label fields beside them.
+}
+
+// Fixed height only when a help icon shares the row, so those fields align,
+// row-for-row, with plain-label fields beside them. Plain labels (the ~60
+// existing consumers) keep their natural line height and spacing.
+.form-field__label-row--with-suffix {
   min-height: 1.25rem;
 }
 

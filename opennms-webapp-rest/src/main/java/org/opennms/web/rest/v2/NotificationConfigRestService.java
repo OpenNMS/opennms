@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
@@ -271,6 +272,7 @@ public class NotificationConfigRestService {
             if (exists) {
                 throw getException(Status.BAD_REQUEST, "Event notification {} already exists.", notification.getName());
             }
+            assertDestinationPathExists(notification.getDestinationPath());
             getNotificationFactory().addNotification(notification);
             return Response.noContent().build();
         } catch (final javax.ws.rs.WebApplicationException e) {
@@ -296,6 +298,7 @@ public class NotificationConfigRestService {
             if (!name.equals(notification.getName()) && getNotificationFactory().getNotification(notification.getName()) != null) {
                 throw getException(Status.BAD_REQUEST, "Event notification {} already exists.", notification.getName());
             }
+            assertDestinationPathExists(notification.getDestinationPath());
             getNotificationFactory().replaceNotification(name, notification);
             return Response.noContent().build();
         } catch (final javax.ws.rs.WebApplicationException e) {
@@ -409,6 +412,7 @@ public class NotificationConfigRestService {
             if (getDestinationPathFactory().getPath(path.getName()) != null) {
                 throw getException(Status.BAD_REQUEST, "Destination path {} already exists.", path.getName());
             }
+            validateDestinationPathReferences(path);
             getDestinationPathFactory().addPath(path);
             return Response.noContent().build();
         } catch (final javax.ws.rs.WebApplicationException e) {
@@ -436,6 +440,7 @@ public class NotificationConfigRestService {
             if (renamed && getDestinationPathFactory().getPath(path.getName()) != null) {
                 throw getException(Status.BAD_REQUEST, "Destination path {} already exists.", path.getName());
             }
+            validateDestinationPathReferences(path);
             final org.opennms.netmgt.config.destinationPaths.Path oldPath = getDestinationPathFactory().getPath(name);
             getDestinationPathFactory().replacePath(name, path);
             if (renamed) {
@@ -492,6 +497,18 @@ public class NotificationConfigRestService {
             // Reject it up front with an explanation instead.
             if (getDestinationPathFactory().getPaths().size() <= 1) {
                 throw getException(Status.BAD_REQUEST, "Destination path {} is the only one configured; at least one must remain.", name);
+            }
+            // deleting a path that notifications still reference would leave them
+            // pointing at a name that no longer exists (rename cascades; delete
+            // must refuse — the asymmetric case)
+            final List<String> referencing = new ArrayList<>();
+            for (final Notification n : getNotificationFactory().getNotifications().values()) {
+                if (name.equals(n.getDestinationPath())) {
+                    referencing.add(n.getName());
+                }
+            }
+            if (!referencing.isEmpty()) {
+                throw getException(Status.CONFLICT, "Destination path {} is used by event notification(s): {}. Repoint or delete them first.", name, String.join(", ", referencing));
             }
             getDestinationPathFactory().removePath(name);
             return Response.noContent().build();
@@ -582,12 +599,15 @@ public class NotificationConfigRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getServiceNames(@Context final SecurityContext securityContext) {
         assertAdmin(securityContext, "read the service list");
+        readLock();
         try {
             final List<String> services = new ArrayList<>(getNotificationFactory().getServiceNames());
             services.sort(String.CASE_INSENSITIVE_ORDER);
             return services;
         } catch (final Exception e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, "Can't read the service list: {}", e.getMessage());
+        } finally {
+            readUnlock();
         }
     }
 
@@ -770,6 +790,53 @@ public class NotificationConfigRestService {
         final org.opennms.netmgt.config.notifications.Varbind varbind = notification.getVarbind();
         if (varbind != null && (StringUtils.isBlank(varbind.getVbname()) || StringUtils.isBlank(varbind.getVbvalue()))) {
             throw getException(Status.BAD_REQUEST, "A varbind requires both a name and a value");
+        }
+        // notifications.xsd leaves event-severity a free string, but notifd
+        // matches it against event severities; anything outside the canonical
+        // names can never match and would fail silently at delivery time.
+        final String severity = notification.getEventSeverity().orElse(null);
+        if (severity != null && VALID_EVENT_SEVERITIES.stream().noneMatch(s -> s.equalsIgnoreCase(severity))) {
+            throw getException(Status.BAD_REQUEST, "Unknown event severity {}; valid values are {}", severity, String.join(", ", VALID_EVENT_SEVERITIES));
+        }
+    }
+
+    private static final List<String> VALID_EVENT_SEVERITIES = java.util.Arrays.asList(
+            "Indeterminate", "Cleared", "Normal", "Warning", "Minor", "Major", "Critical");
+
+    // The legacy wizard populated destination paths by dropdown; the API
+    // equivalent is rejecting a reference to a path that does not exist, which
+    // notifd would otherwise fail on silently at delivery time.
+    private static void assertDestinationPathExists(final String pathName) throws Exception {
+        if (getDestinationPathFactory().getPath(pathName) == null) {
+            throw getException(Status.BAD_REQUEST, "destinationPath {} does not exist.", pathName);
+        }
+    }
+
+    // Target names must resolve to a user, group, or on-call role (a name with
+    // '@' is an email target, which notifd accepts without lookup), and every
+    // command must exist in notificationCommands.xml — mirroring the dropdowns
+    // the legacy wizard constrained these with.
+    private static void validateDestinationPathReferences(final org.opennms.netmgt.config.destinationPaths.Path path) throws Exception {
+        final java.util.Set<String> known = new java.util.HashSet<>();
+        UserFactory.init();
+        known.addAll(UserFactory.getInstance().getUserNames());
+        known.addAll(getGroupManager().getGroupNames());
+        known.addAll(java.util.Arrays.asList(getGroupManager().getRoleNames()));
+
+        final List<org.opennms.netmgt.config.destinationPaths.Target> allTargets = new ArrayList<>(path.getTargets());
+        for (final org.opennms.netmgt.config.destinationPaths.Escalate escalate : path.getEscalates()) {
+            allTargets.addAll(escalate.getTargets());
+        }
+        for (final org.opennms.netmgt.config.destinationPaths.Target target : allTargets) {
+            final String targetName = target.getName();
+            if (!targetName.contains("@") && !known.contains(targetName)) {
+                throw getException(Status.BAD_REQUEST, "Target {} is not a user, group, on-call role, or email address.", targetName);
+            }
+            for (final String command : target.getCommands()) {
+                if (getNotificationCommandFactory().getCommand(command) == null) {
+                    throw getException(Status.BAD_REQUEST, "Command {} is not defined in notificationCommands.xml.", command);
+                }
+            }
         }
     }
 
@@ -975,24 +1042,21 @@ public class NotificationConfigRestService {
         if (StringUtils.isBlank(rule)) {
             throw getException(Status.BAD_REQUEST, "A filter rule is required");
         }
-        readLock();
-        try {
-            final SortedMap<Integer, String> nodes = getMatchingNodes(rule);
-            final PathOutagePreviewDTO preview = new PathOutagePreviewDTO();
-            preview.setTotalCount(nodes.size());
-            for (final Map.Entry<Integer, String> entry : nodes.entrySet()) {
-                if (preview.getNodes().size() >= PREVIEW_NODE_LIMIT) {
-                    break;
-                }
-                final PathOutageDTO dto = new PathOutageDTO();
-                dto.setNodeId(entry.getKey());
-                dto.setNodeLabel(entry.getValue());
-                preview.getNodes().add(dto);
+        // database-only (filter evaluation); the config lock guards the XML
+        // factories and has nothing to protect here
+        final SortedMap<Integer, String> nodes = getMatchingNodes(rule);
+        final PathOutagePreviewDTO preview = new PathOutagePreviewDTO();
+        preview.setTotalCount(nodes.size());
+        for (final Map.Entry<Integer, String> entry : nodes.entrySet()) {
+            if (preview.getNodes().size() >= PREVIEW_NODE_LIMIT) {
+                break;
             }
-            return preview;
-        } finally {
-            readUnlock();
+            final PathOutageDTO dto = new PathOutageDTO();
+            dto.setNodeId(entry.getKey());
+            dto.setNodeLabel(entry.getValue());
+            preview.getNodes().add(dto);
         }
+        return preview;
     }
 
     @POST
@@ -1018,10 +1082,11 @@ public class NotificationConfigRestService {
         } else {
             final String raw = request.getCriticalIp().trim();
             try {
-                FilterDaoFactory.getInstance().validateRule("IPADDR IPLIKE " + raw);
-                // addr already parses/canonicalizes; normalize would be a redundant round-trip
-                criticalIp = InetAddressUtils.addr(raw);
-            } catch (final FilterParseException | IllegalArgumentException e) {
+                // forString only accepts IP literals; InetAddressUtils.addr is
+                // getByName under the hood, which would resolve a hostname over
+                // DNS in a blocking lookup with no timeout
+                criticalIp = com.google.common.net.InetAddresses.forString(raw);
+            } catch (final IllegalArgumentException e) {
                 throw getException(Status.BAD_REQUEST, "Invalid critical path IP address: {}", raw);
             }
         }

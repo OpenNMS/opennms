@@ -161,6 +161,13 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
                 + "<roles><role name=\"junit-oncall\" supervisor=\"admin\" membership-group=\"Admin\"/></roles>"
                 + "</groupinfo>", Charset.defaultCharset());
 
+        // target-reference validation resolves user names via UserFactory
+        FileUtils.writeStringToFile(new File(etc, "users.xml"), "<?xml version=\"1.0\"?>"
+                + "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\">"
+                + "<header><rev>.9</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
+                + "<users><user><user-id>admin</user-id><full-name>Administrator</full-name></user></users>"
+                + "</userinfo>", Charset.defaultCharset());
+
 
         m_filterDao = mock(FilterDao.class);
         // the *.*.*.* -> node stub is added in afterServletStart, once the node
@@ -284,6 +291,60 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         Assert.assertFalse(updated.has("event-severity"));
 
         sendRequest(DELETE, "/notification-config/event-notifications/junit-severity", 204);
+    }
+
+    @Test
+    public void testEventNotificationUnknownReferencesRejected() throws Exception {
+        // destinationPath must exist; otherwise delivery fails silently
+        final String badPath = "{\"name\":\"junit-bad-path\",\"status\":\"off\","
+                + "\"uei\":\"uei.opennms.org/nodes/nodeUp\","
+                + "\"rule\":{\"value\":\"IPADDR IPLIKE *.*.*.*\"},"
+                + "\"destinationPath\":\"no-such-path\","
+                + "\"text-message\":\"x\"}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications", badPath, 400);
+
+        // severity outside the canonical names can never match an event
+        final String badSeverity = "{\"name\":\"junit-bad-sev\",\"status\":\"off\","
+                + "\"uei\":\"uei.opennms.org/nodes/nodeUp\","
+                + "\"rule\":{\"value\":\"IPADDR IPLIKE *.*.*.*\"},"
+                + "\"destinationPath\":\"Email-Admin\","
+                + "\"text-message\":\"x\","
+                + "\"event-severity\":\"Bananas\"}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications", badSeverity, 400);
+    }
+
+    @Test
+    public void testDestinationPathUnknownReferencesRejected() throws Exception {
+        // a target that is not a user, group, role, or email address
+        final String ghostTarget = "{\"name\":\"junit-ghost\","
+                + "\"target\":[{\"name\":\"ghost\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", ghostTarget, 400);
+
+        // a command that is not defined in notificationCommands.xml
+        final String ghostCommand = "{\"name\":\"junit-ghost-cmd\","
+                + "\"target\":[{\"name\":\"Admin\",\"command\":[\"carrierPigeon\"]}],\"escalate\":[]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", ghostCommand, 400);
+
+        // known user, on-call role, and email targets all pass
+        final String validTargets = "{\"name\":\"junit-valid-targets\","
+                + "\"target\":[{\"name\":\"admin\",\"command\":[\"javaEmail\"]},"
+                + "{\"name\":\"junit-oncall\",\"command\":[\"javaEmail\"]},"
+                + "{\"name\":\"noc@example.com\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", validTargets, 204);
+        sendRequest(DELETE, "/notification-config/destination-paths/junit-valid-targets", 204);
+    }
+
+    @Test
+    public void testDeleteReferencedDestinationPathRejected() throws Exception {
+        // junitNotification references Email-Admin; delete must refuse (409)
+        // rather than leave the notification pointing at a missing path
+        final String spare = "{\"name\":\"junit-spare\","
+                + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", spare, 204);
+
+        sendRequest(DELETE, "/notification-config/destination-paths/Email-Admin", 409);
+        // the unreferenced one deletes fine
+        sendRequest(DELETE, "/notification-config/destination-paths/junit-spare", 204);
     }
 
     @Test
