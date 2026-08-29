@@ -81,7 +81,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("test-source");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor");
         m_source.setUploadedBy("JUnitTest");
@@ -217,7 +217,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("testEventEnabledFlagName");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -269,7 +269,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("testDeleteEvents");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test events from a source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -348,7 +348,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("sourceAndEventTesting");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor2");
         m_source.setUploadedBy("testCases");
@@ -392,7 +392,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         empty.setName("empty-source");
         empty.setEnabled(true);
         empty.setCreatedTime(new Date());
-        empty.setFileOrder(2);
+        empty.setFileOrder(m_eventSourceDao.nextFileOrder());
         empty.setVendor("TestVendor");
         empty.setEventCount(0);
         m_eventSourceDao.saveOrUpdate(empty);

@@ -85,7 +85,7 @@ public class EventConfEventOrderConcurrencyIT implements InitializingBean {
             source.setEnabled(true);
             source.setCreatedTime(new Date());
             source.setLastModified(new Date());
-            source.setFileOrder(1);
+            source.setFileOrder(m_eventSourceDao.nextFileOrder());
             source.setVendor("TestVendor");
             source.setUploadedBy("JUnitTest");
             source.setEventCount(4);
@@ -176,6 +176,87 @@ public class EventConfEventOrderConcurrencyIT implements InitializingBean {
         assertEquals(6, events.stream().map(EventConfEvent::getEventOrder).distinct().count());
     }
 
+
+    /**
+     * Two transactions creating sources must not be handed the same fileOrder either: the
+     * allocation holds the file-order lock until the first creator commits.
+     */
+    @Test
+    public void testNextFileOrderSerializesConcurrentCreators() throws Exception {
+        final CountDownLatch firstHoldsLock = new CountDownLatch(1);
+        final CountDownLatch secondAsked = new CountDownLatch(1);
+        final AtomicInteger firstOrder = new AtomicInteger();
+        final AtomicInteger secondOrder = new AtomicInteger();
+        final AtomicLong firstCommittedAt = new AtomicLong();
+        final AtomicLong secondObtainedAt = new AtomicLong();
+
+        Thread first = new Thread(() -> m_transactionTemplate.execute(status -> {
+            int order = m_eventSourceDao.nextFileOrder();
+            firstOrder.set(order);
+            m_eventSourceDao.save(newSource("concurrency-source-a", order));
+            m_eventSourceDao.flush();
+            firstHoldsLock.countDown();
+            try {
+                assertTrue(secondAsked.await(10, TimeUnit.SECONDS));
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            firstCommittedAt.set(System.nanoTime());
+            return null;
+        }), "creator-1");
+
+        Thread second = new Thread(() -> {
+            try {
+                assertTrue(firstHoldsLock.await(10, TimeUnit.SECONDS));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            m_transactionTemplate.execute(status -> {
+                secondAsked.countDown();
+                int order = m_eventSourceDao.nextFileOrder(); // blocks until creator-1 commits
+                secondObtainedAt.set(System.nanoTime());
+                secondOrder.set(order);
+                m_eventSourceDao.save(newSource("concurrency-source-b", order));
+                m_eventSourceDao.flush();
+                return null;
+            });
+        }, "creator-2");
+
+        first.start();
+        second.start();
+        first.join(30_000);
+        second.join(30_000);
+        assertFalse(first.isAlive());
+        assertFalse(second.isAlive());
+
+        assertEquals("second creator must see the first insert", firstOrder.get() + 1, secondOrder.get());
+        assertTrue("second allocation must have waited for the first commit",
+                secondObtainedAt.get() > firstCommittedAt.get());
+
+        m_transactionTemplate.execute(status -> {
+            for (String name : List.of("concurrency-source-a", "concurrency-source-b")) {
+                EventConfSource s = m_eventSourceDao.findByName(name);
+                if (s != null) {
+                    m_eventSourceDao.delete(s);
+                }
+            }
+            return null;
+        });
+    }
+
+    private EventConfSource newSource(String name, int fileOrder) {
+        EventConfSource source = new EventConfSource();
+        source.setName(name);
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setLastModified(new Date());
+        source.setFileOrder(fileOrder);
+        source.setVendor("TestVendor");
+        source.setUploadedBy("JUnitTest");
+        source.setEventCount(0);
+        return source;
+    }
 
     private EventConfEvent newEvent(EventConfSource source, String uei, int order) {
         EventConfEvent event = new EventConfEvent();

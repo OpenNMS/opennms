@@ -92,8 +92,6 @@ public class EventConfRestService implements EventConfRestApi {
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
         final String username = getUsername(securityContext);
         final Date now = new Date();
-        int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
-
         final Map<String, Attachment> fileMap = new LinkedHashMap<>();
         for (Attachment attachment : attachments) {
             String filename = attachment.getContentDisposition().getParameter("filename");
@@ -114,8 +112,9 @@ public class EventConfRestService implements EventConfRestApi {
             fileMap.put(basename, attachment);
         }
 
-        // Detect and parse eventconf.xml for file ordering
-        Map<String, Integer> fileOrderMap = buildFileOrderFromEventConf(fileMap);
+        // An eventconf.xml in the upload dictates the source order; it is applied after the files are
+        // persisted (see reorderSourcesFromEventConf), so it is not stored as a source itself.
+        final List<String> eventConfOrder = parseEventConfOrder(fileMap);
 
         List<String> orderedFiles = new ArrayList<>(fileMap.keySet());
 
@@ -138,36 +137,28 @@ public class EventConfRestService implements EventConfRestApi {
             }
 
             try {
-                final EventConfSource existingSource = eventConfSourceDao.findByName(fileName);
-                final int fileOrder;
-                if (fileOrderMap != null && fileOrderMap.containsKey(fileName)) {
-                    fileOrder = fileOrderMap.get(fileName);
-                } else if (existingSource != null) {
-                    fileOrder = existingSource.getFileOrder();
-                } else {
-                    fileOrder = ++maxFileOrder;
-                }
-
+                // 0 = decided inside the persisting transaction: an existing source keeps its committed
+                // position, a new one is allocated MAX+1 under the allocation lock. Reading the value here,
+                // outside any transaction, could write back a position a concurrent reorder just changed.
                 eventConfPersistenceService.persistEventConfFile(
                         fileEvents,
-                        buildMetadata(fileName, "", fileEvents, fileOrder, username, now));
+                        buildMetadata(fileName, "", fileEvents, 0, username, now));
                 successList.add(buildSuccessResponse(fileName, fileEvents));
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
             }
         }
 
-        // Update fileOrder for existing DB sources not in this upload
-        if (fileOrderMap != null) {
-            for (Map.Entry<String, Integer> entry : fileOrderMap.entrySet()) {
-                if (!fileMap.containsKey(entry.getKey())) {
-                    eventConfPersistenceService.updateFileOrder(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-
         final long dbEndTime = System.currentTimeMillis();
         LOG.info("Time to add {} files to DB: {} ms", orderedFiles.size(), (dbEndTime - dbStartTime));
+
+        if (eventConfOrder != null) {
+            try {
+                eventConfPersistenceService.reorderSourcesFromEventConf(eventConfOrder);
+            } catch (Exception e) {
+                errorList.add(buildErrorResponse("eventconf", e));
+            }
+        }
 
         eventConfPersistenceService.reloadEventsIntoMemory();
 
@@ -175,89 +166,35 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     /**
-     * If an eventconf.xml is present in the upload, parse its event-file entries
-     * and build a fileOrder map for all sources (uploaded + existing in DB).
-     * Referenced sources (explicitly listed in eventconf.xml) follow eventconf.xml order
-     * (first entry = searched first among referenced).
-     * Unreferenced sources (sources in DB but not in eventconf.xml, or files included in the
-     * upload but not explicitly listed in eventconf.xml) get higher fileOrder (searched before
-     * referenced), consistent with normal upload behavior where new files get highest priority.
-     * Returns null if no eventconf.xml is present or parsing fails.
+     * If an eventconf.xml is part of the upload, removes it from the file map and returns the source
+     * names of its {@code <event-file>} entries in file order (first = evaluated first).
+     * Returns null when there is no eventconf.xml, it lists no files, or it cannot be parsed
+     * (in which case it is left in the map so it shows up in the error list).
      */
-    private Map<String, Integer> buildFileOrderFromEventConf(final Map<String, Attachment> fileMap) {
+    private List<String> parseEventConfOrder(final Map<String, Attachment> fileMap) {
         final Attachment eventConfAttachment = fileMap.get("eventconf");
         if (eventConfAttachment == null) {
             return null;
         }
-        // Remove eventconf from fileMap only after confirming it exists
         fileMap.remove("eventconf");
-
         try (InputStream stream = eventConfAttachment.getObject(InputStream.class)) {
             final Events eventConfEvents = parseEventFile(new ByteArrayInputStream(stream.readAllBytes()));
             final List<String> eventConfOrder = new ArrayList<>();
-            final Set<String> eventConfOrderSet = new HashSet<>();
+            final Set<String> seen = new HashSet<>();
             for (String eventFile : eventConfEvents.getEventFiles()) {
                 String name = stripPathAndExtension(eventFile);
-                if (name != null && !name.isEmpty() && eventConfOrderSet.add(name)) {
+                if (name != null && !name.isEmpty() && seen.add(name)) {
                     eventConfOrder.add(name);
                 }
             }
-
             if (eventConfOrder.isEmpty()) {
                 LOG.info("eventconf.xml contained no <event-file> entries, falling back to default ordering");
                 return null;
             }
-
-            // Collect all known source names: uploaded files + existing DB sources
-            final Set<String> allSourceNames = new LinkedHashSet<>(fileMap.keySet());
-            allSourceNames.addAll(eventConfSourceDao.findAllNames());
-
-            // Unreferenced sources (sources in DB but not in eventconf.xml): preserve their existing DB order
-            final List<EventConfSource> existingByOrder = eventConfSourceDao.findAllByFileOrder();
-            final List<String> unreferencedSorted = new ArrayList<>();
-            final Set<String> unreferencedSet = new HashSet<>();
-            for (EventConfSource src : existingByOrder) {
-                if (!eventConfOrderSet.contains(src.getName())) {
-                    unreferencedSorted.add(src.getName());
-                    unreferencedSet.add(src.getName());
-                }
-            }
-            // Add any newly uploaded unreferenced files (not in eventconf.xml and not in DB yet) at the end
-            for (String name : fileMap.keySet()) {
-                if (!eventConfOrderSet.contains(name) && !unreferencedSet.contains(name)) {
-                    unreferencedSorted.add(name);
-                }
-            }
-
-            final Map<String, Integer> fileOrderMap = new HashMap<>();
-            // Reserve fileOrder 1 for catch-all (always searched last)
-            final String CATCH_ALL = EventConfSource.CATCH_ALL_SOURCE_NAME;
-            int nextOrder = 2;
-
-            // Referenced sources in eventconf.xml order: last entry gets lowest fileOrder (searched last)
-            // first entry gets highest fileOrder among referenced (searched first among referenced)
-            // catch-all is excluded — it stays pinned at fileOrder 1
-            for (int i = eventConfOrder.size() - 1; i >= 0; i--) {
-                String name = eventConfOrder.get(i);
-                if (!CATCH_ALL.equals(name) && allSourceNames.contains(name)) {
-                    fileOrderMap.put(name, nextOrder++);
-                }
-            }
-
-            // Unreferenced sources get higher fileOrder (searched first),
-            // consistent with uploads without eventconf.xml where new files get highest priority.
-            // Existing unreferenced preserve their relative order; newly uploaded ones go last (highest priority).
-            for (String name : unreferencedSorted) {
-                if (!CATCH_ALL.equals(name)) {
-                    fileOrderMap.put(name, nextOrder++);
-                }
-            }
-
             LOG.info("Parsed eventconf.xml with {} event-file entries for ordering", eventConfOrder.size());
-            return fileOrderMap;
+            return eventConfOrder;
         } catch (Exception e) {
             LOG.warn("Failed to parse eventconf.xml for file ordering, falling back to default order: {}", e.getMessage());
-            // Re-add eventconf to fileMap so it appears in the error list
             fileMap.put("eventconf", eventConfAttachment);
             return null;
         }
@@ -615,12 +552,6 @@ public class EventConfRestService implements EventConfRestApi {
                         .build();
             }
 
-            int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
-            int newOrder = maxFileOrder + 1;
-
-            LOG.debug("Assigned fileOrder={} for new EventConfSource name='{}'",
-                    newOrder, request.getName());
-
             EventConfSource eventConfSource = new EventConfSource();
             eventConfSource.setName(request.getName());
             eventConfSource.setDescription(request.getDescription());
@@ -629,8 +560,8 @@ public class EventConfRestService implements EventConfRestApi {
             eventConfSource.setEventCount(0);
             eventConfSource.setCreatedTime(now);
             eventConfSource.setLastModified(now);
-            eventConfSource.setFileOrder(newOrder);
             eventConfSource.setUploadedBy(username);
+            // fileOrder is allocated by the service inside its transaction (max + 1, unique)
 
             LOG.debug("Persisting EventConfSource name='{}'", request.getName());
 

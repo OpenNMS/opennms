@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.slf4j.Logger;
@@ -175,6 +177,28 @@ public class EventConfSourceDaoHibernate
         // Return map with results
         return Map.of("totalRecords", resultCount, "eventConfSourceList", eventConfSourceList);
 
+    }
+
+    @Override
+    public Integer nextFileOrder() {
+        lockFileOrders();
+        return findMaxFileOrder() + 1;
+    }
+
+    @Override
+    public void lockFileOrders() {
+        // The DAO's table-level named lock (accessLocks row EVENTCONF_SOURCES_ACCESS, held until the
+        // transaction ends): the next taker blocks until this transaction commits, so a MAX+1 read
+        // after it always sees the previous allocation or renumbering.
+        lock();
+    }
+
+    @Override
+    public void lockForUpdate(Long sourceId) {
+        final var session = getSessionFactory().getCurrentSession();
+        // the row may have been created in this very transaction
+        session.flush();
+        session.get(EventConfSource.class, sourceId, new LockOptions(LockMode.PESSIMISTIC_WRITE));
     }
 
     @Override

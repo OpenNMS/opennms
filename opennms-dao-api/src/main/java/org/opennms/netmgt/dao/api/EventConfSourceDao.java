@@ -58,5 +58,26 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
 
     Integer findMaxFileOrder();
 
+    /**
+     * Allocates the {@code fileOrder} for a new source ({@code findMaxFileOrder + 1}, i.e. evaluated
+     * before every existing source). Concurrent allocations are serialized by {@link #lockFileOrders()},
+     * so two creators can never be handed the same value. Must be called inside a transaction.
+     */
+    Integer nextFileOrder();
+
+    /**
+     * Takes the transaction-scoped named lock that serializes every change to {@code fileOrder} values
+     * (allocation and renumbering) - the DAO's {@code accessLocks} row, see {@code AbstractDaoHibernate#lock()}.
+     * Released when the transaction ends.
+     */
+    void lockFileOrders();
+
+    /**
+     * Locks the source row ({@code SELECT ... FOR UPDATE}) for the rest of the current transaction.
+     * Hold it before replacing, appending or compacting the source's events so concurrent writers
+     * cannot interleave and produce duplicate event positions.
+     */
+    void lockForUpdate(Long sourceId);
+
     List<String> findAllVendors();
 }

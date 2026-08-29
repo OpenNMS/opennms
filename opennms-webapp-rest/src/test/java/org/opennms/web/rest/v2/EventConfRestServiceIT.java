@@ -305,7 +305,8 @@ public class EventConfRestServiceIT {
         m_source.setName("testEventEnabledFlagTest");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
+        m_source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -396,7 +397,8 @@ public class EventConfRestServiceIT {
         source.setName("emptySource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        source.setFileOrder(1);
+        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
+        source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
         source.setDescription("Source with no events");
         source.setVendor("TestVendor");
         source.setUploadedBy("JUnitTest");
@@ -593,7 +595,8 @@ public class EventConfRestServiceIT {
         m_source.setName("testEventEnabledFlagTest");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
+        m_source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -781,7 +784,8 @@ public class EventConfRestServiceIT {
         source.setName("testGetSource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        source.setFileOrder(1);
+        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
+        source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
         source.setDescription("Test source for get by ID");
         source.setVendor("Cisco");
         source.setUploadedBy("JUnitTest");
@@ -819,7 +823,8 @@ public class EventConfRestServiceIT {
         m_source.setName("testGetEventsByVendor");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
+        m_source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
         m_source.setDescription("Test event source");
         m_source.setVendor("test");
         m_source.setUploadedBy("JUnitTest");
@@ -855,7 +860,8 @@ public class EventConfRestServiceIT {
         source.setName("addEventConfSource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        source.setFileOrder(1);
+        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
+        source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
         source.setDescription("Test addEventConfSource");
         source.setVendor("Cisco");
         source.setUploadedBy("JUnitTest");
@@ -1247,15 +1253,13 @@ public class EventConfRestServiceIT {
         @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         @SuppressWarnings("unchecked") List<EventConfSourceDto> dtos = (List<EventConfSourceDto>) entity.get("eventConfSourceList");
 
-        // Sorted ascending by evaluationOrder == descending by fileOrder. The value is the 1-based rank:
-        // (number of sources with a strictly higher fileOrder) + 1, so sources sharing a fileOrder share a rank.
-        // Other tests in this class may leave sources behind, so derive expectations from the list itself.
+        // Sorted ascending by evaluationOrder == descending by the (unique) fileOrder; the value is the dense 1-based rank
         for (int i = 0; i < dtos.size(); i++) {
             EventConfSourceDto dto = dtos.get(i);
-            long higher = dtos.stream().filter(d -> d.getFileOrder() > dto.getFileOrder()).count();
-            assertEquals("rank of " + dto.getName(), Integer.valueOf((int) higher + 1), dto.getEvaluationOrder());
+            assertEquals("rank of " + dto.getName(), Integer.valueOf(i + 1), dto.getEvaluationOrder());
             if (i > 0) {
-                assertTrue(dtos.get(i - 1).getFileOrder() >= dto.getFileOrder());
+                assertTrue("fileOrder must be unique and strictly ordered",
+                        dtos.get(i - 1).getFileOrder() > dto.getFileOrder());
             }
         }
         // the catch-all (fileOrder 1) is never evaluated before anything else

@@ -61,13 +61,17 @@ public class EventConfSource implements Serializable {
     @Column(length = 128)
     private String vendor;
 
+    /**
+     * Source precedence: higher is evaluated first. Unique across sources
+     * ({@code uk_eventconf_sources_file_order}); the catch-all source is pinned at 1.
+     * Allocate new values with {@code EventConfSourceDao.nextFileOrder()}.
+     */
     @Column(name = "file_order", nullable = false)
     private Integer fileOrder;
 
     /**
      * Position in which this source is evaluated when matching events: 1 = evaluated first.
-     * Derived from {@link #fileOrder} (higher fileOrder is evaluated first); sources sharing a
-     * fileOrder share a position. Read-only.
+     * Derived from the unique {@link #fileOrder}, so it is a dense 1..N rank. Read-only.
      */
     @Formula("(SELECT COUNT(*) + 1 FROM eventconf_sources o WHERE o.file_order > file_order)")
     private Integer evaluationOrder;
