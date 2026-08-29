@@ -3,7 +3,7 @@ import { ALARM_CHART_SEVERITIES, SEVERITIES, maxSeverity, severityColor, severit
 
 describe('severity helpers', () => {
   it('keeps the list highest-severity-first with descending weights', () => {
-    const weights = SEVERITIES.map((s) => s.weight)
+    const weights = SEVERITIES.map(s => s.weight)
     expect([...weights].sort((a, b) => b - a)).toEqual(weights)
     expect(SEVERITIES[0].key).toBe('CRITICAL')
   })

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildFilterClauses, filterFiqlClauses, isFilterActive, resolveFilterNodeIds } from '@/components/Dashboard/filter'
 import { v2 } from '@/services/axiosInstances'
 
-vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn() } }))
+vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn() }}))
 
 const filter = (over: Partial<{ surveillanceCategories: string[]; ipMatch: string | null }> = {}) => ({
   surveillanceCategories: over.surveillanceCategories ?? [],
@@ -33,8 +33,8 @@ describe('dashboard filter helper', () => {
 
   it('resolveFilterNodeIds unions members across categories and caches', async () => {
     vi.mocked(v2.get)
-      .mockResolvedValueOnce({ data: { node: [{ id: 1 }, { id: 2 }] } })
-      .mockResolvedValueOnce({ data: { node: [{ id: 2 }, { id: 3 }] } })
+      .mockResolvedValueOnce({ data: { node: [{ id: 1 }, { id: 2 }] }})
+      .mockResolvedValueOnce({ data: { node: [{ id: 2 }, { id: 3 }] }})
 
     const ids = await resolveFilterNodeIds(filter({ surveillanceCategories: ['B', 'A'] }))
     expect([...(ids ?? [])].sort()).toEqual([1, 2, 3])
@@ -55,7 +55,7 @@ describe('dashboard filter helper', () => {
   })
 
   it('buildFilterClauses combines IP and resolved nodes', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { node: [{ id: 7 }] } })
+    vi.mocked(v2.get).mockResolvedValue({ data: { node: [{ id: 7 }] }})
     const clauses = await buildFilterClauses(filter({ surveillanceCategories: ['X'], ipMatch: '10.0.0.5' }))
     expect(clauses).toContain('ipInterface.ipAddress==10.0.0.5')
     expect(clauses).toContain('(node.id==7)')

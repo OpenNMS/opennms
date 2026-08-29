@@ -64,7 +64,7 @@ describe('timeframeRange', () => {
 
 describe('timeframe and refresh option lists', () => {
   it('cover every preset exactly once', () => {
-    const values = timeframeOptions.map((o) => o.value)
+    const values = timeframeOptions.map(o => o.value)
     expect(new Set(values).size).toBe(values.length)
     for (const preset of Object.values(TimeframePreset)) {
       expect(values).toContain(preset)
@@ -73,7 +73,7 @@ describe('timeframe and refresh option lists', () => {
 
   it('refresh options start with off and ascend', () => {
     expect(refreshOptions[0].value).toBe(0)
-    const rest = refreshOptions.slice(1).map((o) => o.value)
+    const rest = refreshOptions.slice(1).map(o => o.value)
     expect([...rest].sort((a, b) => a - b)).toEqual(rest)
   })
 })
