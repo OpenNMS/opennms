@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -63,7 +62,6 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SortedSetMultimap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * This class represents a singular instance that is used to map IP
@@ -78,10 +76,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheDaoImpl.class);
 
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("sync-interface-to-node-cache")
-            .build();
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+    private final ExecutorService executorService = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("sync-interface-to-node-cache-", 0).factory());
     private final CountDownLatch initialNodeSyncDone = new CountDownLatch(1);
 
     private static class Key {

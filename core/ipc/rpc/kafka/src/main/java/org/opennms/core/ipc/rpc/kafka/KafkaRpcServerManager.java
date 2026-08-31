@@ -125,7 +125,8 @@ public class KafkaRpcServerManager {
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
     // Delay queue which caches rpcId and removes when rpcId reaches expiration time.
     private DelayQueue<RpcId> rpcIdQueue = new DelayQueue<>();
-    private ExecutorService delayQueueExecutor = Executors.newSingleThreadExecutor();
+    private ExecutorService delayQueueExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-server-delay-queue-", 0).factory());
     private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
     private final TracerRegistry tracerRegistry;
     private KafkaTopicProvider kafkaRpcTopicProvider = new KafkaTopicProvider();

@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -51,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class OpenNMSKafkaConsumer {
@@ -68,11 +66,8 @@ public class OpenNMSKafkaConsumer {
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.consumer.client";
 
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("kafka-consumer-events-%d")
-            .build();
-
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+    private final ExecutorService executorService = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("kafka-consumer-events-", 0).factory());
 
     public OpenNMSKafkaConsumer(ConfigurationAdmin configAdmin, EventForwarder eventForwarder) {
         this.configAdmin = configAdmin;

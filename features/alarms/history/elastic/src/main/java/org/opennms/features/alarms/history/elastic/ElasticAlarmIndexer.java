@@ -78,7 +78,6 @@ import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 
 import io.searchbox.core.Bulk;
@@ -130,9 +129,8 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private final List<AlarmDocumentDTO> alarmDocumentsToIndex = new LinkedList<>();
 
     private Map<Integer, AlarmDocumentDTO> alarmDocumentsById = new LinkedHashMap<>();
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
-            .setNameFormat("ElasticAlarmIndexer")
-            .build());
+    private final ExecutorService executor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("ElasticAlarmIndexer-", 0).factory());
     private final AtomicBoolean stopped = new AtomicBoolean(false);
     private java.util.Timer timer;
     private final Function<OnmsAlarm, AlarmDocumentDTO> documentMapper;

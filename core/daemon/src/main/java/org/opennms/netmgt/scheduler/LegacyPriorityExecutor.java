@@ -41,7 +41,8 @@ public class LegacyPriorityExecutor implements PausableFiber {
     private final String m_parent;
     private final ExecutorService priorityJobPoolExecutor;
     private final DelayQueue<PriorityReadyRunnable> priorityQueue;
-    private final ExecutorService m_worker = Executors.newSingleThreadExecutor();
+    private final ExecutorService m_worker = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("LegacyPriorityExecutor-Worker-", 0).factory());
     private volatile int m_status;
     public LegacyPriorityExecutor(String parent, Integer poolSize, Integer queueSize) {
         m_parent=parent;

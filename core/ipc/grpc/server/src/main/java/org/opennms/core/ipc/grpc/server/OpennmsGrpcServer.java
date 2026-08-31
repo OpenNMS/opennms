@@ -126,15 +126,13 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private JmxReporter sinkMetricsReporter;
     private TracerRegistry tracerRegistry;
     private final AtomicBoolean closed = new AtomicBoolean(false);
-    private final ThreadFactory timerThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-timeout-tracker-%d")
-            .build();
     private final ThreadFactory sinkConsumerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("sink-consumer-%d")
             .build();
 
     // RPC timeout executor thread retrieves elements from delay queue used to timeout rpc requests.
-    private final ExecutorService rpcTimeoutExecutor = Executors.newSingleThreadExecutor(timerThreadFactory);
+    private final ExecutorService rpcTimeoutExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-timeout-tracker-", 0).factory());
     // Each RPC response is handled on a new thread which does unmarshalling and returning response to corresponding module.
     private final ExecutorService responseHandlerExecutor = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("rpc-response-handler-", 0).factory());

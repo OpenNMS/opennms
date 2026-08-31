@@ -45,7 +45,6 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -93,7 +92,6 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 import com.google.common.math.IntMath;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
@@ -126,14 +124,10 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private String location;
     private KafkaProducer<String, byte[]> producer;
     private final Properties kafkaConfig = new Properties();
-    private final ThreadFactory consumerThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-client-kafka-consumer-%d")
-            .build();
-    private final ThreadFactory timerThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-client-timeout-tracker-%d")
-            .build();
-    private final ExecutorService kafkaConsumerExecutor = Executors.newSingleThreadExecutor(consumerThreadFactory);
-    private final ExecutorService timerExecutor = Executors.newSingleThreadExecutor(timerThreadFactory);
+    private final ExecutorService kafkaConsumerExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-client-kafka-consumer-", 0).factory());
+    private final ExecutorService timerExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-client-timeout-tracker-", 0).factory());
     private final ExecutorService responseHandlerExecutor = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("rpc-client-response-handler-", 0).factory());
     private final Map<String, ResponseCallback> rpcResponseMap = new ConcurrentHashMap<>();

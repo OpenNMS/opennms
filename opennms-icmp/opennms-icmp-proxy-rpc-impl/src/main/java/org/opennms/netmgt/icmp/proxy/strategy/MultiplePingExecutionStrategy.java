@@ -84,7 +84,8 @@ public class MultiplePingExecutionStrategy implements ExecutionStrategy{
         }
 
         public void startCancelableExecution(Callable<?> task) {
-            this.executor = Executors.newSingleThreadExecutor(runnable -> new Thread(null, runnable, "icmp-proxy-pool-" + poolNumber.getAndIncrement()));
+            this.executor = Executors.newThreadPerTaskExecutor(
+                    Thread.ofVirtual().name("icmp-proxy-pool-" + poolNumber.getAndIncrement() + "-", 0).factory());
             this.future = executor.submit(task);
         }
     }
