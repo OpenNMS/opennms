@@ -182,35 +182,64 @@ const optionProblems = computed<Record<string, string>>(() => {
 
 const canForecast = computed(() => !!selectedMetric.value && Object.keys(optionProblems.value).length === 0)
 
-// only DEF-backed metrics (with a real attribute + resource) can be fetched as a
-// measurements source; CDEF/expression series are skipped as non-forecastable
+// Every drawn series is forecastable: the whole model is posted — DEFs as
+// sources, CDEFs as expressions, the same shape Graph.vue builds — and the
+// selected series' metric name is the filter chain's inputColumn. The old
+// single-source label:'data' shortcut ruled out CDEF-drawn series, which most
+// stock graph definitions use.
 const metricFor = (seriesMetricName: string): Metric | undefined =>
   model.value?.metrics.find(m => m.name === seriesMetricName)
-const isFetchable = (m?: Metric): boolean => !!m && !!m.attribute && !!m.resourceId && !m.expression
+
+const buildModelPayload = (selected: string, startMs: number, endMs: number, filter?: FilterDef[]) => {
+  const metrics = model.value?.metrics ?? []
+  const source = metrics.filter(m => !m.expression).map(m => ({
+    aggregation: m.aggregation || 'AVERAGE',
+    attribute: m.attribute,
+    label: m.name,
+    resourceId: m.resourceId,
+    // the selected column must come back in the response; everything else
+    // keeps its model-declared visibility
+    transient: m.name === selected ? false : !!m.transient
+  }))
+  const expression = metrics.filter(m => Boolean(m.expression)).map(m => ({
+    value: m.expression as string,
+    label: m.name,
+    transient: m.name === selected ? false : !!m.transient
+  }))
+  const payload: Record<string, unknown> = {
+    start: startMs,
+    end: endMs,
+    step: Math.max(1, Math.floor((endMs - startMs) / 1000)),
+    source
+  }
+  if (expression.length) {
+    payload.expression = expression
+  }
+  if (filter) {
+    payload.filter = filter
+  }
+  return payload
+}
+
+// the selected column by its label; older single-column responses (no labels
+// array) fall back to the first column
+const selectedColumn = (resp: { labels?: string[], columns?: { values: number[] }[] }, name: string): number[] => {
+  const values = resp.labels ? columnByLabel(resp, name) : (resp.columns?.[0]?.values ?? [])
+  return values.map((v: unknown) => (typeof v === 'number' ? v : NaN))
+}
 
 const fetchColumn = async (seriesMetricName: string, startMs: number, endMs: number) => {
-  const metric = metricFor(seriesMetricName)
-  if (!isFetchable(metric)) {
+  if (!metricFor(seriesMetricName)) {
     return null
   }
-  const step = Math.max(1, Math.floor((endMs - startMs) / 1000))
-  const resp = await API.getGraphMetrics({
-    start: startMs, end: endMs, step,
-    source: [{
-      aggregation: metric!.aggregation || 'AVERAGE',
-      attribute: metric!.attribute,
-      label: 'data',
-      resourceId: metric!.resourceId,
-      transient: false
-    }]
-  } as any)
+  const resp = await API.getGraphMetrics(buildModelPayload(seriesMetricName, startMs, endMs) as any)
   if (!resp) {
     return null
   }
   const timestamps = (resp.timestamps ?? []) as number[]
-  const values = (resp.columns?.[0]?.values ?? []).map((v: unknown) => (typeof v === 'number' ? v : NaN))
+  const values = selectedColumn(resp, seriesMetricName)
   // the API's step and returned timestamp spacing are already in milliseconds
-  const stepMs = timestamps.length > 1 ? timestamps[1] - timestamps[0] : step
+  const stepMs = timestamps.length > 1 ? timestamps[1] - timestamps[0] : Math.max(1, Math.floor((endMs - startMs) / 1000))
   return { timestamps, values, stepMs }
 }
 
@@ -304,7 +333,7 @@ const columnByLabel = (resp: { labels?: string[], columns?: { values: number[] }
 // page surfaces these cases via checkForecastWarning.js, and the new page must
 // too, or the user just sees a bare data line and empty legend entries. Returns
 // a human-readable reason, or null when the forecast looks healthy.
-const forecastWarningFor = (resp: { labels?: string[], columns?: { values: number[] }[] }): string | null => {
+const forecastWarningFor = (resp: { labels?: string[], columns?: { values: number[] }[] }, dataLabel: string): string | null => {
   const fit = columnByLabel(resp, 'HWFit')
   if (!fit.length) {
     return 'Forecast could not be produced. The most common cause is that the selected training window does not have enough historical data.'
@@ -312,7 +341,7 @@ const forecastWarningFor = (resp: { labels?: string[], columns?: { values: numbe
   if (!fit.some(v => !Number.isNaN(v))) {
     // Holt-Winters here is multiplicative, so a series that touches zero inside
     // its season divides by zero and yields no fit at all
-    if (columnByLabel(resp, 'data').some(v => v === 0)) {
+    if (selectedColumn(resp, dataLabel).some(v => v === 0)) {
       return 'Forecast produced no valid values because the metric reaches zero within its season, which the multiplicative Holt-Winters model cannot forecast. Try a metric or a training window that stays above zero.'
     }
     return 'Forecast produced no valid values. This typically means gaps or outliers in the training window left too few usable samples after filtering.'
@@ -330,33 +359,22 @@ const runForecast = async () => {
   warning.value = null
   forecasting.value = true
   try {
-    const metric = metricFor(selectedMetric.value)
-    if (!isFetchable(metric)) {
+    if (!metricFor(selectedMetric.value)) {
       warning.value = 'Could not load data for the selected metric.'
       drawChart([])
       return
     }
     const end = Date.now()
     const start = end - options.value.trainingStart * DAY_MS
-    const step = Math.max(1, Math.floor((end - start) / 1000))
-    const resp = await API.getGraphMetrics({
-      start, end, step,
-      source: [{
-        aggregation: metric!.aggregation || 'AVERAGE',
-        attribute: metric!.attribute,
-        label: 'data',
-        resourceId: metric!.resourceId,
-        transient: false
-      }],
-      filter: forecastFilters('data', options.value)
-    } as any)
+    const resp = await API.getGraphMetrics(
+      buildModelPayload(selectedMetric.value, start, end, forecastFilters(selectedMetric.value, options.value)) as any)
     if (!resp || !(resp.timestamps ?? []).length) {
       warning.value = 'Could not load data for the selected metric.'
       drawChart([])
       return
     }
     const ts = resp.timestamps as number[]
-    const datasets: any[] = [line(seriesName(), '#7EE600', toPoints(ts, columnByLabel(resp, 'data')))]
+    const datasets: any[] = [line(seriesName(), '#7EE600', toPoints(ts, selectedColumn(resp, selectedMetric.value)))]
     datasets.push(line('HW Bounds (low)', '#ff0000', toPoints(ts, columnByLabel(resp, 'HWLwr')), true))
     datasets.push({ ...line('HW Bounds (high)', 'rgba(255,0,0,0.12)', toPoints(ts, columnByLabel(resp, 'HWUpr')), true, true), borderColor: '#ff0000' })
     datasets.push(line('HW Fit', '#9d4edd', toPoints(ts, columnByLabel(resp, 'HWFit'))))
@@ -364,7 +382,7 @@ const runForecast = async () => {
     drawChart(datasets)
     // the data line still renders; explain why the forecast overlay is missing
     // or degenerate instead of leaving empty legend entries unexplained
-    warning.value = forecastWarningFor(resp)
+    warning.value = forecastWarningFor(resp, selectedMetric.value)
   } finally {
     forecasting.value = false
   }
@@ -375,9 +393,9 @@ onMounted(async () => {
     const definitionData = await API.getDefinitionData(props.forecastDefinition)
     const converter = new RrdGraphConverter({ graphDef: definitionData, resourceId: props.forecastResourceId })
     model.value = converter.model as any
-    series.value = (converter.model.series || []).filter((s: Series) => s.name && s.metric && isFetchable(metricFor(s.metric)))
+    series.value = (converter.model.series || []).filter((s: Series) => s.name && s.metric && !!metricFor(s.metric))
     if (!series.value.length) {
-      loadError.value = 'This graph has no forecastable metrics (it may be built entirely from computed expressions).'
+      loadError.value = 'This graph has no forecastable series.'
       return
     }
     selectedMetric.value = series.value[0].metric as string

@@ -67,12 +67,24 @@ const forecastableModel = () => ({
   series: [{ name: 'In', metric: 'ifInOctets', color: '#7EE600', type: 'line', title: 'In' }]
 })
 
-// A CDEF/expression series with no fetchable backing metric — not forecastable.
+// A CDEF/expression-drawn series — forecastable since the full model is posted
+// with the series name as the filter inputColumn (most stock graphs draw CDEFs).
 const computedOnlyModel = () => ({
   title: 'Derived',
   verticalLabel: '',
-  metrics: [{ name: 'derived', expression: 'a + b', aggregation: 'AVERAGE', attribute: '', resourceId: '' }],
+  metrics: [
+    { name: 'a', attribute: 'ifInOctets', resourceId: RESOURCE_ID, aggregation: 'AVERAGE', transient: true },
+    { name: 'derived', expression: 'a * 8', aggregation: 'AVERAGE', attribute: '', resourceId: '' }
+  ],
   series: [{ name: 'Derived', metric: 'derived', color: '#fff', type: 'line', title: 'Derived' }]
+})
+
+// no drawable series at all — the only remaining non-forecastable shape
+const seriesLessModel = () => ({
+  title: 'Empty',
+  verticalLabel: '',
+  metrics: [{ name: 'a', attribute: 'x', resourceId: RESOURCE_ID, aggregation: 'AVERAGE' }],
+  series: []
 })
 
 const metricsResponse = { timestamps: [1000, 2000, 3000, 4000], columns: [{ values: [1, 2, 3, 4] }] }
@@ -104,15 +116,49 @@ describe('ForecastGraph.vue', () => {
     expect(wrapper.find('[data-test="forecast-run"]').attributes('disabled')).toBeUndefined()
   })
 
-  it('reports a load error and blocks forecasting when nothing is forecastable', async () => {
-    converterModel = computedOnlyModel()
+  it('reports a load error only when the graph has no series at all', async () => {
+    converterModel = seriesLessModel()
     const wrapper = mountGraph()
     await flushPromises()
 
     expect(wrapper.find('[data-test="forecast-load-error"]').exists()).toBe(true)
-    // no metric could be selected, so no data was fetched and Forecast is disabled
     expect(getGraphMetrics).not.toHaveBeenCalled()
     expect(wrapper.find('[data-test="forecast-run"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('forecasts a CDEF-drawn series by posting the whole model with inputColumn', async () => {
+    // the old single-source label:'data' payload dropped every expression-backed
+    // series, dead-ending most stock graph definitions
+    converterModel = computedOnlyModel()
+    const wrapper = mountGraph()
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="forecast-load-error"]').exists()).toBe(false)
+    expect(getGraphMetrics).toHaveBeenCalledTimes(1)
+    const initial = getGraphMetrics.mock.calls[0][0]
+    // DEFs ride as sources, the CDEF as an expression, selected column non-transient
+    expect(initial.source.map((m: { label: string }) => m.label)).toEqual(['a'])
+    expect(initial.expression).toEqual([expect.objectContaining({ label: 'derived', value: 'a * 8', transient: false })])
+
+    getGraphMetrics.mockClear()
+    getGraphMetrics.mockResolvedValue({
+      timestamps: [1000, 2000, 3000],
+      labels: ['derived', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
+      columns: [
+        { values: [1, 2, 3] },
+        { values: [1, 2, 3] },
+        { values: [1, 1, 2] },
+        { values: [2, 3, 4] },
+        { values: [1, 2, 3] }
+      ]
+    })
+    await wrapper.find('[data-test="forecast-run"]').trigger('click')
+    await flushPromises()
+
+    const payload = getGraphMetrics.mock.calls[0][0]
+    const hw = payload.filter.find((f: { name: string }) => f.name === 'HoltWinters')
+    expect(hw.parameter).toContainEqual({ key: 'inputColumn', value: 'derived' })
+    expect(wrapper.find('[data-test="forecast-warning"]').exists()).toBe(false)
   })
 
   it('surfaces a failure to load the graph definition', async () => {
@@ -131,7 +177,7 @@ describe('ForecastGraph.vue', () => {
     // the server returns the forecast columns keyed by label
     getGraphMetrics.mockResolvedValue({
       timestamps: [1000, 2000, 3000],
-      labels: ['data', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
+      labels: ['ifInOctets', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
       columns: [
         { values: [1, 2, NaN] },
         { values: [NaN, NaN, 3] },
@@ -159,7 +205,7 @@ describe('ForecastGraph.vue', () => {
     await flushPromises()
     getGraphMetrics.mockResolvedValue({
       timestamps: [1000, 2000, 3000],
-      labels: ['data', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
+      labels: ['ifInOctets', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
       columns: [
         { values: [1, 0, 2] }, // the metric touches zero within the window
         { values: [NaN, NaN, NaN] }, // multiplicative Holt-Winters yields no fit
@@ -180,7 +226,7 @@ describe('ForecastGraph.vue', () => {
     await flushPromises()
     getGraphMetrics.mockResolvedValue({
       timestamps: [1000, 2000],
-      labels: ['data'],
+      labels: ['ifInOctets'],
       columns: [{ values: [1, 2] }]
     })
 
@@ -195,7 +241,7 @@ describe('ForecastGraph.vue', () => {
     await flushPromises()
     getGraphMetrics.mockResolvedValue({
       timestamps: [1000, 2000, 3000],
-      labels: ['data', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
+      labels: ['ifInOctets', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
       columns: [
         { values: [5, 5, 5] },
         { values: [5, 5, 5] }, // valid flat fit
