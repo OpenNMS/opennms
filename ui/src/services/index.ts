@@ -75,6 +75,7 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import {
   createManagedUser,
   deleteManagedUser,
@@ -95,6 +96,9 @@ import {
 
 export default {
   search,
+  getSystemReportPlugins,
+  getSystemReportFormatters,
+  generateSystemReport,
   getInfo,
   getNodes,
   getAlarms,

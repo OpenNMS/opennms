@@ -686,7 +686,7 @@
         {
           "id": "generateSystemReport",
           "name": "Generate System Report",
-          "url": "admin/support/systemReportList.htm",
+          "url": "ui/index.html#/system-report",
           "locationMatch": null,
           "roles": null
         }
