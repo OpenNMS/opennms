@@ -347,11 +347,9 @@ public class AvailabilityRestService extends OnmsRestService {
                             @Content(mediaType = MediaType.APPLICATION_XML,
                                     schema = @Schema(implementation = AvailabilityNode.class))
                     }),
-            @ApiResponse(responseCode = "404", description = "No category with that name is defined.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Category Web Serverz was not found."))),
-            @ApiResponse(responseCode = "500", description = "The node is not in the category, does not exist, or the category data could not be read.",
+            @ApiResponse(responseCode = "500", description = "The category is not defined, the node is not in it or does not exist, or the "
+                    + "category data could not be read. The handler catches every failure, including the internal "
+                    + "unknown-category 404, and rewraps it as 500, so this operation never answers 404.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Failed to get availability data for category Web Servers : HTTP 404 Not Found")))

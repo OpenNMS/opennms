@@ -346,7 +346,6 @@ public interface NodeLinkRestApi {
                     {
                       "cdpGlobalRun": "true",
                       "cdpGlobalDeviceId": "core-sw-01",
-                      "cdpGlobalDeviceIdFormat": "other",
                       "cdpCreateTime": "8/17/26, 5:20:39 PM",
                       "cdpLastPollTime": "8/17/26, 5:20:39 PM"
                     }"""))),

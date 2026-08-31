@@ -57,8 +57,8 @@ public class SnmpConfigurationResource {
                     and per-range `definition` entries, and the named `profiles` if any are configured.
 
                     Community strings, authentication and privacy passphrases are returned in the clear,
-                    exactly as they are stored. On an installation that keeps SNMP configuration in the
-                    database rather than in the file, the response reflects the database contents.
+                    exactly as they are stored. The resource reads `etc/snmp-config.xml` directly, so on an
+                    installation that keeps SNMP configuration in the database the response can be stale.
 
                     Unset defaults come back as JSON nulls and are omitted entirely from the XML form.""",
             operationId = "getSnmpConfiguration")
@@ -72,15 +72,15 @@ public class SnmpConfigurationResource {
                                               "definition": [],
                                               "profiles": null,
                                               "version": "v2c",
-                                              "readCommunity": "public",
-                                              "writeCommunity": null,
+                                              "read-community": "public",
+                                              "write-community": null,
                                               "timeout": 1800,
                                               "retry": 1,
                                               "port": null,
-                                              "maxVarsPerPdu": null,
-                                              "maxRepetitions": null,
-                                              "securityLevel": null,
-                                              "securityName": null
+                                              "max-vars-per-pdu": null,
+                                              "max-repetitions": null,
+                                              "security-level": null,
+                                              "security-name": null
                                             }""")),
                             @Content(mediaType = MediaType.APPLICATION_XML,
                                     schema = @Schema(implementation = SnmpConfig.class),

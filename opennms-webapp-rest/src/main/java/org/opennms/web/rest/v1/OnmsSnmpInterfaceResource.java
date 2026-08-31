@@ -109,7 +109,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
 
                     Every query parameter that is not one of the paging parameters below is read as a property
                     restriction on `OnmsSnmpInterface`. A value of `null` or `notnull` becomes an is-null /
-                    is-not-null test. Unknown property names are logged and ignored rather than rejected.
+                    is-not-null test. Unknown property names are not ignored: the filter still binds them and the query fails with 500 `Unknown entity: null`.
 
                     `collectFlag` and `pollFlag` in the representation are the bean properties `collect` and
                     `poll`; the boolean `collect` and `poll` in the same body are derived read-only views of them.
@@ -486,7 +486,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "At least one field was written. No body."),
-            @ApiResponse(responseCode = "304", description = "No key in the body resolved to a writable, unprotected property. A `collect` key still triggers the reinitialize event in this case."),
+            @ApiResponse(responseCode = "304", description = "No key in the body resolved to a writable, unprotected property. `collect` itself is writable, so a body containing it always answers 204 instead."),
             @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, `ifIndex` is negative, or the node has no SNMP interface with that ifIndex.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),

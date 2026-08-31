@@ -208,10 +208,7 @@ public class FilesystemRestService {
             @ApiResponse(responseCode = "200", description = "The Markdown help document, or an empty body when none is bundled.",
                     content = @Content(mediaType = "text/markdown",
                             schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Unsupported file extension: passwd"))),
+            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
             @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
     })
     public InputStream getFileHelp(
@@ -278,10 +275,7 @@ public class FilesystemRestService {
             @ApiResponse(responseCode = "200", description = "The file contents. The media type is probed from the file.",
                     content = @Content(schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "204", description = "The file does not exist. No body."),
-            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Cannot access files outside of folder! Filename given: ../../passwd"))),
+            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
             @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
     })
     public Response getFileContents(
@@ -326,7 +320,7 @@ public class FilesystemRestService {
                     content = @Content(mediaType = MediaType.TEXT_HTML,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Successfully wrote to '/opt/opennms/etc/example.xml'."))),
-            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, its extension is not supported, or an `.xml` upload is not well formed.",
+            @ApiResponse(responseCode = "400", description = "An `.xml` upload is not well formed (body as below). A name outside `etc` or an unsupported extension is also a 400, but with an empty body.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Validation failed: XML document structures must start and end within the same entity."))),
@@ -382,10 +376,7 @@ public class FilesystemRestService {
                     content = @Content(mediaType = MediaType.TEXT_HTML,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Successfully deleted to '/opt/opennms/etc/example.xml'."))),
-            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Unsupported file extension: passwd"))),
+            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
             @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin."),
             @ApiResponse(responseCode = "500", description = "The file does not exist, or could not be removed.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,

@@ -106,11 +106,11 @@ import java.util.stream.Collectors;
         to situations: they resolve any alarm id. Acting on a situation alarm does not cascade to its
         members, so acknowledging or clearing a situation leaves the correlated alarms as they were.
 
-        Four operations here are the inherited alarm operations, and they carry the alarm wording and
+        Five operations here are the inherited alarm operations, and they carry the alarm wording and
         an `_1`-suffixed operationId: `GET /situations/{id}` (`getAlarmById_1`), `POST /situations`
-        (`createAlarm_1`), `PUT /situations/{id}` (`updateAlarmProperties_1`) and
-        `DELETE /situations/{id}` (`deleteAlarm_1`). Creating and deleting are not implemented on
-        either path.""")
+        (`createAlarm_1`), the form and JSON variants of `PUT /situations/{id}`
+        (`updateAlarmProperties_1`, `replaceAlarm_1`) and `DELETE /situations/{id}` (`deleteAlarm_1`).
+        Creating and deleting are not implemented on either path.""")
 public class SituationsRestService extends AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SituationsRestService.class);
@@ -141,8 +141,9 @@ public class SituationsRestService extends AlarmRestService {
             description = """
         Return a page of alarms whose `isSituation` is true. The restriction is added to whatever `_s`
         supplies, so `_s` narrows the set of situations rather than widening it to ordinary alarms.
-        Only `isSituation` is registered as a query behaviour on this resource, so an `_s` naming any
-        other property is rejected with 500.
+        Only `isSituation` has a registered query behaviour on this resource. Other `alarm.*` properties
+        still pass through to the criteria and filter normally; only terms that need a registered type
+        conversion, such as `alarm.severity`, fail with 500.
 
         `relatedAlarms` holds a summary of each member alarm. The situation itself carries the highest
         severity of its members at the time the correlating event was sent.
@@ -207,8 +208,9 @@ public class SituationsRestService extends AlarmRestService {
         and appears in the reduction key of the situation alarm as
         `uei.opennms.org/alarms/situation:<uuid>`.
 
-        Ids that name no alarm, and ids whose alarm already belongs to another situation, are dropped
-        from the set. If fewer than two alarms survive, nothing is created and the call answers 204.
+        An id that names no alarm fails the whole call with 500 when the loaded proxy is first touched.
+        Ids whose alarm already belongs to another situation are dropped from the set; if fewer than two
+        alarms survive, nothing is created and the call answers 204.
 
         The situation is created by publishing an event, so the call returns before the situation alarm
         exists. `description` is stored as given and `diagnosticText`, when present, is appended to it
@@ -251,8 +253,9 @@ public class SituationsRestService extends AlarmRestService {
         Add the alarms in `alarmIdList` to the situation named by `situationId`. The new membership is
         the union of the current members and the ids that resolved, so this never removes anything.
 
-        Ids that name no alarm, and ids whose alarm already belongs to another situation, are dropped.
-        When the union equals the current membership the call answers 204 and no event is published.
+        An id that names no alarm fails the whole call with 500 when the loaded proxy is first touched.
+        Ids whose alarm already belongs to another situation are dropped. When the union equals the
+        current membership the call answers 204 and no event is published.
 
         The change is applied by publishing an event, so the call returns before the membership is
         visible. `feedback` is accepted and not used.""",
@@ -370,11 +373,11 @@ public class SituationsRestService extends AlarmRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = {
                                     @ExampleObject(name = "absent", value = "Unable to determine alarm ID to update based on query path."),
-                                    @ExampleObject(name = "unknown", value = "Unable to locate alarm with ID 999999")
+                                    @ExampleObject(name = "unknown", value = "Unable to locate alarm with ID '999999'")
                             })),
             @ApiResponse(responseCode = "403", description = "The authenticated user may not clear alarms.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin")))
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     public Response doAction(
             AlarmAddRemoveRequest req,
@@ -439,7 +442,7 @@ public class SituationsRestService extends AlarmRestService {
                             examples = @ExampleObject(value = "Invalid situation ID: 999999"))),
             @ApiResponse(responseCode = "403", description = "The authenticated user may not clear alarms.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin")))
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     public Response removeAndClear(
             AlarmAddRemoveRequest req,
@@ -550,7 +553,7 @@ public class SituationsRestService extends AlarmRestService {
             description = """
         Return the number of alarms whose `isSituation` is true, as a plain-text integer. The response
         is `text/plain` only, so a request that asks solely for `application/json` is answered with
-        404. `limit` and `offset` are ignored: the count covers the whole match.
+        404. `limit` is ignored, but a non-zero `offset` reaches the count query and fails with 500.
 
         Example query: `_s=alarm.isSituation==true`.""",
             operationId = "getSituationCount")
@@ -637,7 +640,7 @@ public class SituationsRestService extends AlarmRestService {
                     description = "Unprefixed property id from `GET /situations/properties`.", example = "severity")
             @PathParam("propertyId") final String propertyId,
             @Parameter(in = ParameterIn.QUERY, name = "q",
-                    description = "Case-sensitive substring the value must contain.", example = "situation")
+                    description = "Substring the value must contain. Database-backed properties match case-insensitively; only fixed value lists are case-sensitive.", example = "situation")
             @QueryParam("q") final String query,
             @Parameter(in = ParameterIn.QUERY, name = "limit",
                     description = "Maximum number of values returned. Applies only to values read from the database.",
@@ -682,7 +685,10 @@ public class SituationsRestService extends AlarmRestService {
             @ApiResponse(responseCode = "404", description = "No situation matched `_s`. No body is returned."),
             @ApiResponse(responseCode = "500", description = "`_s` named a property that is not registered on this resource.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm")))
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
@@ -729,7 +735,10 @@ public class SituationsRestService extends AlarmRestService {
                             examples = @ExampleObject(value = "Body cannot be null."))),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Alarm not found.")))
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response updateMemo(@Context final SecurityContext securityContext,
@@ -760,7 +769,10 @@ public class SituationsRestService extends AlarmRestService {
                             examples = @ExampleObject(value = "Body cannot be null."))),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Alarm not found.")))
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response updateJournal(@Context final SecurityContext securityContext,
@@ -784,7 +796,10 @@ public class SituationsRestService extends AlarmRestService {
             @ApiResponse(responseCode = "204", description = "The sticky memo is gone, whether or not one was set. No body is returned."),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Alarm not found.")))
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response removeMemo(@Context final SecurityContext securityContext,
@@ -808,7 +823,10 @@ public class SituationsRestService extends AlarmRestService {
             @ApiResponse(responseCode = "204", description = "The journal note is gone, whether or not one was set. No body is returned."),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Alarm not found.")))
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response removeJournal(@Context final SecurityContext securityContext,
@@ -834,7 +852,10 @@ public class SituationsRestService extends AlarmRestService {
             @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
             @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response createTicket(@Context final SecurityContext securityContext,
@@ -859,7 +880,10 @@ public class SituationsRestService extends AlarmRestService {
             @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
             @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response updateTicket(@Context final SecurityContext securityContext,
@@ -883,7 +907,10 @@ public class SituationsRestService extends AlarmRestService {
             @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
             @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response closeTicket(@Context final SecurityContext securityContext,

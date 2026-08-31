@@ -89,8 +89,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         so they only work with `Accept: application/json`.
 
         The list endpoints take `limit`, `offset`, `orderBy`, `order` and a repeatable `severityFilter`.
-        `severityFilter` has to be spelled as a severity label (`Normal`, `Warning`, `Minor`, `Major`,
-        `Critical`); any other value fails with a 500. On `/status/applications` and
+        `severityFilter` has to be spelled as a severity label, matched case-insensitively; all seven
+        labels parse, `Indeterminate` and `Cleared` included. Any other value fails with a 500. On `/status/applications` and
         `/status/business-services`, supplying `severityFilter` without `orderBy` also fails with a 500.
         An empty page is reported as 204 rather than as an empty list, and a non-empty page carries a
         `Content-Range: items <first>-<last>/<total>` header.""")
@@ -232,7 +232,7 @@ public class StatusRestService {
                             examples = @ExampleObject(value = "Cannot invoke \"org.opennms.web.utils.QueryParameters$Order.getColumn()\" because the return value of \"org.opennms.web.utils.QueryParameters.getOrder()\" is null")))
     })
     public Response getApplications(
-            @Parameter(description = "Reads `limit`, `offset`, `orderBy`, `order` and a repeatable `severityFilter` (`Normal`, `Warning`, `Minor`, `Major`, `Critical`) from the query string.", hidden = true)
+            @Parameter(description = "Reads `limit`, `offset`, `orderBy`, `order` and a repeatable `severityFilter` (any severity label, `Indeterminate` through `Critical`) from the query string.", hidden = true)
             @Context final UriInfo uriInfo) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
         final SeverityFilter severityFilter = getSeverityFilter(uriInfo);
@@ -290,7 +290,7 @@ public class StatusRestService {
                             examples = @ExampleObject(value = "Cannot invoke \"org.opennms.netmgt.model.OnmsSeverity.getId()\" because \"s\" is null")))
     })
     public Response getBusinessServices(
-            @Parameter(description = "Reads `limit`, `offset`, `orderBy`, `order` and a repeatable `severityFilter` (`Normal`, `Warning`, `Minor`, `Major`, `Critical`) from the query string.", hidden = true)
+            @Parameter(description = "Reads `limit`, `offset`, `orderBy`, `order` and a repeatable `severityFilter` (any severity label, `Indeterminate` through `Critical`) from the query string.", hidden = true)
             @Context final UriInfo uriInfo) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
         final SeverityFilter severityFilter = getSeverityFilter(uriInfo);

@@ -544,10 +544,10 @@ public class DiscoveryRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The sweep was handed to the discovery task executor. No body."),
             @ApiResponse(responseCode = "403", description = """
-                    The caller holds neither `ROLE_PROVISION` nor `ROLE_ADMIN`. A caller that fails the
-                    Spring Security rule for `/api/v2/**` never reaches the resource and gets the
-                    container's HTML error page; one that passes that rule but lacks both roles gets the
-                    plain-text message below.""",
+                    The caller holds neither `ROLE_PROVISION` nor `ROLE_ADMIN`. The shipped security
+                    rules gate `POST /api/v2/discovery` on the same two roles, so in a stock deployment
+                    the container answers first with its HTML error page and the in-handler plain-text
+                    message below is unreachable; it appears only under customized security rules.""",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "The PROVISION or ADMIN role is required to submit a discovery scan."))),
             @ApiResponse(responseCode = "500", description = """

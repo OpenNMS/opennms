@@ -178,7 +178,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                       "node": [ { "id": 2 } ]
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No scheduled outage with that name.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Scheduled outage Weekend maintenance was not found.")))
     })
@@ -233,12 +233,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "A new calendar was added. `Location` points at it."),
             @ApiResponse(responseCode = "204", description = "An existing calendar with the same name was replaced."),
-            @ApiResponse(responseCode = "400", description = "The body was absent.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Outage object can't be null"))),
-            @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled, or the configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            @ApiResponse(responseCode = "500", description = "The body was absent or could not be unmarshalled, or the configuration could not be written. The in-handler null check is unreachable: the providers reject a missing body first.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save or update the scheduled outage Weekend maintenance because, Failed to marshal/unmarshal XML file while marshalling Outages: javax.xml.bind.MarshalException")))
     })
@@ -280,11 +276,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The calendar was deleted."),
             @ApiResponse(responseCode = "404", description = "No scheduled outage with that name.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Scheduled outage Weekend maintenance was not found."))),
             @ApiResponse(responseCode = "500", description = "One of the configuration files could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't delete the scheduled outage Weekend maintenance because, java.io.IOException")))
     })
@@ -326,11 +322,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "404", description = "No such calendar, or no such package.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Collector package example1 does not exist."))),
             @ApiResponse(responseCode = "500", description = "The configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save collector's configuration: java.io.IOException")))
     })
@@ -364,11 +360,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "404", description = "No such calendar, or no such package.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Collector package example1 does not exist."))),
             @ApiResponse(responseCode = "500", description = "The configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save collector's configuration: java.io.IOException")))
     })
@@ -404,11 +400,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "404", description = "No such calendar, or no such package.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Poller package example1 does not exist."))),
             @ApiResponse(responseCode = "500", description = "The configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save poller's configuration: java.io.IOException")))
     })
@@ -442,11 +438,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "404", description = "No such calendar, or no such package.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Poller package example1 does not exist."))),
             @ApiResponse(responseCode = "500", description = "The configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save poller's configuration: java.io.IOException")))
     })
@@ -480,11 +476,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "404", description = "No such calendar, or no such package.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Threshold package mib2 does not exist."))),
             @ApiResponse(responseCode = "500", description = "The configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save thresholds configuration: java.io.IOException")))
     })
@@ -520,7 +516,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "500", description = "No such calendar, no such package, or the configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't delete the scheduled outage Weekend maintenance because, HTTP 404 Not Found")))
     })
@@ -558,11 +554,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "404", description = "No scheduled outage with that name.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Scheduled outage Weekend maintenance was not found."))),
             @ApiResponse(responseCode = "500", description = "The configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save notifications configuration: java.io.IOException")))
     })
@@ -593,11 +589,11 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The configuration was written."),
             @ApiResponse(responseCode = "404", description = "No scheduled outage with that name.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Scheduled outage Weekend maintenance was not found."))),
             @ApiResponse(responseCode = "500", description = "The configuration could not be written.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't save notifications configuration: java.io.IOException")))
     })
@@ -695,7 +691,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Malformed IP Address notanip"))),
             @ApiResponse(responseCode = "404", description = "No scheduled outage with that name.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Scheduled outage Weekend maintenance was not found.")))
     })

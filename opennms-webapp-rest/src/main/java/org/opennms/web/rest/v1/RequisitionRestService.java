@@ -147,7 +147,7 @@ import org.springframework.transaction.annotation.Transactional;
 
         Dates (`date-stamp`, `last-import`, `last-imported`) are epoch milliseconds in JSON and ISO-8601
         timestamps in XML; the derived schema shows `date-time`. The `PUT` handlers consume
-        `application/x-www-form-urlencoded` only.""")
+        `application/x-www-form-urlencoded` only, except `PUT .../import`, which reads no body.""")
 public class RequisitionRestService extends OnmsRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionRestService.class);

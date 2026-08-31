@@ -68,8 +68,9 @@ public class FilterParamDef {
 
     // @XmlValue alone leaves the property out of the generated OpenAPI document, because swagger's
     // ModelResolver drops members of an XmlAccessType.NONE class that carry none of @XmlElement,
-    // @XmlAttribute, @XmlElementRef(s) or a Jackson 2 @JsonProperty. The wire name is "value".
-    @JsonProperty
+    // @XmlAttribute, @XmlElementRef(s) or a Jackson 2 @JsonProperty. Named explicitly so a Jackson 2
+    // consumer serializes the wire name "value".
+    @JsonProperty("value")
     @Schema(name = "value", required = true,
             description = "Parameter value, always sent as a string and coerced to the parameter's declared type.",
             example = "0")

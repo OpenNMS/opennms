@@ -415,7 +415,8 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
                             examples = @ExampleObject(value = """
                             The ID of the object doesn't match the ID of the path: Other != ApiDocMinion"""))),
             @ApiResponse(responseCode = "404", description = """
-                    No Minion has that identifier, or the body was empty. The response has no body."""),
+                    The body was empty. An unknown identifier is not a 404: the row is saved as new, so a
+                    JSON or XML PUT to a nonexistent id inserts a Minion record and answers 204."""),
             @ApiResponse(responseCode = "501", description = """
                     Reached only by a form-encoded body: updating named properties is not implemented here. The response has no body.""")
     })

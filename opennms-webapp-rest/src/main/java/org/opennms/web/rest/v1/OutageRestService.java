@@ -287,7 +287,8 @@ public class OutageRestService extends OnmsRestService {
                     upper bound. Outages that are still open (`ifRegainedService` null) are always included,
                     whichever form is used.
                     Remaining query parameters are applied as outage filters as on `GET /outages`, including the
-                    default `limit` of 10. `totalCount` is not set on this operation and comes back null.
+                    default `limit` of 10. `totalCount` is never set separately here, so it falls back to `count`
+                    and reflects the page size rather than the number of matches.
                     An unknown node id is not an error: the result is an empty list.""",
             operationId = "getOutagesForNodeV1"
     )
@@ -297,8 +298,8 @@ public class OutageRestService extends OnmsRestService {
                             schema = @Schema(implementation = OnmsOutageCollection.class),
                             examples = @ExampleObject(value = """
                     {
-                      "totalCount": null,
-                      "count": null,
+                      "totalCount": 1,
+                      "count": 1,
                       "offset": 0,
                       "outage": [ {
                           "id": 255,

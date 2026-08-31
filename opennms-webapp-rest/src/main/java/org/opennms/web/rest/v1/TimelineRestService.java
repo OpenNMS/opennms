@@ -481,7 +481,7 @@ public class TimelineRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "A numeric path segment was not a number.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "500", description = "`width` was 0, or the window was narrower than `width` seconds.",
+            @ApiResponse(responseCode = "500", description = "`width` was 0, or the window was narrower than `width` seconds while at least one outage fell in it; with no outage in the window the division is never reached and the response is 200.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string")))
     })

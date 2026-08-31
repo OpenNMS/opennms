@@ -147,7 +147,7 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
     @Override
     @Operation(summary = "List SNMP interfaces",
             description = """
-                    SNMP interfaces matching the query. The query joins the node, its asset record, location and categories, and the IP interfaces, so properties of all of those are searchable. Duplicate rows produced by those joins are collapsed before the page is built, which can make the returned `count` smaller than the requested `limit`.
+                    SNMP interfaces matching the query. The query joins the node, its asset record and location, and the IP interfaces, so properties of those are searchable; `category.*` terms are not joined here and fail with 500. Duplicate rows produced by those joins are collapsed before the page is built, which can make the returned `count` smaller than the requested `limit`.
 
                     Timestamps are epoch milliseconds in JSON and ISO-8601 with a UTC offset in XML.
 

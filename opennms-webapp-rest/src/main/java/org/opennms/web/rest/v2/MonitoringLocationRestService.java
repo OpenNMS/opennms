@@ -406,7 +406,8 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
                             examples = @ExampleObject(value = """
                             The ID of the object doesn't match the ID of the path: Other != Default"""))),
             @ApiResponse(responseCode = "404", description = """
-                    No monitoring location has that name, or the body was empty. The response has no body."""),
+                    The body was empty. An unknown name is not a 404: the row is saved as new, so a JSON
+                    or XML PUT to a nonexistent name creates the location and answers 204."""),
             @ApiResponse(responseCode = "501", description = """
                     Reached only by a form-encoded body: updating named properties is not implemented here. The response has no body.""")
     })

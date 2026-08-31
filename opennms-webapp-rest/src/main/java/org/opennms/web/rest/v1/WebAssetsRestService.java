@@ -150,9 +150,8 @@ public class WebAssetsRestService extends OnmsRestService {
         get their own, `md`, `sh`, `txt`, `yml` and `jsp` come back as `text/plain`, `xml` as `text/xml`, and
         anything unrecognised as `application/octet-stream`.
 
-        When the exact name is not registered, one fallback is tried: the last `-`-separated component of the
-        name is dropped and, if that shorter name registers a file whose path is the originally requested
-        one, that file is served.
+        When the exact name is not registered a fallback is attempted, but its list handling throws before
+        it can run, so an unregistered name containing `-` fails with 500 rather than falling back.
 
         When the registered file is not present on the classpath the request fails with 500 even though the
         asset is listed.""",
@@ -161,8 +160,8 @@ public class WebAssetsRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The asset file. The media type follows the `type` segment.",
                     content = @Content(schema = @Schema(type = "string", format = "binary"))),
-            @ApiResponse(responseCode = "404", description = "No file is registered for that asset name and type. The body is empty."),
-            @ApiResponse(responseCode = "500", description = "The file is registered but could not be read.",
+            @ApiResponse(responseCode = "404", description = "No file is registered for that asset name and type, and the name contains no `-`. The body is empty."),
+            @ApiResponse(responseCode = "500", description = "The file is registered but could not be read, or an unregistered name containing `-` hit the broken fallback.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "java.io.FileNotFoundException: class path resource [opennms.css] cannot be opened because it does not exist")))

@@ -83,7 +83,7 @@ public class DataCollectionConfigResource implements InitializingBean {
             @ApiResponse(responseCode = "200", description = "The resolved data collection configuration. The example is abbreviated to one group and one MIB group.",
                     content = {
                             @Content(mediaType = MediaType.APPLICATION_JSON,
-                                    schema = @Schema(implementation = DatacollectionConfig.class),
+                                    schema = @Schema(implementation = org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl.class),
                                     examples = @ExampleObject(value = """
                                             {
                                               "snmp-collection": [
@@ -114,7 +114,7 @@ public class DataCollectionConfigResource implements InitializingBean {
                                               ]
                                             }""")),
                             @Content(mediaType = MediaType.APPLICATION_XML,
-                                    schema = @Schema(implementation = DatacollectionConfig.class))
+                                    schema = @Schema(implementation = org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl.class))
                     }),
             @ApiResponse(responseCode = "404", description = "The data collection DAO holds no root configuration. Bodiless.")
     })

@@ -450,9 +450,11 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
             operationId = "notificationsUpdate")
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = """
-                    No notification has that identifier. The response has no body."""),
+                    The form variant answers 404 when nothing matches the identifier; the JSON or XML
+                    variant answers 404 only for an absent body and does not look the identifier up."""),
             @ApiResponse(responseCode = "501", description = """
-                    Notifications do not support update. The response has no body.""")
+                    Notifications do not support update. Returned by the JSON or XML variant whether or not the
+                    identifier exists. The response has no body.""")
     })
     public Response updateProperties(final SecurityContext securityContext, final UriInfo uriInfo,
             @Parameter(description = """

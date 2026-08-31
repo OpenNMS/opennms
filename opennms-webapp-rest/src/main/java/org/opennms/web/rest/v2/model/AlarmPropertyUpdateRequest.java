@@ -47,7 +47,7 @@ public class AlarmPropertyUpdateRequest {
 
     @Schema(description = """
             User credited with the acknowledgement. Defaults to the authenticated user. A caller
-            without ROLE_ADMIN may only name itself.""",
+            without ROLE_ADMIN or ROLE_DELEGATE may only name itself.""",
             example = "admin")
     public String ackUser;
 

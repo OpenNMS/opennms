@@ -31,7 +31,7 @@ public class TicketerConfig {
     @Schema(description = "Class name of the ticketer plugin in use. Null when the ticketer is disabled.", example = "org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin")
     private String plugin;
 
-    @Schema(description = "Whether the trouble ticketer is enabled, from opennms.ticketer.plugin in opennms.properties.", example = "false")
+    @Schema(description = "Whether the trouble ticketer is enabled, from opennms.alarmTroubleTicketEnabled in opennms.properties.", example = "false")
     private boolean enabled;
 
     public void setPlugin(String plugin) {

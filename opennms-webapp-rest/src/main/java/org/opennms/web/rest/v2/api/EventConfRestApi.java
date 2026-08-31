@@ -117,7 +117,7 @@ public interface EventConfRestApi {
                         }
                       ]
                     }"""))),
-            @ApiResponse(responseCode = "400", description = "Invalid eventconf.xml or request")
+            @ApiResponse(responseCode = "400", description = "The multipart body has no `upload` part; rejected before the handler with an empty body. A file that fails to parse is not a 400: it is reported inside `errors` with 200.")
     })
     Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
@@ -268,9 +268,9 @@ public interface EventConfRestApi {
             @Parameter(description = "Case-insensitive substring matched against UEI, event label, and description.",
                     example = "LINK-3")
             @QueryParam("eventFilter") String eventFilter,
-            @Parameter(description = "Sort field: `uei`, `eventLabel`, `description`, or `enabled`. Anything else sorts by `createdTime`.",
+            @Parameter(description = "Sort field: `uei`, `eventLabel`, `description`, `severity`, or `enabled`. Anything else sorts by `createdTime`.",
                     example = "uei",
-                    schema = @Schema(allowableValues = {"uei", "eventLabel", "description", "enabled"}))
+                    schema = @Schema(allowableValues = {"uei", "eventLabel", "description", "severity", "enabled"}))
             @QueryParam("eventSortBy") String eventSortBy,
             @Parameter(description = "Sort direction.", example = "asc",
                     schema = @Schema(allowableValues = {"asc", "desc"}, defaultValue = "desc"))
@@ -400,7 +400,7 @@ public interface EventConfRestApi {
                     content = @Content)
     })
     Response filterEventConfSource(
-            @Parameter(description = "Case-insensitive term matched against name, vendor, and description.", example = "cisco")
+            @Parameter(description = "Case-insensitive term matched against name, vendor, and description, and against the UEIs and event labels of the source's events.", example = "cisco")
             @QueryParam("filter") String filter,
             @Parameter(description = "Sort field: `name`, `vendor`, `description`, `fileOrder`, or `eventCount`. Anything else sorts by `createdTime`.",
                     example = "name", required = true,
@@ -488,7 +488,10 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "404", description = "EventConfSource not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Source with ID 17 not found")))})
+                            examples = @ExampleObject(value = "Source with ID 17 not found"))),
+            @ApiResponse(responseCode = "500", description = "The body could not be deserialized (for example the XML spellings sent as JSON), or persisting the event failed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))})
     Response addEventConfSourceEvent(
             @Parameter(description = "Identifier of the source the event is added to.", example = "17", required = true)
             @PathParam("sourceId") final Long sourceId,
@@ -588,8 +591,8 @@ public interface EventConfRestApi {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "EventConf events deleted successfully."))),
-            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid event IDs)",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            @ApiResponse(responseCode = "500", description = "Missing or empty event ids. The IllegalArgumentException from the handler is mapped by the generic provider as 500 text/plain, not 400.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Event IDs to delete must not be null or empty"))),
             @ApiResponse(responseCode = "404", description = "Source or one or more events not found",

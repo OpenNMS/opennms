@@ -156,7 +156,7 @@ public class GraphRestService extends OnmsRestService {
                         "ifHCInOctets",
                         "ifHCOutOctets"
                       ],
-                      "command": "--title=\"Bits In/Out (High Speed)\" --vertical-label=\"Bits per second\" DEF:octIn={rrd1}:ifHCInOctets:AVERAGE DEF:octOut={rrd2}:ifHCOutOctets:AVERAGE",
+                      "command": "--title=\\"Bits In/Out (High Speed)\\" --vertical-label=\\"Bits per second\\" DEF:octIn={rrd1}:ifHCInOctets:AVERAGE DEF:octOut={rrd2}:ifHCOutOctets:AVERAGE",
                       "externalValues": [],
                       "propertiesValues": [],
                       "order": 4222,

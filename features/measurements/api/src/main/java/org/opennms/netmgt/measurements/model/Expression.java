@@ -83,11 +83,11 @@ public class Expression {
         this.label = label;
     }
 
-    // The bare Jackson 2 @JsonProperty is only there to keep the property in the generated OpenAPI
+    // The Jackson 2 @JsonProperty is only there to keep the property in the generated OpenAPI
     // document: swagger's ModelResolver drops members of an XmlAccessType.NONE class that carry none
     // of @XmlElement, @XmlAttribute, @XmlElementRef(s) or a Jackson 2 @JsonProperty, and @XmlValue is
-    // not one of them. The wire name is "value" rather than the bean name.
-    @com.fasterxml.jackson.annotation.JsonProperty
+    // not one of them. Named explicitly so a Jackson 2 consumer serializes the wire name "value".
+    @com.fasterxml.jackson.annotation.JsonProperty("value")
     @Schema(name = "value",
             description = "JEXL expression evaluated once per row. Source and expression labels are in scope as "
                     + "variables, as are the string constants returned in the response.",

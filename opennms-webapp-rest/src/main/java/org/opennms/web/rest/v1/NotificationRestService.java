@@ -135,7 +135,7 @@ public class NotificationRestService extends OnmsRestService {
                       ]
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No notification with that id, or the path segment is not an integer.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Notification 99999999 was not found.")))
     })
@@ -202,11 +202,11 @@ public class NotificationRestService extends OnmsRestService {
                       "user": "admin",
                       "totalCount": 2613,
                       "totalUnacknowledgedCount": 2293,
-                      "userUnacknowledgedCount": 4578,
+                      "userUnacknowledgedCount": 0,
                       "teamUnacknowledgedCount": 1,
                       "userUnacknowledgedNotifications": {
                         "totalCount": null,
-                        "count": 10,
+                        "count": null,
                         "offset": 0,
                         "notification": []
                       }
@@ -309,7 +309,7 @@ public class NotificationRestService extends OnmsRestService {
                         } ]
                     }"""))),
             @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the notification entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
     })
@@ -350,11 +350,11 @@ public class NotificationRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The notification was updated."),
             @ApiResponse(responseCode = "400", description = "`ack` was absent.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Must supply the 'ack' parameter, set to either 'true' or 'false'"))),
             @ApiResponse(responseCode = "404", description = "No notification with that id.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Notification 99999999 was not found."))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`.")
@@ -403,7 +403,7 @@ public class NotificationRestService extends OnmsRestService {
             @ApiResponse(responseCode = "204", description = "The request was processed, whether or not anything matched."),
             @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`."),
             @ApiResponse(responseCode = "500", description = "A form parameter is not a property of the notification entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
     })

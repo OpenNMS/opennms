@@ -64,8 +64,8 @@ import org.springframework.stereotype.Component;
 @Tag(name = "Logs", description = """
         Read access to the `.log` files in the OpenNMS log directory.
 
-        Both operations require `ROLE_ADMIN`, enforced both by the servlet security configuration and again
-        in the handler.
+        Both operations require `ROLE_ADMIN`, enforced by the check in the handler itself; the shipped
+        security configuration has no rule for `/rest/logs`.
 
         Only files directly in the log directory whose name ends in `.log` are reachable. Anything else,
         including a path that would escape the directory, is rejected with 400.""")
@@ -141,10 +141,7 @@ public class LogRestService {
                             examples = @ExampleObject(value = """
                     2026-08-26 02:57:48,374 DEBUG [qtp450304221-76882] o.a.c.p.PhaseInterceptorChain: Invoking handleMessage on interceptor"""))),
             @ApiResponse(responseCode = "204", description = "The file does not exist. No body."),
-            @ApiResponse(responseCode = "400", description = "The name does not end in `.log`, or is not directly inside the log directory.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Cannot access files outside of log folder! Filename given: ../etc/opennms.log"))),
+            @ApiResponse(responseCode = "400", description = "The name does not end in `.log`, or is not directly inside the log directory. The body is empty: the message-only exception is mapped without its message."),
             @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.")
     })
     public Response getFileContents(

@@ -190,13 +190,13 @@ public interface DataCollectionConfRestApi {
                     schema = @Schema(type = "string", format = "binary"))
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Upload processed. Per-file outcomes are split between `success` and `errors`.",
+            @ApiResponse(responseCode = "200", description = "Upload processed. Per-file outcomes are split between `success` and `errors`. For a sources-only upload each success entry carries only `file`, holding the parsed group name rather than the uploaded filename; `profile` appears only on the bulk-config path.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = DataCollectionConfUploadResponse.class),
                             examples = @ExampleObject(value = """
                     {
                       "success": [
-                        { "file": "Cisco", "source": "Cisco" },
+                        { "file": "Cisco" },
                         { "file": "datacollection-config", "profile": "default" }
                       ],
                       "errors": [
@@ -416,7 +416,7 @@ public interface DataCollectionConfRestApi {
                             examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response enableDisableSnmpCollectionProfiles(
-            @Parameter(description = "Target state for every listed profile.", example = "false", required = true)
+            @Parameter(description = "Target state for every listed profile. Declared required, but an omitted value is read as the primitive default `false` and disables the listed profiles.", example = "false", required = true)
             @QueryParam("enabled") boolean enabled,
                                                  List<Integer> ids,
                                                  @Context SecurityContext securityContext);
@@ -505,7 +505,8 @@ public interface DataCollectionConfRestApi {
         - `filter`: case-insensitive substring match on name, vendor and description.
         - `sortBy`: `name`, `vendor`, `description`; anything else falls back to `createdTime`.
         - `order`: `asc` or `desc` (default `desc`).
-        - `limit` is **required** and has to be 1..1000; `offset` defaults to 0 when omitted.
+        - `limit` is **required** and has to be 1..1000; `offset` is effectively required too: omitting it
+          makes the DAO fail internally and the endpoint answers 204 even when rows match.
 
         `createdTime` and `lastModified` come back as epoch milliseconds.""",
             operationId = "filterSnmpCollectionSources"
@@ -560,7 +561,7 @@ public interface DataCollectionConfRestApi {
             description = """
         Page through the MIB groups belonging to one source.
         - `mibGroupFilter`: case-insensitive match on name and ifType.
-        - `sortBy`: `name` or `ifType`; anything else falls back to `createdTime`.
+        - `sortBy`: `name` or `ifType`; anything else falls back to `name`.
         - `order`: `asc` or `desc` (default `desc`).
         - `offset` and `limit` are **both required**: omitting `offset` fails with a 500 rather than
           defaulting to 0. `limit` has to be 1..1000.
@@ -604,8 +605,8 @@ public interface DataCollectionConfRestApi {
             @PathParam("collectionSourceId") Integer collectionSourceId,
             @Parameter(description = "Case-insensitive substring matched against name and ifType.", example = "cisco")
             @QueryParam("mibGroupFilter") String mibGroupFilter,
-            @Parameter(description = "Sort column. An unrecognised value falls back to `createdTime`.",
-                    example = "name", schema = @Schema(allowableValues = {"name", "ifType", "createdTime"}))
+            @Parameter(description = "Sort column. An unrecognised value falls back to `name`.",
+                    example = "name", schema = @Schema(allowableValues = {"name", "ifType"}))
             @QueryParam("sortBy") String sortBy,
             @Parameter(description = "Sort direction.", example = "asc", schema = @Schema(allowableValues = {"asc", "desc"}))
             @QueryParam("order") String order,
@@ -625,7 +626,7 @@ public interface DataCollectionConfRestApi {
             description = """
         Page through the resource types belonging to one source.
         - `resourceTypeFilter`: case-insensitive match on name and label.
-        - `sortBy`: `name` or `label`; anything else falls back to `createdTime`.
+        - `sortBy`: `name` or `label`; anything else falls back to `name`.
         - `order`: `asc` or `desc` (default `desc`).
         - `offset` and `limit` are **both required**: omitting `offset` fails with a 500 rather than
           defaulting to 0. `limit` has to be 1..1000.
@@ -671,8 +672,8 @@ public interface DataCollectionConfRestApi {
             @PathParam("collectionSourceId") Integer collectionSourceId,
             @Parameter(description = "Case-insensitive substring matched against name and label.", example = "cpq")
             @QueryParam("resourceTypeFilter") String resourceTypeFilter,
-            @Parameter(description = "Sort column. An unrecognised value falls back to `createdTime`.",
-                    example = "name", schema = @Schema(allowableValues = {"name", "label", "createdTime"}))
+            @Parameter(description = "Sort column. An unrecognised value falls back to `name`.",
+                    example = "name", schema = @Schema(allowableValues = {"name", "label"}))
             @QueryParam("sortBy") String sortBy,
             @Parameter(description = "Sort direction.", example = "asc", schema = @Schema(allowableValues = {"asc", "desc"}))
             @QueryParam("order") String order,
@@ -693,7 +694,7 @@ public interface DataCollectionConfRestApi {
             description = """
         Page through the system definitions belonging to one source.
         - `systemDefsFilter`: case-insensitive match on name.
-        - `sortBy`: `name`; anything else falls back to `createdTime`.
+        - `sortBy`: `name`; anything else also sorts by `name`.
         - `order`: `asc` or `desc` (default `desc`).
         - `offset` and `limit` are **both required**: omitting `offset` fails with a 500 rather than
           defaulting to 0. `limit` has to be 1..1000.
@@ -738,8 +739,8 @@ public interface DataCollectionConfRestApi {
             @PathParam("collectionSourceId") Integer collectionSourceId,
             @Parameter(description = "Case-insensitive substring matched against name.", example = "Cisco")
             @QueryParam("systemDefsFilter") String systemDefFilter,
-            @Parameter(description = "Sort column. An unrecognised value falls back to `createdTime`.",
-                    example = "name", schema = @Schema(allowableValues = {"name", "createdTime"}))
+            @Parameter(description = "Sort column. An unrecognised value falls back to `name`.",
+                    example = "name", schema = @Schema(allowableValues = {"name"}))
             @QueryParam("sortBy") String sortBy,
             @Parameter(description = "Sort direction.", example = "asc", schema = @Schema(allowableValues = {"asc", "desc"}))
             @QueryParam("order") String order,
@@ -891,7 +892,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "SnmpCollectionSources not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "SnmpCollectionSource with ID 999999 not found")))})
+                            examples = @ExampleObject(value = "SnmpCollectionSource with ID 999999 not found"))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))})
     Response addMibGroupToSnmpCollectionSources(
             @Parameter(description = "Source id the MIB group is created under. Must be a positive integer.", example = "24", required = true)
             @PathParam("collectionSourceId") final Integer collectionSourceId,
@@ -929,7 +934,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "SnmpCollectionSources not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "SnmpCollectionSource with ID 999999 not found")))})
+                            examples = @ExampleObject(value = "SnmpCollectionSource with ID 999999 not found"))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))})
     Response addResourceTypeToSnmpCollectionSources(
             @Parameter(description = "Source id the resource type is created under. Must be a positive integer.", example = "24", required = true)
             @PathParam("collectionSourceId") final Integer collectionSourceId,
@@ -967,7 +976,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "SnmpCollectionSources not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "SnmpCollectionSource with ID 999999 not found")))})
+                            examples = @ExampleObject(value = "SnmpCollectionSource with ID 999999 not found"))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))})
     Response addSystemDefToSnmpCollectionSources(
             @Parameter(description = "Source id the system definition is created under. Must be a positive integer.", example = "24", required = true)
             @PathParam("collectionSourceId") final Integer collectionSourceId,
@@ -1003,7 +1016,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "SnmpCollectionSources or MibGroup not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "MibGroup was not found: No MibGroup found for collectionSourceId=24, mibGroupId=999999")))
+                            examples = @ExampleObject(value = "MibGroup was not found: No MibGroup found for collectionSourceId=24, mibGroupId=999999"))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response updateMibGroupInSnmpCollectionSources(
             @Parameter(description = "Source id owning the MIB group.", example = "24", required = true)
@@ -1043,7 +1060,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "SnmpCollectionSources or ResourceType not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "ResourceType was not found: No ResourceType found for collectionSourceId=24, resourceTypeId=999999")))
+                            examples = @ExampleObject(value = "ResourceType was not found: No ResourceType found for collectionSourceId=24, resourceTypeId=999999"))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response updateResourceTypeInSnmpCollectionSources(
             @Parameter(description = "Source id owning the resource type.", example = "24", required = true)
@@ -1084,7 +1105,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "SnmpCollectionSources or SystemDef not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "SystemDef was not found: No SystemDef found for collectionSourceId=24, systemDefId=999999")))
+                            examples = @ExampleObject(value = "SystemDef was not found: No SystemDef found for collectionSourceId=24, systemDefId=999999"))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response updateSystemDefInSnmpCollectionSources(
             @Parameter(description = "Source id owning the system definition.", example = "24", required = true)
@@ -1304,7 +1329,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "400", description = "No `id` parameter supplied, or an id that is not a positive integer",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "All ids must be non-null positive integers.")))
+                            examples = @ExampleObject(value = "All ids must be non-null positive integers."))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response enableDisableSnmpDataCollectionSources(
             @Parameter(description = "Target state for every listed source.", example = "false", required = true,
@@ -1339,7 +1368,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "Reported when the update itself raises an entity-not-found; an unknown id on its own answers 200.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Source or one/more ids were not found: ...")))
+                            examples = @ExampleObject(value = "Source or one/more ids were not found: ..."))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response enableDisableSnmpMibGroups(
             @Parameter(description = "Source id owning the MIB groups.", example = "24", required = true)
@@ -1376,7 +1409,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "Reported when the update itself raises an entity-not-found; an unknown id on its own answers 200.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Source or one/more ids were not found: ...")))
+                            examples = @ExampleObject(value = "Source or one/more ids were not found: ..."))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response enableDisableSnmpResourceTypes(
             @Parameter(description = "Source id owning the resource types.", example = "24", required = true)
@@ -1414,7 +1451,11 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "Reported when the update itself raises an entity-not-found; an unknown id on its own answers 200.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Source or one/more ids were not found: ...")))
+                            examples = @ExampleObject(value = "Source or one/more ids were not found: ..."))),
+            @ApiResponse(responseCode = "500", description = "Unexpected failure while persisting the change",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unexpected error occurred\"}")))
     })
     Response enableDisableSnmpSystemDefs(
             @Parameter(description = "Source id owning the system definitions.", example = "24", required = true)

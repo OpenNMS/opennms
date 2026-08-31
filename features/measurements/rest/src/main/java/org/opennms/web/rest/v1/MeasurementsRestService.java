@@ -454,9 +454,9 @@ public class MeasurementsRestService {
                       "start": 1787726591000,
                       "end": 1787730191000,
                       "timestamps": [1787729700000, 1787730000000, 1787730300000],
-                      "labels": ["resp"],
+                      "labels": ["respSeconds"],
                       "columns": [
-                        {"values": [14.329565633333331, 10.33385595, "NaN"]}
+                        {"values": [0.014329565633333331, 0.01033385595, "NaN"]}
                       ],
                       "constants": [],
                       "metadata": {
@@ -479,11 +479,11 @@ public class MeasurementsRestService {
                                     examples = @ExampleObject(value = """
                     <query-response end="1787730191000" start="1787726591000" step="300000">
                       <columns>
-                        <values>14.329565633333331</values>
-                        <values>10.33385595</values>
+                        <values>0.014329565633333331</values>
+                        <values>0.01033385595</values>
                         <values>NaN</values>
                       </columns>
-                      <labels>resp</labels>
+                      <labels>respSeconds</labels>
                       <metadata>
                         <resources>
                           <resource id="node[loopback-lab:lb-001].responseTime[127.0.0.1]"

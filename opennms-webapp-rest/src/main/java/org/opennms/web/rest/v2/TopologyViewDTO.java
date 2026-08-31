@@ -46,8 +46,8 @@ public class TopologyViewDTO {
 
     @Schema(description = """
             Display name, trimmed. Required on create and unique across views; a colliding create or
-            rename is refused with 409.""",
-            required = true, example = "Core and distribution")
+            rename is refused with 409. Optional on update.""",
+            example = "Core and distribution")
     @JsonProperty("name")
     private String name;
 
@@ -55,7 +55,7 @@ public class TopologyViewDTO {
             The canvas, as free-form JSON. The server stores it verbatim as a string and does not
             validate its shape. Required on create; omitted on update it leaves the stored definition
             alone.""",
-            required = true, type = "object")
+            type = "object")
     @JsonProperty("definition")
     private JsonNode definition;
 

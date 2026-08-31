@@ -261,7 +261,7 @@ public class KscRestService extends OnmsRestService {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The graph was appended and the configuration saved."),
-            @ApiResponse(responseCode = "400", description = "`reportName` or `resourceId` was missing or empty.",
+            @ApiResponse(responseCode = "400", description = "`reportName` or `resourceId` was missing. The empty-string check compares by reference, so an empty parameter is not reliably rejected.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid request: reportName and resourceId cannot be empty!"))),
@@ -288,8 +288,7 @@ public class KscRestService extends OnmsRestService {
             @QueryParam("resourceId") final String resourceId,
             @Parameter(description = "Time window for the graph. An unrecognised value is replaced with `7_day` without an error.",
                     example = "7_day",
-                    schema = @Schema(allowableValues = {"1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour",
-                            "1_day", "2_day", "7_day", "1_month", "3_month", "6_month", "1_year"}))
+                    schema = @Schema(allowableValues = {"1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour", "1_day", "2_day", "7_day", "1_month", "3_month", "6_month", "1_year", "Today", "Yesterday", "Yesterday 9am-5pm", "Yesterday 5pm-10pm", "This Week", "Last Week", "This Month", "Last Month", "This Quarter", "Last Quarter", "This Year", "Last Year"}))
             @QueryParam("timespan") String timespan) {
         writeLock();
 
@@ -552,8 +551,7 @@ public class KscRestService extends OnmsRestService {
         private String m_title;
 
         @Schema(description = "Time window for the graph. An unrecognised value is stored as `7_day`.", example = "7_day",
-                allowableValues = {"1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour", "1_day", "2_day",
-                        "7_day", "1_month", "3_month", "6_month", "1_year"})
+                allowableValues = {"1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour", "1_day", "2_day", "7_day", "1_month", "3_month", "6_month", "1_year", "Today", "Yesterday", "Yesterday 9am-5pm", "Yesterday 5pm-10pm", "This Week", "Last Week", "This Month", "Last Month", "This Quarter", "Last Quarter", "This Year", "Last Year"})
         @XmlAttribute(name = "timespan", required = true)
         private String m_timespan;
 

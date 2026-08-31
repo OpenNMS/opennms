@@ -75,8 +75,10 @@ import org.springframework.transaction.annotation.Transactional;
         Surveillance categories group nodes and gate who may see them. A category is identified by name
         everywhere in this API, and names are unique.
 
-        `/categories/nodes/...` and `/categories/groups/...` are fixed sub-resources, so a category whose name is
-        literally `nodes` or `groups` cannot be addressed through `/categories/{categoryName}`.""")
+        `/categories/nodes/{nodeCriteria}` and `/categories/groups/{groupName}` are fixed two-segment
+        sub-resources. They shadow only the two-segment category routes, so a category literally named
+        `nodes` or `groups` is still reachable at `/categories/nodes` or `/categories/groups`, but not
+        through the nested `/categories/{categoryName}/...` paths.""")
 @Transactional
 public class CategoryRestService extends OnmsRestService {
 	

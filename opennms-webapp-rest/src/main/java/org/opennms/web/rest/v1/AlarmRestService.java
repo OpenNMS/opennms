@@ -141,7 +141,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User 'jroe', is not allowed to read alarms."))),
             @ApiResponse(responseCode = "500", description = "The path segment is neither `summaries` nor an integer.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "For input string: \"abc\"")))
     })
@@ -256,7 +256,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                         } ]
                     }"""))),
             @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the alarm entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null"))),
             @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The shipped security rules gate the endpoint on the same four roles, so the container answers first with its own HTML error page; the plain-text body below comes from the resource check.",
@@ -308,7 +308,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The request was processed."),
             @ApiResponse(responseCode = "400", description = "No alarm with that id.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unable to locate alarm with ID '99999999'"))),
             @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
@@ -428,9 +428,10 @@ public class AlarmRestService extends AlarmRestServiceBase {
                     examples = @ExampleObject(value = "ack=true&id=4547")))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "At least one alarm matched and was processed."),
-            @ApiResponse(responseCode = "304", description = "No alarm matched the filters."),
-            @ApiResponse(responseCode = "400", description = "None of `ack`, `escalate` or `clear` was supplied, or both `id` and `alarmId` were.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            @ApiResponse(responseCode = "304", description = "No alarm matched the filters. Returned even when no action parameter was supplied: the "
+                    + "missing-action check runs per matched alarm, so it is never reached with an empty match."),
+            @ApiResponse(responseCode = "400", description = "At least one alarm matched but none of `ack`, `escalate` or `clear` was supplied, or both `id` and `alarmId` were.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'."))),
             @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
@@ -439,7 +440,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                             examples = @ExampleObject(value = "User 'jroe', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`."),
             @ApiResponse(responseCode = "500", description = "A form parameter is not a property of the alarm entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
     })

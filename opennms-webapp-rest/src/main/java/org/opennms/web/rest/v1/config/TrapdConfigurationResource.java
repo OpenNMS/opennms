@@ -57,12 +57,12 @@ public class TrapdConfigurationResource {
                     Returns the contents of trapd-configuration.xml, including the SNMPv3 users trapd will
                     accept traps from. A `threads` value of 0 means trapd sizes the pool from the available
                     processor count.""",
-            operationId = "getTrapdConfiguration")
+            operationId = "getTrapdConfigurationV1")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The current trapd configuration.",
                     content = {
                             @Content(mediaType = MediaType.APPLICATION_JSON,
-                                    schema = @Schema(implementation = TrapdConfig.class),
+                                    schema = @Schema(implementation = org.opennms.netmgt.config.trapd.TrapdConfiguration.class),
                                     examples = @ExampleObject(value = """
                                             {
                                               "threads": 0,
@@ -77,7 +77,7 @@ public class TrapdConfigurationResource {
                                               "use-address-from-varbind": null
                                             }""")),
                             @Content(mediaType = MediaType.APPLICATION_XML,
-                                    schema = @Schema(implementation = TrapdConfig.class),
+                                    schema = @Schema(implementation = org.opennms.netmgt.config.trapd.TrapdConfiguration.class),
                                     examples = @ExampleObject(value = """
                                             <?xml version="1.0" encoding="UTF-8"?>
                                             <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd"

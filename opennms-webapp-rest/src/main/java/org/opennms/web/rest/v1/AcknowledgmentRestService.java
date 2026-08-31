@@ -116,7 +116,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
                       "refId": 4547
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No acknowledgement with that id, or the path segment is not an integer.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Acknowledgement object 99999999 was not found."))),
             @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
@@ -213,7 +213,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
                       ]
                     }"""))),
             @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the acknowledgement entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null"))),
             @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
@@ -276,7 +276,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
                     }"""))),
             @ApiResponse(responseCode = "304", description = "The id parsed but no alarm or notification has it."),
             @ApiResponse(responseCode = "400", description = "Neither or both ids were supplied, an id was not an integer, or `action` was not one of the four verbs.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "You must supply either an alarmId or notifId"))),
             @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",

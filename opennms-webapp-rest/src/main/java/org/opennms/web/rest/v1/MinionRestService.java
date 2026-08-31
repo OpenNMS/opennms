@@ -55,7 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
         Read-only access to the Minions that have registered with this instance.
 
         Rows appear when a Minion checks in and are not created through this API. An instance with no Minions
-        answers with an empty list and a count of 0.
+        answers with an empty list whose `count` is null and `totalCount` is 0.
 
         `date` and `lastCheckedIn` are serialised as epoch milliseconds, not as the date-time strings the
         derived schema shows. `properties` is whatever the Minion reported about itself, so its keys vary by
@@ -208,7 +208,7 @@ public class MinionRestService extends OnmsRestService {
                             @Content(mediaType = MediaType.APPLICATION_XML,
                                     schema = @Schema(implementation = OnmsMinionCollection.class))
                     }),
-            @ApiResponse(responseCode = "400", description = "A query parameter did not name a property of the Minion entity, or a value did not convert.",
+            @ApiResponse(responseCode = "500", description = "A query parameter did not name a property of the Minion entity, or a value did not convert.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string")))
     })

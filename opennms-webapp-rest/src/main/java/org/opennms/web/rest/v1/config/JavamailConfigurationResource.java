@@ -626,9 +626,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             summary = "Get one end2end mail configuration",
             description = """
                     Returns the named `end2end-mail-config`. Unlike the readmail and sendmail lookups there is
-                    no `default` special case, so `default` here means an entry actually named `default`.
-
-                    Neither name is validated against the configurations that exist.""",
+                    no `default` special case, so `default` here means an entry actually named `default`.""",
             operationId = "getEnd2endMailConfiguration")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The end2end mail configuration.",

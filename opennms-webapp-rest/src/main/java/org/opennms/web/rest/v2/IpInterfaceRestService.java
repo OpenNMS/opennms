@@ -157,7 +157,7 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
     @Override
     @Operation(summary = "List IP interfaces",
             description = """
-                    IP interfaces matching the query, ordered by database identifier unless `orderBy` says otherwise. The query joins the node, its asset record, location and categories, the SNMP interface and the monitored services, so properties of all of those are searchable.
+                    IP interfaces matching the query, ordered by database identifier unless `orderBy` says otherwise. The query joins the node, its asset record and location, and the SNMP interface, so properties of those are searchable; `category.*` and `monitoredService.*` terms are not joined here and fail with 500.
 
                     Timestamps are epoch milliseconds in JSON and ISO-8601 with a UTC offset in XML.
 

@@ -148,7 +148,7 @@ public class NodeRestService extends OnmsRestService {
                     `ipInterfaces.monitoredServices.serviceType` as `serviceType`, so restrictions such as
                     `category.name`, `ipInterface.ipAddress`, `assetRecord.city` and `serviceType.name` all
                     resolve. A value of `null` or `notnull` becomes an is-null / is-not-null test. Unknown
-                    property names are logged and ignored rather than rejected.
+                    property names are logged and ignored rather than rejected.Unknown property names are not ignored: the filter still binds them and the query fails with 500 `Unknown entity: null`.
 
                     The criteria property for the database id is `id`. `nodeId` is not usable as a criteria
                     property and any request that sends it fails with 500, including the comma-separated form.

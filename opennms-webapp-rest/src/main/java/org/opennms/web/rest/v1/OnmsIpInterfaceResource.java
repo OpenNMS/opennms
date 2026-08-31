@@ -104,11 +104,15 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
                     Every query parameter that is not one of the paging parameters below is read as a property
                     restriction on `OnmsIpInterface`. Joins are pre-registered for `monitoredServices.serviceType`
                     as `serviceType` and for `node`. A value of `null` or `notnull` becomes an is-null /
-                    is-not-null test. Unknown property names are logged and ignored rather than rejected.
+                    is-not-null test. Unknown property names are not ignored: the filter still binds them and the query fails with 500 `Unknown entity: null`.
 
                     `isManaged` is a one-character code: `M` is managed, and only `M` counts as managed. `U`, `F`
                     and `N` are the unmanaged, forced-unmanaged and not-polled variants; `D` marks a deleted row.
-                    `snmpPrimary` is `P` for the primary SNMP interface, `S` for secondary and `N` for none.""",
+                    `snmpPrimary` is `P` for the primary SNMP interface, `S` for secondary and `N` for none.
+
+                    An interface bound to an SNMP interface additionally carries a nested `snmpInterface`
+                    object, as shown on `GET .../ipinterfaces/{ipAddress}`; the example below is an unbound
+                    interface.""",
             operationId = "listNodeIpInterfaces",
             parameters = {
                     @Parameter(in = ParameterIn.QUERY, name = "limit",

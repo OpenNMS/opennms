@@ -61,8 +61,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
-import org.opennms.web.rest.support.SearchPropertyCollection;
-import org.opennms.web.rest.support.StringCollection;
 
 @Component
 @Path("userdefinedlinks")

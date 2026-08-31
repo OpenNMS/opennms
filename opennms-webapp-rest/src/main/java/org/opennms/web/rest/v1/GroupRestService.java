@@ -147,7 +147,7 @@ public class GroupRestService extends OnmsRestService {
                       "user": [ "admin" ]
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -188,7 +188,7 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "201", description = "Group stored. `Location` points at the new group."),
             @ApiResponse(responseCode = "415", description = "The body was not `application/xml`."),
             @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled, or the group could not be saved.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Failed to marshal/unmarshal XML file while unmarshalling an object (OnmsGroup)")))
     })
@@ -225,7 +225,7 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "204", description = "The group was updated."),
             @ApiResponse(responseCode = "304", description = "No supplied key matched a writable property, so nothing was written."),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -269,7 +269,7 @@ public class GroupRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was deleted."),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -300,11 +300,11 @@ public class GroupRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The user was added to the group."),
             @ApiResponse(responseCode = "400", description = "The user is already a member, or no such user exists.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User with name 'jroe' already added or does not exist."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -336,11 +336,11 @@ public class GroupRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The user was removed from the group."),
             @ApiResponse(responseCode = "400", description = "The user is not a member of the group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User with name 'jroe' does not exist in group 'NOC'"))),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -397,7 +397,7 @@ public class GroupRestService extends OnmsRestService {
                       ]
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -432,7 +432,7 @@ public class GroupRestService extends OnmsRestService {
                       "role": [ "ROLE_ADMIN" ]
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No such group, or the user is not a member of it.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User with name 'jroe' does not exist in group 'NOC'")))
     })
@@ -460,11 +460,11 @@ public class GroupRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was authorized for the category."),
             @ApiResponse(responseCode = "400", description = "The group is already authorized, or no such category exists.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' already added or does not exist."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -496,11 +496,11 @@ public class GroupRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The authorization was removed."),
             @ApiResponse(responseCode = "400", description = "The group was not authorized for that category, or no such category exists.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' does not exist. Remove failed."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
@@ -540,7 +540,7 @@ public class GroupRestService extends OnmsRestService {
                       "name": "Routers"
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No such group, or the group is not authorized for that category.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Switches' does not exist for group 'NOC'.")))
     })
@@ -583,7 +583,7 @@ public class GroupRestService extends OnmsRestService {
                       ]
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No such group.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })

@@ -129,7 +129,7 @@ public class EventRestService extends OnmsRestService {
                       ]
                     }"""))),
             @ApiResponse(responseCode = "404", description = "No event with that id, or the path segment is not an integer.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Event object 99999999 was not found.")))
     })
@@ -220,7 +220,7 @@ public class EventRestService extends OnmsRestService {
                         } ]
                     }"""))),
             @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the event entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
     })
@@ -286,11 +286,11 @@ public class EventRestService extends OnmsRestService {
                         } ]
                     }"""))),
             @ApiResponse(responseCode = "400", description = "`begin` or `end` could not be parsed.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Can't parse start date"))),
             @ApiResponse(responseCode = "500", description = "`column` or another query parameter is not a property of the event entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
     })
@@ -379,11 +379,11 @@ public class EventRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The event was updated."),
             @ApiResponse(responseCode = "400", description = "`ack` was absent.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Must supply the 'ack' parameter, set to either 'true' or 'false'"))),
             @ApiResponse(responseCode = "404", description = "No event with that id.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Event object 99999999 was not found."))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`.")
@@ -435,7 +435,7 @@ public class EventRestService extends OnmsRestService {
             @ApiResponse(responseCode = "204", description = "The request was processed, whether or not anything matched."),
             @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`."),
             @ApiResponse(responseCode = "500", description = "A form parameter is not a property of the event entity.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
     })
@@ -547,12 +547,13 @@ public class EventRestService extends OnmsRestService {
             })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "The event was handed to eventd."),
-            @ApiResponse(responseCode = "400", description = "Bean validation failed, or the event could not be sent.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            @ApiResponse(responseCode = "400", description = "Bean validation failed, or the event could not be sent. The handler's catch block "
+                    + "rewraps the inner error, so the body is the generic reason phrase rather than the validation message.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "1 errors found while validating event."))),
+                            examples = @ExampleObject(value = "HTTP 400 Bad Request"))),
             @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled: an unknown field, or XML elements out of schema order.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Unrecognized field \"description\" (Class org.opennms.netmgt.xml.event.Event), not marked as ignorable")))
     })

@@ -119,7 +119,7 @@ public class IfServicesRestService extends OnmsRestService {
                     `ipInterface.snmpInterface` as `snmpInterface` and `serviceType`, so restrictions such as
                     `node.label`, `ipInterface.ipAddress`, `category.name` and `serviceType.name` all resolve.
                     A value of `null` or `notnull` becomes an is-null / is-not-null test instead of an equality
-                    test. Unknown property names are logged and ignored rather than rejected.
+                    test. Unknown property names are not ignored: the filter still binds them and the query fails with 500 `Unknown entity: null`.
 
                     Results are ordered by `id`. `totalCount` counts all matches, `count` the returned page.""",
             operationId = "searchIfServices",
@@ -281,9 +281,10 @@ public class IfServicesRestService extends OnmsRestService {
 
                     With no query parameters the selection is every monitored service in the system.
 
-                    `status=S` and a transition from `A` to `F` store `F` and send both
-                    `serviceUnmanaged` and `suspendPollingService`. `status=R` and a transition from `F` to `A`
-                    store `A` and send `resumePollingService`.""",
+                    The supplied `status` letter is stored as-is, including the literal `S` or `R`; unlike the
+                    per-service endpoint there is no rewrite to `F` or `A`. `status=S`, and a transition from
+                    `A` to `F`, send `serviceUnmanaged` and `suspendPollingService`; `status=R`, and a
+                    transition from `F` to `A`, send `resumePollingService`.""",
             operationId = "updateIfServices",
             parameters = {
                     @Parameter(in = ParameterIn.QUERY, name = "node.label",

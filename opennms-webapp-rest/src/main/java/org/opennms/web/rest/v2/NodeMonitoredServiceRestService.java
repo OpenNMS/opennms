@@ -483,9 +483,10 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             description = """
         Attach a monitored service to the interface and send a `nodeGainedService` event, plus an
         application-changed event for each application named in the body. `serviceType.name` is
-        required, and a service type that does not yet exist is created. `status` in the body is not
-        applied: the service is stored with no status, so an immediate read-back can show `status` and
-        `statusLong` as `null`. The new service's URI is returned in the `Location` header.""",
+        required, and a service type that does not yet exist is created. `status` in the body is applied
+        as given; omitting it stores the service with no status, so an immediate read-back can show
+        `status` and `statusLong` as `null`. The new service's URI is returned in the `Location`
+        header.""",
             operationId = "NodeMonitoredServiceRestServicePOSTService",
             parameters = {
                     @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",

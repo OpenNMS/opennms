@@ -359,7 +359,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             description = """
         Return the number of alarms matching `_s` as a plain-text integer. The response is
         `text/plain` only, so a request that asks solely for `application/json` is answered with 404.
-        `limit` and `offset` are ignored here: the count covers the whole match.
+        `limit` is ignored here, but a non-zero `offset` reaches the count query and fails with 500.
 
         Example query: `_s=alarm.severity==MINOR`.""",
             operationId = "getAlarmCount")
@@ -467,7 +467,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
                     description = "Unprefixed property id from `GET /alarms/properties`.", example = "severity")
             @PathParam("propertyId") final String propertyId,
             @Parameter(in = ParameterIn.QUERY, name = "q",
-                    description = "Case-sensitive substring the value must contain.", example = "nodeLost")
+                    description = "Substring the value must contain. Database-backed properties match case-insensitively; only fixed value lists are case-sensitive.", example = "nodeLost")
             @QueryParam("q") final String query,
             @Parameter(in = ParameterIn.QUERY, name = "limit",
                     description = "Maximum number of values returned. Applies only to values read from the database.",
@@ -600,7 +600,10 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             @ApiResponse(responseCode = "404", description = "No alarm matched `_s`. No body is returned."),
             @ApiResponse(responseCode = "500", description = "`_s` named a property the entity does not have.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm")))
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
     })
     @Override
     public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
@@ -663,7 +666,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             @ApiResponse(responseCode = "204", description = "The alarm was updated. No body is returned."),
             @ApiResponse(responseCode = "403", description = "The caller may not act on behalf of the `ackUser` named.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User 'operator' cannot act on behalf of user 'admin'"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "404", description = "No alarm has that id. No body is returned.")
     })
     @Override
@@ -736,7 +739,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
                             examples = @ExampleObject(value = "Body cannot be null."))),
             @ApiResponse(responseCode = "403", description = "The caller may not act on behalf of the `user` named.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Alarm not found.")))
@@ -775,7 +778,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
                             examples = @ExampleObject(value = "Body cannot be null."))),
             @ApiResponse(responseCode = "403", description = "The caller may not act on behalf of the `user` named.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Alarm not found.")))
@@ -806,7 +809,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             @ApiResponse(responseCode = "204", description = "The sticky memo is gone, whether or not one was set. No body is returned."),
             @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Alarm not found.")))
@@ -834,7 +837,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             @ApiResponse(responseCode = "204", description = "The journal note is gone, whether or not one was set. No body is returned."),
             @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "404", description = "No alarm has that id.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Alarm not found.")))
@@ -869,7 +872,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
             @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
@@ -908,7 +911,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
             @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
@@ -944,7 +947,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
             @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'"))),
             @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))

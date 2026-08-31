@@ -134,9 +134,11 @@ public class ProvisiondStatusRestService {
                     expired out of the cache. The body is empty.""")
     })
     public Response getJobStatus(@Parameter(description = """
-                    A key from `GET /provisiond/status`. Ids containing `/` cannot be expressed in this
-                    path segment.""",
-                    required = true, example = "Routers.xml.20260826025715")
+                    A key from `GET /provisiond/status`. URL-triggered import jobs are keyed by their
+                    `file:/...` URL, which contains `/` and cannot be expressed in this path segment, so
+                    those jobs are not reachable here; only keys without `/`, such as a scheduled
+                    requisition's job name, can be looked up.""",
+                    required = true, example = "Routers")
                                  @PathParam("jobId") String jobId) {
         MonitorHolder monitorHolder = getMonitorHolder();
         ProvisionMonitor monitor = monitorHolder.getMonitors().get(jobId);

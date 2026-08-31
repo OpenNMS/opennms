@@ -294,10 +294,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
                       <location>Default</location>
                     </event>"""))
                     }),
-            @ApiResponse(responseCode = "404", description = "No event has that id. No body is returned."),
-            @ApiResponse(responseCode = "500", description = "The path segment is not a number.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "object is not an instance of declaring class")))
+            @ApiResponse(responseCode = "404", description = "No event has that id, or the path segment is not a number (the parameter fails conversion before the handler runs). No body is returned.")
     })
     @Override
     public Response get(@Context final UriInfo uriInfo,
@@ -315,7 +312,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
             description = """
         Return the number of events matching `_s` as a plain-text integer. The response is
         `text/plain` only, so a request that asks solely for `application/json` is answered with 404.
-        `limit` and `offset` are ignored: the count covers the whole match.
+        `limit` is ignored, but a non-zero `offset` reaches the count query and fails with 500.
 
         Example query: `_s=event.eventUei==uei.opennms.org/nodes/nodeDown`.""",
             operationId = "getEventCount")
@@ -410,7 +407,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
                     description = "Unprefixed property id from `GET /events/properties`.", example = "eventUei")
             @PathParam("propertyId") final String propertyId,
             @Parameter(in = ParameterIn.QUERY, name = "q",
-                    description = "Case-sensitive substring the value must contain.", example = "nodeDown")
+                    description = "Substring the value must contain. Database-backed properties match case-insensitively; only fixed value lists are case-sensitive.", example = "nodeDown")
             @QueryParam("q") final String query,
             @Parameter(in = ParameterIn.QUERY, name = "limit",
                     description = "Maximum number of values returned. Applies only to values read from the database.",

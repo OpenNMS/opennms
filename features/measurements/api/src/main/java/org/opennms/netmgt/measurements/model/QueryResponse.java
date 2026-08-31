@@ -369,9 +369,10 @@ public class QueryResponse {
         public String getKey() {
             return this.key;
         }
-        // The bare Jackson 2 @JsonProperty only keeps the property in the generated OpenAPI document;
-        // swagger's ModelResolver drops @XmlValue members of an XmlAccessType.NONE class. Wire name is "value".
-        @com.fasterxml.jackson.annotation.JsonProperty
+        // The Jackson 2 @JsonProperty only keeps the property in the generated OpenAPI document;
+        // swagger's ModelResolver drops @XmlValue members of an XmlAccessType.NONE class. Named
+        // explicitly so a Jackson 2 consumer serializes the wire name "value".
+        @com.fasterxml.jackson.annotation.JsonProperty("value")
         @Schema(name = "value",
                 description = "Property value.",
                 example = "eth0")

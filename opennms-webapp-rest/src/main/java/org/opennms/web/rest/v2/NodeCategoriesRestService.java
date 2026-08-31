@@ -345,7 +345,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
             description = """
         Apply the form parameters as bean properties to a set of category rows. The criteria for this
         resource are not restricted to the node in the path, so the selection is every category in the
-        system, capped by the default `limit` of 10. The node in the path affects only the 404 check.
+        system, capped by the default `limit` of 10. This route never reads the node segment at all.
         `name` is rejected with 400, so the writable property is `description`, and it is written on
         the shared category definition rather than on anything belonging to this node.""",
             operationId = "NodeCategoriesRestServicePUTCategories",
@@ -362,10 +362,9 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Cannot rename category."))),
             @ApiResponse(responseCode = "404", description = "No category row matched. No body is returned."),
-            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+            @ApiResponse(responseCode = "500", description = "The `_s` search expression did not parse. The node segment is never parsed on this route, so a bad node segment alone is not an error.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+                            schema = @Schema(type = "string")))
     })
     @Override
     public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
@@ -458,7 +457,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "The selected category rows were deleted."),
             @ApiResponse(responseCode = "404", description = "No category row matched. No body is returned."),
-            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`, the node id is valid but names no node while at least one category matched, or the `_s` search expression did not parse.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "For input string: \"notanumber\"")))
