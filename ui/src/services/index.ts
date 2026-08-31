@@ -75,9 +75,21 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
+import {
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
+} from './groupAdminService'
 
 export default {
   search,
+  getSystemReportPlugins,
+  getSystemReportFormatters,
+  generateSystemReport,
   getInfo,
   getNodes,
   getAlarms,
@@ -139,5 +151,11 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
-  performLogout
+  performLogout,
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
 }

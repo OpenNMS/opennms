@@ -197,9 +197,26 @@
 
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
+    <!-- Dashboard layout is system-wide: reads fall through to the /api/v2/** GET
+         catch-all (every reader role); only admins may save it, so override just
+         the write. Order matters — this must precede the /api/v2/** PUT rule. -->
+    <intercept-url pattern="/api/v2/dashboard/**" method="PUT" access="ROLE_ADMIN" />
+
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/discovery/**" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
 
+    <!-- The system report drives an admin-only page and bundles logs/config, so keep
+         even its plugin/formatter metadata to admins rather than the GET catch-all below;
+         generation (POST) is likewise admin-only -->
+    <intercept-url pattern="/api/v2/system-report/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/system-report/**" method="POST" access="ROLE_ADMIN" />
+
+    <!-- Group membership drives notification routing; admin-only in every method -->
+    <intercept-url pattern="/api/v2/groups/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/groups/**" method="HEAD" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/groups/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/groups/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/groups/**" method="PUT" access="ROLE_ADMIN" />
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
@@ -347,8 +364,11 @@
     <intercept-url pattern="/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <!-- Vue menu bundle (static js/css/fonts). Must be anonymous: bootstrap.jsp preloads it from the
          login page, and an auth redirect there gets cached by Safari/Firefox as text/html for the
-         asset URL, breaking the menu on all JSP pages after login (NMS-20174). -->
-    <intercept-url pattern="/ui-components/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+         asset URL, breaking the menu on all JSP pages after login (NMS-20174). Deliberately limited
+         to assets/**: the unpacked dist-menu artifact also ships an index.html (the Vite build
+         input) at /ui-components/, which nothing links to and which must not be anonymously
+         reachable (NMS-20180). -->
+    <intercept-url pattern="/ui-components/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />

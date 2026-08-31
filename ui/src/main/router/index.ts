@@ -94,6 +94,12 @@ const router = createRouter({
       component: Home
     },
     {
+      // configurable system-wide dashboard (NMS-19851); home route repoints here at cutover
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import('@/containers/Dashboard.vue')
+    },
+    {
       // for compatibility with legacy plugins
       // should be removed when all plugins have unique 'extensionId' and follow new pattern
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
@@ -147,6 +153,25 @@ const router = createRouter({
         const checkRoles = () => {
           if (!adminRole.value) {
             showSnackBar({ msg: 'No role access to logs.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/admin/groups',
+      name: 'Manage Groups',
+      component: () => import('@/containers/ManageGroups.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage groups.' })
             router.push(from.path)
           }
         }
@@ -261,6 +286,25 @@ const router = createRouter({
         const checkRoles = () => {
           if (!adminRole.value) {
             showSnackBar({ msg: 'Must be admin to access SCV.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/system-report',
+      name: 'Generate System Report',
+      component: () => import('@/containers/SystemReport.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to generate a system report.' })
             router.push(from.path)
           }
         }

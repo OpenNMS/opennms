@@ -57,6 +57,11 @@ OpenNMS call site already passed explicitly:
 - **`OnmsMenu`** defaults `popup` to `true` (PrimeVue's own default is
   `false`) — every OpenNMS usage is a popup/dropdown menu; pass
   `:popup="false"` for an inline menu.
+- **`OnmsSearchInput`** is a fixed three-part composite: a leading search icon,
+  the input, and a trailing clear button that appears only when there is a value
+  (clicking it emits `update:modelValue` with `''` plus a `clear` event, then
+  returns focus to the input). Consumers do not supply the icons. It also
+  exposes `focus()`/`blur()` for callers that need to drive the field.
 - **`OnmsInputNumber`** defaults `useGrouping` to `false` (PrimeVue's own
   default is `true`) — OpenNMS numeric fields are ports/counts/intervals,
   not grouped quantities.
@@ -84,6 +89,12 @@ Other tranche-2 notes:
 - **`OnmsListbox`**'s `change` event emits the selected value directly, not
   PrimeVue's `{ originalEvent, value }` event object, matching the
   `OnmsAutoComplete` `optionSelect` precedent.
+- **`OnmsAutoComplete`** exposes `clearInput()` and `focus()` for call sites that
+  render their own clear affordance (`MapSearch`). `clearInput()` exists because
+  in `multiple` mode PrimeVue's inner input is *uncontrolled* — it binds `value`
+  only in single mode — so text typed but not yet turned into a selection lives
+  in the DOM with no model to reset, and a caller cannot reach it through
+  `modelValue`. Clearing the selection itself is still done via `modelValue`.
 
 ## Components (tranche 3)
 
@@ -121,10 +132,79 @@ OnmsTable (+ the `OnmsTablePageEvent`, `OnmsTableSortEvent`,
   the seam (a new prop/emit on `OnmsTable`/`OnmsColumn`) before reaching for
   `unsafePt` if a real need for one of these appears.
 
+## Icons
+
+The icon set (262 template-only SVG SFCs, originally vendored from FeatherDS)
+lives at `packages/onms-ui/src/icons/<category>/<Name>.vue`, alongside the
+`OnmsIcon` wrapper that renders it. It moved here from `ui/src/components/icons/`
+in NMS-20243: under the old `@/components/icons/...` path it was reachable only
+through the core app's own Vite alias, so no plugin could import an icon at all.
+
+Icons are reached through a **subpath export**, not the barrel:
+
+```ts
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
+// then: <OnmsIcon :icon="DeleteIcon" />
+```
+
+The 12 category directories (`account`, `action`, `communication`, `content`,
+`datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
+`notification`, `status`) are part of the path. They matter: 22 basenames
+(`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
+more than one category, so the category is what disambiguates them.
+
+### Why icons are NOT in the barrel
+
+Deliberate, and load-bearing. `ui/src/main/main.ts` does
+`import * as OnmsUI` and assigns that namespace object to `window.OnmsUI`. A
+namespace object cannot be tree-shaken — so **anything reachable from
+`index.ts` ships to every user unconditionally**. Exporting 262 icons from the
+barrel would force the entire set into the core bundle even though a typical
+screen uses a handful.
+
+Keeping them on a subpath preserves per-icon tree-shaking and code-splitting:
+each call site imports one module, and Rollup includes only what is reached.
+(Verified: an icon used only by the Adhoc Graphs screen lands in the
+`AdhocGraphs.js` chunk, not `index.js`.) A corollary worth remembering —
+`tests/onms-ui/exports.test.ts` needed no change when the icons moved, because
+the runtime contract genuinely did not change.
+
+### What this means for plugins
+
+Two different mechanisms, depending on how a plugin gets at an icon:
+
+| | Icon used *internally* by a seam component | Plugin imports an icon *directly* |
+|---|---|---|
+| Path | relative, inside this package | `@opennms/onms-ui/icons/action/Delete.vue` |
+| At runtime | in the **host** bundle, shared | **bundled into the plugin's own dist** (~1 KB) |
+| Externalized to `window.OnmsUI`? | n/a | **No.** `external: ['@opennms/onms-ui']` is an exact-string match, and `rollup-plugin-external-globals` maps exact ids — neither matches a subpath |
+| Plugin rebuild to pick up a change? | No — the host owns it | Yes, like any vendored asset |
+| Needs this package resolvable at plugin build time? | No | Yes |
+
+The first column is why this move is **invisible to the plugin ABI**. A plugin
+using `OnmsSearchInput` renders the *host's* compiled component, which carries
+its search and clear icons with it; the plugin's dist contains no icon data at all. So an
+already-built plugin keeps working across this change with no rebuild.
+
+The last row is the live caveat: this package is `"private": true` and is not
+published to a registry. In-repo consumers (the core app, the example plugin)
+resolve it through the pnpm workspace and work today. An **external** plugin
+repo compiles against the *bare* specifier and externalizes it, so it never
+resolves the package — but a subpath icon import *does* require real
+resolution. External plugins therefore can't use subpath icons until this
+package is installable (published, tarball, or vendored). That is strictly
+better than before, where icons were unreachable by any plugin.
+
+If sharing icons off `window.OnmsUI` is ever genuinely wanted, it does not
+require moving them again — widen the plugin externals contract to a
+regex/function matching `@opennms/onms-ui/icons/*` and expose a registry. That
+is a plugin-toolchain change, and it carries the bundle cost described above;
+it is declined for now, not foreclosed.
+
 ## OnmsTooltip
 
 `OnmsTooltip` (`packages/onms-ui/src/directives/OnmsTooltip.ts`) is a seam
-re-export of PrimeVue's `Tooltip` directive, exported from the package barrel
+wrapper around PrimeVue's `Tooltip` directive, exported from the package barrel
 alongside the components above. Unlike the components, it isn't installed by
 this package — directives are registered at the app level, the same way core
 already installs the PrimeVue plugin itself
@@ -143,6 +223,51 @@ rename is behavior-neutral: PrimeVue keys the directive's internals (the
 `BaseTooltip.extend('tooltip', ...)`, not off the name it's registered under,
 so `v-onms-tooltip` behaves identically to `v-tooltip` (verified against
 primevue@4.5.5) — only the vocabulary in the template changes.
+
+It is a thin wrapper rather than a bare re-export because of one upstream bug
+(NMS-20162): PrimeVue stamps the configured tooltip z-index onto the host element
+as `$_ptooltipZIndex`, and does it in `beforeMount` only, reading it from
+`binding.instance.$primevue`. That misses two cases.
+
+1. Vue fills `binding.instance` in with `getComponentPublicInstance()`, which
+   hands over the host's *exposeProxy* whenever the component has called
+   `expose()` — which `<script setup>` always compiles to. That proxy resolves
+   Vue's own `$`-properties but not app `globalProperties`, so `$primevue` came
+   back undefined for every tooltip in the app.
+2. `beforeMount` returns early on an empty directive value, before the capture,
+   and `updated` re-binds the events but never sets the property. So a tooltip
+   whose text arrives with data — `v-onms-tooltip="row.label"` in a table cell,
+   a label computed from a store — mounted empty and stayed uncaptured even once
+   it had something to say.
+
+Either way nothing was captured and the ZIndex util fell back to ~1000 — behind
+the fixed menubar (1030) and the side-menu rail (2000), which reads as "the
+tooltip never opens".
+
+The wrapper fixes both by resolving the configured z-index off the vnode's app
+context — the same fallback PrimeVue's own `BaseDirective._getConfig` uses for
+the rest of its config, which is why everything except the z-index worked — and
+stamping it on the host after both `beforeMount` and `updated`. `updated` is
+enough for a late value because `tooltipActions` reads the property at show time
+(`ZIndex.set('tooltip', tooltipElement, el.$_ptooltipZIndex)`), not at bind time,
+so nothing has to be remounted for a tooltip to arrive late. See
+`tests/onms-ui/OnmsTooltip.test.ts`.
+
+### Tooltips on `OnmsIconButton`
+
+Prefer the `tooltip` prop over putting `v-onms-tooltip` on the component:
+
+```vue
+<OnmsIconButton :icon="Delete" tooltip="Delete" />
+```
+
+The prop mounts the directive on the button itself, with no remount when the
+text arrives late — the wrapper handles that (see above). When `tooltip` is set
+the native `title` attribute is dropped, so the browser's own tooltip doesn't
+duplicate the rich one; `title`, if given, still names the button for assistive
+tech, and a `tooltip`-only button is named from the tooltip text. Positioning
+modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing
+one keeps using the directive.
 
 ## Runtime exposure for plugins
 

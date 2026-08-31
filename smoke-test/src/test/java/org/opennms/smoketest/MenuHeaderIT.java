@@ -81,7 +81,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
 
         clickMenuItem("Dashboards", "Surveillance Dashboard");
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
 
         driver.switchTo().parentFrame();
@@ -115,7 +115,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("Monitoring", "Surveillance View");
         // switchTo() by xpath is much faster than by ID
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         driver.switchTo().parentFrame();
         frontPage();
@@ -171,7 +171,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'User List')]")));
 
         clickMenuItem("User Management", "Manage Groups");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Group List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
 
         clickMenuItem("User Management", "Manage On-call Roles");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
@@ -276,8 +277,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         assertNotNull("supportMenu / Public Issue Tracker", foundElement);
 
         clickMenuItem("Support", "Generate System Report");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
+        // NMS-20154 repointed this entry to the new PrimeVue page (ui/index.html#/system-report),
+        // which renders the /ui breadcrumb (div.breadcrumbs) and an OnmsButton rather than the
+        // legacy ol.breadcrumb list and a Bootstrap submit input.
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'Generate System Report')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(normalize-space(.), 'Generate System Report')]")));
 
         // Omitting for now - need to fix!
         // Vaadin Topology page
@@ -412,7 +416,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // get the central search text input control and search for "Configure"
-        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']/input[@class='search-input']");
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']");
         searchInput.sendKeys("Configure");
 
         // Get the search result context header

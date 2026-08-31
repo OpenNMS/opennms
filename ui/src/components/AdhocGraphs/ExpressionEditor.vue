@@ -138,7 +138,7 @@ import {
 } from '@opennms/onms-ui'
 import { computed, ref } from 'vue'
 
-import DeleteIcon from '@/components/icons/action/Delete.vue'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { AdhocExpression, AdhocGraphConfig, AdhocSeries, AdhocSeriesStyle } from '@/types/adhocGraph'
 import { expressionIssues } from './utils/adhocQuery'

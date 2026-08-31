@@ -411,7 +411,7 @@
         {
           "id": "manageGroups",
           "name": "Manage Groups",
-          "url": "admin/userGroupView/groups/list.htm",
+          "url": "ui/index.html#/admin/groups",
           "locationMatch": "",
           "roles": null
         },
@@ -679,7 +679,7 @@
         {
           "id": "generateSystemReport",
           "name": "Generate System Report",
-          "url": "admin/support/systemReportList.htm",
+          "url": "ui/index.html#/system-report",
           "locationMatch": null,
           "roles": null
         }

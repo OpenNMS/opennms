@@ -9,7 +9,11 @@
     </div>
 
     <div class="onms-menubar__center">
-      <Search class="search-left-margin" id="onms-central-search-control" />
+      <Search
+        ref="searchRef"
+        class="search-left-margin"
+        id="onms-central-search-control"
+      />
 
       <!-- Provision/Quick add node menu -->
       <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
@@ -67,12 +71,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 
 import { useOutsideClick } from '@/composables/useOutsideClick'
 import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
-import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
-import CalendarIcon from '@/components/icons/action/Calendar.vue'
+import LightDarkMode from '@opennms/onms-ui/icons/action/LightDarkMode.vue'
+import CalendarIcon from '@opennms/onms-ui/icons/action/Calendar.vue'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'
@@ -88,6 +92,7 @@ const appStore = useAppStore()
 const menuStore = useMenuStore()
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const outsideClick = ref()
+const searchRef = ref<InstanceType<typeof Search> | null>(null)
 const currentDropdownMenu = ref<DropdownMenuType>(DropdownMenuType.None)
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
@@ -96,15 +101,32 @@ const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButto
 const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
 const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
 
-// Empty until the menu data loads. The calendar icon is v-if'd on this:
-// PrimeVue's tooltip captures the configured z-index only when the directive
-// mounts with a non-empty value (an empty value both binds a blank tooltip
-// and falls back to z-index ~1000, behind this fixed header's 1030), so the
-// element must not mount until the label is ready.
+// Empty until the menu data loads. The calendar icon exists only to carry this
+// label (the visible date/time text is hidden at narrow widths, NMS-20201), so
+// it is v-if'd on it — no point in a date icon before there is a date.
+//
+// That v-if is no longer load-bearing for the tooltip: it used to be the local
+// workaround for PrimeVue capturing the configured z-index only when the
+// directive mounted with a non-empty value, which left the tooltip behind this
+// fixed header's 1030. The OnmsTooltip seam wrapper now stamps the z-index after
+// `updated` too, so a label that arrives with the menu data is fine either way
+// (tests/onms-ui/OnmsTooltip.test.ts pins that).
+//
+// The `.bottom` modifier is a placement choice, not a workaround: PrimeVue's
+// default `right` puts the tooltip inside the header band, on top of the
+// neighbouring menubar items.
 const dateTimeLabel = computed<string>(() => [formattedTime.value, formattedDate.value].filter(Boolean).join(' '))
 
-useOutsideClick(outsideClick.value, () => {
-  resetMenuItems()
+// `outsideClick`, not `outsideClick.value`: the composable stores the ref and
+// reads `.value` when the click arrives, so passing the (still-undefined) value
+// at setup time left it looking at nothing. It also stays dormant until its
+// returned `active` ref is set — enable it only while a dropdown is open, which
+// is the only time there is any state to reset. Both dropdowns are inline
+// Popovers (appendTo="self"), so clicks inside them count as inside the header.
+const outsideClickActive = useOutsideClick(outsideClick, () => resetMenuItems())
+
+watch(currentDropdownMenu, (menu) => {
+  outsideClickActive.value = menu !== DropdownMenuType.None
 })
 
 const resetMenuItems = () => {
@@ -165,11 +187,7 @@ const shiftCheck = (e: KeyboardEvent) => {
       if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
         clearShiftCheck()
 
-        const elem: HTMLInputElement | null = document.querySelector('.onms-search-input-wrapper input.search-input')
-
-        if (elem) {
-          elem.focus()
-        }
+        searchRef.value?.focus()
       } else {
         clearShiftCheck()
       }

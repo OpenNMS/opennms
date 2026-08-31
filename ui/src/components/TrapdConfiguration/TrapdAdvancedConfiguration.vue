@@ -96,8 +96,8 @@
 import { ref } from 'vue'
 
 import { OnmsButton, OnmsConfirmationDialog, OnmsIcon } from '@opennms/onms-ui'
-import IconDownload from '@/components/icons/action/DownloadFile.vue'
-import IconUpload from '@/components/icons/action/UploadFile.vue'
+import IconDownload from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import IconUpload from '@opennms/onms-ui/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'

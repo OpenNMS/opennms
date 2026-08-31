@@ -66,7 +66,7 @@ import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
 import { OnmsButton, OnmsIconButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
-import DownloadFile from '@/components/icons/action/DownloadFile.vue'
+import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 Chart.register(...registerables)
