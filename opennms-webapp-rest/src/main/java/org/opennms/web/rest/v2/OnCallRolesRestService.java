@@ -449,9 +449,9 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     /**
      * Validates AND canonicalizes: begins/ends are rewritten into the exact
      * zero-padded form the runtime dispatches on (setOutCalTime switches on
-     * string length 20/8 and parses with the JVM default locale), and weekly
-     * days are lowercased. Accepting anything looser would store entries
-     * notifd silently ignores.
+     * string length 20/8 and parses with Locale.ROOT), and weekly days are
+     * lowercased. Accepting anything looser would store entries notifd
+     * silently ignores.
      */
     private void validateTime(final String type, final OnCallTimeDto time) {
         final String day = trimToNull(time.getDay());
@@ -465,8 +465,8 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 if (!begins.before(ends)) {
                     throw new IllegalArgumentException("The start time must be before the end time.");
                 }
-                time.setBegins(runtimeDateTimeString(begins));
-                time.setEnds(runtimeDateTimeString(ends));
+                time.setBegins(strictFormat(DATE_TIME_FORMAT, Locale.ROOT).format(begins));
+                time.setEnds(strictFormat(DATE_TIME_FORMAT, Locale.ROOT).format(ends));
                 return;
             case "daily":
                 if (day != null) {
@@ -507,27 +507,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         } catch (final ParseException e) {
             throw new IllegalArgumentException("Invalid schedule time '" + value + "': expected the format " + format);
         }
-    }
-
-    /**
-     * The runtime (BasicScheduleUtils.setOutCalTime) parses stored dd-MMM-yyyy
-     * strings with the JVM default locale. Always store the canonical English
-     * form (fixed width, matches what the API accepts and returns) and reject
-     * when the default locale cannot parse it back — otherwise the entry would
-     * be stored but silently ignored by notifd. The check is locale-level, not
-     * month-level, so the same request never flips between accept and reject.
-     */
-    private static String runtimeDateTimeString(final Date date) {
-        final String stored = strictFormat(DATE_TIME_FORMAT, Locale.ROOT).format(date);
-        try {
-            if (!date.equals(strictFormat(DATE_TIME_FORMAT, Locale.getDefault()).parse(stored))) {
-                throw new ParseException(stored, 0);
-            }
-        } catch (final ParseException e) {
-            throw new IllegalArgumentException("The server locale " + Locale.getDefault()
-                    + " cannot parse the dd-MMM-yyyy schedule format the scheduler requires, so specific schedules would be ignored at runtime.");
-        }
-        return stored;
     }
 
     private static SimpleDateFormat strictFormat(final String format, final Locale locale) {

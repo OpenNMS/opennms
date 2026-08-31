@@ -130,6 +130,31 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testSpecificScheduleIsLocaleIndependent() throws Exception {
+        // The whole schedule pipeline is pinned to Locale.ROOT (the API's
+        // canonicalization and BasicScheduleUtils' parsing); a non-English
+        // default locale, whose SimpleDateFormat cannot parse "Jun", must not
+        // change any outcome. Guards the ROOT contract on the API side.
+        final java.util.Locale original = java.util.Locale.getDefault();
+        java.util.Locale.setDefault(java.util.Locale.GERMANY);
+        try {
+            ensureGroup("locale-team", "oncall1");
+            final String body = "{\"name\":\"junit-locale-role\",\"membership-group\":\"locale-team\",\"supervisor\":\"admin\","
+                    + "\"schedule\":[{\"user\":\"oncall1\",\"type\":\"specific\","
+                    + "\"time\":[{\"begins\":\"15-Jun-2093 08:00:00\",\"ends\":\"15-Jun-2093 17:00:00\"}]}]}";
+            sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles", body, 201);
+
+            final JSONObject created = new JSONObject(getJson("/on-call-roles/junit-locale-role", 200));
+            final JSONObject schedule = created.getJSONArray("schedule").getJSONObject(0);
+            assertEquals("15-Jun-2093 08:00:00", schedule.getJSONArray("time").getJSONObject(0).getString("begins"));
+
+            sendRequest(DELETE, "/on-call-roles/junit-locale-role", 204);
+        } finally {
+            java.util.Locale.setDefault(original);
+        }
+    }
+
+    @Test
     public void testListIncludesCurrentlyOnCall() throws Exception {
         ensureGroup("list-team", "listuser");
         sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
