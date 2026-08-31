@@ -33,6 +33,7 @@
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.44.0",
     "axios": "^1.19.0",
+    "grid-layout-plus": "^1.1.1",
     "chart.js": "^3.9.1",
     "chartjs-plugin-zoom": "^2.0.1",
     "cronstrue": "^3.9.0",
