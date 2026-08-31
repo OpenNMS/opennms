@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -49,6 +48,9 @@ public class TrapdConfigurationResource {
     @Resource(name="trapd-configuration.xml")
     ConfigurationResource<TrapdConfig> m_trapdConfigResource;
     
+    // Documented by example only: the response is the JAXB TrapdConfiguration, which swagger-core
+    // cannot introspect (Jackson sees conflicting array and List setters for snmpv3User). The v1
+    // response carries the XSD attribute names, so the v2 TrapdConfigDto does not describe it either.
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Operation(
@@ -62,7 +64,6 @@ public class TrapdConfigurationResource {
             @ApiResponse(responseCode = "200", description = "The current trapd configuration.",
                     content = {
                             @Content(mediaType = MediaType.APPLICATION_JSON,
-                                    schema = @Schema(implementation = org.opennms.netmgt.config.trapd.TrapdConfiguration.class),
                                     examples = @ExampleObject(value = """
                                             {
                                               "threads": 0,
@@ -77,7 +78,6 @@ public class TrapdConfigurationResource {
                                               "use-address-from-varbind": null
                                             }""")),
                             @Content(mediaType = MediaType.APPLICATION_XML,
-                                    schema = @Schema(implementation = org.opennms.netmgt.config.trapd.TrapdConfiguration.class),
                                     examples = @ExampleObject(value = """
                                             <?xml version="1.0" encoding="UTF-8"?>
                                             <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd"
