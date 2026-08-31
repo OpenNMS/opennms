@@ -52,6 +52,7 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
@@ -847,15 +848,32 @@ public class NotificationConfigRestService {
         if (path.getTargets().isEmpty()) {
             throw getException(Status.BAD_REQUEST, "The destination path requires at least one target");
         }
+        validateDelay("initial-delay", path.getInitialDelay().orElse(null));
         validateTargets(path.getTargets());
         for (final org.opennms.netmgt.config.destinationPaths.Escalate escalate : path.getEscalates()) {
             if (StringUtils.isBlank(escalate.getDelay())) {
                 throw getException(Status.BAD_REQUEST, "Every escalation requires a delay");
             }
+            validateDelay("escalation delay", escalate.getDelay());
             if (escalate.getTargets().isEmpty()) {
                 throw getException(Status.BAD_REQUEST, "Every escalation requires at least one target");
             }
             validateTargets(escalate.getTargets());
+        }
+    }
+
+    // notifd parses these with TimeConverter.convertToMillis when the notice
+    // fires — AFTER the notice row is inserted — so a bad value would persist
+    // the notice, schedule nothing, and throw inside eventd's dispatch.
+    private static void validateDelay(final String field, final String value) {
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        try {
+            TimeConverter.convertToMillis(value);
+        } catch (final NumberFormatException e) {
+            throw getException(Status.BAD_REQUEST,
+                    "Invalid {} '{}': use a number with an optional unit suffix us, ms, s, m, h or d (e.g. 30s, 15m, 1h).", field, value);
         }
     }
 
@@ -864,6 +882,7 @@ public class NotificationConfigRestService {
             if (StringUtils.isBlank(target.getName())) {
                 throw getException(Status.BAD_REQUEST, "Every target requires a name");
             }
+            validateDelay("target interval", target.getInterval().orElse(null));
             if (target.getCommands().isEmpty() || target.getCommands().stream().anyMatch(StringUtils::isBlank)) {
                 throw getException(Status.BAD_REQUEST, "Every target requires at least one non-empty command");
             }

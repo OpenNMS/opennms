@@ -96,4 +96,52 @@ describe('useBrowserNotifications', () => {
     mod.default('http://localhost:8980/opennms/')
     expect(FakeWebSocket.instances).toHaveLength(1)
   })
+
+  // Safari's requestPermission is callback-only (no Promise to .catch) and
+  // Firefox ignores requests without a user gesture; the NMS-20200 opt-in owns
+  // granting, so this composable must never request permission itself.
+  it('never calls requestPermission', async () => {
+    const requestPermission = vi.fn()
+    const FakeNotification = { permission: 'default', requestPermission }
+    vi.stubGlobal('Notification', FakeNotification)
+    vi.stubGlobal('window', Object.assign(Object.create(globalThis), { Notification: FakeNotification }))
+
+    await start()
+
+    expect(requestPermission).not.toHaveBeenCalled()
+    expect(FakeWebSocket.instances).toHaveLength(1)
+  })
+
+  it('delivers through the NMS-20200 service worker when one registers', async () => {
+    const showNotification = vi.fn().mockReturnValue({ then: vi.fn() })
+    const register = vi.fn().mockResolvedValue({ showNotification })
+    const FakeNotification = { permission: 'granted' }
+    vi.stubGlobal('Notification', FakeNotification)
+    vi.stubGlobal('window', Object.assign(Object.create(globalThis), { Notification: FakeNotification }))
+    vi.stubGlobal('navigator', Object.assign(Object.create(globalThis.navigator ?? {}), { serviceWorker: { register }}))
+
+    await start()
+    await Promise.resolve() // let register() resolve
+    FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ id: ['1'], head: ['Head'], body: ['Body'] }) })
+
+    expect(register).toHaveBeenCalledWith('http://localhost:8980/opennms/notification-sw.js')
+    expect(showNotification).toHaveBeenCalledWith('Head', expect.objectContaining({ body: 'Body' }))
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  // Chrome for Android: the page-scoped constructor throws; the message must
+  // land in the snackbar instead of being swallowed.
+  it('falls back to the snackbar when the Notification constructor throws', async () => {
+    const FakeNotification = function () {
+      throw new Error('Illegal constructor')
+    } as unknown as { permission: string }
+    FakeNotification.permission = 'granted'
+    vi.stubGlobal('Notification', FakeNotification)
+    vi.stubGlobal('window', Object.assign(Object.create(globalThis), { Notification: FakeNotification }))
+
+    await start()
+    FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ id: ['2'], head: ['Head'], body: ['Body'] }) })
+
+    expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: 'Head — Body' }))
+  })
 })

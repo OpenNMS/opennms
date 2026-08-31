@@ -335,6 +335,31 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     }
 
     @Test
+    public void testInvalidDelaysRejected() throws Exception {
+        // TimeConverter.convertToMillis parses these after the notice row is
+        // inserted, so a bad value poisons eventd dispatch; reject up front.
+        final String badInitial = "{\"name\":\"junit-delay\",\"initial-delay\":\"5min\","
+                + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", badInitial, 400);
+
+        final String badEscalation = "{\"name\":\"junit-delay\","
+                + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}],"
+                + "\"escalate\":[{\"delay\":\"1h30m\",\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}]}]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", badEscalation, 400);
+
+        final String badInterval = "{\"name\":\"junit-delay\","
+                + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"],\"interval\":\"soon\"}],\"escalate\":[]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", badInterval, 400);
+
+        // the full accepted grammar passes
+        final String good = "{\"name\":\"junit-delay\",\"initial-delay\":\"30s\","
+                + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"],\"interval\":\"15m\"}],"
+                + "\"escalate\":[{\"delay\":\"1h\",\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}]}]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", good, 204);
+        sendRequest(DELETE, "/notification-config/destination-paths/junit-delay", 204);
+    }
+
+    @Test
     public void testDeleteReferencedDestinationPathRejected() throws Exception {
         // junitNotification references Email-Admin; delete must refuse (409)
         // rather than leave the notification pointing at a missing path

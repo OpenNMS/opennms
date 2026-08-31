@@ -24,6 +24,7 @@
         <FormField
           label="Initial Delay"
           for="path-initial-delay"
+          :error="initialDelayError"
         >
           <template #label-suffix>
             <HelpBadge :content="delayHelp" ariaLabel="Initial Delay help" />
@@ -94,6 +95,7 @@
             <FormField
               label="Escalate After"
               :for="`escalation-delay-${eIndex}`"
+              :error="escalationDelayError(escalation.delay)"
             >
               <template #label-suffix>
                 <HelpBadge :content="escalateHelp" ariaLabel="Escalate After help" />
@@ -165,6 +167,7 @@ import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms
 import TargetRowEditor, { MethodOption, TargetRow } from '@/components/AdminNotifications/TargetRowEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
+import { NOTIFD_DURATION_HINT, isValidNotifdDuration } from '@/lib/adminValidation'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath, DestinationPathTarget } from '@/types/notificationConfig'
 
@@ -320,16 +323,28 @@ watch(
   }
 )
 
-const rowIsValid = (row: TargetRow) => !!row.name.trim() && row.commands.length > 0
+const rowIsValid = (row: TargetRow) =>
+  !!row.name.trim() && row.commands.length > 0 && isValidNotifdDuration(row.interval)
+
+// blank is allowed (server skips it); anything present must parse
+const initialDelayError = computed(() =>
+  isValidNotifdDuration(initialDelay.value) ? undefined : NOTIFD_DURATION_HINT)
+
+const escalationDelayError = (delay: string) =>
+  isValidNotifdDuration(delay) ? undefined : NOTIFD_DURATION_HINT
 
 const isValid = computed(() => {
   if (!name.value.trim() || !targets.value.length) {
     return false
   }
+  if (!isValidNotifdDuration(initialDelay.value)) {
+    return false
+  }
   if (!targets.value.every(rowIsValid)) {
     return false
   }
-  return escalations.value.every(esc => esc.targets.length > 0 && esc.targets.every(rowIsValid))
+  return escalations.value.every(esc =>
+    isValidNotifdDuration(esc.delay) && esc.targets.length > 0 && esc.targets.every(rowIsValid))
 })
 
 const toTarget = (row: TargetRow): DestinationPathTarget => ({

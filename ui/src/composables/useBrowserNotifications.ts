@@ -47,16 +47,46 @@ const unwrap = (value?: string | string[]): string | undefined => {
   return value ?? undefined
 }
 
+// The service-worker path, mirroring core/web-assets (NMS-20200/#8769):
+// registration.showNotification works everywhere including Chrome for
+// Android, where the page-scoped Notification constructor throws.
+let swRegistration: ServiceWorkerRegistration | null = null
+
+const registerServiceWorker = (baseHref: string) => {
+  if (!('serviceWorker' in navigator)) {
+    return
+  }
+  // notification-sw.js is served at the webapp root (shipped by NMS-20200)
+  navigator.serviceWorker.register(`${baseHref}notification-sw.js`)
+    .then((registration) => {
+      swRegistration = registration
+    }, () => undefined)
+}
+
 const display = (message: BrowserNotificationMessage) => {
   const head = unwrap(message.head) ?? 'OpenNMS Notification'
   const body = unwrap(message.body)
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(head, {
-      body: body ?? '',
-      tag: `opennms:notification:${unwrap(message.id) ?? head}`
-    })
-  } else {
-    showSnackBar({ msg: body ? `${head} — ${body}` : head, timeout: 8000 })
+  const fallbackToSnackbar = () => showSnackBar({ msg: body ? `${head} — ${body}` : head, timeout: 8000 })
+
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    fallbackToSnackbar()
+    return
+  }
+  const options = {
+    body: body ?? '',
+    tag: `opennms:notification:${unwrap(message.id) ?? head}`
+  }
+  if (swRegistration) {
+    // two-arg then, matching core/web-assets: rejection (e.g. a worker that
+    // never activated) must still land the message in the snackbar
+    swRegistration.showNotification(head, options).then(null, fallbackToSnackbar)
+    return
+  }
+  try {
+    // throws on Chrome for Android; fallback only, as in core/web-assets
+    new Notification(head, options)
+  } catch {
+    fallbackToSnackbar()
   }
 }
 
@@ -102,9 +132,13 @@ const startBrowserNotifications = (baseHref: string) => {
     return
   }
   started = true
-  if ('Notification' in window && Notification.permission === 'default') {
-    // fire-and-forget; the snackbar fallback covers an undecided/denied state
-    Notification.requestPermission().catch(() => undefined)
+  // No permission request here: Safari's callback-only requestPermission has
+  // no Promise to .catch and Firefox ignores requests without a user gesture.
+  // The click-triggered opt-in from NMS-20200 (core/web-assets) owns granting;
+  // permission is origin-wide, and until granted the snackbar carries every
+  // message. Desktop delivery goes through the NMS-20200 service worker.
+  if ('Notification' in window && Notification.permission === 'granted') {
+    registerServiceWorker(baseHref)
   }
   connect(baseHref)
 }

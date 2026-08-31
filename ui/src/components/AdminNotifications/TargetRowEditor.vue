@@ -76,6 +76,7 @@
       class="target-interval"
       label="Interval"
       :for="`target-interval-${row.key}`"
+      :error="intervalError"
     >
       <template #label-suffix>
         <HelpBadge :content="intervalHelp" ariaLabel="Interval help" />
@@ -125,6 +126,7 @@ import { OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsSelect } from '@ope
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
+import { NOTIFD_DURATION_HINT, isValidNotifdDuration } from '@/lib/adminValidation'
 
 // row is a model (the parent shares the object and reads the edited fields back);
 // using defineModel keeps that two-way flow without mutating a plain prop.
@@ -160,6 +162,9 @@ const rowMethodOptions = computed<MethodOption[]>(() => {
     option.value === 'browser' ? { ...option, label: `${option.label} — not for email targets`, disabled: true } : option
   )
 })
+
+const intervalError = computed(() =>
+  isValidNotifdDuration(row.value.interval) ? undefined : NOTIFD_DURATION_HINT)
 
 const nameLabel = computed(() => {
   switch (row.value.type) {

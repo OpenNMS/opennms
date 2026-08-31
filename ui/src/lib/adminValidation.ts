@@ -78,3 +78,20 @@ export const validateEmailShape = (value: string, label: string): string | null 
   }
   return null
 }
+
+/**
+ * notifd delay/interval grammar: TimeConverter.convertToMillis accepts a
+ * number with an optional unit suffix us/ms/s/m/h/d — nothing else. It parses
+ * these AFTER the notice row is inserted, so a value it rejects persists the
+ * notice, schedules nothing, and throws inside eventd's dispatch. Blank is
+ * allowed here; callers that require a value check for blank separately.
+ */
+export const NOTIFD_DURATION_HINT = 'Use a number with an optional unit: us, ms, s, m, h or d (e.g. 30s, 15m, 1h).'
+
+export const isValidNotifdDuration = (value: string | undefined | null): boolean => {
+  const trimmed = (value ?? '').trim()
+  if (!trimmed) {
+    return true
+  }
+  return /^\d+(\.\d+)?(us|ms|s|m|h|d)?$/i.test(trimmed)
+}
