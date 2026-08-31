@@ -75,9 +75,14 @@ The `OSGiBasedTicketerPlugin` is now the default ticketer plugin.
 Ticketing is automatically enabled when an OSGi-based ticketer plugin is installed and disabled when it is removed.
 The `NullTicketerPlugin` and the `opennms.ticketer.plugin` property have been removed.
 
-If you have `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.NullTicketerPlugin` in a custom properties file under `etc/opennms.properties.d/`, remove that entry before upgrading.
-If you previously set `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin`, that entry is now redundant and can be removed.
+IMPORTANT: Remove any `opennms.ticketer.plugin` line from `etc/opennms.properties` and `etc/opennms.properties.d/` before upgrading.
+Older releases, including the Docker stock config, shipped `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.NullTicketerPlugin` by default, so it's likely present even if you never touched your config -- leaving it in causes a `ClassNotFoundException` on startup.
+An `opennms.ticketer.plugin=...OSGiBasedTicketerPlugin` entry is also now redundant and can be removed.
 The `opennms.alarmTroubleTicketEnabled` property is no longer required but can still be used to explicitly enable or disable ticketing.
+
+=== MCP server for AI agents
+{page-component-title} can now be accessed by AI agents through the https://modelcontextprotocol.io[Model Context Protocol] (MCP): installing the optional `opennms-mcp-server` feature exposes tools to query nodes and alarms, acknowledge or clear alarms, and send events, governed by the user's existing roles.
+See xref:development:oia/mcp-server.adoc[MCP Server] for installation and details.
 
 === Light and dark mode for the Vue UI
 The Vue-based web UI now supports a light/dark theme toggle, in addition to the system-default option.
