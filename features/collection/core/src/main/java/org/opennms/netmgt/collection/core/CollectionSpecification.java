@@ -34,6 +34,7 @@ import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.EmptyScopeProvider;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.LazyScope;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
@@ -187,7 +188,11 @@ public class CollectionSpecification {
      * @return A read only Map instance
      */
     public ServiceParameters getServiceParameters() {
-        return new ServiceParameters(Collections.unmodifiableMap(Interpolator.interpolateObjects(m_parameters, scopeProvider.getScope())));
+        // The returned map is a lazy transformValues view, so interpolation runs per read.
+        // Wrap the scope so the entity lookups behind it are only paid if a parameter
+        // actually contains a metadata expression, and then only once (LazyScope memoizes).
+        final Scope scope = new LazyScope(scopeProvider::getScope);
+        return new ServiceParameters(Collections.unmodifiableMap(Interpolator.interpolateObjects(m_parameters, scope)));
     }
 
     private boolean isTrue(String stg) {
