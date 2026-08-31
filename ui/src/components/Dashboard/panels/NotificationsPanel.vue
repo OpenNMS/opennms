@@ -37,8 +37,8 @@ License.
       </p>
       <p>
         <i class="pi pi-users" />
-        There {{ summary.teamUnacknowledgedCount === 1 ? 'is' : 'are' }}
-        <a :href="teamLink">{{ phrase(summary.teamUnacknowledgedCount) }}</a>
+        There {{ summary.totalUnacknowledgedCount === 1 ? 'is' : 'are' }}
+        <a :href="teamLink">{{ phrase(summary.totalUnacknowledgedCount) }}</a>
       </p>
       <p>
         <i class="pi pi-calendar" />

@@ -30,6 +30,12 @@ License.
       Loading…
     </p>
     <p
+      v-else-if="failed"
+      class="situations__muted"
+    >
+      Unable to load situations.
+    </p>
+    <p
       v-else-if="!situations.length"
       class="situations__muted"
     >
@@ -63,25 +69,29 @@ License.
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
-import { getPendingSituations, type Situation } from '@/services/situationService'
+import { getPendingSituations, situationAlarmCount, type Situation } from '@/services/situationService'
 import { buildFilterClauses } from '../filter'
 import { severityColor, severityLabel, severityTint } from '../severity'
 
 const props = defineProps<PanelComponentProps>()
 
 const loading = ref(true)
+const failed = ref(false)
 const situations = ref<Situation[]>([])
 const shade = computed(() => !!props.options?.shade)
 
+// legacy wording: "affecting N nodes having M alarms"; the alarm count is the
+// length of relatedAlarms — AlarmDTO carries no situationAlarmCount field
 const describe = (s: Situation): string => {
   const parts: string[] = []
   if (s.affectedNodeCount != null) {
-    parts.push(`${s.affectedNodeCount} node${s.affectedNodeCount === 1 ? '' : 's'}`)
+    parts.push(`affecting ${s.affectedNodeCount} node${s.affectedNodeCount === 1 ? '' : 's'}`)
   }
-  if (s.situationAlarmCount != null) {
-    parts.push(`${s.situationAlarmCount} alarm${s.situationAlarmCount === 1 ? '' : 's'}`)
+  const alarms = situationAlarmCount(s)
+  if (alarms > 0) {
+    parts.push(`having ${alarms} alarm${alarms === 1 ? '' : 's'}`)
   }
-  return parts.join(', ')
+  return parts.join(' ')
 }
 
 let loadSeq = 0
@@ -94,7 +104,9 @@ const load = async () => {
   if (seq !== loadSeq) {
     return
   }
-  situations.value = result
+  // null = fetch failure; keep it distinct from an all-clear empty list
+  failed.value = result === null
+  situations.value = result ?? []
   loading.value = false
 }
 

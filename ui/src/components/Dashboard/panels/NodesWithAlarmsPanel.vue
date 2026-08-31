@@ -70,11 +70,9 @@ License.
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
-import { SORT } from '@/types'
-import type { Alarm } from '@/types'
-import { getAlarms } from '@/services/alarmService'
-import { buildFilterClauses } from '../filter'
-import { isActionableSeverity, maxSeverity, severityColor, severityLabel, severityTint } from '../severity'
+import { getNodeAlarmSummaries } from '@/services/alarmService'
+import { resolveFilterToNodeIdSet } from '../filter'
+import { isActionableSeverity, severityColor, severityLabel, severityTint } from '../severity'
 
 interface NodeAlarmRow {
   nodeId: number
@@ -93,47 +91,25 @@ const MAX_ROWS = 12
 
 let loadSeq = 0
 const load = async () => {
-  // seq synchronously at call time (buildFilterClauses awaits) so call order wins
+  // seq synchronously at call time (the resolvers await) so call order wins
   const seq = ++loadSeq
   loading.value = true
-  // Parity with the legacy node-alarm-summary box (AlarmDao.getNodeAlarmSummaries):
-  // only UNACKNOWLEDGED alarms of WARNING severity or higher count as "pending".
-  // Filter server-side (FIQL) so acknowledged/cleared/normal alarms neither
-  // inflate the counts nor consume the fetch budget; order by severity so a cap
-  // keeps the most severe. The client guard re-applies the severity floor
-  // defensively in case the server comparison is looser than expected.
-  const clauses = await buildFilterClauses(props.filter)
-  const resp = await getAlarms({
-    _s: ['alarmAckTime==\u0000', 'severity=ge=WARNING', ...clauses].join(';'),
-    limit: 500,
-    orderBy: 'severity',
-    order: SORT.DESCENDING
-  })
+  // The v1 alarm-summaries endpoint IS the legacy node-alarm-summary source
+  // (AlarmDao.getNodeAlarmSummaries): exact per-node counts of pending alarms,
+  // aggregated server-side — deriving counts from a capped alarm page
+  // undercounted any node whose alarms fell past the page. The dashboard
+  // filter resolves to a node-id set and narrows the summaries.
+  const [summaries, filterIds] = await Promise.all([
+    getNodeAlarmSummaries(),
+    resolveFilterToNodeIdSet(props.filter)
+  ])
   if (seq !== loadSeq) {
     return
   }
-  const alarms: Alarm[] = resp ? resp.alarm : []
-
-  const byNode = new Map<number, NodeAlarmRow>()
-  for (const a of alarms) {
-    if (a.nodeId == null || !isActionableSeverity(a.severity)) {
-      continue
-    }
-    const existing = byNode.get(a.nodeId)
-    if (existing) {
-      existing.count += 1
-      existing.maxSeverity = maxSeverity([existing.maxSeverity, a.severity])
-    } else {
-      byNode.set(a.nodeId, {
-        nodeId: a.nodeId,
-        nodeLabel: a.nodeLabel ?? `Node ${a.nodeId}`,
-        count: 1,
-        maxSeverity: a.severity
-      })
-    }
-  }
-
-  rows.value = [...byNode.values()].slice(0, MAX_ROWS)
+  const all = (summaries ?? [])
+    .filter(s => isActionableSeverity(s.maxSeverity))
+    .filter(s => filterIds === null || filterIds.has(s.nodeId))
+  rows.value = all.slice(0, MAX_ROWS)
   loading.value = false
 }
 

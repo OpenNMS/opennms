@@ -23,17 +23,22 @@
 import { v2 } from './axiosInstances'
 
 // Situations are alarms flagged isSituation; the relevant extra fields come
-// straight from the alarm JSON.
+// straight from the alarm JSON. The related-alarm count is the LENGTH of
+// relatedAlarms — AlarmDTO has no situationAlarmCount field.
 export interface Situation {
   id: number | string
   severity: string
-  situationAlarmCount?: number
+  relatedAlarms?: unknown[]
   affectedNodeCount?: number
   lastEventTime?: number
   logMessage?: string
 }
 
-export const getPendingSituations = async (limit = 12, extraFiql: string[] = []): Promise<Situation[]> => {
+export const situationAlarmCount = (s: Situation): number =>
+  Array.isArray(s.relatedAlarms) ? s.relatedAlarms.length : 0
+
+// null on failure so the panel shows an error line, not an all-clear
+export const getPendingSituations = async (limit = 12, extraFiql: string[] = []): Promise<Situation[] | null> => {
   try {
     const fiql = encodeURIComponent(['isSituation==true', ...extraFiql].join(';'))
     const resp = await v2.get(`/alarms?_s=${fiql}&limit=${limit}&orderBy=lastEventTime&order=DESC`)
@@ -42,6 +47,6 @@ export const getPendingSituations = async (limit = 12, extraFiql: string[] = [])
     }
     return (resp.data?.alarm ?? []) as Situation[]
   } catch (_err) {
-    return []
+    return null
   }
 }

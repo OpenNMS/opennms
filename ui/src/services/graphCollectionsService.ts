@@ -20,34 +20,24 @@
 /// License.
 ///
 
-import { v2 } from './axiosInstances'
+import { rest } from './axiosInstances'
 
-// Mirrors NewsFeedItem from the v2 /newsfeed endpoint (response: { items: [...] }).
-export interface NewsFeedItem {
-  title: string
-  link: string
-  description: string
-  shortDescription: string
-  categories: string[]
-  tags: string[]
+// Graph Collections are the KSC reports of old; the v1 endpoint keeps its
+// historical name. GET /rest/ksc returns the terse list ({ id, label }).
+export interface GraphCollection {
+  id: number
+  label: string
 }
 
-export interface NewsFeedResult {
-  // 204 means opennms.newsFeedPanel.show=false on the server — the whole
-  // feature is off, not merely an empty feed
-  disabled: boolean
-  items: NewsFeedItem[]
-}
-
-// null on failure so the panel shows an error line, not an all-clear
-export const getNewsFeed = async (): Promise<NewsFeedResult | null> => {
+export const getGraphCollections = async (): Promise<GraphCollection[]> => {
   try {
-    const resp = await v2.get('/newsfeed')
-    if (resp.status === 204) {
-      return { disabled: true, items: [] }
-    }
-    return { disabled: false, items: (resp.data?.items ?? []) as NewsFeedItem[] }
+    const resp = await rest.get('/ksc', { headers: { Accept: 'application/json' }})
+    const raw = resp.data?.kscReport
+    const arr = Array.isArray(raw) ? raw : raw ? [raw] : []
+    return arr
+      .map((r: any) => ({ id: Number(r.id), label: String(r.label ?? '') }))
+      .filter((r: GraphCollection) => Number.isFinite(r.id) && r.label)
   } catch (_err) {
-    return null
+    return []
   }
 }

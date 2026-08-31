@@ -45,6 +45,12 @@ License.
       Loading…
     </p>
     <p
+      v-else-if="failed"
+      class="status-overview__muted"
+    >
+      Unable to load the status summary.
+    </p>
+    <p
       v-else-if="alarmsTotal === 0 && outagesTotal === 0"
       class="status-overview__muted"
     >
@@ -131,6 +137,7 @@ const rootRef = ref<HTMLElement | null>(null)
 const alarmsCanvas = ref<HTMLCanvasElement | null>(null)
 const outagesCanvas = ref<HTMLCanvasElement | null>(null)
 let resizeObserver: ResizeObserver | null = null
+const failed = ref(false)
 const alarmsEntries = ref<StatusSummaryEntry[]>([])
 const outagesEntries = ref<StatusSummaryEntry[]>([])
 const loading = ref(true)
@@ -196,12 +203,14 @@ const renderDonut = (
 const load = async () => {
   loading.value = true
   const [alarms, outages] = await Promise.all([getNodesByAlarms(), getNodesByOutages()])
-  alarmsEntries.value = alarms
-  outagesEntries.value = outages
+  // null = fetch failure; keep it distinct from a genuinely empty summary
+  failed.value = alarms === null || outages === null
+  alarmsEntries.value = alarms ?? []
+  outagesEntries.value = outages ?? []
   loading.value = false
   await nextTick()
-  alarmsChart = renderDonut(alarmsCanvas.value, alarms, alarmsChart, 'alarms')
-  outagesChart = renderDonut(outagesCanvas.value, outages, outagesChart, 'outages')
+  alarmsChart = renderDonut(alarmsCanvas.value, alarmsEntries.value, alarmsChart, 'alarms')
+  outagesChart = renderDonut(outagesCanvas.value, outagesEntries.value, outagesChart, 'outages')
 }
 
 let themeObserver: MutationObserver | null = null

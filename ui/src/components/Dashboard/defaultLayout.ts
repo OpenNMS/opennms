@@ -24,8 +24,13 @@ import { type DashboardLayout, type DashboardPanel, TimeframePreset } from '@/ty
 
 // h is authored in legacy grid rows for readability but stored in PIXELS (the
 // canonical unit the grid/persistence use), so the default doc doesn't mix units
-// with saved (pixel) layouts. 56px matches the legacy row size / toPx().
-const ROW_PX = 56
+// with saved (pixel) layouts. The single source of truth for the row size —
+// the grid's legacy-layout conversion and the store's addPanel import it.
+export const ROW_PX = 56
+
+// referenced by the layout fallback so an install with the news feed disabled
+// (opennms.newsFeedPanel.show=false) doesn't ship a 9-row dead box
+export const NEWSFEED_PANEL_TYPE = 'newsfeed'
 
 const panel = (id: string, type: string, x: number, y: number, w: number, rows: number): DashboardPanel => ({
   id,
@@ -57,7 +62,7 @@ export const createDefaultLayout = (): DashboardLayout => ({
   //   Left   : Situations, Nodes w/ Alarms, Service Outages, Business Services,
   //            Applications, News Feed
   //   Center : Status Overview, Availability (24h), Regional Status map
-  //   Right  : Notifications, Resource Graphs, KSC Reports, Quick Search
+  //   Right  : Notifications, Resource Graphs, Graph Collections, Quick Search
   panels: [
     panel('situations-1', 'pending-situations', 0, 0, 3, 3),
     panel('nodes-1', 'nodes-with-alarms', 0, 3, 3, 5),
@@ -70,7 +75,7 @@ export const createDefaultLayout = (): DashboardLayout => ({
     panel('map-1', 'regional-map', 3, 14, 6, 8),
     panel('notif-1', 'notifications', 9, 0, 3, 3),
     panel('graphs-1', 'resource-graphs', 9, 3, 3, 2),
-    panel('ksc-1', 'ksc-reports', 9, 5, 3, 2),
+    panel('ksc-1', 'graph-collections', 9, 5, 3, 2),
     panel('quicksearch-1', 'quick-search', 9, 7, 3, 5)
   ]
 })

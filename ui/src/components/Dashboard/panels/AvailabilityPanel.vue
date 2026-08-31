@@ -116,18 +116,11 @@ const load = async () => {
   loading.value = false
 }
 
-// The global filter's surveillance-category selection narrows this category
-// rollup directly (IP match does not apply to a category-level view).
-const sections = computed<AvailabilitySection[]>(() => {
-  const selected = props.filter.surveillanceCategories
-  if (!selected.length) {
-    return allSections.value
-  }
-  const set = new Set(selected)
-  return allSections.value
-    .map(section => ({ ...section, categories: section.categories.filter(c => set.has(c.name)) }))
-    .filter(section => section.categories.length > 0)
-})
+// The global filter does NOT apply here: RTC availability categories come from
+// etc/categories.xml ("Network Interfaces", "Web Servers", …), a different
+// namespace from the surveillance categories the filter selects — with no
+// stock overlap, filtering by name blanked the panel for any selection.
+const sections = computed<AvailabilitySection[]>(() => allSections.value)
 
 onMounted(load)
 watch(() => props.refreshTick, load)

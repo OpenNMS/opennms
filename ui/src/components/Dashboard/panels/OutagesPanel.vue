@@ -30,6 +30,12 @@ License.
       Loading…
     </p>
     <p
+      v-else-if="failed"
+      class="outages__muted"
+    >
+      Unable to load outages.
+    </p>
+    <p
       v-else-if="!outages.length"
       class="outages__muted"
     >
@@ -64,6 +70,7 @@ import { buildFilterClauses } from '../filter'
 const props = defineProps<PanelComponentProps>()
 
 const loading = ref(true)
+const failed = ref(false)
 const outages = ref<CurrentOutage[]>([])
 
 const serviceName = outageServiceName
@@ -80,7 +87,9 @@ const load = async () => {
   if (seq !== loadSeq) {
     return
   }
-  outages.value = result
+  // null = fetch failure; keep it distinct from an all-clear empty list
+  failed.value = result === null
+  outages.value = result ?? []
   loading.value = false
 }
 

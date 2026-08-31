@@ -34,6 +34,12 @@ License.
       Loading…
     </p>
     <p
+      v-else-if="failed"
+      class="status-list__muted"
+    >
+      Unable to load the current status.
+    </p>
+    <p
       v-else-if="!items.length"
       class="status-list__muted"
     >
@@ -65,17 +71,21 @@ import { type StatusListItem } from '@/services/statusService'
 import { severityColor, severityLabel } from '../severity'
 
 const props = defineProps<{
-  loader: () => Promise<StatusListItem[]>
+  loader: () => Promise<StatusListItem[] | null>
   emptyText: string
   refreshTick: number
 }>()
 
 const loading = ref(true)
+const failed = ref(false)
 const items = ref<StatusListItem[]>([])
 
 const load = async () => {
   loading.value = true
-  items.value = await props.loader()
+  const result = await props.loader()
+  // null = fetch failure; keep it distinct from an all-clear empty list
+  failed.value = result === null
+  items.value = result ?? []
   loading.value = false
 }
 

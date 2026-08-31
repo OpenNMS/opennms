@@ -77,8 +77,11 @@ import 'leaflet/dist/leaflet.css'
 import { LMap, LTileLayer, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
 import type { Map as LeafletMapType } from 'leaflet'
 import API from '@/services'
+import { SORT } from '@/types'
 import type { Alarm, Node } from '@/types'
 import type { PanelComponentProps } from '@/types/dashboard'
+import { useGeolocationStore } from '@/stores/geolocationStore'
+import { buildFilterClauses } from '../filter'
 import { maxSeverity } from '../severity'
 import CriticalIcon from '@/assets/Critical-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
@@ -96,8 +99,9 @@ interface MapMarker {
   label: string
 }
 
-// Remember the user's pan/zoom across reloads (per browser).
-const VIEW_KEY = 'opennms.dashboard.regionalMap.view'
+// Remember the user's pan/zoom across reloads (per browser, per panel — two
+// map panels on one dashboard must not fight over a shared key).
+const VIEW_KEY = `opennms.dashboard.regionalMap.view.${props.panelId}`
 interface SavedView {
   lat: number
   lng: number
@@ -124,8 +128,19 @@ const zoom = ref<number>(saved ? saved.zoom : 2)
 let leaflet: LeafletMapType | null = null
 let resizeObserver: ResizeObserver | null = null
 
-const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-const attribution = '&copy; OpenStreetMap contributors'
+// The configured tile server (gwt.openlayers.url via the geolocation config
+// API) wins, exactly like the main map; OSM is only the fallback.
+const geolocationStore = useGeolocationStore()
+const tileUrl = ref('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+const attribution = ref('&copy; OpenStreetMap contributors')
+const resolveTileProvider = async () => {
+  await geolocationStore.fetchTileProviders()
+  const provider = geolocationStore.tileProviders.find(p => p.visible)
+  if (provider?.url) {
+    tileUrl.value = provider.url
+    attribution.value = provider.attribution ?? ''
+  }
+}
 
 const saveView = () => {
   if (!leaflet) {
@@ -165,12 +180,22 @@ const onReady = (mapObject: LeafletMapType) => {
   setTimeout(() => leaflet?.invalidateSize(), 600)
 }
 
+let loadSeq = 0
 const load = async () => {
+  const seq = ++loadSeq
   loading.value = true
+  // The dashboard filter constrains both queries (node ids from categories +
+  // the ip clause); alarms are severity-ordered so the fetch cap keeps the
+  // worst problems rather than an arbitrary page.
+  const clauses = await buildFilterClauses(props.filter)
+  const fiql = clauses.join(';')
   const [nodesResp, alarmsResp] = await Promise.all([
-    API.getNodes({ limit: 2000 }),
-    API.getAlarms({ limit: 2000 })
+    API.getNodes({ limit: 2000, ...(fiql ? { _s: fiql } : {}) }),
+    API.getAlarms({ limit: 2000, orderBy: 'severity', order: SORT.DESCENDING, ...(fiql ? { _s: fiql } : {}) })
   ])
+  if (seq !== loadSeq) {
+    return
+  }
   const nodes: Node[] = nodesResp ? nodesResp.node : []
   const alarms: Alarm[] = alarmsResp ? alarmsResp.alarm : []
 
@@ -201,13 +226,14 @@ const load = async () => {
 }
 
 onMounted(() => {
+  resolveTileProvider()
   load()
   if (containerRef.value) {
     resizeObserver = new ResizeObserver(() => leaflet?.invalidateSize())
     resizeObserver.observe(containerRef.value)
   }
 })
-watch(() => props.refreshTick, load)
+watch([() => props.refreshTick, () => props.filter], load, { deep: true })
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   resizeObserver = null

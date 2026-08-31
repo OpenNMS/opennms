@@ -93,3 +93,36 @@ export const filterFiqlClauses = (filter: DashboardFilter, nodeIds: number[] | n
 // Convenience: resolve + build the clauses in one call.
 export const buildFilterClauses = async (filter: DashboardFilter): Promise<string[]> =>
   filterFiqlClauses(filter, await resolveFilterNodeIds(filter))
+
+// Resolve the WHOLE filter (categories AND ip match) to a node-id set, for
+// consumers of server-aggregated data that cannot take FIQL (e.g. the alarm
+// summaries endpoint). null = no active filter; an empty set = filter active
+// but matching nothing.
+export const resolveFilterToNodeIdSet = async (filter: DashboardFilter): Promise<Set<number> | null> => {
+  if (!isFilterActive(filter)) {
+    return null
+  }
+  const categoryIds = await resolveFilterNodeIds(filter)
+  const ip = filter.ipMatch?.trim()
+  let ipIds: Set<number> | null = null
+  if (ip) {
+    ipIds = new Set()
+    try {
+      const resp = await v2.get(`/nodes?_s=${encodeURIComponent(`ipInterface.ipAddress==${ip}`)}&limit=0`)
+      for (const node of resp.data?.node ?? []) {
+        if (node?.id != null) {
+          ipIds.add(Number(node.id))
+        }
+      }
+    } catch {
+      // an unresolvable ip clause must fail closed (match nothing), not open
+    }
+  }
+  if (categoryIds && ipIds) {
+    return new Set([...categoryIds].filter(id => ipIds!.has(id)))
+  }
+  if (categoryIds) {
+    return new Set(categoryIds)
+  }
+  return ipIds ?? new Set()
+}

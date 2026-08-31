@@ -176,13 +176,13 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
-  'ksc-reports': {
-    type: 'ksc-reports',
-    // the legacy dashboard labels this KSC-report search box "Graph Collections"
+  'graph-collections': {
+    type: 'graph-collections',
+    // formerly the "KSC Reports" box; the product name is Graph Collections now
     title: 'Graph Collections',
     titleHref: '/opennms/KSC/index.jsp',
     category: 'info',
-    component: defineAsyncComponent(() => import('./panels/KscReportsPanel.vue')),
+    component: defineAsyncComponent(() => import('./panels/GraphCollectionsPanel.vue')),
     defaultSize: { w: 3, h: 2 },
     minSize: { w: 2, h: 2 },
     renamable: true,

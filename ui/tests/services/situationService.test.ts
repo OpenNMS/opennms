@@ -20,34 +20,24 @@
 /// License.
 ///
 
-import { v2 } from './axiosInstances'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { getPendingSituations, situationAlarmCount } from '@/services/situationService'
+import { v2 } from '@/services/axiosInstances'
 
-// Mirrors NewsFeedItem from the v2 /newsfeed endpoint (response: { items: [...] }).
-export interface NewsFeedItem {
-  title: string
-  link: string
-  description: string
-  shortDescription: string
-  categories: string[]
-  tags: string[]
-}
+vi.mock('@/services/axiosInstances', () => ({
+  v2: { get: vi.fn() }
+}))
 
-export interface NewsFeedResult {
-  // 204 means opennms.newsFeedPanel.show=false on the server — the whole
-  // feature is off, not merely an empty feed
-  disabled: boolean
-  items: NewsFeedItem[]
-}
+describe('situationService', () => {
+  beforeEach(() => vi.clearAllMocks())
 
-// null on failure so the panel shows an error line, not an all-clear
-export const getNewsFeed = async (): Promise<NewsFeedResult | null> => {
-  try {
-    const resp = await v2.get('/newsfeed')
-    if (resp.status === 204) {
-      return { disabled: true, items: [] }
-    }
-    return { disabled: false, items: (resp.data?.items ?? []) as NewsFeedItem[] }
-  } catch (_err) {
-    return null
-  }
-}
+  it('derives the alarm count from relatedAlarms — AlarmDTO has no situationAlarmCount', () => {
+    expect(situationAlarmCount({ id: 1, severity: 'MAJOR', relatedAlarms: [{}, {}, {}] })).toBe(3)
+    expect(situationAlarmCount({ id: 2, severity: 'MAJOR' })).toBe(0)
+  })
+
+  it('returns null on failure so the panel can show an error, not all-clear', async () => {
+    vi.mocked(v2.get).mockRejectedValue(new Error('500'))
+    expect(await getPendingSituations()).toBeNull()
+  })
+})

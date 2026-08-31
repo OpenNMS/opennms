@@ -40,8 +40,9 @@ describe('panel registry', () => {
     }
   })
 
-  it('labels the KSC-report panel "Graph Collections" to match the legacy dashboard', () => {
-    // same feature as the legacy "Graph Collections" search box (both -> KSC/index.jsp)
-    expect(getPanelDefinition('ksc-reports')?.title).toBe('Graph Collections')
+  it('registers the collection search box under the Graph Collections name, not KSC', () => {
+    // the product name is Graph Collections now; only the legacy URLs keep "KSC"
+    expect(getPanelDefinition('graph-collections')?.title).toBe('Graph Collections')
+    expect(getPanelDefinition('ksc-reports')).toBeUndefined()
   })
 })

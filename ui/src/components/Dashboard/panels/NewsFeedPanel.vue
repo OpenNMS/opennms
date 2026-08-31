@@ -30,6 +30,12 @@ License.
       Loading…
     </p>
     <p
+      v-else-if="failed"
+      class="news-feed__muted"
+    >
+      Unable to load the news feed.
+    </p>
+    <p
       v-else-if="!items.length"
       class="news-feed__muted"
     >
@@ -76,8 +82,12 @@ const props = defineProps<PanelComponentProps>()
 // The feed is external content; only allow http(s) links so a crafted item can't
 // inject a javascript:/data: URL into the href.
 const safeLink = (link: string | undefined): string => {
+  // a feed item with no link must not resolve to the app origin
+  if (!link) {
+    return '#'
+  }
   try {
-    const url = new URL(link ?? '', window.location.origin)
+    const url = new URL(link, window.location.origin)
     return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '#'
   } catch {
     return '#'
@@ -85,11 +95,15 @@ const safeLink = (link: string | undefined): string => {
 }
 
 const loading = ref(true)
+const failed = ref(false)
 const items = ref<NewsFeedItem[]>([])
 
 const load = async () => {
   loading.value = true
-  items.value = await getNewsFeed()
+  const result = await getNewsFeed()
+  // null = fetch failure; a disabled feed (204) just renders as empty
+  failed.value = result === null
+  items.value = result?.items ?? []
   loading.value = false
 }
 

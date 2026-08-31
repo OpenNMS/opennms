@@ -17,6 +17,30 @@ const axios404 = () => {
 describe('dashboardService', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  it('omits the news-feed panel from the default layout when the feed is disabled', async () => {
+    // server 204 on /newsfeed = opennms.newsFeedPanel.show=false; the legacy
+    // homepage omitted the box entirely rather than showing a dead 9-row panel
+    vi.mocked(v2.get).mockImplementation(async (url: string) => {
+      if (url === '/newsfeed') {
+        return { status: 204, data: null }
+      }
+      throw axios404()
+    })
+    const layout = await getSystemDashboard()
+    expect(layout.panels.some(p => p.type === 'newsfeed')).toBe(false)
+  })
+
+  it('keeps the news-feed panel in the default layout when the feed is enabled', async () => {
+    vi.mocked(v2.get).mockImplementation(async (url: string) => {
+      if (url === '/newsfeed') {
+        return { status: 200, data: { items: [] }}
+      }
+      throw axios404()
+    })
+    const layout = await getSystemDashboard()
+    expect(layout.panels.some(p => p.type === 'newsfeed')).toBe(true)
+  })
+
   it('returns the stored layout when it looks valid', async () => {
     const layout = createDefaultLayout()
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: layout })

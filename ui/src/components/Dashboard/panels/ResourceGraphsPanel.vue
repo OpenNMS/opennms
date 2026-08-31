@@ -21,35 +21,21 @@ License.
 -->
 
 <!--
-  Dashboard panel for the legacy "Resource Graphs" search box. Simplified
-  launcher: links to the resource graph chooser and finds a node by label so the
-  user can open its graphs. (Full node typeahead is a follow-up.)
+  Dashboard panel for the legacy "Resource Graphs" box. The legacy target
+  (graph/chooseresource.jsp) no longer exists, and a node search that lands on
+  the node list contradicts the panel title — so this is an honest launcher
+  into the Vue Resource Graphs browser, which owns resource selection.
 -->
 <template>
   <div class="search-box">
-    <form
-      class="search-box__form"
-      action="/opennms/element/nodeList.htm"
-      method="get"
+    <a
+      class="search-box__launch"
+      href="/opennms/ui/index.html#/resource-graphs"
+      title="Choose a resource and view its graphs"
     >
-      <input
-        type="hidden"
-        name="listInterfaces"
-        value="false"
-      >
-      <input
-        class="search-box__text"
-        name="nodename"
-        placeholder="Type the node label"
-      >
-      <button
-        class="search-box__btn"
-        type="submit"
-        title="Find node and view its resource graphs"
-      >
-        <i class="pi pi-search" />
-      </button>
-    </form>
+      <i class="pi pi-chart-line" />
+      Open Resource Graphs
+    </a>
   </div>
 </template>
 
@@ -73,21 +59,19 @@ defineProps<PanelComponentProps>()
     gap: 0.25rem;
   }
 
-  &__text {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 0.3rem 0.5rem;
-    border: 1px solid var(--p-content-border-color, #ccc);
-    border-radius: 4px;
-  }
-
-  &__btn {
-    flex: 0 0 auto;
+  &__launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.3rem 0.6rem;
     border: 1px solid var(--p-content-border-color, #ccc);
     border-radius: 4px;
-    background: var(--p-content-background, #fff);
-    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 </style>

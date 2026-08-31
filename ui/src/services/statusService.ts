@@ -30,7 +30,9 @@ export interface StatusSummaryEntry {
   count: number
 }
 
-const fetchSummary = async (path: string): Promise<StatusSummaryEntry[]> => {
+// null on failure (as opposed to a genuinely empty summary) so the panels can
+// show an error line instead of rendering a fetch failure as all-clear
+const fetchSummary = async (path: string): Promise<StatusSummaryEntry[] | null> => {
   try {
     const resp = await v2.get(path)
     if (resp.status === 204 || !Array.isArray(resp.data)) {
@@ -40,14 +42,14 @@ const fetchSummary = async (path: string): Promise<StatusSummaryEntry[]> => {
       .filter((row): row is [string, number] => Array.isArray(row) && row.length >= 2)
       .map(row => ({ label: String(row[0]), count: Number(row[1]) }))
   } catch (_err) {
-    return []
+    return null
   }
 }
 
-export const getNodesByAlarms = (): Promise<StatusSummaryEntry[]> =>
+export const getNodesByAlarms = (): Promise<StatusSummaryEntry[] | null> =>
   fetchSummary('/status/summary/nodes/alarms')
 
-export const getNodesByOutages = (): Promise<StatusSummaryEntry[]> =>
+export const getNodesByOutages = (): Promise<StatusSummaryEntry[] | null> =>
   fetchSummary('/status/summary/nodes/outages')
 
 // Named status lists (business services / applications) — only those with a
@@ -63,9 +65,16 @@ const PROBLEM_SEVERITIES = new Set(['WARNING', 'MINOR', 'MAJOR', 'CRITICAL'])
 const severityString = (s: unknown): string =>
   (typeof s === 'string' ? s : ((s as any)?.label ?? (s as any)?.name ?? '')).toUpperCase()
 
-const fetchStatusList = async (path: string, key: string): Promise<StatusListItem[]> => {
+// severityFilter/orderBy=severity make the server fetch everything, filter,
+// sort, and only then apply the limit (AbstractStatusService clears the DAO
+// limit for severity-related queries) — without them the server pages first
+// (default limit 10, unordered) and problems past the page silently vanish.
+const PROBLEM_QUERY = [...PROBLEM_SEVERITIES].map(s => `severityFilter=${s}`).join('&')
+  + '&orderBy=severity&order=desc&limit=50'
+
+const fetchStatusList = async (path: string, key: string): Promise<StatusListItem[] | null> => {
   try {
-    const resp = await v2.get(path, { headers: { Accept: 'application/json' }})
+    const resp = await v2.get(`${path}?${PROBLEM_QUERY}`, { headers: { Accept: 'application/json' }})
     if (resp.status === 204 || !resp.data) {
       return []
     }
@@ -73,14 +82,15 @@ const fetchStatusList = async (path: string, key: string): Promise<StatusListIte
     const arr = Array.isArray(raw) ? raw : raw ? [raw] : []
     return arr
       .map((x: any) => ({ id: Number(x.id), name: x.name, severity: severityString(x.severity) }))
+      // defensive re-check only; the server already filtered
       .filter((x: StatusListItem) => PROBLEM_SEVERITIES.has(x.severity))
   } catch (_err) {
-    return []
+    return null
   }
 }
 
-export const getBusinessServicesStatus = (): Promise<StatusListItem[]> =>
+export const getBusinessServicesStatus = (): Promise<StatusListItem[] | null> =>
   fetchStatusList('/status/business-services', 'businessservice')
 
-export const getApplicationsStatus = (): Promise<StatusListItem[]> =>
+export const getApplicationsStatus = (): Promise<StatusListItem[] | null> =>
   fetchStatusList('/status/applications', 'application')
