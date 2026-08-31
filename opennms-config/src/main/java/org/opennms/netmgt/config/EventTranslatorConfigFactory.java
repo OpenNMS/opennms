@@ -136,10 +136,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         }
     }
 
-    private synchronized void unmarshall(InputStream stream) throws IOException {
-        unmarshall(stream, null);
-    }
-
     /**
      * Simply marshals the config without messing with the singletons.
      *
@@ -155,7 +151,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
             try {
                 stream = new FileInputStream(cfgFile);
-                unmarshall(stream);
+                // Keep the existing DataSource: sql value specs read it at evaluation time,
+                // so dropping it here leaves every sql translation broken until a restart.
+                unmarshall(stream, m_dbConnFactory);
                 // After reloading m_config we must invalidate the cached specs so new
                 // events are translated using the updated configuration.
                 m_translationSpecs = null;
