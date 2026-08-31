@@ -278,8 +278,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         assertNotNull("supportMenu / Public Issue Tracker", foundElement);
 
         clickMenuItem("Support", "Generate System Report");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
+        // NMS-20154 repointed this entry to the new PrimeVue page (ui/index.html#/system-report),
+        // which renders the /ui breadcrumb (div.breadcrumbs) and an OnmsButton rather than the
+        // legacy ol.breadcrumb list and a Bootstrap submit input.
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'Generate System Report')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(normalize-space(.), 'Generate System Report')]")));
 
         // Omitting for now - need to fix!
         // Vaadin Topology page
