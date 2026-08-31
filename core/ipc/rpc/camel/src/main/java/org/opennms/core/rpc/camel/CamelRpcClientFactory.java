@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.CamelContext;
@@ -65,7 +64,6 @@ import com.codahale.metrics.jmx.JmxReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.common.util.concurrent.TimeLimiter;
 
 import io.opentracing.Span;
@@ -85,10 +83,6 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     public static final String LOCAL_EXEC_TIMEOUT_PROPERTY = "org.opennms.core.ipc.rpc.local.timeout";
 
     public static final long LOCAL_EXEC_TIMEOUT_MS_DEFAULT = TimeUnit.MINUTES.toMillis(30);
-
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("CamelRpcClientFactory-Pool-%d")
-            .build();
 
     private String location;
 
@@ -278,7 +272,8 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     public void start() {
         endpoint = camelContext.getEndpoint("direct:executeRpc");
         template = camelContext.createProducerTemplate();
-        executor = Executors.newCachedThreadPool(threadFactory);
+        executor = Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("CamelRpcClientFactory-Pool-", 0).factory());
         timeLimiter = SimpleTimeLimiter.create(executor);
 
         tracerRegistry.init(SystemInfoUtils.getInstanceId());

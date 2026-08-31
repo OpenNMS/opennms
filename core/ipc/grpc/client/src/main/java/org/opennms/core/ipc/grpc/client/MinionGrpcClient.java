@@ -128,14 +128,12 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private ConnectivityState currentChannelState;
     private MetricRegistry metrics;
     private TracerRegistry tracerRegistry;
-    private final ThreadFactory requestHandlerThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-request-handler-%d")
-            .build();
     private final ThreadFactory blockingSinkMessageThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("blocking-sink-message-%d")
             .build();
     // Each request is handled in a new thread which unmarshals and executes the request.
-    private final ExecutorService requestHandlerExecutor = Executors.newCachedThreadPool(requestHandlerThreadFactory);
+    private final ExecutorService requestHandlerExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-request-handler-", 0).factory());
     // Maintain the map of RPC modules and their ID.
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
     // This maintains a blocking thread for each dispatch module when OpenNMS is not in active state.

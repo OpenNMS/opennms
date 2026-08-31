@@ -129,15 +129,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private final ThreadFactory consumerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-client-kafka-consumer-%d")
             .build();
-    private final ThreadFactory responseHandlerThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-client-response-handler-%d")
-            .build();
     private final ThreadFactory timerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-client-timeout-tracker-%d")
             .build();
     private final ExecutorService kafkaConsumerExecutor = Executors.newSingleThreadExecutor(consumerThreadFactory);
     private final ExecutorService timerExecutor = Executors.newSingleThreadExecutor(timerThreadFactory);
-    private final ExecutorService responseHandlerExecutor = Executors.newCachedThreadPool(responseHandlerThreadFactory);
+    private final ExecutorService responseHandlerExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-client-response-handler-", 0).factory());
     private final Map<String, ResponseCallback> rpcResponseMap = new ConcurrentHashMap<>();
     private KafkaConsumerRunner kafkaConsumerRunner;
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();

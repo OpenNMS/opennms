@@ -72,7 +72,6 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.common.util.concurrent.TimeLimiter;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 
@@ -88,8 +87,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     // If state need to be reloaded in case of engine being reloaded because of exception in rules engine, set this system property to true.
     public static final String RELOAD_STATE_AFTER_EXCEPTION = "org.opennms.netmgt.correlation.drools.reloadStateAfterException";
 
-    private static final ExecutorService s_sessionDisposeExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-            .setNameFormat("DroolsCorrelationEngine-Dispose-Pool-%d").build());
+    private static final ExecutorService s_sessionDisposeExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("DroolsCorrelationEngine-Dispose-Pool-", 0).factory());
     private static TimeLimiter s_timeLimiter = SimpleTimeLimiter.create(s_sessionDisposeExecutor);
 
     private KieBase m_kieBase;

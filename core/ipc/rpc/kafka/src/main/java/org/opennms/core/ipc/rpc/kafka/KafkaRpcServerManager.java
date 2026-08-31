@@ -44,7 +44,6 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -82,7 +81,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.math.IntMath;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
@@ -117,10 +115,8 @@ public class KafkaRpcServerManager {
     private KafkaProducer<String, byte[]> producer;
     private MinionIdentity minionIdentity;
     private Integer maxBufferSize = KafkaRpcConstants.MAX_BUFFER_SIZE_CONFIGURED;
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-server-kafka-consumer-%d")
-            .build();
-    private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
+    private final ExecutorService executor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("rpc-server-kafka-consumer-", 0).factory());
     private final ExecutorService requestExecutor = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("rpc-request-executor-", 0).factory());
     private Map<String, KafkaConsumerRunner> kafkaConsumersByTopic = new ConcurrentHashMap<>();

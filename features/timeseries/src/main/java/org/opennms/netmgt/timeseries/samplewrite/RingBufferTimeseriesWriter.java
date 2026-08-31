@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -49,7 +48,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.FatalExceptionHandler;
 import com.lmax.disruptor.RingBuffer;
@@ -135,9 +133,8 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
 
     private void setUpWorkerPool() {
         // Executor that will be used to construct new threads for consumers
-        final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("TimeseriesWriter-Consumer-%d").build();
-        executor = Executors.newCachedThreadPool(namedThreadFactory);
+        executor = Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("TimeseriesWriter-Consumer-", 0).factory());
 
         @SuppressWarnings("unchecked")
         final WorkHandler<SampleBatchEvent>[] handlers = new WorkHandler[numWriterThreads];

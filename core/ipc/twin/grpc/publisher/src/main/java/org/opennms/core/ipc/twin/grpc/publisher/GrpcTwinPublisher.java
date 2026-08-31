@@ -24,7 +24,6 @@ package org.opennms.core.ipc.twin.grpc.publisher;
 import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.grpc.stub.StreamObserver;
 import io.opentracing.References;
 import io.opentracing.Scope;
@@ -51,7 +50,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
@@ -59,10 +57,8 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     private final GrpcIpcServer grpcIpcServer;
     private Multimap<String, StreamObserver<TwinResponseProto>> sinkStreamsByLocation = LinkedListMultimap.create();
     private Map<String, StreamObserver<TwinResponseProto>> sinkStreamsBySystemId = new HashMap<>();
-    private final ThreadFactory twinRpcThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("twin-rpc-handler-%d")
-            .build();
-    private final ExecutorService twinRpcExecutor = Executors.newCachedThreadPool(twinRpcThreadFactory);
+    private final ExecutorService twinRpcExecutor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("twin-rpc-handler-", 0).factory());
 
     public GrpcTwinPublisher(LocalTwinSubscriber twinSubscriber, GrpcIpcServer grpcIpcServer) {
         super(twinSubscriber);
