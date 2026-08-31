@@ -94,6 +94,12 @@ const router = createRouter({
       component: Home
     },
     {
+      // configurable system-wide dashboard (NMS-19851); home route repoints here at cutover
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import('@/containers/Dashboard.vue')
+    },
+    {
       // for compatibility with legacy plugins
       // should be removed when all plugins have unique 'extensionId' and follow new pattern
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
