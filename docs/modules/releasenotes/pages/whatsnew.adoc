@@ -80,6 +80,10 @@ Older releases, including the Docker stock config, shipped `opennms.ticketer.plu
 An `opennms.ticketer.plugin=...OSGiBasedTicketerPlugin` entry is also now redundant and can be removed.
 The `opennms.alarmTroubleTicketEnabled` property is no longer required but can still be used to explicitly enable or disable ticketing.
 
+=== MCP server for AI agents
+{page-component-title} can now be accessed by AI agents through the https://modelcontextprotocol.io[Model Context Protocol] (MCP): installing the optional `opennms-mcp-server` feature exposes tools to query nodes and alarms, acknowledge or clear alarms, and send events, governed by the user's existing roles.
+See xref:development:oia/mcp-server.adoc[MCP Server] for installation and details.
+
 === Light and dark mode for the Vue UI
 The Vue-based web UI now supports a light/dark theme toggle, in addition to the system-default option.
 
