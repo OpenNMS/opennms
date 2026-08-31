@@ -210,7 +210,12 @@ public class UsersRestService implements UsersRestApi {
                 }
                 final User updated = copyOf(existing);
                 applyDto(updated, dto);
-                m_userManager.saveUser(userId, updated);
+                try {
+                    m_userManager.saveUser(userId, updated);
+                } catch (final Exception e) {
+                    restorePreviousUser(userId, existing);
+                    throw e;
+                }
             }
             return Response.noContent().build();
         } catch (final Exception e) {
@@ -232,7 +237,14 @@ public class UsersRestService implements UsersRestApi {
                 }
                 final User updated = copyOf(existing);
                 updated.setPassword(m_userManager.encryptedPassword(request.getPassword(), true), Boolean.TRUE);
-                m_userManager.saveUser(userId, updated);
+                try {
+                    m_userManager.saveUser(userId, updated);
+                } catch (final Exception e) {
+                    // without this, the new hash stays live in memory after the
+                    // 500 and the user can log in with the "failed" password
+                    restorePreviousUser(userId, existing);
+                    throw e;
+                }
             }
             LOG.info("Password changed for user {} by {}", userId, principal(securityContext));
             return Response.noContent().build();
@@ -356,6 +368,13 @@ public class UsersRestService implements UsersRestApi {
                 throw new IllegalArgumentException("Invalid timeZoneId: " + timeZoneId);
             }
         }
+        // users.xsd constrains tui-pin to [0-9]+; an invalid value would pass
+        // into the in-memory map and then fail the schema-validating marshal,
+        // leaving the map poisoned (isUpdateNeeded stays false) until restart
+        final String tuiPin = StringUtils.trimToNull(dto.getTuiPin());
+        if (tuiPin != null && !tuiPin.matches("[0-9]+")) {
+            throw new IllegalArgumentException("The TUI PIN must contain only digits.");
+        }
         if (dto.getRoles() != null) {
             for (final String role : dto.getRoles()) {
                 if (!Authentication.isValidRole(role)) {
@@ -441,6 +460,19 @@ public class UsersRestService implements UsersRestApi {
             }
         } catch (final Exception rollbackFailure) {
             LOG.warn("Could not roll back partially created user {}", userId, rollbackFailure);
+        }
+    }
+
+    // saveUser mutates the in-memory map before marshalling, so a failed save
+    // leaves the new state live in memory while users.xml keeps the old one —
+    // and isUpdateNeeded() won't notice. Re-save the previous state to bring
+    // memory and file back in line.
+    private void restorePreviousUser(final String userId, final User previous) {
+        try {
+            m_userManager.saveUser(userId, previous);
+        } catch (final Exception rollbackFailure) {
+            LOG.warn("Could not restore the previous state of user {} after a failed save; "
+                    + "in-memory state may diverge from users.xml until restart", userId, rollbackFailure);
         }
     }
 

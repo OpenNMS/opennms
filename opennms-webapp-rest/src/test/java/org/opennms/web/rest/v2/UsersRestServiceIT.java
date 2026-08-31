@@ -166,6 +166,27 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testInvalidTuiPinRejectedWithoutPoisoningTheMap() throws Exception {
+        final User user = new User();
+        user.setUserId("pinuser");
+        user.setPassword(m_userManager.encryptedPassword("pw", true), Boolean.TRUE);
+        m_userManager.saveUser("pinuser", user);
+
+        // users.xsd constrains tui-pin to [0-9]+; an unvalidated write used to
+        // reach the in-memory map, fail the schema-validating marshal, and wedge
+        // every later user mutation until restart
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/pinuser",
+                "{\"userId\":\"pinuser\",\"tuiPin\":\"1234x\"}", 400);
+
+        // the map must not be poisoned: a valid follow-up write still succeeds
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/pinuser",
+                "{\"userId\":\"pinuser\",\"tuiPin\":\"1234\",\"fullName\":\"Pin User\"}", 204);
+        final User updated = m_userManager.getUser("pinuser");
+        assertEquals("1234", updated.getTuiPin().orElse(null));
+        assertEquals("Pin User", updated.getFullName().orElse(null));
+    }
+
+    @Test
     public void testUpdatePreservesUnexposedContacts() throws Exception {
         // seed a user carrying an XMPP contact, as a hand-edited users.xml would
         final User user = new User();

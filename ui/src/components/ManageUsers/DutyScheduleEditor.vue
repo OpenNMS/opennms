@@ -34,6 +34,7 @@
           class="time-input"
           aria-label="Begin time"
           :data-test="`duty-${index}-begin`"
+          @input="markEdited(row)"
         >
         <span class="to">to</span>
         <input
@@ -42,6 +43,7 @@
           class="time-input"
           aria-label="End time"
           :data-test="`duty-${index}-end`"
+          @input="markEdited(row)"
         >
       </template>
       <!-- a hand-edited entry the day/time form can't represent stays editable
@@ -98,6 +100,10 @@ interface Row {
   end: string
   // non-null only for entries the structured form can't represent
   raw: string | null
+  // the untouched incoming string; serialized back byte-identically until the
+  // user edits the row, so merely opening the dialog can never rewrite a
+  // schedule the server only grandfathers in its original form
+  original: string | null
 }
 
 let nextId = 0
@@ -120,15 +126,21 @@ const toMilitary = (hhmm: string): string => {
 const parse = (value: string): Row => {
   const match = SCHEDULE.exec(value.trim())
   if (!match) {
-    return { id: nextId++, days: [], begin: '', end: '', raw: value }
+    return { id: nextId++, days: [], begin: '', end: '', raw: value, original: null }
   }
   return {
     id: nextId++,
     days: match[1].match(/../g) ?? [],
     begin: toHHMM(match[2]),
     end: toHHMM(match[3]),
-    raw: null
+    raw: null,
+    original: value.trim()
   }
+}
+
+// any user edit drops the pristine string so the row re-serializes from fields
+const markEdited = (row: Row) => {
+  row.original = null
 }
 
 const serialize = (): string[] =>
@@ -136,6 +148,9 @@ const serialize = (): string[] =>
     .map((row) => {
       if (row.raw !== null) {
         return row.raw.trim()
+      }
+      if (row.original !== null) {
+        return row.original
       }
       // an incomplete row (no day, or a missing time) is not a valid schedule
       // yet; keep it visible for editing but leave it out of the value
@@ -159,9 +174,17 @@ watch(
   { immediate: true, deep: true }
 )
 
-watch(rows, () => emit('update:modelValue', serialize()), { deep: true })
+// no emit when the serialization matches the incoming value: opening the
+// dialog must not rewrite anything, only real edits may
+watch(rows, () => {
+  const next = serialize()
+  if (JSON.stringify(next) !== JSON.stringify(props.modelValue ?? [])) {
+    emit('update:modelValue', next)
+  }
+}, { deep: true })
 
 const toggleDay = (row: Row, day: string) => {
+  markEdited(row)
   const at = row.days.indexOf(day)
   if (at >= 0) {
     row.days.splice(at, 1)
@@ -171,7 +194,7 @@ const toggleDay = (row: Row, day: string) => {
 }
 
 const addRow = () => {
-  rows.value.push({ id: nextId++, days: [], begin: '09:00', end: '17:00', raw: null })
+  rows.value.push({ id: nextId++, days: [], begin: '09:00', end: '17:00', raw: null, original: null })
 }
 
 const removeRow = (index: number) => {
