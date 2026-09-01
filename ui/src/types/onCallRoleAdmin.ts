@@ -67,6 +67,7 @@ export interface OnCallCalendar {
   year: number
   month: number
   'time-zone'?: string
+  'schedule-error'?: string
   day: OnCallCalendarDay[]
 }
 

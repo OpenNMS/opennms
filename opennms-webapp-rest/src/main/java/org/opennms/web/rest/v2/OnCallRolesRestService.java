@@ -81,8 +81,8 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     // in groups.xml, and user/group mutations cascade through GroupManager,
     // so all v2 services touching it share one monitor.
 
-    /** Markup per the legacy servlets, plus URL-path-segment safety. */
-    private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s]");
+    /** Markup per the legacy servlets, plus URL-path-segment safety; \p{Cntrl} because \s spares most C0 chars, which then fail the XML marshal. */
+    private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s\\p{Cntrl}]");
 
     private static final Set<String> SCHEDULE_TYPES = Set.of("specific", "daily", "weekly", "monthly");
 
@@ -143,8 +143,12 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         }
         try {
             synchronized (org.opennms.netmgt.config.GroupFactory.class) {
+                // one update() and one Role snapshot for the whole month: every
+                // day resolves against the same config state, and a role deleted
+                // mid-request can't vanish between iterations
                 m_groupManager.update();
-                if (m_groupManager.getRole(name) == null) {
+                final Role role = m_groupManager.getRole(name);
+                if (role == null) {
                     return Response.status(Status.NOT_FOUND).entity("On-call role " + name + " was not found.").build();
                 }
                 final OnCallCalendarDto calendar = new OnCallCalendarDto();
@@ -160,21 +164,29 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                     final Date dayEnd = Date.from(date.plusDays(1).atStartOfDay(zone).toInstant());
                     final CalendarDayDto dayDto = new CalendarDayDto();
                     dayDto.setDate(date.toString());
-                    final OwnedIntervalSequence intervals = m_groupManager.getRoleScheduleEntries(name, dayStart, dayEnd);
-                    for (final java.util.Iterator<OwnedInterval> it = intervals.iterator(); it.hasNext();) {
-                        final OwnedInterval interval = it.next();
-                        final CalendarEntryDto entry = new CalendarEntryDto();
-                        entry.setStart(interval.getStart().getTime());
-                        entry.setEnd(interval.getEnd().getTime());
-                        boolean supervisor = false;
-                        final Set<String> users = new LinkedHashSet<>();
-                        for (final Owner owner : interval.getOwners()) {
-                            users.add(owner.getUser());
-                            supervisor |= owner.isSupervisor();
+                    try {
+                        final OwnedIntervalSequence intervals = m_groupManager.getRoleScheduleEntries(role, dayStart, dayEnd);
+                        for (final java.util.Iterator<OwnedInterval> it = intervals.iterator(); it.hasNext();) {
+                            final OwnedInterval interval = it.next();
+                            final CalendarEntryDto entry = new CalendarEntryDto();
+                            entry.setStart(interval.getStart().getTime());
+                            entry.setEnd(interval.getEnd().getTime());
+                            boolean supervisor = false;
+                            final Set<String> users = new LinkedHashSet<>();
+                            for (final Owner owner : interval.getOwners()) {
+                                users.add(owner.getUser());
+                                supervisor |= owner.isSupervisor();
+                            }
+                            entry.setUsers(new ArrayList<>(users));
+                            entry.setSupervisor(supervisor);
+                            dayDto.getEntries().add(entry);
                         }
-                        entry.setUsers(new ArrayList<>(users));
-                        entry.setSupervisor(supervisor);
-                        dayDto.getEntries().add(entry);
+                    } catch (final Exception e) {
+                        // hand-edited entries the runtime can't resolve (e.g. an
+                        // overnight 20:00-06:00 window) throw out of the interval
+                        // math; a valid GET must not turn that into a 400
+                        LOG.warn("Can't resolve the schedule of on-call role {} for {}: {}", name, date, e.toString());
+                        calendar.setScheduleError("Some entries of this role cannot be evaluated; check this role's entries in groups.xml.");
                     }
                     calendar.getDays().add(dayDto);
                 }
@@ -465,6 +477,8 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 if (!begins.before(ends)) {
                     throw new IllegalArgumentException("The start time must be before the end time.");
                 }
+                validateYearRange(begins);
+                validateYearRange(ends);
                 time.setBegins(strictFormat(DATE_TIME_FORMAT, Locale.ROOT).format(begins));
                 time.setEnds(strictFormat(DATE_TIME_FORMAT, Locale.ROOT).format(ends));
                 return;
@@ -492,10 +506,21 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         final Date start = parseDate(TIME_FORMAT, time.getBegins());
         final Date end = parseDate(TIME_FORMAT, time.getEnds());
         if (!start.before(end)) {
-            throw new IllegalArgumentException("The start time must be before the end time.");
+            throw new IllegalArgumentException("The start time must be before the end time."
+                    + " For an overnight shift, add two entries instead: one ending at 23:59:59 and one starting at 00:00:00.");
         }
         time.setBegins(strictFormat(TIME_FORMAT, Locale.ROOT).format(start));
         time.setEnds(strictFormat(TIME_FORMAT, Locale.ROOT).format(end));
+    }
+
+    /** groups.xsd pins the year to [12][0-9]{3}; anything else clears validation and then fails the marshal on save. */
+    private static void validateYearRange(final Date date) {
+        final java.util.Calendar calendar = java.util.Calendar.getInstance(Locale.ROOT);
+        calendar.setTime(date);
+        final int year = calendar.get(java.util.Calendar.YEAR);
+        if (year < 1000 || year > 2999) {
+            throw new IllegalArgumentException("Schedule dates must use a year between 1000 and 2999.");
+        }
     }
 
     private static Date parseDate(final String format, final String value) {
@@ -570,7 +595,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
 
     private static String validateName(final String name) {
         if (INVALID_NAME.matcher(name).find()) {
-            return "The role name must not contain markup, whitespace, or the characters : / \\ % ? #";
+            return "The role name must not contain markup, whitespace, control characters, or the characters : / \\ % ? #";
         }
         if (".".equals(name) || "..".equals(name)) {
             return "The role name must not be a dot segment.";

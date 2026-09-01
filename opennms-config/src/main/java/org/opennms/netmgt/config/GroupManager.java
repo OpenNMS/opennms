@@ -670,26 +670,37 @@ public abstract class GroupManager implements GroupConfig {
      */
     public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) throws IOException {
         update();
+        return getRoleScheduleEntries(getRole(roleid), start, end);
+    }
 
+    /**
+     * Resolves the schedule entries from an already-loaded role, without
+     * re-checking config freshness. Callers resolving many windows in one
+     * request (e.g. a month calendar) should load the role once and use this,
+     * so every window sees the same snapshot.
+     *
+     * @param role a {@link org.opennms.netmgt.config.groups.Role} object.
+     * @param start a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     * @return a {@link org.opennms.core.utils.OwnedIntervalSequence} object.
+     */
+    public OwnedIntervalSequence getRoleScheduleEntries(Role role, Date start, Date end) {
         OwnedIntervalSequence schedEntries = new OwnedIntervalSequence();
-                 Role role = getRole(roleid);
-                 for (int i = 0; i < role.getSchedules().size(); i++) {
-                    final int index = i;
-                    Schedule sched = (Schedule) role.getSchedules().get(index);
-                     Owner owner = new Owner(roleid, sched.getName(), i);
-                     schedEntries.addAll(BasicScheduleUtils.getIntervalsCovering(start, end, BasicScheduleUtils.getGroupSchedule(sched), owner));
-                 }
-                 
-                 OwnedIntervalSequence defaultEntries = new OwnedIntervalSequence(new OwnedInterval(start, end));
-                 defaultEntries.removeAll(schedEntries);
-                 Owner supervisor = new Owner(roleid, role.getSupervisor());
-                 for (Iterator<OwnedInterval> it = defaultEntries.iterator(); it.hasNext();) {
-                     OwnedInterval interval = it.next();
-                     interval.addOwner(supervisor);
-                 }
-                 schedEntries.addAll(defaultEntries);
-                 return schedEntries;
-        
+        for (int i = 0; i < role.getSchedules().size(); i++) {
+            Schedule sched = role.getSchedules().get(i);
+            Owner owner = new Owner(role.getName(), sched.getName(), i);
+            schedEntries.addAll(BasicScheduleUtils.getIntervalsCovering(start, end, BasicScheduleUtils.getGroupSchedule(sched), owner));
+        }
+
+        OwnedIntervalSequence defaultEntries = new OwnedIntervalSequence(new OwnedInterval(start, end));
+        defaultEntries.removeAll(schedEntries);
+        Owner supervisor = new Owner(role.getName(), role.getSupervisor());
+        for (Iterator<OwnedInterval> it = defaultEntries.iterator(); it.hasNext();) {
+            OwnedInterval interval = it.next();
+            interval.addOwner(supervisor);
+        }
+        schedEntries.addAll(defaultEntries);
+        return schedEntries;
     }
 
     /**

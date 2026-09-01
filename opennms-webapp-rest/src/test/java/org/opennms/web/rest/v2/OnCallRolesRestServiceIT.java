@@ -513,10 +513,70 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         try {
             sendRequest(GET, "/on-call-roles", 403);
             sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles", "{\"name\":\"x\"}", 403);
+            sendData(PUT, MediaType.APPLICATION_JSON, "/on-call-roles/anything", "{\"supervisor\":\"admin\"}", 403);
+            sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles/anything/rename", "{\"new-name\":\"y\"}", 403);
+            sendRequest(GET, "/on-call-roles/anything/calendar?year=2093&month=6", 403);
             sendRequest(DELETE, "/on-call-roles/anything", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
+    }
+
+    @Test
+    public void testCalendarToleratesUnresolvableHandEditedEntries() throws Exception {
+        // an overnight time is storable by hand (groups.xsd has no ordering
+        // constraint) but the runtime's interval math throws on it; the
+        // calendar must stay a 200 and flag the role instead of blaming the caller
+        ensureGroup("night-team", "nightuser");
+        final Role role = new Role();
+        role.setName("night-role");
+        role.setMembershipGroup("night-team");
+        role.setSupervisor("admin");
+        final Schedule schedule = new Schedule();
+        schedule.setName("nightuser");
+        schedule.setType("daily");
+        final Time overnight = new Time();
+        overnight.setBegins("20:00:00");
+        overnight.setEnds("06:00:00");
+        schedule.getTimes().add(overnight);
+        role.getSchedules().add(schedule);
+        m_groupManager.saveRole(role);
+
+        final JSONObject calendar = new JSONObject(getJson("/on-call-roles/night-role/calendar?year=2093&month=6", 200));
+        assertEquals(30, calendar.getJSONArray("day").length());
+        assertTrue(calendar.getString("schedule-error").length() > 0);
+
+        sendRequest(DELETE, "/on-call-roles/night-role", 204);
+    }
+
+    @Test
+    public void testYearOutsideSchemaRangeRejected() throws Exception {
+        // groups.xsd pins years to [12][0-9]{3}; 3000 used to clear validation
+        // and then fail the marshal on save
+        ensureGroup("year-team", "yearuser");
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"year-role\",\"membership-group\":\"year-team\",\"supervisor\":\"admin\",\"schedule\":["
+                + "{\"user\":\"yearuser\",\"type\":\"specific\",\"time\":[{\"begins\":\"01-Jan-3000 08:00:00\",\"ends\":\"01-Jan-3000 17:00:00\"}]}]}", 400);
+        sendRequest(GET, "/on-call-roles/year-role", 404);
+    }
+
+    @Test
+    public void testControlCharacterNameRejected() throws Exception {
+        // \s misses most C0 characters, which would pass validation and then
+        // break the XML marshal
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles", "{\"name\":\"bad\\u0001name\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles/x/rename", "{\"new-name\":\"bad\\u0001name\"}", 400);
+    }
+
+    @Test
+    public void testOvernightShiftRejectionSuggestsSplitting() throws Exception {
+        ensureGroup("split-team", "splituser");
+        final String body = sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"split-role\",\"membership-group\":\"split-team\",\"supervisor\":\"admin\",\"schedule\":["
+                + "{\"user\":\"splituser\",\"type\":\"daily\",\"time\":[{\"begins\":\"20:00:00\",\"ends\":\"06:00:00\"}]}]}", 400)
+                .getContentAsString();
+        assertTrue("expected a split-into-two-entries hint, got: " + body, body.contains("overnight"));
+        assertTrue(body.contains("23:59:59"));
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {

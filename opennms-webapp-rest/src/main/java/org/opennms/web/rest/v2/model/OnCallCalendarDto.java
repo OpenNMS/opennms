@@ -54,6 +54,10 @@ public class OnCallCalendarDto {
     @XmlElement(name = "day")
     private List<CalendarDayDto> days = new ArrayList<>();
 
+    /** Set when some stored entries could not be resolved; affected days render without them. */
+    @XmlElement(name = "schedule-error")
+    private String scheduleError;
+
     public String getRole() {
         return role;
     }
@@ -92,6 +96,14 @@ public class OnCallCalendarDto {
 
     public void setDays(final List<CalendarDayDto> days) {
         this.days = days;
+    }
+
+    public String getScheduleError() {
+        return scheduleError;
+    }
+
+    public void setScheduleError(final String scheduleError) {
+        this.scheduleError = scheduleError;
     }
 
     @XmlRootElement(name = "on-call-calendar-day")

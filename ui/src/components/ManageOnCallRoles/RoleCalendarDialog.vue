@@ -34,6 +34,12 @@
       class="zone-hint"
       data-test="zone-hint"
     >All times are shown and entered in server time ({{ serverZone }}).</p>
+    <div
+      v-if="calendar?.['schedule-error']"
+      class="schedule-warning"
+      role="alert"
+      data-test="calendar-schedule-error"
+    >{{ calendar['schedule-error'] }}</div>
 
     <div class="calendar-grid" data-test="calendar-grid">
       <div
@@ -114,6 +120,8 @@
             inputId="calendar-entry-start"
             showTime
             hourFormat="24"
+            :minDate="MIN_SCHEDULE_DATE"
+            :maxDate="MAX_SCHEDULE_DATE"
             data-test="entry-start-input"
           />
         </FormField>
@@ -123,6 +131,8 @@
             inputId="calendar-entry-end"
             showTime
             hourFormat="24"
+            :minDate="MIN_SCHEDULE_DATE"
+            :maxDate="MAX_SCHEDULE_DATE"
             data-test="entry-end-input"
           />
         </FormField>
@@ -199,9 +209,18 @@ const scheduleToRemove = ref<{ index: number, schedule: OnCallSchedule } | null>
 
 const serverZone = computed(() => calendar.value?.['time-zone'] ?? '')
 
+// groups.xsd pins schedule years to [12][0-9]{3}
+const MIN_SCHEDULE_DATE = new Date(1000, 0, 1)
+const MAX_SCHEDULE_DATE = new Date(2999, 11, 31, 23, 59, 59)
+
 const entryRangeProblem = computed(() => {
   if (entryStart.value && entryEnd.value && entryStart.value >= entryEnd.value) {
     return 'The start time must be before the end time.'
+  }
+  for (const date of [entryStart.value, entryEnd.value]) {
+    if (date && (date.getFullYear() < 1000 || date.getFullYear() > 2999)) {
+      return 'Schedule dates must use a year between 1000 and 2999.'
+    }
   }
   return null
 })
@@ -378,6 +397,15 @@ const cancelRemove = () => {
   text-align: center;
   font-size: 0.85rem;
   color: var(--p-text-muted-color);
+}
+
+.schedule-warning {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--p-amber-200, #fde68a);
+  background: var(--p-amber-50, #fffbeb);
+  color: var(--p-amber-800, #92400e);
 }
 
 .dialog-error {
