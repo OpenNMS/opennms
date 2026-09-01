@@ -330,8 +330,14 @@ const rowIsValid = (row: TargetRow) =>
 const initialDelayError = computed(() =>
   isValidNotifdDuration(initialDelay.value) ? undefined : NOTIFD_DURATION_HINT)
 
-const escalationDelayError = (delay: string) =>
-  isValidNotifdDuration(delay) ? undefined : NOTIFD_DURATION_HINT
+// unlike the initial delay, an escalation delay is required — the server 400s
+// a blank one — so blankness is checked here, per isValidNotifdDuration's contract
+const escalationDelayError = (delay: string) => {
+  if (!delay.trim()) {
+    return 'An escalation delay is required.'
+  }
+  return isValidNotifdDuration(delay) ? undefined : NOTIFD_DURATION_HINT
+}
 
 const isValid = computed(() => {
   if (!name.value.trim() || !targets.value.length) {
@@ -344,7 +350,7 @@ const isValid = computed(() => {
     return false
   }
   return escalations.value.every(esc =>
-    isValidNotifdDuration(esc.delay) && esc.targets.length > 0 && esc.targets.every(rowIsValid))
+    !escalationDelayError(esc.delay) && esc.targets.length > 0 && esc.targets.every(rowIsValid))
 })
 
 const toTarget = (row: TargetRow): DestinationPathTarget => ({

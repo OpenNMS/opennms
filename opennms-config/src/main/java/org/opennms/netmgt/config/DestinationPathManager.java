@@ -50,7 +50,9 @@ public abstract class DestinationPathManager {
 
     private DestinationPaths allPaths;
 
-    private Map<String, Path> m_destinationPaths = new TreeMap<String, Path>();
+    // replaced wholesale on reload and read without synchronization from
+    // getPath/getPaths, so the swap must be safely published
+    private volatile Map<String, Path> m_destinationPaths = new TreeMap<String, Path>();
 
     private Header oldHeader;
 

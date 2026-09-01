@@ -72,6 +72,8 @@ describe('useBrowserNotifications', () => {
     FakeWebSocket.instances[0].onmessage?.({
       data: JSON.stringify({ id: ['7'], head: ['Head'], body: ['Body'] })
     })
+    await Promise.resolve()
+    await Promise.resolve()
 
     expect(notificationSpy).toHaveBeenCalledWith('Head', expect.objectContaining({ body: 'Body' }))
     expect(showSnackBar).not.toHaveBeenCalled()
@@ -112,17 +114,77 @@ describe('useBrowserNotifications', () => {
     expect(FakeWebSocket.instances).toHaveLength(1)
   })
 
-  it('delivers through the NMS-20200 service worker when one registers', async () => {
+  it('delivers through the NMS-20200 service worker once it is active', async () => {
     const showNotification = vi.fn().mockReturnValue({ then: vi.fn() })
-    const register = vi.fn().mockResolvedValue({ showNotification })
+    const register = vi.fn().mockResolvedValue({ active: {}, showNotification })
     const FakeNotification = { permission: 'granted' }
     vi.stubGlobal('Notification', FakeNotification)
     vi.stubGlobal('window', Object.assign(Object.create(globalThis), { Notification: FakeNotification }))
     vi.stubGlobal('navigator', Object.assign(Object.create(globalThis.navigator ?? {}), { serviceWorker: { register }}))
 
     await start()
-    await Promise.resolve() // let register() resolve
     FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ id: ['1'], head: ['Head'], body: ['Body'] }) })
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(register).toHaveBeenCalledWith('http://localhost:8980/opennms/notification-sw.js')
+    expect(showNotification).toHaveBeenCalledWith('Head', expect.objectContaining({ body: 'Body' }))
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  // the worker registered but never activated: showNotification would reject
+  // with InvalidStateError, so activation is awaited with a bounded timeout
+  // and the message falls back to the page-scoped constructor
+  it('waits for worker activation before using showNotification', async () => {
+    const showNotification = vi.fn().mockReturnValue({ then: vi.fn() })
+    const listenerRef: { fn?: () => void } = {}
+    const installing = {
+      state: 'installing',
+      addEventListener: (_: string, listener: () => void) => {
+        listenerRef.fn = listener
+      }
+    }
+    const registration = { active: null as object | null, installing, showNotification }
+    const register = vi.fn().mockResolvedValue(registration)
+    const FakeNotification = { permission: 'granted' }
+    vi.stubGlobal('Notification', FakeNotification)
+    vi.stubGlobal('window', Object.assign(Object.create(globalThis), { Notification: FakeNotification }))
+    vi.stubGlobal('navigator', Object.assign(Object.create(globalThis.navigator ?? {}), { serviceWorker: { register }}))
+
+    await start()
+    FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ id: ['1'], head: ['Head'], body: ['Body'] }) })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(showNotification).not.toHaveBeenCalled()
+
+    installing.state = 'activated'
+    listenerRef.fn?.()
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(showNotification).toHaveBeenCalledWith('Head', expect.objectContaining({ body: 'Body' }))
+  })
+
+  // the opt-in lives on other pages: permission can flip to granted after
+  // this page loaded, and the worker must still be picked up without a reload
+  it('registers the worker on demand after a mid-session permission grant', async () => {
+    const showNotification = vi.fn().mockReturnValue({ then: vi.fn() })
+    const register = vi.fn().mockResolvedValue({ active: {}, showNotification })
+    const FakeNotification = { permission: 'default' }
+    vi.stubGlobal('Notification', FakeNotification)
+    vi.stubGlobal('window', Object.assign(Object.create(globalThis), { Notification: FakeNotification }))
+    vi.stubGlobal('navigator', Object.assign(Object.create(globalThis.navigator ?? {}), { serviceWorker: { register }}))
+
+    await start()
+    expect(register).not.toHaveBeenCalled()
+
+    FakeNotification.permission = 'granted'
+    FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ id: ['9'], head: ['Head'], body: ['Body'] }) })
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
 
     expect(register).toHaveBeenCalledWith('http://localhost:8980/opennms/notification-sw.js')
     expect(showNotification).toHaveBeenCalledWith('Head', expect.objectContaining({ body: 'Body' }))
@@ -141,6 +203,8 @@ describe('useBrowserNotifications', () => {
 
     await start()
     FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ id: ['2'], head: ['Head'], body: ['Body'] }) })
+    await Promise.resolve()
+    await Promise.resolve()
 
     expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: 'Head — Body' }))
   })

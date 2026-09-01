@@ -50,20 +50,58 @@ const unwrap = (value?: string | string[]): string | undefined => {
 // The service-worker path, mirroring core/web-assets (NMS-20200/#8769):
 // registration.showNotification works everywhere including Chrome for
 // Android, where the page-scoped Notification constructor throws.
-let swRegistration: ServiceWorkerRegistration | null = null
+const ACTIVATION_TIMEOUT_MS = 5000
 
-const registerServiceWorker = (baseHref: string) => {
+let swReady: Promise<ServiceWorkerRegistration | null> | null = null
+
+// showNotification rejects with InvalidStateError until the worker is ACTIVE,
+// so resolve only on activation — bounded, because a worker stuck installing
+// must not park messages — and with null on redundancy, as in core/web-assets'
+// withServiceWorker. navigator.serviceWorker.ready is the wrong tool here: it
+// never settles when registration failed.
+const awaitActivation = (registration: ServiceWorkerRegistration): Promise<ServiceWorkerRegistration | null> =>
+  new Promise((resolve) => {
+    if (registration.active) {
+      resolve(registration)
+      return
+    }
+    const pending = registration.installing ?? registration.waiting
+    if (!pending) {
+      resolve(null)
+      return
+    }
+    let settled = false
+    const finish = (value: ServiceWorkerRegistration | null) => {
+      if (!settled) {
+        settled = true
+        resolve(value)
+      }
+    }
+    pending.addEventListener('statechange', () => {
+      if (pending.state === 'activated') {
+        finish(registration)
+      } else if (pending.state === 'redundant') {
+        finish(null)
+      }
+    })
+    setTimeout(() => finish(null), ACTIVATION_TIMEOUT_MS)
+  })
+
+// notification-sw.js is served at the webapp root (shipped by NMS-20200);
+// registration is idempotent and the promise is cached, so calling this per
+// message is free once settled
+const withServiceWorker = (baseHref: string): Promise<ServiceWorkerRegistration | null> => {
   if (!('serviceWorker' in navigator)) {
-    return
+    return Promise.resolve(null)
   }
-  // notification-sw.js is served at the webapp root (shipped by NMS-20200)
-  navigator.serviceWorker.register(`${baseHref}notification-sw.js`)
-    .then((registration) => {
-      swRegistration = registration
-    }, () => undefined)
+  if (!swReady) {
+    swReady = navigator.serviceWorker.register(`${baseHref}notification-sw.js`)
+      .then(awaitActivation, () => null)
+  }
+  return swReady
 }
 
-const display = (message: BrowserNotificationMessage) => {
+const display = (baseHref: string, message: BrowserNotificationMessage) => {
   const head = unwrap(message.head) ?? 'OpenNMS Notification'
   const body = unwrap(message.body)
   const fallbackToSnackbar = () => showSnackBar({ msg: body ? `${head} — ${body}` : head, timeout: 8000 })
@@ -76,18 +114,22 @@ const display = (message: BrowserNotificationMessage) => {
     body: body ?? '',
     tag: `opennms:notification:${unwrap(message.id) ?? head}`
   }
-  if (swRegistration) {
-    // two-arg then, matching core/web-assets: rejection (e.g. a worker that
-    // never activated) must still land the message in the snackbar
-    swRegistration.showNotification(head, options).then(null, fallbackToSnackbar)
-    return
-  }
-  try {
-    // throws on Chrome for Android; fallback only, as in core/web-assets
-    new Notification(head, options)
-  } catch {
-    fallbackToSnackbar()
-  }
+  // the worker registers on demand, so a permission granted mid-session (the
+  // opt-in lives on other pages) reaches the worker without a reload
+  withServiceWorker(baseHref).then((registration) => {
+    if (registration) {
+      // two-arg then, matching core/web-assets: a rejection must still land
+      // the message in the snackbar
+      registration.showNotification(head, options).then(null, fallbackToSnackbar)
+      return
+    }
+    try {
+      // throws on Chrome for Android; fallback only, as in core/web-assets
+      new Notification(head, options)
+    } catch {
+      fallbackToSnackbar()
+    }
+  })
 }
 
 // Bounded backoff: a session that keeps being rejected (expired auth, a proxy
@@ -112,7 +154,7 @@ const connect = (baseHref: string) => {
 
   ws.onmessage = (event: MessageEvent) => {
     try {
-      display(JSON.parse(event.data))
+      display(baseHref, JSON.parse(event.data))
     } catch {
       // not a notification payload; ignore
     }
@@ -136,9 +178,11 @@ const startBrowserNotifications = (baseHref: string) => {
   // no Promise to .catch and Firefox ignores requests without a user gesture.
   // The click-triggered opt-in from NMS-20200 (core/web-assets) owns granting;
   // permission is origin-wide, and until granted the snackbar carries every
-  // message. Desktop delivery goes through the NMS-20200 service worker.
+  // message. Desktop delivery goes through the NMS-20200 service worker,
+  // warmed up here when permission is already granted so the first message
+  // doesn't pay the activation wait.
   if ('Notification' in window && Notification.permission === 'granted') {
-    registerServiceWorker(baseHref)
+    withServiceWorker(baseHref)
   }
   connect(baseHref)
 }

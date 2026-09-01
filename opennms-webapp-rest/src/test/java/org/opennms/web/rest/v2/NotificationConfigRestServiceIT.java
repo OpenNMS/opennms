@@ -351,6 +351,14 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
                 + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"],\"interval\":\"soon\"}],\"escalate\":[]}";
         sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", badInterval, 400);
 
+        // convertToMillis alone would take these (Float.parseFloat allows
+        // signs, NaN and Infinity), so the grammar is enforced by regex too
+        for (final String sneaky : new String[]{ "-5s", "+5s", "NaN", "Infinity", "1e3s" }) {
+            final String body = "{\"name\":\"junit-delay\",\"initial-delay\":\"" + sneaky + "\","
+                    + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}";
+            sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", body, 400);
+        }
+
         // the full accepted grammar passes
         final String good = "{\"name\":\"junit-delay\",\"initial-delay\":\"30s\","
                 + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"],\"interval\":\"15m\"}],"

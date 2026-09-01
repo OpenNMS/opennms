@@ -126,10 +126,13 @@ public class NotificationRestService extends OnmsRestService {
                 .toCriteria()));
 
         // Determine number of notices not acknowledged and not "assigned to" current user
+        // distinct, like the list query below: the join yields one row per
+        // recipient, and a multi-recipient notice must count once
         info.setTeamUnacknowledgedCount(m_notifDao.countMatching(new CriteriaBuilder(OnmsNotification.class)
                 .isNull("answeredBy")
                 .alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN)
                 .or(Restrictions.ne("usersNotified.userId", user), Restrictions.isNull("usersNotified.userId"))
+                .distinct()
                 .toCriteria()));
 
         // Load newest unacknowledged notifications for user, but only N

@@ -865,11 +865,19 @@ public class NotificationConfigRestService {
     // notifd parses these with TimeConverter.convertToMillis when the notice
     // fires — AFTER the notice row is inserted — so a bad value would persist
     // the notice, schedule nothing, and throw inside eventd's dispatch.
+    // convertToMillis alone is too loose (Float.parseFloat takes signs, NaN
+    // and Infinity), so the same grammar the UI enforces is applied first.
+    private static final java.util.regex.Pattern NOTIFD_DURATION =
+            java.util.regex.Pattern.compile("\\d+(\\.\\d+)?(us|ms|s|m|h|d)?", java.util.regex.Pattern.CASE_INSENSITIVE);
+
     private static void validateDelay(final String field, final String value) {
         if (StringUtils.isBlank(value)) {
             return;
         }
         try {
+            if (!NOTIFD_DURATION.matcher(value.trim()).matches()) {
+                throw new NumberFormatException();
+            }
             TimeConverter.convertToMillis(value);
         } catch (final NumberFormatException e) {
             throw getException(Status.BAD_REQUEST,

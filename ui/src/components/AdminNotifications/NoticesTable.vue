@@ -144,6 +144,7 @@ import DownloadFileIcon from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import PrintIcon from '@opennms/onms-ui/icons/action/Print.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import useRole from '@/composables/useRole'
+import { saveBlobAsFile } from '@/services/eventConfigService'
 import { useMenuStore } from '@/stores/menuStore'
 import { MessageSeverity } from '@/types'
 import { useNoticesStore } from '@/stores/noticesStore'
@@ -234,11 +235,7 @@ const downloadCsv = async () => {
     ...rows.map(row => headers.map(h => escapeCell(row[h] === '-' ? '' : row[h])).join(','))
   ].join('\r\n')
   const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-  link.download = `notices-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.csv`
-  link.click()
-  URL.revokeObjectURL(link.href)
+  saveBlobAsFile(blob, `notices-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.csv`)
 }
 
 const printNotices = async () => {
