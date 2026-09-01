@@ -7,11 +7,18 @@
         class="time-range-label"
       >{{ label }}</span>
 
+      <!--
+        aria-labelledby REPLACES the button's content as its accessible name, so
+        pointing it at the label alone would drop the selected range -- the only
+        changing information the button carries. Listing the button's own id
+        after the label's concatenates the two ("Time Range: Last day").
+      -->
       <OnmsButton
+        :id="triggerId"
         variant="text"
         class="graph-controls"
         aria-haspopup="true"
-        :aria-labelledby="label ? labelId : undefined"
+        :aria-labelledby="label ? `${labelId} ${triggerId}` : undefined"
         @click="toggleMenu"
       >
         {{ selectedTime }} &nbsp;
@@ -36,9 +43,14 @@
           </ul>
 
           <div class="custom-col">
-            <FormField label="Start" class="date-input">
+            <FormField
+              label="Start"
+              class="date-input"
+              :for="startInputId"
+            >
               <OnmsDatePicker
                 v-model="startDateRef"
+                :inputId="startInputId"
                 showTime
                 hourFormat="12"
                 placeholder="Start date and time"
@@ -47,9 +59,15 @@
                 @hide="openPickerCount--"
               />
             </FormField>
-            <FormField label="End" class="date-input">
+            <FormField
+              label="End"
+              class="date-input"
+              :for="endInputId"
+              :error="rangeError"
+            >
               <OnmsDatePicker
                 v-model="endDateRef"
+                :inputId="endInputId"
                 showTime
                 hourFormat="12"
                 placeholder="End date and time"
@@ -95,6 +113,9 @@ defineProps<{
 const emit = defineEmits(['updateTime'])
 
 const labelId = useId()
+const triggerId = useId()
+const startInputId = useId()
+const endInputId = useId()
 
 const menu = ref()
 
@@ -118,6 +139,16 @@ const openPickerCount = ref(0)
  * gone and openPickerCount is back to 0. Sampling here -- the <ul> sees mousedown
  * before it bubbles to document -- is what makes "a click that merely dismissed a
  * picker" distinguishable from "a click that chose a preset".
+ *
+ * Known window: PrimeVue emits `show` from the overlay's onEnter hook but binds
+ * that document dismisser in onAfterEnter, so during the enter transition a
+ * picker reports itself open while nothing will dismiss it. A press landing in
+ * that window makes the preset click a no-op -- the picker stays up and nothing
+ * is selected -- and the next click behaves normally. Left as-is deliberately:
+ * suppressing only when the picker actually closed would, in the same window,
+ * restore the original bug (preset selected and popover closed) which is a wrong
+ * action rather than a dropped one, and PrimeVue exposes no way to dismiss the
+ * overlay ourselves (onBlur does not close it; overlayVisible is internal).
  */
 const dismissedPickerOnPress = ref(false)
 
@@ -125,7 +156,24 @@ const latchPickerDismissal = () => {
   dismissedPickerOnPress.value = openPickerCount.value > 0
 }
 
-const disableCustomTimeBtn = computed(() => !startDateRef.value || !endDateRef.value)
+/**
+ * The :minDate/:maxDate cross-wiring below is a UI affordance, NOT the
+ * correctness guarantee -- PrimeVue does not enforce it strictly enough to be
+ * one. Its isSelectable() compares year/month/day only, and the typed-input
+ * path (isValidSelection, with manualInput defaulting to true) goes through
+ * that, so typing a later time on the boundary day into Start is accepted
+ * unclamped and inverts the range. A calendar click does clamp at full
+ * granularity, but clamping Start to maxDate lands it exactly on End, which is
+ * a zero-width window. Both slip past a null-check, and an inverted range then
+ * reads as a negative difference below, mislabelling the window as "minutes".
+ */
+const rangeError = computed(() =>
+  startDateRef.value && endDateRef.value && endDateRef.value <= startDateRef.value
+    ? 'End must be after start'
+    : undefined)
+
+const disableCustomTimeBtn = computed(() =>
+  !startDateRef.value || !endDateRef.value || Boolean(rangeError.value))
 
 const toggleMenu = (event: Event) => menu.value.toggle(event)
 
@@ -165,14 +213,18 @@ const selectOption = (option: TimeOption) => {
 }
 
 const applyCustomTime = () => {
-  // The button is disabled until both are set; this narrows the refs without a cast.
-  if (!startDateRef.value || !endDateRef.value) {
+  const start = startDateRef.value
+  const end = endDateRef.value
+
+  // Mirrors disableCustomTimeBtn rather than trusting it: the button being
+  // disabled is a UI state, and this also narrows the refs without a cast.
+  if (!start || !end || end <= start) {
     return
   }
 
   let format = 'hours'
-  const startTime = getUnixTime(startDateRef.value)
-  const endTime = getUnixTime(endDateRef.value)
+  const startTime = getUnixTime(start)
+  const endTime = getUnixTime(end)
 
   // end - start, as Dates. This previously passed unix SECONDS in the wrong order,
   // so the difference was always negative and every custom range was labeled as

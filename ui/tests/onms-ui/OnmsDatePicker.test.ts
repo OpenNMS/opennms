@@ -133,4 +133,17 @@ describe('OnmsDatePicker', () => {
     expect(wrapper.emitted('show')).toHaveLength(1)
     expect(wrapper.emitted('hide')).toHaveLength(1)
   })
+
+  // Needed so a FormField label can be associated with the real <input>:
+  // PrimeVue renders the input inside a wrapper, so an `id` falling through to
+  // the root lands on the wrapper, where a label's `for` cannot reach it.
+  it('declares and forwards inputId onto the rendered input', () => {
+    const wrapper = mount(OnmsDatePicker, {
+      props: { inputId: 'range-start' },
+      global: globalPlugins
+    })
+
+    expect(wrapper.props('inputId')).toBe('range-start')
+    expect(wrapper.get('input').attributes('id')).toBe('range-start')
+  })
 })

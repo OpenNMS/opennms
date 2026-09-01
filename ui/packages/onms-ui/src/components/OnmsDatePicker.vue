@@ -9,6 +9,7 @@
     :stepMinute="stepMinute"
     :stepSecond="stepSecond"
     :placeholder="placeholder"
+    :inputId="inputId"
     :minDate="minDate ?? undefined"
     :maxDate="maxDate ?? undefined"
     :pt="unsafePt as never"
@@ -35,6 +36,11 @@ import type { OnmsHourFormat } from '../types'
 // signature). All defaults below match installed primevue@4.5.5's own, so
 // declaring these props changes no existing consumer's rendering.
 //
+// inputId lands on the rendered <input>, not the wrapper element. A plain `id`
+// falling through would settle on PrimeVue's wrapper, out of reach of a
+// FormField label's `for`, so the association needs this dedicated prop --
+// the same reason OnmsSelect, OnmsInputNumber and friends declare one.
+//
 // PrimeVue-reality: minDate/maxDate are typed `Date | undefined` there, and any
 // non-undefined value is treated as a live bound. Consumers hold bounds in
 // nullable refs (TimeControls' startDateRef/endDateRef), so this wrapper
@@ -50,6 +56,7 @@ withDefaults(defineProps<{
   stepMinute?: number
   stepSecond?: number
   placeholder?: string
+  inputId?: string
   minDate?: Date | null
   maxDate?: Date | null
   unsafePt?: unknown
@@ -63,6 +70,7 @@ withDefaults(defineProps<{
   stepMinute: 1,
   stepSecond: 1,
   placeholder: undefined,
+  inputId: undefined,
   minDate: undefined,
   maxDate: undefined,
   unsafePt: undefined

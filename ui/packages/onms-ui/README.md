@@ -291,6 +291,11 @@ changed no existing call site's rendering. `placeholder` / `minDate` / `maxDate`
 are declared for the same reason: passing them by attribute fallthrough happens
 to reach PrimeVue, but rule 2 classes that as unsupported.
 
+`inputId` lands on the rendered `<input>` rather than the wrapper element, so a
+`FormField` label's `for` can reach the real control — the same reason
+`OnmsSelect`, `OnmsInputNumber` and the other input wrappers declare one. A
+plain `id` would fall through to PrimeVue's wrapper, out of a label's reach.
+
 Beyond `update:modelValue`, the wrapper emits `show` / `hide` when the overlay
 panel opens and closes. `TimeControls` needs them: PrimeVue dismisses the panel
 from a document-level **mousedown** listener, so a consumer that wants to tell

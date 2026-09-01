@@ -238,8 +238,10 @@ describe('TimeControls label', () => {
 
     expect(label.text()).toBe('Time Range:')
     expect(label.attributes('id')).toBeTruthy()
+    // The label leads the accessible name; the exact composition (label id then
+    // the button's own id) is asserted in the accessible-name test below.
     expect(wrapper.get('button[aria-haspopup="true"]').attributes('aria-labelledby'))
-      .toBe(label.attributes('id'))
+      .toMatch(new RegExp(`^${label.attributes('id')}\\b`))
   })
 
   it('leaves the trigger button unnamed when there is no label', () => {
@@ -252,6 +254,22 @@ describe('TimeControls label', () => {
   // Two instances must be mounted in ONE app: Vue's useId counter is per app
   // instance, so two separate mount() calls would both yield 'v-0' and the
   // assertion would be vacuous.
+  // aria-labelledby REPLACES the element's content as its accessible name, so
+  // pointing it at the label span alone renamed the button from "Last day" to
+  // "Time Range:" -- the selected range, the only changing information on the
+  // button, stopped being announced. Referencing the button's own id after the
+  // label's concatenates the two.
+  it('names the trigger button with the label AND the selected range', () => {
+    const wrapper = mountControls({ label: 'Time Range:' })
+    const button = wrapper.get('button[aria-haspopup="true"]')
+    const labelId = wrapper.get('.time-range-label').attributes('id')
+
+    expect(button.attributes('id')).toBeTruthy()
+    expect(button.attributes('aria-labelledby'))
+      .toBe(`${labelId} ${button.attributes('id')}`)
+    expect(button.text()).toContain('Last day')
+  })
+
   it('gives each instance on a page its own label id', () => {
     const Host = {
       components: { TimeControls },
@@ -268,5 +286,79 @@ describe('TimeControls label', () => {
 
     expect(first.attributes('id')).toBeTruthy()
     expect(first.attributes('id')).not.toBe(second.attributes('id'))
+  })
+})
+
+describe('TimeControls range validity', () => {
+  const applyButton = (wrapper: ReturnType<typeof mountControls>) =>
+    wrapper.findAll('button').find(button => button.text().includes('Apply custom time'))!
+
+  const pickRange = async (wrapper: ReturnType<typeof mountControls>, start: Date, end: Date) => {
+    const pickers = wrapper.findAllComponents(OnmsDatePicker)
+    await pickers[0].vm.$emit('update:modelValue', start)
+    await pickers[1].vm.$emit('update:modelValue', end)
+  }
+
+  // minDate/maxDate cross-wiring is NOT sufficient. PrimeVue's isSelectable
+  // compares only year/month/day, and isValidSelection (the typed-input path,
+  // with manualInput defaulting to true) goes through it -- so typing a later
+  // time on the boundary DAY into the start field is accepted unclamped.
+  it('rejects an inverted range', async () => {
+    const wrapper = mountControls()
+
+    await pickRange(wrapper, new Date(2026, 8, 2, 23, 30), new Date(2026, 8, 2, 9, 0))
+
+    expect(applyButton(wrapper).attributes('disabled')).toBeDefined()
+  })
+
+  // A calendar click DOES clamp at full granularity (selectDate assigns
+  // date = maxDate), so clicking a too-late day in the start field lands
+  // exactly on the end instant. That zero-width window is the likely outcome,
+  // not the inverted one.
+  it('rejects a zero-width range', async () => {
+    const wrapper = mountControls()
+    const instant = new Date(2026, 8, 2, 9, 0)
+
+    await pickRange(wrapper, instant, new Date(instant))
+
+    expect(applyButton(wrapper).attributes('disabled')).toBeDefined()
+  })
+
+  it('emits nothing for an invalid range', async () => {
+    const wrapper = mountControls()
+
+    await pickRange(wrapper, new Date(2026, 8, 2, 23, 30), new Date(2026, 8, 2, 9, 0))
+    await applyButton(wrapper).trigger('click')
+
+    expect(wrapper.emitted('updateTime')).toBeUndefined()
+  })
+
+  it('explains why an invalid range is rejected', async () => {
+    const wrapper = mountControls()
+
+    await pickRange(wrapper, new Date(2026, 8, 2, 23, 30), new Date(2026, 8, 2, 9, 0))
+
+    expect(wrapper.text()).toContain('End must be after start')
+  })
+
+  it('accepts a well-ordered range', async () => {
+    const wrapper = mountControls()
+
+    await pickRange(wrapper, new Date(2026, 8, 1, 13, 0), new Date(2026, 8, 2, 9, 0))
+
+    expect(applyButton(wrapper).attributes('disabled')).toBeUndefined()
+    expect(wrapper.text()).not.toContain('End must be after start')
+  })
+
+  it('labels each range field for its own picker input', () => {
+    const wrapper = mountControls()
+    const labels = wrapper.findAll('.custom-col label[for]')
+    const inputIds = wrapper.findAll('.custom-col input').map(input => input.attributes('id'))
+
+    expect(labels).toHaveLength(2)
+    for (const label of labels) {
+      expect(inputIds).toContain(label.attributes('for'))
+    }
+    expect(labels[0].attributes('for')).not.toBe(labels[1].attributes('for'))
   })
 })
