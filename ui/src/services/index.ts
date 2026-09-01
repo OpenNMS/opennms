@@ -77,6 +77,15 @@ import {
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import {
+  createManagedUser,
+  deleteManagedUser,
+  getAvailableUserRoles,
+  getManagedUsers,
+  renameManagedUser,
+  setManagedUserPassword,
+  updateManagedUser
+} from './userAdminService'
+import {
   addDestinationPath,
   addEventNotification,
   applyPathOutage,
@@ -178,6 +187,13 @@ export default {
   addZenithRegistration,
   getZenithRegistrations,
   performLogout,
+  createManagedUser,
+  deleteManagedUser,
+  getAvailableUserRoles,
+  getManagedUsers,
+  renameManagedUser,
+  setManagedUserPassword,
+  updateManagedUser,
   acknowledgeNotice,
   addDestinationPath,
   addEventNotification,
