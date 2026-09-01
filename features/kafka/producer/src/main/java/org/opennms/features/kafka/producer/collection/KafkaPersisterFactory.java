@@ -51,6 +51,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
     private ConfigurationAdmin configAdmin;
     private String topicName;
     private boolean disableMetricsSplitting = false;
+    private boolean useJson = false;
     private String metricFilter;
 
     @Override
@@ -66,6 +67,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
         persister.setProducer(producer);
         persister.setTopicName(topicName);
         persister.setDisableMetricsSplitting(disableMetricsSplitting);
+        persister.setUseJson(useJson);
         persister.setMetricFilter(metricFilter);
         return persister;
     }
@@ -132,6 +134,10 @@ public class KafkaPersisterFactory implements PersisterFactory {
 
     public void setDisableMetricsSplitting(boolean disableMetricsSplitting) {
         this.disableMetricsSplitting = disableMetricsSplitting;
+    }
+
+    public void setUseJson(boolean useJson) {
+        this.useJson = useJson;
     }
 
     public void setMetricFilter(String metricFilter) {
