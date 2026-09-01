@@ -116,6 +116,45 @@ const topPanels = computed<OnmsMenuItem[]>(() => {
 
 const tieredMenuRef = ref<any>(null)
 
+// Close any open flyout and drop out of hover mode, so the next hover has to
+// dwell again.
+//
+// With nothing open, clearing `dirty` is the whole job (hide() would have done
+// it as a side effect): TieredMenu leaves it set after hovering an entry that
+// has no submenu, so skipping this would keep the rail in hover mode with no
+// flyout to show for it, and the next hover would open instantly with no dwell.
+//
+// hide() also resets focusedItemInfo to index -1. That is right for a flyout
+// the pointer merely hovered open — hover never focuses the menubar, so there
+// is no position to lose — but not for one the user clicked or tabbed into,
+// where it would discard their place in the menu. So when the menu actually
+// holds focus, put the focused index back on the root entry that was open,
+// which is where TieredMenu itself lands after closing a submenu (see its
+// onItemClick). A deeper position is not restored as-is: it points into a
+// submenu that is now closed, and TieredMenu would resolve the stale index
+// against the root list.
+const closeFlyouts = () => {
+  const menu = tieredMenuRef.value
+
+  if (!menu) {
+    return
+  }
+
+  if (!menu.activeItemPath?.length) {
+    menu.dirty = false
+    return
+  }
+
+  const rootItem = menu.activeItemPath.find((item: { parentKey: string }) => item.parentKey === '')
+  const keepFocus = menu.focused && rootItem
+
+  menu.hide?.()
+
+  if (keepFocus) {
+    menu.focusedItemInfo = { index: rootItem.index, level: 0, parentKey: '' }
+  }
+}
+
 const togglePinned = () => {
   isPinned.value = !isPinned.value
   menuStore.setSideMenuExpanded(isPinned.value)
@@ -126,17 +165,12 @@ const togglePinned = () => {
   clearHoverTimers()
   hoveredItem = null
 
-  // Close any open flyout. Clicking the toggle button already does this via
-  // TieredMenu's outside-click listener; this makes the keyboard shortcut
-  // behave the same — otherwise the flyout would be repositioned mid-way
-  // through the rail's 0.1s width transition and end up with a stale left
-  // offset once the transition finishes. Guarded on an actually-open flyout
-  // (activeItemPath non-empty) because hide() also resets TieredMenu's
-  // focusedItemInfo — calling it unconditionally would throw away a keyboard
-  // user's arrow-navigation position even when there was nothing to close.
-  if (tieredMenuRef.value?.activeItemPath?.length) {
-    tieredMenuRef.value.hide?.()
-  }
+  // Clicking the toggle button already closes the flyout via TieredMenu's
+  // outside-click listener; this makes the keyboard shortcut behave the same —
+  // otherwise the flyout would be repositioned mid-way through the rail's 0.1s
+  // width transition and end up with a stale left offset once the transition
+  // finishes.
+  closeFlyouts()
 }
 
 // --- Hover-to-open flyouts (NMS-20273) -----------------------------------
@@ -185,12 +219,23 @@ const onRailMouseOver = (event: MouseEvent) => {
   const target = event.target as HTMLElement | null
   const item = target?.closest<HTMLElement>('.p-tieredmenu-root-list > .p-tieredmenu-item') ?? null
 
-  if (!item || item === hoveredItem) {
+  if (item === hoveredItem) {
     return
   }
 
-  hoveredItem = item
+  // Also covers the pointer landing on the rail's own chrome — the toggle
+  // button, the gap below the last entry — where item is null. The dwell has
+  // to be cancelled there too: its only guard is `hoveredItem !== item`, so
+  // leaving hoveredItem set would let it fire for an entry the pointer has
+  // already left, opening a flyout under it (reaching for the toggle is the
+  // common case). Clearing hoveredItem also re-arms the dwell if the pointer
+  // comes back to that same entry.
   window.clearTimeout(hoverOpenTimer)
+  hoveredItem = item
+
+  if (!item) {
+    return
+  }
 
   // Already in hover mode: TieredMenu's own mouseenter handler switches
   // flyouts, so no dwell and nothing for us to do.
@@ -222,22 +267,7 @@ const onRailMouseLeave = () => {
   clearHoverTimers()
   hoveredItem = null
 
-  hoverCloseTimer = window.setTimeout(() => {
-    const menu = tieredMenuRef.value
-
-    if (!menu) {
-      return
-    }
-
-    // Same guard as togglePinned: hide() also resets focusedItemInfo, so only
-    // call it when there is actually a flyout to close. Otherwise just drop
-    // out of hover mode, so re-entering the rail needs a fresh dwell.
-    if (menu.activeItemPath?.length) {
-      menu.hide()
-    } else {
-      menu.dirty = false
-    }
-  }, HOVER_CLOSE_DELAY_MS)
+  hoverCloseTimer = window.setTimeout(closeFlyouts, HOVER_CLOSE_DELAY_MS)
 }
 
 // Global shortcut: Ctrl+\ toggles the rail expand/collapse, so the menu can be

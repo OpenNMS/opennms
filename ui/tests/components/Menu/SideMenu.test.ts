@@ -320,6 +320,71 @@ describe('SideMenu.vue', () => {
       expect(activePath()).toHaveLength(0)
     })
 
+    it('cancels a pending dwell when the pointer moves onto the rail chrome', async () => {
+      await rootItems()[0].trigger('mouseover')
+
+      // The common 'hover an entry, then reach for the toggle' motion. The
+      // toggle is inside the nav, so no mouseleave fires to stop the dwell.
+      await wrapper.get('.onms-side-menu__toggle').trigger('mouseover')
+      vi.advanceTimersByTime(HOVER_OPEN_DELAY_MS)
+      await nextTick()
+
+      expect(activePath()).toHaveLength(0)
+      expect(menu().dirty).toBe(false)
+
+      // Coming back to the same entry has to re-arm the dwell, not sit inert.
+      await dwellOn(0)
+      expect(activePath()).toHaveLength(1)
+    })
+
+    it('leaves hover mode when the rail is toggled with no flyout open', async () => {
+      // dirty with an empty activeItemPath is reachable: hovering a direct link
+      // once in hover mode routes through TieredMenu's own onItemChange, which
+      // empties activeItemPath but never clears dirty.
+      await dwellOn(0)
+      await rootItems()[1].trigger('mouseover')
+      await rootItems()[1].get('.p-tieredmenu-item-content').trigger('mouseenter')
+      await nextTick()
+      expect(activePath()).toHaveLength(0)
+      expect(menu().dirty).toBe(true)
+
+      window.dispatchEvent(ctrlBackslash())
+      await nextTick()
+
+      // Otherwise every hover after the toggle opens instantly, with no dwell.
+      expect(menu().dirty).toBe(false)
+    })
+
+    it('keeps the focused entry when the pointer leaves a menu that holds focus', async () => {
+      await dwellOn(0)
+
+      // Stands in for a user who clicked or tabbed in and then arrowed into the
+      // submenu: TieredMenu focuses its menubar, and hide() resets
+      // focusedItemInfo along with everything else.
+      menu().focused = true
+      menu().focusedItemInfo = { index: 1, level: 1, parentKey: '0' }
+
+      await wrapper.get('nav').trigger('mouseleave')
+      vi.advanceTimersByTime(HOVER_CLOSE_DELAY_MS)
+      await nextTick()
+
+      expect(activePath()).toHaveLength(0)
+      // Back on the root entry whose flyout was open, rather than discarded —
+      // the same place TieredMenu itself lands after closing a submenu.
+      expect(menu().focusedItemInfo).toEqual({ index: 0, level: 0, parentKey: '' })
+    })
+
+    it('discards nothing after a pure hover, which never focuses the menu', async () => {
+      await dwellOn(0)
+      expect(menu().focused).toBe(false)
+
+      await wrapper.get('nav').trigger('mouseleave')
+      vi.advanceTimersByTime(HOVER_CLOSE_DELAY_MS)
+      await nextTick()
+
+      expect(menu().focusedItemInfo).toEqual({ index: -1, level: 0, parentKey: '' })
+    })
+
     it('behaves the same way while the rail is pinned open', async () => {
       await wrapper.get('.onms-side-menu__toggle').trigger('click')
       expect(isOpen()).toBe(true)
