@@ -572,6 +572,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         m_groups.forEach(Schedulable::unschedule);
         m_groups.clear();
 
+        // these three are scheduled only at init and re-read the interval on
+        // every reschedule, so a changed topology_interval applies here too
+        m_nodesTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
+        m_networkRouterTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
+        m_userDefinedLinkTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
+
         if (m_ospfTopologyUpdater.isRegistered()) {
             m_ospfTopologyUpdater.unschedule();
             m_ospfTopologyUpdater.unregister();
