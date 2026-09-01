@@ -29,23 +29,39 @@ import { rest } from './axiosInstances'
 // A status API and on-page status display are follow-up tickets.
 
 export interface ReloadableDaemon {
-  // the exact daemonName parm value the daemon matches on (casing matters)
   name: string
   label: string
   description: string
 }
 
-// Mirrors DaemonReloadEnum (core/lib), the canonical set the Karaf
-// reload-daemon command completes on. Keep in sync when the enum grows.
+// Every daemon with a reloadDaemonConfig handler in the codebase; each handler
+// subscribes independently, so this union is hand-maintained. All handlers
+// match the daemonName parm case-insensitively. Provisioning adapters
+// (Provisiond.*) and correlation engines also accept targeted reloads but are
+// components addressed by their own name, not daemons, so they are not listed.
 export const RELOADABLE_DAEMONS: ReloadableDaemon[] = [
-  { name: 'alarmd', label: 'Alarmd', description: 'Alarm processing: reduction, correlation, and northbound rules.' },
+  { name: 'Ackd', label: 'Ackd', description: 'Acknowledgment readers and their schedules.' },
+  { name: 'Alarmd', label: 'Alarmd', description: 'Alarm processing: reduction, correlation, and northbound rules.' },
+  { name: 'Bsmd', label: 'Bsmd', description: 'Business service hierarchy and reduction rules.' },
   { name: 'Collectd', label: 'Collectd', description: 'Performance data collection packages and schedules.' },
+  { name: 'Discovery', label: 'Discovery', description: 'Discovery ranges, foreign sources, and schedules.' },
+  { name: 'Enlinkd', label: 'Enlinkd', description: 'Topology link discovery protocols and schedules.' },
   { name: 'Eventd', label: 'Eventd', description: 'Event configuration (eventconf) and processing.' },
   { name: 'Notifd', label: 'Notifd', description: 'Notifications, destination paths, and notice queues.' },
+  { name: 'PerspectivePoller', label: 'Perspective Poller', description: 'Monitoring perspective polling packages.' },
   { name: 'Pollerd', label: 'Pollerd', description: 'Service polling packages, thresholds, and outage handling.' },
-  { name: 'syslogd', label: 'Syslogd', description: 'Syslog reception and matching rules.' },
+  { name: 'Provisiond', label: 'Provisiond', description: 'Provisioning: import schedules and detection settings.' },
+  { name: 'Reportd', label: 'Reportd', description: 'Scheduled report definitions and delivery.' },
+  { name: 'Scriptd', label: 'Scriptd', description: 'Event-driven scripts and script engines.' },
+  { name: 'Statsd', label: 'Statsd', description: 'Statistics report definitions and schedules.' },
+  { name: 'Syslogd', label: 'Syslogd', description: 'Syslog reception and matching rules.' },
   { name: 'Telemetryd', label: 'Telemetryd', description: 'Telemetry listeners, parsers, and adapters.' },
-  { name: 'trapd', label: 'Trapd', description: 'SNMP trap reception configuration.' }
+  { name: 'Threshd', label: 'Threshd', description: 'Thresholding configuration and package assignments.' },
+  { name: 'Ticketd', label: 'Ticketd', description: 'Trouble-ticketing integration settings.' },
+  { name: 'Tl1d', label: 'Tl1d', description: 'TL1 network element connections.' },
+  { name: 'Translator', label: 'Translator', description: 'Event translation specifications.' },
+  { name: 'Trapd', label: 'Trapd', description: 'SNMP trap reception configuration.' },
+  { name: 'Vacuumd', label: 'Vacuumd', description: 'Database automations, triggers, and actions.' }
 ]
 
 const RELOAD_UEI = 'uei.opennms.org/internal/reloadDaemonConfig'

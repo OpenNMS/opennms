@@ -304,7 +304,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='scv-container']//p[text()='Add Credentials']")));
 
         clickMenuItem("Tools", "Daemon Management");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card-title' and text()='Daemon Management']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and text()='Daemon Management']")));
 
         // Omitting for now - need ROLE_FILESYSTEM_EDITOR
         // clickMenuItem("toolsMenu", "File Editor");

@@ -12,8 +12,10 @@
       previous configuration in effect.
     </p>
     <p>
-      Only the daemons listed here support config reload. Starting and stopping daemons, and live daemon status,
-      are not yet available from this page.
+      This page lists the daemons that handle the reload event. Some specialized components — provisioning
+      adapters (addressed as <em>Provisiond.&lt;AdapterName&gt;</em>) and correlation engines — also accept
+      targeted reloads but are configured through their own subsystems and are not listed here. Starting and
+      stopping daemons, and live daemon status, are not yet available from this page.
     </p>
   </div>
 </template>

@@ -52,9 +52,17 @@ describe('daemonService', () => {
     await expect(reloadDaemon('trapd')).rejects.toThrow('403')
   })
 
-  it('keeps the exact daemonName casing the daemons match on', () => {
-    // reload matching is case-sensitive per daemon (DaemonReloadEnum wire values)
-    expect(RELOADABLE_DAEMONS.map(d => d.name)).toEqual(
-      ['alarmd', 'Collectd', 'Eventd', 'Notifd', 'Pollerd', 'syslogd', 'Telemetryd', 'trapd'])
+  it('covers the daemons with reloadDaemonConfig handlers, without duplicates', () => {
+    // every handler matches daemonName case-insensitively, so casing is display
+    // preference; the set is the hand-maintained union of handler subscriptions
+    const names = RELOADABLE_DAEMONS.map(d => d.name)
+    expect(new Set(names).size).toBe(names.length)
+    for (const name of ['Ackd', 'Alarmd', 'Bsmd', 'Collectd', 'Discovery', 'Enlinkd', 'Eventd', 'Notifd',
+      'PerspectivePoller', 'Pollerd', 'Provisiond', 'Reportd', 'Scriptd', 'Statsd', 'Syslogd',
+      'Telemetryd', 'Threshd', 'Ticketd', 'Tl1d', 'Translator', 'Trapd', 'Vacuumd']) {
+      expect(names).toContain(name)
+    }
+    const labels = RELOADABLE_DAEMONS.map(d => d.label)
+    expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b)))
   })
 })

@@ -21,64 +21,38 @@
 ///
 
 import DaemonManagement from '@/containers/DaemonManagement.vue'
-import { flushPromises, mount } from '@vue/test-utils'
+import DaemonManagementTable from '@/components/DaemonManagement/DaemonManagementTable.vue'
+import { useMenuStore } from '@/stores/menuStore'
+import { createTestingPinia } from '@pinia/testing'
+import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
+import { setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { reloadDaemon } from '@/services/daemonService'
 
-const showSnackBar = vi.fn()
-vi.mock('@/composables/useSnackbar', () => ({
-  default: () => ({ showSnackBar })
-}))
-
-vi.mock('@/services/daemonService', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@/services/daemonService')>()
-  return { ...original, reloadDaemon: vi.fn() }
+const mountContainer = () => mount(DaemonManagement, {
+  global: {
+    plugins: [PrimeVue],
+    stubs: { DaemonManagementTable: true, BreadCrumbs: true }
+  }
 })
 
-const mountPage = async () => {
-  const wrapper = mount(DaemonManagement, {
-    global: {
-      plugins: [PrimeVue],
-      stubs: { BreadCrumbs: true, AboutDialogButton: true, DaemonManagementAbout: true }
-    }
-  })
-  await flushPromises()
-  return wrapper
-}
-
-describe('DaemonManagement.vue', () => {
+describe('DaemonManagement.vue (container)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
+    useMenuStore().mainMenu = { homeUrl: '/opennms/index.jsp' } as any
   })
 
-  it('lists every reloadable daemon with a reload action', async () => {
-    const wrapper = await mountPage()
-    const table = wrapper.find('[data-test="daemons-table"]')
-    for (const name of ['Alarmd', 'Collectd', 'Eventd', 'Notifd', 'Pollerd', 'Syslogd', 'Telemetryd', 'Trapd']) {
-      expect(table.text()).toContain(name)
-    }
-    expect(wrapper.findAll('[data-test^="reload-"]')).toHaveLength(8)
+  it('renders the page title and the daemons table', () => {
+    const wrapper = mountContainer()
+    expect(wrapper.find('h1.page-title').text()).toBe('Daemon Management')
+    expect(wrapper.findComponent(DaemonManagementTable).exists()).toBe(true)
   })
 
-  it('requests the reload with the exact wire name and confirms via snackbar', async () => {
-    vi.mocked(reloadDaemon).mockResolvedValue()
-    const wrapper = await mountPage()
-
-    await wrapper.find('[data-test="reload-Pollerd"]').trigger('click')
-    await flushPromises()
-
-    expect(reloadDaemon).toHaveBeenCalledWith('Pollerd')
-    expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringContaining('Reload requested for Pollerd') }))
-  })
-
-  it('surfaces a failed reload request as an error snackbar', async () => {
-    vi.mocked(reloadDaemon).mockRejectedValue(new Error('boom'))
-    const wrapper = await mountPage()
-
-    await wrapper.find('[data-test="reload-trapd"]').trigger('click')
-    await flushPromises()
-
-    expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+  it('points the Home crumb at the OpenNMS home page, not the SPA root', () => {
+    const wrapper = mountContainer()
+    const crumbs = (wrapper.vm as any).breadcrumbs
+    expect(crumbs[0]).toEqual({ label: 'Home', to: '/opennms/index.jsp', isAbsoluteLink: true })
+    expect(crumbs[1]).toEqual({ label: 'Daemon Management', to: '#', position: 'last' })
   })
 })
