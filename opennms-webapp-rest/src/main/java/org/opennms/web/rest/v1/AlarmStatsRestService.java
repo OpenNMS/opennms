@@ -174,7 +174,6 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
             builder.eq("severity", severity);
         }
 
-        builder.fetch("firstEvent", FetchType.EAGER);
         builder.fetch("lastEvent", FetchType.EAGER);
         
         builder.alias("node", "node", JoinType.LEFT_JOIN);
