@@ -23,7 +23,7 @@ package org.opennms.netmgt.enlinkd;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 
 import org.opennms.core.spring.BeanUtils;
@@ -99,26 +99,29 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     @Autowired
     private NodesOnmsTopologyUpdater m_nodesTopologyUpdater;
+    // the swapped-on-reload updaters are volatile so event and shell threads
+    // see the clone reload() installs
     @Autowired
-    private BridgeOnmsTopologyUpdater m_bridgeTopologyUpdater;
+    private volatile BridgeOnmsTopologyUpdater m_bridgeTopologyUpdater;
     @Autowired
-    private CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
+    private volatile CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
     @Autowired
-    private LldpOnmsTopologyUpdater m_lldpTopologyUpdater;
+    private volatile LldpOnmsTopologyUpdater m_lldpTopologyUpdater;
     @Autowired
-    private IsisOnmsTopologyUpdater m_isisTopologyUpdater;
+    private volatile IsisOnmsTopologyUpdater m_isisTopologyUpdater;
     @Autowired
-    private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
+    private volatile OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
     @Autowired
-    private OspfAreaOnmsTopologyUpdater m_ospfAreaTopologyUpdater;
+    private volatile OspfAreaOnmsTopologyUpdater m_ospfAreaTopologyUpdater;
     @Autowired
-    private DiscoveryBridgeDomains m_discoveryBridgeDomains;
+    private volatile DiscoveryBridgeDomains m_discoveryBridgeDomains;
     @Autowired
     private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
     @Autowired
     private NetworkRouterTopologyUpdater m_networkRouterTopologyUpdater;
 
-    private final List<SchedulableNodeCollectorGroup> m_groups = new ArrayList<>();
+    // iterated by event and shell threads while reload() rebuilds it
+    private final List<SchedulableNodeCollectorGroup> m_groups = new CopyOnWriteArrayList<>();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -563,7 +566,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     }
 
     @Override
-    public void reload() {
+    public synchronized void reload() {
         LOG.info("reload: reload enlinkd daemon service");
 
         m_groups.forEach(Schedulable::unschedule);
@@ -616,7 +619,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         try {
             m_linkdConfig.reload();
         } catch (IOException e) {
-            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
+            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage(), e);
+            return false;
+        } catch (RuntimeException e) {
+            // JaxbUtils reports a malformed config as a runtime DataAccessException
+            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage(), e);
             return false;
         }
         reload();
