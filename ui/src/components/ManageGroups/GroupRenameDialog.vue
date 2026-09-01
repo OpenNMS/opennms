@@ -76,7 +76,9 @@ watch(
   () => props.visible,
   (isVisible) => {
     if (isVisible) {
-      newName.value = ''
+      // pre-populate with the current name (NMS-20282): most renames are small
+      // edits, and Rename stays disabled until the name actually changes
+      newName.value = props.groupName
       errorText.value = ''
     }
   }

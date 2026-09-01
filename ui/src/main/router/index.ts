@@ -203,6 +203,26 @@ const router = createRouter({
       }
     },
     {
+      // :groupName can be an existing group's name, or 'create' for a new group
+      path: '/admin/groups/:groupName',
+      name: 'Group Editor',
+      component: () => import('@/containers/GroupEditor.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage groups.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/map',
       name: 'Map',
       component: () => import('@/containers/Map.vue'),

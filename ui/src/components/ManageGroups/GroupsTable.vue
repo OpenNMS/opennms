@@ -8,7 +8,7 @@
           label="Add New Group"
           icon="pi pi-plus"
           data-test="add-group-button"
-          @click="openEditor(null)"
+          @click="router.push({ path: '/admin/groups/create' })"
         />
         <AboutDialogButton title="Groups">
           <GroupsAbout />
@@ -66,7 +66,7 @@
               :title="`Edit ${data.name}`"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-group-button"
-              @click="openEditor(data)"
+              @click="openEditor(data.name)"
             />
             <OnmsIconButton
               :icon="Delete"
@@ -102,10 +102,6 @@
     </div>
   </TableCard>
 
-  <GroupEditorDialog
-    v-model:visible="showEditor"
-    :group="groupToEdit"
-  />
   <GroupRenameDialog
     v-model:visible="showRename"
     :groupName="actionGroupName"
@@ -128,13 +124,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
 import GroupsAbout from '@/components/ManageGroups/GroupsAbout.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -145,9 +141,8 @@ import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
 const store = useGroupAdminStore()
+const router = useRouter()
 
-const showEditor = ref(false)
-const groupToEdit = ref<ManagedGroup | null>(null)
 const showRename = ref(false)
 const actionGroupName = ref('')
 const showDeleteConfirmation = ref(false)
@@ -159,9 +154,10 @@ const emptyListContent = {
 
 const isProtected = (name: string) => PROTECTED_GROUP_NAMES.includes(name)
 
-const openEditor = (group: ManagedGroup | null) => {
-  groupToEdit.value = group
-  showEditor.value = true
+// the editor is a routed page now (NMS-20282): too much form for a dialog,
+// and deep-linkable like the users editor
+const openEditor = (groupName: string) => {
+  router.push({ path: `/admin/groups/${encodeURIComponent(groupName)}` })
 }
 
 const openRename = (group: ManagedGroup) => {
