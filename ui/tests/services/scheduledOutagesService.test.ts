@@ -95,18 +95,25 @@ describe('scheduledOutagesService', () => {
     expect(rest.delete).toHaveBeenCalledWith('/sched-outages/nightly/notifd')
   })
 
-  it('builds the node autocomplete query and maps id/label', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { node: [{ id: '7', label: 'core-sw' }] }})
-    const nodes = await searchOutageNodes('core')
-    expect(v2.get).toHaveBeenCalledWith('/nodes?limit=200&_s=node.label==*core*')
+  it('searches nodes case-insensitively via the v1 ilike comparator', async () => {
+    // v2 FIQL wildcards are a case-sensitive LIKE; only v1 offers ilike
+    vi.mocked(rest.get).mockResolvedValue({ data: { node: [{ id: '7', label: 'core-sw' }] }})
+    const nodes = await searchOutageNodes('CORE')
+    expect(rest.get).toHaveBeenCalledWith('/nodes?limit=200&comparator=ilike&label=%25CORE%25')
     expect(nodes).toEqual([{ id: 7, label: 'core-sw' }])
   })
 
   it('strips FIQL/URL metacharacters from the autocomplete query', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { node: [] }})
+    vi.mocked(rest.get).mockResolvedValue({ data: { node: [] }})
     await searchOutageNodes('a*b);node.id==1&x=2')
-    // metacharacters that could break out of the FIQL term or inject params are removed
-    expect(v2.get).toHaveBeenCalledWith('/nodes?limit=200&_s=node.label==*abnode.id1x2*')
+    // metacharacters that could break out of the term or inject params are removed
+    expect(rest.get).toHaveBeenCalledWith('/nodes?limit=200&comparator=ilike&label=%25abnode.id1x2%25')
+  })
+
+  it('ORs the raw and lowercased term for interface hostname search', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: { ipInterface: [] }})
+    await searchOutageInterfaces('GW')
+    expect(v2.get).toHaveBeenCalledWith('/ipinterfaces?limit=200&_s=ipHostName==*gw*,ipHostName==*GW*')
   })
 
   // The v2 API rejects wildcards on the IP_ADDRESS-typed ipAddress property and

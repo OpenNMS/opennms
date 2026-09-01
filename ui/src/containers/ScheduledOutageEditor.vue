@@ -9,8 +9,11 @@
     <OnmsCard>
       <template #content>
       <div class="page-header">
-        <h2 class="headline3" data-test="editor-title">Editing Outage: {{ name }}</h2>
-        <OnmsButton variant="text" label="Cancel" data-test="cancel" @click="goBack" />
+        <OnmsButton variant="text" class="back-button" data-test="back-button" @click="goBack">
+          <OnmsIcon :icon="ArrowBack" />
+          Go Back
+        </OnmsButton>
+        <h2 class="headline3" data-test="editor-title">{{ isNew ? 'New Scheduled Outage' : 'Edit Scheduled Outage' }}: {{ name }}</h2>
       </div>
 
       <div v-if="loading" data-test="editor-loading">Loading…</div>
@@ -26,8 +29,8 @@
           <section class="selection">
             <h3 class="section-title">Nodes and Interfaces</h3>
             <div class="pickers">
-              <NodeInterfacePicker mode="node" :items="outage.node ?? []" :nodeLabels="nodeLabels" @add="addNode" @remove="removeNode" />
-              <NodeInterfacePicker mode="interface" :items="outage.interface ?? []" @add="addInterface" @remove="removeInterface" />
+              <NodeInterfacePicker mode="node" :items="outage.node ?? []" :nodeLabels="nodeLabels" :matchAny="isMatchAny" @add="addNode" @remove="removeNode" />
+              <NodeInterfacePicker mode="interface" :items="outage.interface ?? []" :matchAny="isMatchAny" @add="addInterface" @remove="removeInterface" />
             </div>
             <div class="match-any-row">
               <OnmsButton
@@ -36,9 +39,6 @@
                 data-test="match-any"
                 @click="selectAll"
               />
-              <span v-if="isMatchAny" class="match-any-note" data-test="match-any-note">
-                Applies to all nodes and interfaces.
-              </span>
             </div>
             <p v-if="showSelectionError" class="field-error" data-test="selection-error">
               You must select at least one node or interface for this scheduled outage.
@@ -85,7 +85,7 @@
         </div>
 
         <div v-if="!loadFailed" class="actions">
-          <OnmsButton label="Save Outage" data-test="save" :disabled="saving" @click="save" />
+          <OnmsButton :label="isNew ? 'Create' : 'Save'" data-test="save" :disabled="saving" @click="save" />
           <OnmsButton variant="text" label="Cancel" data-test="cancel-bottom" @click="goBack" />
         </div>
       </template>
@@ -122,7 +122,8 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsCard, OnmsConfirmationDialog, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard, OnmsConfirmationDialog, OnmsIcon, OnmsSelect } from '@opennms/onms-ui'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -183,11 +184,12 @@ const showTypeChangeConfirm = ref(false)
 const nodeLabels = reactive<Record<number, string>>({})
 // the type currently reflected by outage.time, so a type change can warn before
 // discarding spans that were entered under the previous type
-const lastType = ref<OutageType | undefined>(undefined)
+const lastType = ref<OutageType | undefined>(isNew ? 'specific' : undefined)
 
 const outage = reactive<ScheduledOutage>({
   name,
-  type: undefined,
+  // a new outage starts on a usable form: type pre-selected, spans addable
+  type: isNew ? 'specific' : undefined,
   time: [],
   node: [],
   interface: []
@@ -447,15 +449,22 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
 .outage-editor {
   .page-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .back-button {
+    padding-left: 0;
   }
 
   .editor-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
+    // the applies column spans both rows; without content-sized rows the
+    // browser distributes its extra height as blank space above the schedule
+    grid-template-rows: min-content 1fr;
     grid-template-areas:
       'selection applies'
       'schedule applies';
@@ -481,10 +490,6 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
     align-items: center;
     gap: 0.75rem;
     margin-top: 1rem;
-  }
-
-  .match-any-note {
-    color: var(--p-text-muted-color);
   }
 
   .field-error,

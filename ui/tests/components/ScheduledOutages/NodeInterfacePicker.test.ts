@@ -46,19 +46,31 @@ describe('NodeInterfacePicker.vue', () => {
       items: [{ id: 5 }, { id: 99 }],
       nodeLabels: { 5: 'core-router' }
     })
-    const chips = wrapper.findAll('.chip').map(c => c.text())
+    const chips = wrapper.findAll('[data-test="picker-node-chip"]').map(c => c.text())
     expect(chips[0]).toContain('core-router (id 5)')
     expect(chips[1]).toContain('Node id 99 (not found)')
   })
 
   it('shows interface addresses as-is', () => {
     const wrapper = mountPicker({ mode: 'interface', items: [{ address: '10.0.0.1' }] })
-    expect(wrapper.find('.chip').text()).toContain('10.0.0.1')
+    expect(wrapper.find('[data-test="picker-interface-chip"]').text()).toContain('10.0.0.1')
   })
 
   it('emits remove with the item index', async () => {
     const wrapper = mountPicker({ mode: 'interface', items: [{ address: '10.0.0.1' }, { address: '10.0.0.2' }] })
-    await wrapper.findAll('[data-test="picker-interface-remove"]')[1].trigger('click')
+    await wrapper.findAll('[data-test="picker-interface-chip"] .p-chip-remove-icon')[1].trigger('click')
     expect(wrapper.emitted('remove')).toEqual([[1]])
+  })
+
+  it('renders friendly all-selected chips for match-any', () => {
+    // the wire value is the match-any pseudo-interface; users see All Nodes /
+    // All Interfaces instead of the internal token
+    const nodeSide = mountPicker({ mode: 'node', items: [], matchAny: true })
+    expect(nodeSide.find('[data-test="picker-node-all"]').text()).toContain('All Nodes')
+    expect(nodeSide.find('[data-test="picker-node-empty"]').exists()).toBe(false)
+
+    const ifaceSide = mountPicker({ mode: 'interface', items: [{ address: 'match-any' }], matchAny: true })
+    expect(ifaceSide.find('[data-test="picker-interface-chip"]').text()).toContain('All Interfaces')
+    expect(ifaceSide.text()).not.toContain('match-any')
   })
 })

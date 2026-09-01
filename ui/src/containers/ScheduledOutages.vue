@@ -8,27 +8,23 @@
   <div class="scheduled-outages">
     <TableCard>
       <div class="header">
-        <div class="card-title">Scheduled Outages</div>
-        <div class="header-actions">
-          <FormField label="New outage name" for="new-outage-name">
-            <div class="create-row">
-              <OnmsInputText id="new-outage-name" v-model="newName" placeholder="New Name" data-test="new-name" />
-              <OnmsButton
-                icon="pi pi-plus"
-                label="Create"
-                :disabled="!newName.trim()"
-                data-test="create-outage"
-                @click="createOutage"
-              />
-            </div>
-          </FormField>
-          <AboutDialogButton title="Scheduled Outages">
-            <ScheduledOutagesAbout />
-          </AboutDialogButton>
+        <div class="title-block">
+          <div class="card-title">Scheduled Outages</div>
+          <div class="subtitle-row">
+            <span class="subtitle">View and create scheduled outages.</span>
+            <AboutDialogButton title="Scheduled Outages">
+              <ScheduledOutagesAbout />
+            </AboutDialogButton>
+          </div>
         </div>
+        <OnmsButton
+          icon="pi pi-plus"
+          label="Create New Outage"
+          data-test="create-outage"
+          @click="openCreateDialog"
+        />
       </div>
 
-      <p v-if="createError" class="error" data-test="create-error">{{ createError }}</p>
       <p v-if="loadError" class="error" data-test="load-error">{{ loadError }}</p>
 
       <OnmsTable
@@ -92,6 +88,30 @@
       </div>
     </TableCard>
 
+    <OnmsDialog
+      :visible="showCreateDialog"
+      modal
+      header="Create New Outage"
+      width="28rem"
+      data-test="create-dialog"
+      @update:visible="(value: boolean) => { if (!value) closeCreateDialog() }"
+    >
+      <FormField label="Name" for="new-outage-name" :error="createError">
+        <OnmsInputText
+          id="new-outage-name"
+          v-model="newName"
+          placeholder="Outage name"
+          fluid
+          data-test="new-name"
+          @keyup.enter="createOutage"
+        />
+      </FormField>
+      <div class="dialog-actions">
+        <OnmsButton variant="text" label="Cancel" data-test="create-cancel" @click="closeCreateDialog" />
+        <OnmsButton label="Create" :disabled="!newName.trim()" data-test="create-confirm" @click="createOutage" />
+      </div>
+    </OnmsDialog>
+
     <OnmsConfirmationDialog
       :visible="!!outageToDelete"
       title="Delete Scheduled Outage"
@@ -113,7 +133,7 @@
 import { computed, h, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 
@@ -163,7 +183,7 @@ const outageToDelete = ref('')
 
 const emptyContent = computed(() => ({
   title: 'No scheduled outages',
-  msg: 'Create one with the New Name field above.'
+  msg: 'Create one with the Create New Outage button above.'
 }))
 
 const load = async () => {
@@ -222,6 +242,18 @@ const selectionTitle = (o: ScheduledOutage): string => [
   ...(o.interface ?? []).map(i => i.address)
 ].join(', ')
 
+const showCreateDialog = ref(false)
+
+const openCreateDialog = () => {
+  newName.value = ''
+  createError.value = ''
+  showCreateDialog.value = true
+}
+
+const closeCreateDialog = () => {
+  showCreateDialog.value = false
+}
+
 const createOutage = () => {
   const name = newName.value.trim()
   createError.value = ''
@@ -261,7 +293,7 @@ const confirmDelete = async () => {
 .scheduled-outages {
   .header {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 1rem;
@@ -272,16 +304,21 @@ const confirmDelete = async () => {
     font-weight: 600;
   }
 
-  .header-actions {
-    display: flex;
-    align-items: flex-end;
-    gap: 0.75rem;
-  }
-
-  .create-row {
+  .subtitle-row {
     display: flex;
     align-items: center;
+    gap: 0.25rem;
+  }
+
+  .subtitle {
+    color: var(--p-text-muted-color);
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
     gap: 0.5rem;
+    margin-top: 1rem;
   }
 
   .action-container {

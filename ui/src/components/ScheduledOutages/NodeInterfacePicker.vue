@@ -26,30 +26,31 @@
 
     <div class="current">
       <div class="current-title">Current selection:</div>
-      <p v-if="!items.length" class="none" :data-test="`picker-${mode}-empty`">
+      <!-- match-any lives in the interface list; the node picker mirrors it as
+           a display-only chip so both read as "everything selected" -->
+      <div v-if="mode === 'node' && matchAny" class="chips">
+        <OnmsChip label="All Nodes" :data-test="`picker-${mode}-all`" />
+      </div>
+      <p v-else-if="!items.length" class="none" :data-test="`picker-${mode}-empty`">
         {{ mode === 'node' ? 'No specific nodes selected' : 'No specific interfaces selected' }}
       </p>
-      <ul v-else class="chips">
-        <li v-for="(item, index) in items" :key="index" class="chip">
-          <span>{{ labelFor(item) }}</span>
-          <OnmsIconButton
-            :icon="Delete"
-            severity="danger"
-            :title="`Remove ${labelFor(item)}`"
-            :aria-label="`Remove ${labelFor(item)}`"
-            :data-test="`picker-${mode}-remove`"
-            @click="emit('remove', index)"
-          />
-        </li>
-      </ul>
+      <div v-else class="chips">
+        <OnmsChip
+          v-for="(item, index) in items"
+          :key="index"
+          :label="labelFor(item)"
+          removable
+          :data-test="`picker-${mode}-chip`"
+          @remove="emit('remove', index)"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { OnmsAutoComplete, OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
-import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import { OnmsAutoComplete, OnmsButton, OnmsChip } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { OutageInterface, OutageNode } from '@/types/scheduledOutage'
 import { searchOutageInterfaces, searchOutageNodes } from '@/services/scheduledOutagesService'
@@ -64,6 +65,8 @@ const props = defineProps<{
   // node id -> label, resolved by the editor; ids without an entry are shown
   // as not-found (deleted nodes still referenced by the outage config)
   nodeLabels?: Record<number, string>
+  // the outage applies to everything; the node picker shows an All Nodes chip
+  matchAny?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -102,7 +105,7 @@ const addSelection = () => {
 
 const labelFor = (item: OutageNode | OutageInterface): string => {
   if (!('id' in item)) {
-    return item.address
+    return item.address === 'match-any' ? 'All Interfaces' : item.address
   }
   const label = props.nodeLabels?.[item.id]
   return label ? `${label} (id ${item.id})` : `Node id ${item.id} (not found)`
@@ -118,7 +121,7 @@ const labelFor = (item: OutageNode | OutageInterface): string => {
 
   .search-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.5rem;
 
     :deep(.p-autocomplete) {
@@ -143,22 +146,9 @@ const labelFor = (item: OutageNode | OutageInterface): string => {
   }
 
   .chips {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .chip {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.15rem 0.25rem;
-    border-radius: 4px;
-    background: var(--p-content-hover-background, rgba(127, 127, 127, 0.08));
+    flex-wrap: wrap;
+    gap: 0.35rem;
   }
 }
 </style>

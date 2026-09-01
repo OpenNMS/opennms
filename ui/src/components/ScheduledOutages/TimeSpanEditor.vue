@@ -27,11 +27,11 @@
 
       <template v-else>
         <div v-if="type === 'weekly'" class="span-row">
-          <span class="span-label">Day</span>
+          <span class="span-label">Day of Week</span>
           <OnmsSelect v-model="fields.day" :options="DAYS_OF_WEEK" optionLabel="label" optionValue="value" data-test="weekly-day" />
         </div>
         <div v-if="type === 'monthly'" class="span-row">
-          <span class="span-label">Day</span>
+          <span class="span-label">Day of Month</span>
           <OnmsSelect v-model="fields.day" :options="DAYS_OF_MONTH" optionLabel="label" optionValue="value" data-test="monthly-day" />
         </div>
         <div class="span-row">
@@ -48,7 +48,7 @@
         </div>
       </template>
 
-      <OnmsButton label="Add Outage" icon="pi pi-plus" data-test="add-time" @click="addSpan" />
+      <OnmsButton label="Add Timespan" icon="pi pi-plus" class="add-button" data-test="add-time" @click="addSpan" />
     </div>
 
     <ul v-if="times.length" class="span-list">
@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { OnmsButton, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import { OutageTime, OutageType } from '@/types/scheduledOutage'
@@ -101,6 +101,16 @@ const currentYear = new Date().getFullYear()
 const years = yearOptions(currentYear)
 const fields = reactive<TimeSpanFields>(defaultTimeSpanFields(currentYear))
 
+// the day field is shared between weekly (names) and monthly (numbers), so a
+// type switch must reset it to a value that exists in the new option list
+watch(() => props.type, (type) => {
+  if (type === 'monthly' && !DAYS_OF_MONTH.some(d => d.value === fields.day)) {
+    fields.day = '1'
+  } else if (type === 'weekly' && !DAYS_OF_WEEK.some(d => d.value === fields.day)) {
+    fields.day = 'sunday'
+  }
+}, { immediate: true })
+
 const addSpan = () => {
   emit('add', buildOutageTime(props.type, fields))
 }
@@ -128,8 +138,12 @@ const addSpan = () => {
   }
 
   .span-label {
-    width: 3rem;
+    width: 6.5rem;
     font-weight: 600;
+  }
+
+  .add-button {
+    align-self: flex-start;
   }
 
   .span-list {

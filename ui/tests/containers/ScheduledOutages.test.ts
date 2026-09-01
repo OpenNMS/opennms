@@ -60,7 +60,16 @@ const mountPage = async () => {
   const wrapper = mount(ScheduledOutages, {
     global: {
       plugins: [PrimeVue],
-      stubs: { BreadCrumbs: true, AboutDialogButton: true, ScheduledOutagesAbout: true }
+      stubs: {
+        BreadCrumbs: true,
+        AboutDialogButton: true,
+        ScheduledOutagesAbout: true,
+        // PrimeVue Dialog teleports to body, out of the wrapper's reach
+        OnmsDialog: {
+          props: ['visible', 'header'],
+          template: '<div v-if="visible" class="dialog-stub"><slot /></div>'
+        }
+      }
     }
   })
   await flushPromises()
@@ -99,6 +108,25 @@ describe('ScheduledOutages.vue', () => {
     const wrapper = await mountPage()
     expect(wrapper.find('[data-test="load-error"]').text()).toBe('Failed to load scheduled outages.')
     expect(wrapper.find('[data-test="outages-table"]').exists()).toBe(false)
+  })
+
+  it('creates through the dialog and routes to the editor', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    await wrapper.find('[data-test="new-name"]').setValue('maintenance')
+    await wrapper.find('[data-test="create-confirm"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith({ path: '/scheduled-outages/edit', query: { name: 'maintenance', new: 'true' }})
+  })
+
+  it('rejects a duplicate name in the create dialog', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    await wrapper.find('[data-test="new-name"]').setValue('nightly')
+    await wrapper.find('[data-test="create-confirm"]').trigger('click')
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('already exists')
   })
 
   it('routes edit to the editor with the outage name', async () => {

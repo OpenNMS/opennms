@@ -120,12 +120,14 @@ export const setNotificationMembership = async (outageName: string, applied: boo
   }
 }
 
-// Node label autocomplete for the node picker (id + label).
+// Node label autocomplete for the node picker (id + label). The v1 endpoint is
+// used because its ilike comparator gives a case-insensitive substring match,
+// which v2 FIQL wildcards (case-sensitive LIKE) cannot express.
 export const searchOutageNodes = async (query: string): Promise<{ id: number, label: string }[]> => {
   try {
     const term = sanitizeSearchTerm(query)
-    const filter = term ? `&_s=node.label==*${term}*` : ''
-    const resp = await v2.get(`/nodes?limit=200${filter}`)
+    const filter = term ? `&comparator=ilike&label=${encodeURIComponent(`%${term}%`)}` : ''
+    const resp = await rest.get(`/nodes?limit=200${filter}`)
     return asArray<any>(resp.data?.node)
       .map(n => ({ id: Number(n.id), label: n.label as string }))
       .filter(n => !Number.isNaN(n.id))
@@ -152,7 +154,12 @@ export const searchOutageInterfaces = async (query: string): Promise<{ address: 
   const term = sanitizeSearchTerm(query)
   const isExactIp = isCompleteIpAddress(term)
   try {
-    const filter = term ? (isExactIp ? `&_s=ipAddress==${term}` : `&_s=ipHostName==*${term}*`) : ''
+    // there is no v1 ipinterfaces endpoint (no ilike), so hostname matching
+    // ORs the raw and lowercased term — DNS names are stored lowercase, which
+    // makes this case-insensitive in practice
+    const hostFilters = [...new Set([term.toLowerCase(), term])]
+      .map(t => `ipHostName==*${t}*`).join(',')
+    const filter = term ? (isExactIp ? `&_s=ipAddress==${term}` : `&_s=${hostFilters}`) : ''
     const resp = await v2.get(`/ipinterfaces?limit=200${filter}`)
     const found = asArray<any>(resp.data?.ipInterface)
       .map(i => ({ address: i.ipAddress as string, nodeLabel: i.nodeLabel ?? '' }))
