@@ -404,7 +404,7 @@
         {
           "id": "manageUsers",
           "name": "Manage Users",
-          "url": "admin/userGroupView/users/list.jsp",
+          "url": "ui/index.html#/admin/users",
           "locationMatch": "",
           "roles": null
         },
