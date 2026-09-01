@@ -55,6 +55,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.ssl.SSLException;
 
@@ -125,6 +126,9 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private final ConfigurationAdmin configAdmin;
     private StreamObserver<RpcResponseProto> rpcStream;
     private StreamObserver<SinkMessage> sinkStream;
+    // Guards rpcStream writes with a lock rather than a monitor so that a virtual thread
+    // blocked on rpcStream.onNext() (e.g. gRPC backpressure) parks instead of pinning its carrier.
+    private final ReentrantLock rpcStreamLock = new ReentrantLock();
     private ConnectivityState currentChannelState;
     private MetricRegistry metrics;
     private TracerRegistry tracerRegistry;
@@ -474,15 +478,20 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         }
     }
 
-    private synchronized void sendRpcResponse(RpcResponseProto rpcResponseProto) {
-        if (rpcStream != null) {
-            try {
-                rpcStream.onNext(rpcResponseProto);
-            } catch (Exception e) {
-                LOG.error("Exception while sending RPC response : {}", rpcResponseProto);
+    private void sendRpcResponse(RpcResponseProto rpcResponseProto) {
+        rpcStreamLock.lock();
+        try {
+            if (rpcStream != null) {
+                try {
+                    rpcStream.onNext(rpcResponseProto);
+                } catch (Exception e) {
+                    LOG.error("Exception while sending RPC response : {}", rpcResponseProto);
+                }
+            } else {
+                throw new RuntimeException("RPC response handler not found");
             }
-        } else {
-            throw new RuntimeException("RPC response handler not found");
+        } finally {
+            rpcStreamLock.unlock();
         }
     }
 

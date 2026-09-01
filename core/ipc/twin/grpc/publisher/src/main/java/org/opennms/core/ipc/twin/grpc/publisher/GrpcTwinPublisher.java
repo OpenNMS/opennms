@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
@@ -59,6 +60,9 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     private Map<String, StreamObserver<TwinResponseProto>> sinkStreamsBySystemId = new HashMap<>();
     private final ExecutorService twinRpcExecutor = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("twin-rpc-handler-", 0).factory());
+    // Guards sink stream writes with a lock rather than a monitor so that a virtual thread
+    // blocked on stream.onNext() (e.g. gRPC backpressure) parks instead of pinning its carrier.
+    private final ReentrantLock sinkResponseLock = new ReentrantLock();
 
     public GrpcTwinPublisher(LocalTwinSubscriber twinSubscriber, GrpcIpcServer grpcIpcServer) {
         super(twinSubscriber);
@@ -70,27 +74,32 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
         sendTwinResponseForSink(mapTwinResponse(sinkUpdate));
     }
 
-    private synchronized boolean sendTwinResponseForSink(TwinResponseProto twinResponseProto) {
-        if (sinkStreamsByLocation.isEmpty()) {
-            return false;
-        }
+    private boolean sendTwinResponseForSink(TwinResponseProto twinResponseProto) {
+        sinkResponseLock.lock();
         try {
-            if (Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
-                LOG.debug("Sending sink update for key {} at all locations", twinResponseProto.getConsumerKey());
-                sinkStreamsByLocation.values().forEach(stream -> {
-                    stream.onNext(twinResponseProto);
-                });
-            } else {
-                String location = twinResponseProto.getLocation();
-                sinkStreamsByLocation.get(location).forEach(stream -> {
-                    stream.onNext(twinResponseProto);
-                    LOG.debug("Sending sink update for key {} at location {}", twinResponseProto.getConsumerKey(), twinResponseProto.getLocation());
-                });
+            if (sinkStreamsByLocation.isEmpty()) {
+                return false;
             }
-        } catch (Exception e) {
-            LOG.error("Error while sending Twin response for Sink stream", e);
+            try {
+                if (Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
+                    LOG.debug("Sending sink update for key {} at all locations", twinResponseProto.getConsumerKey());
+                    sinkStreamsByLocation.values().forEach(stream -> {
+                        stream.onNext(twinResponseProto);
+                    });
+                } else {
+                    String location = twinResponseProto.getLocation();
+                    sinkStreamsByLocation.get(location).forEach(stream -> {
+                        stream.onNext(twinResponseProto);
+                        LOG.debug("Sending sink update for key {} at location {}", twinResponseProto.getConsumerKey(), twinResponseProto.getLocation());
+                    });
+                }
+            } catch (Exception e) {
+                LOG.error("Error while sending Twin response for Sink stream", e);
+            }
+            return true;
+        } finally {
+            sinkResponseLock.unlock();
         }
-        return true;
     }
 
     public void start() throws IOException {
@@ -111,6 +120,11 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     }
 
     private class StreamHandler extends OpenNMSTwinIpcGrpc.OpenNMSTwinIpcImplBase {
+
+        // Guards rpc stream writes and sink-stream registration with a lock rather than a monitor
+        // so that a virtual thread blocked on onNext() (e.g. gRPC backpressure) parks instead of
+        // pinning its carrier.
+        private final ReentrantLock lock = new ReentrantLock();
 
         @Override
         public io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinRequestProto> rpcStreaming(
@@ -150,30 +164,40 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             };
         }
 
-        private synchronized void sendTwinResponse(TwinResponseProto twinResponseProto, StreamObserver<TwinResponseProto> rpcStream) {
-            if (rpcStream != null) {
-                rpcStream.onNext(twinResponseProto);
+        private void sendTwinResponse(TwinResponseProto twinResponseProto, StreamObserver<TwinResponseProto> rpcStream) {
+            lock.lock();
+            try {
+                if (rpcStream != null) {
+                    rpcStream.onNext(twinResponseProto);
+                }
+            } finally {
+                lock.unlock();
             }
         }
 
-        private synchronized void handleSinkStreamUpdate(MinionHeader request, StreamObserver<TwinResponseProto> responseObserver) {
-            if (sinkStreamsBySystemId.containsKey(request.getSystemId())) {
-                StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> sinkStream = sinkStreamsBySystemId.remove(request.getSystemId());
-                sinkStreamsByLocation.remove(request.getLocation(), sinkStream);
-            }
-            sinkStreamsByLocation.put(request.getLocation(), responseObserver);
-            sinkStreamsBySystemId.put(request.getSystemId(), responseObserver);
-
-            forEachSession(((sessionKey, twinTracker) -> {
-                if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
-                    TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
-                    twinUpdate.setSessionId(twinTracker.getSessionId());
-                    twinUpdate.setVersion(twinTracker.getVersion());
-                    twinUpdate.setPatch(false);
-                    TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
-                    responseObserver.onNext(twinResponseProto);
+        private void handleSinkStreamUpdate(MinionHeader request, StreamObserver<TwinResponseProto> responseObserver) {
+            lock.lock();
+            try {
+                if (sinkStreamsBySystemId.containsKey(request.getSystemId())) {
+                    StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> sinkStream = sinkStreamsBySystemId.remove(request.getSystemId());
+                    sinkStreamsByLocation.remove(request.getLocation(), sinkStream);
                 }
-            }));
+                sinkStreamsByLocation.put(request.getLocation(), responseObserver);
+                sinkStreamsBySystemId.put(request.getSystemId(), responseObserver);
+
+                forEachSession(((sessionKey, twinTracker) -> {
+                    if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
+                        TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
+                        twinUpdate.setSessionId(twinTracker.getSessionId());
+                        twinUpdate.setVersion(twinTracker.getVersion());
+                        twinUpdate.setPatch(false);
+                        TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                        responseObserver.onNext(twinResponseProto);
+                    }
+                }));
+            } finally {
+                lock.unlock();
+            }
         }
 
         @Override

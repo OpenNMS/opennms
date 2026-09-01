@@ -25,6 +25,8 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
@@ -43,6 +45,10 @@ public class LegacyPriorityExecutor implements PausableFiber {
     private final DelayQueue<PriorityReadyRunnable> priorityQueue;
     private final ExecutorService m_worker = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("LegacyPriorityExecutor-Worker-", 0).factory());
+    // Guards m_status with a lock rather than a monitor so that the virtual thread running the
+    // worker loop parks on await() instead of pinning its carrier while paused.
+    private final ReentrantLock m_lock = new ReentrantLock();
+    private final Condition m_statusChanged = m_lock.newCondition();
     private volatile int m_status;
     public LegacyPriorityExecutor(String parent, Integer poolSize, Integer queueSize) {
         m_parent=parent;
@@ -51,36 +57,54 @@ public class LegacyPriorityExecutor implements PausableFiber {
         priorityQueue = new DelayQueue<>();
     }
 
-    public synchronized void addPriorityReadyRunnable(PriorityReadyRunnable job) {
-        priorityQueue.add(job);
-        if (LOG.isInfoEnabled()) {
-            LOG.info("addPriorityReadyRunnable: Added {}, total in queue: {}", job.getInfo(), priorityQueue.size());
+    public void addPriorityReadyRunnable(PriorityReadyRunnable job) {
+        m_lock.lock();
+        try {
+            priorityQueue.add(job);
+            if (LOG.isInfoEnabled()) {
+                LOG.info("addPriorityReadyRunnable: Added {}, total in queue: {}", job.getInfo(), priorityQueue.size());
+            }
+        } finally {
+            m_lock.unlock();
         }
     }
 
     @Override
-    public synchronized void pause() {
-        if (m_status == PAUSED) {
-            return;
+    public void pause() {
+        m_lock.lock();
+        try {
+            if (m_status == PAUSED) {
+                return;
+            }
+            m_status=PAUSE_PENDING;
+            m_statusChanged.signalAll();
+        } finally {
+            m_lock.unlock();
         }
-        m_status=PAUSE_PENDING;
-        notifyAll();
     }
 
     @Override
-    public synchronized void resume() {
-        if (m_status == RUNNING) {
-            return;
+    public void resume() {
+        m_lock.lock();
+        try {
+            if (m_status == RUNNING) {
+                return;
+            }
+            m_status=RESUME_PENDING;
+            m_statusChanged.signalAll();
+        } finally {
+            m_lock.unlock();
         }
-        m_status=RESUME_PENDING;
-        notifyAll();
     }
 
     @Override
     public void start() {
         m_worker.execute(() -> {
-            synchronized (this) {
+            m_lock.lock();
+            try {
                 m_status = RUNNING;
+            } finally {
+                m_lock.unlock();
             }
             LOG.info("run: Priority Executor {} running", m_parent);
 
@@ -94,14 +118,15 @@ public class LegacyPriorityExecutor implements PausableFiber {
                             break;
                         }
                         // Drain can leave the dispatcher blocked on an empty queue; still honor pause.
-                        synchronized (this) {
+                        m_lock.lock();
+                        try {
                             if (m_status == PAUSE_PENDING) {
                                 LOG.info("run: pausing.");
                                 m_status = PAUSED;
-                                notifyAll();
+                                m_statusChanged.signalAll();
                             }
                             while (m_status == PAUSED) {
-                                wait();
+                                m_statusChanged.await();
                             }
                             if (m_status == STOP_PENDING) {
                                 LOG.info("run: status = {}, time to exit", m_status);
@@ -112,6 +137,8 @@ public class LegacyPriorityExecutor implements PausableFiber {
                                 LOG.info("run: resuming.");
                                 m_status = RUNNING;
                             }
+                        } finally {
+                            m_lock.unlock();
                         }
                     }
                     if (!keepRunning) {
@@ -125,8 +152,11 @@ public class LegacyPriorityExecutor implements PausableFiber {
                             LOG.info("run: pausing.");
                         }
                         m_status = PAUSED;
-                        synchronized (this) {
-                                wait();
+                        m_lock.lock();
+                        try {
+                            m_statusChanged.await();
+                        } finally {
+                            m_lock.unlock();
                         }
                     }
                     if (m_status == STOP_PENDING) {
@@ -156,21 +186,31 @@ public class LegacyPriorityExecutor implements PausableFiber {
     }
 
     @Override
-    public synchronized void stop() {
-        if (m_status == STOP_PENDING) {
-            return;
+    public void stop() {
+        m_lock.lock();
+        try {
+            if (m_status == STOP_PENDING) {
+                return;
+            }
+            m_status=STOP_PENDING;
+            priorityJobPoolExecutor.shutdown();
+            m_worker.shutdown();
+        } finally {
+            m_lock.unlock();
         }
-        m_status=STOP_PENDING;
-        priorityJobPoolExecutor.shutdown();
-        m_worker.shutdown();
     }
 
     @Override
-    public synchronized int getStatus() {
-        if (m_worker.isShutdown()) {
-            m_status=STOPPED;
+    public int getStatus() {
+        m_lock.lock();
+        try {
+            if (m_worker.isShutdown()) {
+                m_status=STOPPED;
+            }
+            return m_status;
+        } finally {
+            m_lock.unlock();
         }
-        return m_status;
     }
 
 
