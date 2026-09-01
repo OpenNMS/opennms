@@ -237,6 +237,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     public void destroy() {
         initialNodeSyncDone.countDown();
         executorService.shutdownNow();
+        refreshTimer.cancel();
     }
 
     public NodeDao getNodeDao() {
