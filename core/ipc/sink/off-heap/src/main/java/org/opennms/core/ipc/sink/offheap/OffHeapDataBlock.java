@@ -49,16 +49,23 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
     protected static final Logger LOG = LoggerFactory.getLogger(OffHeapDataBlock.class);
     protected static final ForkJoinPool serdesPool = new ForkJoinPool(
             Math.max(Runtime.getRuntime().availableProcessors() * 2, 4));
+    // flushToDisk() tasks run here. Kept separate from prefetchExecutorService so that
+    // prefetch tasks blocking in enableQueue() waiting on a flush future can never starve
+    // the threads a flush needs to actually run.
     protected static final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    // notifyNextDataBlock() prefetch tasks run here. They call enableQueue(), which can block
+    // waiting on an in-flight flush future; if that wait happened on the same pool as the flush
+    // itself, enough blocked prefetch tasks could wedge every flush behind them forever.
+    protected static final ExecutorService prefetchExecutorService = Executors.newFixedThreadPool(10);
 
     protected int queueSize;
-    protected BlockingQueue<Map.Entry<String, T>> queue;
+    protected volatile BlockingQueue<Map.Entry<String, T>> queue;
 
     private String name;
     private final Function<T, byte[]> serializer;
     private final Function<byte[], T> deserializer;
     private final Lock diskLock = new ReentrantLock(true);
-    private int offHeapQueueSize = -1;
+    private volatile int offHeapQueueSize = -1;
 
     private Future<Integer> future;
 
@@ -131,7 +138,7 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
             return;
         }
         if (nextDataBlock instanceof OffHeapDataBlock) {
-            executorService.submit(() -> {
+            prefetchExecutorService.submit(() -> {
                         try {
                             ((OffHeapDataBlock<T>) nextDataBlock).enableQueue();
                         } catch (ReadFailedException | InterruptedException e) {
