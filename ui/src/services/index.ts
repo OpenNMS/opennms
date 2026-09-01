@@ -77,6 +77,15 @@ import {
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import {
+  createManagedUser,
+  deleteManagedUser,
+  getAvailableUserRoles,
+  getManagedUsers,
+  renameManagedUser,
+  setManagedUserPassword,
+  updateManagedUser
+} from './userAdminService'
+import {
   createOnCallRole,
   deleteOnCallRole,
   getOnCallCalendar,
@@ -172,6 +181,13 @@ export default {
   renameOnCallRole,
   updateOnCallRole,
   performLogout,
+  createManagedUser,
+  deleteManagedUser,
+  getAvailableUserRoles,
+  getManagedUsers,
+  renameManagedUser,
+  setManagedUserPassword,
+  updateManagedUser,
   createManagedGroup,
   deleteManagedGroup,
   getGroupMemberCandidates,

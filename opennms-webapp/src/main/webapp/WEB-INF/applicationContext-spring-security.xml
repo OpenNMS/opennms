@@ -205,6 +205,13 @@
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/discovery/**" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
 
+    <!-- User management exposes contact details and account controls; admin-only in every method -->
+    <intercept-url pattern="/api/v2/users/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/users/**" method="HEAD" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/users/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/users/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/users/**" method="PUT" access="ROLE_ADMIN" />
+
     <!-- On-call roles drive notification scheduling; admin-only in every method -->
     <intercept-url pattern="/api/v2/on-call-roles/**" method="GET" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/on-call-roles/**" method="HEAD" access="ROLE_ADMIN" />
@@ -224,6 +231,7 @@
     <intercept-url pattern="/api/v2/groups/**" method="DELETE" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/groups/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/groups/**" method="PUT" access="ROLE_ADMIN" />
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
