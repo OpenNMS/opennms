@@ -3,11 +3,10 @@ import { describe, expect, it } from 'vitest'
 
 import {
   DEFAULT_RANGE,
-  HOUR_OPTIONS,
   relativeRangeOf,
   resolveRelativeRange,
   TIME_RANGE_OPTIONS
-} from '@/components/Resources/utils/timeRangeOptions'
+} from '@/components/Common/utils/timeRangeOptions'
 
 // A date well away from a DST boundary or month end, so the arithmetic below is
 // unambiguous.
@@ -80,26 +79,6 @@ describe('TIME_RANGE_OPTIONS', () => {
   it('carries exactly one duration field per option', () => {
     for (const option of TIME_RANGE_OPTIONS) {
       expect(Object.keys(option.time), option.label).toHaveLength(1)
-    }
-  })
-})
-
-describe('HOUR_OPTIONS', () => {
-  it('covers all 24 hours of the day in order', () => {
-    expect(HOUR_OPTIONS).toHaveLength(24)
-    expect(HOUR_OPTIONS.map(option => option.time.hours)).toEqual(
-      Array.from({ length: 24 }, (_unused, hour) => hour)
-    )
-  })
-
-  it('labels midnight and noon as 12 AM and 12 PM', () => {
-    expect(HOUR_OPTIONS[0].label).toBe('12 AM')
-    expect(HOUR_OPTIONS[12].label).toBe('12 PM')
-  })
-
-  it('uses numeric hours, so add() cannot concatenate them', () => {
-    for (const option of HOUR_OPTIONS) {
-      expect(typeof option.time.hours, option.label).toBe('number')
     }
   })
 })
