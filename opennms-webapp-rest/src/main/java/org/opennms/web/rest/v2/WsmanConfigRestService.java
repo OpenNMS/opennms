@@ -29,9 +29,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -47,17 +49,21 @@ import javax.ws.rs.core.SecurityContext;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.config.wsman.credentials.Range;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
+import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.model.WsmanConfigDto;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate.DefinitionUpdate;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate.RangeUpdate;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate.SettingsUpdate;
+import org.opennms.web.rest.v2.model.WsmanDataCollectionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -80,8 +86,15 @@ public class WsmanConfigRestService {
 
     private static final int MAX_PORT = 65535;
 
+    // relative to opennms.home, as WSManDataCollectionConfigDaoJaxb declares them
+    private static final Path DATA_COLLECTION_ROOT = Paths.get("etc", "wsman-datacollection-config.xml");
+    private static final Path DATA_COLLECTION_DIR = Paths.get("etc", "wsman-datacollection.d");
+
     @Autowired
     private WSManConfigDao wsManConfigDao;
+
+    @Autowired
+    private WSManDataCollectionConfigDao wsManDataCollectionConfigDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -129,6 +142,49 @@ public class WsmanConfigRestService {
             writeConfig(next);
             return Response.ok(WsmanConfigDto.from(readConfig())).build();
         }
+    }
+
+    @GET
+    @javax.ws.rs.Path("data-collection")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get the WS-Man data collection configuration", description = "Collections, groups and system definitions from wsman-datacollection-config.xml and wsman-datacollection.d, each tagged with its source file", operationId = "WsmanConfigRestServiceGetDataCollection")
+    public Response getDataCollection(@Context final SecurityContext securityContext) {
+        requireAdmin(securityContext);
+        final WsmanDataCollectionDto dto = new WsmanDataCollectionDto();
+        for (final Path file : dataCollectionFiles()) {
+            try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+                dto.addSource(file.getFileName().toString(), JaxbUtils.unmarshal(WsmanDatacollectionConfig.class, reader));
+            } catch (final IOException e) {
+                throw new WebApplicationException("Unable to read " + file + ": " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
+            }
+        }
+        return Response.ok(dto).build();
+    }
+
+    // The same file set, in the same order, that the merging DAO folds
+    // together: the root file first, then the drop-ins sorted by name.
+    private List<Path> dataCollectionFiles() {
+        final Path home = wsManDataCollectionConfigDao instanceof AbstractMergingJaxbConfigDao
+                ? ((AbstractMergingJaxbConfigDao<?, ?>) wsManDataCollectionConfigDao).getOpennmsHome()
+                : Paths.get(System.getProperty("opennms.home"));
+        final List<Path> files = new ArrayList<>();
+        final Path root = home.resolve(DATA_COLLECTION_ROOT);
+        if (Files.isReadable(root)) {
+            files.add(root);
+        }
+        final Path dir = home.resolve(DATA_COLLECTION_DIR);
+        if (Files.isDirectory(dir)) {
+            try (Stream<Path> stream = Files.list(dir)) {
+                stream.filter(Files::isRegularFile)
+                        .filter(Files::isReadable)
+                        .filter(f -> f.getFileName().toString().endsWith(".xml"))
+                        .sorted()
+                        .forEach(files::add);
+            } catch (final IOException e) {
+                throw new WebApplicationException("Unable to list " + dir + ": " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
+            }
+        }
+        return files;
     }
 
     private static void requireAdmin(final SecurityContext securityContext) {

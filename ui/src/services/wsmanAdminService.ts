@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection } from '@/types/wsmanAdmin'
 import { v2 } from './axiosInstances'
 
 // Manage WS-Man (NMS-20286): wsman-config.xml through /api/v2/wsman-config.
@@ -79,4 +79,30 @@ const updateWsmanConfig = async (input: WsmanConfigInput): Promise<string | null
   }
 }
 
-export { getWsmanConfig, updateWsmanConfig }
+const asList = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : [])
+
+// null on failure so the tab can show an error state
+const getWsmanDataCollection = async (): Promise<WsmanDataCollection | null> => {
+  try {
+    startSpinner()
+    const resp = await v2.get(`${endpoint}/data-collection`, { headers: { Accept: 'application/json' }})
+    const data = resp.data
+    if (!data || !Array.isArray(data.sources)) {
+      return null
+    }
+    return {
+      rrdRepository: data.rrdRepository ?? null,
+      sources: data.sources,
+      collections: asList(data.collections),
+      groups: asList(data.groups),
+      systemDefinitions: asList(data.systemDefinitions)
+    }
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to load the WS-Man data collection configuration.', error: true })
+    return null
+  } finally {
+    stopSpinner()
+  }
+}
+
+export { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig }

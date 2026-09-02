@@ -36,7 +36,7 @@ const mountPage = async (state: Record<string, unknown>) => {
   const wrapper = mount(ManageWsman, {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true, initialState: { wsmanAdminStore: state }})],
-      stubs: { WsmanHelpPanel: true, WsmanDefaultsCard: true, WsmanDefinitionsTable: true, BreadCrumbs: true }
+      stubs: { WsmanHelpPanel: true, WsmanDefaultsCard: true, WsmanDefinitionsTable: true, WsmanDataCollectionPanel: true, WsmanDefaultsDialog: true, WsmanDefinitionDialog: true, OnmsConfirmationDialog: true, BreadCrumbs: true }
     }
   })
   await flushPromises()
@@ -48,6 +48,7 @@ describe('ManageWsman.vue (container)', () => {
     const wrapper = await mountPage({ config: { defaults: SETTINGS, definitions: [] }, loadError: false })
     const store = useWsmanAdminStore()
     expect(store.getConfig).toHaveBeenCalled()
+    expect(store.getDataCollection).toHaveBeenCalled()
     expect(wrapper.find('.page-title').text()).toBe('Manage WS-Man')
     expect(wrapper.find('[data-test="tab-definitions"]').text()).toContain('Definitions (0)')
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)

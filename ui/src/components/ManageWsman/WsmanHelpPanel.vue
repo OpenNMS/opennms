@@ -29,7 +29,9 @@
           definition wins; use the Up and Down actions to change the order. Passwords are shown only as
           set or not set, and saving without entering one keeps the stored password. Changes are written to
           <code>wsman-config.xml</code> and picked up by the daemons without a restart. <strong>Data
-          Collection</strong> groups and system definitions live in <code>wsman-datacollection-config.xml</code>.
+          Collection</strong> shows the collections, system definitions and groups the collector merges from
+          <code>wsman-datacollection-config.xml</code> and <code>wsman-datacollection.d/</code>, with the file each
+          one comes from; it is read-only for now.
         </p>
       </div>
     </div>

@@ -28,6 +28,7 @@ import API from '@/services'
 vi.mock('@/services', () => ({
   default: {
     getWsmanConfig: vi.fn(),
+    getWsmanDataCollection: vi.fn(),
     updateWsmanConfig: vi.fn()
   }
 }))
@@ -61,6 +62,19 @@ describe('wsmanAdminStore', () => {
     vi.mocked(API.updateWsmanConfig).mockResolvedValueOnce('nope')
     expect(await store.saveConfig(input)).toBe('nope')
     expect(API.getWsmanConfig).toHaveBeenCalledTimes(1)
+  })
+
+  it('loads the data collection view and flags its failure separately', async () => {
+    const store = useWsmanAdminStore()
+    const dc = { rrdRepository: null, sources: ['wsman-datacollection-config.xml'], collections: [], groups: [], systemDefinitions: [] }
+    vi.mocked(API.getWsmanDataCollection).mockResolvedValueOnce(dc)
+    await store.getDataCollection()
+    expect(store.dataCollection).toEqual(dc)
+    expect(store.dataCollectionError).toBe(false)
+    vi.mocked(API.getWsmanDataCollection).mockResolvedValueOnce(null)
+    await store.getDataCollection()
+    expect(store.dataCollectionError).toBe(true)
+    expect(store.dataCollection).toEqual(dc)
   })
 
   it('flags a load error and keeps the previous configuration', async () => {

@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getWsmanConfig, updateWsmanConfig } from '@/services/wsmanAdminService'
+import { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig } from '@/services/wsmanAdminService'
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -56,6 +56,15 @@ describe('wsmanAdminService', () => {
     // an HTML error page is never shown verbatim
     vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 500, data: '<html>boom</html>' }})
     expect(await updateWsmanConfig(input)).toBe('Failed to save the WS-Man configuration.')
+  })
+
+  it('reads the data collection sub-resource and normalizes missing lists', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { sources: ['wsman-datacollection-config.xml'], collections: [{ name: 'default' }] }})
+    const result = await getWsmanDataCollection()
+    expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config/data-collection')
+    expect(result).toEqual({ rrdRepository: null, sources: ['wsman-datacollection-config.xml'], collections: [{ name: 'default' }], groups: [], systemDefinitions: [] })
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getWsmanDataCollection()).toBeNull()
   })
 
   it('returns null on failure or an unexpected body', async () => {

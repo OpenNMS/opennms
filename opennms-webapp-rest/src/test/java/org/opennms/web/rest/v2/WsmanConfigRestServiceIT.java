@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -128,10 +129,52 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testDataCollectionListsEveryFileWithItsObjects() throws Exception {
+        final JSONObject body = new JSONObject(getJson("/wsman-config/data-collection", 200));
+        // the root file first, then the shipped drop-ins in name order
+        final JSONArray sources = body.getJSONArray("sources");
+        assertEquals("wsman-datacollection-config.xml", sources.getString(0));
+        assertTrue(sources.toString().contains("dell-idrac.xml"));
+        assertTrue(sources.toString().contains("microsoft-windows.xml"));
+
+        final JSONObject collection = body.getJSONArray("collections").getJSONObject(0);
+        assertEquals("default", collection.getString("name"));
+        assertEquals("wsman-datacollection-config.xml", collection.getString("source"));
+        assertTrue(collection.getBoolean("includeAllSystemDefinitions"));
+        assertEquals(300, collection.getInt("rrdStep"));
+        assertEquals(5, collection.getJSONArray("rras").length());
+
+        JSONObject powerSupply = null;
+        final JSONArray groups = body.getJSONArray("groups");
+        for (int i = 0; i < groups.length(); i++) {
+            if ("drac-power-supply".equals(groups.getJSONObject(i).getString("name"))) {
+                powerSupply = groups.getJSONObject(i);
+            }
+        }
+        assertTrue("expected the drac-power-supply group", powerSupply != null);
+        assertEquals("dell-idrac.xml", powerSupply.getString("source"));
+        assertEquals("dracPowerSupplyIndex", powerSupply.getString("resourceType"));
+        assertEquals(5, powerSupply.getJSONArray("attributes").length());
+        assertEquals("gauge", powerSupply.getJSONArray("attributes").getJSONObject(0).getString("type"));
+
+        JSONObject idrac8 = null;
+        final JSONArray sysDefs = body.getJSONArray("systemDefinitions");
+        for (int i = 0; i < sysDefs.length(); i++) {
+            if ("Dell iDRAC 8".equals(sysDefs.getJSONObject(i).getString("name"))) {
+                idrac8 = sysDefs.getJSONObject(i);
+            }
+        }
+        assertTrue("expected the Dell iDRAC 8 system definition", idrac8 != null);
+        assertEquals(1, idrac8.getJSONArray("rules").length());
+        assertEquals("drac-system-board", idrac8.getJSONArray("includedGroups").getString(0));
+    }
+
+    @Test
     public void testForbiddenForNonAdmin() throws Exception {
         setUser("user", new String[]{ "ROLE_USER" });
         try {
             getJson("/wsman-config", 403);
+            getJson("/wsman-config/data-collection", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", "{\"defaults\":{},\"definitions\":[]}", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
