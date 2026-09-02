@@ -77,6 +77,13 @@ public class IpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.10"), 200));
         LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==*1"), 200));
         LOG.warn(sendRequest(GET, url, parseParamData("_s=snmpPrimary==P"), 200));
+
+        // ipAddress accepts iplike patterns, so a partial address can be
+        // searched without a hostname
+        assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.*"), 200)).getInt("count"));
+        assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.*.*"), 200)).getInt("count"));
+        assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.*,ipHostName==*nomatch*"), 200)).getInt("count"));
+        sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.11.*"), 204);
     }
 
     @Test

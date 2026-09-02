@@ -24,7 +24,7 @@ import ScheduledOutageEditor from '@/containers/ScheduledOutageEditor.vue'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getOutageApplicability, getScheduledOutage, saveScheduledOutage } from '@/services/scheduledOutagesService'
+import { getOutageApplicability, getScheduledOutage, saveScheduledOutage, setNotificationMembership, setPackageMembership } from '@/services/scheduledOutagesService'
 
 const push = vi.fn()
 const replace = vi.fn()
@@ -107,6 +107,26 @@ describe('ScheduledOutageEditor.vue', () => {
     expect(nodePicker.props('items')).toEqual([{ id: 7 }])
     expect(ifacePicker.props('items')).toEqual([])
     expect(ifacePicker.props('matchAny')).toBe(false)
+  })
+
+  it('reports an applies-to read failure instead of an empty matrix, and saves without touching memberships', async () => {
+    vi.mocked(getScheduledOutage).mockResolvedValue({
+      name: 'nightly', type: 'daily', time: [{ begins: '01:00:00', ends: '02:00:00' }], node: [], interface: [{ address: 'match-any' }]
+    } as any)
+    vi.mocked(getOutageApplicability).mockResolvedValue(null)
+    vi.mocked(saveScheduledOutage).mockResolvedValue(undefined as any)
+    const wrapper = await mountPage()
+
+    expect(wrapper.find('[data-test="applies-error"]').exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'AppliesToMatrix' }).exists()).toBe(false)
+    // the outage itself is still editable
+    expect(wrapper.find('[data-test="save"]').exists()).toBe(true)
+
+    await wrapper.find('[data-test="save"]').trigger('click')
+    await flushPromises()
+    expect(saveScheduledOutage).toHaveBeenCalled()
+    expect(setPackageMembership).not.toHaveBeenCalled()
+    expect(setNotificationMembership).not.toHaveBeenCalled()
   })
 
   it('treats new=true as a blank form without a load guard', async () => {

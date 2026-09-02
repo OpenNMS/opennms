@@ -101,6 +101,17 @@ describe('ScheduledOutages.vue', () => {
     expect(marks.filter(m => m === 'applied').length).toBe(3)
   })
 
+  it('renders memberships as unknown when applies-to cannot be read', async () => {
+    vi.mocked(getOutageApplicability).mockResolvedValue(null)
+    const wrapper = await mountPage()
+
+    expect(wrapper.find('[data-test="outages-table"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="applies-error"]').text()).toContain('unknown')
+    const marks = wrapper.findAll('[data-test="applied-mark"]').map(m => m.attributes('aria-label'))
+    expect(marks.length).toBe(8)
+    expect(marks.every(m => m === 'unknown')).toBe(true)
+  })
+
   it('shows node labels and interface addresses in the selection column', async () => {
     const wrapper = await mountPage()
     const text = wrapper.find('[data-test="outages-table"]').text()

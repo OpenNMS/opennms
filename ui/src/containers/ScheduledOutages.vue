@@ -27,6 +27,7 @@
 
       <p v-if="loadError" class="error" data-test="load-error">{{ loadError }}</p>
       <p v-if="actionError" class="error" data-test="action-error">{{ actionError }}</p>
+      <p v-if="appliesError" class="error" data-test="applies-error">{{ appliesError }}</p>
 
       <OnmsTable
         v-if="outages.length"
@@ -158,14 +159,15 @@ interface OutageRow extends ScheduledOutage {
   applies?: { notifications: boolean, polling: boolean, thresholds: boolean, collection: boolean }
 }
 
-// small inline green-check / muted-dash cell
+// small inline green-check / muted-dash cell; undefined (applies-to could not
+// be read) renders as unknown rather than as "not applied"
 const AppliedMark = (props: { on?: boolean }) =>
   h('span', {
-    class: props.on ? 'mark on' : 'mark off',
+    class: props.on === undefined ? 'mark unknown' : props.on ? 'mark on' : 'mark off',
     'data-test': 'applied-mark',
     role: 'img',
-    'aria-label': props.on ? 'applied' : 'not applied'
-  }, props.on ? '✓' : '—')
+    'aria-label': props.on === undefined ? 'unknown' : props.on ? 'applied' : 'not applied'
+  }, props.on === undefined ? '?' : props.on ? '✓' : '—')
 
 const router = useRouter()
 
@@ -182,6 +184,7 @@ const createError = ref('')
 const loadError = ref('')
 // kept separate from loadError, which the post-action reload resets
 const actionError = ref('')
+const appliesError = ref('')
 const outageToDelete = ref('')
 
 const emptyContent = computed(() => ({
@@ -205,15 +208,19 @@ const load = async () => {
   // One name-less applies-to call exposes every package's outage calendars, so
   // per-row membership is derived here instead of one request per outage.
   const appl = await getOutageApplicability()
-  const referencedBy = (packages: { calendars: string[] }[] | undefined, outageName: string) =>
-    !!packages?.some(p => p.calendars.includes(outageName))
+  appliesError.value = appl === null
+    ? 'Failed to load which subsystems each outage applies to; those columns are shown as unknown.'
+    : ''
+  const referencedBy = (packages: { calendars: string[] }[], outageName: string) =>
+    packages.some(p => p.calendars.includes(outageName))
   for (const row of rows) {
-    row.applies = {
-      notifications: !!appl?.notificationCalendars.includes(row.name),
-      polling: referencedBy(appl?.pollers, row.name),
-      thresholds: referencedBy(appl?.thresholders, row.name),
-      collection: referencedBy(appl?.collectors, row.name)
-    }
+    // leave applies unset on failure so the cells render as unknown, not "—"
+    row.applies = appl ? {
+      notifications: appl.notificationCalendars.includes(row.name),
+      polling: referencedBy(appl.pollers, row.name),
+      thresholds: referencedBy(appl.thresholders, row.name),
+      collection: referencedBy(appl.collectors, row.name)
+    } : undefined
   }
   // resolve node labels for the selection column in a single OR query
   const nodeIds = [...new Set(rows.flatMap(row => (row.node ?? []).map(n => n.id)))]
@@ -338,7 +345,8 @@ const confirmDelete = async () => {
     font-weight: 700;
   }
 
-  :deep(.mark.off) {
+  :deep(.mark.off),
+  :deep(.mark.unknown) {
     color: var(--p-text-muted-color);
   }
 }

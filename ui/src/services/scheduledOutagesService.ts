@@ -144,12 +144,24 @@ export const isCompleteIpAddress = (s: string): boolean => {
   return s.includes(':') && s.length >= 3 && /^[0-9a-fA-F:]+$/.test(s)
 }
 
-// IP interface autocomplete for the interface picker. The v2 API has no
-// substring search on ipAddress (it is IP_ADDRESS-typed, so wildcards 500) and
-// no ipLike param; ipHostName does accept wildcards and holds the address text
-// whenever DNS did not resolve. A complete IP queries ipAddress exactly and is
-// always offered as a suggestion itself, since poll-outages accepts any valid
-// address whether or not it is in inventory.
+// A partial dotted IPv4 (192, 192.168., 192.168.1) as the iplike pattern that
+// matches every address under it; null for anything else.
+export const ipv4PrefixPattern = (term: string): string | null => {
+  if (!/^\d{1,3}(\.\d{1,3}){0,2}\.?$/.test(term)) {
+    return null
+  }
+  const octets = term.split('.').filter(o => o !== '')
+  if (octets.some(o => Number(o) > 255)) {
+    return null
+  }
+  return [...octets, ...Array(4 - octets.length).fill('*')].join('.')
+}
+
+// IP interface autocomplete for the interface picker. A complete IP queries
+// ipAddress exactly and is always offered as a suggestion itself, since
+// poll-outages accepts any valid address whether or not it is in inventory.
+// A partial IPv4 also searches ipAddress as an iplike pattern, because
+// ipHostName holds the hostname wherever reverse DNS resolved.
 export const searchOutageInterfaces = async (query: string): Promise<{ address: string, nodeLabel: string }[]> => {
   const term = sanitizeSearchTerm(query)
   const isExactIp = isCompleteIpAddress(term)
@@ -159,7 +171,9 @@ export const searchOutageInterfaces = async (query: string): Promise<{ address: 
     // makes this case-insensitive in practice
     const hostFilters = [...new Set([term.toLowerCase(), term])]
       .map(t => `ipHostName==*${t}*`).join(',')
-    const filter = term ? (isExactIp ? `&_s=ipAddress==${term}` : `&_s=${hostFilters}`) : ''
+    const prefix = isExactIp ? null : ipv4PrefixPattern(term)
+    const partialFilters = prefix ? `ipAddress==${prefix},${hostFilters}` : hostFilters
+    const filter = term ? (isExactIp ? `&_s=ipAddress==${term}` : `&_s=${partialFilters}`) : ''
     const resp = await v2.get(`/ipinterfaces?limit=200${filter}`)
     const found = asArray<any>(resp.data?.ipInterface)
       .map(i => ({ address: i.ipAddress as string, nodeLabel: i.nodeLabel ?? '' }))

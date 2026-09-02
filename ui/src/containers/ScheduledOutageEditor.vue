@@ -72,7 +72,11 @@
           </section>
 
           <section class="applies">
+            <p v-if="appliesFailed" class="error" data-test="applies-error">
+              Failed to load which subsystems this outage applies to. Its memberships are left unchanged when you save; reload the page to try again.
+            </p>
             <AppliesToMatrix
+              v-else
               :notifications="applicability.notifications"
               :pollers="applicability.pollers"
               :thresholders="applicability.thresholders"
@@ -205,6 +209,8 @@ const applicability = reactive<OutageApplicability>({
 
 // snapshot of the loaded membership, to only PUT/DELETE what actually changed
 let originalApplicability: OutageApplicability | null = null
+// the applies-to read failed: an empty matrix would read as "nothing applied"
+const appliesFailed = ref(false)
 
 const isMatchAny = computed(() =>
   (outage.interface ?? []).some(i => i.address === MATCH_ANY)
@@ -242,7 +248,13 @@ onMounted(async () => {
       return
     }
   }
-  const appl = await getOutageApplicability(isNew ? undefined : name)
+  await loadApplicability(isNew ? undefined : name)
+  loading.value = false
+})
+
+const loadApplicability = async (outageName?: string) => {
+  const appl = await getOutageApplicability(outageName)
+  appliesFailed.value = appl === null
   if (appl) {
     applicability.notifications = appl.notifications
     applicability.pollers = appl.pollers
@@ -250,8 +262,7 @@ onMounted(async () => {
     applicability.collectors = appl.collectors
     originalApplicability = clone(appl)
   }
-  loading.value = false
-})
+}
 
 const resolveNodeLabels = async () => {
   const labels = await getNodeLabels((outage.node ?? []).map(n => n.id))
@@ -400,19 +411,13 @@ const save = async () => {
   }
 }
 
-const reloadApplicability = async () => {
-  const appl = await getOutageApplicability(outage.name)
-  if (appl) {
-    applicability.notifications = appl.notifications
-    applicability.pollers = appl.pollers
-    applicability.thresholders = appl.thresholders
-    applicability.collectors = appl.collectors
-    originalApplicability = clone(appl)
-  }
-}
+const reloadApplicability = () => loadApplicability(outage.name)
 
 // PUT/DELETE only the memberships that differ from what was loaded.
 const applyMembershipChanges = async () => {
+  if (appliesFailed.value) {
+    return
+  }
   const original = originalApplicability
   const wasApplied = (subsystem: Subsystem, pkgName: string): boolean => {
     if (!original) {

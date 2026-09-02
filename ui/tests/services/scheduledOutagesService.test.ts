@@ -26,6 +26,7 @@ import {
   getOutageApplicability,
   getScheduledOutage,
   getScheduledOutages,
+  ipv4PrefixPattern,
   searchOutageInterfaces,
   searchOutageNodes,
   setNotificationMembership,
@@ -116,14 +117,33 @@ describe('scheduledOutagesService', () => {
     expect(v2.get).toHaveBeenCalledWith('/ipinterfaces?limit=200&_s=ipHostName==*gw*,ipHostName==*GW*')
   })
 
-  // The v2 API rejects wildcards on the IP_ADDRESS-typed ipAddress property and
-  // any ipInterface.-prefixed property (both 500), so partial terms must search
-  // ipHostName and complete IPs must match ipAddress exactly.
-  it('searches partial interface terms via an ipHostName wildcard', async () => {
+  // ipAddress is IP_ADDRESS-typed, so only iplike patterns (10.0.*.*) are
+  // valid there; a partial IPv4 is widened to one and ORed with the hostname
+  // wildcard, since ipHostName holds the hostname wherever reverse DNS resolved
+  it('searches a partial IPv4 as an iplike pattern ORed with the hostname wildcard', async () => {
     vi.mocked(v2.get).mockResolvedValue({ data: { ipInterface: [{ ipAddress: '192.168.1.1', nodeLabel: 'gw' }] }})
     const result = await searchOutageInterfaces('192')
-    expect(v2.get).toHaveBeenCalledWith('/ipinterfaces?limit=200&_s=ipHostName==*192*')
+    expect(v2.get).toHaveBeenCalledWith('/ipinterfaces?limit=200&_s=ipAddress==192.*.*.*,ipHostName==*192*')
     expect(result).toEqual([{ address: '192.168.1.1', nodeLabel: 'gw' }])
+
+    await searchOutageInterfaces('192.168.1.')
+    expect(v2.get).toHaveBeenLastCalledWith('/ipinterfaces?limit=200&_s=ipAddress==192.168.1.*,ipHostName==*192.168.1.*')
+  })
+
+  it('widens a dotted prefix to four octets and rejects anything else', () => {
+    expect(ipv4PrefixPattern('10')).toBe('10.*.*.*')
+    expect(ipv4PrefixPattern('10.0')).toBe('10.0.*.*')
+    expect(ipv4PrefixPattern('10.0.1.')).toBe('10.0.1.*')
+    expect(ipv4PrefixPattern('999')).toBeNull()
+    expect(ipv4PrefixPattern('gw')).toBeNull()
+    expect(ipv4PrefixPattern('fe80:')).toBeNull()
+    expect(ipv4PrefixPattern('10.0.0.5')).toBeNull()
+  })
+
+  it('searches non-numeric terms via the ipHostName wildcard only', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: {}})
+    await searchOutageInterfaces('router')
+    expect(v2.get).toHaveBeenCalledWith('/ipinterfaces?limit=200&_s=ipHostName==*router*')
   })
 
   it('searches a complete IP via an exact ipAddress match and offers the typed IP itself', async () => {
