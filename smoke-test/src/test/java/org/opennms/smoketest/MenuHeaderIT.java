@@ -143,7 +143,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Applications']")));
 
         clickMenuItem("Distributed Monitoring", "Manage Monitoring Locations");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Monitoring Locations')]")));
+        // now a /ui (Vue) page rather than the legacy JSP breadcrumb
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Monitoring Locations']")));
 
         // Manage Inventory Menu
         clickMenuItem("Manage Inventory", "Provisioning Requisitions");

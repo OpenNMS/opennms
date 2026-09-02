@@ -30,6 +30,12 @@ import {
 } from './nodeService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
+import {
+  createMonitoringLocation,
+  deleteMonitoringLocation,
+  listMonitoringLocations,
+  updateMonitoringLocation
+} from './monitoringLocationAdminService'
 import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
@@ -117,6 +123,10 @@ export default {
   getNodeAvailabilityPercentage,
   getCategories,
   getMonitoringLocations,
+  createMonitoringLocation,
+  deleteMonitoringLocation,
+  listMonitoringLocations,
+  updateMonitoringLocation,
   getLog,
   getLogs,
   getFile,

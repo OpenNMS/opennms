@@ -127,6 +127,24 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin/monitoring-locations',
+      name: 'Manage Monitoring Locations',
+      component: () => import('@/containers/ManageMonitoringLocations.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage monitoring locations.' })
+            router.push(from.path)
+          }
+        }
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/configuration',
       name: 'Configuration',
       component: () => import('@/containers/ProvisionDConfig.vue'),
