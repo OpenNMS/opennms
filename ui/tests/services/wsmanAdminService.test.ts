@@ -38,10 +38,10 @@ describe('wsmanAdminService', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('reads /wsman-config and normalizes a missing definitions list', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { defaults: { username: 'root', hasPassword: true }}})
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { version: 'abc', defaults: { username: 'root', hasPassword: true }}})
     const result = await getWsmanConfig()
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config')
-    expect(result).toEqual({ defaults: { username: 'root', hasPassword: true }, definitions: [] })
+    expect(result).toEqual({ version: 'abc', defaults: { username: 'root', hasPassword: true }, definitions: [] })
   })
 
   it('PUTs the document and returns null on success or the server reason on failure', async () => {
@@ -71,6 +71,9 @@ describe('wsmanAdminService', () => {
     vi.mocked(v2.get).mockRejectedValueOnce(new Error('403'))
     expect(await getWsmanConfig()).toBeNull()
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: '<html>' })
+    expect(await getWsmanConfig()).toBeNull()
+    // a payload without the version token cannot be saved back safely
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { defaults: {}}})
     expect(await getWsmanConfig()).toBeNull()
   })
 })

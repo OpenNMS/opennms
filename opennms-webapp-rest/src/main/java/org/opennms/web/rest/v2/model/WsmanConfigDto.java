@@ -90,6 +90,8 @@ public class WsmanConfigDto {
 
     private final AgentSettings defaults;
     private final List<DefinitionDto> definitions = new ArrayList<>();
+    // content hash of the file this was read from; a PUT must present it
+    private String version;
 
     private WsmanConfigDto(final AgentSettings defaults) {
         this.defaults = defaults;
@@ -97,6 +99,8 @@ public class WsmanConfigDto {
 
     public AgentSettings getDefaults() { return defaults; }
     public List<DefinitionDto> getDefinitions() { return definitions; }
+    public String getVersion() { return version; }
+    public void setVersion(final String version) { this.version = version; }
 
     public static WsmanConfigDto from(final WsmanConfig config) {
         Objects.requireNonNull(config, "config");

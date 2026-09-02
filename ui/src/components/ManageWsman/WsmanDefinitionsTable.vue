@@ -3,7 +3,7 @@
     <template #title>
       <div class="card-header">
         <span class="card-title">Definitions</span>
-        <OnmsButton label="Add Definition" icon="pi pi-plus" size="small" data-test="add-definition" @click="emit('add')" />
+        <OnmsButton label="Add Definition" data-test="add-definition" @click="emit('add')" />
       </div>
     </template>
     <template #content>
@@ -40,8 +40,8 @@
         <OnmsColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
-              <OnmsButton variant="text" size="small" label="Up" :disabled="data.index === 0" :title="'Move up (matched earlier)'" data-test="move-up" @click="emit('move', data.index, -1)" />
-              <OnmsButton variant="text" size="small" label="Down" :disabled="data.index === rows.length - 1" :title="'Move down (matched later)'" data-test="move-down" @click="emit('move', data.index, 1)" />
+              <OnmsButton variant="text" label="Up" :disabled="data.index === 0" :title="'Move up (matched earlier)'" data-test="move-up" @click="emit('move', data.index, -1)" />
+              <OnmsButton variant="text" label="Down" :disabled="data.index === rows.length - 1" :title="'Move down (matched later)'" data-test="move-down" @click="emit('move', data.index, 1)" />
               <OnmsIconButton :icon="Edit" :title="`Edit definition ${data.index + 1}`" :aria-label="`Edit definition ${data.index + 1}`" data-test="edit-definition" @click="emit('edit', data.index)" />
               <OnmsIconButton :icon="Delete" severity="danger" :title="`Delete definition ${data.index + 1}`" :aria-label="`Delete definition ${data.index + 1}`" data-test="delete-definition" @click="emit('delete', data.index)" />
             </div>

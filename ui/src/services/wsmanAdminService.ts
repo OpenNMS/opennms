@@ -37,12 +37,13 @@ const getWsmanConfig = async (): Promise<WsmanConfig | null> => {
     startSpinner()
     const resp = await v2.get(endpoint, { headers: { Accept: 'application/json' }})
     const data = resp.data
-    if (!data || !data.defaults) {
+    if (!data || !data.defaults || typeof data.version !== 'string') {
       return null
     }
     return {
       defaults: data.defaults,
-      definitions: Array.isArray(data.definitions) ? data.definitions : []
+      definitions: Array.isArray(data.definitions) ? data.definitions : [],
+      version: data.version
     }
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load the WS-Man configuration.', error: true })

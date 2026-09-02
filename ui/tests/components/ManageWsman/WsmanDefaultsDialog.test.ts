@@ -39,6 +39,7 @@ const SETTINGS = {
   ssl: true, strictSsl: false, path: '/wsman', productVendor: null, productVersion: null, gssAuth: null
 }
 const CONFIG = {
+  version: 'v1',
   defaults: SETTINGS,
   definitions: [{ ...SETTINGS, ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [] }]
 }
@@ -70,6 +71,7 @@ describe('WsmanDefaultsDialog.vue', () => {
 
     expect(store.saveConfig).toHaveBeenCalledTimes(1)
     const input = store.saveConfig.mock.calls[0][0]
+    expect(input.version).toBe('v1')
     expect(input.defaults).toMatchObject({ username: 'operator', password: null, clearPassword: false, ssl: true })
     expect(input.definitions).toHaveLength(1)
     expect(input.definitions[0]).toMatchObject({ sourceIndex: 0, password: null, ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }] })
@@ -87,7 +89,7 @@ describe('WsmanDefaultsDialog.vue', () => {
 
   it('disables saving while a setting is out of range', async () => {
     await mountDialog()
-    await wrapper.find('[data-test="path-input"]').setValue('no-leading-slash')
+    await wrapper.find('[data-test="path-input"]').setValue('wsman path')
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 })

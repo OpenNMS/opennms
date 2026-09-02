@@ -9,7 +9,7 @@
       :error="errors.password"
       :hint="hasPassword ? 'A password is stored. Leave this blank to keep it.' : undefined"
     >
-      <OnmsPassword :inputId="`${idPrefix}-password`" :modelValue="modelValue.password" :feedback="false" toggleMask fluid :invalid="!!errors.password" data-test="password-input" @update:modelValue="set('password', $event ?? '')" />
+      <OnmsPassword :inputId="`${idPrefix}-password`" :modelValue="modelValue.password" toggleMask fluid :invalid="!!errors.password" data-test="password-input" @update:modelValue="set('password', $event ?? '')" />
     </FormField>
     <label v-if="hasPassword" class="check-row" data-test="clear-password-row">
       <OnmsCheckbox :modelValue="modelValue.clearPassword" binary data-test="clear-password" @update:modelValue="set('clearPassword', $event)" />

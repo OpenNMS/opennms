@@ -3,7 +3,7 @@
     <template #title>
       <div class="card-header">
         <span class="card-title">Agent Defaults</span>
-        <OnmsButton label="Edit" icon="pi pi-pencil" variant="outlined" size="small" data-test="edit-defaults" @click="emit('edit')" />
+        <OnmsButton label="Edit" variant="outlined" data-test="edit-defaults" @click="emit('edit')" />
       </div>
     </template>
     <template #content>

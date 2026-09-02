@@ -52,6 +52,8 @@ export interface WsmanDefinition extends WsmanAgentSettings {
 export interface WsmanConfig {
   defaults: WsmanAgentSettings
   definitions: WsmanDefinition[]
+  // content hash of the file; a save must present it and is refused if the file changed
+  version: string
 }
 
 // Request body of PUT /api/v2/wsman-config. password null keeps the stored
@@ -71,6 +73,7 @@ export interface WsmanDefinitionInput extends WsmanSettingsInput {
 }
 
 export interface WsmanConfigInput {
+  version: string
   defaults: WsmanSettingsInput
   definitions: WsmanDefinitionInput[]
 }

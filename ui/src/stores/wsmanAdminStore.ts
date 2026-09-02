@@ -47,12 +47,12 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     }
   }
 
-  // null on success (and the config is re-read), else the reason to show
+  // null on success, else the reason to show. The config is re-read either
+  // way: on success for the new state, on failure (e.g. a 409 because another
+  // admin saved first) so the next attempt is built from the current file.
   const saveConfig = async (input: WsmanConfigInput): Promise<string | null> => {
     const error = await API.updateWsmanConfig(input)
-    if (error === null) {
-      await getConfig()
-    }
+    await getConfig()
     return error
   }
 

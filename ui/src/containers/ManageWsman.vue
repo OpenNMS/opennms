@@ -13,16 +13,13 @@
     </p>
     <p v-if="actionError" class="error" data-test="action-error">{{ actionError }}</p>
 
-    <OnmsTabs v-else-if="store.config" v-model:value="activeTab">
+    <OnmsTabs v-if="store.config" v-model:value="activeTab">
       <OnmsTabList>
         <OnmsTab :value="0" data-test="tab-definitions">Definitions ({{ store.config.definitions.length }})</OnmsTab>
         <OnmsTab :value="1" data-test="tab-defaults">Agent Defaults</OnmsTab>
         <OnmsTab :value="2" data-test="tab-data-collection">Data Collection</OnmsTab>
       </OnmsTabList>
       <OnmsTabPanels>
-        <OnmsTabPanel :value="1">
-          <WsmanDefaultsCard :settings="store.config.defaults" @edit="showDefaultsDialog = true" />
-        </OnmsTabPanel>
         <OnmsTabPanel :value="0">
           <WsmanDefinitionsTable
             :definitions="store.config.definitions"
@@ -31,6 +28,9 @@
             @delete="askDelete"
             @move="moveDefinition"
           />
+        </OnmsTabPanel>
+        <OnmsTabPanel :value="1">
+          <WsmanDefaultsCard :settings="store.config.defaults" @edit="showDefaultsDialog = true" />
         </OnmsTabPanel>
         <OnmsTabPanel :value="2">
           <p v-if="store.dataCollectionError" class="error" data-test="data-collection-error">
