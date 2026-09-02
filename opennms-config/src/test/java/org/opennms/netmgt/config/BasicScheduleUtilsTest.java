@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
@@ -246,6 +247,28 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         assertTimeIntervalSequence(expected.toArray(new OwnedInterval[]{}), intervals);
     }
     
+    @Test
+    public void testSetOutCalTimeParsesRootLocaleMonthUnderForeignDefaultLocale() {
+        // WebSchedEntry writes 'specific' begins/ends with Locale.ROOT month
+        // abbreviations; setOutCalTime must parse them the same way regardless
+        // of the server's default locale, or the entry is silently dropped.
+        final Locale previous = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.GERMANY);
+            // seed a distinct date so a no-op parse (the pre-fix behaviour) is
+            // detectable rather than coincidentally matching
+            final Calendar cal = new GregorianCalendar(2000, Calendar.JANUARY, 1, 0, 0, 0);
+            BasicScheduleUtils.setOutCalTime(cal, "15-Sep-2093 09:30:00");
+            assertEquals(2093, cal.get(Calendar.YEAR));
+            assertEquals(Calendar.SEPTEMBER, cal.get(Calendar.MONTH));
+            assertEquals(15, cal.get(Calendar.DAY_OF_MONTH));
+            assertEquals(9, cal.get(Calendar.HOUR_OF_DAY));
+            assertEquals(30, cal.get(Calendar.MINUTE));
+        } finally {
+            Locale.setDefault(previous);
+        }
+    }
+
     @Test
     public void testNms6013IsTimeInScheduleWithDay() throws Exception {
         String schedSpec = "" +

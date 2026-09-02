@@ -86,6 +86,17 @@ import {
   updateManagedUser
 } from './userAdminService'
 import {
+  createOnCallRole,
+  deleteOnCallRole,
+  getOnCallCalendar,
+  getOnCallGroupCandidates,
+  getOnCallRole,
+  getOnCallSupervisorCandidates,
+  listOnCallRoles,
+  renameOnCallRole,
+  updateOnCallRole
+} from './onCallRoleAdminService'
+import {
   createManagedGroup,
   deleteManagedGroup,
   getGroupMemberCandidates,
@@ -160,6 +171,15 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
+  createOnCallRole,
+  deleteOnCallRole,
+  getOnCallCalendar,
+  getOnCallGroupCandidates,
+  getOnCallRole,
+  getOnCallSupervisorCandidates,
+  listOnCallRoles,
+  renameOnCallRole,
+  updateOnCallRole,
   performLogout,
   createManagedUser,
   deleteManagedUser,

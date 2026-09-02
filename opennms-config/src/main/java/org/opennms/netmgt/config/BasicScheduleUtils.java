@@ -23,6 +23,7 @@ package org.opennms.netmgt.config;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -168,7 +169,11 @@ public abstract class BasicScheduleUtils {
      */
     public static void setOutCalTime(final Calendar outCal, final String timeStr) {
         if (timeStr.length() == BasicScheduleUtils.FORMAT1.length()) {
-            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT1);
+            // FORMAT1 carries an abbreviated month (MMM); WebSchedEntry writes it
+            // with Locale.ROOT, so parse with Locale.ROOT too — otherwise a server
+            // whose default locale abbreviates months differently silently drops
+            // the schedule entry.
+            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT1, Locale.ROOT);
     
             // parse the date string passed
             Date tempDate = null;
@@ -192,7 +197,7 @@ public abstract class BasicScheduleUtils {
             outCal.set(Calendar.SECOND, tempCal.get(Calendar.SECOND));
             outCal.set(Calendar.MILLISECOND, 0);
         } else if (timeStr.length() == BasicScheduleUtils.FORMAT2.length()) {
-            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT2);
+            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT2, Locale.ROOT);
     
             // parse the date string passed
             Date tempDate = null;
