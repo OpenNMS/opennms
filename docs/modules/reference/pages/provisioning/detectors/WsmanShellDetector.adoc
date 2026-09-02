@@ -3,6 +3,7 @@
 
 The WsManShellDetector connects to the agent defined in `wsman-config.xml`, runs a command through WinRS (the Windows Remote Shell protocol carried over WS-Management), and marks the service as detected when its output matches an optional banner and, if configured, it exits with the expected code.
 Use it to define arbitrary services based on the state of the Windows host.
+Connection details, credentials, and Kerberos settings for the target come from `wsman-config.xml`; see xref:performance-data-collection/collectors/wsman.adoc#ga-performance-mgmt-collectors-wsman-agent-config[WS-Management agent configuration] and xref:configuration/wsman-kerberos.adoc[WS-Management Kerberos authentication and message encryption].
 
 The command runs as the user configured in `wsman-config.xml`.
 Give that account only the rights it needs: membership in the `Remote Management Users` group on the target is enough to run commands.

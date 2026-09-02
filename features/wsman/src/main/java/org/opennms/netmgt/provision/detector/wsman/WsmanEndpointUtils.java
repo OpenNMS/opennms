@@ -49,7 +49,10 @@ public class WsmanEndpointUtils {
         attributes.put(GSS_AUTH, Boolean.toString(endpoint.isGSSAuth()));
         attributes.put(KERBEROS_ENCRYPTION, Boolean.toString(endpoint.isKerberosEncryption()));
         attributes.put(STRICT_SSL, Boolean.toString(endpoint.isStrictSSL()));
-        if (endpoint.isBasicAuth()) {
+        // Credentials are carried whenever they are set, not only for basic authentication:
+        // with gss-auth or kerberos-encryption they are the Kerberos principal and password
+        // used to obtain the ticket, and isBasicAuth() is false in that case.
+        if (endpoint.getUsername() != null && endpoint.getPassword() != null) {
             attributes.put(USERNAME, endpoint.getUsername());
             attributes.put(PASSWORD, endpoint.getPassword());
         }

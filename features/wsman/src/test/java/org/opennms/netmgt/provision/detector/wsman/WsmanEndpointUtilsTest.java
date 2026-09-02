@@ -51,6 +51,31 @@ public class WsmanEndpointUtilsTest {
     }
 
     @Test
+    public void keepsCredentialsWithGssAuthAndKerberosEncryption() throws MalformedURLException {
+        // With GSS or Kerberos encryption the credentials are the Kerberos principal and password;
+        // isBasicAuth() is false, but they must still survive the trip through the map
+        WSManEndpoint kerberos = WsmanEndpointUtils.fromMap(WsmanEndpointUtils.toMap(
+                new WSManEndpoint.Builder("http://win.example.org:5985/wsman")
+                        .withKerberosEncryption()
+                        .withBasicAuth("svc@EXAMPLE.ORG", "secret")
+                        .build()));
+        assertTrue(kerberos.isKerberosEncryption());
+        assertFalse(kerberos.isBasicAuth());
+        assertEquals("svc@EXAMPLE.ORG", kerberos.getUsername());
+        assertEquals("secret", kerberos.getPassword());
+
+        WSManEndpoint gss = WsmanEndpointUtils.fromMap(WsmanEndpointUtils.toMap(
+                new WSManEndpoint.Builder("https://win.example.org:5986/wsman")
+                        .withGSSAuth()
+                        .withBasicAuth("svc@EXAMPLE.ORG", "secret")
+                        .build()));
+        assertTrue(gss.isGSSAuth());
+        assertFalse(gss.isKerberosEncryption());
+        assertEquals("svc@EXAMPLE.ORG", gss.getUsername());
+        assertEquals("secret", gss.getPassword());
+    }
+
+    @Test
     public void canConvertKerberosEncryptionToAndFromMap() throws MalformedURLException {
         WSManEndpoint expectedEndpoint = new WSManEndpoint.Builder("http://win.example.org:5985/wsman")
                 .withKerberosEncryption()
