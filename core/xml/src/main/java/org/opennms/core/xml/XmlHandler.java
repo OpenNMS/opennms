@@ -45,7 +45,19 @@ public class XmlHandler<U> {
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
 
+    public static <U> XmlHandler<U> forWire(Class<U> clazz) {
+        return new XmlHandler<>(clazz, JaxbUtils.MarshallerProfile.WIRE);
+    }
+
+    public static <U> XmlHandler<U> forConfig(Class<U> clazz) {
+        return new XmlHandler<>(clazz, JaxbUtils.MarshallerProfile.CONFIG);
+    }
+
     public XmlHandler(Class<U> clazz) {
+        this(clazz, JaxbUtils.MarshallerProfile.CONFIG);
+    }
+
+    private XmlHandler(Class<U> clazz, JaxbUtils.MarshallerProfile profile) {
         this.clazz = clazz;
         JAXBContext context;
         try {
@@ -53,7 +65,7 @@ public class XmlHandler<U> {
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
-        this.marshaller = JaxbUtils.getMarshallerFor(clazz, context);
+        this.marshaller = JaxbUtils.getMarshallerFor(clazz, context, profile);
         this.unmarshaller = JaxbUtils.getUnmarshallerFor(clazz, context, false);
         // Use the same event handler that we use in JaxbUtils
         try {
