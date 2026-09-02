@@ -28,6 +28,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
@@ -184,19 +187,17 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testUpdateKeepsReplacesAndClearsPasswords() throws Exception {
         // editing the defaults without a password keeps the stored one
-        String body = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config",
-                "{\"defaults\":{\"username\":\"operator\",\"ssl\":true,\"path\":\"/wsman\",\"timeout\":15000,\"retry\":2},\"definitions\":[]}", 200)
-                .getContentAsString();
+        String body = put("{\"defaults\":{\"username\":\"operator\",\"ssl\":true,\"path\":\"/wsman\",\"timeout\":15000,\"retry\":2},\"definitions\":[]}", 200);
         JSONObject defaults = new JSONObject(body).getJSONObject("defaults");
         assertEquals("operator", defaults.getString("username"));
         assertEquals(15000, defaults.getInt("timeout"));
         assertTrue(defaults.getBoolean("hasPassword"));
         assertTrue(fileContent().contains("password=\"calvin\""));
+        assertTrue("the rewritten file keeps an XML declaration", fileContent().startsWith("<?xml version=\"1.0\""));
         assertFalse(body.contains("calvin"));
 
         // a new definition with its own password
-        body = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config",
-                "{\"defaults\":{\"username\":\"operator\"},\"definitions\":[" + DEFINITION_10 + "]}", 200).getContentAsString();
+        body = put("{\"defaults\":{\"username\":\"operator\"},\"definitions\":[" + DEFINITION_10 + "]}", 200);
         final JSONObject def = new JSONObject(body).getJSONArray("definitions").getJSONObject(0);
         assertTrue(def.getBoolean("hasPassword"));
         assertEquals("10.0.0.1", def.getJSONArray("ranges").getJSONObject(0).getString("begin"));
@@ -204,19 +205,16 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(fileContent().contains("secret-one"));
 
         // re-saving it by sourceIndex without a password keeps it; a second new one goes in front of it
-        body = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config",
-                "{\"defaults\":{\"username\":\"operator\"},\"definitions\":["
+        body = put("{\"defaults\":{\"username\":\"operator\"},\"definitions\":["
                 + "{\"specifics\":[\"192.168.1.9\"],\"clearPassword\":false},"
-                + "{\"sourceIndex\":0,\"ranges\":[{\"begin\":\"10.0.0.1\",\"end\":\"10.0.0.50\"}],\"username\":\"monitor\",\"clearPassword\":false}]}", 200)
-                .getContentAsString();
+                + "{\"sourceIndex\":0,\"ranges\":[{\"begin\":\"10.0.0.1\",\"end\":\"10.0.0.50\"}],\"username\":\"monitor\",\"clearPassword\":false}]}", 200);
         assertEquals(2, new JSONObject(body).getJSONArray("definitions").length());
         assertFalse(new JSONObject(body).getJSONArray("definitions").getJSONObject(0).getBoolean("hasPassword"));
         assertTrue(new JSONObject(body).getJSONArray("definitions").getJSONObject(1).getBoolean("hasPassword"));
         assertTrue(fileContent().contains("secret-one"));
 
         // clearing removes it from the file
-        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config",
-                "{\"defaults\":{\"username\":\"operator\",\"clearPassword\":true},\"definitions\":["
+        put("{\"defaults\":{\"username\":\"operator\",\"clearPassword\":true},\"definitions\":["
                 + "{\"sourceIndex\":1,\"ranges\":[{\"begin\":\"10.0.0.1\",\"end\":\"10.0.0.50\"}],\"clearPassword\":true}]}", 200);
         body = getJson("/wsman-config", 200);
         assertFalse(new JSONObject(body).getJSONObject("defaults").getBoolean("hasPassword"));
@@ -229,33 +227,87 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testInvalidUpdatesAreRejectedAndLeaveTheFileAlone() throws Exception {
         final String before = fileContent();
         final String[] bad = {
-            // end before begin
+            // end before begin, mixed families, no criteria
             "{\"defaults\":{},\"definitions\":[{\"ranges\":[{\"begin\":\"10.0.0.50\",\"end\":\"10.0.0.1\"}]}]}",
-            // mixed families
             "{\"defaults\":{},\"definitions\":[{\"ranges\":[{\"begin\":\"10.0.0.1\",\"end\":\"fe80::1\"}]}]}",
-            // no criteria
             "{\"defaults\":{},\"definitions\":[{\"username\":\"x\"}]}",
-            // malformed IPLIKE and specific
-            "{\"defaults\":{},\"definitions\":[{\"ipMatches\":[\"10.0.*\"]}]}",
+            // a host name is not an address, even a resolvable one
+            "{\"defaults\":{},\"definitions\":[{\"specifics\":[\"localhost\"]}]}",
             "{\"defaults\":{},\"definitions\":[{\"specifics\":[\"not-an-ip\"]}]}",
-            // out-of-range settings and a bad path
+            // IPLIKE: too few fields, IPv6 (not in the schema), reversed range, double dash, octet above 255
+            "{\"defaults\":{},\"definitions\":[{\"ipMatches\":[\"10.0.*\"]}]}",
+            "{\"defaults\":{},\"definitions\":[{\"ipMatches\":[\"fe80:*:*:*:*:*:*:*\"]}]}",
+            "{\"defaults\":{},\"definitions\":[{\"ipMatches\":[\"10.0.0.50-1\"]}]}",
+            "{\"defaults\":{},\"definitions\":[{\"ipMatches\":[\"10.0.1-2-3.*\"]}]}",
+            "{\"defaults\":{},\"definitions\":[{\"ipMatches\":[\"10.0.0.999\"]}]}",
+            "{\"defaults\":{},\"definitions\":[{\"ipMatches\":[\"1000.*.*.*\"]}]}",
+            // out-of-range settings and whitespace in the path
             "{\"defaults\":{\"port\":70000},\"definitions\":[]}",
-            "{\"defaults\":{\"timeout\":0},\"definitions\":[]}",
+            "{\"defaults\":{\"timeout\":-1},\"definitions\":[]}",
             "{\"defaults\":{\"path\":\"wsman path\"},\"definitions\":[]}",
-            // a stale or duplicated source index
-            "{\"defaults\":{},\"definitions\":[{\"sourceIndex\":3,\"specifics\":[\"10.0.0.1\"]}]}",
-            "{\"defaults\":{},\"definitions\":[]}" // placeholder replaced below
+            // a new password and a clear request at once
+            "{\"defaults\":{\"password\":\"x\",\"clearPassword\":true},\"definitions\":[]}",
+            // a stale source index
+            "{\"defaults\":{},\"definitions\":[{\"sourceIndex\":3,\"specifics\":[\"10.0.0.1\"]}]}"
         };
-        for (int i = 0; i < bad.length - 1; i++) {
-            final String response = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", bad[i], 400).getContentAsString();
-            assertFalse("expected a plain-text reason for: " + bad[i], response.isBlank());
+        for (final String request : bad) {
+            final String response = put(request, 400);
+            assertFalse("expected a plain-text reason for: " + request, response.isBlank());
         }
+        // an omitted definitions list would silently drop every definition
+        assertFalse(put("{\"defaults\":{\"username\":\"operator\"}}", 400).isBlank());
         assertEquals("a rejected update must not touch the file", before, fileContent());
 
-        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config",
-                "{\"defaults\":{},\"definitions\":[" + DEFINITION_10 + "]}", 200);
-        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config",
-                "{\"defaults\":{},\"definitions\":[{\"sourceIndex\":0,\"specifics\":[\"10.0.0.1\"]},{\"sourceIndex\":0,\"specifics\":[\"10.0.0.2\"]}]}", 400);
+        put("{\"defaults\":{},\"definitions\":[" + DEFINITION_10 + "]}", 200);
+        // the same stored definition claimed twice
+        put("{\"defaults\":{},\"definitions\":[{\"sourceIndex\":0,\"specifics\":[\"10.0.0.1\"]},{\"sourceIndex\":0,\"specifics\":[\"10.0.0.2\"]}]}", 400);
+    }
+
+    @Test
+    public void testAcceptsWhatTheDaemonAccepts() throws Exception {
+        // the endpoint builder prepends the slash a path lacks, a zero timeout is
+        // legal, and an existing value must never block an unrelated save
+        final String body = put("{\"defaults\":{\"path\":\"wsman\",\"timeout\":0,\"username\":\" spaced \"},\"definitions\":["
+                + "{\"ipMatches\":[\"10.0.1-5,9.*\"],\"specifics\":[\"fe80::1\"]}]}", 200);
+        final JSONObject defaults = new JSONObject(body).getJSONObject("defaults");
+        assertEquals("wsman", defaults.getString("path"));
+        assertEquals(0, defaults.getInt("timeout"));
+        assertEquals(" spaced ", defaults.getString("username"));
+        assertEquals("fe80::1", new JSONObject(body).getJSONArray("definitions").getJSONObject(0).getJSONArray("specifics").getString(0));
+    }
+
+    @Test
+    public void testStaleVersionIsRefused() throws Exception {
+        final String stale = currentVersion();
+        put("{\"defaults\":{\"username\":\"first\"},\"definitions\":[]}", 200);
+        // a page loaded before that save must not overwrite it
+        final String response = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config",
+                "{\"version\":\"" + stale + "\",\"defaults\":{\"username\":\"second\"},\"definitions\":[]}", 409).getContentAsString();
+        assertTrue(response.contains("changed since"));
+        assertTrue(fileContent().contains("username=\"first\""));
+        // and a request with no version at all is a 400, not a blind write
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", "{\"defaults\":{\"username\":\"third\"},\"definitions\":[]}", 400);
+        assertTrue(fileContent().contains("username=\"first\""));
+    }
+
+    @Test
+    public void testRewriteKeepsFileMode() throws Exception {
+        // the file holds credentials; an operator's 0600 must survive a save
+        final Set<PosixFilePermission> restricted = PosixFilePermissions.fromString("rw-------");
+        Files.setPosixFilePermissions(m_workingCopy.toPath(), restricted);
+        put("{\"defaults\":{\"username\":\"operator\"},\"definitions\":[]}", 200);
+        assertEquals(restricted, Files.getPosixFilePermissions(m_workingCopy.toPath()));
+        assertTrue(fileContent().startsWith("<?xml version=\"1.0\""));
+    }
+
+    private String currentVersion() throws Exception {
+        return new JSONObject(getJson("/wsman-config", 200)).getString("version");
+    }
+
+    // every body is sent with the version the file has right now
+    private String put(final String bodyWithoutVersion, final int expectedStatus) throws Exception {
+        final String body = "{\"version\":\"" + currentVersion() + "\"," + bodyWithoutVersion.substring(1);
+        return sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", body, expectedStatus).getContentAsString();
     }
 
     private String fileContent() throws Exception {

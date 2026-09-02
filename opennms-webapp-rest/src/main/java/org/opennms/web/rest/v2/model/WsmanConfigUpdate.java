@@ -25,10 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Request body of PUT /api/v2/wsman-config: the whole document. A null
- * password keeps the stored one (the client never sees it); clearPassword
- * removes it. A definition's sourceIndex names the definition it was loaded
- * from, so its stored password follows it through edits and reordering.
+ * Request body of PUT /api/v2/wsman-config: the whole document, plus the
+ * version it was built from. A null password keeps the stored one (the
+ * client never sees it); clearPassword removes it. A definition's
+ * sourceIndex names the definition it was loaded from, so its stored
+ * password follows it through edits and reordering.
  */
 public class WsmanConfigUpdate {
 
@@ -102,10 +103,15 @@ public class WsmanConfigUpdate {
     }
 
     private SettingsUpdate defaults;
-    private List<DefinitionUpdate> definitions = new ArrayList<>();
+    // null (absent) is rejected: removing every definition must be an explicit empty list
+    private List<DefinitionUpdate> definitions;
+    // the version the client loaded; the write is refused if the file changed since
+    private String version;
 
     public SettingsUpdate getDefaults() { return defaults; }
     public void setDefaults(SettingsUpdate defaults) { this.defaults = defaults; }
     public List<DefinitionUpdate> getDefinitions() { return definitions; }
-    public void setDefinitions(List<DefinitionUpdate> definitions) { this.definitions = definitions == null ? new ArrayList<>() : definitions; }
+    public void setDefinitions(List<DefinitionUpdate> definitions) { this.definitions = definitions; }
+    public String getVersion() { return version; }
+    public void setVersion(String version) { this.version = version; }
 }

@@ -70,6 +70,7 @@ const save = async () => {
   try {
     // the definitions ride along unchanged; their index keeps their passwords
     const error = await store.saveConfig({
+      version: props.config.version,
       defaults: formToInput(form.value),
       definitions: props.config.definitions.map((d, i) => definitionToInput(d, i))
     })

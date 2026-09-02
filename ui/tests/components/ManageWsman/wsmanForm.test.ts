@@ -57,21 +57,31 @@ describe('wsmanForm', () => {
 
   it('carries every loaded definition with its index so stored passwords survive', () => {
     const input = configToInput({
+      version: 'abc',
       defaults: SETTINGS,
       definitions: [
         { ...SETTINGS, ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [] },
         { ...SETTINGS, ranges: [], specifics: ['10.1.1.1'], ipMatches: ['10.2.*.*'] }
       ]
     })
+    expect(input.version).toBe('abc')
     expect(input.definitions.map(d => d.sourceIndex)).toEqual([0, 1])
     expect(input.definitions.every(d => d.password === null && !d.clearPassword)).toBe(true)
     expect(input.definitions[1].ipMatches).toEqual(['10.2.*.*'])
   })
 
-  it('flags out-of-range settings and a conflicting password request', () => {
-    const errors = validateSettingsForm({ ...settingsToForm(SETTINGS), port: 70000, timeout: 0, retry: -1, path: 'wsman x', password: 'x', clearPassword: true })
+  it('flags only what the daemon cannot use, plus a conflicting password request', () => {
+    const errors = validateSettingsForm({ ...settingsToForm(SETTINGS), port: 70000, timeout: -1, retry: -1, path: 'wsman x', password: 'x', clearPassword: true })
     expect(Object.keys(errors).sort()).toEqual(['password', 'path', 'port', 'retry', 'timeout'])
     expect(validateSettingsForm(settingsToForm(SETTINGS))).toEqual({})
+    // a path without a leading slash and a zero timeout are fine (the endpoint builder copes)
+    expect(validateSettingsForm({ ...settingsToForm(SETTINGS), path: 'wsman', timeout: 0 })).toEqual({})
+  })
+
+  it('passes loaded values through untouched so an unrelated save cannot rewrite them', () => {
+    const input = configToInput({ version: 'v', defaults: { ...SETTINGS, username: ' spaced ' }, definitions: [] })
+    expect(input.defaults.username).toBe(' spaced ')
+    expect(input.defaults.password).toBeNull()
   })
 
   it('checks address shapes, range order and IPLIKE patterns', () => {
@@ -84,7 +94,11 @@ describe('wsmanForm', () => {
     expect(isIplikePattern('10.0.*.*')).toBe(true)
     expect(isIplikePattern('10.0.1-5,9.*')).toBe(true)
     expect(isIplikePattern('10.0.*')).toBe(false)
-    expect(isIplikePattern('fe80:*:*:*:*:*:*:*')).toBe(true)
+    // the schema allows IPv4 patterns only, and IPLike never matches these
+    expect(isIplikePattern('fe80:*:*:*:*:*:*:*')).toBe(false)
+    expect(isIplikePattern('10.0.0.50-1')).toBe(false)
+    expect(isIplikePattern('10.0.1-2-3.*')).toBe(false)
+    expect(isIplikePattern('10.0.0.999')).toBe(false)
     expect(isIplikePattern('not a pattern')).toBe(false)
   })
 })

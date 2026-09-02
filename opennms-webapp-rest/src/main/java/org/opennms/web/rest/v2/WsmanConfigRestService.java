@@ -23,16 +23,19 @@ package org.opennms.web.rest.v2;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
@@ -46,7 +49,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
-import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
@@ -67,6 +69,8 @@ import org.opennms.web.rest.v2.model.WsmanDataCollectionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.net.InetAddresses;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -75,9 +79,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * definitions) for the Manage WS-Man page. The file carries agent
  * credentials, so every method is admin-only and passwords are never
  * returned; an update keeps a stored password unless it is replaced or
- * explicitly cleared. The DAO's file-reload container picks the rewritten
- * file up on its next access, so the daemons see the change without a
- * restart.
+ * explicitly cleared, and must present the version it was built from so a
+ * stale page cannot overwrite another admin's change. The DAO's file-reload
+ * container picks the rewritten file up on its next access, so the daemons
+ * see the change without a restart.
  */
 @Component
 @javax.ws.rs.Path("wsman-config")
@@ -85,6 +90,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class WsmanConfigRestService {
 
     private static final int MAX_PORT = 65535;
+
+    // wsman-config.xsd's ip-match grammar: four dotted fields, each * or a
+    // comma list of numbers and a-b ranges. IPv6 patterns are not allowed.
+    private static final String IPLIKE_FIELD = "(\\*|[0-9]{1,3}((,|-)[0-9]{1,3})*)";
+    private static final Pattern IPLIKE_V4 = Pattern.compile("^" + IPLIKE_FIELD + "(\\." + IPLIKE_FIELD + "){3}$");
 
     // relative to opennms.home, as WSManDataCollectionConfigDaoJaxb declares them
     private static final Path DATA_COLLECTION_ROOT = Paths.get("etc", "wsman-datacollection-config.xml");
@@ -101,20 +111,31 @@ public class WsmanConfigRestService {
     @Operation(summary = "Get the WS-Man agent configuration", description = "Agent defaults and definitions from wsman-config.xml; passwords are reported as present or absent only", operationId = "WsmanConfigRestServiceGetConfig")
     public Response getConfig(@Context final SecurityContext securityContext) {
         requireAdmin(securityContext);
-        return Response.ok(WsmanConfigDto.from(readConfig())).build();
+        return Response.ok(toDto(readConfig())).build();
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Replace the WS-Man agent configuration", description = "Rewrites wsman-config.xml from the given defaults and definitions. A null password keeps the stored one; clearPassword removes it; a definition's sourceIndex carries its stored password over.", operationId = "WsmanConfigRestServiceUpdateConfig")
+    @Operation(summary = "Replace the WS-Man agent configuration", description = "Rewrites wsman-config.xml from the given defaults and definitions; the request must carry the version returned by GET and is refused with 409 if the file changed since. A null password keeps the stored one; clearPassword removes it; a definition's sourceIndex carries its stored password over.", operationId = "WsmanConfigRestServiceUpdateConfig")
     public Response updateConfig(@Context final SecurityContext securityContext, final WsmanConfigUpdate update) {
         requireAdmin(securityContext);
         if (update == null || update.getDefaults() == null) {
             throw badRequest("The configuration and its defaults are required.");
         }
+        if (update.getDefinitions() == null) {
+            throw badRequest("The definitions list is required; send an empty list to remove every definition.");
+        }
+        if (update.getVersion() == null || update.getVersion().isBlank()) {
+            throw badRequest("The version returned by GET is required.");
+        }
         synchronized (this) {
-            final WsmanConfig current = readConfig();
+            final Loaded loaded = readConfig();
+            if (!loaded.version.equals(update.getVersion())) {
+                throw new WebApplicationException(Response.status(Status.CONFLICT).type(MediaType.TEXT_PLAIN)
+                        .entity("The WS-Man configuration changed since it was loaded; reload the page and apply the change again.").build());
+            }
+            final WsmanConfig current = loaded.config;
             final WsmanConfig next = new WsmanConfig();
             applyDefaults(next, update.getDefaults(), current.getPassword());
             validateSettings(update.getDefaults(), "The defaults");
@@ -140,7 +161,7 @@ public class WsmanConfigRestService {
                 position++;
             }
             writeConfig(next);
-            return Response.ok(WsmanConfigDto.from(readConfig())).build();
+            return Response.ok(toDto(readConfig())).build();
         }
     }
 
@@ -154,8 +175,10 @@ public class WsmanConfigRestService {
         for (final Path file : dataCollectionFiles()) {
             try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                 dto.addSource(file.getFileName().toString(), JaxbUtils.unmarshal(WsmanDatacollectionConfig.class, reader));
-            } catch (final IOException e) {
-                throw new WebApplicationException("Unable to read " + file + ": " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
+            } catch (final IOException | RuntimeException e) {
+                // a hand-edited drop-in that no longer parses must name itself, not surface as a bare 500
+                throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN)
+                        .entity("Unable to read " + file.getFileName() + ": " + e.getMessage()).build());
             }
         }
         return Response.ok(dto).build();
@@ -210,27 +233,71 @@ public class WsmanConfigRestService {
         return Paths.get(System.getProperty("opennms.home"), "etc", "wsman-config.xml");
     }
 
-    private WsmanConfig readConfig() {
+    private static final class Loaded {
+        private final WsmanConfig config;
+        private final String version;
+
+        private Loaded(final WsmanConfig config, final String version) {
+            this.config = config;
+            this.version = version;
+        }
+    }
+
+    private Loaded readConfig() {
         final Path file = configFile();
-        try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-            return JaxbUtils.unmarshal(WsmanConfig.class, reader);
+        try {
+            final byte[] bytes = Files.readAllBytes(file);
+            try (Reader reader = new StringReader(new String(bytes, StandardCharsets.UTF_8))) {
+                return new Loaded(JaxbUtils.unmarshal(WsmanConfig.class, reader), digest(bytes));
+            }
         } catch (final IOException e) {
             throw new WebApplicationException("Unable to read " + file + ": " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Marshal first, then replace the file atomically, so a marshal failure or
-    // a crash mid-write can never leave a truncated wsman-config.xml behind.
+    private static WsmanConfigDto toDto(final Loaded loaded) {
+        final WsmanConfigDto dto = WsmanConfigDto.from(loaded.config);
+        dto.setVersion(loaded.version);
+        return dto;
+    }
+
+    private static String digest(final byte[] bytes) {
+        try {
+            final StringBuilder hex = new StringBuilder();
+            for (final byte b : MessageDigest.getInstance("SHA-256").digest(bytes)) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString();
+        } catch (final NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    // Marshal (and schema-validate) first, then overwrite the existing file in
+    // place like the other config writers, so its mode, ownership and any
+    // symlink survive; a marshal failure never reaches the file.
     private void writeConfig(final WsmanConfig config) {
         final Path file = configFile();
-        final String xml = JaxbUtils.marshal(config);
-        final Path temp = file.resolveSibling(file.getFileName() + ".tmp");
+        final String xml;
         try {
-            Files.write(temp, xml.getBytes(StandardCharsets.UTF_8));
-            Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            // JaxbUtils marshals a fragment; keep the declaration the shipped file carries
+            xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + JaxbUtils.marshal(config);
+        } catch (final RuntimeException e) {
+            throw badRequest("The configuration does not satisfy wsman-config.xsd: " + rootMessage(e));
+        }
+        try {
+            Files.write(file, xml.getBytes(StandardCharsets.UTF_8));
         } catch (final IOException e) {
             throw new WebApplicationException("Unable to write " + file + ": " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private static String rootMessage(final Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+        return cause.getMessage() == null ? cause.getClass().getSimpleName() : cause.getMessage();
     }
 
     // --- mapping -----------------------------------------------------------
@@ -284,13 +351,14 @@ public class WsmanConfigRestService {
             if (InetAddressUtils.toInteger(begin).compareTo(InetAddressUtils.toInteger(end)) > 0) {
                 throw badRequest(label + " has a range whose end address is before its begin address.");
             }
+            // canonical literal text (IPv6 compressed), never the resolved form
             final Range range = new Range();
-            range.setBegin(InetAddressUtils.str(begin));
-            range.setEnd(InetAddressUtils.str(end));
+            range.setBegin(InetAddresses.toAddrString(begin));
+            range.setEnd(InetAddresses.toAddrString(end));
             d.getRange().add(range);
         }
         for (final String specific : u.getSpecifics()) {
-            d.getSpecific().add(InetAddressUtils.str(parseAddress(specific, label + " has an invalid specific address")));
+            d.getSpecific().add(InetAddresses.toAddrString(parseAddress(specific, label + " has an invalid specific address")));
         }
         for (final String ipMatch : u.getIpMatches()) {
             validateIpLike(ipMatch, label);
@@ -305,21 +373,27 @@ public class WsmanConfigRestService {
     // --- validation --------------------------------------------------------
 
     private static void validateSettings(final SettingsUpdate u, final String what) {
+        if (u.isClearPassword() && u.getPassword() != null && !u.getPassword().isEmpty()) {
+            throw badRequest(what + ": send a new password or clear the stored one, not both.");
+        }
+        // only what the daemon itself cannot use: WSManEndpoint rejects negative
+        // timeouts, a port outside the TCP range makes an unusable URL, and the
+        // endpoint builder prepends the '/' a path may lack
         if (u.getRetry() != null && u.getRetry() < 0) {
             throw badRequest(what + ": retries must be 0 or more.");
         }
-        if (u.getTimeout() != null && u.getTimeout() < 1) {
-            throw badRequest(what + ": the timeout must be at least 1 millisecond.");
+        if (u.getTimeout() != null && u.getTimeout() < 0) {
+            throw badRequest(what + ": the timeout must be 0 or more milliseconds.");
         }
         if (u.getPort() != null && (u.getPort() < 1 || u.getPort() > MAX_PORT)) {
             throw badRequest(what + ": the port must be between 1 and " + MAX_PORT + ".");
         }
-        if (u.getMaxElements() != null && u.getMaxElements() < 1) {
-            throw badRequest(what + ": max elements must be at least 1.");
+        if (u.getMaxElements() != null && u.getMaxElements() < 0) {
+            throw badRequest(what + ": max elements must be 0 or more.");
         }
         final String path = u.getPath();
-        if (path != null && !path.isBlank() && (path.chars().anyMatch(Character::isWhitespace) || !path.trim().startsWith("/"))) {
-            throw badRequest(what + ": the path must start with / and contain no whitespace.");
+        if (path != null && !path.isBlank() && path.chars().anyMatch(Character::isWhitespace)) {
+            throw badRequest(what + ": the path must not contain whitespace.");
         }
         for (final String s : new String[] { u.getUsername(), u.getPassword(), u.getProductVendor(), u.getProductVersion() }) {
             if (s != null && s.chars().anyMatch(Character::isISOControl)) {
@@ -332,28 +406,51 @@ public class WsmanConfigRestService {
         if (value == null || value.isBlank()) {
             throw badRequest(problem + " (empty).");
         }
-        try {
-            return InetAddressUtils.addr(value.trim());
-        } catch (final RuntimeException e) {
-            throw badRequest(problem + ": " + value.trim());
+        // literal only: InetAddressUtils.addr would resolve a host name through DNS
+        final String literal = value.trim();
+        if (!InetAddresses.isInetAddress(literal)) {
+            throw badRequest(problem + ": " + literal);
         }
+        return InetAddresses.forString(literal);
     }
 
-    // IPLike only reports a malformed pattern while matching, so probe it with
-    // an address of the pattern's own family.
+    // The schema admits only the IPv4 grammar, and IPLike silently never
+    // matches a reversed range, a multi-dash field or an octet above 255, so
+    // those are rejected here rather than stored as a criterion that is dead.
     private static void validateIpLike(final String pattern, final String label) {
         if (pattern == null || pattern.isBlank()) {
             throw badRequest(label + " has an empty IPLIKE pattern.");
         }
-        final String probe = pattern.contains(":") ? "::1" : "127.0.0.1";
-        try {
-            IPLike.matches(probe, pattern.trim());
-        } catch (final RuntimeException e) {
-            throw badRequest(label + " has an invalid IPLIKE pattern: " + pattern.trim());
+        final String p = pattern.trim();
+        if (p.contains(":")) {
+            throw badRequest(label + " has an IPv6 IPLIKE pattern; wsman-config.xml only allows IPv4 patterns (use a range or address for IPv6).");
+        }
+        if (!IPLIKE_V4.matcher(p).matches()) {
+            throw badRequest(label + " has an invalid IPLIKE pattern: " + p + " (use four fields of *, a number, a-b, or a comma list).");
+        }
+        for (final String field : p.split("\\.")) {
+            if ("*".equals(field)) {
+                continue;
+            }
+            for (final String part : field.split(",")) {
+                final String[] bounds = part.split("-");
+                if (bounds.length > 2) {
+                    throw badRequest(label + " has an IPLIKE field with more than one range: " + field);
+                }
+                final int low = Integer.parseInt(bounds[0]);
+                final int high = Integer.parseInt(bounds[bounds.length - 1]);
+                if (low > 255 || high > 255) {
+                    throw badRequest(label + " has an IPLIKE octet above 255: " + field);
+                }
+                if (low > high) {
+                    throw badRequest(label + " has a reversed IPLIKE range: " + part);
+                }
+            }
         }
     }
 
+    // not trimmed: an unrelated save must not rewrite a value it did not touch
     private static String blankToNull(final String s) {
-        return s == null || s.isBlank() ? null : s.trim();
+        return s == null || s.isBlank() ? null : s;
     }
 }

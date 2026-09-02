@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { isIP, isIPv4 } from 'is-ip'
 import {
   WsmanAgentSettings,
   WsmanConfig,
@@ -99,24 +100,24 @@ export const formToInput = (f: WsmanSettingsForm): WsmanSettingsInput => ({
   productVersion: blankToNull(f.productVersion)
 })
 
-// Mirrors the server rules so the dialog can flag problems before submitting.
+// Mirrors the server rules, which only reject what the daemon cannot use,
+// so the dialog can flag problems before submitting.
 export const validateSettingsForm = (f: WsmanSettingsForm): Partial<Record<keyof WsmanSettingsForm, string>> => {
   const errors: Partial<Record<keyof WsmanSettingsForm, string>> = {}
   if (f.port !== null && (!Number.isInteger(f.port) || f.port < 1 || f.port > 65535)) {
     errors.port = 'The port must be between 1 and 65535.'
   }
-  if (f.timeout !== null && (!Number.isInteger(f.timeout) || f.timeout < 1)) {
-    errors.timeout = 'The timeout must be at least 1 millisecond.'
+  if (f.timeout !== null && (!Number.isInteger(f.timeout) || f.timeout < 0)) {
+    errors.timeout = 'The timeout must be 0 or more milliseconds.'
   }
   if (f.retry !== null && (!Number.isInteger(f.retry) || f.retry < 0)) {
     errors.retry = 'Retries must be 0 or more.'
   }
-  if (f.maxElements !== null && (!Number.isInteger(f.maxElements) || f.maxElements < 1)) {
-    errors.maxElements = 'Max elements must be at least 1.'
+  if (f.maxElements !== null && (!Number.isInteger(f.maxElements) || f.maxElements < 0)) {
+    errors.maxElements = 'Max elements must be 0 or more.'
   }
-  const path = f.path.trim()
-  if (path && (!path.startsWith('/') || /\s/.test(path))) {
-    errors.path = 'The path must start with / and contain no whitespace.'
+  if (/\s/.test(f.path.trim())) {
+    errors.path = 'The path must not contain whitespace.'
   }
   if (f.clearPassword && f.password) {
     errors.password = 'Enter a new password or clear it, not both.'
@@ -124,10 +125,28 @@ export const validateSettingsForm = (f: WsmanSettingsForm): Partial<Record<keyof
   return errors
 }
 
+// Loaded settings passed through untouched (no trimming, no coercion): a save
+// that edits one object must not rewrite the values of the others.
+export const settingsToInput = (s: WsmanAgentSettings): WsmanSettingsInput => ({
+  username: s.username,
+  password: null,
+  clearPassword: false,
+  ssl: s.ssl,
+  strictSsl: s.strictSsl,
+  gssAuth: s.gssAuth,
+  port: s.port,
+  timeout: s.timeout,
+  retry: s.retry,
+  maxElements: s.maxElements,
+  path: s.path,
+  productVendor: s.productVendor,
+  productVersion: s.productVersion
+})
+
 // The unchanged definitions of the loaded config, each carrying its index so
 // the server keeps its stored password.
 export const definitionToInput = (d: WsmanDefinition, sourceIndex: number | null): WsmanDefinitionInput => ({
-  ...formToInput(settingsToForm(d)),
+  ...settingsToInput(d),
   ranges: d.ranges.map(r => ({ ...r })),
   specifics: [...d.specifics],
   ipMatches: [...d.ipMatches],
@@ -135,24 +154,16 @@ export const definitionToInput = (d: WsmanDefinition, sourceIndex: number | null
 })
 
 export const configToInput = (c: WsmanConfig): WsmanConfigInput => ({
-  defaults: formToInput(settingsToForm(c.defaults)),
+  version: c.version,
+  defaults: settingsToInput(c.defaults),
   definitions: c.definitions.map((d, i) => definitionToInput(d, i))
 })
 
 // --- address checks (shape only; the server does the authoritative parse) ---
 
-const IPV4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
+export const isIpAddress = (s: string): boolean => isIP(s.trim())
 
-export const isIpAddress = (s: string): boolean => {
-  const v = s.trim()
-  const m = IPV4.exec(v)
-  if (m) {
-    return m.slice(1).every(o => Number(o) <= 255)
-  }
-  return v.includes(':') && /^[0-9a-fA-F:.]+$/.test(v) && v.length >= 3
-}
-
-export const isIpv4 = (s: string): boolean => IPV4.test(s.trim())
+export const isIpv4 = (s: string): boolean => isIPv4(s.trim())
 
 const ipv4ToNumber = (s: string): number =>
   s.trim().split('.').reduce((acc, o) => acc * 256 + Number(o), 0)
@@ -171,13 +182,19 @@ export const rangeProblem = (begin: string, end: string): string | null => {
   return null
 }
 
-// IPLIKE: four dotted fields (IPv4) or colon-separated fields (IPv6), each a
-// number, *, a-b range, or a comma list of those.
-const IPLIKE_FIELD = '(\\*|[0-9a-fA-F]+(-[0-9a-fA-F]+)?)(,(\\*|[0-9a-fA-F]+(-[0-9a-fA-F]+)?))*'
+// IPLIKE as wsman-config.xsd allows it: four dotted IPv4 fields, each *, a
+// number, an a-b range or a comma list of those, with every octet at most 255
+// and every range in order (IPLike silently never matches the rest).
+const IPLIKE_FIELD = '(\\*|[0-9]{1,3}((,|-)[0-9]{1,3})*)'
 const IPLIKE_V4 = new RegExp(`^${IPLIKE_FIELD}(\\.${IPLIKE_FIELD}){3}$`)
-const IPLIKE_V6 = new RegExp(`^${IPLIKE_FIELD}(:${IPLIKE_FIELD}){7}$`)
 
 export const isIplikePattern = (s: string): boolean => {
   const v = s.trim()
-  return v.includes(':') ? IPLIKE_V6.test(v) : IPLIKE_V4.test(v) && !/[a-fA-F]/.test(v)
+  if (!IPLIKE_V4.test(v)) {
+    return false
+  }
+  return v.split('.').every(field => field === '*' || field.split(',').every((part) => {
+    const bounds = part.split('-').map(Number)
+    return bounds.length <= 2 && bounds.every(n => n <= 255) && bounds[0] <= bounds[bounds.length - 1]
+  }))
 }

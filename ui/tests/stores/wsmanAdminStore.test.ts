@@ -33,7 +33,7 @@ vi.mock('@/services', () => ({
   }
 }))
 
-const CONFIG = { defaults: { username: 'root', hasPassword: true }, definitions: [] }
+const CONFIG = { version: 'v1', defaults: { username: 'root', hasPassword: true }, definitions: [] }
 
 describe('wsmanAdminStore', () => {
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe('wsmanAdminStore', () => {
     expect(store.isLoading).toBe(false)
   })
 
-  it('re-reads the configuration after a successful save and passes a failure through', async () => {
+  it('re-reads the configuration after every save and passes a failure through', async () => {
     const store = useWsmanAdminStore()
     const input = { defaults: {}, definitions: [] } as any
     vi.mocked(API.updateWsmanConfig).mockResolvedValueOnce(null)
@@ -59,9 +59,12 @@ describe('wsmanAdminStore', () => {
     expect(API.getWsmanConfig).toHaveBeenCalledTimes(1)
     expect(store.config).toEqual(CONFIG)
 
+    // a failure (e.g. a version conflict) also re-reads, so the next attempt starts from the current file
     vi.mocked(API.updateWsmanConfig).mockResolvedValueOnce('nope')
+    vi.mocked(API.getWsmanConfig).mockResolvedValueOnce({ ...CONFIG, version: 'v2' } as any)
     expect(await store.saveConfig(input)).toBe('nope')
-    expect(API.getWsmanConfig).toHaveBeenCalledTimes(1)
+    expect(API.getWsmanConfig).toHaveBeenCalledTimes(2)
+    expect(store.config?.version).toBe('v2')
   })
 
   it('loads the data collection view and flags its failure separately', async () => {

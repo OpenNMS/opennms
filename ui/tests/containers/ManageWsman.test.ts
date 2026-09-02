@@ -32,6 +32,8 @@ const SETTINGS = {
   ssl: true, strictSsl: false, path: '/wsman', productVendor: null, productVersion: null, gssAuth: null
 }
 
+const CONFIG = { version: 'v1', defaults: SETTINGS, definitions: [] }
+
 const mountPage = async (state: Record<string, unknown>) => {
   const wrapper = mount(ManageWsman, {
     global: {
@@ -45,13 +47,32 @@ const mountPage = async (state: Record<string, unknown>) => {
 
 describe('ManageWsman.vue (container)', () => {
   it('loads the configuration on mount and renders the page title', async () => {
-    const wrapper = await mountPage({ config: { defaults: SETTINGS, definitions: [] }, loadError: false })
+    const wrapper = await mountPage({ config: CONFIG, loadError: false })
     const store = useWsmanAdminStore()
     expect(store.getConfig).toHaveBeenCalled()
     expect(store.getDataCollection).toHaveBeenCalled()
     expect(wrapper.find('.page-title').text()).toBe('Manage WS-Man')
     expect(wrapper.find('[data-test="tab-definitions"]').text()).toContain('Definitions (0)')
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+  })
+
+  it('keeps the tabs on screen when a table action fails, and clears the error on the next success', async () => {
+    const wrapper = await mountPage({ config: { ...CONFIG, definitions: [{ ...SETTINGS, ranges: [], specifics: ['10.0.0.1'], ipMatches: [] }, { ...SETTINGS, ranges: [], specifics: ['10.0.0.2'], ipMatches: [] }] }, loadError: false })
+    const store = useWsmanAdminStore()
+    vi.mocked(store.saveConfig).mockResolvedValueOnce('The WS-Man configuration changed since it was loaded; reload the page and apply the change again.')
+    ;(wrapper.vm as any).moveDefinition(0, 1)
+    await flushPromises()
+    expect(wrapper.find('[data-test="action-error"]').text()).toContain('changed since')
+    expect(wrapper.find('[data-test="tab-definitions"]').exists()).toBe(true)
+    // the store sends the loaded version along with the reordered definitions
+    const input = vi.mocked(store.saveConfig).mock.calls[0][0]
+    expect(input.version).toBe('v1')
+    expect(input.definitions.map((d: any) => d.sourceIndex)).toEqual([1, 0])
+
+    vi.mocked(store.saveConfig).mockResolvedValueOnce(null)
+    ;(wrapper.vm as any).moveDefinition(1, -1)
+    await flushPromises()
+    expect(wrapper.find('[data-test="action-error"]').exists()).toBe(false)
   })
 
   it('shows an error instead of an empty configuration when the read fails', async () => {

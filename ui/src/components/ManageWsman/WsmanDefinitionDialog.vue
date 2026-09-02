@@ -28,7 +28,7 @@
             <OnmsIconButton :icon="Delete" severity="danger" :title="'Remove range'" :aria-label="'Remove range'" data-test="remove-range" @click="ranges.splice(i, 1)" />
             <small v-if="rangeErrors[i]" class="field-error">{{ rangeErrors[i] }}</small>
           </div>
-          <OnmsButton variant="outlined" label="Add range" icon="pi pi-plus" size="small" data-test="add-range" @click="ranges.push({ begin: '', end: '' })" />
+          <OnmsButton variant="outlined" label="Add range" data-test="add-range" @click="ranges.push({ begin: '', end: '' })" />
         </div>
 
         <div class="criteria-block">
@@ -38,7 +38,7 @@
           </div>
           <div class="add-row">
             <OnmsInputText v-model="newSpecific" placeholder="10.0.0.5" :invalid="!!newSpecific && !isIpAddress(newSpecific)" data-test="specific-input" @keydown.enter.prevent="addSpecific" />
-            <OnmsButton variant="outlined" label="Add" size="small" :disabled="!newSpecific.trim() || !isIpAddress(newSpecific)" data-test="add-specific" @click="addSpecific" />
+            <OnmsButton variant="outlined" label="Add" :disabled="!newSpecific.trim() || !isIpAddress(newSpecific)" data-test="add-specific" @click="addSpecific" />
           </div>
         </div>
 
@@ -48,8 +48,8 @@
             <OnmsChip v-for="(m, i) in ipMatches" :key="`m-${m}`" :label="m" removable @remove="ipMatches.splice(i, 1)" />
           </div>
           <div class="add-row">
-            <OnmsInputText v-model="newIpMatch" placeholder="10.0.*.* or 10.0.1-5.*" :invalid="!!newIpMatch && !isIplikePattern(newIpMatch)" data-test="ipmatch-input" @keydown.enter.prevent="addIpMatch" />
-            <OnmsButton variant="outlined" label="Add" size="small" :disabled="!newIpMatch.trim() || !isIplikePattern(newIpMatch)" data-test="add-ipmatch" @click="addIpMatch" />
+            <OnmsInputText v-model="newIpMatch" placeholder="10.0.*.* or 10.0.1-5.* (IPv4 only)" :invalid="!!newIpMatch && !isIplikePattern(newIpMatch)" data-test="ipmatch-input" @keydown.enter.prevent="addIpMatch" />
+            <OnmsButton variant="outlined" label="Add" :disabled="!newIpMatch.trim() || !isIplikePattern(newIpMatch)" data-test="add-ipmatch" @click="addIpMatch" />
           </div>
         </div>
       </section>
@@ -88,6 +88,7 @@ import {
   isIplikePattern,
   rangeProblem,
   settingsToForm,
+  settingsToInput,
   validateSettingsForm
 } from './wsmanForm'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
@@ -174,7 +175,8 @@ const save = async () => {
       definitions[props.index] = edited
     }
     const error = await store.saveConfig({
-      defaults: formToInput(settingsToForm(props.config.defaults)),
+      version: props.config.version,
+      defaults: settingsToInput(props.config.defaults),
       definitions
     })
     if (error === null) {

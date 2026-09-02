@@ -39,6 +39,7 @@ const SETTINGS = {
   ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null
 }
 const CONFIG = {
+  version: 'v1',
   defaults: { ...SETTINGS, username: 'root', hasPassword: true },
   definitions: [{ ...SETTINGS, hasPassword: true, username: 'monitor', ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [] }]
 }
@@ -78,6 +79,7 @@ describe('WsmanDefinitionDialog.vue', () => {
     expect(input.definitions).toHaveLength(2)
     expect(input.definitions[0]).toMatchObject({ sourceIndex: 0, username: 'monitor', password: null })
     expect(input.definitions[1]).toMatchObject({ sourceIndex: null, specifics: ['10.1.1.1'], ranges: [], ipMatches: [] })
+    expect(input.version).toBe('v1')
     expect(input.defaults).toMatchObject({ username: 'root', password: null })
   })
 
@@ -99,9 +101,11 @@ describe('WsmanDefinitionDialog.vue', () => {
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
-  it('rejects a malformed IPLIKE pattern at the add button', async () => {
+  it('rejects a malformed or IPv6 IPLIKE pattern at the add button', async () => {
     await mountDialog(null)
     await wrapper.find('[data-test="ipmatch-input"]').setValue('10.0.*')
+    expect(wrapper.find('[data-test="add-ipmatch"]').attributes('disabled')).toBeDefined()
+    await wrapper.find('[data-test="ipmatch-input"]').setValue('fe80:*:*:*:*:*:*:*')
     expect(wrapper.find('[data-test="add-ipmatch"]').attributes('disabled')).toBeDefined()
     await wrapper.find('[data-test="ipmatch-input"]').setValue('10.0.*.*')
     expect(wrapper.find('[data-test="add-ipmatch"]').attributes('disabled')).toBeUndefined()
