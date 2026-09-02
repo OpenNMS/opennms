@@ -15,15 +15,15 @@
 
     <OnmsTabs v-else-if="store.config" v-model:value="activeTab">
       <OnmsTabList>
-        <OnmsTab :value="0" data-test="tab-defaults">Agent Defaults</OnmsTab>
-        <OnmsTab :value="1" data-test="tab-definitions">Definitions ({{ store.config.definitions.length }})</OnmsTab>
+        <OnmsTab :value="0" data-test="tab-definitions">Definitions ({{ store.config.definitions.length }})</OnmsTab>
+        <OnmsTab :value="1" data-test="tab-defaults">Agent Defaults</OnmsTab>
         <OnmsTab :value="2" data-test="tab-data-collection">Data Collection</OnmsTab>
       </OnmsTabList>
       <OnmsTabPanels>
-        <OnmsTabPanel :value="0">
+        <OnmsTabPanel :value="1">
           <WsmanDefaultsCard :settings="store.config.defaults" @edit="showDefaultsDialog = true" />
         </OnmsTabPanel>
-        <OnmsTabPanel :value="1">
+        <OnmsTabPanel :value="0">
           <WsmanDefinitionsTable
             :definitions="store.config.definitions"
             @add="openDefinition(null)"
