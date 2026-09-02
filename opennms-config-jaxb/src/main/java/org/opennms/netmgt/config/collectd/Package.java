@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IpListFromUrl;
+import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * Package encapsulating addresses eligible to have SNMP
@@ -215,14 +217,24 @@ public class Package implements Serializable {
     }
 
     public boolean hasSpecific(final byte[] addr) {
-        final IPAddress ipAddr = new IPAddress(addr);
+        if (addr == null) {
+            return false;
+        }
+        // Compare bytes directly to avoid allocating an InetAddress / IPAddress per spec.
         for (final String espec : getSpecifics()) {
-            if (ipAddr.equals(new IPAddress(espec))) {
+            final byte[] specBytes = InetAddressUtils.toIpAddrBytes(espec);
+            if (specBytes != null && BYTE_ARRAY_COMPARATOR.compare(addr, specBytes) == 0) {
                 return true;
             }
         }
         return false;
     }
+
+    /**
+     * Stateless and thread-safe; reuse one instance to avoid per-comparison
+     * allocation in {@link #hasSpecific(byte[])} / range checks.
+     */
+    private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
 
     public List<IncludeRange> getIncludeRanges() {
         if (m_includeRanges == null) {
@@ -249,12 +261,14 @@ public class Package implements Serializable {
             return true;
         }
 
-        final IPAddress ipAddr = new IPAddress(addr);
+        // Parse range bounds as bytes; reuse a single comparator instance.
+        final byte[] addrBytes = InetAddressUtils.toIpAddrBytes(addr);
 
         for (final IncludeRange rng : getIncludeRanges()) {
-            final IPAddress begin = rng.getBeginAsAddress();
-            final IPAddress end   = rng.getEndAsAddress();
-            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
+            final byte[] beginBytes = InetAddressUtils.toIpAddrBytes(rng.getBegin());
+            final byte[] endBytes = InetAddressUtils.toIpAddrBytes(rng.getEnd());
+            if (BYTE_ARRAY_COMPARATOR.compare(addrBytes, beginBytes) >= 0
+                    && BYTE_ARRAY_COMPARATOR.compare(addrBytes, endBytes) <= 0) {
                 return true;
             }
         }
@@ -282,13 +296,14 @@ public class Package implements Serializable {
     }
 
     public boolean hasExcludeRange(final String addr) {
-        final IPAddress ipAddr = new IPAddress(addr);
+        final byte[] addrBytes = InetAddressUtils.toIpAddrBytes(addr);
 
         for (final ExcludeRange rng : getExcludeRanges()) {
-            final IPAddress begin = rng.getBeginAsAddress();
-            final IPAddress end   = rng.getEndAsAddress();
+            final byte[] beginBytes = InetAddressUtils.toIpAddrBytes(rng.getBegin());
+            final byte[] endBytes = InetAddressUtils.toIpAddrBytes(rng.getEnd());
 
-            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
+            if (BYTE_ARRAY_COMPARATOR.compare(addrBytes, beginBytes) >= 0
+                    && BYTE_ARRAY_COMPARATOR.compare(addrBytes, endBytes) <= 0) {
                 return true;
             }
         }

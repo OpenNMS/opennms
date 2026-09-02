@@ -65,6 +65,11 @@ import org.slf4j.LoggerFactory;
  */
 abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfacePollerConfig {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfacePollerConfigManager.class);
+    /**
+     * Stateless and thread-safe; reuse one instance to avoid per-comparison
+     * allocation in {@link #interfaceInPackage(String, Package)}.
+     */
+    private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
 
     /**
      * <p>Constructor for SnmpInterfacePollerConfigManager.</p>
@@ -366,7 +371,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
 
         for (String spec : pkg.getSpecifics()) {
             byte[] speca = toIpAddrBytes(spec);
-            if (new ByteArrayComparator().compare(speca, addr) == 0) {
+            if (BYTE_ARRAY_COMPARATOR.compare(speca, addr) == 0) {
                 has_specific = true;
                 break;
             }

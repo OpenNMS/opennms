@@ -235,6 +235,11 @@ abstract public class PollerConfigManager implements PollerConfig  {
 
 
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigManager.class);
+    /**
+     * Stateless and thread-safe; reuse one instance to avoid per-comparison
+     * allocation in {@link #isInterfaceInPackage(String, Package)}.
+     */
+    private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -691,9 +696,9 @@ abstract public class PollerConfigManager implements PollerConfig  {
         final byte[] addr = toIpAddrBytes(iface);
 
         for (final IncludeRange rng : pkg.getIncludeRanges()) {
-            int comparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getBegin()));
+            int comparison = BYTE_ARRAY_COMPARATOR.compare(addr, toIpAddrBytes(rng.getBegin()));
             if (comparison > 0) {
-                int endComparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getEnd()));
+                int endComparison = BYTE_ARRAY_COMPARATOR.compare(addr, toIpAddrBytes(rng.getEnd()));
                 if (endComparison <= 0) {
                     has_range_include = true;
                     break;
@@ -705,7 +710,7 @@ abstract public class PollerConfigManager implements PollerConfig  {
         }
 
         for (final String spec : pkg.getSpecifics()) {
-            if (new ByteArrayComparator().compare(addr, toIpAddrBytes(spec)) == 0) {
+            if (BYTE_ARRAY_COMPARATOR.compare(addr, toIpAddrBytes(spec)) == 0) {
                 has_specific = true;
                 LOG.debug("interfaceInPackage: Interface {} defined as 'specific'", iface);
                 break;
@@ -722,9 +727,9 @@ abstract public class PollerConfigManager implements PollerConfig  {
 
         if (!has_specific) {
             for (final ExcludeRange rng : pkg.getExcludeRanges()) {
-                int comparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getBegin()));
+                int comparison = BYTE_ARRAY_COMPARATOR.compare(addr, toIpAddrBytes(rng.getBegin()));
                 if (comparison > 0) {
-                    int endComparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getEnd()));
+                    int endComparison = BYTE_ARRAY_COMPARATOR.compare(addr, toIpAddrBytes(rng.getEnd()));
                     if (endComparison <= 0) {
                         LOG.debug("interfaceInPackage: Interface {} matches an exclude range", iface);
                         has_range_exclude = true;

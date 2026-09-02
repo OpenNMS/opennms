@@ -42,6 +42,7 @@ import static org.opennms.netmgt.snmp.SnmpConfiguration.VERSION1;
 import static org.opennms.netmgt.snmp.SnmpConfiguration.versionToString;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.core.utils.ByteArrayComparator;
@@ -58,6 +59,12 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
 
     private final InetAddress m_address;
+    /**
+     * Cached network-byte-order representation of {@link #m_address}; computed
+     * once per visitor so the per-range / per-specific match loops do not
+     * allocate a fresh byte[] for every comparison.
+     */
+    private final byte[] m_addressBytes;
     private final String m_location;
 
     private SnmpConfig m_currentConfig;
@@ -80,6 +87,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     public AddressSnmpConfigVisitor(final InetAddress addr, final String location) {
         m_address = addr;
+        m_addressBytes = addr == null ? null : addr.getAddress();
         m_location = LocationUtils.getEffectiveLocationName(location);
     }
 
@@ -141,9 +149,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
         for (final String saddr : specifics) {
             try {
-                final InetAddress addr = InetAddressUtils.addr(saddr);
-                if (addr != null && addr.equals(m_address)) {
-                    //LOG.debug("{} == {}", addr, m_address);
+        // Cached-once per visitor; safe because m_address is final.
+                final byte[] specBytes = InetAddressUtils.toIpAddrBytes(saddr);
+                if (specBytes != null && Arrays.equals(specBytes, m_addressBytes)) {
                     handleMatch();
                     return;
                 }
@@ -158,11 +166,12 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         // if we've already matched a specific, don't bother with the ranges
         if (!shouldTryToMatch()) return;
 
+        // Cached-once per visitor; safe because m_address is final.
+        final byte[] addr = m_addressBytes;
         for (final Range range : ranges) {
-            final byte[] addr = m_address.getAddress();
             final byte[] begin = InetAddressUtils.toIpAddrBytes(range.getBegin());
             final byte[] end = InetAddressUtils.toIpAddrBytes(range.getEnd());
-    
+
             final boolean inRange;
             if (BYTE_ARRAY_COMPARATOR.compare(begin, end) <= 0) {
                 inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
