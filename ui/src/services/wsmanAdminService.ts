@@ -22,11 +22,10 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput } from '@/types/wsmanAdmin'
 import { v2 } from './axiosInstances'
 
-// Manage WS-Man (NMS-20286): read-only view of wsman-config.xml through
-// /api/v2/wsman-config. Editing is a later slice.
+// Manage WS-Man (NMS-20286): wsman-config.xml through /api/v2/wsman-config.
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -53,4 +52,31 @@ const getWsmanConfig = async (): Promise<WsmanConfig | null> => {
   }
 }
 
-export { getWsmanConfig }
+// Only surface a server detail if it looks like a short, plain message — a 500
+// often returns a servlet HTML error page, which must not be shown verbatim.
+const errorMessage = (err: any, fallback: string): string => {
+  const detail = err?.response?.data
+  if (typeof detail === 'string') {
+    const trimmed = detail.trim()
+    if (trimmed && trimmed.length <= 300 && !/[<>]/.test(trimmed)) {
+      return trimmed
+    }
+  }
+  return fallback
+}
+
+// Whole-document replace; resolves to null on success or the reason to show
+// in the dialog. No toast here: the dialog owns the error surface.
+const updateWsmanConfig = async (input: WsmanConfigInput): Promise<string | null> => {
+  try {
+    startSpinner()
+    await v2.put(endpoint, input, { headers: { Accept: 'application/json' }})
+    return null
+  } catch (err: any) {
+    return errorMessage(err, 'Failed to save the WS-Man configuration.')
+  } finally {
+    stopSpinner()
+  }
+}
+
+export { getWsmanConfig, updateWsmanConfig }

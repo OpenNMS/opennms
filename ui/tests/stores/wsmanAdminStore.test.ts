@@ -27,7 +27,8 @@ import API from '@/services'
 
 vi.mock('@/services', () => ({
   default: {
-    getWsmanConfig: vi.fn()
+    getWsmanConfig: vi.fn(),
+    updateWsmanConfig: vi.fn()
   }
 }))
 
@@ -46,6 +47,20 @@ describe('wsmanAdminStore', () => {
     expect(store.config).toEqual(CONFIG)
     expect(store.loadError).toBe(false)
     expect(store.isLoading).toBe(false)
+  })
+
+  it('re-reads the configuration after a successful save and passes a failure through', async () => {
+    const store = useWsmanAdminStore()
+    const input = { defaults: {}, definitions: [] } as any
+    vi.mocked(API.updateWsmanConfig).mockResolvedValueOnce(null)
+    vi.mocked(API.getWsmanConfig).mockResolvedValueOnce(CONFIG as any)
+    expect(await store.saveConfig(input)).toBeNull()
+    expect(API.getWsmanConfig).toHaveBeenCalledTimes(1)
+    expect(store.config).toEqual(CONFIG)
+
+    vi.mocked(API.updateWsmanConfig).mockResolvedValueOnce('nope')
+    expect(await store.saveConfig(input)).toBe('nope')
+    expect(API.getWsmanConfig).toHaveBeenCalledTimes(1)
   })
 
   it('flags a load error and keeps the previous configuration', async () => {

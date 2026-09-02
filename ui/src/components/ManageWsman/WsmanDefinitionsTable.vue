@@ -1,7 +1,10 @@
 <template>
   <OnmsCard class="wsman-definitions" data-test="wsman-definitions">
     <template #title>
-      <span class="card-title">Definitions</span>
+      <div class="card-header">
+        <span class="card-title">Definitions</span>
+        <OnmsButton label="Add Definition" icon="pi pi-plus" size="small" data-test="add-definition" @click="emit('add')" />
+      </div>
     </template>
     <template #content>
       <p class="card-note">
@@ -34,6 +37,16 @@
         <OnmsColumn header="Overrides">
           <template #body="{ data }">{{ overrideSummary(data.definition) }}</template>
         </OnmsColumn>
+        <OnmsColumn header="Actions">
+          <template #body="{ data }">
+            <div class="action-container">
+              <OnmsButton variant="text" size="small" label="Up" :disabled="data.index === 0" :title="'Move up (matched earlier)'" data-test="move-up" @click="emit('move', data.index, -1)" />
+              <OnmsButton variant="text" size="small" label="Down" :disabled="data.index === rows.length - 1" :title="'Move down (matched later)'" data-test="move-down" @click="emit('move', data.index, 1)" />
+              <OnmsIconButton :icon="Edit" :title="`Edit definition ${data.index + 1}`" :aria-label="`Edit definition ${data.index + 1}`" data-test="edit-definition" @click="emit('edit', data.index)" />
+              <OnmsIconButton :icon="Delete" severity="danger" :title="`Delete definition ${data.index + 1}`" :aria-label="`Delete definition ${data.index + 1}`" data-test="delete-definition" @click="emit('delete', data.index)" />
+            </div>
+          </template>
+        </OnmsColumn>
       </OnmsTable>
     </template>
   </OnmsCard>
@@ -41,12 +54,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { OnmsCard, OnmsColumn, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import { WsmanDefinition } from '@/types/wsmanAdmin'
 import { NOT_SET, SETTING_ROWS, formatSetting } from './wsmanDisplay'
 
 const props = defineProps<{
   definitions: WsmanDefinition[]
+}>()
+
+const emit = defineEmits<{
+  (e: 'add'): void
+  (e: 'edit', index: number): void
+  (e: 'delete', index: number): void
+  (e: 'move', index: number, delta: number): void
 }>()
 
 const rows = computed(() => props.definitions.map((definition, index) => ({ index, definition })))
@@ -95,9 +117,22 @@ const overrideSummary = (d: WsmanDefinition): string => {
   padding: 25px;
 }
 
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.action-container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .card-note {

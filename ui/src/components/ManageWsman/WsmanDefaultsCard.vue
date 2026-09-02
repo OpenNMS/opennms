@@ -1,7 +1,10 @@
 <template>
   <OnmsCard class="wsman-defaults" data-test="wsman-defaults">
     <template #title>
-      <span class="card-title">Agent Defaults</span>
+      <div class="card-header">
+        <span class="card-title">Agent Defaults</span>
+        <OnmsButton label="Edit" icon="pi pi-pencil" variant="outlined" size="small" data-test="edit-defaults" @click="emit('edit')" />
+      </div>
     </template>
     <template #content>
       <p class="card-note">
@@ -19,18 +22,29 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsCard } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard } from '@opennms/onms-ui'
 import { WsmanAgentSettings } from '@/types/wsmanAdmin'
 import { SETTING_ROWS, formatSetting } from './wsmanDisplay'
 
 defineProps<{
   settings: WsmanAgentSettings
 }>()
+
+const emit = defineEmits<{
+  (e: 'edit'): void
+}>()
 </script>
 
 <style lang="scss" scoped>
 .wsman-defaults {
   padding: 25px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .card-title {
