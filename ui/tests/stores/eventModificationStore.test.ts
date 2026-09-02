@@ -20,6 +20,7 @@ describe('eventModificationStore', () => {
     enabled: true,
     eventCount: 10,
     fileOrder: 1,
+    evaluationOrder: 1,
     uploadedBy: 'testuser',
     createdTime: new Date('2024-01-01'),
     lastModified: new Date('2024-01-02')
@@ -38,7 +39,8 @@ describe('eventModificationStore', () => {
     modifiedBy: 'user1',
     sourceName: 'Test Source',
     vendor: 'Test Vendor',
-    fileOrder: 1
+    fileOrder: 1,
+    eventOrder: 1
   }
 
   beforeEach(() => {

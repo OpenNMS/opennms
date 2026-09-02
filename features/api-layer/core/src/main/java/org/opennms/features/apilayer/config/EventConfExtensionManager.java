@@ -173,8 +173,9 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
                 List<EventConfEvent> allEventsToSave = new ArrayList<>();
 
                 if (!newEvents.isEmpty()) {
+                    // New plugin events are appended after the existing ones of the source
                     List<EventConfEvent> newEntities = EventConfServiceHelper.createEventConfEventEntities(
-                            source, newEvents, USERNAME, now
+                            source, newEvents, USERNAME, now, eventConfEventDao.nextEventOrder(source.getId())
                     );
                     allEventsToSave.addAll(newEntities);
                 }
@@ -219,8 +220,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
             source.setDescription("Events from OpenNMS plugins");
             source.setVendor("OpenNMS-Plugins");
             source.setEnabled(true);
-            Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
-            source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
+            source.setFileOrder(eventConfSourceDao.nextFileOrder());
             source.setCreatedTime(now);
             source.setLastModified(now);
             source.setUploadedBy(USERNAME);

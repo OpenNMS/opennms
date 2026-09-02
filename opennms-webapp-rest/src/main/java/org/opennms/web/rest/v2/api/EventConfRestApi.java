@@ -109,8 +109,9 @@ public interface EventConfRestApi {
             description = """
         Retrieves EventConfEvent records for the given source ID with optional filtering, sorting, and pagination.
         - `eventFilter`: case-insensitive match on UEI, Event Label, or Description.
-        - `eventSortBy`: sort field `uei`, `eventLabel`, `description`, `enabled` defaults to `createdTime` if invalid.
-        - `eventOrder`: `asc` or `desc` (default: `desc`).
+        - `eventSortBy`: sort field `eventOrder`, `uei`, `eventLabel`, `description`, `severity`, `enabled`;
+          defaults to `eventOrder` (the evaluation position within the source, 1 = evaluated first) if missing or invalid.
+        - `eventOrder`: `asc` or `desc` (default: `desc`, or `asc` when falling back to `eventOrder`).
         - `offset` and `limit`: for pagination.""",
             operationId = "filterConfEventBySourceId"
     )
@@ -171,7 +172,13 @@ public interface EventConfRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Filter EventConfSource Records",
-            description = "Fetch EventConfSource records based on provided filters such as name, vendor, description, fileOrder and eventCount.",
+            description = """
+        Fetch EventConfSource records matching `filter` (name, vendor, description, or UEI/label of a contained event).
+        - `sortBy`: `name`, `vendor`, `description`, `evaluationOrder`, `fileOrder`, `eventCount`; defaults to `createdTime` if invalid.
+        - `order`: `asc` or `desc` (default: `desc`).
+        `evaluationOrder` is the position in which sources are evaluated when matching events (1 = first).
+        It is derived from the stored `fileOrder`, where a higher value is evaluated first and
+        `opennms.catch-all.events` is pinned at 1 (always evaluated last).""",
             operationId = "filterEventConfSource"
     )
     @ApiResponses(value = {

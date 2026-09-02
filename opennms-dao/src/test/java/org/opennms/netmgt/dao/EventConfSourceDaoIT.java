@@ -39,20 +39,24 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -72,6 +76,9 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
 
     @Autowired
     private EventConfSourceDao m_dao;
@@ -131,6 +138,71 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
     @Test
     @Transactional
+    public void testEvaluationOrderIsDerivedFromFileOrder() {
+        m_dao.flush();
+        m_dao.clear();
+        // fileOrder 42 beats every seeded source (23..1), so it is evaluated first
+        EventConfSource junit = m_dao.findByName("JUnit Source");
+        assertEquals(Integer.valueOf(1), junit.getEvaluationOrder());
+
+        // the catch-all is pinned at fileOrder 1 and therefore evaluated last
+        EventConfSource catchAll = m_dao.findByName(EventConfSource.CATCH_ALL_SOURCE_NAME);
+        assertNotNull(catchAll);
+        assertEquals(Integer.valueOf(1), catchAll.getFileOrder());
+        assertEquals(Integer.valueOf(m_dao.findAll().size()), catchAll.getEvaluationOrder());
+
+        // sortable through the paged filter, ascending = evaluation order
+        @SuppressWarnings("unchecked")
+        List<EventConfSource> page = (List<EventConfSource>) m_dao
+                .filterEventConfSource("", "evaluationOrder", "asc", 0, 0, 5).get("eventConfSourceList");
+        assertEquals("JUnit Source", page.get(0).getName());
+        for (int i = 1; i < page.size(); i++) {
+            assertTrue(page.get(i - 1).getFileOrder() >= page.get(i).getFileOrder());
+        }
+    }
+
+    /**
+     * The unique constraint is deferred (checked at commit) so a reorder can rewrite every row in one
+     * transaction. Provoke the violation from a separate, committed transaction (own thread, own
+     * connection) against the seeded catch-all (fileOrder 1), so this test's transaction stays intact.
+     */
+    @Test
+    @Transactional
+    public void testFileOrderMustBeUnique() throws Exception {
+        final AtomicReference<Throwable> failure = new AtomicReference<>();
+        final Thread creator = new Thread(() -> {
+            try {
+                m_transactionTemplate.execute(status -> {
+                    EventConfSource dup = new EventConfSource();
+                    dup.setName("duplicate-file-order");
+                    dup.setEnabled(true);
+                    dup.setCreatedTime(new Date());
+                    dup.setFileOrder(1); // same as the catch-all
+                    dup.setVendor("TestVendor");
+                    dup.setEventCount(0);
+                    m_dao.saveOrUpdate(dup);
+                    m_dao.flush();
+                    return null;
+                });
+            } catch (Throwable t) {
+                failure.set(t);
+            }
+        }, "duplicate-creator");
+        creator.start();
+        creator.join(30_000);
+        assertFalse(creator.isAlive());
+
+        assertNotNull("duplicate fileOrder must be rejected at commit", failure.get());
+        final StringBuilder chain = new StringBuilder();
+        for (Throwable t = failure.get(); t != null; t = t.getCause()) {
+            chain.append(t.getMessage()).append(' ');
+        }
+        assertTrue(chain.toString(), chain.toString().contains("uk_eventconf_sources_file_order"));
+        assertNull("nothing may have been persisted", m_dao.findByName("duplicate-file-order"));
+    }
+
+    @Test
+    @Transactional
     public void testFileOrderIsPersisted() {
         EventConfSource found = m_dao.findByName("JUnit Source");
         assertNotNull(found);
@@ -176,7 +248,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         m_source1.setName("test-source");
         m_source1.setEnabled(true);
         m_source1.setCreatedTime(new Date());
-        m_source1.setFileOrder(1);
+        m_source1.setFileOrder(m_dao.nextFileOrder());
         m_source1.setDescription("Test event source");
         m_source1.setVendor("TestVendor");
         m_source1.setUploadedBy("JUnitTest");
@@ -202,6 +274,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             jpaEvent.setEnabled(true);
             jpaEvent.setSeverity(xmlEvent.getSeverity());
             jpaEvent.setCreatedTime(new Date());
+            jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
             jpaEvent.setLastModified(new Date());
             jpaEvent.setModifiedBy("XMLTest");
             jpaEvent.setSource(m_source1);
@@ -226,6 +299,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         int totalExpectedEventCount = 0;
         List<Long> allSourceIds = new ArrayList<>();
 
+        final int baseFileOrder = m_dao.findMaxFileOrder();
         for (int i = 0; i < xmlFiles.length; i++) {
             String file = xmlFiles[i];
 
@@ -234,7 +308,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             source.setName("test-source-" + i);
             source.setEnabled(true);
             source.setCreatedTime(new Date());
-            source.setFileOrder(i + 1);
+            source.setFileOrder(baseFileOrder + i + 1);
             source.setDescription("Source for " + file);
             source.setVendor("JUnitVendor");
             source.setUploadedBy("JUnitTest");
@@ -264,6 +338,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
                 jpaEvent.setSource(source);
@@ -294,6 +369,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         int totalExpectedEventCount = 0;
         List<Long> allSourceIds = new ArrayList<>();
 
+        final int baseFileOrder = m_dao.findMaxFileOrder();
         for (int i = 0; i < xmlFiles.length; i++) {
             String file = xmlFiles[i];
 
@@ -301,7 +377,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             source.setName("test-source-" + i);
             source.setEnabled(true);
             source.setCreatedTime(new Date());
-            source.setFileOrder(i + 1);
+            source.setFileOrder(baseFileOrder + i + 1);
             source.setDescription("Source for " + file);
             source.setVendor("JUnitVendor");
             source.setUploadedBy("JUnitTest");
@@ -330,6 +406,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
                 jpaEvent.setSource(source);
@@ -356,6 +433,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         int totalExpectedEventCount = 0;
         List<Long> allSourceIds = new ArrayList<>();
 
+        final int baseFileOrder = m_dao.findMaxFileOrder();
         for (int i = 0; i < xmlFiles.length; i++) {
             String file = xmlFiles[i];
 
@@ -363,7 +441,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             source.setName("test-source-" + i);
             source.setEnabled(true);
             source.setCreatedTime(new Date());
-            source.setFileOrder(i + 1);
+            source.setFileOrder(baseFileOrder + i + 1);
             source.setDescription("Source for " + file);
             source.setVendor("testVendor");
             source.setUploadedBy("Test");
@@ -387,6 +465,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setEventOrder(events.getEvents().indexOf(xmlEvent) + 1);
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
                 jpaEvent.setSource(source);
@@ -440,7 +519,8 @@ public class EventConfSourceDaoIT implements InitializingBean {
         source1.setName("Source-A");
         source1.setVendor("VendorA");
         source1.setEnabled(true);
-        source1.setFileOrder(1);
+        final int baseFileOrder = m_dao.findMaxFileOrder();
+        source1.setFileOrder(baseFileOrder + 1);
         source1.setDescription("First Source");
         source1.setEventCount(1);
         source1.setCreatedTime(new Date());
@@ -452,7 +532,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         source2.setName("Source-B");
         source2.setVendor("VendorB");
         source2.setEnabled(true);
-        source2.setFileOrder(2);
+        source2.setFileOrder(baseFileOrder + 2);
         source2.setDescription("Second Source");
         source2.setEventCount(2);
         source2.setCreatedTime(new Date());
@@ -491,7 +571,8 @@ public class EventConfSourceDaoIT implements InitializingBean {
     public void testFilterEventConfSource_ReturnsValidRecords() {
         EventConfSource source1 = new EventConfSource();
         source1.setName("opennms.test.events");
-        source1.setFileOrder(1);
+        final int baseFileOrder = m_dao.findMaxFileOrder();
+        source1.setFileOrder(baseFileOrder + 1);
         source1.setEventCount(5);
         source1.setEnabled(true);
         source1.setCreatedTime(new Date());
@@ -502,7 +583,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
         EventConfSource source2 = new EventConfSource();
         source2.setName("cisco.test.events");
-        source2.setFileOrder(2);
+        source2.setFileOrder(baseFileOrder + 2);
         source2.setEventCount(3);
         source2.setEnabled(true);
         source2.setCreatedTime(new Date());
@@ -588,6 +669,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setEventOrder(m_eventDao.findMaxEventOrder(m_source.getId()) + 1);
         event.setSeverity(severity);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());

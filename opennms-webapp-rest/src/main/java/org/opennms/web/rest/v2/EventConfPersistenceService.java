@@ -51,6 +51,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -86,6 +88,9 @@ public class EventConfPersistenceService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
+        // Serialize with concurrent appenders (nextEventOrder locks the same row) so the 1..N
+        // numbering below cannot interleave with a MAX+1 computed against the old events.
+        eventConfSourceDao.lockForUpdate(source.getId());
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
     }
@@ -143,18 +148,73 @@ public class EventConfPersistenceService {
         }
     }
 
+    /**
+     * Persists a new source. A missing or non-positive {@code fileOrder} is allocated here, inside the
+     * transaction, so the value is unique even under concurrent creates.
+     */
     @Transactional
     public Long createEventConfSource(final EventConfSource eventConfSource) {
+        if (eventConfSource.getFileOrder() == null || eventConfSource.getFileOrder() <= 0) {
+            eventConfSource.setFileOrder(eventConfSourceDao.nextFileOrder());
+        }
         return eventConfSourceDao.save(eventConfSource);
     }
 
-    @Transactional
-    public void updateFileOrder(final String sourceName, final int fileOrder) {
-        EventConfSource source = eventConfSourceDao.findByName(sourceName);
-        if (source != null) {
-            source.setFileOrder(fileOrder);
-            eventConfSourceDao.saveOrUpdate(source);
+    /**
+     * Renumbers every existing source according to an eventconf.xml {@code <event-file>} list, in one
+     * transaction: referenced sources take the file's order (first listed = evaluated first), sources
+     * not listed keep their relative order but are evaluated before all referenced ones (like any
+     * freshly uploaded file), and the catch-all stays pinned at 1.
+     * <p>
+     * REQUIRES_NEW and executed under {@link EventConfSourceDao#lockFileOrders()}: the upload is one
+     * non-transactional REST call made of independent steps; the uploaded files are persisted first
+     * (new sources get a locked MAX+1) and this step then rewrites all values from the committed table,
+     * so no value is ever reserved outside a transaction. The unique constraint on fileOrder is deferred,
+     * so intermediate collisions while the rows are rewritten are allowed and only the end state is checked.
+     *
+     * @param eventConfOrder source names in eventconf.xml order
+     * @return the resulting fileOrder per source name
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Map<String, Integer> reorderSourcesFromEventConf(final List<String> eventConfOrder) {
+        eventConfSourceDao.lockFileOrders();
+
+        final List<EventConfSource> existing = eventConfSourceDao.findAllByFileOrder(); // ascending
+        final Map<String, EventConfSource> byName = new LinkedHashMap<>();
+        existing.forEach(source -> byName.put(source.getName(), source));
+        final Set<String> referenced = new HashSet<>(eventConfOrder);
+
+        final Map<String, Integer> assigned = new LinkedHashMap<>();
+        int nextOrder = 2;
+        // referenced, walked from the last entry so the first listed ends up highest
+        for (int i = eventConfOrder.size() - 1; i >= 0; i--) {
+            final String name = eventConfOrder.get(i);
+            if (!EventConfSource.CATCH_ALL_SOURCE_NAME.equals(name) && byName.containsKey(name) && !assigned.containsKey(name)) {
+                assigned.put(name, nextOrder++);
+            }
         }
+        // unreferenced, keeping their current relative order, above every referenced one
+        for (EventConfSource source : existing) {
+            final String name = source.getName();
+            if (!EventConfSource.CATCH_ALL_SOURCE_NAME.equals(name) && !referenced.contains(name)) {
+                assigned.put(name, nextOrder++);
+            }
+        }
+        if (byName.containsKey(EventConfSource.CATCH_ALL_SOURCE_NAME)) {
+            assigned.put(EventConfSource.CATCH_ALL_SOURCE_NAME, 1);
+        }
+
+        final Date now = new Date();
+        assigned.forEach((name, fileOrder) -> {
+            final EventConfSource source = byName.get(name);
+            if (!fileOrder.equals(source.getFileOrder())) {
+                source.setFileOrder(fileOrder);
+                source.setLastModified(now);
+                eventConfSourceDao.saveOrUpdate(source);
+            }
+        });
+        LOG.info("Renumbered {} event-conf sources from an eventconf.xml with {} entries", assigned.size(), eventConfOrder.size());
+        return assigned;
     }
 
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
@@ -163,7 +223,13 @@ public class EventConfPersistenceService {
             source = new EventConfSource();
             source.setCreatedTime(eventConfSourceMetadataDto.getNow());
         }
-        source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
+        // fileOrder <= 0 means "decide here": an existing source keeps the position it has in this
+        // transaction's snapshot, a new one is allocated MAX+1 under the allocation lock
+        if (eventConfSourceMetadataDto.getFileOrder() > 0) {
+            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
+        } else if (source.getFileOrder() == null) {
+            source.setFileOrder(eventConfSourceDao.nextFileOrder());
+        }
         source.setName(eventConfSourceMetadataDto.getFilename());
         source.setEventCount(eventConfSourceMetadataDto.getEventCount());
         source.setEnabled(true);
@@ -176,8 +242,9 @@ public class EventConfPersistenceService {
     }
 
     private void saveEvents(EventConfSource source, Events events, String username, Date now) {
+        // All events of the source were just deleted, so numbering restarts at 1 in file order
         List<EventConfEvent> eventEntities = EventConfServiceHelper.createEventConfEventEntities(
-                source, events.getEvents(), username, now);
+                source, events.getEvents(), username, now, 1);
         eventConfEventDao.saveAll(eventEntities);
     }
 
@@ -254,7 +321,9 @@ public class EventConfPersistenceService {
             eventConfSourceDao.delete(source);
         } else {
             LOG.info("Deleting {} events from sourceId={} (remaining count={})", deleteCount, sourceId, currentCount - deleteCount);
+            eventConfSourceDao.lockForUpdate(sourceId); // keep appenders out while positions are compacted
             eventConfEventDao.deleteByEventIds(sourceId, existingEventIds);
+            eventConfEventDao.compactEventOrder(sourceId);
             source.setEventCount(currentCount - deleteCount);
             eventConfSourceDao.saveOrUpdate(source);
         }
