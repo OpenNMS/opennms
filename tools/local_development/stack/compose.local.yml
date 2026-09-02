@@ -1,0 +1,21 @@
+# Override that runs the image built from this working tree instead of the last
+# published Horizon release.
+#
+# Build it first (from the repository root):
+#
+#   ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests
+#   make -C opennms-container/core image
+#
+# That tags opennms/horizon:37.0.0-SNAPSHOT (the version in the root pom.xml)
+# and opennms/horizon:latest. Then:
+#
+#   docker compose -f compose.yaml -f compose.local.yml up -d
+#
+# There is deliberately no `build:` stanza here: opennms-container/core/Dockerfile
+# expects a ./tarball-root/ directory that opennms-container/common.mk unpacks
+# from the assembly tarball, so `docker build` on its own would fail.
+
+services:
+  opennms:
+    image: ${ONMS_LOCAL_IMAGE:-opennms/horizon:37.0.0-SNAPSHOT}
+    pull_policy: never
