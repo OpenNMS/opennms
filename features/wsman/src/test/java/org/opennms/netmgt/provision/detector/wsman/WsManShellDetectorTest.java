@@ -54,6 +54,7 @@ public class WsManShellDetectorTest {
     private static final String SC_RUNNING = "SERVICE_NAME: w32time\r\n        STATE              : 4  RUNNING\r\n";
 
     private WSManClient client;
+    private WSManClientFactory clientFactory;
     private WsManShellDetectorFactory factory;
     private WSManEndpoint endpoint;
     private InetAddress address;
@@ -61,7 +62,7 @@ public class WsManShellDetectorTest {
     @Before
     public void setUp() throws Exception {
         client = mock(WSManClient.class);
-        WSManClientFactory clientFactory = mock(WSManClientFactory.class);
+        clientFactory = mock(WSManClientFactory.class);
         when(clientFactory.getClient(any())).thenReturn(client);
         factory = new WsManShellDetectorFactory(clientFactory);
         endpoint = new WSManEndpoint.Builder("http://127.0.0.1:5985/wsman").withBasicAuth("user", "pass").build();
@@ -84,6 +85,7 @@ public class WsManShellDetectorTest {
         assertArrayEquals(new String[] {"query w32time"}, args.getValue());
         assertEquals(Duration.ofMillis(detector.getTimeout()), timeout.getValue());
         assertEquals(2000, detector.getTimeout());
+        assertEndpointTimeouts(2000);
         assertTrue(options.getValue().isNoProfile());
         verify(client).close();
     }
@@ -132,6 +134,7 @@ public class WsManShellDetectorTest {
         ArgumentCaptor<ShellOptions> options = ArgumentCaptor.forClass(ShellOptions.class);
         verify(client).runCommand(eq("dir"), any(), timeout.capture(), options.capture());
         assertEquals(Duration.ofMillis(5000), timeout.getValue());
+        assertEndpointTimeouts(5000);
         assertFalse(options.getValue().isNoProfile());
         assertEquals(437, options.getValue().getCodepage());
         assertEquals("C:\\Temp", options.getValue().getWorkingDirectory());
@@ -149,6 +152,18 @@ public class WsManShellDetectorTest {
 
         DetectResults results = detector.detect(request);
         assertTrue(results.isServiceDetected());
+    }
+
+    /** Every exchange with the host is bounded by the detector timeout, not only the wait for output. */
+    private void assertEndpointTimeouts(int expectedMillis) {
+        ArgumentCaptor<WSManEndpoint> captor = ArgumentCaptor.forClass(WSManEndpoint.class);
+        verify(clientFactory).getClient(captor.capture());
+        assertEquals(Integer.valueOf(expectedMillis), captor.getValue().getConnectionTimeout());
+        assertEquals(Integer.valueOf(expectedMillis), captor.getValue().getReceiveTimeout());
+        // Everything else is carried over unchanged
+        assertEquals(endpoint.getUrl(), captor.getValue().getUrl());
+        assertEquals(endpoint.getUsername(), captor.getValue().getUsername());
+        assertEquals(endpoint.getPassword(), captor.getValue().getPassword());
     }
 
     @Test(expected = IllegalArgumentException.class)

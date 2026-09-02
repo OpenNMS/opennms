@@ -75,7 +75,7 @@ import com.google.common.cache.RemovalNotification;
  * threads polling the same endpoint through the same factory instance take turns.
  * That is a protocol constraint, not a choice made here.
  */
-public class CachingWSManClientFactory implements WSManClientFactory {
+public class CachingWSManClientFactory implements WSManClientFactory, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(CachingWSManClientFactory.class);
 
     static final Duration EXPIRE_AFTER = Duration.ofHours(1);
@@ -121,6 +121,7 @@ public class CachingWSManClientFactory implements WSManClientFactory {
     /**
      * Closes and forgets every cached client.
      */
+    @Override
     public void close() {
         m_clients.invalidateAll();
         m_clients.cleanUp();

@@ -7,6 +7,9 @@ Use it to define arbitrary services based on the state of the Windows host.
 The command runs as the user configured in `wsman-config.xml`.
 Give that account only the rights it needs: membership in the `Remote Management Users` group on the target is enough to run commands.
 
+WARNING: The `command` and `args` values are handed to the Windows command interpreter exactly as written, and `cmd.exe` treats characters such as `&`, `|`, and `>` as command separators.
+Metadata expressions are expanded by provisiond for every parameter, so avoid referencing node or interface metadata in `command` or `args` unless you control who can edit it.
+
 == Detector facts
 
 [options="autowidth"]
@@ -65,7 +68,8 @@ Set a legacy code page such as `437` (US OEM) or `850` (Western European OEM) on
 | Shell default
 
 | timeout
-| Time in milliseconds to wait for the command to complete.
+| Time in milliseconds that bounds each step of the detection: connecting to the host, creating the shell, waiting for the command to complete, and deleting the shell.
+No single step may take longer than this.
 | `2000`
 
 | serviceName

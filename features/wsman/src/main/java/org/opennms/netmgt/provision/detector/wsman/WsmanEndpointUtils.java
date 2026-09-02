@@ -96,4 +96,21 @@ public class WsmanEndpointUtils {
         return builder.build();
     }
 
+    /**
+     * Returns a copy of the endpoint whose HTTP connection and receive timeouts are both
+     * set to the given value, so that no single exchange with the host outlives the
+     * caller's own time budget.
+     */
+    public static WSManEndpoint withTimeouts(WSManEndpoint endpoint, int timeoutMillis) {
+        final Map<String, String> attributes = toMap(endpoint);
+        attributes.put(CONNECTION_TIMEOUT, Integer.toString(timeoutMillis));
+        attributes.put(RECEIVE_TIMEOUT, Integer.toString(timeoutMillis));
+        try {
+            return fromMap(attributes);
+        } catch (MalformedURLException e) {
+            // The URL came from a valid endpoint
+            throw new IllegalStateException(e);
+        }
+    }
+
 }

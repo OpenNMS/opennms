@@ -31,11 +31,14 @@ import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WsManShellDetectorFactory extends GenericServiceDetectorFactory<WsManShellDetector> {
+    private static final Logger LOG = LoggerFactory.getLogger(WsManShellDetectorFactory.class);
 
     private final WSManClientFactory m_factory;
 
@@ -62,5 +65,19 @@ public class WsManShellDetectorFactory extends GenericServiceDetectorFactory<WsM
     @Override
     public DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes) {
         return new DetectRequestImpl(address, port, WsmanEndpointUtils.toMap(m_wsmanConfigDao.getEndpoint(address)));
+    }
+
+    /**
+     * Releases any clients the factory is holding on to. Called by the blueprint
+     * container when the bundle stops.
+     */
+    public void destroy() {
+        if (m_factory instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) m_factory).close();
+            } catch (Exception e) {
+                LOG.debug("Error closing WS-Man client factory", e);
+            }
+        }
     }
 }

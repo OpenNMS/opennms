@@ -88,7 +88,9 @@ public class WsManShellDetector extends SyncAbstractDetector {
             throw new IllegalArgumentException("'command' is required.");
         }
         final String[] arguments = ShellCommandUtils.toArguments(args);
-        try (WSManClient client = m_factory.getClient(endpoint)) {
+        // No single exchange with the host may outlive the detector timeout
+        final WSManEndpoint boundedEndpoint = WsmanEndpointUtils.withTimeouts(endpoint, getTimeout());
+        try (WSManClient client = m_factory.getClient(boundedEndpoint)) {
             LOG.debug("Running '{}' with arguments {} on {}", command, arguments, address);
             final CommandResult result = client.runCommand(command, arguments, Duration.ofMillis(getTimeout()),
                     ShellCommandUtils.buildShellOptions(noProfile, codepage, workingDirectory));

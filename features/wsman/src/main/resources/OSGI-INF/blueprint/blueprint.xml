@@ -10,32 +10,32 @@
 ">
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManDetectorFactory" />
+		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManDetectorFactory" destroy-method="destroy" />
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManWQLDetectorFactory" />
+		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManWQLDetectorFactory" destroy-method="destroy" />
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManShellDetectorFactory" />
+		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManShellDetectorFactory" destroy-method="destroy" />
 	</service>
 
-	<bean id="wsmanCollector" class="org.opennms.netmgt.collectd.WsManCollector" />
+	<bean id="wsmanCollector" class="org.opennms.netmgt.collectd.WsManCollector" destroy-method="destroy" />
 	<service ref="wsmanCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
 		<service-properties>
 			<entry key="type" value="org.opennms.netmgt.collectd.WsManCollector" />
 		</service-properties>
 	</service>
 
-	<bean id="wsmanMonitor" class="org.opennms.netmgt.poller.monitors.WsManMonitor" />
+	<bean id="wsmanMonitor" class="org.opennms.netmgt.poller.monitors.WsManMonitor" destroy-method="destroy" />
 	<service ref="wsmanMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
 			<entry key="type" value="org.opennms.netmgt.poller.monitors.WsManMonitor" />
 		</service-properties>
 	</service>
 
-	<bean id="wsmanShellMonitor" class="org.opennms.netmgt.poller.monitors.WsManShellMonitor" />
+	<bean id="wsmanShellMonitor" class="org.opennms.netmgt.poller.monitors.WsManShellMonitor" destroy-method="destroy" />
 	<service ref="wsmanShellMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
 			<entry key="type" value="org.opennms.netmgt.poller.monitors.WsManShellMonitor" />

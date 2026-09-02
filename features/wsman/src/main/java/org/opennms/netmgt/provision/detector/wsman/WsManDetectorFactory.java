@@ -109,4 +109,18 @@ public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDet
             return null;
         });
     }
+
+    /**
+     * Releases any clients the factory is holding on to. Called by the blueprint
+     * container when the bundle stops.
+     */
+    public void destroy() {
+        if (m_factory instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) m_factory).close();
+            } catch (Exception e) {
+                LOG.debug("Error closing WS-Man client factory", e);
+            }
+        }
+    }
 }

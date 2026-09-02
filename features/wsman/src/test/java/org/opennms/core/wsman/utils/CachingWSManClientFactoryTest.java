@@ -22,6 +22,7 @@
 package org.opennms.core.wsman.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +35,17 @@ import static org.mockito.Mockito.when;
 
 import java.net.MalformedURLException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.opennms.core.wsman.WSManClient;
@@ -117,6 +129,80 @@ public class CachingWSManClientFactoryTest {
 
         verify(delegate, times(5)).getClient(any());
         assertEquals(5, factory.size());
+    }
+
+    @Test
+    public void sharesOneClientPerEndpointUnderConcurrentLoad() throws Exception {
+        final int endpoints = 4;
+        final int threads = 32;
+        final int iterations = 250;
+
+        // Count real client creations and make each one slow enough to expose races in the loader
+        final AtomicInteger created = new AtomicInteger();
+        WSManClientFactory delegate = endpoint -> {
+            created.incrementAndGet();
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return mock(WSManClient.class);
+        };
+        CachingWSManClientFactory factory = new CachingWSManClientFactory(delegate);
+
+        final List<WSManEndpoint> kerberos = new ArrayList<>();
+        for (int i = 0; i < endpoints; i++) {
+            kerberos.add(new WSManEndpoint.Builder("http://host" + i + ".example.org:5985/wsman").withKerberosEncryption().build());
+        }
+        final WSManEndpoint plain = new WSManEndpoint.Builder("http://plain.example.org:5985/wsman").withBasicAuth("u", "p").build();
+
+        // Every handle observed per endpoint must wrap the same delegate instance
+        final Map<Integer, Set<WSManClient>> delegatesSeen = new ConcurrentHashMap<>();
+        final AtomicInteger plainClients = new AtomicInteger();
+        final ExecutorService pool = Executors.newFixedThreadPool(threads);
+        final CountDownLatch start = new CountDownLatch(1);
+        final List<Future<?>> futures = new ArrayList<>();
+        for (int t = 0; t < threads; t++) {
+            final int seed = t;
+            futures.add(pool.submit(() -> {
+                start.await();
+                for (int i = 0; i < iterations; i++) {
+                    if ((seed + i) % 5 == 0) {
+                        try (WSManClient c = factory.getClient(plain)) {
+                            assertFalse(c instanceof SharedClient);
+                            plainClients.incrementAndGet();
+                        }
+                    } else {
+                        final int idx = (seed + i) % endpoints;
+                        try (WSManClient c = factory.getClient(kerberos.get(idx))) {
+                            assertTrue(c instanceof SharedClient);
+                            delegatesSeen.computeIfAbsent(idx, k -> ConcurrentHashMap.newKeySet()).add(((SharedClient) c).getDelegate());
+                            c.identify();
+                        }
+                    }
+                }
+                return null;
+            }));
+        }
+        start.countDown();
+        for (Future<?> f : futures) {
+            f.get(30, TimeUnit.SECONDS);
+        }
+        pool.shutdown();
+
+        // Exactly one real client per Kerberos endpoint, plus one per plain request
+        assertEquals(endpoints + plainClients.get(), created.get());
+        assertEquals(endpoints, factory.size());
+        for (int i = 0; i < endpoints; i++) {
+            assertEquals("endpoint " + i + " must map to a single shared client", 1, delegatesSeen.get(i).size());
+            verify(delegatesSeen.get(i).iterator().next(), never()).close();
+        }
+
+        // And closing the factory releases each of them exactly once
+        factory.close();
+        for (int i = 0; i < endpoints; i++) {
+            verify(delegatesSeen.get(i).iterator().next(), times(1)).close();
+        }
     }
 
     @Test

@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +44,7 @@ import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
+import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.exceptions.WSManException;
 import org.opennms.core.wsman.shell.CommandResult;
 import org.opennms.core.wsman.shell.ShellOptions;
@@ -61,6 +63,7 @@ public class WsManShellMonitorTest {
     private static final String SC_STOPPED = "\r\nSERVICE_NAME: w32time \r\n        STATE              : 1  STOPPED \r\n";
 
     private WSManClient client;
+    private WSManClientFactory clientFactory;
     private WsManShellMonitor monitor;
     private MonitoredService svc;
     private Definition agentConfig;
@@ -72,7 +75,7 @@ public class WsManShellMonitorTest {
         when(configDao.getAgentConfig(any())).thenReturn(agentConfig);
 
         client = mock(WSManClient.class);
-        WSManClientFactory clientFactory = mock(WSManClientFactory.class);
+        clientFactory = mock(WSManClientFactory.class);
         when(clientFactory.getClient(any())).thenReturn(client);
 
         monitor = new WsManShellMonitor();
@@ -166,14 +169,79 @@ public class WsManShellMonitorTest {
     }
 
     @Test
+    public void serviceRetryOverridesWsmanConfig() {
+        agentConfig.setRetry(2);
+        when(client.runCommand(eq("sc"), any(), any(), any())).thenThrow(new WSManException("down"));
+        poll(params("command", "sc", "retry", "0"));
+        verify(client, times(1)).runCommand(eq("sc"), any(), any(), any());
+    }
+
+    @Test
+    public void timeoutBoundsCommandAndEveryExchange() {
+        when(client.runCommand(any(), any(), any(), any())).thenReturn(new CommandResult(0, "", ""));
+
+        // Default
+        poll(params("command", "dir"));
+        assertTimeouts(WsManShellMonitor.DEFAULT_TIMEOUT);
+
+        // wsman-config.xml default applies when the service has none
+        agentConfig.setTimeout(7000);
+        poll(params("command", "dir"));
+        assertTimeouts(7000);
+
+        // The service definition wins over wsman-config.xml
+        poll(params("command", "dir", "timeout", "1500"));
+        assertTimeouts(1500);
+    }
+
+    private void assertTimeouts(int expectedMillis) {
+        ArgumentCaptor<WSManEndpoint> endpoint = ArgumentCaptor.forClass(WSManEndpoint.class);
+        verify(clientFactory, atLeastOnce()).getClient(endpoint.capture());
+        assertEquals(Integer.valueOf(expectedMillis), endpoint.getValue().getConnectionTimeout());
+        assertEquals(Integer.valueOf(expectedMillis), endpoint.getValue().getReceiveTimeout());
+
+        ArgumentCaptor<Duration> timeout = ArgumentCaptor.forClass(Duration.class);
+        verify(client, atLeastOnce()).runCommand(any(), any(), timeout.capture(), any());
+        assertEquals(Duration.ofMillis(expectedMillis), timeout.getValue());
+    }
+
+    @Test
+    public void doesNotSubstitutePlaceholdersIntoCommandOrArgs() {
+        when(client.runCommand(any(), any(), any(), any())).thenReturn(new CommandResult(0, "", ""));
+        poll(params("command", "{nodeLabel}", "args", "query {nodeLabel} {ipAddr}"));
+
+        ArgumentCaptor<String[]> args = ArgumentCaptor.forClass(String[].class);
+        verify(client).runCommand(eq("{nodeLabel}"), args.capture(), any(), any());
+        assertArrayEquals(new String[] {"query {nodeLabel} {ipAddr}"}, args.getValue());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsNonNumericCodepage() {
+        poll(params("command", "dir", "codepage", "utf8"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsNonPositiveCodepage() {
+        poll(params("command", "dir", "codepage", "0"));
+    }
+
+    @Test
+    public void isDownWhenClientCannotBeCreated() {
+        when(clientFactory.getClient(any())).thenThrow(new WSManException("no kerberos login"));
+        PollStatus status = poll(params("command", "dir"));
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertTrue(status.getReason(), status.getReason().contains("no kerberos login"));
+    }
+
+    @Test
     public void passesTimeoutAndShellOptions() {
         when(client.runCommand(any(), any(), any(), any())).thenReturn(new CommandResult(0, "", ""));
-        poll(params("command", "dir", "timeout", "5000", "no-profile", "false", "codepage", "437", "working-directory", "C:\\Temp"));
+        poll(params("command", "dir", "timeout", "2500", "no-profile", "false", "codepage", "437", "working-directory", "C:\\Temp"));
 
         ArgumentCaptor<Duration> timeout = ArgumentCaptor.forClass(Duration.class);
         ArgumentCaptor<ShellOptions> options = ArgumentCaptor.forClass(ShellOptions.class);
         verify(client).runCommand(eq("dir"), any(), timeout.capture(), options.capture());
-        assertEquals(Duration.ofMillis(5000), timeout.getValue());
+        assertEquals(Duration.ofMillis(2500), timeout.getValue());
         assertEquals(false, options.getValue().isNoProfile());
         assertEquals(437, options.getValue().getCodepage());
         assertEquals("C:\\Temp", options.getValue().getWorkingDirectory());

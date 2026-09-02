@@ -5,7 +5,11 @@ Use this monitor to run a command on a Windows host through WinRS (the Windows R
 Connection details, credentials, and Kerberos settings for the target come from `wsman-config.xml`, as with the other WS-Management monitors, detectors, and collectors.
 
 The command runs as the user configured in `wsman-config.xml`, in a fresh short-lived shell that is deleted when the command completes.
-Give that account only the rights it needs: membership in the `Remote Management Users` group on the target is enough to run commands, and the command line is taken verbatim from the poller configuration.
+Give that account only the rights it needs: membership in the `Remote Management Users` group on the target is enough to run commands.
+
+WARNING: The `command` and `args` values are handed to the Windows command interpreter exactly as written, and `cmd.exe` treats characters such as `&`, `|`, and `>` as command separators.
+For that reason these two parameters do not support placeholder substitution: substituting a value that someone else can influence, such as a node label, would let that person run commands on the host.
+Metadata expressions are still expanded by the poller for every parameter, so avoid referencing node, interface, or asset metadata in `command` or `args` unless you control who can edit it.
 
 == Monitor facts
 
@@ -27,16 +31,18 @@ Give that account only the rights it needs: membership in the `Remote Management
 
 3+|*Required*
 
-| command kbd:[{}]
+| command
 | The executable to run, for example `ipconfig` or `powershell`.
+Placeholder substitution is not applied, see the warning above.
 | n/a
 
 3+|*Optional*
 
-| args kbd:[{}]
+| args
 | Arguments passed to the command.
 The value is handed to the Windows host verbatim, so it is the rest of the command line exactly as you would type it there, using Windows quoting rules.
 Write double quotes as `&quot;` in the XML file.
+Placeholder substitution is not applied, see the warning above.
 | none
 
 | banner kbd:[{}]
@@ -66,9 +72,10 @@ Set a legacy code page such as `437` (US OEM) or `850` (Western European OEM) on
 | Shell default
 
 | timeout
-| Time in milliseconds to wait for the command to complete.
-Shell creation and deletion are not counted.
-On timeout the command is terminated and the poll fails.
+| Time in milliseconds that bounds each step of the poll: connecting to the host, creating the shell, waiting for the command to complete, and deleting the shell.
+No single step may take longer than this, so a poll against an unresponsive host ends after a small multiple of the value.
+When the command itself exceeds it, the command is terminated and the poll fails.
+Falls back to the `timeout` value from `wsman-config.xml` when not set.
 Keep this short; a command that needs more than a few seconds is a poor fit for a poll.
 | `3000`
 
