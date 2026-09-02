@@ -61,4 +61,22 @@ describe('WsmanDefinitionsTable.vue', () => {
     expect(wrapper.text()).toContain('Timeout (ms): 5000')
     expect(wrapper.find('[data-test="no-definitions"]').exists()).toBe(false)
   })
+
+  it('emits add, edit, delete and move for the actions', async () => {
+    const wrapper = mountTable([
+      { ...BASE, specifics: ['10.0.0.1'] },
+      { ...BASE, specifics: ['10.0.0.2'] }
+    ])
+    await wrapper.find('[data-test="add-definition"]').trigger('click')
+    await wrapper.findAll('[data-test="edit-definition"]')[1].trigger('click')
+    await wrapper.findAll('[data-test="delete-definition"]')[0].trigger('click')
+    await wrapper.findAll('[data-test="move-down"]')[0].trigger('click')
+    expect(wrapper.emitted('add')).toHaveLength(1)
+    expect(wrapper.emitted('edit')?.[0]).toEqual([1])
+    expect(wrapper.emitted('delete')?.[0]).toEqual([0])
+    expect(wrapper.emitted('move')?.[0]).toEqual([0, 1])
+    // the first row cannot move up, the last cannot move down
+    expect(wrapper.findAll('[data-test="move-up"]')[0].attributes('disabled')).toBeDefined()
+    expect(wrapper.findAll('[data-test="move-down"]')[1].attributes('disabled')).toBeDefined()
+  })
 })

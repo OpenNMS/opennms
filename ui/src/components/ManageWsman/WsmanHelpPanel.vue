@@ -26,8 +26,10 @@
           <strong>Agent Defaults</strong> are the connection settings from the root of
           <code>wsman-config.xml</code> that apply to every agent. <strong>Definitions</strong> override
           those settings for the IP ranges, addresses, or IPLIKE patterns they match; the first matching
-          definition wins. Passwords are shown only as set or not set. <strong>Data Collection</strong>
-          groups and system definitions live in <code>wsman-datacollection-config.xml</code>.
+          definition wins; use the Up and Down actions to change the order. Passwords are shown only as
+          set or not set, and saving without entering one keeps the stored password. Changes are written to
+          <code>wsman-config.xml</code> and picked up by the daemons without a restart. <strong>Data
+          Collection</strong> groups and system definitions live in <code>wsman-datacollection-config.xml</code>.
         </p>
       </div>
     </div>

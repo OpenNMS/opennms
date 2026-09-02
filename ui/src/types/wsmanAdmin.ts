@@ -53,3 +53,24 @@ export interface WsmanConfig {
   defaults: WsmanAgentSettings
   definitions: WsmanDefinition[]
 }
+
+// Request body of PUT /api/v2/wsman-config. password null keeps the stored
+// one (never shown to the client); clearPassword removes it. sourceIndex is
+// the index the definition was loaded from, so its stored password follows
+// it through edits and reordering; null for a new definition.
+export interface WsmanSettingsInput extends Omit<WsmanAgentSettings, 'hasPassword'> {
+  password: string | null
+  clearPassword: boolean
+}
+
+export interface WsmanDefinitionInput extends WsmanSettingsInput {
+  ranges: WsmanRange[]
+  specifics: string[]
+  ipMatches: string[]
+  sourceIndex: number | null
+}
+
+export interface WsmanConfigInput {
+  defaults: WsmanSettingsInput
+  definitions: WsmanDefinitionInput[]
+}

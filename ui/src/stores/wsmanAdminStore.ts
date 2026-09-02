@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput } from '@/types/wsmanAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -45,5 +45,14 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     }
   }
 
-  return { config, loadError, isLoading, getConfig }
+  // null on success (and the config is re-read), else the reason to show
+  const saveConfig = async (input: WsmanConfigInput): Promise<string | null> => {
+    const error = await API.updateWsmanConfig(input)
+    if (error === null) {
+      await getConfig()
+    }
+    return error
+  }
+
+  return { config, loadError, isLoading, getConfig, saveConfig }
 })

@@ -21,11 +21,11 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getWsmanConfig } from '@/services/wsmanAdminService'
+import { getWsmanConfig, updateWsmanConfig } from '@/services/wsmanAdminService'
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
-  v2: { get: vi.fn() }
+  v2: { get: vi.fn(), put: vi.fn() }
 }))
 vi.mock('@/composables/useSnackbar', () => ({
   default: () => ({ showSnackBar: vi.fn() })
@@ -42,6 +42,20 @@ describe('wsmanAdminService', () => {
     const result = await getWsmanConfig()
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config')
     expect(result).toEqual({ defaults: { username: 'root', hasPassword: true }, definitions: [] })
+  })
+
+  it('PUTs the document and returns null on success or the server reason on failure', async () => {
+    const input = { defaults: { username: 'x', password: null, clearPassword: false }, definitions: [] } as any
+    vi.mocked(v2.put).mockResolvedValueOnce({ status: 200, data: {}})
+    expect(await updateWsmanConfig(input)).toBeNull()
+    expect(vi.mocked(v2.put).mock.calls[0][0]).toBe('/wsman-config')
+    expect(vi.mocked(v2.put).mock.calls[0][1]).toBe(input)
+
+    vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 400, data: 'Definition 1 has a range whose end address is before its begin address.' }})
+    expect(await updateWsmanConfig(input)).toContain('before its begin')
+    // an HTML error page is never shown verbatim
+    vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 500, data: '<html>boom</html>' }})
+    expect(await updateWsmanConfig(input)).toBe('Failed to save the WS-Man configuration.')
   })
 
   it('returns null on failure or an unexpected body', async () => {

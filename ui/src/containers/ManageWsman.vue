@@ -11,6 +11,7 @@
     <p v-if="store.loadError" class="error" data-test="load-error">
       Failed to load the WS-Man configuration. Check that <code>wsman-config.xml</code> is readable, then reload the page.
     </p>
+    <p v-if="actionError" class="error" data-test="action-error">{{ actionError }}</p>
 
     <OnmsTabs v-else-if="store.config" v-model:value="activeTab">
       <OnmsTabList>
@@ -20,10 +21,16 @@
       </OnmsTabList>
       <OnmsTabPanels>
         <OnmsTabPanel :value="0">
-          <WsmanDefaultsCard :settings="store.config.defaults" />
+          <WsmanDefaultsCard :settings="store.config.defaults" @edit="showDefaultsDialog = true" />
         </OnmsTabPanel>
         <OnmsTabPanel :value="1">
-          <WsmanDefinitionsTable :definitions="store.config.definitions" />
+          <WsmanDefinitionsTable
+            :definitions="store.config.definitions"
+            @add="openDefinition(null)"
+            @edit="openDefinition"
+            @delete="askDelete"
+            @move="moveDefinition"
+          />
         </OnmsTabPanel>
         <OnmsTabPanel :value="2">
           <p class="placeholder" data-test="data-collection-placeholder">
@@ -34,16 +41,37 @@
         </OnmsTabPanel>
       </OnmsTabPanels>
     </OnmsTabs>
+
+    <template v-if="store.config">
+      <WsmanDefaultsDialog v-model:visible="showDefaultsDialog" :config="store.config" />
+      <WsmanDefinitionDialog v-model:visible="showDefinitionDialog" :config="store.config" :index="editingIndex" />
+      <OnmsConfirmationDialog
+        :visible="deleteIndex !== null"
+        title="Delete Definition"
+        actionButtonText="Delete"
+        @ok="confirmDelete"
+        @cancel="deleteIndex = null"
+      >
+        <template #content>
+          <p data-test="delete-confirm-text">
+            Delete definition {{ (deleteIndex ?? 0) + 1 }}? Agents it matched will use the next matching definition or the defaults.
+          </p>
+        </template>
+      </OnmsConfirmationDialog>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import { OnmsConfirmationDialog, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import WsmanDefaultsCard from '@/components/ManageWsman/WsmanDefaultsCard.vue'
+import WsmanDefaultsDialog from '@/components/ManageWsman/WsmanDefaultsDialog.vue'
+import WsmanDefinitionDialog from '@/components/ManageWsman/WsmanDefinitionDialog.vue'
 import WsmanDefinitionsTable from '@/components/ManageWsman/WsmanDefinitionsTable.vue'
+import { configToInput } from '@/components/ManageWsman/wsmanForm'
 import WsmanHelpPanel from '@/components/ManageWsman/WsmanHelpPanel.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
@@ -52,6 +80,11 @@ import { BreadCrumb } from '@/types'
 const menuStore = useMenuStore()
 const store = useWsmanAdminStore()
 const activeTab = ref(0)
+const showDefaultsDialog = ref(false)
+const showDefinitionDialog = ref(false)
+const editingIndex = ref<number | null>(null)
+const deleteIndex = ref<number | null>(null)
+const actionError = ref('')
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -63,6 +96,42 @@ const breadcrumbs = computed<BreadCrumb[]>(() => [
 onMounted(async () => {
   await store.getConfig()
 })
+
+const openDefinition = (index: number | null) => {
+  editingIndex.value = index
+  showDefinitionDialog.value = true
+}
+
+const askDelete = (index: number) => {
+  deleteIndex.value = index
+}
+
+// Reordering and deleting resend the document; every surviving definition
+// keeps its sourceIndex so its stored password follows it.
+const confirmDelete = async () => {
+  const index = deleteIndex.value
+  deleteIndex.value = null
+  if (index === null || !store.config) {
+    return
+  }
+  const input = configToInput(store.config)
+  input.definitions.splice(index, 1)
+  actionError.value = (await store.saveConfig(input)) ?? ''
+}
+
+const moveDefinition = async (index: number, delta: number) => {
+  if (!store.config) {
+    return
+  }
+  const input = configToInput(store.config)
+  const target = index + delta
+  if (target < 0 || target >= input.definitions.length) {
+    return
+  }
+  const [moved] = input.definitions.splice(index, 1)
+  input.definitions.splice(target, 0, moved)
+  actionError.value = (await store.saveConfig(input)) ?? ''
+}
 </script>
 
 <style lang="scss" scoped>
