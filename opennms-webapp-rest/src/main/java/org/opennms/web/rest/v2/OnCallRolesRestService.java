@@ -86,7 +86,8 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
 
     private static final Set<String> SCHEDULE_TYPES = Set.of("specific", "daily", "weekly", "monthly");
 
-    private static final Set<String> WEEKDAYS = Set.of("sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday");
+    private static final List<String> WEEKDAY_ORDER = List.of("sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday");
+    private static final Set<String> WEEKDAYS = Set.copyOf(WEEKDAY_ORDER);
 
     /** groups.xsd time formats; Locale.ROOT matches the legacy writers. */
     private static final String DATE_TIME_FORMAT = "dd-MMM-yyyy HH:mm:ss";
@@ -507,10 +508,28 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         final Date end = parseDate(TIME_FORMAT, time.getEnds());
         if (!start.before(end)) {
             throw new IllegalArgumentException("The start time must be before the end time."
-                    + " For an overnight shift, add two entries instead: one ending at 23:59:59 and one starting at 00:00:00.");
+                    + " For an overnight shift, add two entries instead: " + overnightSplitHint(type, time.getDay()));
         }
         time.setBegins(strictFormat(TIME_FORMAT, Locale.ROOT).format(start));
         time.setEnds(strictFormat(TIME_FORMAT, Locale.ROOT).format(end));
+    }
+
+    /** The second half of a split overnight shift lands on the following day, which weekly and monthly entries must name. */
+    private static String overnightSplitHint(final String type, final String day) {
+        switch (type) {
+            case "weekly": {
+                final int index = WEEKDAY_ORDER.indexOf(day);
+                final String next = WEEKDAY_ORDER.get((index + 1) % WEEKDAY_ORDER.size());
+                return "one on " + day + " ending at 23:59:59 and one on " + next + " starting at 00:00:00.";
+            }
+            case "monthly": {
+                final int dayOfMonth = Integer.parseInt(day);
+                final String next = dayOfMonth >= 31 ? "1" : String.valueOf(dayOfMonth + 1);
+                return "one on day " + day + " ending at 23:59:59 and one on day " + next + " starting at 00:00:00.";
+            }
+            default:
+                return "one ending at 23:59:59 and one starting at 00:00:00.";
+        }
     }
 
     /** groups.xsd pins the year to [12][0-9]{3}; anything else clears validation and then fails the marshal on save. */

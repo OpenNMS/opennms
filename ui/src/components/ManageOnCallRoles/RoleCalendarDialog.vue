@@ -33,7 +33,7 @@
       v-if="serverZone"
       class="zone-hint"
       data-test="zone-hint"
-    >All times are shown and entered in server time ({{ serverZone }}).</p>
+    >Times are shown in server time ({{ serverZone }}).<template v-if="zonesDiffer"> Times you enter use your browser's time zone ({{ browserZone }}) and are stored in server time.</template></p>
     <div
       v-if="calendar?.['schedule-error']"
       class="schedule-warning"
@@ -146,6 +146,11 @@
         />
       </div>
       <small
+        v-if="entryPreview"
+        class="entry-preview"
+        data-test="entry-preview"
+      >Stored as {{ entryPreview }} server time ({{ serverZone }}).</small>
+      <small
         v-if="entryRangeProblem"
         class="field-error"
         data-test="entry-range-error"
@@ -208,6 +213,26 @@ const showRemoveConfirmation = ref(false)
 const scheduleToRemove = ref<{ index: number, schedule: OnCallSchedule } | null>(null)
 
 const serverZone = computed(() => calendar.value?.['time-zone'] ?? '')
+const browserZone = (() => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone ?? ''
+  } catch (_err) {
+    return ''
+  }
+})()
+const zonesDiffer = computed(() => !!serverZone.value && !!browserZone && serverZone.value !== browserZone)
+
+// the pickers hold browser-local instants; the stored strings are the same
+// instants on the server's wall clock, which is also how the calendar is shown
+const toServerTimestamp = (date: Date) => formatScheduleTimestamp(date, serverZone.value || undefined)
+
+// make the conversion visible before saving whenever the two zones differ
+const entryPreview = computed(() => {
+  if (!zonesDiffer.value || !entryStart.value || !entryEnd.value || entryRangeProblem.value) {
+    return ''
+  }
+  return `${toServerTimestamp(entryStart.value)} – ${toServerTimestamp(entryEnd.value)}`
+})
 
 // groups.xsd pins schedule years to [12][0-9]{3}
 const MIN_SCHEDULE_DATE = new Date(1000, 0, 1)
@@ -327,7 +352,7 @@ const addEntry = async () => {
     const schedules = [...(role.value.schedule ?? []), {
       user: entryUser.value,
       type: 'specific' as const,
-      time: [{ begins: formatScheduleTimestamp(entryStart.value), ends: formatScheduleTimestamp(entryEnd.value) }]
+      time: [{ begins: toServerTimestamp(entryStart.value), ends: toServerTimestamp(entryEnd.value) }]
     }]
     if (await saveSchedules(schedules)) {
       entryUser.value = null
@@ -396,6 +421,12 @@ const cancelRemove = () => {
   margin: -0.5rem 0 0.75rem 0;
   text-align: center;
   font-size: 0.85rem;
+  color: var(--p-text-muted-color);
+}
+
+.entry-preview {
+  display: block;
+  margin-top: 0.25rem;
   color: var(--p-text-muted-color);
 }
 

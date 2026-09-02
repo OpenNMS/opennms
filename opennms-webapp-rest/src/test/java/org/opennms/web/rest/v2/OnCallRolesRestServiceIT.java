@@ -577,6 +577,23 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 .getContentAsString();
         assertTrue("expected a split-into-two-entries hint, got: " + body, body.contains("overnight"));
         assertTrue(body.contains("23:59:59"));
+
+        // the second half of a weekly or monthly split lands on the next day,
+        // which the hint has to name or both halves end up on the same day
+        final String weekly = sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"split-role\",\"membership-group\":\"split-team\",\"supervisor\":\"admin\",\"schedule\":["
+                + "{\"user\":\"splituser\",\"type\":\"weekly\",\"time\":[{\"day\":\"monday\",\"begins\":\"20:00:00\",\"ends\":\"06:00:00\"}]}]}", 400)
+                .getContentAsString();
+        assertTrue("expected the next weekday in the hint, got: " + weekly, weekly.contains("on monday ending at 23:59:59"));
+        assertTrue(weekly.contains("on tuesday starting at 00:00:00"));
+
+        final String monthly = sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"split-role\",\"membership-group\":\"split-team\",\"supervisor\":\"admin\",\"schedule\":["
+                + "{\"user\":\"splituser\",\"type\":\"monthly\",\"time\":[{\"day\":\"15\",\"begins\":\"20:00:00\",\"ends\":\"06:00:00\"}]}]}", 400)
+                .getContentAsString();
+        assertTrue("expected the next day of month in the hint, got: " + monthly, monthly.contains("on day 15 ending at 23:59:59"));
+        assertTrue(monthly.contains("on day 16 starting at 00:00:00"));
+        sendRequest(GET, "/on-call-roles/split-role", 404);
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {

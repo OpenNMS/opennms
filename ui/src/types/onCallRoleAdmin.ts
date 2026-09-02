@@ -74,8 +74,22 @@ export interface OnCallCalendar {
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 // groups.xml stores specific times as dd-MMM-yyyy HH:mm:ss with English
-// month abbreviations regardless of browser locale.
-export const formatScheduleTimestamp = (date: Date): string => {
+// month abbreviations regardless of browser locale. notifd reads them in the
+// server's zone, so a picked instant is expressed in `timeZone` when given;
+// an unknown zone id falls back to the browser's wall clock.
+export const formatScheduleTimestamp = (date: Date, timeZone?: string): string => {
   const pad = (n: number) => String(n).padStart(2, '0')
+  if (timeZone) {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone, hourCycle: 'h23',
+        year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
+      }).formatToParts(date)
+      const get = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find(p => p.type === type)?.value)
+      return `${pad(get('day'))}-${MONTHS_EN[get('month') - 1]}-${get('year')} ${pad(get('hour'))}:${pad(get('minute'))}:${pad(get('second'))}`
+    } catch (_err) {
+      // RangeError for a zone id this browser does not know
+    }
+  }
   return `${pad(date.getDate())}-${MONTHS_EN[date.getMonth()]}-${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }

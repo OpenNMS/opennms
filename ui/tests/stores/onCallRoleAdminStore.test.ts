@@ -119,4 +119,19 @@ describe('formatScheduleTimestamp', () => {
     expect(formatScheduleTimestamp(new Date(2093, 5, 15, 8, 0, 0))).toBe('15-Jun-2093 08:00:00')
     expect(formatScheduleTimestamp(new Date(2093, 11, 1, 17, 30, 5))).toBe('01-Dec-2093 17:30:05')
   })
+
+  it('expresses the instant on the server zone wall clock when a zone is given', () => {
+    // 07:00Z is 09:00 in Berlin (summer) and 16:00 in Tokyo; the day rolls over
+    // for zones ahead of UTC near midnight
+    const instant = new Date(Date.UTC(2093, 5, 15, 7, 0, 0))
+    expect(formatScheduleTimestamp(instant, 'UTC')).toBe('15-Jun-2093 07:00:00')
+    expect(formatScheduleTimestamp(instant, 'Europe/Berlin')).toBe('15-Jun-2093 09:00:00')
+    expect(formatScheduleTimestamp(instant, 'Asia/Tokyo')).toBe('15-Jun-2093 16:00:00')
+    expect(formatScheduleTimestamp(new Date(Date.UTC(2093, 11, 31, 23, 30, 0)), 'Asia/Tokyo')).toBe('01-Jan-2094 08:30:00')
+  })
+
+  it('falls back to the browser wall clock for an unknown zone id', () => {
+    const local = new Date(2093, 5, 15, 8, 0, 0)
+    expect(formatScheduleTimestamp(local, 'Not/AZone')).toBe('15-Jun-2093 08:00:00')
+  })
 })
