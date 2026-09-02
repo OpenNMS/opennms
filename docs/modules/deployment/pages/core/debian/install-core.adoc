@@ -1,3 +1,6 @@
+
+include::../debian/adoptium.adoc[]
+
 .Install GnuPG and add OpenNMS repository GPG key
 [source, console]
 ----
