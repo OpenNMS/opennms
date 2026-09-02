@@ -204,6 +204,25 @@ describe('TimeControls preset options', () => {
     expect(popoverHideCalls.count).toBe(1)
   })
 
+  // An unmatched hide must not drive the count below zero: a later show would
+  // then only bring it back to 0, the latch would read "no picker open" while
+  // one is on screen, and the preset click would be taken as a selection. Only
+  // `> 0` is read, so an unclamped decrement fails silently rather than loudly.
+  it('survives a hide with no matching show', async () => {
+    const wrapper = mountControls()
+    const picker = wrapper.findAllComponents(OnmsDatePicker)[0]
+
+    await picker.vm.$emit('hide')
+    await picker.vm.$emit('show')
+
+    const option = firstOption(wrapper)
+    await option.trigger('mousedown')
+    await option.trigger('click')
+
+    expect(wrapper.emitted('updateTime')).toBeUndefined()
+    expect(popoverHideCalls.count).toBe(0)
+  })
+
   // Two pickers share one flag; the second closing must not be masked by the
   // first, nor the flag left latched while one is still open.
   it('stays suppressed while the second picker is still open', async () => {
