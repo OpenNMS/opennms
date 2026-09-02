@@ -41,7 +41,7 @@ export interface ReloadableDaemon {
 // components addressed by their own name, not daemons, so they are not listed.
 export const RELOADABLE_DAEMONS: ReloadableDaemon[] = [
   { name: 'Ackd', label: 'Ackd', description: 'Acknowledgment readers and their schedules.' },
-  { name: 'Alarmd', label: 'Alarmd', description: 'Alarm processing: reduction, correlation, and northbound rules.' },
+  { name: 'Alarmd', label: 'Alarmd', description: 'Alarm correlation rules (Drools).' },
   { name: 'Bsmd', label: 'Bsmd', description: 'Business service hierarchy and reduction rules.' },
   { name: 'Collectd', label: 'Collectd', description: 'Performance data collection packages and schedules.' },
   { name: 'Discovery', label: 'Discovery', description: 'Discovery ranges, foreign sources, and schedules.' },
@@ -50,7 +50,7 @@ export const RELOADABLE_DAEMONS: ReloadableDaemon[] = [
   { name: 'Notifd', label: 'Notifd', description: 'Notifications, destination paths, and notice queues.' },
   { name: 'PerspectivePoller', label: 'Perspective Poller', description: 'Monitoring perspective polling packages.' },
   { name: 'Pollerd', label: 'Pollerd', description: 'Service polling packages, thresholds, and outage handling.' },
-  { name: 'Provisiond', label: 'Provisiond', description: 'Provisioning: import schedules and detection settings.' },
+  { name: 'Provisiond', label: 'Provisiond', description: 'Requisition import schedule.' },
   { name: 'Reportd', label: 'Reportd', description: 'Scheduled report definitions and delivery.' },
   { name: 'Scriptd', label: 'Scriptd', description: 'Event-driven scripts and script engines.' },
   { name: 'Statsd', label: 'Statsd', description: 'Statistics report definitions and schedules.' },
