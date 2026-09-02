@@ -36,6 +36,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
@@ -99,6 +108,105 @@ public class IfServicesRestService extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Search monitored services",
+            description = """
+                    Returns a flat list of monitored services across all nodes, each with its polling status.
+
+                    Every query parameter that is not one of the paging parameters below is read as a property
+                    restriction on `OnmsMonitoredService`. Joins are pre-registered for `ipInterface`,
+                    `ipInterface.node` as `node`, `ipInterface.node.categories` as `category`,
+                    `ipInterface.snmpInterface` as `snmpInterface` and `serviceType`, so restrictions such as
+                    `node.label`, `ipInterface.ipAddress`, `category.name` and `serviceType.name` all resolve.
+                    A value of `null` or `notnull` becomes an is-null / is-not-null test instead of an equality
+                    test. Unknown property names are not ignored: the filter still binds them and the query fails with 500 `Unknown entity: null`.
+
+                    Results are ordered by `id`. `totalCount` counts all matches, `count` the returned page.""",
+            operationId = "searchIfServices",
+            parameters = {
+                    @Parameter(in = ParameterIn.QUERY, name = "limit",
+                            description = "Maximum rows to return. 0 disables the limit.",
+                            schema = @Schema(type = "integer", defaultValue = "10"), example = "25"),
+                    @Parameter(in = ParameterIn.QUERY, name = "offset",
+                            description = "Zero-based index of the first row to return.",
+                            schema = @Schema(type = "integer"), example = "0"),
+                    @Parameter(in = ParameterIn.QUERY, name = "orderBy",
+                            description = "Property to sort on, replacing the default `id` ordering.",
+                            schema = @Schema(type = "string"), example = "serviceType.name"),
+                    @Parameter(in = ParameterIn.QUERY, name = "order",
+                            description = "Sort direction for `orderBy`. Anything other than `desc` is read as ascending.",
+                            schema = @Schema(type = "string", allowableValues = {"asc", "desc"}), example = "asc"),
+                    @Parameter(in = ParameterIn.QUERY, name = "comparator",
+                            description = "Comparison applied to every property restriction in the query.",
+                            schema = @Schema(type = "string", defaultValue = "eq",
+                                    allowableValues = {"eq", "ne", "gt", "lt", "ge", "le", "like", "ilike", "contains", "iplike"}),
+                            example = "ilike"),
+                    @Parameter(in = ParameterIn.QUERY, name = "match",
+                            description = "Whether the property restrictions are combined with AND or OR.",
+                            schema = @Schema(type = "string", defaultValue = "all", allowableValues = {"all", "any"}),
+                            example = "any"),
+                    @Parameter(in = ParameterIn.QUERY, name = "node.label",
+                            description = "Restrict to services on nodes with this label. One of the generic property restrictions.",
+                            schema = @Schema(type = "string"), example = "core-sw-01"),
+                    @Parameter(in = ParameterIn.QUERY, name = "ipInterface.ipAddress",
+                            description = "Restrict to services on this IP address.",
+                            schema = @Schema(type = "string"), example = "192.0.2.10"),
+                    @Parameter(in = ParameterIn.QUERY, name = "category.name",
+                            description = "Restrict to services on nodes in this surveillance category.",
+                            schema = @Schema(type = "string"), example = "Production"),
+                    @Parameter(in = ParameterIn.QUERY, name = "serviceType.name",
+                            description = "Restrict to services of this type.",
+                            schema = @Schema(type = "string"), example = "ICMP")
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Matching monitored services.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsMonitoredServiceDetailList.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "monitored-service": [
+                        {
+                          "id": "23616",
+                          "status": "Managed",
+                          "serviceName": "ICMP",
+                          "statusCode": "A",
+                          "ipAddress": "192.0.2.10",
+                          "ipInterfaceId": 23601,
+                          "isMonitored": true,
+                          "node": "core-sw-01",
+                          "isDown": false
+                        },
+                        {
+                          "id": "23619",
+                          "status": "Forced Unmanaged",
+                          "serviceName": "SNMP",
+                          "statusCode": "F",
+                          "ipAddress": "192.0.2.10",
+                          "ipInterfaceId": 23601,
+                          "isMonitored": false,
+                          "node": "core-sw-01",
+                          "isDown": false
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsMonitoredServiceDetailList.class),
+                                    examples = @ExampleObject(value = """
+                    <monitored-services count="1" offset="0" totalCount="1">
+                      <monitored-service isDown="false" id="23616" ipInterfaceId="23601" isMonitored="true" statusCode="A">
+                        <ipAddress>192.0.2.10</ipAddress>
+                        <node>core-sw-01</node>
+                        <serviceName>ICMP</serviceName>
+                        <status>Managed</status>
+                      </monitored-service>
+                    </monitored-services>"""))
+                    })
+    })
     public OnmsMonitoredServiceDetailList getServices(@Context final UriInfo uriInfo) {
         final Criteria c = getCriteria(uriInfo.getQueryParameters());
         final OnmsMonitoredServiceDetailList servicesList = new OnmsMonitoredServiceDetailList();
@@ -115,7 +223,47 @@ public class IfServicesRestService extends OnmsRestService {
 
     @GET
     @Path("/{id}")
-    public Response getServiceById(@PathParam("id") Integer monitoredServiceId) {
+    @Operation(
+            summary = "Get one monitored service by database id",
+            description = """
+                    Looks the monitored service up by its `ifservices` primary key, which is the `id` reported by
+                    the search endpoint. This is the numeric service id, not a node id and not a service name.
+
+                    The representation follows the request `Accept` header and defaults to XML when none is
+                    sent.""",
+            operationId = "getIfServiceById"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The monitored service.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsMonitoredServiceDetail.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": "23616",
+                      "status": "Managed",
+                      "serviceName": "ICMP",
+                      "statusCode": "A",
+                      "ipAddress": "192.0.2.10",
+                      "ipInterfaceId": 23601,
+                      "isMonitored": true,
+                      "node": "core-sw-01",
+                      "isDown": false
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsMonitoredServiceDetail.class),
+                                    examples = @ExampleObject(value = """
+                    <monitored-service isDown="false" id="23616" ipInterfaceId="23601" isMonitored="true" statusCode="A">
+                      <ipAddress>192.0.2.10</ipAddress>
+                      <node>core-sw-01</node>
+                      <serviceName>ICMP</serviceName>
+                      <status>Managed</status>
+                    </monitored-service>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No monitored service has that id. Also returned when `id` is not an integer, since the path then matches no method. The body is empty.")
+    })
+    public Response getServiceById(@Parameter(description = "Primary key of the monitored service, as reported by GET /ifservices.", example = "23616")
+                                   @PathParam("id") Integer monitoredServiceId) {
         OnmsMonitoredService monitoredService = m_serviceDao.get(monitoredServiceId);
         if (monitoredService == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -124,6 +272,65 @@ public class IfServicesRestService extends OnmsRestService {
     }
 
     @PUT
+    @Operation(
+            summary = "Set the polling status of every matching monitored service",
+            description = """
+                    Bulk update of the poller status of the services selected by the query string. The selection
+                    works exactly as it does for GET /ifservices, and `limit` and `offset` are cleared before the
+                    update, so every match is affected, not just the first page.
+
+                    With no query parameters the selection is every monitored service in the system.
+
+                    The supplied `status` letter is stored as-is, including the literal `S` or `R`; unlike the
+                    per-service endpoint there is no rewrite to `F` or `A`. `status=S`, and a transition from
+                    `A` to `F`, send `serviceUnmanaged` and `suspendPollingService`; `status=R`, and a
+                    transition from `F` to `A`, send `resumePollingService`.""",
+            operationId = "updateIfServices",
+            parameters = {
+                    @Parameter(in = ParameterIn.QUERY, name = "node.label",
+                            description = "Restrict the update to services on nodes with this label. Any `OnmsMonitoredService` property path accepted by GET /ifservices works here too.",
+                            schema = @Schema(type = "string"), example = "core-sw-01"),
+                    @Parameter(in = ParameterIn.QUERY, name = "ipInterface.ipAddress",
+                            description = "Restrict the update to services on this IP address.",
+                            schema = @Schema(type = "string"), example = "192.0.2.10"),
+                    @Parameter(in = ParameterIn.QUERY, name = "category.name",
+                            description = "Restrict the update to services on nodes in this surveillance category.",
+                            schema = @Schema(type = "string"), example = "Production")
+            }
+    )
+    @RequestBody(
+            required = true,
+            description = """
+                    Form-encoded body. `status` is required. `services` optionally narrows the update to a
+                    comma-separated list of service names within the selection; names that match nothing simply
+                    leave the selection untouched.
+
+                    Any content type is accepted, but only a form-encoded body deserializes; a JSON body fails
+                    with HTTP 500.""",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "string"),
+                    examples = {
+                            @ExampleObject(name = "forceUnmanaged", summary = "Force every selected service unmanaged",
+                                    value = "status=F"),
+                            @ExampleObject(name = "resumeTwoServices", summary = "Resume polling for ICMP and HTTP only",
+                                    value = "status=R&services=ICMP,HTTP")
+                    })
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "At least one service was updated. No body."),
+            @ApiResponse(responseCode = "304", description = "The selection was non-empty but `services` excluded every member of it, so nothing was written."),
+            @ApiResponse(responseCode = "400", description = "`status` is missing or not one of A, F, R, S, or the query string selected no service.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = {
+                                    @ExampleObject(name = "badStatus", value = "Parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)"),
+                                    @ExampleObject(name = "noMatch", value = "Can't find any service matching the provided criteria: {node.label=[nosuchnode]}.")
+                            })),
+            @ApiResponse(responseCode = "500", description = "Sending event to the event bus failed, or the body was not form-encoded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can not deserialize instance of java.util.ArrayList out of VALUE_STRING token")))
+    })
     public Response updateServices(@Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
         final String status = params.getFirst("status");
         if (status == null || !status.matches("(A|R|S|F)")) {

@@ -29,15 +29,25 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.google.common.collect.Maps;
 
 @XmlRootElement(name = "reduce-function")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Schema(description = """
+        A reduce function turning the mapped severities of a service's edges into the service's own
+        operational status. `type` and the `properties` keys are those reported by
+        `GET /business-services/functions/reduce`.""")
 public class ReduceFunctionDTO {
 
+    @Schema(description = "Reduce function name.", example = "HighestSeverity", required = true,
+            allowableValues = {"HighestSeverity", "HighestSeverityAbove", "ExponentialPropagation", "Threshold"})
     @XmlElement(name="type", required = true)
     private String type;
 
+    @Schema(description = "Function parameters, keyed by the parameter `key` the metadata endpoint reports. "
+            + "Empty for functions that take none.",
+            example = "{\"threshold\":\"0.26\"}")
     @XmlElement(name="properties")
     private Map<String, String> properties = Maps.newHashMap();
 

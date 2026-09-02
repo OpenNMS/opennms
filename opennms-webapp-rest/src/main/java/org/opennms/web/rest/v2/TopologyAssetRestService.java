@@ -51,6 +51,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -81,12 +89,49 @@ public class TopologyAssetRestService {
 
     static final String[] ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "image/gif", "image/webp"};
 
+    private static final String ASSET_ID_DESC =
+            "The asset's generated id, as returned by the upload or the listing (a UUID on this build).";
+
+    private static final String ASSET_STORE_UNAVAILABLE =
+            "The asset store bean is not present in this deployment.";
+
     @Autowired(required = false)
     private TopologyAssetDao m_dao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<TopologyAssetDTO> list(@QueryParam("kind") final String kind) {
+    @Operation(summary = "List topology image assets",
+            description = """
+        Metadata for every stored asset. The image bytes are not included; they are served from
+        `/topology/assets/{id}`. `created` and `lastModified` are epoch milliseconds.""",
+            operationId = "listTopologyAssets")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Asset metadata, empty when nothing matches.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = TopologyAssetDTO.class)),
+                            examples = @ExampleObject(value = """
+                    [
+                      {
+                        "id": "defb7a91-9287-459a-ba1d-6879fee1cbfd",
+                        "name": "rack-elevation",
+                        "kind": "background",
+                        "mimeType": "image/png",
+                        "sizeBytes": 36667,
+                        "owner": "admin",
+                        "created": 1787727367630,
+                        "lastModified": 1787727367630
+                      }
+                    ]"""))),
+            @ApiResponse(responseCode = "503", description = ASSET_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "The topology asset store is not available")))
+    })
+    public List<TopologyAssetDTO> list(@Parameter(description = """
+                    Restrict the listing to one kind. An unrecognised value matches nothing and
+                    yields an empty array.""",
+                    example = "icon",
+                    schema = @Schema(allowableValues = {"background", "icon"}))
+                                       @QueryParam("kind") final String kind) {
         return getDao().findAll().stream()
                 .filter(asset -> kind == null || kind.equals(asset.getKind()))
                 .map(TopologyAssetRestService::toDto)
@@ -96,10 +141,61 @@ public class TopologyAssetRestService {
     @POST
     @Consumes({"image/png", "image/jpeg", "image/gif", "image/webp"})
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Upload a topology image asset",
+            description = """
+        The request body is the raw image, not a multipart form; the `Content-Type` header records the
+        stored MIME type. `name` and `kind` travel as query parameters.
+
+        Size caps are per kind: 10485760 bytes for a `background`, 524288 for an `icon`. Only
+        `image/png`, `image/jpeg`, `image/gif` and `image/webp` are accepted; `image/svg+xml` is
+        rejected at the media-type layer. The `owner` recorded on the asset is the authenticated
+        principal.
+
+        Names carry no uniqueness constraint: uploading the same name twice stores two assets with
+        different ids.
+        The 201 carries a `Location` header pointing at the new asset's byte URL.""",
+            operationId = "uploadTopologyAsset")
+    @RequestBody(required = true, description = "The raw image bytes.",
+            content = {
+                    @Content(mediaType = "image/png", schema = @Schema(type = "string", format = "binary")),
+                    @Content(mediaType = "image/jpeg", schema = @Schema(type = "string", format = "binary")),
+                    @Content(mediaType = "image/gif", schema = @Schema(type = "string", format = "binary")),
+                    @Content(mediaType = "image/webp", schema = @Schema(type = "string", format = "binary"))
+            })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Asset stored. `Location` holds its byte URL.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = TopologyAssetDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": "defb7a91-9287-459a-ba1d-6879fee1cbfd",
+                      "name": "core-switch",
+                      "kind": "icon",
+                      "mimeType": "image/png",
+                      "sizeBytes": 67,
+                      "owner": "admin",
+                      "created": 1787727367630,
+                      "lastModified": 1787727367630
+                    }"""))),
+            @ApiResponse(responseCode = "400", description = "`name` is missing or blank, `kind` is missing or unrecognised, or the body is empty.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "An asset kind is required (?kind=): one of [background, icon]"))),
+            @ApiResponse(responseCode = "413", description = "The body exceeds the cap for this kind.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "A icon asset may be at most 524288 bytes"))),
+            @ApiResponse(responseCode = "415", description = "The `Content-Type` is absent or is not one of the four accepted image types."),
+            @ApiResponse(responseCode = "503", description = ASSET_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "The topology asset store is not available")))
+    })
     public Response upload(@Context final UriInfo uriInfo,
                            @Context final SecurityContext securityContext,
                            @Context final javax.ws.rs.core.HttpHeaders headers,
+                           @Parameter(description = "Display name for the asset. Trimmed; must not be blank.",
+                                   required = true, example = "core-switch")
                            @QueryParam("name") final String name,
+                           @Parameter(description = "Which cap and role the asset takes on.", required = true,
+                                   example = "icon", schema = @Schema(allowableValues = {"background", "icon"}))
                            @QueryParam("kind") final String kind,
                            final byte[] bytes) {
         if (name == null || name.trim().isEmpty()) {
@@ -146,7 +242,26 @@ public class TopologyAssetRestService {
      */
     @GET
     @Path("{id}")
-    public Response getBytes(@Context final Request request, @PathParam("id") final String id) {
+    @Operation(summary = "Get a topology asset's image bytes",
+            description = """
+        Serves the stored bytes under the asset's own `Content-Type`, with `Cache-Control: max-age=3600`
+        and an `ETag` derived from the asset's last-modified time. A conditional request carrying a
+        matching `If-None-Match` answers 304 with no body.""",
+            operationId = "getTopologyAssetBytes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The image, under its stored MIME type.",
+                    content = @Content(mediaType = "image/png", schema = @Schema(type = "string", format = "binary"))),
+            @ApiResponse(responseCode = "304", description = "`If-None-Match` matched the current ETag."),
+            @ApiResponse(responseCode = "404", description = "No such asset, or the metadata row has no bytes behind it.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No asset with id \'defb7a91-9287-459a-ba1d-6879fee1cbfd\'"))),
+            @ApiResponse(responseCode = "503", description = ASSET_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response getBytes(@Context final Request request,
+                             @Parameter(description = ASSET_ID_DESC, required = true,
+                                     example = "defb7a91-9287-459a-ba1d-6879fee1cbfd")
+                             @PathParam("id") final String id) {
         final TopologyAsset asset = require(id);
         final EntityTag etag = new EntityTag(String.valueOf(asset.getLastModified() == null ? 0L : asset.getLastModified().getTime()));
 
@@ -171,13 +286,54 @@ public class TopologyAssetRestService {
     @GET
     @Path("{id}/meta")
     @Produces(MediaType.APPLICATION_JSON)
-    public TopologyAssetDTO getMeta(@PathParam("id") final String id) {
+    @Operation(summary = "Get a topology asset's metadata",
+            description = "One asset's metadata without transferring the image. `created` and `lastModified` are epoch milliseconds.",
+            operationId = "getTopologyAssetMeta")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The asset's metadata.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = TopologyAssetDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": "defb7a91-9287-459a-ba1d-6879fee1cbfd",
+                      "name": "core-switch",
+                      "kind": "icon",
+                      "mimeType": "image/png",
+                      "sizeBytes": 67,
+                      "owner": "admin",
+                      "created": 1787727367630,
+                      "lastModified": 1787727367630
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "No asset with that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No asset with id \'defb7a91-9287-459a-ba1d-6879fee1cbfd\'"))),
+            @ApiResponse(responseCode = "503", description = ASSET_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public TopologyAssetDTO getMeta(@Parameter(description = ASSET_ID_DESC, required = true,
+                                            example = "defb7a91-9287-459a-ba1d-6879fee1cbfd")
+                                    @PathParam("id") final String id) {
         return toDto(require(id));
     }
 
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") final String id) {
+    @Operation(summary = "Delete a topology asset",
+            description = """
+        Removes the metadata and the bytes together. Views that referenced the asset are not rewritten,
+        so a background or icon reference can be left dangling.""",
+            operationId = "deleteTopologyAsset")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Asset deleted."),
+            @ApiResponse(responseCode = "404", description = "No asset with that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No asset with id \'defb7a91-9287-459a-ba1d-6879fee1cbfd\'"))),
+            @ApiResponse(responseCode = "503", description = ASSET_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response delete(@Parameter(description = ASSET_ID_DESC, required = true,
+                                   example = "defb7a91-9287-459a-ba1d-6879fee1cbfd")
+                           @PathParam("id") final String id) {
         if (!getDao().delete(id)) {
             throw webException(Response.Status.NOT_FOUND, "No asset with id '" + id + "'");
         }
