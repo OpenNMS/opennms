@@ -110,8 +110,8 @@
         {
           "id": "searchInventory",
           "name": "Search Inventory",
-          "url": "element/index.jsp",
-          "locationMatch": "element",
+          "url": "ui/index.html#/inventory-search",
+          "locationMatch": "inventory-search",
           "roles": null
         }
       ]
