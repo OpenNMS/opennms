@@ -31,14 +31,14 @@
 	sum(tally)
 FROM
 	(SELECT
-		((EXTRACT(days from (now() - to_date(dateinstalled, '$P!{DS_DATE_FORMAT}'))))/365)::INTEGER AS age,
+		((EXTRACT(days from (now() - to_date(dateinstalled, $P{DS_DATE_FORMAT}))))/365)::INTEGER AS age,
 		CASE
 			WHEN
 				maintcontractexpires = ''
 			THEN
 				NULL
 			ELSE
-				EXTRACT(epoch from (to_date(maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now()))
+				EXTRACT(epoch from (to_date(maintcontractexpires,$P{DS_DATE_FORMAT}) - now()))
 		END AS contractleft,
 		count(*) AS tally
 	FROM
@@ -92,7 +92,7 @@ FROM
 LEFT JOIN
 	assets
 ON
-	(to_char((to_date(assets.maintcontractexpires,'$P!{DS_DATE_FORMAT}')),'YYYY-MM') =
+	(to_char((to_date(assets.maintcontractexpires,$P{DS_DATE_FORMAT})),'YYYY-MM') =
 	to_char(generatedMonth.dates, 'YYYY-MM') AND assets.maintcontractexpires != 'n.v.')
 ORDER BY
 	yearmonth]]>
@@ -119,10 +119,10 @@ ORDER BY
 			THEN
 				'no contract'
 		WHEN
-			EXTRACT(epoch from (to_date(maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now())) > 0
+			EXTRACT(epoch from (to_date(maintcontractexpires,$P{DS_DATE_FORMAT}) - now())) > 0
 			THEN 'in contract'
 		WHEN
-			EXTRACT(epoch from (to_date(maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now())) < 0
+			EXTRACT(epoch from (to_date(maintcontractexpires,$P{DS_DATE_FORMAT}) - now())) < 0
 			THEN 'expired'
 		ELSE
 			'UNKNOWN'
