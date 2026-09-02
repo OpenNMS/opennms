@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getBusinessServicesStatus, getNodesByAlarms } from '@/services/statusService'
+import { getApplicationsStatus, getBusinessServicesStatus, getNodesByAlarms } from '@/services/statusService'
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -34,7 +34,7 @@ describe('statusService', () => {
   it('filters and orders problems server-side instead of paging first', async () => {
     // without severityFilter/orderBy=severity the server pages at its default
     // limit of 10 (unordered) and problems past the page silently vanish
-    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { businessservice: [] }})
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { businessservices: [] }})
     await getBusinessServicesStatus()
 
     const url = vi.mocked(v2.get).mock.calls[0][0] as string
@@ -44,6 +44,16 @@ describe('statusService', () => {
     expect(url).toContain('orderBy=severity')
     expect(url).toContain('order=desc')
     expect(url).toMatch(/limit=\d+/)
+  })
+
+  it('reads the plural JSON list names the status DTOs actually emit', async () => {
+    // the DTO lists are @JsonProperty("businessservices") / ("applications");
+    // the singular names exist only as XML element names
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { businessservices: [{ id: 1, name: 'BS', severity: 'MAJOR' }] }})
+    expect(await getBusinessServicesStatus()).toEqual([{ id: 1, name: 'BS', severity: 'MAJOR' }])
+
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { applications: [{ id: 2, name: 'App', severity: { label: 'Critical' }}] }})
+    expect(await getApplicationsStatus()).toEqual([{ id: 2, name: 'App', severity: 'CRITICAL' }])
   })
 
   it('returns null on failure so panels can show an error, not all-clear', async () => {

@@ -81,7 +81,7 @@ import { SORT } from '@/types'
 import type { Alarm, Node } from '@/types'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { useGeolocationStore } from '@/stores/geolocationStore'
-import { buildFilterClauses } from '../filter'
+import { filterFiqlClauses, resolveFilterNodeIds } from '../filter'
 import { maxSeverity } from '../severity'
 import CriticalIcon from '@/assets/Critical-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
@@ -186,12 +186,14 @@ const load = async () => {
   loading.value = true
   // The dashboard filter constrains both queries (node ids from categories +
   // the ip clause); alarms are severity-ordered so the fetch cap keeps the
-  // worst problems rather than an arbitrary page.
-  const clauses = await buildFilterClauses(props.filter)
-  const fiql = clauses.join(';')
+  // worst problems rather than an arbitrary page. The node id is `id` on the
+  // nodes entity and `node.id` on alarms.
+  const nodeIds = await resolveFilterNodeIds(props.filter)
+  const nodeFiql = filterFiqlClauses(props.filter, nodeIds, 'id').join(';')
+  const alarmFiql = filterFiqlClauses(props.filter, nodeIds, 'node.id').join(';')
   const [nodesResp, alarmsResp] = await Promise.all([
-    API.getNodes({ limit: 2000, ...(fiql ? { _s: fiql } : {}) }),
-    API.getAlarms({ limit: 2000, orderBy: 'severity', order: SORT.DESCENDING, ...(fiql ? { _s: fiql } : {}) })
+    API.getNodes({ limit: 2000, ...(nodeFiql ? { _s: nodeFiql } : {}) }),
+    API.getAlarms({ limit: 2000, orderBy: 'severity', order: SORT.DESCENDING, ...(alarmFiql ? { _s: alarmFiql } : {}) })
   ])
   if (seq !== loadSeq) {
     return

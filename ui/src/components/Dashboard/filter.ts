@@ -76,7 +76,9 @@ const MAX_NODE_IDS = 300
 
 // FIQL fragments (already grouped) that constrain a node-scoped query to the
 // active filter. AND these into the panel's own `_s` with ';'.
-export const filterFiqlClauses = (filter: DashboardFilter, nodeIds: number[] | null): string[] => {
+// `nodeIdProperty` is the FIQL path of the node id on the queried entity:
+// `node.id` where the node is an alias (alarms, outages), `id` on /nodes itself.
+export const filterFiqlClauses = (filter: DashboardFilter, nodeIds: number[] | null, nodeIdProperty = 'node.id'): string[] => {
   const clauses: string[] = []
   const ip = filter.ipMatch?.trim()
   if (ip) {
@@ -85,14 +87,14 @@ export const filterFiqlClauses = (filter: DashboardFilter, nodeIds: number[] | n
   if (nodeIds) {
     // a category selected but matching no nodes must return nothing, not everything
     const capped = nodeIds.slice(0, MAX_NODE_IDS)
-    clauses.push(capped.length ? `(${capped.map(id => `node.id==${id}`).join(',')})` : 'node.id==-1')
+    clauses.push(capped.length ? `(${capped.map(id => `${nodeIdProperty}==${id}`).join(',')})` : `${nodeIdProperty}==-1`)
   }
   return clauses
 }
 
 // Convenience: resolve + build the clauses in one call.
-export const buildFilterClauses = async (filter: DashboardFilter): Promise<string[]> =>
-  filterFiqlClauses(filter, await resolveFilterNodeIds(filter))
+export const buildFilterClauses = async (filter: DashboardFilter, nodeIdProperty = 'node.id'): Promise<string[]> =>
+  filterFiqlClauses(filter, await resolveFilterNodeIds(filter), nodeIdProperty)
 
 // Resolve the WHOLE filter (categories AND ip match) to a node-id set, for
 // consumers of server-aggregated data that cannot take FIQL (e.g. the alarm

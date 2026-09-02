@@ -72,6 +72,8 @@ const severityString = (s: unknown): string =>
 const PROBLEM_QUERY = [...PROBLEM_SEVERITIES].map(s => `severityFilter=${s}`).join('&')
   + '&orderBy=severity&order=desc&limit=50'
 
+// `key` is the DTO list's JSON name (plural, @JsonProperty); the singular
+// form is only its XML element name.
 const fetchStatusList = async (path: string, key: string): Promise<StatusListItem[] | null> => {
   try {
     const resp = await v2.get(`${path}?${PROBLEM_QUERY}`, { headers: { Accept: 'application/json' }})
@@ -90,7 +92,7 @@ const fetchStatusList = async (path: string, key: string): Promise<StatusListIte
 }
 
 export const getBusinessServicesStatus = (): Promise<StatusListItem[] | null> =>
-  fetchStatusList('/status/business-services', 'businessservice')
+  fetchStatusList('/status/business-services', 'businessservices')
 
 export const getApplicationsStatus = (): Promise<StatusListItem[] | null> =>
-  fetchStatusList('/status/applications', 'application')
+  fetchStatusList('/status/applications', 'applications')
