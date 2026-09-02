@@ -269,6 +269,47 @@ tech, and a `tooltip`-only button is named from the tooltip text. Positioning
 modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing
 one keeps using the directive.
 
+## OnmsDatePicker: dates, times, and time-only (NMS-20280)
+
+`OnmsDatePicker` covers all three shapes, so there is no `OnmsTimePicker`:
+
+| prop | type | default | effect |
+| --- | --- | --- | --- |
+| `showTime` | `boolean` | `false` | adds hour/minute spinners below the calendar |
+| `showSeconds` | `boolean` | `false` | adds a second spinner (requires `showTime` or `timeOnly`) |
+| `timeOnly` | `boolean` | `false` | hides the calendar entirely — a pure time picker |
+| `hourFormat` | `OnmsHourFormat` (`'12' \| '24'`) | `'24'` | clock convention |
+| `stepHour` / `stepMinute` / `stepSecond` | `number` | `1` | spinner increments |
+
+`timeOnly` needs no companion `showTime`: PrimeVue gates the time panel on
+`showTime || timeOnly` and the date panel on `!timeOnly`.
+
+`hourFormat` is typed as the owned `OnmsHourFormat` rather than PrimeVue's
+`HintedString<'12' | '24'>`, per rule 4. Every default above matches installed
+primevue@4.5.5's own, so these are not "notable deviations" — declaring them
+changed no existing call site's rendering. `placeholder` / `minDate` / `maxDate`
+are declared for the same reason: passing them by attribute fallthrough happens
+to reach PrimeVue, but rule 2 classes that as unsupported.
+
+`inputId` lands on the rendered `<input>` rather than the wrapper element, so a
+`FormField` label's `for` can reach the real control — the same reason
+`OnmsSelect`, `OnmsInputNumber` and the other input wrappers declare one. A
+plain `id` would fall through to PrimeVue's wrapper, out of a label's reach.
+
+Beyond `update:modelValue`, the wrapper emits `show` / `hide` when the overlay
+panel opens and closes. `TimeControls` needs them: PrimeVue dismisses the panel
+from a document-level **mousedown** listener, so a consumer that wants to tell
+"this click dismissed a picker" from "this click chose something else" has to
+sample overlay visibility on mousedown. Without these emits its only route is
+reaching into PrimeVue internals.
+
+`minDate` / `maxDate` accept `Date | null` and collapse `null` to `undefined`
+before reaching PrimeVue, which types them `Date | undefined` and treats any
+non-undefined value as a live bound. That keeps a `?? undefined` out of every
+call site holding its bounds in a nullable ref. `TimeControls` relies on this:
+it cross-wires its two pickers (`:maxDate="endDateRef"` / `:minDate="startDateRef"`)
+so a range cannot invert, and both refs start out null.
+
 ## Runtime exposure for plugins
 
 This package's barrel export (`packages/onms-ui/src/index.ts`) **is** the
