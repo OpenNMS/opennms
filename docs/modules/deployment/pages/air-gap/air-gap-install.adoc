@@ -101,7 +101,7 @@ endif::[]
 
 === Step 6 (Optional): Plugin Support
 
-If you need additional OpenNMS plugins (e.g., for CIFS monitoring, Asset Inventory, etc), download these packages from the OpenNMS repositories and include them in your installation files.
+If you need additional OpenNMS plugins (e.g., for Asset Inventory, etc), download these packages from the OpenNMS repositories and include them in your installation files.
 
 == Part 2: Installation on Air-Gapped System
 
