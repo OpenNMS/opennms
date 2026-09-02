@@ -164,6 +164,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("Manage Inventory", "Manage Business Services");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Business Services')]")));
+
+        // a /ui (Vue) page: assert its page title rather than a JSP breadcrumb
+        clickMenuItem("Manage Inventory", "Manage WS-Man");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and normalize-space(text())='Manage WS-Man']")));
         frontPage();
 
         // User Management Menu

@@ -190,6 +190,13 @@
     <intercept-url pattern="/api/v2/snmp-config/**" method="PUT" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="PATCH" access="ROLE_ADMIN,ROLE_PROVISION" />
 
+    <!-- wsman-config.xml carries agent credentials: admin-only for every method -->
+    <intercept-url pattern="/api/v2/wsman-config/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="PATCH" access="ROLE_ADMIN" />
+
     <!-- Trapd Config exposes SNMPv3 credentials; restrict to admin or provision -->
     <intercept-url pattern="/api/v2/trapd/**" method="GET" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/trapd/**" method="DELETE" access="ROLE_ADMIN,ROLE_PROVISION" />

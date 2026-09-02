@@ -390,6 +390,13 @@
           "url": "admin/bsm/adminpage.jsp",
           "locationMatch": "",
           "roles": null
+        },
+        {
+          "id": "manageWsman",
+          "name": "Manage WS-Man",
+          "url": "ui/index.html#/admin/wsman-config",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },

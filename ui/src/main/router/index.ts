@@ -203,6 +203,25 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin/wsman-config',
+      name: 'Manage WS-Man',
+      component: () => import('@/containers/ManageWsman.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage WS-Man configuration.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/map',
       name: 'Map',
       component: () => import('@/containers/Map.vue'),
