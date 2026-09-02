@@ -8,7 +8,7 @@
           label="Add New User"
           icon="pi pi-plus"
           data-test="add-user-button"
-          @click="openEditor(null)"
+          @click="router.push({ path: '/admin/users/create' })"
         />
         <AboutDialogButton title="Users">
           <UsersAbout />
@@ -75,7 +75,7 @@
               :title="`Edit ${data.userId}`"
               :aria-label="`Edit ${data.userId}`"
               data-test="edit-user-button"
-              @click="openEditor(data)"
+              @click="openEditor(data.userId)"
             />
             <OnmsIconButton
               :icon="Delete"
@@ -111,10 +111,6 @@
     </div>
   </TableCard>
 
-  <UserEditorDialog
-    v-model:visible="showEditor"
-    :user="userToEdit"
-  />
   <UserPasswordDialog
     v-model:visible="showPassword"
     :userId="actionUserId"
@@ -141,13 +137,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import UsersAbout from '@/components/ManageUsers/UsersAbout.vue'
@@ -159,9 +155,8 @@ import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 const store = useUserAdminStore()
+const router = useRouter()
 
-const showEditor = ref(false)
-const userToEdit = ref<ManagedUser | null>(null)
 const showPassword = ref(false)
 const showRename = ref(false)
 const actionUserId = ref('')
@@ -174,9 +169,9 @@ const emptyListContent = {
 
 const isProtected = (userId: string) => PROTECTED_USER_IDS.includes(userId)
 
-const openEditor = (user: ManagedUser | null) => {
-  userToEdit.value = user
-  showEditor.value = true
+// the editor is a routed page now (NMS-20281): too much form for a dialog
+const openEditor = (userId: string) => {
+  router.push({ path: `/admin/users/${encodeURIComponent(userId)}` })
 }
 
 const openPassword = (user: ManagedUser) => {

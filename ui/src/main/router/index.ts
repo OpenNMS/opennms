@@ -184,6 +184,26 @@ const router = createRouter({
       }
     },
     {
+      // :userId can be an existing user's id, or 'create' for a new user
+      path: '/admin/users/:userId',
+      name: 'User Editor',
+      component: () => import('@/containers/UserEditor.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage users.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/admin/groups',
       name: 'Manage Groups',
       component: () => import('@/containers/ManageGroups.vue'),
