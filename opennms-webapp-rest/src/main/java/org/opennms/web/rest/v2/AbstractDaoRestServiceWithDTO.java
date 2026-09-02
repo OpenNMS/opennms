@@ -68,8 +68,10 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.rest.support.CriteriaBehavior;
@@ -93,6 +95,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.google.common.base.Strings;
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
@@ -565,6 +569,39 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             m_eventProxy.send(event);
         } catch (final EventProxyException e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
+        }
+    }
+
+    /**
+     * Notifies interested daemons that the meta-data of the given node (or one of its
+     * interfaces or services) was changed, so they can discard cached, interpolated values.
+     *
+     * The event is dispatched after the surrounding transaction commits — sending it
+     * earlier would let consumers re-read (and re-cache) the pre-update values. The
+     * notification is advisory and best-effort: a delivery failure must not fail the
+     * already-committed request, consumers re-resolve after the metadata cache TTL.
+     */
+    protected void sendNodeMetadataUpdatedEvent(final Integer nodeId) {
+        final Event event = new EventBuilder(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI, "ReST")
+                .setNodeid(nodeId)
+                .getEvent();
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    sendEventQuietly(event);
+                }
+            });
+        } else {
+            sendEventQuietly(event);
+        }
+    }
+
+    private void sendEventQuietly(final Event event) {
+        try {
+            m_eventProxy.send(event);
+        } catch (final Exception e) {
+            LOG.warn("Failed to send {} event; cached metadata will refresh after the TTL.", event.getUei(), e);
         }
     }
 

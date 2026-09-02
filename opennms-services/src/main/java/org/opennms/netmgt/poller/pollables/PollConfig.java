@@ -58,4 +58,12 @@ public interface PollConfig extends Timer {
      */
     public void refresh();
 
+    /**
+     * Discards any cached, metadata-interpolated state (e.g. service parameters)
+     * so the next poll re-resolves it. Unlike {@link #refresh()} this does not
+     * re-resolve the poller configuration.
+     */
+    default void refreshMetadata() {
+    }
+
 }

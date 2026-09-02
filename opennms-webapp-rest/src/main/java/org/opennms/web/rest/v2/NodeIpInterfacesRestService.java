@@ -147,6 +147,8 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         }
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
+        // interface properties (hostname, ...) are visible to metadata interpolation
+        sendNodeMetadataUpdatedEvent(targetObject.getNodeId());
         return Response.noContent().build();
     }
 
@@ -236,6 +238,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.removeMetaData(context);
             getDao().update(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -257,6 +260,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.removeMetaData(context, key);
             getDao().update(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -278,6 +282,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -299,6 +304,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.addMetaData(context, key, value);
             getDao().update(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();

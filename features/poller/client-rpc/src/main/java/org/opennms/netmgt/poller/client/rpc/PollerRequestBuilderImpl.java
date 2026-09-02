@@ -59,6 +59,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private final Map<String, String> patternVariables = new HashMap<>();
 
+    private boolean preInterpolated = false;
+
     private Long ttlInMs;
 
     public PollerRequestBuilderImpl(LocationAwarePollerClientImpl client) {
@@ -120,6 +122,12 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return this;
     }
 
+    @Override
+    public PollerRequestBuilder withPreInterpolatedAttributes(boolean preInterpolated) {
+        this.preInterpolated = preInterpolated;
+        return this;
+    }
+
     // memoized scope; invalidated by the mutators that feed it (withService, withPatternVariables)
     private Scope scope;
 
@@ -154,7 +162,16 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitor not found: " + className);
         }
 
-        final Map<String, Object> interpolatedAttributes = this.getInterpolatedAttributes();
+        // The normal Poller path (PollableServiceConfig) passes attributes that are already
+        // interpolated, so we must not interpolate them a second time. Other callers (e.g. DCB)
+        // pass raw expressions which are interpolated here. The scope is only built when
+        // interpolation is needed since each build hits the database.
+        final Map<String, Object> interpolatedAttributes;
+        if (preInterpolated) {
+            interpolatedAttributes = new HashMap<>(this.attributes);
+        } else {
+            interpolatedAttributes = Interpolator.interpolateObjects(this.attributes, getScope());
+        }
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(service.getNodeId())
@@ -186,7 +203,10 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         // such as the agent details and other state related attributes
         // which should be included in the request
         final Map<String, Object> parameters = request.getMonitorParameters();
-        request.addAttributes(Interpolator.interpolateAttributes(serviceMonitor.getRuntimeAttributes(request, parameters), getScope()));
+        final Map<String, Object> runtimeAttributes = serviceMonitor.getRuntimeAttributes(request, parameters);
+        if (!runtimeAttributes.isEmpty()) {
+            request.addAttributes(Interpolator.interpolateAttributes(runtimeAttributes, getScope()));
+        }
 
         // Execute the request
         return client.getDelegate().execute(request).thenApply(results -> {

@@ -184,6 +184,9 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         Set<OnmsApplication> changedApplications = Sets.symmetricDifference(applicationsOriginal, targetObject.getApplications());
         ApplicationEventUtil.getApplicationChangedEvents(changedApplications).forEach(this::sendEvent);
 
+        // service properties are visible to metadata interpolation
+        sendNodeMetadataUpdatedEvent(targetObject.getNodeId());
+
         boolean changed = m_component.hasStatusChanged(previousStatus, targetObject);
         return changed ? Response.noContent().build() : Response.notModified().build();
     }
@@ -292,6 +295,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.removeMetaData(context);
             getDao().update(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -313,6 +317,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.removeMetaData(context, key);
             getDao().update(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -334,6 +339,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -355,6 +361,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.addMetaData(context, key, value);
             getDao().update(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();

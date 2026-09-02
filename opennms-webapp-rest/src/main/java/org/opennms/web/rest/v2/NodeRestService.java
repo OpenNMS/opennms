@@ -465,6 +465,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsNode targetObject, MultivaluedMapImpl params) {
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
+        // node properties (label, sys* fields, ...) are visible to metadata interpolation
+        sendNodeMetadataUpdatedEvent(targetObject.getId());
         return Response.noContent().build();
     }
 
@@ -599,6 +601,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.removeMetaData(context);
             getDao().update(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -619,6 +622,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.removeMetaData(context, key);
             getDao().update(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -639,6 +643,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -659,6 +664,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.addMetaData(context, key, value);
             getDao().update(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();

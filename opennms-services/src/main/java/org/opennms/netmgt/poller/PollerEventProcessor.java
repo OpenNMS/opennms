@@ -46,6 +46,7 @@ import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -160,6 +161,19 @@ final class PollerEventProcessor implements EventListener {
 
         // node location change
         ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
+
+        // node updated
+        ueiList.add(EventConstants.NODE_UPDATED_EVENT_UEI);
+
+        // node meta-data updated
+        ueiList.add(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI);
+
+        // node scan completed
+        ueiList.add(EventConstants.PROVISION_SCAN_COMPLETE_UEI);
+
+        // hardware inventory finished (the SNMP metadata provisioning adapter
+        // writes node meta-data after the node scan and reports it with this event)
+        ueiList.add(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI);
 
         // for reloading poller configuration and re-scheduling pollers
         ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
@@ -387,6 +401,39 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
+    private void nodeUpdatedHandler(IEvent event) {
+        final Long nodeId = event.getNodeid();
+        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
+        if (pnode == null) {
+            LOG.debug("nodeUpdatedHandler: node {} not found in pollable network, ignoring.", nodeId);
+            return;
+        }
+        LOG.debug("nodeUpdatedHandler: clearing cached parameters for node {}", nodeId);
+        for (final PollableInterface iface : pnode.getInterfaces()) {
+            for (final PollableService svc : iface.getServices()) {
+                refreshMetadata(svc);
+            }
+        }
+    }
+
+    private void refreshMetadataForAllServices() {
+        LOG.debug("refreshMetadataForAllServices: clearing cached parameters for all services");
+        getNetwork().visit(new PollableVisitorAdaptor() {
+            @Override
+            public void visitService(PollableService svc) {
+                refreshMetadata(svc);
+            }
+        });
+    }
+
+    private static void refreshMetadata(PollableService svc) {
+        try {
+            svc.refreshMetadata();
+        } catch (final Exception e) {
+            LOG.warn("refreshMetadata: failed to refresh metadata for {}, skipping.", svc, e);
+        }
+    }
+
     private void interfaceDeletedHandler(IEvent event) {
         Long nodeId = event.getNodeid();
         String sourceUei = event.getUei();
@@ -545,6 +592,14 @@ final class PollerEventProcessor implements EventListener {
             LOG.info("Reloading poller configuration in pollerd");
 
             reloadConfigHandler(event);
+        } else if (event.getUei().equals(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI)) {
+            // handled before the node-id guard below: without a node id the event
+            // signals a global change (e.g. rotated SCV credentials)
+            if (event.hasNodeid() && event.getNodeid() > 0) {
+                nodeUpdatedHandler(event);
+            } else {
+                refreshMetadataForAllServices();
+            }
         } else if(!event.hasNodeid()) {
             // For all other events, if the event doesn't have a nodeId it can't be processed.
 
@@ -582,6 +637,10 @@ final class PollerEventProcessor implements EventListener {
                 LOG.info("PollerEventProcessor: no node or interface found, discarding event");
             }
             nodeLabelChangedHandler(event);
+            if (event.getNodeid() > 0) {
+                // the node label is visible to metadata interpolation (${node:label})
+                nodeUpdatedHandler(event);
+            }
         } else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI) || event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
             if (event.getNodeid() < 0) {
                 LOG.info("PollerEventProcessor: no node or interface found, discarding event");
@@ -603,8 +662,9 @@ final class PollerEventProcessor implements EventListener {
                 serviceDeletedHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
-            if (event.getNodeid() > 0) { 
+            if (event.getNodeid() > 0) {
                 serviceReschedule(event, false);
+                nodeUpdatedHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
             if (event.getNodeid() > 0) {
@@ -614,6 +674,13 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)) {
             if (event.getNodeid() > 0) {
                 serviceReschedule(event, false);
+                nodeUpdatedHandler(event);
+            }
+        } else if (event.getUei().equals(EventConstants.NODE_UPDATED_EVENT_UEI) ||
+                   event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI) ||
+                   event.getUei().equals(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI)) {
+            if (event.getNodeid() != null && event.getNodeid() > 0) {
+                nodeUpdatedHandler(event);
             }
         } // end single event process
 
