@@ -761,6 +761,7 @@ public class NotificationConfigRestService {
         if (notification == null || StringUtils.isBlank(notification.getName())) {
             throw getException(Status.BAD_REQUEST, "The event notification and its name are required");
         }
+        validateAddressableName(notification.getName(), "event notification name");
         if (!"on".equals(notification.getStatus()) && !"off".equals(notification.getStatus())) {
             throw getException(Status.BAD_REQUEST, "The event notification requires a status of 'on' or 'off'");
         }
@@ -822,6 +823,8 @@ public class NotificationConfigRestService {
         UserFactory.init();
         known.addAll(UserFactory.getInstance().getUserNames());
         known.addAll(getGroupManager().getGroupNames());
+        // getUserNames/getGroupNames refresh from the file; getRoleNames does not
+        getGroupManager().update();
         known.addAll(java.util.Arrays.asList(getGroupManager().getRoleNames()));
 
         final List<org.opennms.netmgt.config.destinationPaths.Target> allTargets = new ArrayList<>(path.getTargets());
@@ -845,6 +848,7 @@ public class NotificationConfigRestService {
         if (path == null || StringUtils.isBlank(path.getName())) {
             throw getException(Status.BAD_REQUEST, "The destination path and its name are required");
         }
+        validateAddressableName(path.getName(), "destination path name");
         if (path.getTargets().isEmpty()) {
             throw getException(Status.BAD_REQUEST, "The destination path requires at least one target");
         }
@@ -859,6 +863,18 @@ public class NotificationConfigRestService {
                 throw getException(Status.BAD_REQUEST, "Every escalation requires at least one target");
             }
             validateTargets(escalate.getTargets());
+        }
+    }
+
+    // Names become the {name} path segment of PUT/DELETE; '/', '\\' and '%'
+    // survive encoding only to be rejected by the HTTP firewall, so such an
+    // entry could be created but never edited or deleted. Control characters
+    // break the XML marshal.
+    private static final java.util.regex.Pattern UNADDRESSABLE_NAME = java.util.regex.Pattern.compile("[/\\\\%\\p{Cntrl}]");
+
+    private static void validateAddressableName(final String name, final String what) {
+        if (UNADDRESSABLE_NAME.matcher(name).find()) {
+            throw getException(Status.BAD_REQUEST, "The {} must not contain /, \\, % or control characters.", what);
         }
     }
 

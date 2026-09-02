@@ -62,6 +62,9 @@ export const validateAdminComments = (value: string): string | null => {
  */
 export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name)
 
+/** Field hint for a name that fails isPathAddressable. */
+export const UNADDRESSABLE_NAME_HINT = 'The name must not contain / \\ or %'
+
 /**
  * Loose shape check: every comma-separated recipient must contain a
  * local@domain somewhere, which also accepts RFC-5322 display-name forms

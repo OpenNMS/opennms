@@ -14,6 +14,7 @@
           label="Path Name"
           for="path-name"
           required
+          :error="nameProblem"
         >
           <OnmsInputText
             id="path-name"
@@ -167,7 +168,7 @@ import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms
 import TargetRowEditor, { MethodOption, TargetRow } from '@/components/AdminNotifications/TargetRowEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
-import { NOTIFD_DURATION_HINT, isValidNotifdDuration } from '@/lib/adminValidation'
+import { NOTIFD_DURATION_HINT, UNADDRESSABLE_NAME_HINT, isPathAddressable, isValidNotifdDuration } from '@/lib/adminValidation'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath, DestinationPathTarget } from '@/types/notificationConfig'
 
@@ -339,8 +340,12 @@ const escalationDelayError = (delay: string) => {
   return isValidNotifdDuration(delay) ? undefined : NOTIFD_DURATION_HINT
 }
 
+// the name becomes the {name} path segment of PUT/DELETE, so an
+// unaddressable one could be created but never edited or deleted
+const nameProblem = computed(() => (isPathAddressable(name.value.trim()) ? undefined : UNADDRESSABLE_NAME_HINT))
+
 const isValid = computed(() => {
-  if (!name.value.trim() || !targets.value.length) {
+  if (!name.value.trim() || nameProblem.value || !targets.value.length) {
     return false
   }
   if (!isValidNotifdDuration(initialDelay.value)) {

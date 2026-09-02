@@ -539,6 +539,45 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     }
 
     @Test
+    public void testDestinationPathTargetsFollowRoleFileChanges() throws Exception {
+        // a role added behind the manager's back (hand edit, or the on-call
+        // roles API) must be a valid target without an unrelated read first
+        final File groupsFile = new File("target/test-work-dir/etc/groups.xml");
+        FileUtils.writeStringToFile(groupsFile, "<?xml version=\"1.0\"?>"
+                + "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\">"
+                + "<header><rev>1.3</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
+                + "<groups><group><name>Admin</name><user>admin</user></group></groups>"
+                + "<roles><role name=\"junit-oncall\" supervisor=\"admin\" membership-group=\"Admin\"/>"
+                + "<role name=\"junit-fresh-role\" supervisor=\"admin\" membership-group=\"Admin\"/></roles>"
+                + "</groupinfo>", Charset.defaultCharset());
+        groupsFile.setLastModified(System.currentTimeMillis() + 1000);
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths",
+                "{\"name\":\"junit-fresh-target\",\"target\":[{\"name\":\"junit-fresh-role\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}", 204);
+        sendRequest(DELETE, "/notification-config/destination-paths/junit-fresh-target", 204);
+    }
+
+    @Test
+    public void testUnaddressableNamesRejected() throws Exception {
+        // '/', '\\', '%' and control characters cannot be addressed as the
+        // {name} path segment of PUT/DELETE, so such an entry could never be
+        // edited or deleted again
+        for (final String bad : new String[] {"junit/slash", "junit\\\\back", "junit%pct", "junit\\u0001ctl"}) {
+            sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications",
+                    "{\"name\":\"" + bad + "\",\"status\":\"off\",\"uei\":\"uei.opennms.org/nodes/nodeUp\","
+                    + "\"rule\":{\"value\":\"IPADDR IPLIKE *.*.*.*\"},\"destinationPath\":\"Email-Admin\",\"text-message\":\"x\"}", 400);
+            sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths",
+                    "{\"name\":\"" + bad + "\",\"target\":[{\"name\":\"admin\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}", 400);
+        }
+        // a rename to such a name is rejected the same way, and the entry keeps its name
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths",
+                "{\"name\":\"junit-renamable\",\"target\":[{\"name\":\"admin\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}", 204);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/destination-paths/junit-renamable",
+                "{\"name\":\"junit/renamed\",\"target\":[{\"name\":\"admin\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}", 400);
+        sendRequest(GET, "/notification-config/destination-paths/junit-renamable", 200);
+        sendRequest(DELETE, "/notification-config/destination-paths/junit-renamable", 204);
+    }
+
+    @Test
     public void testDestinationPathsReadable() throws Exception {
         // the read side ships in the base PR: the event-notification editor
         // needs the path list for its destination picker

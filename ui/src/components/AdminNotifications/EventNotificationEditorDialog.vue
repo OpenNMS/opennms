@@ -321,6 +321,7 @@ import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
+import { UNADDRESSABLE_NAME_HINT, isPathAddressable } from '@/lib/adminValidation'
 import API from '@/services'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { EventNotification, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
@@ -539,6 +540,8 @@ const validateForm = async (): Promise<boolean> => {
     errors.name = 'Name is required.'
   } else if (name.length > NAME_MAX) {
     errors.name = `Name must be ${NAME_MAX} characters or fewer.`
+  } else if (!isPathAddressable(name)) {
+    errors.name = UNADDRESSABLE_NAME_HINT
   } else if (!isEditing.value && store.eventNotifications.some(n => n.name === name)) {
     errors.name = 'A notification with this name already exists.'
   }

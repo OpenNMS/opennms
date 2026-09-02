@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
@@ -71,11 +72,10 @@ public abstract class DestinationPathManager {
     }
 
     private void initializeDestinationPaths() {
-        // Build the replacement map and swap the field reference in one
-        // assignment rather than clearing in place: a reload replaces memory
-        // with the file (instead of merging over it), while a reader holding an
-        // earlier unmodifiableMap keeps a consistent snapshot and saveCurrent()'s
-        // iteration is never emptied mid-flight.
+        // Build the replacement map and swap the volatile reference, as every
+        // mutator does: a reload replaces memory with the file (instead of
+        // merging over it), and a published map is never mutated afterwards,
+        // so unlocked readers always see a consistent snapshot.
         final Map<String, Path> paths = new TreeMap<>();
         for (Path curPath : allPaths.getPaths()) {
             paths.put(curPath.getName(), curPath);
@@ -182,36 +182,20 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void addPath(Path newPath) throws IOException {
-        saveWithRollback(() -> m_destinationPaths.put(newPath.getName(), newPath));
-    }
-
-    @FunctionalInterface
-    private interface ConfigChange {
-        void apply() throws IOException;
+        commit(paths -> paths.put(newPath.getName(), newPath));
     }
 
     /**
-     * Applies an in-memory change and persists it, restoring the previous paths if
-     * persistence fails. saveCurrent() marshals the model only after the caller has
-     * already changed the map, so a change that leaves the config unmarshallable —
-     * e.g. removing the last path, which violates destinationPaths.xsd — would
-     * otherwise leave memory diverged from the on-disk file until a restart.
-     *
-     * Shallow snapshot: safe only while every mutator replaces whole Path objects. An
-     * in-place edit like NotificationManager.replaceNotification would need a deep copy.
+     * Applies a change to a copy of the current paths, persists that copy, and
+     * only then publishes it. Readers never see a map that is being mutated, and
+     * a change the file rejects (e.g. removing the last path, which violates
+     * destinationPaths.xsd) leaves memory and disk unchanged.
      */
-    private synchronized void saveWithRollback(final ConfigChange change) throws IOException {
-        final Map<String, Path> snapshot = new TreeMap<>(m_destinationPaths);
-        try {
-            change.apply();
-            saveCurrent();
-        } catch (final RuntimeException | IOException e) {
-            // Restore by swapping the reference: clear()+putAll() would expose a
-            // transient empty map to readers holding the unmodifiable view, which
-            // is exactly what initializeDestinationPaths() swaps references to avoid.
-            m_destinationPaths = snapshot;
-            throw e;
-        }
+    private synchronized void commit(final Consumer<Map<String, Path>> change) throws IOException {
+        final Map<String, Path> updated = new TreeMap<>(m_destinationPaths);
+        change.accept(updated);
+        saveCurrent(updated);
+        m_destinationPaths = updated;
     }
 
     /**
@@ -222,10 +206,9 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void replacePath(String oldName, Path newPath) throws IOException {
-        // one atomic change so a failed save rolls back both the remove and the add
-        saveWithRollback(() -> {
-            m_destinationPaths.remove(oldName);
-            m_destinationPaths.put(newPath.getName(), newPath);
+        commit(paths -> {
+            paths.remove(oldName);
+            paths.put(newPath.getName(), newPath);
         });
     }
 
@@ -238,7 +221,7 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(Path path) throws IOException {
-        saveWithRollback(() -> m_destinationPaths.remove(path.getName()));
+        commit(paths -> paths.remove(path.getName()));
     }
 
     /**
@@ -250,7 +233,7 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(String name) throws IOException {
-        saveWithRollback(() -> m_destinationPaths.remove(name));
+        commit(paths -> paths.remove(name));
     }
 
     /**
@@ -259,8 +242,12 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void saveCurrent() throws IOException {
+        saveCurrent(m_destinationPaths);
+    }
+
+    private synchronized void saveCurrent(final Map<String, Path> paths) throws IOException {
         allPaths.clearPaths();
-        for (Path path : m_destinationPaths.values()) {
+        for (Path path : paths.values()) {
             allPaths.addPath(path);
         }
     
