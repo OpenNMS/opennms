@@ -260,6 +260,9 @@ const resolveNodeLabels = async () => {
 
 const addNode = (value: OutageNode | OutageInterface, label?: string) => {
   const node = value as OutageNode
+  // a specific node ends "all": match-any would otherwise hide the node in the
+  // pickers and still be written next to it on save
+  outage.interface = (outage.interface ?? []).filter(i => i.address !== MATCH_ANY)
   if (!(outage.node ?? []).some(n => n.id === node.id)) {
     outage.node = [...(outage.node ?? []), { id: node.id }]
     if (label) {

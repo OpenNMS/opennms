@@ -91,6 +91,24 @@ describe('ScheduledOutageEditor.vue', () => {
     expect(wrapper.find('[data-test="save"]').exists()).toBe(true)
   })
 
+  it('adding a node ends "all nodes and interfaces"', async () => {
+    // with match-any active the added node would be hidden by the pickers and
+    // still be saved next to match-any; the legacy editor stripped it
+    vi.mocked(getScheduledOutage).mockResolvedValue({
+      name: 'nightly', type: 'daily', time: [], node: [], interface: [{ address: 'match-any' }]
+    } as any)
+    const wrapper = await mountPage()
+    const [nodePicker, ifacePicker] = wrapper.findAllComponents({ name: 'NodeInterfacePicker' })
+    expect(ifacePicker.props('matchAny')).toBe(true)
+
+    nodePicker.vm.$emit('add', { id: 7 }, 'core-router')
+    await flushPromises()
+
+    expect(nodePicker.props('items')).toEqual([{ id: 7 }])
+    expect(ifacePicker.props('items')).toEqual([])
+    expect(ifacePicker.props('matchAny')).toBe(false)
+  })
+
   it('treats new=true as a blank form without a load guard', async () => {
     query = { name: 'brand-new', new: 'true' }
     const wrapper = await mountPage()

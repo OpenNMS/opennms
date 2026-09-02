@@ -26,6 +26,7 @@
       </div>
 
       <p v-if="loadError" class="error" data-test="load-error">{{ loadError }}</p>
+      <p v-if="actionError" class="error" data-test="action-error">{{ actionError }}</p>
 
       <OnmsTable
         v-if="outages.length"
@@ -179,6 +180,8 @@ const loading = ref(true)
 const newName = ref('')
 const createError = ref('')
 const loadError = ref('')
+// kept separate from loadError, which the post-action reload resets
+const actionError = ref('')
 const outageToDelete = ref('')
 
 const emptyContent = computed(() => ({
@@ -278,11 +281,11 @@ const askDelete = (name: string) => {
 const confirmDelete = async () => {
   const name = outageToDelete.value
   outageToDelete.value = ''
-  loadError.value = ''
+  actionError.value = ''
   try {
     await deleteScheduledOutage(name)
   } catch (err: any) {
-    loadError.value = scheduledOutageErrorMessage(err, `Failed to delete the scheduled outage "${name}".`)
+    actionError.value = scheduledOutageErrorMessage(err, `Failed to delete the scheduled outage "${name}".`)
   } finally {
     await load()
   }

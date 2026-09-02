@@ -135,8 +135,8 @@
 
     <!-- Scheduled-outage "applies to" enumerates poller/collectd/threshd package
          names; keep it admin-only, matching the admin-gated Scheduled Outages page. -->
-    <intercept-url pattern="/rest/sched-outages/applies-to" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/sched-outages/*/applies-to" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/sched-outages/applies-to/**" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/sched-outages/*/applies-to/**" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>

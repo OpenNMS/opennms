@@ -25,6 +25,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  deleteScheduledOutage,
   getNodeLabels,
   getOutageApplicability,
   getScheduledOutages
@@ -68,6 +69,11 @@ const mountPage = async () => {
         OnmsDialog: {
           props: ['visible', 'header'],
           template: '<div v-if="visible" class="dialog-stub"><slot /></div>'
+        },
+        OnmsConfirmationDialog: {
+          props: ['visible'],
+          emits: ['ok', 'cancel'],
+          template: '<div v-if="visible" class="confirm-stub"><slot name="content" /><button data-test="confirm-ok" @click="$emit(\'ok\')">ok</button></div>'
         }
       }
     }
@@ -127,6 +133,20 @@ describe('ScheduledOutages.vue', () => {
 
     expect(push).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('already exists')
+  })
+
+  it('keeps a failed delete visible after the list reloads', async () => {
+    vi.mocked(deleteScheduledOutage).mockRejectedValue(new Error('500'))
+    const wrapper = await mountPage()
+    await wrapper.findAll('[data-test="delete-outage"]')[0].trigger('click')
+    await wrapper.find('[data-test="confirm-ok"]').trigger('click')
+    await flushPromises()
+
+    expect(deleteScheduledOutage).toHaveBeenCalledWith('nightly')
+    expect(wrapper.find('[data-test="action-error"]').text()).toContain('Failed to delete the scheduled outage "nightly"')
+    // the reload succeeded, so the table is still there and no load error shows
+    expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="outages-table"]').exists()).toBe(true)
   })
 
   it('routes edit to the editor with the outage name', async () => {
