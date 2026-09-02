@@ -23,6 +23,8 @@ package org.opennms.netmgt.measurements.model;
 
 import java.lang.reflect.Field;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -77,26 +79,48 @@ public class FilterParamMetaData {
         }
     }
 
+    @Schema(name = "key", required = true,
+            description = "Parameter name, the value to put in a filter's parameter[].key.",
+            example = "cutoffDate")
     public String getKey() {
         return key;
     }
 
+    // Derived by reflection from the filter field, so the set is open rather than an enumeration.
+    @Schema(name = "type", required = true,
+            description = "Declared type the value is coerced to, the lower-cased simple name of the filter field's "
+                    + "type. The shipped filters use boolean, double, int, long and string.",
+            example = "double")
     public String getType() {
         return type;
     }
 
+    @Schema(name = "displayName", required = true,
+            description = "Short label suitable for a form field.",
+            example = "Cutoff")
     public String getDisplayName() {
         return displayName;
     }
 
+    @Schema(name = "description", required = true,
+            description = "Human readable description of the parameter.",
+            example = "Timestamp in milliseconds. Any rows before this time will be removed.")
     public String getDescription() {
         return description;
     }
 
+    // Wire name is "default", not the bean name. Null for a required parameter.
+    @Schema(name = "default",
+            description = "Value used when the parameter is left out of the request. Null when the parameter is "
+                    + "required.",
+            example = "0")
     public String getDefaultValue() {
         return defaultValue;
     }
 
+    @Schema(name = "required", required = true,
+            description = "Whether the filter fails when this parameter is absent.",
+            example = "false")
     public boolean isRequired() {
         return required;
     }

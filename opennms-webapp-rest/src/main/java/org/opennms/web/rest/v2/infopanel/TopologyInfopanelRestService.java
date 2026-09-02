@@ -40,6 +40,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -71,9 +79,46 @@ public class TopologyInfopanelRestService {
 
     private volatile InfoPanelRenderer m_renderer;
 
+    private static final String ITEMS_EXAMPLE = """
+            [
+              {
+                "title": "SNMP Attributes",
+                "order": 10,
+                "html": "<table><tr><td>sysName</td><td>loopback-001</td></tr></table>"
+              }
+            ]""";
+
+    private static final String EMPTY_RESULT_NOTE = """
+            An empty array is returned when `$OPENNMS_HOME/etc/infopanel/` holds no `*.html`
+            templates, or when every template set `visible` to false for this subject.""";
+
     @GET
     @Transactional(readOnly = true)
-    public List<InfoPanelItem> getForNode(@QueryParam("nodeId") final Integer nodeId) {
+    @Operation(summary = "Get info-panel items for a node",
+            description = """
+        Renders every `*.html` Jinjava template in `$OPENNMS_HOME/etc/infopanel/` against the node and
+        returns the ones that set `visible` to true, sorted ascending by `order`. A template that fails
+        to render is skipped and logged; it does not fail the request.
+
+        """ + EMPTY_RESULT_NOTE,
+            operationId = "getTopologyInfopanelForNode")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rendered items, empty when no template produced one.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = InfoPanelItem.class)),
+                            examples = @ExampleObject(value = ITEMS_EXAMPLE))),
+            @ApiResponse(responseCode = "400", description = "`nodeId` was not supplied.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "A nodeId query parameter is required"))),
+            @ApiResponse(responseCode = "404", description = """
+                    No node with that id. A non-numeric `nodeId` also lands here, as an empty-bodied 404
+                    from the parameter conversion rather than this message.""",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No node with id 99999999")))
+    })
+    public List<InfoPanelItem> getForNode(@Parameter(description = "Numeric id of the node to render for.",
+                                                  required = true, example = "2")
+                                          @QueryParam("nodeId") final Integer nodeId) {
         if (nodeId == null) {
             throw webException(Response.Status.BAD_REQUEST, "A nodeId query parameter is required");
         }
@@ -92,10 +137,45 @@ public class TopologyInfopanelRestService {
     @GET
     @javax.ws.rs.Path("edge")
     @Transactional(readOnly = true)
-    public List<InfoPanelItem> getForEdge(@QueryParam("sourceNodeId") final Integer sourceNodeId,
+    @Operation(summary = "Get info-panel items for a link between two nodes",
+            description = """
+        Same template set and same visible/title/order contract as the node operation, rendered with an
+        `edge` context instead: the two endpoint nodes, their port labels, the SNMP interface each port
+        resolved to, and the discovery protocol.
+
+        Port labels are matched against each node's SNMP interfaces by `ifName` first, then `ifDescr`.
+        A port that matches nothing leaves the endpoint's `snmpInterface` and `ifIndex` null.
+
+        """ + EMPTY_RESULT_NOTE,
+            operationId = "getTopologyInfopanelForEdge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rendered items, empty when no template produced one.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = InfoPanelItem.class)),
+                            examples = @ExampleObject(value = ITEMS_EXAMPLE))),
+            @ApiResponse(responseCode = "400", description = "`sourceNodeId` or `targetNodeId` was not supplied.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "sourceNodeId and targetNodeId query parameters are required"))),
+            @ApiResponse(responseCode = "404", description = "Either endpoint id does not resolve to a node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No node with id 99999999")))
+    })
+    public List<InfoPanelItem> getForEdge(@Parameter(description = "Numeric id of the link's source node.",
+                                                  required = true, example = "2")
+                                          @QueryParam("sourceNodeId") final Integer sourceNodeId,
+                                          @Parameter(description = "Numeric id of the link's target node.",
+                                                  required = true, example = "1")
                                           @QueryParam("targetNodeId") final Integer targetNodeId,
+                                          @Parameter(description = """
+                                                  Port label on the source node, matched against its SNMP
+                                                  interfaces by ifName then ifDescr.""",
+                                                  example = "Gi0/1")
                                           @QueryParam("sourcePort") final String sourcePort,
+                                          @Parameter(description = "Port label on the target node, matched the same way.",
+                                                  example = "Gi0/2")
                                           @QueryParam("targetPort") final String targetPort,
+                                          @Parameter(description = "Discovery protocol the link came from, passed through to the templates.",
+                                                  example = "LLDP")
                                           @QueryParam("protocol") final String protocol) {
         if (sourceNodeId == null || targetNodeId == null) {
             throw webException(Response.Status.BAD_REQUEST, "sourceNodeId and targetNodeId query parameters are required");

@@ -34,21 +34,28 @@ import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.google.common.base.Objects;
 
 @XmlRootElement(name = "ip-service")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class IpServiceResponseDTO {
 
+    @Schema(description = "Monitored service id.", example = "1017")
     @XmlElement(name="id")
     private int m_id;
 
+    @Schema(description = "Service type name.", example = "HTTP-8080")
     @XmlElement(name="service-name")
     private String m_serviceName;
 
+    @Schema(description = "Label of the node the service is on.", example = "loopback-001")
     @XmlElement(name="node-label")
     private String m_nodeLabel;
 
+    @Schema(description = "Interface address the service is on. Carries the leading slash of "
+            + "InetAddress.toString().",
+            example = "/127.0.0.1")
     @XmlElement(name="ip-address")
     private String m_ipAddress;
 
