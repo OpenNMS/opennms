@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+              http://www.osgi.org/xmlns/blueprint/v1.0.0
+              https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+              http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+              http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder id="postgresFlowProperties"
+                             persistent-id="org.opennms.features.flows.persistence.postgres"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <!-- DataSource selection:
+                 - datasource.url BLANK (default): use the OpenNMS internal datasource named below. Zero
+                   config; flows go to the internal DB. Best for small-scale / PoC Horizon (no Sentinel).
+                 - datasource.url SET: build a dedicated, self-managed HikariCP pool against that database.
+                   Required on Sentinel and recommended for scale/external flow databases. Point every node
+                   that writes (Sentinel) or reads (Horizon) flows at the SAME database. -->
+            <cm:property name="dataSourceName" value="opennms"/>
+            <cm:property name="datasource.url" value=""/>
+            <cm:property name="datasource.databaseName" value="opennms"/>
+            <cm:property name="datasource.username" value="postgres"/>
+            <cm:property name="datasource.password" value=""/>
+            <cm:property name="datasource.driverClass" value="org.postgresql.Driver"/>
+            <cm:property name="connection.pool.idleTimeout" value="600"/>
+            <cm:property name="connection.pool.loginTimeout" value="3"/>
+            <cm:property name="connection.pool.minPool" value="10"/>
+            <cm:property name="connection.pool.maxPool" value="25"/>
+            <cm:property name="connection.pool.maxSize" value="25"/>
+            <cm:property name="batchSize" value="1000"/>
+            <cm:property name="flushIntervalMs" value="500"/>
+            <cm:property name="queueCapacity" value="100000"/>
+            <!-- Concurrent writer threads: each uses its own pooled connection (one PostgreSQL backend)
+                 while flushing, so raise this to parallelize writes across CPU cores on the database.
+                 Keep writerThreads + queryThreads <= the connection pool max (connection.pool.maxPool). -->
+            <cm:property name="writerThreads" value="1"/>
+            <!-- One node should own schema creation; set false on additional writers (e.g. Sentinels) -->
+            <cm:property name="runSchemaChangelog" value="true"/>
+            <cm:property name="queryThreads" value="4"/>
+            <!-- Write-time aggregation (FlowAggregator -> flow_agg): fixed-window per-dimension summaries
+                 that collapse flow cardinality. Opt-in (adds write load alongside raw persistence). Each
+                 writer must have a distinct aggregation.writerId; readers sum partial rows across writers. -->
+            <cm:property name="aggregation.enabled" value="false"/>
+            <cm:property name="aggregation.windowSizeMs" value="60000"/>
+            <cm:property name="aggregation.allowedLatenessMs" value="300000"/>
+            <cm:property name="aggregation.flushIntervalMs" value="5000"/>
+            <!-- Wall-clock age after which an open window is flushed even if its event-time watermark has
+                 stalled (e.g. an exporter went quiet). 0 = auto (windowSize + allowedLateness + 60s). -->
+            <cm:property name="aggregation.idleFlushMs" value="0"/>
+            <!-- Per exporter+interface cap on application/conversation/host; the tail rolls into one
+                 null-key "Other" row per window. Interface totals are never capped. 0 = keep every key. -->
+            <cm:property name="aggregation.topK" value="10"/>
+            <!-- Distinguishes this writer's partial rows. Leave blank to auto-default to the node identity
+                 (each Sentinel gets a distinct id); readers sum partials across writers regardless. -->
+            <cm:property name="aggregation.writerId" value=""/>
+            <!-- Read routing (mirrors the Elasticsearch SmartQueryService): route eligible queries to the
+                 aggregate table vs the raw table. Aggregates are opt-in (alwaysUseRaw=true by default);
+                 set alwaysUseRaw=false to enable threshold routing, or alwaysUseAgg=true to force it.
+                 Specific-entity/listing queries always use raw. -->
+            <cm:property name="smartQuery.alwaysUseRaw" value="true"/>
+            <cm:property name="smartQuery.alwaysUseAgg" value="false"/>
+            <cm:property name="smartQuery.durationThresholdMs" value="120000"/>
+            <cm:property name="smartQuery.endpointThresholdMs" value="604800000"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="postgresFlowMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <!-- Expose the write-path metrics (batch size, flush interval, throughput, queue size, drops) as JMX
+         MBeans under the org.opennms.netmgt.flows.postgres domain. Works in any Karaf container running
+         this feature (Sentinel writers and the Horizon reader/writer). -->
+    <service ref="postgresFlowMetricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="org.opennms.netmgt.flows.postgres" />
+            <entry key="description" value="PostgreSQL Flow Repository" />
+        </service-properties>
+    </service>
+    <bean id="postgresFlowMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
+        <argument ref="postgresFlowMetricRegistry"/>
+    </bean>
+    <bean id="postgresFlowMetricRegistryDomainedJmxReporterBuilder" factory-ref="postgresFlowMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.netmgt.flows.postgres"/>
+    </bean>
+    <bean id="postgresFlowMetricRegistryJmxReporter"
+          factory-ref="postgresFlowMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
+    <!-- Provides the flow DataSource: the internal OpenNMS datasource when datasource.url is blank
+         (PoC/small-scale), or a dedicated self-managed HikariCP pool when it is set (external/Sentinel).
+         Shared by the write and read beans; the provider closes the pool it owns on shutdown. -->
+    <bean id="flowDataSourceProvider" class="org.opennms.netmgt.flows.postgres.FlowDataSourceProvider"
+          init-method="init" destroy-method="close">
+        <property name="internalDataSourceName" value="${dataSourceName}"/>
+        <property name="url" value="${datasource.url}"/>
+        <property name="databaseName" value="${datasource.databaseName}"/>
+        <property name="username" value="${datasource.username}"/>
+        <property name="password" value="${datasource.password}"/>
+        <property name="driverClass" value="${datasource.driverClass}"/>
+        <property name="idleTimeout" value="${connection.pool.idleTimeout}"/>
+        <property name="loginTimeout" value="${connection.pool.loginTimeout}"/>
+        <property name="minPool" value="${connection.pool.minPool}"/>
+        <property name="maxPool" value="${connection.pool.maxPool}"/>
+        <property name="maxSize" value="${connection.pool.maxSize}"/>
+    </bean>
+
+    <bean id="postgresFlowRepository"
+          class="org.opennms.netmgt.flows.postgres.PostgresFlowRepository"
+          init-method="start" destroy-method="stop">
+        <argument ref="postgresFlowMetricRegistry"/>
+        <!-- The provider (never null) supplies the DataSource in start(); it may be inert (no DataSource
+             configured), in which case the repository logs and does nothing rather than failing to load. -->
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
+        <property name="batchSize" value="${batchSize}"/>
+        <property name="flushIntervalMs" value="${flushIntervalMs}"/>
+        <property name="queueCapacity" value="${queueCapacity}"/>
+        <property name="writerThreads" value="${writerThreads}"/>
+        <property name="runSchemaChangelog" value="${runSchemaChangelog}"/>
+    </bean>
+
+    <!-- The flow Pipeline persists only to the highest service-ranked tier of repositories, so ranking
+         100 (above the default Elasticsearch repository's 0) makes installing this feature override
+         Elasticsearch persistence entirely — no dual-write, no operator configuration. Uninstalling the
+         feature removes this service and the pipeline falls back to Elasticsearch. -->
+    <service ref="postgresFlowRepository" interface="org.opennms.integration.api.v1.flows.FlowRepository" ranking="100">
+        <service-properties>
+            <entry key="flows.repository.id" value="postgres"/>
+        </service-properties>
+    </service>
+
+    <!-- Read path. The flows REST/consumer side delegates to the highest service-ranked FlowQueryService;
+         registering at ranking 100 (above Elasticsearch's default 0) means simply installing this feature
+         forces flow reads onto PostgreSQL with no operator configuration, and uninstalling it falls back
+         to the Elasticsearch reads. -->
+    <bean id="postgresFlowQueryService"
+          class="org.opennms.netmgt.flows.postgres.PostgresFlowQueryService"
+          init-method="start" destroy-method="stop">
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
+        <property name="threads" value="${queryThreads}"/>
+    </bean>
+
+    <!-- Aggregated read path: answers eligible queries from flow_agg, delegating the rest to the raw
+         query service above. -->
+    <bean id="aggregatedFlowQueryService"
+          class="org.opennms.netmgt.flows.postgres.AggregatedFlowQueryService"
+          init-method="start" destroy-method="stop">
+        <argument ref="postgresFlowQueryService"/>
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
+        <property name="threads" value="${queryThreads}"/>
+    </bean>
+
+    <!-- Smart router (port of the Elasticsearch SmartQueryService): picks raw vs aggregated per query.
+         Registered as THE FlowQueryService (ranking 100, above Elasticsearch's 0). -->
+    <bean id="postgresSmartFlowQueryService"
+          class="org.opennms.netmgt.flows.postgres.PostgresSmartQueryService">
+        <argument ref="postgresFlowMetricRegistry"/>
+        <argument ref="postgresFlowQueryService"/>
+        <argument ref="aggregatedFlowQueryService"/>
+        <property name="alwaysUseRawForQueries" value="${smartQuery.alwaysUseRaw}"/>
+        <property name="alwaysUseAggForQueries" value="${smartQuery.alwaysUseAgg}"/>
+        <property name="timeRangeDurationAggregateThresholdMs" value="${smartQuery.durationThresholdMs}"/>
+        <property name="timeRangeEndpointAggregateThresholdMs" value="${smartQuery.endpointThresholdMs}"/>
+    </bean>
+
+    <service ref="postgresSmartFlowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService" ranking="100">
+        <service-properties>
+            <entry key="flows.query.id" value="postgres"/>
+        </service-properties>
+    </service>
+
+    <!-- Health check: verify connectivity to the configured flow database. Counterpart to the
+         Elasticsearch "cluster health check for Flows". -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.netmgt.flows.postgres.PostgresFlowHealthCheck">
+            <argument ref="flowDataSourceProvider"/>
+        </bean>
+    </service>
+
+    <!-- Write-time aggregation. Feeds the in-process FlowAggregator, which writes fixed-window per-
+         dimension summaries to flow_agg. Shares the flow DataSource and is inert when aggregation is
+         disabled or no DataSource is configured. -->
+    <!-- Node identity (core or this Sentinel), used to auto-default the aggregation writerId. -->
+    <reference id="flowIdentity" interface="org.opennms.distributed.core.api.Identity"/>
+
+    <bean id="aggregatingFlowRepository"
+          class="org.opennms.netmgt.flows.postgres.PostgresAggregatingFlowRepository"
+          init-method="start" destroy-method="stop">
+        <argument ref="postgresFlowMetricRegistry"/>
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
+        <property name="identity" ref="flowIdentity"/>
+        <property name="enabled" value="${aggregation.enabled}"/>
+        <property name="windowSizeMs" value="${aggregation.windowSizeMs}"/>
+        <property name="allowedLatenessMs" value="${aggregation.allowedLatenessMs}"/>
+        <property name="flushIntervalMs" value="${aggregation.flushIntervalMs}"/>
+        <property name="idleFlushMs" value="${aggregation.idleFlushMs}"/>
+        <property name="topK" value="${aggregation.topK}"/>
+        <property name="writerId" value="${aggregation.writerId}"/>
+    </bean>
+
+    <!-- Registered as a forwarder (like the Kafka exporter): the pipeline always delivers flows here,
+         alongside the highest-ranked primary store, so aggregation coexists with raw persistence rather
+         than competing for the primary-store tier. -->
+    <service ref="aggregatingFlowRepository" interface="org.opennms.integration.api.v1.flows.FlowRepository">
+        <service-properties>
+            <entry key="flows.repository.id" value="postgres-agg"/>
+            <entry key="flows.repository.forwarder" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>

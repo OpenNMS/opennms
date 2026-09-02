@@ -380,6 +380,7 @@
                         <feature>sentinel-telemetry-jti</feature>
                         <feature>sentinel-telemetry-nxos</feature>
                         <feature>sentinel-flows</feature>
+                        <feature>sentinel-flows-postgres</feature>
                         <feature>sentinel-coordination-api</feature>
                         <feature>sentinel-coordination-common</feature>
                         <feature>sentinel-coordination-zookeeper</feature>

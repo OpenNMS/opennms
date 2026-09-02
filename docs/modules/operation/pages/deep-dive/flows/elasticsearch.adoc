@@ -1,0 +1,137 @@
+
+[[flows-elasticsearch]]
+= Scaling Flows with Elasticsearch
+:description: Persist high volumes of flows in {page-component-title} to Elasticsearch, including the Drift plugin, composable templates, index retention, and the Kafka forwarder.
+
+For high flow volumes, or when you want a dedicated, horizontally scalable flows analytics store, persist flows to Elasticsearch instead of the {page-component-title} PostgreSQL database.
+Elasticsearch is the long-standing {page-component-title} flow store and scales out across a cluster for large deployments.
+
+NOTE: This document covers only the Elasticsearch-specific persistence configuration.
+Complete the xref:deep-dive/flows/basic.adoc#flows-basic[basic flow setup] first (protocol listeners, device configuration, and the Grafana data source), which applies regardless of the flow store.
+
+NOTE: If you enabled the `opennms-flows-postgres` feature during the xref:deep-dive/flows/basic.adoc[basic setup], it takes precedence over Elasticsearch.
+To persist to and read from Elasticsearch instead, remove its `featuresBoot.d` file and uninstall the feature (`feature:uninstall opennms-flows-postgres`).
+
+== Requirements
+
+Make sure that you have the following before you set up flows persistence to Elasticsearch:
+
+* A xref:deep-dive/flows/basic.adoc#flows-basic[basic flows environment] set up.
+* Elasticsearch cluster set up with the https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
+** The Drift plugin persists and queries flows that {page-component-title} collects.
+The Drift version must match the targeted Elasticsearch version.
+** (Optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS` if the default values are not sufficient for your volume of flows or number of nodes.
+** A retention process to remove old flow indices so the disk does not fill up (for example, "keep _X_ days of flows").
+See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
+** {page-component-title} set up to monitor the Elasticsearch stack and generate an alarm if it goes down.
+* The OpenNMS plugin for Grafana configured to visualize flows.
+** Configure the flow and performance data sources.
+
+[WARNING]
+====
+Flows are high volume, and {page-component-title} does not expire flows stored in Elasticsearch.
+Configure an index retention process before you collect flows in production, or the Elasticsearch disk can fill up.
+See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
+====
+
+== Configure {page-component-title} to communicate with Elasticsearch
+
+{page-component-title} must be set up to communicate with Elasticsearch and persist the collected flows data in a defined directory:
+
+. Connect to your {page-component-title} xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
++
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+. Edit `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure flow persistence to use your Elasticsearch cluster:
++
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set elasticUrl http://elastic:9200
+config:update
+----
+
+. (Optional) Edit or create `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` and configure persistence settings:
++
+[source, xml]
+----
+elasticUrl = http://10.10.3.218:9200 <1>
+connTimeout = 30000
+readTimeout = 300000
+settings.index.number_of_replicas = 0
+settings.index.number_of_shards=1
+settings.index.refresh_interval=10s
+elasticIndexStrategy=daily
+----
+<1> Replace with comma-separated list of Elasticsearch nodes.
+
+** See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>> for a complete set of configuration options.
+
+== Configuring NetFlow Composable Templates
+
+OpenNMS supports (https://www.elastic.co/docs/manage-data/data-store/templates)[composable templates] for more flexible and modular management of Elasticsearch index settings.
+To enable composable templates for NetFlow data, update below configuration in Karaf:
+
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set useComposableTemplates true
+config:update
+----
+
+=== Managing NetFlow Templates and Policies
+
+NetFlow component and index templates can be managed from the following directory:
+
+`$\{OPENNMS_HOME}/etc/netflow-templates`
+
+You can customize existing templates, add new ones, or define Index Lifecycle Management (ILM) policies within this folder. Any valid Elasticsearch template or ILM JSON placed here will be picked up and applied by the system.
+
+When placing files in the netflow-templates directory:
+
+* Files intended as ILM policies should have names that include keywords such as ilm, lifecycle, or policy.
+* Files with names containing setting(s), mapping(s), alias(es), or component will be treated as component templates.
+* Files with names containing index or composable will be recognized as index templates.
+
+[[kafka-forwarder-config]]
+== Configure Kafka forwarder
+
+Flows enriched with {page-component-title} node data can be forwarded to Kafka and persisted.
+By default, enriched flows are stored in the `flowsDocument` topic and the payloads are encoded using https://developers.google.com/protocol-buffers/[Google Protocol Buffers].
+See `flowdocument.proto` in the corresponding source definition for the model definitions.
+
+To enable JSON support, set `useJson` to `true`.
+
+Follow these steps to configure forwarding flows to Kafka:
+
+. Enable Kafka forwarding:
++
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
+admin@opennms()> config:property-set enableForwarding true
+admin@opennms()> config:update
+----
+
+. Configure the Kafka server for flows:
++
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.flows.persistence.kafka
+admin@opennms()> config:property-set bootstrap.servers 127.0.0.1:9092
+admin@opennms()> config:property-set topic opennms-flows
+admin@opennms()> config:update
+----
+
+== Next steps
+
+* Classify data flows to resolve them to application names (see xref:deep-dive/flows/classification-engine.adoc[]).
+* xref:deep-dive/flows/sentinel/sentinel.adoc[Scale flow processing with Sentinel] to distribute the processing load.
+* Add https://github.com/OpenNMS/nephron[OpenNMS Nephron] for aggregation and streaming analytics.

@@ -9,7 +9,13 @@
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <reference id="flowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService" availability="mandatory"/>
+    <!-- Delegates to the highest service-ranked FlowQueryService (and swaps live as they come/go), so
+         installing the higher-ranked opennms-flows-postgres feature forces flow reads onto PostgreSQL
+         with no operator configuration, and uninstalling it falls back to the Elasticsearch reads. -->
+    <bean id="flowQueryService" class="org.opennms.netmgt.flows.rest.internal.HighestRankedFlowQueryService"
+          init-method="init" destroy-method="destroy">
+        <argument ref="blueprintBundleContext"/>
+    </bean>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
