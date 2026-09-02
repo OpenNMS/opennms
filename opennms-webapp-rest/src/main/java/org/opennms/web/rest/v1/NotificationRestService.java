@@ -224,9 +224,12 @@ public class NotificationRestService extends OnmsRestService {
         // All unack notifications
         info.setTotalUnacknowledgedCount(m_notifDao.countMatching(new CriteriaBuilder(OnmsNotification.class).isNull("answeredBy").toCriteria()));
 
-        // All unacknowledged notifications for current user
+        // All unacknowledged notifications for current user. A notification holds one
+        // usersNotified row per notification method, so the join must be counted over
+        // distinct notifications rather than over rows.
         info.setUserUnacknowledgedCount(m_notifDao.countMatching(new CriteriaBuilder(OnmsNotification.class).isNull("answeredBy")
                 .alias("usersNotified", "usersNotified").eq("usersNotified.userId", user)
+                .distinct()
                 .toCriteria()));
 
         // Determine number of notices not acknowledged and not "assigned to" current user
@@ -234,12 +237,14 @@ public class NotificationRestService extends OnmsRestService {
                 .isNull("answeredBy")
                 .alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN)
                 .or(Restrictions.ne("usersNotified.userId", user), Restrictions.isNull("usersNotified.userId"))
+                .distinct()
                 .toCriteria()));
 
         // Load newest unacknowledged notifications for user, but only N
         if (info.getUserUnacknowledgedCount() != 0) {
             final List<OnmsNotification> newestNotifications = m_notifDao.findMatching(new CriteriaBuilder(OnmsNotification.class).isNull("answeredBy")
                     .alias("usersNotified", "usersNotified").eq("usersNotified.userId", user)
+                    .distinct()
                     .orderBy("pageTime", false)
                     .limit(10)
                     .toCriteria());
