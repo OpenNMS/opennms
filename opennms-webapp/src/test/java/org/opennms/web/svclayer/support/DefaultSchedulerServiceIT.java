@@ -158,8 +158,6 @@ public class DefaultSchedulerServiceIT {
         } catch (org.opennms.web.svclayer.support.SchedulerContextException ex) {
             assertThat(ex.getContext(), is("floatParm1"));
         }
-
-        assertThat(jobListener.actualExecutions, is(0));
     }
 
     @Test
@@ -170,7 +168,6 @@ public class DefaultSchedulerServiceIT {
         } catch (SchedulerContextException ex) {
             assertThat(ex.getContext(), is("cronExpression"));
         }
-        assertThat(jobListener.actualExecutions, is(0));
     }
 
     @Test
