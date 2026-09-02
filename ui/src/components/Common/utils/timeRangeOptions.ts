@@ -53,34 +53,6 @@ export const TIME_RANGE_OPTIONS: TimeOption[] = [
   { label: 'Last year', time: { years: 1 }}
 ]
 
-/** Hour-of-day choices for the custom range. */
-export const HOUR_OPTIONS: TimeOption[] = [
-  { label: '12 AM', time: { hours: 0 }},
-  { label: '1 AM', time: { hours: 1 }},
-  { label: '2 AM', time: { hours: 2 }},
-  { label: '3 AM', time: { hours: 3 }},
-  { label: '4 AM', time: { hours: 4 }},
-  { label: '5 AM', time: { hours: 5 }},
-  { label: '6 AM', time: { hours: 6 }},
-  { label: '7 AM', time: { hours: 7 }},
-  { label: '8 AM', time: { hours: 8 }},
-  { label: '9 AM', time: { hours: 9 }},
-  { label: '10 AM', time: { hours: 10 }},
-  { label: '11 AM', time: { hours: 11 }},
-  { label: '12 PM', time: { hours: 12 }},
-  { label: '1 PM', time: { hours: 13 }},
-  { label: '2 PM', time: { hours: 14 }},
-  { label: '3 PM', time: { hours: 15 }},
-  { label: '4 PM', time: { hours: 16 }},
-  { label: '5 PM', time: { hours: 17 }},
-  { label: '6 PM', time: { hours: 18 }},
-  { label: '7 PM', time: { hours: 19 }},
-  { label: '8 PM', time: { hours: 20 }},
-  { label: '9 PM', time: { hours: 21 }},
-  { label: '10 PM', time: { hours: 22 }},
-  { label: '11 PM', time: { hours: 23 }}
-]
-
 /** Units a relative range may use; anything else is rejected when decoding a link. */
 export const RANGE_UNITS: RelativeTimeRange['unit'][] =
   ['minutes', 'hours', 'days', 'weeks', 'months', 'years']
