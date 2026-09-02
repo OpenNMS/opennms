@@ -188,12 +188,28 @@
     <intercept-url pattern="/api/v2/snmp-config/**" method="DELETE" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="POST" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="PUT" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/snmp-config/**" method="PATCH" access="ROLE_ADMIN,ROLE_PROVISION" />
 
     <!-- Trapd Config exposes SNMPv3 credentials; restrict to admin or provision -->
     <intercept-url pattern="/api/v2/trapd/**" method="GET" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/trapd/**" method="DELETE" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/trapd/**" method="POST" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/trapd/**" method="PUT" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/trapd/**" method="PATCH" access="ROLE_ADMIN,ROLE_PROVISION" />
+
+    <!-- Event configuration mutates event/alarm generation; mutation is admin-only.
+         Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/eventconf/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/eventconf/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/eventconf/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/eventconf/**" method="PATCH" access="ROLE_ADMIN" />
+
+    <!-- Data-collection configuration controls metric collection/thresholding; mutation is admin-only.
+         Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/datacollectionconf/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/datacollectionconf/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/datacollectionconf/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="ROLE_ADMIN" />
 
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
@@ -236,6 +252,11 @@
     <intercept-url pattern="/api/v2/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/api/v2/**" method="PATCH" access="ROLE_REST,ROLE_ADMIN"/>
+
+    <!-- Fail closed: any method without an explicit rule above (e.g. a future verb) still
+         requires an authenticated write role instead of being permitted by default. -->
+    <intercept-url pattern="/api/v2/**" access="ROLE_REST,ROLE_ADMIN"/>
 
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
