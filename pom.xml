@@ -1937,7 +1937,7 @@
     <minaVersion>2.2.9</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.2.16.Final</netty4Version>
+    <netty4Version>4.2.17.Final</netty4Version>
     <newtsVersion>3.0.1</newtsVersion>
     <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
