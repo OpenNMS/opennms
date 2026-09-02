@@ -95,6 +95,7 @@
 ** xref:service-assurance/monitors/WebMonitor.adoc[]
 ** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
 ** xref:service-assurance/monitors/WsManMonitor.adoc[]
+** xref:service-assurance/monitors/WsManShellMonitor.adoc[]
 
 * xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
@@ -164,6 +165,7 @@
 *** xref:provisioning/detectors/Win32ServiceDetector.adoc[Win32 Service]
 *** xref:provisioning/detectors/WsmanDetector.adoc[WS-MAN]
 *** xref:provisioning/detectors/WsmanWqlDetector.adoc[WS-MAN WQL]
+*** xref:provisioning/detectors/WsmanShellDetector.adoc[WS-MAN Shell]
 
 * xref:daemons/introduction.adoc[]
 ** xref:daemons/daemon-config-files/ackd.adoc[]

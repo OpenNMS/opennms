@@ -1,0 +1,112 @@
+= WsManShellMonitor
+:description: Learn about the WsManShellMonitor in OpenNMS {page-component-title}, which runs a command on a Windows host through WinRS and checks its output.
+
+Use this monitor to run a command on a Windows host through WinRS (the Windows Remote Shell protocol carried over WS-Management) and mark the service as up when its output matches an optional banner and, if configured, it exits with the expected code.
+Connection details, credentials, and Kerberos settings for the target come from `wsman-config.xml`, as with the other WS-Management monitors, detectors, and collectors.
+
+The command runs as the user configured in `wsman-config.xml`, in a fresh short-lived shell that is deleted when the command completes.
+Give that account only the rights it needs: membership in the `Remote Management Users` group on the target is enough to run commands, and the command line is taken verbatim from the poller configuration.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.WsManShellMonitor`
+|===
+
+== Configuration and use
+
+.Monitor-specific parameters for the WsManShellMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| command kbd:[{}]
+| The executable to run, for example `ipconfig` or `powershell`.
+| n/a
+
+3+|*Optional*
+
+| args kbd:[{}]
+| Arguments passed to the command.
+The value is handed to the Windows host verbatim, so it is the rest of the command line exactly as you would type it there, using Windows quoting rules.
+Write double quotes as `&quot;` in the XML file.
+| none
+
+| banner kbd:[{}]
+| Text that must appear in the command's standard output for the service to be considered up.
+If the value starts with `~`, the rest is a regular expression that must match the whole output.
+The expression is compiled so that `.` also matches line breaks, so `~.\*Running.*` matches multi-line output.
+Use `*` or leave the parameter out to accept any output.
+| `*`
+
+| exit-code
+| Exit code the command must return, for example `0`.
+By default any exit code is accepted and only the banner is checked.
+| `*`
+
+| no-profile
+| Skip loading the user profile when creating the shell.
+| `true`
+
+| codepage
+| Windows code page number the remote shell uses to encode the command's output, which the monitor decodes with the same code page.
+The default, `65001`, is UTF-8 and suits most commands.
+Set a legacy code page such as `437` (US OEM) or `850` (Western European OEM) only if a command writes output in that encoding.
+| `65001` (UTF-8)
+
+| working-directory
+| Working directory for the command.
+| Shell default
+
+| timeout
+| Time in milliseconds to wait for the command to complete.
+Shell creation and deletion are not counted.
+On timeout the command is terminated and the poll fails.
+Keep this short; a command that needs more than a few seconds is a poor fit for a poll.
+| `3000`
+
+| retry
+| Number of retries after a failed attempt.
+Falls back to the `retry` value from `wsman-config.xml` when not set.
+| `0`
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Check that the Windows Time service is running:
+
+[source, xml]
+----
+<service name="W32Time" interval="300000" user-defined="true" status="on">
+  <parameter key="command" value="sc"/>
+  <parameter key="args" value="query w32time"/>
+  <parameter key="banner" value="~.*STATE\s*:\s*4\s+RUNNING.*"/>
+</service>
+
+<monitor service="W32Time" class-name="org.opennms.netmgt.poller.monitors.WsManShellMonitor" />
+----
+
+Run a PowerShell command and rely on its exit code alone:
+
+[source, xml]
+----
+<service name="Cluster-Health" interval="300000" user-defined="true" status="on">
+  <parameter key="command" value="powershell"/>
+  <parameter key="args" value="-NoProfile -NonInteractive -Command &quot;if ((Get-ClusterNode -Name $env:COMPUTERNAME).State -ne 'Up') { exit 1 }&quot;"/>
+  <parameter key="exit-code" value="0"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Cluster-Health" class-name="org.opennms.netmgt.poller.monitors.WsManShellMonitor" />
+----
