@@ -33,6 +33,7 @@ public class WsmanEndpointUtils {
     private static final String URL = "url";
     private static final String SERVER_VERSION = "server-version";
     private static final String GSS_AUTH = "gss-auth";
+    private static final String KERBEROS_ENCRYPTION = "kerberos-encryption";
     private static final String STRICT_SSL = "strict-ssl";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -46,6 +47,7 @@ public class WsmanEndpointUtils {
         attributes.put(URL, endpoint.getUrl().toString());
         attributes.put(SERVER_VERSION, endpoint.getServerVersion().toString());
         attributes.put(GSS_AUTH, Boolean.toString(endpoint.isGSSAuth()));
+        attributes.put(KERBEROS_ENCRYPTION, Boolean.toString(endpoint.isKerberosEncryption()));
         attributes.put(STRICT_SSL, Boolean.toString(endpoint.isStrictSSL()));
         if (endpoint.isBasicAuth()) {
             attributes.put(USERNAME, endpoint.getUsername());
@@ -71,6 +73,9 @@ public class WsmanEndpointUtils {
         builder.withServerVersion(WSManVersion.valueOf(attributes.get(SERVER_VERSION)));
         if (Boolean.parseBoolean(attributes.get(GSS_AUTH))) {
             builder.withGSSAuth();
+        }
+        if (Boolean.parseBoolean(attributes.get(KERBEROS_ENCRYPTION))) {
+            builder.withKerberosEncryption();
         }
         builder.withStrictSSL(Boolean.parseBoolean(attributes.get(STRICT_SSL)));
         if (attributes.containsKey(USERNAME)) {

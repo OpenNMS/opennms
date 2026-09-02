@@ -40,9 +40,9 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.InvalidResourceURI;
 import org.opennms.core.wsman.exceptions.WSManException;
+import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
@@ -94,7 +94,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
 
     static final String ELEMENT_COUNT_ATTRIB_NAME = "##ElementCount##";
 
-    private WSManClientFactory m_factory = new CXFWSManClientFactory();
+    private WSManClientFactory m_factory = new CachingWSManClientFactory();
 
     private WSManDataCollectionConfigDao m_wsManDataCollectionConfigDao;
 
@@ -156,7 +156,6 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
         final Groups groups = (Groups)parameters.get(WSMAN_GROUPS_KEY);
 
         final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, agent.getAddress());
-        final WSManClient client = m_factory.getClient(endpoint);
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
 
         if (LOG.isDebugEnabled()) {
@@ -164,16 +163,19 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
             LOG.debug("Collecting attributes on {} from groups: {}", agent, groupNames);
         }
 
-        for (Group group : groups.getGroups()) {
-            try {
-                collectGroupUsing(group, agent, client, config.getRetry() != null ? config.getRetry() : 0, collectionSetBuilder);
-            } catch (InvalidResourceURI e) {
-                LOG.info("Resource URI {} in group named {} is not available on {}.", group.getResourceUri(), group.getName(), agent);
-            } catch (WSManException e) {
-                // If collecting any individual group fails, mark the collection set as
-                // failed, and abort trying to collect any other groups
-                throw new CollectionException(String.format("Collecting group '%s' on %s failed with '%s'. See logs for details.",
-                        group.getName(), agent, e.getMessage()), e);
+        // Close the client when done so any session it holds (Kerberos encryption) is released
+        try (WSManClient client = m_factory.getClient(endpoint)) {
+            for (Group group : groups.getGroups()) {
+                try {
+                    collectGroupUsing(group, agent, client, config.getRetry() != null ? config.getRetry() : 0, collectionSetBuilder);
+                } catch (InvalidResourceURI e) {
+                    LOG.info("Resource URI {} in group named {} is not available on {}.", group.getResourceUri(), group.getName(), agent);
+                } catch (WSManException e) {
+                    // If collecting any individual group fails, mark the collection set as
+                    // failed, and abort trying to collect any other groups
+                    throw new CollectionException(String.format("Collecting group '%s' on %s failed with '%s'. See logs for details.",
+                            group.getName(), agent, e.getMessage()), e);
+                }
             }
         }
 

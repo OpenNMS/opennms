@@ -25,7 +25,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
+import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.provision.DetectRequest;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 public class WsManWQLDetectorFactory extends GenericServiceDetectorFactory<WsManWQLDetector> {
     private static final Logger LOG = LoggerFactory.getLogger(WsManWQLDetectorFactory.class);
 
-    private final WSManClientFactory m_factory = new CXFWSManClientFactory();
+    private final WSManClientFactory m_factory = new CachingWSManClientFactory();
 
     @Autowired
     private WSManConfigDao m_wsmanConfigDao;

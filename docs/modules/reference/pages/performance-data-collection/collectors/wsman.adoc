@@ -202,6 +202,13 @@ This allows the user to also reference credentials stored in the secure credenti
 | Enables GSS authentication.
 When enabled, a reverse lookup is performed on the target IP address to determine the canonical host name.
 | False
+
+| kerberos-encryption
+| Enables Kerberos message encryption (MS-WSMV 2.2.9.1).
+The SOAP payload itself is encrypted, so WS-Management can be used safely over plain HTTP (typically port 5985) without SSL.
+Implies `gss-auth`, and requires a Kerberos environment (`krb5.conf` and either a username and password in this file or a JAAS login configuration named `WSManClient`).
+Only the AES256-CTS-HMAC-SHA1-96 encryption type is supported.
+| False
 |===
 
 NOTE: If you try to connect against Microsoft Windows Server, make sure to set specific ports for WinRM connections.

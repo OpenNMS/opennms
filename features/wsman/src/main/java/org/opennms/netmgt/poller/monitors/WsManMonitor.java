@@ -34,8 +34,8 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.WSManException;
+import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
@@ -67,7 +67,7 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
 
     public static final String SELECTOR_PARAM_PREFIX = "selector.";
 
-    private WSManClientFactory m_factory = new CXFWSManClientFactory();
+    private WSManClientFactory m_factory = new CachingWSManClientFactory();
 
     private WSManConfigDao m_wsManConfigDao;
 
@@ -120,12 +120,11 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
         } catch (MalformedURLException e) {
             return PollStatus.down(e.getMessage());
         }
-        final WSManClient client = m_factory.getClient(endpoint);
         final RetryNTimesLoop retryLoop = new RetryNTimesLoop(ParameterMap.getKeyedInteger(parameters, WSMAN_RETRY_KEY, 0));
 
-        // Issue a GET
+        // Issue a GET, closing the client afterwards so any session it holds (Kerberos encryption) is released
         Node node = null;
-        try {
+        try (WSManClient client = m_factory.getClient(endpoint)) {
             while (retryLoop.shouldContinue()) {
                 try {
                     node = client.get(resourceUri, selectors);
