@@ -74,3 +74,48 @@ export interface WsmanConfigInput {
   defaults: WsmanSettingsInput
   definitions: WsmanDefinitionInput[]
 }
+
+// Wire shape of GET /api/v2/wsman-config/data-collection: every object across
+// wsman-datacollection-config.xml and wsman-datacollection.d, tagged with the
+// file it came from. Read-only for now.
+export interface WsmanCollectionInfo {
+  name: string
+  source: string
+  rrdStep: number | null
+  rras: string[]
+  includeAllSystemDefinitions: boolean
+  includedSystemDefinitions: string[]
+}
+
+export interface WsmanAttributeInfo {
+  name: string
+  alias: string
+  type: string | null
+  indexOf: string | null
+  filter: string | null
+}
+
+export interface WsmanGroupInfo {
+  name: string
+  source: string
+  resourceType: string
+  resourceUri: string
+  dialect: string | null
+  filter: string | null
+  attributes: WsmanAttributeInfo[]
+}
+
+export interface WsmanSystemDefinitionInfo {
+  name: string
+  source: string
+  rules: string[]
+  includedGroups: string[]
+}
+
+export interface WsmanDataCollection {
+  rrdRepository: string | null
+  sources: string[]
+  collections: WsmanCollectionInfo[]
+  groups: WsmanGroupInfo[]
+  systemDefinitions: WsmanSystemDefinitionInfo[]
+}

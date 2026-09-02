@@ -33,11 +33,12 @@
           />
         </OnmsTabPanel>
         <OnmsTabPanel :value="2">
-          <p class="placeholder" data-test="data-collection-placeholder">
-            WS-Man data collection is configured in <code>wsman-datacollection-config.xml</code> and the
-            <code>wsman-datacollection.d/</code> directory. Managing collections and system definitions
-            from this page is not available yet.
+          <p v-if="store.dataCollectionError" class="error" data-test="data-collection-error">
+            Failed to load the WS-Man data collection configuration. Check <code>wsman-datacollection-config.xml</code>
+            and the files in <code>wsman-datacollection.d/</code>, then reload the page.
           </p>
+          <WsmanDataCollectionPanel v-else-if="store.dataCollection" :dataCollection="store.dataCollection" />
+          <p v-else class="placeholder" data-test="data-collection-loading">Loading…</p>
         </OnmsTabPanel>
       </OnmsTabPanels>
     </OnmsTabs>
@@ -70,6 +71,7 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import WsmanDefaultsCard from '@/components/ManageWsman/WsmanDefaultsCard.vue'
 import WsmanDefaultsDialog from '@/components/ManageWsman/WsmanDefaultsDialog.vue'
 import WsmanDefinitionDialog from '@/components/ManageWsman/WsmanDefinitionDialog.vue'
+import WsmanDataCollectionPanel from '@/components/ManageWsman/WsmanDataCollectionPanel.vue'
 import WsmanDefinitionsTable from '@/components/ManageWsman/WsmanDefinitionsTable.vue'
 import { configToInput } from '@/components/ManageWsman/wsmanForm'
 import WsmanHelpPanel from '@/components/ManageWsman/WsmanHelpPanel.vue'
@@ -94,7 +96,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => [
 ])
 
 onMounted(async () => {
-  await store.getConfig()
+  await Promise.all([store.getConfig(), store.getDataCollection()])
 })
 
 const openDefinition = (index: number | null) => {

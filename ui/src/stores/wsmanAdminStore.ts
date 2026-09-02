@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig, WsmanConfigInput } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection } from '@/types/wsmanAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -29,6 +29,8 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
   const config = ref<WsmanConfig | null>(null)
   const loadError = ref(false)
   const isLoading = ref(false)
+  const dataCollection = ref<WsmanDataCollection | null>(null)
+  const dataCollectionError = ref(false)
 
   const getConfig = async () => {
     isLoading.value = true
@@ -54,5 +56,15 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     return error
   }
 
-  return { config, loadError, isLoading, getConfig, saveConfig }
+  const getDataCollection = async () => {
+    const result = await API.getWsmanDataCollection()
+    if (result !== null) {
+      dataCollection.value = result
+      dataCollectionError.value = false
+    } else {
+      dataCollectionError.value = true
+    }
+  }
+
+  return { config, loadError, isLoading, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection }
 })
