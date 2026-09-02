@@ -141,6 +141,66 @@ public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("title=\"foo2\""));
     }
 
+    @Test
+    public void testListIncludesGraphs() throws Exception {
+        // The list is non-terse: each report carries its graphs, not just id/label.
+        final String xml = sendRequest(GET, "/ksc", 200);
+        assertTrue(xml, xml.contains("graphtype=\"ssh\""));
+    }
+
+    @Test
+    public void testCreateAssignsId() throws Exception {
+        // No id attribute -> the server assigns the next available id.
+        final String body = "<kscReport label=\"AutoId\">"
+                + "<kscGraph title=\"auto\" resourceId=\"node[1].nodeSnmp[]\" timespan=\"1_hour\" graphtype=\"mib2.tcpopen\"/>"
+                + "</kscReport>";
+        sendPost("/ksc", body, 201);
+
+        // The config file uses the JAXB Report's "title" attribute, not the DTO's "label".
+        final String xml = slurp(m_configFile);
+        assertTrue(xml, xml.contains("title=\"AutoId\""));
+    }
+
+    @Test
+    public void testUpdateReportReplacesContents() throws Exception {
+        final String create = "<kscReport id=\"7\" label=\"ToEdit\">"
+                + "<kscGraph title=\"g1\" resourceId=\"node[1].nodeSnmp[]\" timespan=\"7_day\" graphtype=\"mib2.tcpopen\"/>"
+                + "</kscReport>";
+        sendPost("/ksc", create, 201, "/ksc/7");
+
+        final String update = "<kscReport id=\"7\" label=\"Edited\" graphs_per_line=\"3\">"
+                + "<kscGraph title=\"g2\" resourceId=\"node[1].nodeSnmp[]\" timespan=\"1_day\" graphtype=\"mib2.tcpopen\"/>"
+                + "</kscReport>";
+        sendPost("/ksc/7", update, 204);
+
+        final String xml = slurp(m_configFile);
+        assertTrue(xml, xml.contains("title=\"Edited\""));
+        assertTrue(xml, xml.contains("title=\"g2\""));
+        // Full replace: the previous graph is gone.
+        assertTrue(xml, !xml.contains("title=\"g1\""));
+    }
+
+    @Test
+    public void testUpdateMissingReport() throws Exception {
+        sendPost("/ksc/99", "<kscReport id=\"99\" label=\"nope\"/>", 404);
+    }
+
+    @Test
+    public void testDeleteReport() throws Exception {
+        final String create = "<kscReport id=\"8\" label=\"ToDelete\">"
+                + "<kscGraph title=\"g\" resourceId=\"node[1].nodeSnmp[]\" timespan=\"7_day\" graphtype=\"mib2.tcpopen\"/>"
+                + "</kscReport>";
+        sendPost("/ksc", create, 201, "/ksc/8");
+        sendRequest(GET, "/ksc/8", 200);
+        sendRequest(DELETE, "/ksc/8", 204);
+        sendRequest(GET, "/ksc/8", 404);
+    }
+
+    @Test
+    public void testDeleteMissingReport() throws Exception {
+        sendRequest(DELETE, "/ksc/99", 404);
+    }
+
     private static String slurp(final File file) throws Exception {
         Reader fileReader = null;
         BufferedReader reader = null;

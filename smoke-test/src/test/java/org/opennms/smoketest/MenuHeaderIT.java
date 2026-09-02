@@ -78,7 +78,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span")));
 
         clickMenuItem("Dashboards", "Graph Collections");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card-title' and text()='Graph Collections']")));
 
         clickMenuItem("Dashboards", "Surveillance Dashboard");
         driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
