@@ -66,23 +66,36 @@ public class IpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    @JUnitTemporaryDatabase
+    // the pl/pgsql iplike is the one that rejects a bare IPv6 literal, so force
+    // it: the exact-match assertions below would pass vacuously otherwise
+    @JUnitTemporaryDatabase(plpgsqlIplike = true)
     public void testFiqlSearch() throws Exception {
         // Add a node with an IP interface
         createNode(201);
         createIpInterface();
+        sendPost("/nodes/1/ipinterfaces", "<ipInterface isManaged=\"M\" snmpPrimary=\"N\">" +
+                "<ipAddress>fe80::1</ipAddress>" +
+                "<hostName>TestMachineV6</hostName>" +
+                "<ipStatus>1</ipStatus>" +
+                "</ipInterface>", 201);
 
         String url = "/ipinterfaces";
 
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.10"), 200));
         LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==*1"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=snmpPrimary==P"), 200));
+        assertEquals(2, new JSONObject(sendRequest(GET, url, parseParamData("_s=snmpPrimary==P,snmpPrimary==N"), 200)).getInt("count"));
 
-        // ipAddress accepts iplike patterns, so a partial address can be
-        // searched without a hostname
+        // literal addresses keep InetAddress equality: IPv6 must still match
+        assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.10"), 200)).getInt("count"));
+        assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==fe80::1"), 200)).getInt("count"));
+        assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress!=10.10.10.10"), 200)).getInt("count"));
+        sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.11"), 204);
+
+        // wildcards go through iplike, so a partial address can be searched
+        // without a hostname
         assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.*"), 200)).getInt("count"));
         assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.*.*"), 200)).getInt("count"));
         assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.10.*,ipHostName==*nomatch*"), 200)).getInt("count"));
+        assertEquals(1, new JSONObject(sendRequest(GET, url, parseParamData("_s=ipAddress!=10.10.*.*"), 200)).getInt("count"));
         sendRequest(GET, url, parseParamData("_s=ipAddress==10.10.11.*"), 204);
     }
 
