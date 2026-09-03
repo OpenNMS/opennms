@@ -2013,7 +2013,7 @@
          needed (Spring4Shell CVE-2022-22965, the SpEL array-allocation DoS CVE-2022-22950, a CGLIB/JDK
          fast-class fix, and spring-web bug fixes) are all shipped in stock 5.3.x, so the patched-bundle
          split is gone and every Spring bundle uses ${springVersion}. -->
-    <springVersion>5.3.39_2</springVersion>
+    <springVersion>6.2.8_1</springVersion>
     <!-- OSGi-version form of springVersion: the ServiceMix Maven coordinate (5.3.39_2) is NOT a valid
          OSGi version, so this suffix-free form is used in OSGi package/feature version fields
          (custom.properties system-packages, feature version attrs/ranges). Keep in sync with springVersion. -->
