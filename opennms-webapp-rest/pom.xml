@@ -215,6 +215,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.opennms.integration.api</groupId>
+      <artifactId>api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
       <scope>${onmsLibScope}</scope>

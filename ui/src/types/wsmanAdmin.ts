@@ -118,11 +118,20 @@ export interface WsmanSystemDefinitionInfo {
   includedGroups: string[]
 }
 
+// Where collected samples end up: the configured time-series strategy and the
+// backend actually behind it (RRD files, Newts, or an installed plugin).
+export interface WsmanStorage {
+  strategy: string
+  label: string
+  detail: string | null
+  available: boolean
+  // the RRD repository and RRAs in the collection files only matter under rrd
+  rrdSettingsUsed: boolean
+}
+
 export interface WsmanDataCollection {
   rrdRepository: string | null
-  // org.opennms.timeseries.strategy: rrd, newts, integration, ...; the RRD
-  // repository and RRAs only take effect under rrd
-  timeseriesStrategy?: string
+  storage?: WsmanStorage
   sources: string[]
   // content hash per source file; a save of that file must present it
   versions: Record<string, string>
