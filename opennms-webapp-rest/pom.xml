@@ -214,10 +214,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- the IT registers a fake time-series storage plugin; production code finds the interface by name -->
     <dependency>
       <groupId>org.opennms.integration.api</groupId>
       <artifactId>api</artifactId>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
