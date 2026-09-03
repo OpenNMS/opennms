@@ -167,11 +167,12 @@ public class WsmanConfigIT {
 
     private void startFakeAgentInContainer() throws Exception {
         final OpenNMSContainer opennms = stack.opennms();
-        // the fake is a JDK-only jar from the test dependencies; run it on the container's OpenNMS JVM (etc/java.conf)
+        // the fake is a JDK-only jar from the test dependencies; run it on the container's OpenNMS JVM,
+        // whose java binary runjava records in etc/java.conf
         final Path jar = Paths.get(FakeWsManAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         opennms.copyFileToContainer(MountableFile.forHostPath(jar), FAKE_JAR);
-        final String command = "J=$(cat /opt/opennms/etc/java.conf 2>/dev/null); "
-                + "nohup \"${J:-/usr}/bin/java\" -cp " + FAKE_JAR + " " + FakeWsManAgent.class.getName()
+        final String command = "J=$(cat /opt/opennms/etc/java.conf 2>/dev/null); [ -x \"$J\" ] || J=java; "
+                + "nohup \"$J\" -cp " + FAKE_JAR + " " + FakeWsManAgent.class.getName()
                 + " --bind 127.0.0.1 --port " + FAKE_PORT + " --user " + FAKE_USER + " --password " + FAKE_PASSWORD
                 + " > /tmp/fake-wsman.log 2>&1 &";
         final ExecResult started = opennms.execInContainer("sh", "-c", command);
