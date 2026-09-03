@@ -138,6 +138,7 @@ public class WsManEndToEndTest {
     @After
     public void stop() {
         agent.close();
+        ResourceTypeMapper.getInstance().setResourceTypeMapper(null);
     }
 
     @Test

@@ -196,6 +196,7 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @After
     public void restoreShippedFile() throws Exception {
+        ResourceTypeMapper.getInstance().setResourceTypeMapper(null);
         // the temporary database is shared across the methods of this class
         m_databasePopulator.resetDatabase();
         Files.write(m_discoveryFile, m_discoveryContent.getBytes(StandardCharsets.UTF_8));

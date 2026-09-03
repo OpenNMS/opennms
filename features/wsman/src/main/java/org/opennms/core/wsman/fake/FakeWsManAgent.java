@@ -86,6 +86,8 @@ public class FakeWsManAgent implements AutoCloseable {
     // class name -> instances -> property values (insertion order kept for stable output)
     private final Map<String, List<Map<String, String>>> classes = new ConcurrentHashMap<>();
     private final Map<String, Enumeration> enumerations = new ConcurrentHashMap<>();
+    // a long-running agent (smoke tests poll for hours) must not grow without bound
+    private static final int MAX_REQUEST_LOG = 1000;
     private final List<String> requestLog = new ArrayList<>();
 
     private static final class Enumeration {
@@ -251,6 +253,9 @@ public class FakeWsManAgent implements AutoCloseable {
             final String wsaNs = addressingNamespace(request);
             final boolean identify = action != null && action.endsWith("/Identify") || firstBodyElement(request, WSMID_NS, "Identify") != null;
             synchronized (this) {
+                if (requestLog.size() >= MAX_REQUEST_LOG) {
+                    requestLog.remove(0);
+                }
                 requestLog.add(identify ? WSMID_NS + "/Identify" : action == null ? "(no action)" : action);
             }
             final String body;
