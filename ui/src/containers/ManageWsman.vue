@@ -16,8 +16,8 @@
     <OnmsTabs v-if="store.config" v-model:value="activeTab">
       <OnmsTabList>
         <OnmsTab :value="0" data-test="tab-definitions">Definitions ({{ store.config.definitions.length }})</OnmsTab>
-        <OnmsTab :value="1" data-test="tab-defaults">Agent Defaults</OnmsTab>
-        <OnmsTab :value="2" data-test="tab-data-collection">Data Collection</OnmsTab>
+        <OnmsTab :value="1" data-test="tab-data-collection">Data Collection</OnmsTab>
+        <OnmsTab :value="2" data-test="tab-defaults">Agent Defaults</OnmsTab>
       </OnmsTabList>
       <OnmsTabPanels>
         <OnmsTabPanel :value="0">
@@ -29,10 +29,10 @@
             @move="moveDefinition"
           />
         </OnmsTabPanel>
-        <OnmsTabPanel :value="1">
+        <OnmsTabPanel :value="2">
           <WsmanDefaultsCard :settings="store.config.defaults" @edit="showDefaultsDialog = true" />
         </OnmsTabPanel>
-        <OnmsTabPanel :value="2">
+        <OnmsTabPanel :value="1">
           <p v-if="store.dataCollectionError" class="error" data-test="data-collection-error">
             Failed to load the WS-Man data collection configuration. Check <code>wsman-datacollection-config.xml</code>
             and the files in <code>wsman-datacollection.d/</code>, then reload the page.
