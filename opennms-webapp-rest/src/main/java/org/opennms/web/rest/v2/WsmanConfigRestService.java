@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -114,6 +115,10 @@ import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.SystemDefinit
 import org.opennms.web.rest.v2.model.WsmanReadinessDto;
 import org.opennms.web.rest.v2.model.WsmanStatusDto;
 import org.opennms.web.rest.v2.model.WsmanSyncResultDto;
+import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.utils.TimeSeries;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.web.rest.v2.model.WsmanStorageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -175,6 +180,9 @@ public class WsmanConfigRestService {
 
     @Autowired
     private CollectdConfigFactory collectdConfigFactory;
+
+    @Autowired
+    private ServiceRegistry serviceRegistry;
 
     // the service provisioning gives a WS-Man server, and what the poller checks
     private static final String WSMAN_SERVICE = "WS-Man";
@@ -650,10 +658,79 @@ public class WsmanConfigRestService {
 
     private WsmanDataCollectionDto readDataCollection() {
         final WsmanDataCollectionDto dto = new WsmanDataCollectionDto();
+        dto.setStorage(storageInfo());
         for (final Map.Entry<Path, LoadedDataCollection> e : readDataCollectionFiles().entrySet()) {
             dto.addSource(e.getKey().getFileName().toString(), e.getValue().version, e.getValue().config);
         }
         return dto;
+    }
+
+    /**
+     * The backend behind the configured time-series strategy. Plugins register a
+     * TimeSeriesStorage service, which the integration layer looks up the same way.
+     */
+    WsmanStorageDto storageInfo() {
+        final WsmanStorageDto storage = new WsmanStorageDto();
+        final String strategy = System.getProperty(TimeSeries.TIMESERIES_STRATEGY_PROPERTY, TimeSeries.RRD_TIME_SERIES_STRATEGY_NAME).trim().toLowerCase();
+        storage.setStrategy(strategy);
+        storage.setAvailable(true);
+        switch (strategy) {
+            case TimeSeries.RRD_TIME_SERIES_STRATEGY_NAME: {
+                final String clazz = System.getProperty(TimeSeries.RRD_STRATEGY_CLASS_PROPERTY, TimeSeries.DEFAULT_RRD_STRATEGY_CLASS);
+                storage.setLabel(clazz.contains("JRobin") ? "RRD files (JRobin)" : "RRD files (RRDtool)");
+                storage.setDetail(System.getProperty("rrd.base.dir"));
+                storage.setRrdSettingsUsed(true);
+                break;
+            }
+            case "newts":
+                storage.setLabel("Newts on Cassandra");
+                storage.setDetail(System.getProperty("org.opennms.newts.config.hostname", "localhost") + ":"
+                        + System.getProperty("org.opennms.newts.config.port", "9042")
+                        + ", keyspace " + System.getProperty("org.opennms.newts.config.keyspace", "newts"));
+                break;
+            case "integration":
+            case "osgi": {
+                final List<String> plugins = serviceRegistry.findProviders(TimeSeriesStorage.class).stream()
+                        .map(plugin -> plugin.getClass().getName()).sorted().collect(Collectors.toList());
+                if (plugins.isEmpty()) {
+                    storage.setLabel("Time-series plugin (none installed)");
+                    storage.setDetail("No TimeSeriesStorage plugin is registered; collected samples are not stored until one is installed.");
+                    storage.setAvailable(false);
+                } else {
+                    storage.setLabel(pluginLabel(plugins.get(0)) + (plugins.size() > 1 ? " and " + (plugins.size() - 1) + " more" : ""));
+                    storage.setDetail(String.join(", ", plugins));
+                }
+                break;
+            }
+            case "evaluate":
+                storage.setLabel("Evaluate (sizing mode, samples discarded)");
+                break;
+            case "tcp":
+                storage.setLabel("TCP protobuf export");
+                storage.setDetail(System.getProperty("org.opennms.rrd.tcp.host", "") + ":" + System.getProperty("org.opennms.rrd.tcp.port", ""));
+                break;
+            default:
+                storage.setLabel(strategy);
+        }
+        return storage;
+    }
+
+    private static String pluginLabel(final String className) {
+        final String simple = className.substring(className.lastIndexOf('.') + 1);
+        final String lower = simple.toLowerCase();
+        if (lower.contains("prometheus")) {
+            return "Prometheus remote write plugin";
+        }
+        if (lower.contains("cortex")) {
+            return "Cortex plugin";
+        }
+        if (lower.contains("timescale")) {
+            return "TimescaleDB plugin";
+        }
+        if (lower.contains("inmemory")) {
+            return "In-memory plugin (test only)";
+        }
+        return simple + " plugin";
     }
 
     private Map<Path, LoadedDataCollection> readDataCollectionFiles() {

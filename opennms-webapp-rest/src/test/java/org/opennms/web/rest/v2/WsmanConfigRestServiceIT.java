@@ -36,7 +36,9 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicReference;
@@ -65,6 +67,13 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.ResourceTypes;
+import org.opennms.core.soa.Registration;
+import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.TagMatcher;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -121,6 +130,9 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     private static final String DEFINITION_10 = "{\"ranges\":[{\"begin\":\"10.0.0.1\",\"end\":\"10.0.0.50\"}],\"specifics\":[],\"ipMatches\":[],"
             + "\"username\":\"monitor\",\"password\":\"secret-one\",\"clearPassword\":false,\"ssl\":false,\"port\":5985}";
+
+    @Autowired
+    private ServiceRegistry m_serviceRegistry;
 
     @Autowired
     private WSManConfigDao m_wsManConfigDao;
@@ -417,6 +429,34 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         put("{\"defaults\":{},\"definitions\":[{\"specifics\":[\"10.20.30.40\"]}]}", 200);
         sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/definitions/0/sync", "", 400);
         put("{\"defaults\":{},\"definitions\":[{\"requisition\":\"bad name\",\"specifics\":[\"10.20.30.40\"]}]}", 400);
+    }
+
+    /** This context runs with the integration strategy and no storage plugin. */
+    @Test
+    public void testDataCollectionReportsTheStorageBackend() throws Exception {
+        JSONObject storage = new JSONObject(getJson("/wsman-config/data-collection", 200)).getJSONObject("storage");
+        assertEquals("integration", storage.getString("strategy"));
+        assertFalse("no plugin registered", storage.getBoolean("available"));
+        assertFalse(storage.getBoolean("rrdSettingsUsed"));
+        assertTrue(storage.getString("label").contains("none installed"));
+
+        // a plugin registers its storage the way the time-series layer finds it
+        final Registration plugin = m_serviceRegistry.register(new PrometheusRemoteWriteStorage(), TimeSeriesStorage.class);
+        try {
+            storage = new JSONObject(getJson("/wsman-config/data-collection", 200)).getJSONObject("storage");
+            assertTrue(storage.getBoolean("available"));
+            assertEquals("Prometheus remote write plugin", storage.getString("label"));
+            assertTrue(storage.getString("detail").endsWith("PrometheusRemoteWriteStorage"));
+        } finally {
+            plugin.unregister();
+        }
+    }
+
+    private static final class PrometheusRemoteWriteStorage implements TimeSeriesStorage {
+        @Override public void store(final List<Sample> samples) { }
+        @Override public List<Metric> findMetrics(final Collection<TagMatcher> tagMatchers) { return List.of(); }
+        @Override public List<Sample> getTimeseries(final TimeSeriesFetchRequest request) { return List.of(); }
+        @Override public void delete(final Metric metric) { }
     }
 
     @Test

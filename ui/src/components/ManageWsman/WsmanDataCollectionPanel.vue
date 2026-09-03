@@ -12,12 +12,18 @@
     </div>
     <dl class="summary">
       <dt>Time-series storage</dt>
-      <dd data-test="timeseries-strategy">{{ storageLabel }}</dd>
-      <dt>RRD repository</dt>
-      <dd data-test="rrd-repository">
-        {{ dataCollection.rrdRepository || NOT_SET }}
-        <span v-if="!usesRrd" class="muted" data-test="rrd-unused">(not used with {{ storageLabel }}; only each collection's step applies)</span>
+      <dd data-test="timeseries-strategy">
+        <span :class="{ unavailable: storage && !storage.available }">{{ storageLabel }}</span>
+        <span v-if="storage?.detail" class="muted" data-test="storage-detail">{{ storage.detail }}</span>
       </dd>
+      <template v-if="usesRrd">
+        <dt>RRD repository</dt>
+        <dd data-test="rrd-repository">{{ dataCollection.rrdRepository || NOT_SET }}</dd>
+      </template>
+      <template v-else>
+        <dt>RRD settings</dt>
+        <dd data-test="rrd-unused">Not used with {{ storageLabel }}: the RRD repository and RRAs below are ignored, only each collection's step applies.</dd>
+      </template>
       <dt>Source files</dt>
       <dd data-test="sources">{{ dataCollection.sources.join(', ') }}</dd>
     </dl>
@@ -190,17 +196,9 @@ const filteredGroups = computed(() => {
     [g.name, g.source, g.resourceType].some(v => v?.toLowerCase().includes(term)))
 })
 
-const STORAGE_LABELS: Record<string, string> = {
-  rrd: 'RRD files',
-  newts: 'Newts',
-  integration: 'time-series integration plugin',
-  osgi: 'time-series integration plugin',
-  evaluate: 'evaluate (sizing mode, samples discarded)',
-  tcp: 'TCP (protobuf) export'
-}
-const strategy = computed(() => props.dataCollection.timeseriesStrategy || 'rrd')
-const usesRrd = computed(() => strategy.value === 'rrd')
-const storageLabel = computed(() => STORAGE_LABELS[strategy.value] ?? strategy.value)
+const storage = computed(() => props.dataCollection.storage)
+const usesRrd = computed(() => storage.value?.rrdSettingsUsed ?? true)
+const storageLabel = computed(() => storage.value?.label ?? 'RRD files')
 </script>
 
 <style lang="scss" scoped>
@@ -298,6 +296,11 @@ const storageLabel = computed(() => STORAGE_LABELS[strategy.value] ?? strategy.v
 .muted {
   color: var(--p-text-muted-color);
   font-size: 0.85rem;
-  margin-left: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.unavailable {
+  color: var(--p-red-500);
+  font-weight: 600;
 }
 </style>

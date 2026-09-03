@@ -84,18 +84,27 @@ describe('WsmanDataCollectionPanel.vue', () => {
     expect(wrapper.find('[data-test="no-groups"]').exists()).toBe(true)
   })
 
-  it('labels the storage after the time-series strategy and marks the RRD repository unused elsewhere', () => {
-    const rrd = mountPanel()
-    expect(rrd.find('[data-test="timeseries-strategy"]').text()).toBe('RRD files')
+  it('names the storage backend and hides the RRD repository when it is not used', () => {
+    const rrd = mountPanel({ ...DATA, storage: { strategy: 'rrd', label: 'RRD files (JRobin)', detail: '/opt/opennms/share/rrd', available: true, rrdSettingsUsed: true }})
+    expect(rrd.find('[data-test="timeseries-strategy"]').text()).toContain('RRD files (JRobin)')
+    expect(rrd.find('[data-test="rrd-repository"]').exists()).toBe(true)
     expect(rrd.find('[data-test="rrd-unused"]').exists()).toBe(false)
     expect(rrd.find('[data-test="collections-table"]').text()).toContain('RRAs')
 
-    const newts = mountPanel({ ...DATA, timeseriesStrategy: 'newts' })
-    expect(newts.find('[data-test="timeseries-strategy"]').text()).toBe('Newts')
-    expect(newts.find('[data-test="rrd-unused"]').text()).toContain('not used with Newts')
+    const newts = mountPanel({ ...DATA, storage: { strategy: 'newts', label: 'Newts on Cassandra', detail: 'cassandra1:9042, keyspace newts', available: true, rrdSettingsUsed: false }})
+    expect(newts.find('[data-test="timeseries-strategy"]').text()).toContain('Newts on Cassandra')
+    expect(newts.find('[data-test="storage-detail"]').text()).toBe('cassandra1:9042, keyspace newts')
+    expect(newts.find('[data-test="rrd-repository"]').exists()).toBe(false)
+    expect(newts.find('[data-test="rrd-unused"]').text()).toContain('Not used with Newts on Cassandra')
     expect(newts.find('[data-test="collections-table"]').text()).toContain('RRAs (RRD only)')
 
-    const plugin = mountPanel({ ...DATA, timeseriesStrategy: 'integration' })
-    expect(plugin.find('[data-test="timeseries-strategy"]').text()).toBe('time-series integration plugin')
+    const plugin = mountPanel({ ...DATA, storage: { strategy: 'integration', label: 'Prometheus remote write plugin', detail: 'org.opennms.plugins.prometheus.PrometheusRemoteWriteStorage', available: true, rrdSettingsUsed: false }})
+    expect(plugin.find('[data-test="timeseries-strategy"]').text()).toContain('Prometheus remote write plugin')
+
+    const missing = mountPanel({ ...DATA, storage: { strategy: 'integration', label: 'Time-series plugin (none installed)', detail: 'No TimeSeriesStorage plugin is registered', available: false, rrdSettingsUsed: false }})
+    expect(missing.find('[data-test="timeseries-strategy"] .unavailable').exists()).toBe(true)
+
+    // an older server without the field behaves as RRD
+    expect(mountPanel().find('[data-test="rrd-repository"]').exists()).toBe(true)
   })
 })
