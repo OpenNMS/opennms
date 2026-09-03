@@ -103,6 +103,7 @@ java.security.auth.login.config=/opt/minion/etc/login.conf
 
 For the container images, pass the same two properties in the `JAVA_OPTS` environment variable and mount the files into the container.
 The `java.security.krb5.conf` property can be omitted when the host's `/etc/krb5.conf` is already correct.
+The file named by `java.security.auth.login.config` must exist and be readable by the user that runs {page-component-title}; a missing file disables the `opennms` login realm that the message broker and JMX rely on (see <<Troubleshooting>>).
 Restart {page-component-title} or the Minion after changing these settings.
 
 == Agent definition
@@ -177,4 +178,9 @@ Re-export the keytab after a password change.
 
 | Polls work from the core but fail for nodes in a Minion location
 | The Kerberos files and system properties are missing on the Minion.
+
+| After setting `java.security.auth.login.config` on the core, Minions can no longer authenticate to the message broker, JMX logins fail, and `output.log` shows `Exception in thread ... SecurityException ... login.conf (No such file or directory)` from `OpenNMSConfiguration`
+| The property points to a file that does not exist or is not readable.
+{page-component-title} adds its own `opennms` login realm on top of the file-based configuration at startup, and it cannot do so when the file cannot be loaded.
+Fix the path or the permissions and restart {page-component-title}.
 |===
