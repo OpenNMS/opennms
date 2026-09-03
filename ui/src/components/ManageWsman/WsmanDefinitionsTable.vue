@@ -10,7 +10,8 @@
       <p class="card-note">
         A server definition names the servers to collect from, by IP range, address or IPLIKE pattern,
         and the connection settings to use for them. The first matching definition wins and anything it
-        leaves unset comes from the agent defaults.
+        leaves unset comes from the agent defaults. The last column counts the servers carrying the WS-Man
+        service that the definition matches, and how many of them the poller currently sees responding.
       </p>
       <OnmsTable
         :value="rows"
@@ -38,6 +39,9 @@
         <OnmsColumn header="Overrides">
           <template #body="{ data }">{{ overrideSummary(data.definition) }}</template>
         </OnmsColumn>
+        <OnmsColumn header="Responding / servers">
+          <template #body="{ data }"><WsmanStatusCell :bucket="statusFor(data.index)" /></template>
+        </OnmsColumn>
         <OnmsColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
@@ -58,11 +62,13 @@ import { computed } from 'vue'
 import { OnmsButton, OnmsCard, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
-import { WsmanDefinition } from '@/types/wsmanAdmin'
+import { WsmanDefinition, WsmanStatus } from '@/types/wsmanAdmin'
+import WsmanStatusCell from './WsmanStatusCell.vue'
 import { NOT_SET, SETTING_ROWS, formatSetting } from './wsmanDisplay'
 
 const props = defineProps<{
   definitions: WsmanDefinition[]
+  status?: WsmanStatus | null
 }>()
 
 const emit = defineEmits<{
@@ -73,6 +79,8 @@ const emit = defineEmits<{
 }>()
 
 const rows = computed(() => props.definitions.map((definition, index) => ({ index, definition })))
+
+const statusFor = (index: number) => props.status?.definitions.find(d => d.index === index) ?? null
 
 const endpointSummary = (d: WsmanDefinition): string => {
   const parts: string[] = []

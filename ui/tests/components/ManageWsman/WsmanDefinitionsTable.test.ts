@@ -33,8 +33,8 @@ const BASE = {
   ranges: [], specifics: [], ipMatches: []
 }
 
-const mountTable = (definitions: any[]) => mount(WsmanDefinitionsTable, {
-  props: { definitions },
+const mountTable = (definitions: any[], status: any = null) => mount(WsmanDefinitionsTable, {
+  props: { definitions, status },
   global: { plugins: [PrimeVue], stubs: { OnmsCard: OnmsCardStub }}
 })
 
@@ -60,6 +60,15 @@ describe('WsmanDefinitionsTable.vue', () => {
     expect(wrapper.text()).toContain('monitor · password set')
     expect(wrapper.text()).toContain('Timeout (ms): 5000')
     expect(wrapper.find('[data-test="no-definitions"]').exists()).toBe(false)
+  })
+
+  it('shows the poller status per definition by position, and a dash without it', () => {
+    const defs = [{ ...BASE, specifics: ['10.0.0.1'] }, { ...BASE, specifics: ['10.0.0.2'] }]
+    const status = { serviceName: 'WS-Man', servers: 5, defaults: { servers: 0, responding: 0, down: 0, lastResponse: null },
+      definitions: [{ index: 0, servers: 4, responding: 3, down: 1, lastResponse: null }, { index: 1, servers: 1, responding: 1, down: 0, lastResponse: null }] }
+    const cells = mountTable(defs, status).findAll('[data-test="status-cell"]').map(c => c.text())
+    expect(cells).toEqual(['3 / 4', '1 / 1'])
+    expect(mountTable(defs).findAll('[data-test="status-unknown"]')).toHaveLength(2)
   })
 
   it('emits add, edit, delete and move for the actions', async () => {

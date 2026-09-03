@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
@@ -52,6 +53,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
@@ -68,6 +70,9 @@ import org.opennms.netmgt.config.wsman.credentials.Range;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.model.WsmanConfigDto;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate;
@@ -80,8 +85,10 @@ import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.AttributeUpda
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.CollectionUpdate;
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.GroupUpdate;
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.SystemDefinitionUpdate;
+import org.opennms.web.rest.v2.model.WsmanStatusDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.net.InetAddresses;
 
@@ -122,6 +129,12 @@ public class WsmanConfigRestService {
 
     @Autowired
     private WSManDataCollectionConfigDao wsManDataCollectionConfigDao;
+
+    @Autowired
+    private MonitoredServiceDao monitoredServiceDao;
+
+    @Autowired
+    private OutageDao outageDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -180,6 +193,56 @@ public class WsmanConfigRestService {
             writeConfig(next);
             return Response.ok(toDto(readConfig())).build();
         }
+    }
+
+    @GET
+    @javax.ws.rs.Path("status")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(summary = "Get what the poller sees per WS-Man server definition", description = "For every managed monitored service of the given type (WS-Man by default), which server definition its address matches, whether it has an open outage, and when it last responded", operationId = "WsmanConfigRestServiceGetStatus")
+    public Response getStatus(@Context final SecurityContext securityContext, @QueryParam("service") @DefaultValue("WS-Man") final String serviceName) {
+        requireAdmin(securityContext);
+        final List<Definition> definitions = readConfig().config.getDefinition();
+        final WsmanStatusDto status = new WsmanStatusDto(serviceName, definitions.size());
+        final Set<Integer> downServiceIds = outageDao.currentOutagesByServiceId().keySet();
+        for (final OnmsMonitoredService svc : monitoredServiceDao.findByType(serviceName)) {
+            if (!"A".equals(svc.getStatus()) || svc.getIpAddress() == null) {
+                continue;
+            }
+            final int index = matchingDefinition(definitions, svc.getIpAddress());
+            final WsmanStatusDto.Bucket bucket = index < 0 ? status.getDefaults() : status.getDefinitions().get(index);
+            bucket.count(downServiceIds.contains(svc.getId()), svc.getLastGood());
+        }
+        return Response.ok(status).build();
+    }
+
+    // The same first-match rule as WSManConfigDaoJaxb.getAgentConfig, returning
+    // the definition's position so the page can put the count on its row.
+    static int matchingDefinition(final List<Definition> definitions, final InetAddress address) {
+        final String text = InetAddressUtils.str(address);
+        for (int i = 0; i < definitions.size(); i++) {
+            final Definition def = definitions.get(i);
+            for (final String specific : def.getSpecific()) {
+                if (address.equals(InetAddressUtils.addr(specific))) {
+                    return i;
+                }
+            }
+            for (final Range range : def.getRange()) {
+                if (InetAddressUtils.isInetAddressInRange(text, range.getBegin(), range.getEnd())) {
+                    return i;
+                }
+            }
+            for (final String ipMatch : def.getIpMatch()) {
+                try {
+                    if (IPLike.matches(text, ipMatch)) {
+                        return i;
+                    }
+                } catch (final RuntimeException e) {
+                    // a malformed hand-edited pattern matches nothing, as in the daemon
+                }
+            }
+        }
+        return -1;
     }
 
     @GET

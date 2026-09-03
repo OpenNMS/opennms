@@ -23,6 +23,7 @@
         <OnmsTabPanel :value="0">
           <WsmanDefinitionsTable
             :definitions="store.config.definitions"
+            :status="store.status"
             @add="openDefinition(null)"
             @edit="openDefinition"
             @delete="askDelete"
@@ -30,7 +31,7 @@
           />
         </OnmsTabPanel>
         <OnmsTabPanel :value="2">
-          <WsmanDefaultsCard :settings="store.config.defaults" @edit="showDefaultsDialog = true" />
+          <WsmanDefaultsCard :settings="store.config.defaults" :status="store.status" @edit="showDefaultsDialog = true" />
         </OnmsTabPanel>
         <OnmsTabPanel :value="1">
           <p v-if="store.dataCollectionError" class="error" data-test="data-collection-error">

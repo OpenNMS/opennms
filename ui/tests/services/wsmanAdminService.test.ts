@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
+import { getWsmanConfig, getWsmanDataCollection, getWsmanStatus, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -74,6 +74,15 @@ describe('wsmanAdminService', () => {
     expect(vi.mocked(v2.put).mock.calls[0][0]).toBe('/wsman-config/data-collection?file=custom.xml')
     vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 409, data: 'custom.xml changed since it was loaded; reload the page and apply the change again.' }})
     expect(await updateWsmanDataCollectionFile('custom.xml', input)).toContain('changed since')
+  })
+
+  it('reads the status and returns null rather than zeros on failure', async () => {
+    const status = { serviceName: 'WS-Man', servers: 1, definitions: [{ index: 0, servers: 1, responding: 1, down: 0, lastResponse: null }], defaults: { servers: 0, responding: 0, down: 0, lastResponse: null }}
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: status })
+    expect(await getWsmanStatus()).toEqual(status)
+    expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config/status')
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getWsmanStatus()).toBeNull()
   })
 
   it('returns null on failure or an unexpected body', async () => {

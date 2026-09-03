@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus } from '@/types/wsmanAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -31,17 +31,21 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
   const isLoading = ref(false)
   const dataCollection = ref<WsmanDataCollection | null>(null)
   const dataCollectionError = ref(false)
+  const status = ref<WsmanStatus | null>(null)
 
+  // the status is keyed by definition position, so it is refreshed together
+  // with the config it describes
   const getConfig = async () => {
     isLoading.value = true
     try {
-      const result = await API.getWsmanConfig()
+      const [result, currentStatus] = await Promise.all([API.getWsmanConfig(), API.getWsmanStatus()])
       if (result !== null) {
         config.value = result
         loadError.value = false
       } else {
         loadError.value = true
       }
+      status.value = currentStatus
     } finally {
       isLoading.value = false
     }
@@ -74,5 +78,5 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     return error
   }
 
-  return { config, loadError, isLoading, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile }
+  return { config, loadError, isLoading, status, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile }
 })
