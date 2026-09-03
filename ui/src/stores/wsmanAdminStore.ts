@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput } from '@/types/wsmanAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -66,5 +66,13 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     }
   }
 
-  return { config, loadError, isLoading, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection }
+  // null on success, else the reason; re-read either way so the next attempt
+  // carries the file's current version
+  const saveDataCollectionFile = async (file: string, input: WsmanDataCollectionFileInput): Promise<string | null> => {
+    const error = await API.updateWsmanDataCollectionFile(file, input)
+    await getDataCollection()
+    return error
+  }
+
+  return { config, loadError, isLoading, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile }
 })

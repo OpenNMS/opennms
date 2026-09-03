@@ -22,7 +22,9 @@
 package org.opennms.web.rest.v2.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.config.wsman.Attrib;
 import org.opennms.netmgt.config.wsman.Collection;
@@ -137,19 +139,23 @@ public class WsmanDataCollectionDto {
 
     private String rrdRepository;
     private final List<String> sources = new ArrayList<>();
+    // content hash per source file; a PUT of that file must present it
+    private final Map<String, String> versions = new LinkedHashMap<>();
     private final List<CollectionInfo> collections = new ArrayList<>();
     private final List<GroupInfo> groups = new ArrayList<>();
     private final List<SystemDefinitionInfo> systemDefinitions = new ArrayList<>();
 
     public String getRrdRepository() { return rrdRepository; }
     public List<String> getSources() { return sources; }
+    public Map<String, String> getVersions() { return versions; }
     public List<CollectionInfo> getCollections() { return collections; }
     public List<GroupInfo> getGroups() { return groups; }
     public List<SystemDefinitionInfo> getSystemDefinitions() { return systemDefinitions; }
 
     /** Folds one file in; files are added in the DAO's merge order, root file first. */
-    public void addSource(final String source, final WsmanDatacollectionConfig config) {
+    public void addSource(final String source, final String version, final WsmanDatacollectionConfig config) {
         sources.add(source);
+        versions.put(source, version);
         if (rrdRepository == null) {
             rrdRepository = config.getRrdRepository();
         }

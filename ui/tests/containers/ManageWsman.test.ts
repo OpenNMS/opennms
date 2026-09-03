@@ -38,7 +38,7 @@ const mountPage = async (state: Record<string, unknown>) => {
   const wrapper = mount(ManageWsman, {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true, initialState: { wsmanAdminStore: state }})],
-      stubs: { WsmanHelpPanel: true, WsmanDefaultsCard: true, WsmanDefinitionsTable: true, WsmanDataCollectionPanel: true, WsmanDefaultsDialog: true, WsmanDefinitionDialog: true, OnmsConfirmationDialog: true, BreadCrumbs: true }
+      stubs: { WsmanHelpPanel: true, WsmanDefaultsCard: true, WsmanDefinitionsTable: true, WsmanDataCollectionPanel: true, WsmanDefaultsDialog: true, WsmanDefinitionDialog: true, WsmanCollectionDialog: true, WsmanSystemDefinitionDialog: true, WsmanGroupDialog: true, OnmsConfirmationDialog: true, BreadCrumbs: true }
     }
   })
   await flushPromises()
@@ -52,7 +52,7 @@ describe('ManageWsman.vue (container)', () => {
     expect(store.getConfig).toHaveBeenCalled()
     expect(store.getDataCollection).toHaveBeenCalled()
     expect(wrapper.find('.page-title').text()).toBe('Manage WS-Man')
-    expect(wrapper.find('[data-test="tab-definitions"]').text()).toContain('Definitions (0)')
+    expect(wrapper.find('[data-test="tab-definitions"]').text()).toContain('Server Definitions (0)')
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
   })
 
@@ -72,6 +72,21 @@ describe('ManageWsman.vue (container)', () => {
     vi.mocked(store.saveConfig).mockResolvedValueOnce(null)
     ;(wrapper.vm as any).moveDefinition(1, -1)
     await flushPromises()
+    expect(wrapper.find('[data-test="action-error"]').exists()).toBe(false)
+  })
+
+  it('deletes a data collection object by rewriting only its own file', async () => {
+    const dc = {
+      rrdRepository: '/rrd', sources: ['wsman-datacollection-config.xml', 'custom.xml'], versions: { 'wsman-datacollection-config.xml': 'r', 'custom.xml': 'c' },
+      collections: [], groups: [{ name: 'g1', source: 'custom.xml', resourceType: 'node', resourceUri: 'u', dialect: null, filter: null, attributes: [] }], systemDefinitions: []
+    }
+    const wrapper = await mountPage({ config: CONFIG, loadError: false, dataCollection: dc, dataCollectionError: false })
+    const store = useWsmanAdminStore()
+    vi.mocked(store.saveDataCollectionFile).mockResolvedValueOnce(null)
+    ;(wrapper.vm as any).askDeleteDataCollection('group', dc.groups[0])
+    await (wrapper.vm as any).confirmDeleteDataCollection()
+    await flushPromises()
+    expect(store.saveDataCollectionFile).toHaveBeenCalledWith('custom.xml', expect.objectContaining({ version: 'c', groups: [] }))
     expect(wrapper.find('[data-test="action-error"]').exists()).toBe(false)
   })
 

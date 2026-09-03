@@ -33,7 +33,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -41,6 +43,7 @@ import java.util.stream.Stream;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -53,6 +56,12 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.config.wsman.Attrib;
+import org.opennms.netmgt.config.wsman.Collection;
+import org.opennms.netmgt.config.wsman.Group;
+import org.opennms.netmgt.config.wsman.Rrd;
+import org.opennms.netmgt.config.wsman.SystemDefinition;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.config.wsman.credentials.Range;
@@ -66,6 +75,11 @@ import org.opennms.web.rest.v2.model.WsmanConfigUpdate.DefinitionUpdate;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate.RangeUpdate;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate.SettingsUpdate;
 import org.opennms.web.rest.v2.model.WsmanDataCollectionDto;
+import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate;
+import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.AttributeUpdate;
+import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.CollectionUpdate;
+import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.GroupUpdate;
+import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.SystemDefinitionUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -99,6 +113,9 @@ public class WsmanConfigRestService {
     // relative to opennms.home, as WSManDataCollectionConfigDaoJaxb declares them
     private static final Path DATA_COLLECTION_ROOT = Paths.get("etc", "wsman-datacollection-config.xml");
     private static final Path DATA_COLLECTION_DIR = Paths.get("etc", "wsman-datacollection.d");
+    // a new drop-in file name: plain characters, no path separators, .xml
+    private static final Pattern DROP_IN_NAME = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._-]*\\.xml$");
+    private static final Pattern RRA = Pattern.compile("^RRA:(AVERAGE|MIN|MAX|LAST):[0-9.]+:[0-9]+:[0-9]+$", Pattern.CASE_INSENSITIVE);
 
     @Autowired
     private WSManConfigDao wsManConfigDao;
@@ -171,25 +188,266 @@ public class WsmanConfigRestService {
     @Operation(summary = "Get the WS-Man data collection configuration", description = "Collections, groups and system definitions from wsman-datacollection-config.xml and wsman-datacollection.d, each tagged with its source file", operationId = "WsmanConfigRestServiceGetDataCollection")
     public Response getDataCollection(@Context final SecurityContext securityContext) {
         requireAdmin(securityContext);
+        return Response.ok(readDataCollection()).build();
+    }
+
+    // the file is a query parameter: a ".xml" path segment would be taken by
+    // CXF as a media-type suffix and negotiated as XML
+    @PUT
+    @javax.ws.rs.Path("data-collection")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Replace one WS-Man data collection file", description = "Rewrites wsman-datacollection-config.xml or one drop-in under wsman-datacollection.d (named by the file query parameter) from the given collections, groups and system definitions. The request must carry the file's version from GET (omit it to create a new drop-in). Names must stay unique across all files and every reference must resolve.", operationId = "WsmanConfigRestServiceUpdateDataCollectionFile")
+    public Response updateDataCollectionFile(@Context final SecurityContext securityContext, @QueryParam("file") final String fileName, final WsmanDataCollectionFileUpdate update) {
+        requireAdmin(securityContext);
+        if (fileName == null || fileName.isBlank()) {
+            throw badRequest("The file query parameter names the data collection file to replace.");
+        }
+        if (update == null || update.getCollections() == null || update.getGroups() == null || update.getSystemDefinitions() == null) {
+            throw badRequest("The collections, groups and systemDefinitions lists are all required; send an empty list to remove that kind from the file.");
+        }
+        synchronized (this) {
+            final Map<Path, LoadedDataCollection> files = readDataCollectionFiles();
+            final Path target = resolveDataCollectionFile(fileName, files);
+            final LoadedDataCollection existing = files.get(target);
+            if (existing == null) {
+                if (update.getVersion() != null && !update.getVersion().isBlank()) {
+                    throw badRequest("There is no file named " + fileName + "; omit the version to create it.");
+                }
+            } else if (update.getVersion() == null || !existing.version.equals(update.getVersion())) {
+                throw new WebApplicationException(Response.status(Status.CONFLICT).type(MediaType.TEXT_PLAIN)
+                        .entity(fileName + " changed since it was loaded; reload the page and apply the change again.").build());
+            }
+
+            final WsmanDatacollectionConfig next = toDataCollectionConfig(update, existing == null ? null : existing.config, target.equals(dataCollectionHome().resolve(DATA_COLLECTION_ROOT)));
+            final Map<Path, WsmanDatacollectionConfig> all = new LinkedHashMap<>();
+            for (final Map.Entry<Path, LoadedDataCollection> e : files.entrySet()) {
+                all.put(e.getKey(), e.getKey().equals(target) ? next : e.getValue().config);
+            }
+            if (existing == null) {
+                all.put(target, next);
+            }
+            validateDataCollectionReferences(all);
+            writeDataCollectionFile(target, next);
+            return Response.ok(readDataCollection()).build();
+        }
+    }
+
+    private static final class LoadedDataCollection {
+        private final WsmanDatacollectionConfig config;
+        private final String version;
+
+        private LoadedDataCollection(final WsmanDatacollectionConfig config, final String version) {
+            this.config = config;
+            this.version = version;
+        }
+    }
+
+    private Path dataCollectionHome() {
+        return wsManDataCollectionConfigDao instanceof AbstractMergingJaxbConfigDao
+                ? ((AbstractMergingJaxbConfigDao<?, ?>) wsManDataCollectionConfigDao).getOpennmsHome()
+                : Paths.get(System.getProperty("opennms.home"));
+    }
+
+    private WsmanDataCollectionDto readDataCollection() {
         final WsmanDataCollectionDto dto = new WsmanDataCollectionDto();
+        for (final Map.Entry<Path, LoadedDataCollection> e : readDataCollectionFiles().entrySet()) {
+            dto.addSource(e.getKey().getFileName().toString(), e.getValue().version, e.getValue().config);
+        }
+        return dto;
+    }
+
+    private Map<Path, LoadedDataCollection> readDataCollectionFiles() {
+        final Map<Path, LoadedDataCollection> files = new LinkedHashMap<>();
         for (final Path file : dataCollectionFiles()) {
-            try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-                dto.addSource(file.getFileName().toString(), JaxbUtils.unmarshal(WsmanDatacollectionConfig.class, reader));
+            try {
+                final byte[] bytes = Files.readAllBytes(file);
+                try (Reader reader = new StringReader(new String(bytes, StandardCharsets.UTF_8))) {
+                    files.put(file, new LoadedDataCollection(JaxbUtils.unmarshal(WsmanDatacollectionConfig.class, reader), digest(bytes)));
+                }
             } catch (final IOException | RuntimeException e) {
                 // a hand-edited drop-in that no longer parses must name itself, not surface as a bare 500
                 throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN)
                         .entity("Unable to read " + file.getFileName() + ": " + e.getMessage()).build());
             }
         }
-        return Response.ok(dto).build();
+        return files;
+    }
+
+    // An existing file by its name, or a new drop-in under wsman-datacollection.d.
+    private Path resolveDataCollectionFile(final String fileName, final Map<Path, LoadedDataCollection> files) {
+        for (final Path file : files.keySet()) {
+            if (file.getFileName().toString().equals(fileName)) {
+                return file;
+            }
+        }
+        if (!DROP_IN_NAME.matcher(fileName).matches()) {
+            throw badRequest("A new data collection file must be a plain name ending in .xml, e.g. custom.xml.");
+        }
+        return dataCollectionHome().resolve(DATA_COLLECTION_DIR).resolve(fileName);
+    }
+
+    private void writeDataCollectionFile(final Path file, final WsmanDatacollectionConfig config) {
+        final String xml;
+        try {
+            xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + JaxbUtils.marshal(config);
+        } catch (final RuntimeException e) {
+            throw badRequest("The file does not satisfy wsman-datacollection.xsd: " + rootMessage(e));
+        }
+        try {
+            Files.createDirectories(file.getParent());
+            Files.write(file, xml.getBytes(StandardCharsets.UTF_8));
+        } catch (final IOException e) {
+            throw new WebApplicationException("Unable to write " + file + ": " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // --- data collection mapping and validation --------------------------
+
+    private static WsmanDatacollectionConfig toDataCollectionConfig(final WsmanDataCollectionFileUpdate u, final WsmanDatacollectionConfig existing, final boolean isRoot) {
+        final WsmanDatacollectionConfig c = new WsmanDatacollectionConfig();
+        // the repository lives on the root file; keep it unless the request sets it
+        if (isRoot) {
+            final String repo = u.getRrdRepository() != null && !u.getRrdRepository().isBlank() ? u.getRrdRepository()
+                    : existing == null ? null : existing.getRrdRepository();
+            c.setRrdRepository(repo);
+        }
+        for (final CollectionUpdate cu : u.getCollections()) {
+            final String label = "Collection " + requireName(cu.getName(), "collection");
+            final Collection col = new Collection();
+            col.setName(cu.getName().trim());
+            if (cu.getRrdStep() == null || cu.getRrdStep() < 1) {
+                throw badRequest(label + " needs an RRD step of at least 1 second.");
+            }
+            if (cu.getRras() == null || cu.getRras().isEmpty()) {
+                throw badRequest(label + " needs at least one RRA.");
+            }
+            final Rrd rrd = new Rrd();
+            rrd.setStep(cu.getRrdStep());
+            for (final String rra : cu.getRras()) {
+                if (rra == null || !RRA.matcher(rra.trim()).matches()) {
+                    throw badRequest(label + " has an invalid RRA: " + rra + " (expected RRA:AVERAGE|MIN|MAX|LAST:xff:steps:rows).");
+                }
+                rrd.getRra().add(rra.trim());
+            }
+            col.setRrd(rrd);
+            if (cu.isIncludeAllSystemDefinitions()) {
+                col.setIncludeAllSystemDefinitions(new Collection.IncludeAllSystemDefinitions());
+            }
+            for (final String name : orEmpty(cu.getIncludedSystemDefinitions())) {
+                col.getIncludeSystemDefinition().add(requireName(name, "included system definition of " + label));
+            }
+            if (!cu.isIncludeAllSystemDefinitions() && col.getIncludeSystemDefinition().isEmpty()) {
+                throw badRequest(label + " must include all system definitions or name at least one; otherwise it collects nothing.");
+            }
+            c.getCollection().add(col);
+        }
+        for (final GroupUpdate gu : u.getGroups()) {
+            final String label = "Group " + requireName(gu.getName(), "group");
+            final Group g = new Group();
+            g.setName(gu.getName().trim());
+            g.setResourceType(requireName(gu.getResourceType(), "resource type of " + label));
+            g.setResourceUri(requireName(gu.getResourceUri(), "resource URI of " + label));
+            g.setDialect(blankToNull(gu.getDialect()));
+            g.setFilter(blankToNull(gu.getFilter()));
+            if (gu.getAttributes() == null || gu.getAttributes().isEmpty()) {
+                throw badRequest(label + " needs at least one attribute.");
+            }
+            for (final AttributeUpdate au : gu.getAttributes()) {
+                final Attrib a = new Attrib();
+                a.setName(requireName(au.getName(), "attribute name in " + label));
+                a.setAlias(requireName(au.getAlias(), "attribute alias in " + label));
+                final AttributeType type = au.getType() == null ? null : AttributeType.parse(au.getType().trim());
+                if (type == null) {
+                    throw badRequest(label + " has an attribute with an unknown type " + au.getType() + "; use gauge, counter or string.");
+                }
+                a.setType(type);
+                a.setIndexOf(blankToNull(au.getIndexOf()));
+                a.setFilter(blankToNull(au.getFilter()));
+                g.getAttrib().add(a);
+            }
+            c.getGroup().add(g);
+        }
+        for (final SystemDefinitionUpdate su : u.getSystemDefinitions()) {
+            final String label = "System definition " + requireName(su.getName(), "system definition");
+            final SystemDefinition sd = new SystemDefinition();
+            sd.setName(su.getName().trim());
+            for (final String rule : orEmpty(su.getRules())) {
+                sd.getRule().add(requireName(rule, "rule of " + label));
+            }
+            for (final String group : orEmpty(su.getIncludedGroups())) {
+                sd.getIncludeGroup().add(requireName(group, "included group of " + label));
+            }
+            if (sd.getRule().isEmpty() || sd.getIncludeGroup().isEmpty()) {
+                throw badRequest(label + " needs at least one rule and at least one included group.");
+            }
+            c.getSystemDefinition().add(sd);
+        }
+        return c;
+    }
+
+    // Names are unique per kind across every file, and every reference resolves
+    // across every file, so a rename or delete in one drop-in cannot strand an
+    // object in another.
+    private static void validateDataCollectionReferences(final Map<Path, WsmanDatacollectionConfig> all) {
+        final Map<String, String> collectionOwner = new LinkedHashMap<>();
+        final Map<String, String> groupOwner = new LinkedHashMap<>();
+        final Map<String, String> sysDefOwner = new LinkedHashMap<>();
+        for (final Map.Entry<Path, WsmanDatacollectionConfig> e : all.entrySet()) {
+            final String file = e.getKey().getFileName().toString();
+            for (final Collection c : e.getValue().getCollection()) {
+                claim(collectionOwner, "collection", c.getName(), file);
+            }
+            for (final Group g : e.getValue().getGroup()) {
+                claim(groupOwner, "group", g.getName(), file);
+            }
+            for (final SystemDefinition s : e.getValue().getSystemDefinition()) {
+                claim(sysDefOwner, "system definition", s.getName(), file);
+            }
+        }
+        for (final WsmanDatacollectionConfig cfg : all.values()) {
+            for (final SystemDefinition s : cfg.getSystemDefinition()) {
+                for (final String group : s.getIncludeGroup()) {
+                    if (!groupOwner.containsKey(group)) {
+                        throw badRequest("System definition " + s.getName() + " includes group " + group + ", which does not exist in any file.");
+                    }
+                }
+            }
+            for (final Collection c : cfg.getCollection()) {
+                for (final String sd : c.getIncludeSystemDefinition()) {
+                    if (!sysDefOwner.containsKey(sd)) {
+                        throw badRequest("Collection " + c.getName() + " includes system definition " + sd + ", which does not exist in any file.");
+                    }
+                }
+            }
+        }
+    }
+
+    private static void claim(final Map<String, String> owners, final String kind, final String name, final String file) {
+        final String other = owners.putIfAbsent(name, file);
+        if (other != null) {
+            throw badRequest("A " + kind + " named " + name + " already exists in " + other + "; names must be unique across all files.");
+        }
+    }
+
+    private static String requireName(final String value, final String what) {
+        if (value == null || value.isBlank()) {
+            throw badRequest("A " + what + " is required.");
+        }
+        if (value.chars().anyMatch(Character::isISOControl)) {
+            throw badRequest("The " + what + " must not contain control characters.");
+        }
+        return value.trim();
+    }
+
+    private static <T> List<T> orEmpty(final List<T> list) {
+        return list == null ? new ArrayList<>() : list;
     }
 
     // The same file set, in the same order, that the merging DAO folds
     // together: the root file first, then the drop-ins sorted by name.
     private List<Path> dataCollectionFiles() {
-        final Path home = wsManDataCollectionConfigDao instanceof AbstractMergingJaxbConfigDao
-                ? ((AbstractMergingJaxbConfigDao<?, ?>) wsManDataCollectionConfigDao).getOpennmsHome()
-                : Paths.get(System.getProperty("opennms.home"));
+        final Path home = dataCollectionHome();
         final List<Path> files = new ArrayList<>();
         final Path root = home.resolve(DATA_COLLECTION_ROOT);
         if (Files.isReadable(root)) {

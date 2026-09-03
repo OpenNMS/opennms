@@ -118,7 +118,50 @@ export interface WsmanSystemDefinitionInfo {
 export interface WsmanDataCollection {
   rrdRepository: string | null
   sources: string[]
+  // content hash per source file; a save of that file must present it
+  versions: Record<string, string>
   collections: WsmanCollectionInfo[]
   groups: WsmanGroupInfo[]
   systemDefinitions: WsmanSystemDefinitionInfo[]
+}
+
+// Request body of PUT /api/v2/wsman-config/data-collection?file=<name>: the
+// whole content of one source file. version is omitted to create a new file.
+export interface WsmanCollectionInput {
+  name: string
+  rrdStep: number | null
+  rras: string[]
+  includeAllSystemDefinitions: boolean
+  includedSystemDefinitions: string[]
+}
+
+export interface WsmanAttributeInput {
+  name: string
+  alias: string
+  type: string
+  indexOf: string | null
+  filter: string | null
+}
+
+export interface WsmanGroupInput {
+  name: string
+  resourceType: string
+  resourceUri: string
+  dialect: string | null
+  filter: string | null
+  attributes: WsmanAttributeInput[]
+}
+
+export interface WsmanSystemDefinitionInput {
+  name: string
+  rules: string[]
+  includedGroups: string[]
+}
+
+export interface WsmanDataCollectionFileInput {
+  version: string | null
+  rrdRepository: string | null
+  collections: WsmanCollectionInput[]
+  groups: WsmanGroupInput[]
+  systemDefinitions: WsmanSystemDefinitionInput[]
 }

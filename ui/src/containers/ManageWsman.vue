@@ -15,7 +15,7 @@
 
     <OnmsTabs v-if="store.config" v-model:value="activeTab">
       <OnmsTabList>
-        <OnmsTab :value="0" data-test="tab-definitions">Definitions ({{ store.config.definitions.length }})</OnmsTab>
+        <OnmsTab :value="0" data-test="tab-definitions">Server Definitions ({{ store.config.definitions.length }})</OnmsTab>
         <OnmsTab :value="1" data-test="tab-data-collection">Data Collection</OnmsTab>
         <OnmsTab :value="2" data-test="tab-defaults">Agent Defaults</OnmsTab>
       </OnmsTabList>
@@ -37,25 +37,52 @@
             Failed to load the WS-Man data collection configuration. Check <code>wsman-datacollection-config.xml</code>
             and the files in <code>wsman-datacollection.d/</code>, then reload the page.
           </p>
-          <WsmanDataCollectionPanel v-else-if="store.dataCollection" :dataCollection="store.dataCollection" />
+          <WsmanDataCollectionPanel
+            v-else-if="store.dataCollection"
+            :dataCollection="store.dataCollection"
+            @add="openDataCollectionEditor"
+            @edit="openDataCollectionEditor"
+            @delete="askDeleteDataCollection"
+          />
           <p v-else class="placeholder" data-test="data-collection-loading">Loading…</p>
         </OnmsTabPanel>
       </OnmsTabPanels>
     </OnmsTabs>
+
+    <template v-if="store.dataCollection">
+      <WsmanCollectionDialog v-model:visible="showCollectionDialog" :dataCollection="store.dataCollection" :original="editingCollection" />
+      <WsmanSystemDefinitionDialog v-model:visible="showSystemDefinitionDialog" :dataCollection="store.dataCollection" :original="editingSystemDefinition" />
+      <WsmanGroupDialog v-model:visible="showGroupDialog" :dataCollection="store.dataCollection" :original="editingGroup" />
+      <OnmsConfirmationDialog
+        :visible="dataCollectionToDelete !== null"
+        title="Delete from Data Collection"
+        actionButtonText="Delete"
+        @ok="confirmDeleteDataCollection"
+        @cancel="dataCollectionToDelete = null"
+      >
+        <template #content>
+          <p data-test="delete-dc-confirm-text">
+            Delete {{ dataCollectionToDelete?.kind === 'systemDefinition' ? 'system definition' : dataCollectionToDelete?.kind }}
+            <strong>{{ dataCollectionToDelete?.item.name }}</strong> from {{ dataCollectionToDelete?.item.source }}?
+            The save is refused if something else still references it.
+          </p>
+        </template>
+      </OnmsConfirmationDialog>
+    </template>
 
     <template v-if="store.config">
       <WsmanDefaultsDialog v-model:visible="showDefaultsDialog" :config="store.config" />
       <WsmanDefinitionDialog v-model:visible="showDefinitionDialog" :config="store.config" :index="editingIndex" />
       <OnmsConfirmationDialog
         :visible="deleteIndex !== null"
-        title="Delete Definition"
+        title="Delete Server Definition"
         actionButtonText="Delete"
         @ok="confirmDelete"
         @cancel="deleteIndex = null"
       >
         <template #content>
           <p data-test="delete-confirm-text">
-            Delete definition {{ (deleteIndex ?? 0) + 1 }}? Agents it matched will use the next matching definition or the defaults.
+            Delete server definition {{ (deleteIndex ?? 0) + 1 }}? Servers it matched will use the next matching definition or the defaults.
           </p>
         </template>
       </OnmsConfirmationDialog>
@@ -71,13 +98,18 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import WsmanDefaultsCard from '@/components/ManageWsman/WsmanDefaultsCard.vue'
 import WsmanDefaultsDialog from '@/components/ManageWsman/WsmanDefaultsDialog.vue'
 import WsmanDefinitionDialog from '@/components/ManageWsman/WsmanDefinitionDialog.vue'
+import WsmanCollectionDialog from '@/components/ManageWsman/WsmanCollectionDialog.vue'
 import WsmanDataCollectionPanel from '@/components/ManageWsman/WsmanDataCollectionPanel.vue'
+import WsmanGroupDialog from '@/components/ManageWsman/WsmanGroupDialog.vue'
+import WsmanSystemDefinitionDialog from '@/components/ManageWsman/WsmanSystemDefinitionDialog.vue'
+import { DataCollectionKind, EditableObject, fileInput, remove } from '@/components/ManageWsman/wsmanDataCollectionForm'
 import WsmanDefinitionsTable from '@/components/ManageWsman/WsmanDefinitionsTable.vue'
 import { configToInput } from '@/components/ManageWsman/wsmanForm'
 import WsmanHelpPanel from '@/components/ManageWsman/WsmanHelpPanel.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { BreadCrumb } from '@/types'
+import { WsmanCollectionInfo, WsmanGroupInfo, WsmanSystemDefinitionInfo } from '@/types/wsmanAdmin'
 
 const menuStore = useMenuStore()
 const store = useWsmanAdminStore()
@@ -87,6 +119,13 @@ const showDefinitionDialog = ref(false)
 const editingIndex = ref<number | null>(null)
 const deleteIndex = ref<number | null>(null)
 const actionError = ref('')
+const showCollectionDialog = ref(false)
+const showSystemDefinitionDialog = ref(false)
+const showGroupDialog = ref(false)
+const editingCollection = ref<WsmanCollectionInfo | null>(null)
+const editingSystemDefinition = ref<WsmanSystemDefinitionInfo | null>(null)
+const editingGroup = ref<WsmanGroupInfo | null>(null)
+const dataCollectionToDelete = ref<{ kind: DataCollectionKind, item: EditableObject } | null>(null)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -119,6 +158,42 @@ const confirmDelete = async () => {
   const input = configToInput(store.config)
   input.definitions.splice(index, 1)
   actionError.value = (await store.saveConfig(input)) ?? ''
+}
+
+const openDataCollectionEditor = (kind: DataCollectionKind, item: EditableObject | null = null) => {
+  if (kind === 'collection') {
+    editingCollection.value = item as WsmanCollectionInfo | null
+    showCollectionDialog.value = true
+  } else if (kind === 'systemDefinition') {
+    editingSystemDefinition.value = item as WsmanSystemDefinitionInfo | null
+    showSystemDefinitionDialog.value = true
+  } else {
+    editingGroup.value = item as WsmanGroupInfo | null
+    showGroupDialog.value = true
+  }
+}
+
+const askDeleteDataCollection = (kind: DataCollectionKind, item: EditableObject) => {
+  dataCollectionToDelete.value = { kind, item }
+}
+
+// The object is removed from the file it lives in; the server refuses the
+// save if a system definition or collection elsewhere still references it.
+const confirmDeleteDataCollection = async () => {
+  const target = dataCollectionToDelete.value
+  dataCollectionToDelete.value = null
+  if (!target || !store.dataCollection) {
+    return
+  }
+  const input = fileInput(store.dataCollection, target.item.source)
+  if (target.kind === 'collection') {
+    input.collections = remove(input.collections, target.item.name)
+  } else if (target.kind === 'systemDefinition') {
+    input.systemDefinitions = remove(input.systemDefinitions, target.item.name)
+  } else {
+    input.groups = remove(input.groups, target.item.name)
+  }
+  actionError.value = (await store.saveDataCollectionFile(target.item.source, input)) ?? ''
 }
 
 const moveDefinition = async (index: number, delta: number) => {

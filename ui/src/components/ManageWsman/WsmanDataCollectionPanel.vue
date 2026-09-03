@@ -1,9 +1,9 @@
 <template>
   <div class="data-collection" data-test="wsman-data-collection">
     <p class="intro">
-      Read from <code>wsman-datacollection-config.xml</code> and every file in
-      <code>wsman-datacollection.d/</code>, in the order the collector merges them. Editing from this
-      page is not available yet.
+      Merged from <code>wsman-datacollection-config.xml</code> and every file in
+      <code>wsman-datacollection.d/</code>, in the order the collector reads them. Each object is saved back
+      to the file it lives in; rewriting a file drops any XML comments it held.
     </p>
     <dl class="summary">
       <dt>RRD repository</dt>
@@ -13,7 +13,12 @@
     </dl>
 
     <OnmsCard class="section" data-test="collections-card">
-      <template #title><span class="card-title">Collections ({{ dataCollection.collections.length }})</span></template>
+      <template #title>
+        <div class="card-header">
+          <span class="card-title">Collections ({{ dataCollection.collections.length }})</span>
+          <OnmsButton label="Add Collection" data-test="add-collection" @click="emit('add', 'collection')" />
+        </div>
+      </template>
       <template #content>
         <OnmsTable :value="dataCollection.collections" dataKey="name" data-test="collections-table">
           <template #empty><span>No collections.</span></template>
@@ -31,12 +36,25 @@
               <span v-else>{{ data.includedSystemDefinitions.join(', ') || NOT_SET }}</span>
             </template>
           </OnmsColumn>
+          <OnmsColumn header="Actions">
+            <template #body="{ data }">
+              <div class="action-container">
+                <OnmsIconButton :icon="Edit" :title="`Edit ${data.name}`" :aria-label="`Edit ${data.name}`" data-test="edit-collection" @click="emit('edit', 'collection', data)" />
+                <OnmsIconButton :icon="Delete" severity="danger" :title="`Delete ${data.name}`" :aria-label="`Delete ${data.name}`" data-test="delete-collection" @click="emit('delete', 'collection', data)" />
+              </div>
+            </template>
+          </OnmsColumn>
         </OnmsTable>
       </template>
     </OnmsCard>
 
     <OnmsCard class="section" data-test="system-definitions-card">
-      <template #title><span class="card-title">System Definitions ({{ dataCollection.systemDefinitions.length }})</span></template>
+      <template #title>
+        <div class="card-header">
+          <span class="card-title">System Definitions ({{ dataCollection.systemDefinitions.length }})</span>
+          <OnmsButton label="Add System Definition" data-test="add-system-definition" @click="emit('add', 'systemDefinition')" />
+        </div>
+      </template>
       <template #content>
         <OnmsTable :value="dataCollection.systemDefinitions" dataKey="name" data-test="system-definitions-table">
           <template #empty><span>No system definitions.</span></template>
@@ -50,6 +68,14 @@
           <OnmsColumn header="Groups">
             <template #body="{ data }">{{ data.includedGroups.join(', ') }}</template>
           </OnmsColumn>
+          <OnmsColumn header="Actions">
+            <template #body="{ data }">
+              <div class="action-container">
+                <OnmsIconButton :icon="Edit" :title="`Edit ${data.name}`" :aria-label="`Edit ${data.name}`" data-test="edit-system-definition" @click="emit('edit', 'systemDefinition', data)" />
+                <OnmsIconButton :icon="Delete" severity="danger" :title="`Delete ${data.name}`" :aria-label="`Delete ${data.name}`" data-test="delete-system-definition" @click="emit('delete', 'systemDefinition', data)" />
+              </div>
+            </template>
+          </OnmsColumn>
         </OnmsTable>
       </template>
     </OnmsCard>
@@ -58,7 +84,10 @@
       <template #title>
         <div class="card-header">
           <span class="card-title">Groups ({{ filteredGroups.length }}<template v-if="groupFilter"> of {{ dataCollection.groups.length }}</template>)</span>
-          <OnmsInputText v-model="groupFilter" placeholder="Filter by name, source or resource type" data-test="group-filter" />
+          <div class="card-tools">
+            <OnmsInputText v-model="groupFilter" placeholder="Filter by name, source or resource type" data-test="group-filter" />
+            <OnmsButton label="Add Group" data-test="add-group" @click="emit('add', 'group')" />
+          </div>
         </div>
       </template>
       <template #content>
@@ -78,6 +107,14 @@
           <OnmsColumn field="resourceType" header="Resource type" sortable />
           <OnmsColumn header="Attributes">
             <template #body="{ data }">{{ data.attributes.length }}</template>
+          </OnmsColumn>
+          <OnmsColumn header="Actions">
+            <template #body="{ data }">
+              <div class="action-container">
+                <OnmsIconButton :icon="Edit" :title="`Edit ${data.name}`" :aria-label="`Edit ${data.name}`" data-test="edit-group" @click="emit('edit', 'group', data)" />
+                <OnmsIconButton :icon="Delete" severity="danger" :title="`Delete ${data.name}`" :aria-label="`Delete ${data.name}`" data-test="delete-group" @click="emit('delete', 'group', data)" />
+              </div>
+            </template>
           </OnmsColumn>
           <template #expansion="{ data }">
             <div class="group-details" :data-test="`group-details-${data.name}`">
@@ -105,12 +142,21 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { OnmsCard, OnmsColumn, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import { WsmanDataCollection, WsmanGroupInfo } from '@/types/wsmanAdmin'
 import { NOT_SET } from './wsmanDisplay'
+import { DataCollectionKind, EditableObject } from './wsmanDataCollectionForm'
 
 const props = defineProps<{
   dataCollection: WsmanDataCollection
+}>()
+
+const emit = defineEmits<{
+  (e: 'add', kind: DataCollectionKind): void
+  (e: 'edit', kind: DataCollectionKind, item: EditableObject): void
+  (e: 'delete', kind: DataCollectionKind, item: EditableObject): void
 }>()
 
 const groupFilter = ref('')
@@ -172,6 +218,19 @@ const filteredGroups = computed(() => {
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.card-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.action-container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .plain-list {

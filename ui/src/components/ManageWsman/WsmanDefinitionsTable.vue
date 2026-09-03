@@ -2,14 +2,15 @@
   <OnmsCard class="wsman-definitions" data-test="wsman-definitions">
     <template #title>
       <div class="card-header">
-        <span class="card-title">Definitions</span>
-        <OnmsButton label="Add Definition" data-test="add-definition" @click="emit('add')" />
+        <span class="card-title">Server Definitions</span>
+        <OnmsButton label="Add Server Definition" data-test="add-definition" @click="emit('add')" />
       </div>
     </template>
     <template #content>
       <p class="card-note">
-        Each definition applies its settings to the addresses it matches; the first match wins and
-        anything it leaves unset comes from the agent defaults.
+        A server definition names the servers to collect from, by IP range, address or IPLIKE pattern,
+        and the connection settings to use for them. The first matching definition wins and anything it
+        leaves unset comes from the agent defaults.
       </p>
       <OnmsTable
         :value="rows"
@@ -17,7 +18,7 @@
         data-test="wsman-definitions-table"
       >
         <template #empty>
-          <span data-test="no-definitions">No definitions. Every agent uses the defaults.</span>
+          <span data-test="no-definitions">No server definitions. Every server uses the agent defaults.</span>
         </template>
         <OnmsColumn header="Applies to">
           <template #body="{ data }">
