@@ -73,11 +73,14 @@ public class BulkingIT {
         return flows;
     }
 
+    private MetricRegistry metricRegistry;
+
     private FlowRepository createFlowRepository(int bulkSize, int bulkFlushMs) {
 
         final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
         final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
-        final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(), elasticRestClient,
+        this.metricRegistry = new MetricRegistry();
+        final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(this.metricRegistry, elasticRestClient,
                 IndexStrategy.MONTHLY, new MockIdentity(), new MockTracerRegistry(), new IndexSettings());
         elasticFlowRepository.setBulkSize(bulkSize);
         elasticFlowRepository.setBulkFlushMs(bulkFlushMs);
@@ -98,14 +101,15 @@ public class BulkingIT {
 
         final long[] persists = new long[2];
 
-        // send full bulk in order to estimate last persist
+        // send full bulk; persist() flushes this synchronously since bulkSize is reached immediately,
+        // so the flush is already complete by the time this call returns
         flowRepository.persist(createMockedFlows(1000));
+        persists[0] = System.currentTimeMillis();
 
+        // confirm the flows actually made it into the index before proceeding
         with().pollInterval(25, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
             final SearchResponse searchResponse = elasticRestClient.search(SearchRequest.forIndices(List.of("netflow-*"), "{\"query\": {\"match_all\": {}}}"));
             LOG.info("Response: {} documents", searchResponse.getHits().getTotalHits());
-            // record the initial persist
-            persists[0] = System.currentTimeMillis();
             return searchResponse.getHits().getTotalHits() == 1000L;
         });
 
@@ -121,12 +125,21 @@ public class BulkingIT {
             return searchResponse.getHits().getTotalHits() == 1000L;
         });
 
-        // now wait for the flows to appear
+        // the flush timer runs on a background thread and increments the "logPersisting" metric the
+        // instant persistBulk() completes; polling that count avoids the ES search-refresh lag that
+        // made this assertion flaky when it was timed off document visibility instead
+        with().pollInterval(1, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
+            final boolean flushed = metricRegistry.timer("logPersisting").getCount() == 2;
+            if (flushed) {
+                persists[1] = System.currentTimeMillis();
+            }
+            return flushed;
+        });
+
+        // now wait for the flows to appear, for completeness
         with().pollInterval(25, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
             final SearchResponse searchResponse = elasticRestClient.search(SearchRequest.forIndices(List.of("netflow-*"), "{\"query\": {\"match_all\": {}}}"));
             LOG.info("Response: {} documents", searchResponse.getHits().getTotalHits());
-            // record the final persist
-            persists[1] = System.currentTimeMillis();
             return searchResponse.getHits().getTotalHits() == 1090L;
         });
 
