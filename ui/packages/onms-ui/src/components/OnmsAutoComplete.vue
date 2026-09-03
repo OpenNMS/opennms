@@ -11,6 +11,7 @@
     :forceSelection="forceSelection"
     :fluid="fluid"
     :dropdown="dropdown"
+    :dropdownMode="dropdownMode"
     :multiple="multiple"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
@@ -62,6 +63,9 @@ withDefaults(defineProps<{
   // explicit false would break that inheritance
   fluid?: boolean
   dropdown?: boolean
+  // dropdownMode: 'blank' clears the query on dropdown click, 'current' keeps it
+  // and searches from the current value; undefined preserves PrimeVue's default.
+  dropdownMode?: 'blank' | 'current'
   // multiple: undefined preserves PrimeVue's default; when true, the model
   // switches to an array of selected values (chips mode)
   multiple?: boolean
@@ -77,6 +81,7 @@ withDefaults(defineProps<{
   forceSelection: false,
   fluid: undefined,
   dropdown: undefined,
+  dropdownMode: undefined,
   multiple: undefined,
   unsafePt: undefined
 })

@@ -144,11 +144,11 @@ public abstract class GroupManager implements GroupConfig {
         }
         buildDutySchedules(m_groups);
         
-        if (groupinfo.getRoles().size() > 0) {
-            m_roles = new LinkedHashMap<String, Role>();
-            for (final Role role : groupinfo.getRoles()) {
-                m_roles.put(role.getName(), role);
-            }
+        // always rebuild, so removing the last role from groups.xml doesn't
+        // leave the previous roles cached until restart
+        m_roles = new LinkedHashMap<String, Role>();
+        for (final Role role : groupinfo.getRoles()) {
+            m_roles.put(role.getName(), role);
         }
     }
 

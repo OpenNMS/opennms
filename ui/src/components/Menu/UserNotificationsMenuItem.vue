@@ -52,7 +52,7 @@
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <OnmsIcon :icon="IconPerson" class="user-notifications-icon" />
           <span class="left-margin-small">
-            {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
+            {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notifications assigned to you
           </span>
         </a>
       </div>
@@ -207,14 +207,14 @@ const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
       icon: 'fa-solid fa-bell',
       iconComponent: markRaw(IconNotificationSelected),
       colorClass: 'alarm-ok',
-      title: 'Notices: On'
+      title: 'Notifications: On'
     }
   } else if (status === 'Off') {
     return {
       icon: 'fa-solid fa-bell-slash',
       iconComponent: markRaw(IconNotificationsOff),
       colorClass: 'alarm-error',
-      title: 'Notices: Off'
+      title: 'Notifications: Off'
     }
   }
 
@@ -223,7 +223,7 @@ const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
     icon: 'fa-solid fa-bell',
     iconComponent: markRaw(IconNotificationSelected),
     colorClass: 'alarm-unknown',
-    title: 'Notices: Unknown'
+    title: 'Notifications: Unknown'
   }
 })
 
@@ -266,9 +266,10 @@ const onMenuItemClick = (url: string) => {
   window.location.assign(link)
 }
 
-const onNotificationItemClick = (item: OnmsNotification) => {
-  const url = `notification/detail.jsp?notice=${item.id}`
-  onMenuItemClick(url)
+const onNotificationItemClick = (_item: OnmsNotification) => {
+  // open the new Notifications page filtered to the user's outstanding notices
+  // (which include this one) instead of the legacy per-notice detail page
+  onMenuItemClick('ui/index.html#/admin/notifications?preset=yourOutstanding')
 }
 </script>
 

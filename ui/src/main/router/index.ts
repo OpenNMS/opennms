@@ -184,6 +184,11 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin/notifications',
+      name: 'Notifications',
+      component: () => import('@/containers/Notifications.vue')
+    },
+    {
       path: '/admin/groups',
       name: 'Manage Groups',
       component: () => import('@/containers/ManageGroups.vue'),
