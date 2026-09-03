@@ -51,6 +51,20 @@
   --onms-background: #f4f7fc;
   --onms-border-on-surface: rgba(10, 12, 27, 0.12);
   --onms-clickable-normal: #0402a9;
+  // Selection and hover affordances on the topology canvas. Its own token
+  // because --onms-clickable-normal is a near-black navy in this theme, which
+  // reads as an outline rather than a highlight over a colored vertex. Light
+  // value is the blue topology has always used; 5.89:1 on --onms-background.
+  --onms-topology-accent: #0b3f8f;
+  // Links carry no emphasis by default, so they are drawn neutral and the accent
+  // above means "this one". Emphasis used to be conveyed by fading everything
+  // else instead, which cannot work here: the base link color is a blue that
+  // cannot follow the theme (it is persisted into saved views), so in this theme
+  // the highlight and the base were the *same color* and only the fade
+  // distinguished them -- and a fade strong enough to register erased the other
+  // links entirely. Neutral base: 3.18:1 against the canvas, 2.90:1 apart from
+  // the accent, and nothing has to disappear.
+  --onms-topology-link: #7d8ca3;
   --onms-shade-3: rgba(10, 12, 27, 0.24);
   --onms-success: #0b720c;
   --onms-error: #a5021f;
@@ -66,6 +80,16 @@
   --onms-background: #0a0c1b;
   --onms-border-on-surface: rgba(255, 255, 255, 0.24);
   --onms-clickable-normal: #b3e7ff;
+  // Matches --onms-clickable-normal above, deliberately. Two things have to be
+  // legible at once here: the accent against the canvas (14.60:1, where the
+  // light theme's #1f5fb0 managed 3.07:1 and 2.76:1 on a panel), and the accent
+  // against the *base link color*, which is theme-independent because it is
+  // persisted into saved views. A mid-blue highlight over mid-blue links
+  // separated by only 2.50:1, which read as the same line slightly thicker;
+  // this separates by 4.75:1.
+  --onms-topology-accent: #b3e7ff;
+  // 3.57:1 against the canvas, 4.09:1 apart from the accent.
+  --onms-topology-link: #5b6b80;
   --onms-shade-3: rgba(255, 255, 255, 0.24);
   --onms-success: #83ee7d;
   --onms-error: #ffa3b5;

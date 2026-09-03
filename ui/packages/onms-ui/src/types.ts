@@ -63,6 +63,14 @@ export interface OnmsTableSortEvent {
   rows?: number
 }
 
+export interface OnmsTableRowClickEvent {
+  originalEvent?: Event
+  /** Clicked row data */
+  data: any
+  /** Row index */
+  index: number
+}
+
 export interface OnmsTableRowEditSaveEvent {
   originalEvent?: Event
   /** Row data before the edit */

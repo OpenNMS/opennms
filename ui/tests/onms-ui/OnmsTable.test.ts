@@ -156,4 +156,23 @@ describe('OnmsTable', () => {
     wrapper.findComponent({ name: 'DataTable' }).vm.$emit('update:expandedRows', { 1: true, 2: true })
     expect(wrapper.emitted('update:expandedRows')![0]).toEqual([{ 1: true, 2: true }])
   })
+
+  it('maps selectionMode through, defaulting to unset', () => {
+    const plain = mount(OnmsTable, { props: { value: rows, dataKey: 'id' }, global: globalPlugins })
+    // undefined falls back to PrimeVue's own default, which is null
+    expect(plain.findComponent({ name: 'DataTable' }).props('selectionMode')).toBeNull()
+
+    const selectable = mount(OnmsTable, {
+      props: { value: rows, dataKey: 'id', selectionMode: 'single' },
+      global: globalPlugins
+    })
+    expect(selectable.findComponent({ name: 'DataTable' }).props('selectionMode')).toBe('single')
+  })
+
+  it('forwards row-click', () => {
+    const wrapper = mount(OnmsTable, { props: { value: rows, dataKey: 'id', selectionMode: 'single' }, global: globalPlugins })
+    const event = { originalEvent: new MouseEvent('click'), data: rows[1], index: 1 }
+    wrapper.findComponent({ name: 'DataTable' }).vm.$emit('row-click', event)
+    expect(wrapper.emitted('row-click')![0]).toEqual([event])
+  })
 })
