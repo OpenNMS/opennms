@@ -54,8 +54,13 @@ public class KafkaPersister implements Persister {
 
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
 
+    // NumericAttribute.type must always print: GAUGE is the zero enum value, which the
+    // printer would otherwise omit, leaving gauges without a type key while counters keep theirs
     private static final JsonFormat.Printer JSON_PRINTER = JsonFormat.printer()
-            .omittingInsignificantWhitespace();
+            .omittingInsignificantWhitespace()
+            .includingDefaultValueFields(Collections.singleton(
+                    CollectionSetProtos.NumericAttribute.getDescriptor()
+                            .findFieldByNumber(CollectionSetProtos.NumericAttribute.TYPE_FIELD_NUMBER)));
 
     private CollectionSetMapper collectionSetMapper;
 
