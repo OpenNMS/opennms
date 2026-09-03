@@ -175,6 +175,8 @@ export interface WsmanStatusBucket {
   servers: number
   responding: number
   down: number
+  // provisioned with the WS-Man service but not polled: no poller package covers them
+  unpolled: number
   lastResponse: number | null
 }
 

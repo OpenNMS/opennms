@@ -230,7 +230,7 @@ public class WsmanConfigRestService {
     @javax.ws.rs.Path("status")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional(readOnly = true)
-    @Operation(summary = "Get what the poller sees per WS-Man server definition", description = "For every managed monitored service of the given type (WS-Man by default), which server definition its address matches, whether it has an open outage, and when it last responded", operationId = "WsmanConfigRestServiceGetStatus")
+    @Operation(summary = "Get what the poller sees per WS-Man server definition", description = "For every monitored service of the given type (WS-Man by default), which server definition its address matches, whether it has an open outage, when it last responded, and how many are provisioned but not polled because no poller package covers them", operationId = "WsmanConfigRestServiceGetStatus")
     public Response getStatus(@Context final SecurityContext securityContext, @QueryParam("service") @DefaultValue("WS-Man") final String serviceName) {
         requireAdmin(securityContext);
         final List<Definition> definitions = readConfig().config.getDefinition();
@@ -254,12 +254,18 @@ public class WsmanConfigRestService {
         }
         final Set<Integer> downServiceIds = outageDao.currentOutagesByServiceId().keySet();
         for (final OnmsMonitoredService svc : monitoredServiceDao.findByType(serviceName)) {
-            if (!"A".equals(svc.getStatus()) || svc.getIpAddress() == null) {
+            if (svc.getIpAddress() == null) {
                 continue;
             }
             final int index = matchingDefinition(definitions, svc.getIpAddress());
             final WsmanStatusDto.Bucket bucket = index < 0 ? status.getDefaults() : status.getDefinitions().get(index);
-            bucket.count(downServiceIds.contains(svc.getId()), svc.getLastGood());
+            // anything but A is a service the poller does not check: provisioning
+            // marks a service N when no poller package covers it, F when forced off
+            if ("A".equals(svc.getStatus())) {
+                bucket.count(downServiceIds.contains(svc.getId()), svc.getLastGood());
+            } else {
+                bucket.countUnpolled();
+            }
         }
         return Response.ok(status).build();
     }
