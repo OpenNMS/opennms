@@ -23,9 +23,8 @@
 /**
  * Cross-links from a topology node to its data, mirroring the legacy map's
  * right-click "Node Info / Resource Graphs / Events / Alarms" operations.
- * These open the relevant existing pages (the new-UI node detail and the
- * established server pages) in a new tab so the topology stays put. URLs were
- * verified against a running 36.x instance.
+ * These open the established server pages in a new tab so the topology stays
+ * put. URLs were verified against a running 36.x instance.
  */
 
 export interface NodeActionLink {
@@ -37,7 +36,9 @@ export interface NodeActionLink {
 const ROOT = '/opennms'
 
 export const nodeActionLinks = (nodeId: number): NodeActionLink[] => [
-  { label: 'Node Details', url: `${ROOT}/ui/index.html#/node/${nodeId}` },
+  // The JSP page, not the Vue one: the new node detail page is incomplete in
+  // H36, and this menu should land somewhere finished.
+  { label: 'Node Details', url: `${ROOT}/element/node.jsp?node=${nodeId}` },
   { label: 'Resource Graphs', url: `${ROOT}/graph/chooseresource.jsp?node=${nodeId}` },
   { label: 'Events', url: `${ROOT}/event/list?filter=node%3D${nodeId}` },
   { label: 'Alarms', url: `${ROOT}/alarm/list.htm?filter=node%3D${nodeId}` }
