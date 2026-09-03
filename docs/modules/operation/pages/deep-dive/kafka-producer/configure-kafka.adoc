@@ -62,6 +62,10 @@ Set this to an empty string to disable filtering, and forward all metrics.
 | Set this value to `true` to enable forwarding of metrics.
 | false
 
+| metrics.useJson
+| Set this value to `true` to forward metrics encoded as JSON instead of protobuf (see below).
+| false
+
 | nodeRefreshTimeoutMs
 | Number of milliseconds to wait before looking up a node in the database again.
 Decrease this value to improve accuracy at the cost of additional database lookups.
@@ -184,6 +188,36 @@ Or add following line at `$OPENNMS_HOME/etc/org.opennms.features.kafka.producer.
 ```
 disable.metrics.splitting = true
 ```
+
+=== Forward metrics as JSON
+
+By default, metrics are forwarded as protobuf messages (see `collectionset.proto` in your distribution for the model definitions).
+To forward metrics encoded as JSON instead, set the value of the `metrics.useJson` property to `true`.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set metrics.useJson true
+admin@opennms()> config:update
+----
+
+Or add following line at `$OPENNMS_HOME/etc/org.opennms.features.kafka.producer.cfg`
+```
+metrics.useJson = true
+```
+
+NOTE: The metric forwarder reads `metrics.useJson` (like `forward.metrics` and `disable.metrics.splitting`) only when the `opennms-kafka-producer` feature starts.
+After changing it, restart {page-component-title} (or restart the feature) for the change to take effect.
+
+The JSON representation follows the canonical protobuf JSON mapping of the same CollectionSet model.
+Note that JSON messages are larger than their protobuf equivalents; the message splitting described above accounts for the encoded size, so large collection sets may split into more messages when JSON is enabled.
+This setting only affects metrics; events, alarms, nodes, and topology messages are always forwarded as protobuf.
+
+IMPORTANT: JSON has no representation for non-finite numbers, so the protobuf JSON mapping encodes them as the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
+A numeric attribute with a missing sample (for example, an uninitialized counter) is therefore forwarded with a string where consumers otherwise see a JSON number.
+Strongly typed consumers must either tolerate this mixed type or parse the payload with a protobuf JSON parser, which accepts these strings for numeric fields.
 
 === Enable exclusive metric forwarding
 
