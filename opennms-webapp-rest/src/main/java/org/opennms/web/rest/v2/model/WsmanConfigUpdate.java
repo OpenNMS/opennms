@@ -21,6 +21,8 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +33,11 @@ import java.util.List;
  * sourceIndex names the definition it was loaded from, so its stored
  * password follows it through edits and reordering.
  */
+// read-only fields a client round-trips from a GET body (hasPassword, source) are ignored
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WsmanConfigUpdate {
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class SettingsUpdate {
         private Integer retry;
         private Integer timeout;
@@ -76,6 +81,7 @@ public class WsmanConfigUpdate {
         public void setGssAuth(Boolean gssAuth) { this.gssAuth = gssAuth; }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RangeUpdate {
         private String begin;
         private String end;
@@ -86,6 +92,7 @@ public class WsmanConfigUpdate {
         public void setEnd(String end) { this.end = end; }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DefinitionUpdate extends SettingsUpdate {
         private List<RangeUpdate> ranges = new ArrayList<>();
         private List<String> specifics = new ArrayList<>();

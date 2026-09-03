@@ -749,6 +749,19 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("fe80::1", new JSONObject(body).getJSONArray("definitions").getJSONObject(0).getJSONArray("specifics").getString(0));
     }
 
+    /** A client that round-trips a GET body into a PUT sends read-only fields such as hasPassword. */
+    @Test
+    public void testUpdateIgnoresReadOnlyFieldsFromAGetBody() throws Exception {
+        final JSONObject current = new JSONObject(getJson("/wsman-config", 200));
+        final JSONObject defaults = current.getJSONObject("defaults");
+        assertTrue("the GET body carries hasPassword", defaults.has("hasPassword"));
+        final JSONObject definition = new JSONObject().put("specifics", new org.json.JSONArray().put("10.20.30.40")).put("username", "monitor").put("hasPassword", false).put("password", "secret-one");
+        final JSONObject body = new JSONObject().put("version", current.getString("version")).put("defaults", defaults).put("definitions", new org.json.JSONArray().put(definition));
+        final JSONObject saved = new JSONObject(sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", body.toString(), 200).getContentAsString());
+        assertEquals("monitor", saved.getJSONArray("definitions").getJSONObject(0).getString("username"));
+        assertTrue(saved.getJSONArray("definitions").getJSONObject(0).getBoolean("hasPassword"));
+    }
+
     @Test
     public void testStaleVersionIsRefused() throws Exception {
         final String stale = currentVersion();
