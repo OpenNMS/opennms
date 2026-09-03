@@ -10,8 +10,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Protocols</name>
   <modules>
-    <module>cifs</module>
-    <module>nsclient</module>
     <module>radius</module>
     <module>xml</module>
     <module>selenium-monitor</module>

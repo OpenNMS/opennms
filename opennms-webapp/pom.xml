@@ -603,11 +603,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.request-tracker</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
