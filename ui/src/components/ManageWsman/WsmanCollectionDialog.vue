@@ -17,7 +17,7 @@
         <OnmsSelect v-else inputId="collection-source" v-model="source" :options="sourceOptions" optionLabel="label" optionValue="value" editable fluid data-test="source-select" />
       </FormField>
       <p v-if="sourceProblem" class="field-error">{{ sourceProblem }}</p>
-      <FormField label="RRD step (seconds)" for="collection-step" required :error="stepProblem || undefined">
+      <FormField label="Step (seconds)" for="collection-step" required hint="Also sizes the RRD files; other time-series storage ignores the RRAs." :error="stepProblem || undefined">
         <OnmsInputNumber inputId="collection-step" v-model="rrdStep" :min="1" :useGrouping="false" :invalid="!!stepProblem" fluid data-test="step-input" />
       </FormField>
       <FormField label="RRAs" required>

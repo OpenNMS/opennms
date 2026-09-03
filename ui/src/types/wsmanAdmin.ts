@@ -120,6 +120,9 @@ export interface WsmanSystemDefinitionInfo {
 
 export interface WsmanDataCollection {
   rrdRepository: string | null
+  // org.opennms.timeseries.strategy: rrd, newts, integration, ...; the RRD
+  // repository and RRAs only take effect under rrd
+  timeseriesStrategy?: string
   sources: string[]
   // content hash per source file; a save of that file must present it
   versions: Record<string, string>

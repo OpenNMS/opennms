@@ -21,6 +21,7 @@
 ///
 
 import WsmanDataCollectionPanel from '@/components/ManageWsman/WsmanDataCollectionPanel.vue'
+import { WsmanDataCollection } from '@/types/wsmanAdmin'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
@@ -40,8 +41,8 @@ const DATA = {
   systemDefinitions: [{ name: 'Dell iDRAC 8', source: 'dell-idrac.xml', rules: ['#productVendor matches \'^Dell.*\''], includedGroups: ['drac-system-board'] }]
 }
 
-const mountPanel = () => mount(WsmanDataCollectionPanel, {
-  props: { dataCollection: DATA },
+const mountPanel = (data: WsmanDataCollection = DATA) => mount(WsmanDataCollectionPanel, {
+  props: { dataCollection: data },
   global: { plugins: [PrimeVue], stubs: { OnmsCard: OnmsCardStub }}
 })
 
@@ -81,5 +82,20 @@ describe('WsmanDataCollectionPanel.vue', () => {
     expect(table).not.toContain('drac-power-supply')
     await wrapper.find('[data-test="group-filter"]').setValue('nothing-matches')
     expect(wrapper.find('[data-test="no-groups"]').exists()).toBe(true)
+  })
+
+  it('labels the storage after the time-series strategy and marks the RRD repository unused elsewhere', () => {
+    const rrd = mountPanel()
+    expect(rrd.find('[data-test="timeseries-strategy"]').text()).toBe('RRD files')
+    expect(rrd.find('[data-test="rrd-unused"]').exists()).toBe(false)
+    expect(rrd.find('[data-test="collections-table"]').text()).toContain('RRAs')
+
+    const newts = mountPanel({ ...DATA, timeseriesStrategy: 'newts' })
+    expect(newts.find('[data-test="timeseries-strategy"]').text()).toBe('Newts')
+    expect(newts.find('[data-test="rrd-unused"]').text()).toContain('not used with Newts')
+    expect(newts.find('[data-test="collections-table"]').text()).toContain('RRAs (RRD only)')
+
+    const plugin = mountPanel({ ...DATA, timeseriesStrategy: 'integration' })
+    expect(plugin.find('[data-test="timeseries-strategy"]').text()).toBe('time-series integration plugin')
   })
 })

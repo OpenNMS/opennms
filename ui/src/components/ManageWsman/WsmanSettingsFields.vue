@@ -18,6 +18,17 @@
     <FormField label="Use SSL" :for="`${idPrefix}-ssl`">
       <OnmsSelect :inputId="`${idPrefix}-ssl`" :modelValue="modelValue.ssl" :options="triOptions" optionLabel="label" optionValue="value" fluid data-test="ssl-select" @update:modelValue="set('ssl', $event as TriState)" />
     </FormField>
+    <div v-if="collapsibleAdvanced" class="advanced-toggle">
+      <OnmsButton
+        variant="text"
+        :label="advancedOpen ? 'Hide advanced settings' : 'Show advanced settings'"
+        :aria-expanded="advancedOpen"
+        data-test="toggle-advanced"
+        @click="advancedOpen = !advancedOpen"
+      />
+      <span v-if="!advancedOpen && advancedSummary" class="advanced-summary" data-test="advanced-summary">{{ advancedSummary }}</span>
+    </div>
+    <template v-if="!collapsibleAdvanced || advancedOpen">
     <FormField label="Strict SSL" :for="`${idPrefix}-strict-ssl`">
       <OnmsSelect :inputId="`${idPrefix}-strict-ssl`" :modelValue="modelValue.strictSsl" :options="triOptions" optionLabel="label" optionValue="value" fluid data-test="strict-ssl-select" @update:modelValue="set('strictSsl', $event as TriState)" />
     </FormField>
@@ -45,12 +56,13 @@
     <FormField label="Product version" :for="`${idPrefix}-version`">
       <OnmsInputText :id="`${idPrefix}-version`" :modelValue="modelValue.productVersion" fluid data-test="version-input" @update:modelValue="set('productVersion', $event ?? '')" />
     </FormField>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { OnmsCheckbox, OnmsInputNumber, OnmsInputText, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
+import { computed, ref, watch } from 'vue'
+import { OnmsButton, OnmsCheckbox, OnmsInputNumber, OnmsInputText, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { TRI_STATE_OPTIONS, TriState, WsmanSettingsForm } from './wsmanForm'
 
@@ -61,6 +73,8 @@ const props = defineProps<{
   hasPassword: boolean
   // a definition inherits an unset value from the defaults; the root falls back to built-ins
   unsetLabel: string
+  // fold everything past username, password and SSL behind a toggle
+  collapsibleAdvanced?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -68,6 +82,25 @@ const emit = defineEmits<{
 }>()
 
 const triOptions = computed(() => TRI_STATE_OPTIONS(props.unsetLabel))
+
+const ADVANCED_KEYS: (keyof WsmanSettingsForm)[] = ['strictSsl', 'gssAuth', 'port', 'path', 'timeout', 'retry', 'maxElements', 'productVendor', 'productVersion']
+const ADVANCED_LABELS: Record<string, string> = {
+  strictSsl: 'Strict SSL', gssAuth: 'GSS', port: 'Port', path: 'Path', timeout: 'Timeout', retry: 'Retries',
+  maxElements: 'Max elements', productVendor: 'Vendor', productVersion: 'Version'
+}
+const isSet = (value: unknown) => value !== null && value !== undefined && value !== '' && value !== 'unset'
+const advancedSet = computed(() => ADVANCED_KEYS.filter(key => isSet(props.modelValue[key])))
+const advancedSummary = computed(() =>
+  advancedSet.value.length ? `Set: ${advancedSet.value.map(key => ADVANCED_LABELS[key]).join(', ')}` : ''
+)
+const hasAdvancedError = computed(() => ADVANCED_KEYS.some(key => !!props.errors[key]))
+// open when something in there is already set, and never hide a field with an error
+const advancedOpen = ref(advancedSet.value.length > 0)
+watch(hasAdvancedError, (value) => {
+  if (value) {
+    advancedOpen.value = true
+  }
+})
 
 const set = <K extends keyof WsmanSettingsForm>(key: K, value: WsmanSettingsForm[K]) => {
   emit('update:modelValue', { ...props.modelValue, [key]: value })
@@ -79,6 +112,18 @@ const set = <K extends keyof WsmanSettingsForm>(key: K, value: WsmanSettingsForm
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.75rem 1.25rem;
+}
+
+.advanced-toggle {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.advanced-summary {
+  color: var(--p-text-muted-color);
+  font-size: 0.85rem;
 }
 
 .check-row {

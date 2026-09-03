@@ -67,8 +67,8 @@
 
       <section>
         <div class="section-head">
-          <h3 class="section-title">Settings</h3>
-          <span class="dialog-note">Anything left unset is inherited from the agent defaults.</span>
+          <h3 class="section-title">Connection settings</h3>
+          <span class="dialog-note">Anything left unset is inherited from the default connection settings.</span>
         </div>
         <WsmanSettingsFields
           v-model="form"
@@ -76,6 +76,7 @@
           :errors="errors"
           :hasPassword="existing?.hasPassword ?? false"
           unsetLabel="Inherit default"
+          collapsibleAdvanced
         />
       </section>
     </div>
