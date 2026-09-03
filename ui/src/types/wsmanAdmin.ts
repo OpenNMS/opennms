@@ -206,3 +206,17 @@ export interface WsmanStatus {
   definitions: WsmanDefinitionStatus[]
   defaults: WsmanStatusBucket
 }
+
+// Wire shape of GET /api/v2/wsman-config/readiness
+export interface WsmanReadiness {
+  ready: boolean
+  pollerService: boolean
+  pollerMonitor: boolean
+  pollerPackage: string | null
+  collectdService: boolean
+  collectdCollector: boolean
+  servers: number
+  polledServers: number
+  unpolledServers: number
+  requisitionsWithUnpolled: string[]
+}

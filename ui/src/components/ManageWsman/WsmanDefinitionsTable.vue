@@ -50,7 +50,7 @@
             </div>
           </template>
         </OnmsColumn>
-        <OnmsColumn header="Actions">
+        <OnmsColumn header="Actions" style="text-align: right">
           <template #body="{ data }">
             <div class="action-container">
               <OnmsButton variant="text" label="Up" :disabled="data.index === 0" :title="'Move up (matched earlier)'" data-test="move-up" @click="emit('move', data.index, -1)" />
@@ -154,9 +154,11 @@ const overrideSummary = (d: WsmanDefinition): string => {
   font-weight: 600;
 }
 
+// keep the trash cans in one vertical line across every row
 .action-container {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.25rem;
 }
 

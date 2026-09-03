@@ -7,6 +7,9 @@
       it held. Adding new collections, system definitions or groups is not offered here until these files
       move into the database.
     </p>
+    <div class="toolbar">
+      <OnmsButton variant="outlined" severity="danger" label="Reset to defaults" data-test="reset-data-collection" @click="emit('reset')" />
+    </div>
     <dl class="summary">
       <dt>RRD repository</dt>
       <dd data-test="rrd-repository">{{ dataCollection.rrdRepository || NOT_SET }}</dd>
@@ -44,7 +47,7 @@
               <span v-else>{{ data.includedSystemDefinitions.join(', ') || NOT_SET }}</span>
             </template>
           </OnmsColumn>
-          <OnmsColumn header="Actions">
+          <OnmsColumn header="Actions" style="text-align: right">
             <template #body="{ data }">
               <div class="action-container">
                 <OnmsIconButton :icon="Edit" :title="`Edit ${data.name}`" :aria-label="`Edit ${data.name}`" data-test="edit-collection" @click="emit('edit', 'collection', data)" />
@@ -77,7 +80,7 @@
           <OnmsColumn header="Groups">
             <template #body="{ data }">{{ data.includedGroups.join(', ') }}</template>
           </OnmsColumn>
-          <OnmsColumn header="Actions">
+          <OnmsColumn header="Actions" style="text-align: right">
             <template #body="{ data }">
               <div class="action-container">
                 <OnmsIconButton :icon="Edit" :title="`Edit ${data.name}`" :aria-label="`Edit ${data.name}`" data-test="edit-system-definition" @click="emit('edit', 'systemDefinition', data)" />
@@ -118,7 +121,7 @@
           <OnmsColumn header="Attributes">
             <template #body="{ data }">{{ data.attributes.length }}</template>
           </OnmsColumn>
-          <OnmsColumn header="Actions">
+          <OnmsColumn header="Actions" style="text-align: right">
             <template #body="{ data }">
               <div class="action-container">
                 <OnmsIconButton :icon="Edit" :title="`Edit ${data.name}`" :aria-label="`Edit ${data.name}`" data-test="edit-group" @click="emit('edit', 'group', data)" />
@@ -152,7 +155,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { OnmsCard, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import { WsmanDataCollection, WsmanGroupInfo } from '@/types/wsmanAdmin'
@@ -167,6 +170,7 @@ const emit = defineEmits<{
   (e: 'add', kind: DataCollectionKind): void
   (e: 'edit', kind: DataCollectionKind, item: EditableObject): void
   (e: 'delete', kind: DataCollectionKind, item: EditableObject): void
+  (e: 'reset'): void
 }>()
 
 const groupFilter = ref('')
@@ -237,9 +241,16 @@ const filteredGroups = computed(() => {
   flex-wrap: wrap;
 }
 
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// keep the trash cans in one vertical line across every row
 .action-container {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.25rem;
 }
 

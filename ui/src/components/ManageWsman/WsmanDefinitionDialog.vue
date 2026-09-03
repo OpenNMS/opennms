@@ -12,63 +12,64 @@
       <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
 
       <section>
-        <h3 class="section-title">Applies to</h3>
-        <p class="dialog-note">
-          Agents whose address falls in a range, is listed, or matches an IPLIKE pattern use this
-          definition. Definitions are checked in order and the first match wins.
-        </p>
+        <div class="section-head">
+          <h3 class="section-title">Applies to</h3>
+          <span class="dialog-note">By IP range, address, or IPLIKE pattern; the first matching definition wins.</span>
+        </div>
         <p v-if="!hasCriteria" class="field-error" data-test="criteria-error">Add at least one range, address, or pattern.</p>
 
-        <div class="criteria-block">
-          <div class="criteria-label">IP ranges</div>
-          <div v-for="(r, i) in ranges" :key="`range-${i}`" class="range-row" :data-test="`range-row-${i}`">
-            <OnmsInputText :modelValue="r.begin" placeholder="Begin" :invalid="!!rangeErrors[i]" data-test="range-begin" @update:modelValue="setRange(i, 'begin', $event ?? '')" />
-            <span>–</span>
-            <OnmsInputText :modelValue="r.end" placeholder="End" :invalid="!!rangeErrors[i]" data-test="range-end" @update:modelValue="setRange(i, 'end', $event ?? '')" />
-            <OnmsIconButton :icon="Delete" severity="danger" :title="'Remove range'" :aria-label="'Remove range'" data-test="remove-range" @click="ranges.splice(i, 1)" />
-            <small v-if="rangeErrors[i]" class="field-error">{{ rangeErrors[i] }}</small>
+        <div class="criteria-grid">
+          <div class="criteria-block">
+            <div class="criteria-label">IP ranges</div>
+            <div v-for="(r, i) in ranges" :key="`range-${i}`" class="range-row" :data-test="`range-row-${i}`">
+              <OnmsInputText :modelValue="r.begin" placeholder="Begin" :invalid="!!rangeErrors[i]" fluid data-test="range-begin" @update:modelValue="setRange(i, 'begin', $event ?? '')" />
+              <span>–</span>
+              <OnmsInputText :modelValue="r.end" placeholder="End" :invalid="!!rangeErrors[i]" fluid data-test="range-end" @update:modelValue="setRange(i, 'end', $event ?? '')" />
+              <OnmsIconButton :icon="Delete" severity="danger" :title="'Remove range'" :aria-label="'Remove range'" data-test="remove-range" @click="ranges.splice(i, 1)" />
+              <small v-if="rangeErrors[i]" class="field-error range-error">{{ rangeErrors[i] }}</small>
+            </div>
+            <OnmsButton variant="outlined" label="Add range" data-test="add-range" @click="ranges.push({ begin: '', end: '' })" />
           </div>
-          <OnmsButton variant="outlined" label="Add range" data-test="add-range" @click="ranges.push({ begin: '', end: '' })" />
-        </div>
 
-        <div class="criteria-block">
-          <div class="criteria-label">Specific addresses</div>
-          <div class="chips" data-test="specific-chips">
-            <OnmsChip v-for="(ip, i) in specifics" :key="`s-${ip}`" :label="ip" removable @remove="specifics.splice(i, 1)" />
+          <div class="criteria-block">
+            <div class="criteria-label">Specific addresses</div>
+            <div class="chips" data-test="specific-chips">
+              <OnmsChip v-for="(ip, i) in specifics" :key="`s-${ip}`" :label="ip" removable @remove="specifics.splice(i, 1)" />
+            </div>
+            <div class="add-row">
+              <OnmsInputText v-model="newSpecific" placeholder="10.0.0.5" :invalid="!!newSpecific && !isIpAddress(newSpecific)" fluid data-test="specific-input" @keydown.enter.prevent="addSpecific" />
+              <OnmsButton variant="outlined" label="Add" :disabled="!newSpecific.trim() || !isIpAddress(newSpecific)" data-test="add-specific" @click="addSpecific" />
+            </div>
           </div>
-          <div class="add-row">
-            <OnmsInputText v-model="newSpecific" placeholder="10.0.0.5" :invalid="!!newSpecific && !isIpAddress(newSpecific)" data-test="specific-input" @keydown.enter.prevent="addSpecific" />
-            <OnmsButton variant="outlined" label="Add" :disabled="!newSpecific.trim() || !isIpAddress(newSpecific)" data-test="add-specific" @click="addSpecific" />
-          </div>
-        </div>
 
-        <div class="criteria-block">
-          <div class="criteria-label">IPLIKE patterns</div>
-          <div class="chips" data-test="ipmatch-chips">
-            <OnmsChip v-for="(m, i) in ipMatches" :key="`m-${m}`" :label="m" removable @remove="ipMatches.splice(i, 1)" />
-          </div>
-          <div class="add-row">
-            <OnmsInputText v-model="newIpMatch" placeholder="10.0.*.* or 10.0.1-5.* (IPv4 only)" :invalid="!!newIpMatch && !isIplikePattern(newIpMatch)" data-test="ipmatch-input" @keydown.enter.prevent="addIpMatch" />
-            <OnmsButton variant="outlined" label="Add" :disabled="!newIpMatch.trim() || !isIplikePattern(newIpMatch)" data-test="add-ipmatch" @click="addIpMatch" />
+          <div class="criteria-block">
+            <div class="criteria-label">IPLIKE patterns</div>
+            <div class="chips" data-test="ipmatch-chips">
+              <OnmsChip v-for="(m, i) in ipMatches" :key="`m-${m}`" :label="m" removable @remove="ipMatches.splice(i, 1)" />
+            </div>
+            <div class="add-row">
+              <OnmsInputText v-model="newIpMatch" placeholder="10.0.*.* (IPv4)" :invalid="!!newIpMatch && !isIplikePattern(newIpMatch)" fluid data-test="ipmatch-input" @keydown.enter.prevent="addIpMatch" />
+              <OnmsButton variant="outlined" label="Add" :disabled="!newIpMatch.trim() || !isIplikePattern(newIpMatch)" data-test="add-ipmatch" @click="addIpMatch" />
+            </div>
           </div>
         </div>
       </section>
 
       <section>
-        <h3 class="section-title">Requisition</h3>
-        <p class="dialog-note">
-          Link the requisition these servers are provisioned into. Sync then adds each specific address
-          the requisition lacks as a node with the WS-Man service, and each range as a scheduled discovery
-          range for it; nothing is ever removed.
-        </p>
-        <FormField label="Requisition" for="wsman-definition-requisition" :error="requisitionProblem || undefined" hint="Pick an existing requisition or type a new name.">
-          <OnmsSelect inputId="wsman-definition-requisition" v-model="requisition" :options="requisitionOptions" optionLabel="label" optionValue="value" editable showClear :invalid="!!requisitionProblem" fluid data-test="requisition-select" />
+        <div class="section-head">
+          <h3 class="section-title">Requisition</h3>
+          <span class="dialog-note">Optional. Sync provisions the addresses and ranges above into it; nothing is ever removed.</span>
+        </div>
+        <FormField label="Requisition" for="wsman-definition-requisition" :error="requisitionProblem || undefined">
+          <OnmsSelect inputId="wsman-definition-requisition" v-model="requisition" :options="requisitionOptions" optionLabel="label" optionValue="value" editable showClear placeholder="Pick an existing requisition or type a new name" :invalid="!!requisitionProblem" fluid data-test="requisition-select" />
         </FormField>
       </section>
 
       <section>
-        <h3 class="section-title">Settings</h3>
-        <p class="dialog-note">Anything left unset is inherited from the agent defaults.</p>
+        <div class="section-head">
+          <h3 class="section-title">Settings</h3>
+          <span class="dialog-note">Anything left unset is inherited from the agent defaults.</span>
+        </div>
         <WsmanSettingsFields
           v-model="form"
           idPrefix="wsman-definition"
@@ -225,51 +226,70 @@ const save = async () => {
 .form-column {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding-top: 0.5rem;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
 }
 
 .section-title {
-  margin: 0 0 0.25rem 0;
+  margin: 0;
   font-size: 1rem;
   font-weight: 600;
 }
 
 .dialog-note {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.9rem;
+  margin: 0;
+  font-size: 0.85rem;
   color: var(--p-text-muted-color);
 }
 
-.criteria-block {
-  margin-bottom: 0.75rem;
+.criteria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem 1.25rem;
+  align-items: start;
 }
 
 .criteria-label {
   font-weight: 600;
   font-size: 0.9rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
 }
 
 .range-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.4rem;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+
+  .range-error {
+    grid-column: 1 / -1;
+  }
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 0.4rem;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .add-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .field-error {

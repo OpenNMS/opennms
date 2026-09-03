@@ -69,6 +69,8 @@ describe('WsmanDataCollectionPanel.vue', () => {
     expect(wrapper.find('[data-test="add-group"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="add-collection"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="add-system-definition"]').exists()).toBe(false)
+    await wrapper.find('[data-test="reset-data-collection"]').trigger('click')
+    expect(wrapper.emitted('reset')).toHaveLength(1)
   })
 
   it('filters groups by name, source or resource type', async () => {

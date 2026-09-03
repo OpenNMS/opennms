@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
 import { rest, v2 } from './axiosInstances'
 
 // Manage WS-Man (NMS-20286): wsman-config.xml through /api/v2/wsman-config.
@@ -161,4 +161,47 @@ const getRequisitionNames = async (): Promise<string[]> => {
   }
 }
 
-export { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanStatus, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile }
+const asReadiness = (data: any): WsmanReadiness | null =>
+  data && typeof data.ready === 'boolean' && Array.isArray(data.requisitionsWithUnpolled) ? (data as WsmanReadiness) : null
+
+// null on failure: the banner then stays silent rather than claiming readiness
+const getWsmanReadiness = async (): Promise<WsmanReadiness | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/readiness`, { headers: { Accept: 'application/json' }})
+    return asReadiness(resp.data)
+  } catch (_err) {
+    return null
+  }
+}
+
+// enable-polling or rescan; the new readiness on success, else the reason
+const runWsmanReadinessAction = async (action: 'enable-polling' | 'rescan'): Promise<WsmanReadiness | string> => {
+  try {
+    startSpinner()
+    const resp = await v2.post(`${endpoint}/readiness/${action}`, null, { headers: { Accept: 'application/json' }})
+    return asReadiness(resp.data) ?? 'The server returned an unexpected answer.'
+  } catch (err: any) {
+    return errorMessage(err, action === 'enable-polling' ? 'Failed to enable WS-Man polling.' : 'Failed to rescan the requisitions.')
+  } finally {
+    stopSpinner()
+  }
+}
+
+// restores the shipped files; the new data collection view on success, else the reason
+const resetWsmanDataCollection = async (): Promise<WsmanDataCollection | string> => {
+  try {
+    startSpinner()
+    const resp = await v2.post(`${endpoint}/data-collection/reset`, null, { headers: { Accept: 'application/json' }})
+    const data = resp.data
+    if (!data || !Array.isArray(data.sources)) {
+      return 'The server returned an unexpected answer.'
+    }
+    return { rrdRepository: data.rrdRepository ?? null, sources: data.sources, versions: data.versions ?? {}, collections: asList(data.collections), groups: asList(data.groups), systemDefinitions: asList(data.systemDefinitions) }
+  } catch (err: any) {
+    return errorMessage(err, 'Failed to reset the WS-Man data collection files.')
+  } finally {
+    stopSpinner()
+  }
+}
+
+export { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile }

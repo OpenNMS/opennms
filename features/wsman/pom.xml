@@ -11,6 +11,22 @@
   <name>OpenNMS :: Features :: WS-Man Integration</name>
   <packaging>bundle</packaging>
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <!-- the shipped data collection files, so the Manage WS-Man page can reset
+           to defaults on installs without share/etc-pristine -->
+      <resource>
+        <directory>${project.basedir}/../../opennms-base-assembly/src/main/filtered/etc</directory>
+        <targetPath>wsman-defaults</targetPath>
+        <filtering>false</filtering>
+        <includes>
+          <include>wsman-datacollection-config.xml</include>
+          <include>wsman-datacollection.d/*.xml</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>

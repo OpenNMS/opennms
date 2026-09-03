@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -32,13 +32,14 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
   const dataCollection = ref<WsmanDataCollection | null>(null)
   const dataCollectionError = ref(false)
   const status = ref<WsmanStatus | null>(null)
+  const readiness = ref<WsmanReadiness | null>(null)
 
   // the status is keyed by definition position, so it is refreshed together
   // with the config it describes
   const getConfig = async () => {
     isLoading.value = true
     try {
-      const [result, currentStatus] = await Promise.all([API.getWsmanConfig(), API.getWsmanStatus()])
+      const [result, currentStatus, currentReadiness] = await Promise.all([API.getWsmanConfig(), API.getWsmanStatus(), API.getWsmanReadiness()])
       if (result !== null) {
         config.value = result
         loadError.value = false
@@ -46,6 +47,7 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
         loadError.value = true
       }
       status.value = currentStatus
+      readiness.value = currentReadiness
     } finally {
       isLoading.value = false
     }
@@ -87,5 +89,27 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     return result
   }
 
-  return { config, loadError, isLoading, status, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition }
+  // enable polling or rescan; null on success (readiness and status re-read), else the reason
+  const runReadinessAction = async (action: 'enable-polling' | 'rescan'): Promise<string | null> => {
+    const result = await API.runWsmanReadinessAction(action)
+    if (typeof result === 'string') {
+      return result
+    }
+    readiness.value = result
+    status.value = await API.getWsmanStatus()
+    return null
+  }
+
+  // null on success (the view is replaced), else the reason
+  const resetDataCollection = async (): Promise<string | null> => {
+    const result = await API.resetWsmanDataCollection()
+    if (typeof result === 'string') {
+      return result
+    }
+    dataCollection.value = result
+    dataCollectionError.value = false
+    return null
+  }
+
+  return { config, loadError, isLoading, status, readiness, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition, runReadinessAction, resetDataCollection }
 })

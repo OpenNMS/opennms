@@ -30,6 +30,9 @@ vi.mock('@/services', () => ({
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
     getWsmanStatus: vi.fn(),
+    getWsmanReadiness: vi.fn(),
+    runWsmanReadinessAction: vi.fn(),
+    resetWsmanDataCollection: vi.fn(),
     syncWsmanDefinition: vi.fn(),
     updateWsmanConfig: vi.fn(),
     updateWsmanDataCollectionFile: vi.fn()
@@ -110,6 +113,29 @@ describe('wsmanAdminStore', () => {
     vi.mocked(API.syncWsmanDefinition).mockResolvedValueOnce('nope')
     expect(await store.syncDefinition(0)).toBe('nope')
     expect(API.getWsmanStatus).toHaveBeenCalledTimes(1)
+  })
+
+  it('loads readiness with the config, applies a readiness action, and resets the data collection', async () => {
+    const store = useWsmanAdminStore()
+    const readiness = { ready: false, pollerService: false, pollerMonitor: false, pollerPackage: null, collectdService: true, collectdCollector: true, servers: 0, polledServers: 0, unpolledServers: 0, requisitionsWithUnpolled: [] }
+    vi.mocked(API.getWsmanConfig).mockResolvedValueOnce(CONFIG as any)
+    vi.mocked(API.getWsmanStatus).mockResolvedValue(null)
+    vi.mocked(API.getWsmanReadiness).mockResolvedValueOnce(readiness)
+    await store.getConfig()
+    expect(store.readiness).toEqual(readiness)
+
+    vi.mocked(API.runWsmanReadinessAction).mockResolvedValueOnce({ ...readiness, ready: true, pollerService: true, pollerMonitor: true })
+    expect(await store.runReadinessAction('enable-polling')).toBeNull()
+    expect(store.readiness?.ready).toBe(true)
+    vi.mocked(API.runWsmanReadinessAction).mockResolvedValueOnce('nope')
+    expect(await store.runReadinessAction('rescan')).toBe('nope')
+
+    const dc = { rrdRepository: null, sources: ['wsman-datacollection-config.xml'], versions: {}, collections: [], groups: [], systemDefinitions: [] }
+    vi.mocked(API.resetWsmanDataCollection).mockResolvedValueOnce(dc)
+    expect(await store.resetDataCollection()).toBeNull()
+    expect(store.dataCollection).toEqual(dc)
+    vi.mocked(API.resetWsmanDataCollection).mockResolvedValueOnce('failed')
+    expect(await store.resetDataCollection()).toBe('failed')
   })
 
   it('flags a load error and keeps the previous configuration', async () => {
