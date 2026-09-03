@@ -338,15 +338,17 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(0, defaults.getInt("responding"));
         assertEquals(1, defaults.getInt("down"));
 
-        // an unmanaged service is not a server the poller checks
+        // a service provisioning marked as not polled is counted apart, not as a polled server
         m_sessionUtils.withTransaction(() -> {
             final OnmsMonitoredService up = m_databasePopulator.getMonitoredServiceDao().get(upId.get());
-            up.setStatus("F");
+            up.setStatus("N");
             m_databasePopulator.getMonitoredServiceDao().saveOrUpdate(up);
             m_databasePopulator.getMonitoredServiceDao().flush();
             return null;
         });
-        assertEquals(0, new JSONObject(getJson("/wsman-config/status", 200)).getJSONArray("definitions").getJSONObject(0).getInt("servers"));
+        final JSONObject unpolled = new JSONObject(getJson("/wsman-config/status", 200)).getJSONArray("definitions").getJSONObject(0);
+        assertEquals(0, unpolled.getInt("servers"));
+        assertEquals(1, unpolled.getInt("unpolled"));
     }
 
     @Test

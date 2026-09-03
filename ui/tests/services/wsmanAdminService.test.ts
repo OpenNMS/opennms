@@ -78,7 +78,7 @@ describe('wsmanAdminService', () => {
   })
 
   it('reads the status and returns null rather than zeros on failure', async () => {
-    const status = { serviceName: 'WS-Man', servers: 1, definitions: [{ index: 0, servers: 1, responding: 1, down: 0, lastResponse: null }], defaults: { servers: 0, responding: 0, down: 0, lastResponse: null }}
+    const status = { serviceName: 'WS-Man', servers: 1, definitions: [{ index: 0, servers: 1, responding: 1, down: 0, unpolled: 0, lastResponse: null }], defaults: { servers: 0, responding: 0, down: 0, unpolled: 0, lastResponse: null }}
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: status })
     expect(await getWsmanStatus()).toEqual(status)
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config/status')

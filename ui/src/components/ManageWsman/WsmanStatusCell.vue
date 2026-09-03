@@ -2,6 +2,7 @@
   <span v-if="!bucket" class="unknown" data-test="status-unknown">—</span>
   <span v-else class="status" :title="title" data-test="status-cell">
     <OnmsTag :value="`${bucket.responding} / ${bucket.servers}`" :severity="severity" />
+    <small v-if="bucket.unpolled" class="unpolled" data-test="status-unpolled">{{ bucket.unpolled }} not polled</small>
   </span>
 </template>
 
@@ -31,12 +32,26 @@ const title = computed(() => {
     return ''
   }
   const last = props.bucket.lastResponse ? new Date(props.bucket.lastResponse).toLocaleString() : 'never'
-  return `${props.bucket.servers} server(s) with the WS-Man service; ${props.bucket.responding} responding, ${props.bucket.down} down; last response ${last}`
+  const unpolled = props.bucket.unpolled
+    ? `; ${props.bucket.unpolled} provisioned but not polled: add the WS-Man service to a poller package in poller-configuration.xml`
+    : ''
+  return `${props.bucket.servers} server(s) polled for WS-Man; ${props.bucket.responding} responding, ${props.bucket.down} down; last response ${last}${unpolled}`
 })
 </script>
 
 <style lang="scss" scoped>
 .unknown {
   color: var(--p-text-muted-color);
+}
+
+.status {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.unpolled {
+  color: var(--p-orange-500, #ef6c00);
 }
 </style>

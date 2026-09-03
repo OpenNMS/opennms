@@ -36,11 +36,15 @@ public class WsmanStatusDto {
         private int servers;
         private int responding;
         private int down;
+        // services provisioning marked as not polled: no poller package covers WS-Man for them
+        private int unpolled;
         private Date lastResponse;
 
         public int getServers() { return servers; }
         public int getResponding() { return responding; }
         public int getDown() { return down; }
+        public int getUnpolled() { return unpolled; }
+        public void countUnpolled() { unpolled++; }
         public Date getLastResponse() { return lastResponse; }
 
         public void count(final boolean isDown, final Date lastGood) {

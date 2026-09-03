@@ -29,10 +29,17 @@ const mountCell = (bucket: any) => mount(WsmanStatusCell, { props: { bucket }, g
 
 describe('WsmanStatusCell.vue', () => {
   it('shows responding over servers and colors by outages', () => {
-    expect(mountCell({ servers: 3, responding: 3, down: 0, lastResponse: null }).text()).toBe('3 / 3')
-    const partly = mountCell({ servers: 3, responding: 1, down: 2, lastResponse: 1700000000000 })
+    expect(mountCell({ servers: 3, responding: 3, down: 0, unpolled: 0, lastResponse: null }).text()).toBe('3 / 3')
+    const partly = mountCell({ servers: 3, responding: 1, down: 2, unpolled: 0, lastResponse: 1700000000000 })
     expect(partly.text()).toBe('1 / 3')
     expect(partly.find('[data-test="status-cell"]').attributes('title')).toContain('2 down')
+    expect(partly.find('[data-test="status-unpolled"]').exists()).toBe(false)
+  })
+
+  it('calls out servers provisioned but never polled', () => {
+    const wrapper = mountCell({ servers: 0, responding: 0, down: 0, unpolled: 4, lastResponse: null })
+    expect(wrapper.find('[data-test="status-unpolled"]').text()).toBe('4 not polled')
+    expect(wrapper.find('[data-test="status-cell"]').attributes('title')).toContain('poller-configuration.xml')
   })
 
   it('renders a dash, not zeros, when the status could not be read', () => {

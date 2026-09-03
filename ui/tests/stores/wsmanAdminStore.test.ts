@@ -46,7 +46,7 @@ describe('wsmanAdminStore', () => {
 
   it('stores the configuration and the poller status together on success', async () => {
     vi.mocked(API.getWsmanConfig).mockResolvedValue(CONFIG as any)
-    const status = { serviceName: 'WS-Man', servers: 0, definitions: [], defaults: { servers: 0, responding: 0, down: 0, lastResponse: null }}
+    const status = { serviceName: 'WS-Man', servers: 0, definitions: [], defaults: { servers: 0, responding: 0, down: 0, unpolled: 0, lastResponse: null }}
     vi.mocked(API.getWsmanStatus).mockResolvedValue(status)
     const store = useWsmanAdminStore()
     await store.getConfig()
@@ -102,7 +102,7 @@ describe('wsmanAdminStore', () => {
   it('re-reads the status after a successful sync and passes a failure through', async () => {
     const store = useWsmanAdminStore()
     const result = { requisition: 'windows', addedNodes: [], existingNodes: 1, addedRanges: [], existingRanges: 0, skippedPatterns: [], importRequested: false, discoveryReloadRequested: false }
-    const status = { serviceName: 'WS-Man', servers: 1, definitions: [], defaults: { servers: 0, responding: 0, down: 0, lastResponse: null }}
+    const status = { serviceName: 'WS-Man', servers: 1, definitions: [], defaults: { servers: 0, responding: 0, down: 0, unpolled: 0, lastResponse: null }}
     vi.mocked(API.syncWsmanDefinition).mockResolvedValueOnce(result)
     vi.mocked(API.getWsmanStatus).mockResolvedValueOnce(status)
     expect(await store.syncDefinition(0)).toEqual(result)
