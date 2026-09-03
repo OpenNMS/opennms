@@ -180,6 +180,8 @@ public class WsmanConfigRestService {
     private static final String WSMAN_SERVICE = "WS-Man";
     private static final String WSMAN_MONITOR_CLASS = "org.opennms.netmgt.poller.monitors.WsManMonitor";
     private static final String WSMAN_POLL_RESOURCE_URI = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_OperatingSystem";
+    // WsManMonitor refuses to poll without a rule; any answer with a Caption counts as up
+    private static final String WSMAN_POLL_RULE = "#Caption matches '.*'";
     // the shipped data collection files, bundled by the wsman feature for installs without share/etc-pristine
     private static final String DEFAULTS_RESOURCE_PREFIX = "wsman-defaults/";
     private static final String[] DEFAULT_DROP_INS = { "dell-idrac.xml", "microsoft-windows.xml" };
@@ -432,6 +434,7 @@ public class WsmanConfigRestService {
             service.addParameter("retry", "1");
             service.addParameter("timeout", "5000");
             service.addParameter("resource-uri", WSMAN_POLL_RESOURCE_URI);
+            service.addParameter("rule", WSMAN_POLL_RULE);
             target.addService(service);
             changed = true;
         }

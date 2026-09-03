@@ -24,6 +24,7 @@
         <includes>
           <include>wsman-datacollection-config.xml</include>
           <include>wsman-datacollection.d/*.xml</include>
+          <include>resource-types.d/wsman-*.xml</include>
         </includes>
       </resource>
     </resources>
