@@ -22,6 +22,32 @@
         <attrib name="PercentInterruptTime" alias="wrmOSCpuPctIntrTime" type="Gauge"/>
         <attrib name="PercentUserTime" alias="wrmOSCpuPctUserTime" type="Gauge"/>
     </group>
+    <!-- feeds the shipped Windows Memory graphs (wrmOSMem*) -->
+    <group name="winrm-memory"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfOS_Memory"
+           resource-type="node">
+        <attrib name="AvailableBytes" alias="wrmOSMemAvailBytes" type="Gauge"/>
+        <attrib name="CacheBytes" alias="wrmOSMemCacheBytes" type="Gauge"/>
+        <attrib name="CacheFaultsPersec" alias="wrmOSMemCacheFaults" type="Gauge"/>
+        <attrib name="PageFaultsPersec" alias="wrmOSMemPgFaultsSec" type="Gauge"/>
+        <attrib name="CommitLimit" alias="wrmOSMemCommitLimit" type="Gauge"/>
+        <attrib name="CommittedBytes" alias="wrmOSMemCommitted" type="Gauge"/>
+        <attrib name="PoolNonpagedAllocs" alias="wrmOSMemNPPAllocs" type="Gauge"/>
+        <attrib name="PoolPagedAllocs" alias="wrmOSMemPPAllocs" type="Gauge"/>
+    </group>
+
+    <!-- feeds the shipped Windows Processes and Threads / IPC graphs (wrmOSObj*) -->
+    <group name="winrm-objects"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfOS_Objects"
+           resource-type="node">
+        <attrib name="Processes" alias="wrmOSObjProcesses" type="Gauge"/>
+        <attrib name="Threads" alias="wrmOSObjThreads" type="Gauge"/>
+        <attrib name="Events" alias="wrmOSObjEvents" type="Gauge"/>
+        <attrib name="Mutexes" alias="wrmOSObjMutexes" type="Gauge"/>
+        <attrib name="Sections" alias="wrmOSObjSections" type="Gauge"/>
+        <attrib name="Semaphores" alias="wrmOSObjSemaphores" type="Gauge"/>
+    </group>
+
     <group name="winrm-physical-disk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk" wmiNamespace="root/cimv2"
            resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
            resource-type="wrmPhysicalDisk">
@@ -98,6 +124,8 @@
         <rule>#productVendor matches '^Microsoft.*' and #productVersion matches '^OS.*'</rule>
         <include-group>winrm-os</include-group>
         <include-group>winrm-cpu</include-group>
+        <include-group>winrm-memory</include-group>
+        <include-group>winrm-objects</include-group>
         <include-group>winrm-logical-disk</include-group>
         <include-group>winrm-physical-disk</include-group>
         <include-group>winrm-network-interface</include-group>
