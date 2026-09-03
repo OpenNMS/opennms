@@ -2,8 +2,10 @@
   <div class="data-collection" data-test="wsman-data-collection">
     <p class="intro">
       Merged from <code>wsman-datacollection-config.xml</code> and every file in
-      <code>wsman-datacollection.d/</code>, in the order the collector reads them. Each object is saved back
-      to the file it lives in; rewriting a file drops any XML comments it held.
+      <code>wsman-datacollection.d/</code>, in the order the collector reads them. Existing objects can be
+      edited or removed and are saved back to the file they live in; rewriting a file drops any XML comments
+      it held. Adding new collections, system definitions or groups is not offered here until these files
+      move into the database.
     </p>
     <dl class="summary">
       <dt>RRD repository</dt>
@@ -16,7 +18,13 @@
       <template #title>
         <div class="card-header">
           <span class="card-title">Collections ({{ dataCollection.collections.length }})</span>
-          <OnmsButton label="Add Collection" data-test="add-collection" @click="emit('add', 'collection')" />
+          <!--
+            Creating objects from this page is held back until the data collection
+            files move into the database in a future effort: today every new object
+            would land in an XML file on disk with no way to manage the files
+            themselves. Editing and deleting what exists stays available.
+          -->
+          <!-- <OnmsButton label="Add Collection" data-test="add-collection" @click="emit('add', 'collection')" /> -->
         </div>
       </template>
       <template #content>
@@ -52,7 +60,8 @@
       <template #title>
         <div class="card-header">
           <span class="card-title">System Definitions ({{ dataCollection.systemDefinitions.length }})</span>
-          <OnmsButton label="Add System Definition" data-test="add-system-definition" @click="emit('add', 'systemDefinition')" />
+          <!-- held back with the other Add buttons; see the note on the Collections card -->
+          <!-- <OnmsButton label="Add System Definition" data-test="add-system-definition" @click="emit('add', 'systemDefinition')" /> -->
         </div>
       </template>
       <template #content>
@@ -86,7 +95,8 @@
           <span class="card-title">Groups ({{ filteredGroups.length }}<template v-if="groupFilter"> of {{ dataCollection.groups.length }}</template>)</span>
           <div class="card-tools">
             <OnmsInputText v-model="groupFilter" placeholder="Filter by name, source or resource type" data-test="group-filter" />
-            <OnmsButton label="Add Group" data-test="add-group" @click="emit('add', 'group')" />
+            <!-- held back with the other Add buttons; see the note on the Collections card -->
+            <!-- <OnmsButton label="Add Group" data-test="add-group" @click="emit('add', 'group')" /> -->
           </div>
         </div>
       </template>
@@ -142,7 +152,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { OnmsButton, OnmsCard, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
+import { OnmsCard, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import { WsmanDataCollection, WsmanGroupInfo } from '@/types/wsmanAdmin'

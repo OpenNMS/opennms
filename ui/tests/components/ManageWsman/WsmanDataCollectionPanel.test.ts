@@ -59,16 +59,16 @@ describe('WsmanDataCollectionPanel.vue', () => {
     expect(wrapper.find('[data-test="groups-table"]').text()).toContain('drac-power-supply')
   })
 
-  it('emits add, edit and delete with the kind and the object', async () => {
+  it('emits edit and delete with the kind and the object, and offers no Add buttons', async () => {
     const wrapper = mountPanel()
-    await wrapper.find('[data-test="add-group"]').trigger('click')
     await wrapper.findAll('[data-test="edit-group"]')[0].trigger('click')
     await wrapper.find('[data-test="delete-system-definition"]').trigger('click')
-    await wrapper.find('[data-test="add-collection"]').trigger('click')
-    expect(wrapper.emitted('add')?.[0]).toEqual(['group'])
-    expect(wrapper.emitted('add')?.[1]).toEqual(['collection'])
     expect(wrapper.emitted('edit')?.[0]).toEqual(['group', DATA.groups[0]])
     expect(wrapper.emitted('delete')?.[0]).toEqual(['systemDefinition', DATA.systemDefinitions[0]])
+    // creation is held back until the files move into the database
+    expect(wrapper.find('[data-test="add-group"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="add-collection"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="add-system-definition"]').exists()).toBe(false)
   })
 
   it('filters groups by name, source or resource type', async () => {
