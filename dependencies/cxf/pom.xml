@@ -108,6 +108,16 @@
           <groupId>xml-apis</groupId>
           <artifactId>xml-apis</artifactId>
         </exclusion>
+        <!-- Woodstox 3.x/4.1 duplicate the com.ctc.wstx classes shipped by woodstox-core;
+             CXF's secure-parser fallback breaks when the old copies load first -->
+        <exclusion>
+          <groupId>org.codehaus.woodstox</groupId>
+          <artifactId>wstx-asl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.woodstox</groupId>
+          <artifactId>woodstox-core-asl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
