@@ -38,6 +38,7 @@ import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
 import com.google.common.base.MoreObjects;
@@ -45,12 +46,17 @@ import com.google.common.base.MoreObjects;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdgeResponseDTO {
 
+    @Schema(description = "Edge id. Reassigned when the owning service is replaced with a PUT.",
+            example = "23667")
     @XmlElement(name="id")
     private long id;
 
+    @Schema(description = "Severity this edge currently contributes, after its map function.",
+            example = "INDETERMINATE")
     @XmlElement(name="operational-status")
     private Status operationalStatus;
 
+    @Schema(description = "Map function applied to this edge's severity.")
     @XmlElement(name="map-function")
     private MapFunctionDTO mapFunction;
 
@@ -60,6 +66,8 @@ public abstract class AbstractEdgeResponseDTO {
     @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
     private ResourceLocation location;
 
+    @Schema(description = "Reduction keys this edge listens on. Derived for IP-service and "
+            + "application edges; the supplied key for a reduction-key edge; empty for a child edge.")
     @XmlElement(name="reduction-key")
     @XmlElementWrapper(name="reduction-keys")
     private Set<String> reductionKeys = new HashSet<>();

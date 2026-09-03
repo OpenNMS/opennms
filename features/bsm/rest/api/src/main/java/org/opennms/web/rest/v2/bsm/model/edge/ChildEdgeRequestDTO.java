@@ -21,14 +21,18 @@
  */
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="child-edge")
+@Schema(description = "An edge pointing at another business service.")
 public class ChildEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     private Long childId;
 
+    @Schema(description = "Id of the child business service. The resulting graph has to stay acyclic.",
+            example = "23641", required = true)
     @XmlElement(name="child-id",required = true)
     public Long getChildId() {
         return childId;

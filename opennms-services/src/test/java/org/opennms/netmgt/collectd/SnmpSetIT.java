@@ -28,16 +28,9 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
@@ -53,6 +46,7 @@ import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
 import org.snmp4j.agent.DuplicateRegistrationException;
+import org.snmp4j.agent.MOScope;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOScalar;
 import org.snmp4j.agent.mo.MOTableRow;
@@ -76,7 +70,12 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.transport.TransportMappings;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SnmpSetIT extends OpenNMSITCase {
     private static class TestSnmpAgent extends BaseAgent {
@@ -111,6 +110,15 @@ public class SnmpSetIT extends OpenNMSITCase {
         }
 
         @Override
+        protected void registerSnmpMIBs() {
+            super.registerSnmpMIBs();
+            // CVE-2026-39006: SNMP4J-CONFIG-MIB exposes snmp4jCfgStoragePath, which lets an SNMP peer
+            // with write access redirect the agent's serialized configuration to an arbitrary path.
+            // These tests only need the two scalars registered above, so keep that MIB out of the tree.
+            snmp4jConfigMIB.unregisterMOs(server, getContext(snmp4jConfigMIB));
+        }
+
+        @Override
         protected void addUsmUser(USM usm) {
         }
 
@@ -133,15 +141,15 @@ public class SnmpSetIT extends OpenNMSITCase {
             // define read community access
             vacmMIB.addGroup(SecurityModel.SECURITY_MODEL_SNMPv2c, new OctetString("cpublic"), new OctetString("v1v2group1"), StorageType.nonVolatile);
             vacmMIB.addAccess(new OctetString("v1v2group1"), new OctetString("public"), SecurityModel.SECURITY_MODEL_SNMPv2c, SecurityLevel.NOAUTH_NOPRIV, MutableVACM.VACM_MATCH_EXACT, new OctetString("fullReadView1"), new OctetString("fullWriteView1"), new OctetString("fullNotifyView1"), StorageType.nonVolatile);
-            vacmMIB.addViewTreeFamily(new OctetString("fullReadView1"), new OID("1.3"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
-            vacmMIB.addViewTreeFamily(new OctetString("fullReadView1"), new OID("1.4"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
+            vacmMIB.addViewTreeFamily(new OctetString("fullReadView1"), new OID("1.3.0"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
+            vacmMIB.addViewTreeFamily(new OctetString("fullReadView1"), new OID("1.4.0"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
             // define write community access
             vacmMIB.addGroup(SecurityModel.SECURITY_MODEL_SNMPv2c, new OctetString("cprivate"), new OctetString("v1v2group2"), StorageType.nonVolatile);
             vacmMIB.addAccess(new OctetString("v1v2group2"), new OctetString("public"), SecurityModel.SECURITY_MODEL_SNMPv2c, SecurityLevel.NOAUTH_NOPRIV, MutableVACM.VACM_MATCH_EXACT, new OctetString("fullReadView2"), new OctetString("fullWriteView2"), new OctetString("fullNotifyView2"), StorageType.nonVolatile);
-            vacmMIB.addViewTreeFamily(new OctetString("fullReadView2"), new OID("1.3"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
-            vacmMIB.addViewTreeFamily(new OctetString("fullWriteView2"), new OID("1.3"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
-            vacmMIB.addViewTreeFamily(new OctetString("fullReadView2"), new OID("1.4"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
-            vacmMIB.addViewTreeFamily(new OctetString("fullWriteView2"), new OID("1.4"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
+            vacmMIB.addViewTreeFamily(new OctetString("fullReadView2"), new OID("1.3.0"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
+            vacmMIB.addViewTreeFamily(new OctetString("fullWriteView2"), new OID("1.3.0"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
+            vacmMIB.addViewTreeFamily(new OctetString("fullReadView2"), new OID("1.4.0"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
+            vacmMIB.addViewTreeFamily(new OctetString("fullWriteView2"), new OID("1.4.0"), new OctetString(), VacmMIB.vacmViewIncluded, StorageType.nonVolatile);
         }
 
         @Override
@@ -235,5 +243,19 @@ public class SnmpSetIT extends OpenNMSITCase {
         assertEquals("foobar1", result4.toString());
         final SnmpValue result5 = m_locationAwareSnmpClient.get(snmpAgentConfig, SnmpObjId.get(".1.4.0")).execute().get();
         assertEquals("foobar2", result5.toString());
+    }
+
+    /**
+     * CVE-2026-39006: SNMP4J-CONFIG-MIB exposes snmp4jCfgStoragePath, which lets an SNMP peer with
+     * write access redirect the agent's serialized configuration to an arbitrary path. Make sure
+     * {@link TestSnmpAgent#registerSnmpMIBs()} keeps that MIB out of the agent's MIB tree.
+     */
+    @Test
+    public void testSnmp4jConfigMibIsNotRegistered() {
+        // snmp4jConfigMIB, i.e. iso.org.dod.internet.private.enterprises.agentpp.snmp4j.snmp4jConfig
+        final OID snmp4jConfigMib = new OID("1.3.6.1.4.1.4976.10.1.1.2");
+        for (final MOScope scope : testSnmpAgent.getServer().getRegistry().keySet()) {
+            assertFalse("SNMP4J-CONFIG-MIB must not be registered, but " + scope + " covers it", scope.getLowerBound().startsWith(snmp4jConfigMib));
+        }
     }
 }
