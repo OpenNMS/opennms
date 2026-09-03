@@ -39,4 +39,10 @@ describe('panel registry', () => {
       expect(panel.h).toBeGreaterThan(0)
     }
   })
+
+  it('registers the collection search box under the Graph Collections name, not KSC', () => {
+    // the product name is Graph Collections now; only the legacy URLs keep "KSC"
+    expect(getPanelDefinition('graph-collections')?.title).toBe('Graph Collections')
+    expect(getPanelDefinition('ksc-reports')).toBeUndefined()
+  })
 })
