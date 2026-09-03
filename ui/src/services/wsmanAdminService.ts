@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput } from '@/types/wsmanAdmin'
 import { v2 } from './axiosInstances'
 
 // Manage WS-Man (NMS-20286): wsman-config.xml through /api/v2/wsman-config.
@@ -94,6 +94,7 @@ const getWsmanDataCollection = async (): Promise<WsmanDataCollection | null> => 
     return {
       rrdRepository: data.rrdRepository ?? null,
       sources: data.sources,
+      versions: data.versions ?? {},
       collections: asList(data.collections),
       groups: asList(data.groups),
       systemDefinitions: asList(data.systemDefinitions)
@@ -106,4 +107,17 @@ const getWsmanDataCollection = async (): Promise<WsmanDataCollection | null> => 
   }
 }
 
-export { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig }
+// Replaces one source file; null on success or the reason to show in the dialog.
+const updateWsmanDataCollectionFile = async (file: string, input: WsmanDataCollectionFileInput): Promise<string | null> => {
+  try {
+    startSpinner()
+    await v2.put(`${endpoint}/data-collection?file=${encodeURIComponent(file)}`, input, { headers: { Accept: 'application/json' }})
+    return null
+  } catch (err: any) {
+    return errorMessage(err, 'Failed to save the WS-Man data collection file.')
+  } finally {
+    stopSpinner()
+  }
+}
+
+export { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig, updateWsmanDataCollectionFile }

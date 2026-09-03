@@ -29,7 +29,8 @@ vi.mock('@/services', () => ({
   default: {
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
-    updateWsmanConfig: vi.fn()
+    updateWsmanConfig: vi.fn(),
+    updateWsmanDataCollectionFile: vi.fn()
   }
 }))
 
@@ -69,7 +70,7 @@ describe('wsmanAdminStore', () => {
 
   it('loads the data collection view and flags its failure separately', async () => {
     const store = useWsmanAdminStore()
-    const dc = { rrdRepository: null, sources: ['wsman-datacollection-config.xml'], collections: [], groups: [], systemDefinitions: [] }
+    const dc = { rrdRepository: null, sources: ['wsman-datacollection-config.xml'], versions: {}, collections: [], groups: [], systemDefinitions: [] }
     vi.mocked(API.getWsmanDataCollection).mockResolvedValueOnce(dc)
     await store.getDataCollection()
     expect(store.dataCollection).toEqual(dc)
@@ -78,6 +79,19 @@ describe('wsmanAdminStore', () => {
     await store.getDataCollection()
     expect(store.dataCollectionError).toBe(true)
     expect(store.dataCollection).toEqual(dc)
+  })
+
+  it('re-reads the data collection after saving a file, success or not', async () => {
+    const store = useWsmanAdminStore()
+    const dc = { rrdRepository: null, sources: ['custom.xml'], versions: { 'custom.xml': 'v2' }, collections: [], groups: [], systemDefinitions: [] }
+    vi.mocked(API.updateWsmanDataCollectionFile).mockResolvedValueOnce(null)
+    vi.mocked(API.getWsmanDataCollection).mockResolvedValueOnce(dc)
+    expect(await store.saveDataCollectionFile('custom.xml', { version: null, rrdRepository: null, collections: [], groups: [], systemDefinitions: [] })).toBeNull()
+    expect(store.dataCollection?.versions['custom.xml']).toBe('v2')
+    vi.mocked(API.updateWsmanDataCollectionFile).mockResolvedValueOnce('nope')
+    vi.mocked(API.getWsmanDataCollection).mockResolvedValueOnce(dc)
+    expect(await store.saveDataCollectionFile('custom.xml', { version: 'v2', rrdRepository: null, collections: [], groups: [], systemDefinitions: [] })).toBe('nope')
+    expect(API.getWsmanDataCollection).toHaveBeenCalledTimes(2)
   })
 
   it('flags a load error and keeps the previous configuration', async () => {

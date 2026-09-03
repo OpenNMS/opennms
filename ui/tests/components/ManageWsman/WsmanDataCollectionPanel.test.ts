@@ -30,6 +30,7 @@ const OnmsCardStub = { name: 'OnmsCard', template: '<div><slot name="title" /><s
 const DATA = {
   rrdRepository: '/opt/opennms/share/rrd/snmp/',
   sources: ['wsman-datacollection-config.xml', 'dell-idrac.xml'],
+  versions: { 'wsman-datacollection-config.xml': 'a', 'dell-idrac.xml': 'b' },
   collections: [{ name: 'default', source: 'wsman-datacollection-config.xml', rrdStep: 300, rras: ['RRA:AVERAGE:0.5:1:2016'], includeAllSystemDefinitions: true, includedSystemDefinitions: [] }],
   groups: [
     { name: 'drac-power-supply', source: 'dell-idrac.xml', resourceType: 'dracPowerSupplyIndex', resourceUri: 'http://schemas.dmtf.org/wbem/wscim/1/*', dialect: null, filter: 'select InputVoltage from DCIM_PowerSupplyView',
@@ -56,6 +57,18 @@ describe('WsmanDataCollectionPanel.vue', () => {
     expect(sysDefs).toContain('Dell iDRAC 8')
     expect(sysDefs).toContain('drac-system-board')
     expect(wrapper.find('[data-test="groups-table"]').text()).toContain('drac-power-supply')
+  })
+
+  it('emits add, edit and delete with the kind and the object', async () => {
+    const wrapper = mountPanel()
+    await wrapper.find('[data-test="add-group"]').trigger('click')
+    await wrapper.findAll('[data-test="edit-group"]')[0].trigger('click')
+    await wrapper.find('[data-test="delete-system-definition"]').trigger('click')
+    await wrapper.find('[data-test="add-collection"]').trigger('click')
+    expect(wrapper.emitted('add')?.[0]).toEqual(['group'])
+    expect(wrapper.emitted('add')?.[1]).toEqual(['collection'])
+    expect(wrapper.emitted('edit')?.[0]).toEqual(['group', DATA.groups[0]])
+    expect(wrapper.emitted('delete')?.[0]).toEqual(['systemDefinition', DATA.systemDefinitions[0]])
   })
 
   it('filters groups by name, source or resource type', async () => {

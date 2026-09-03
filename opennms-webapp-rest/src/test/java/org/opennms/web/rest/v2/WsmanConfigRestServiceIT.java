@@ -46,7 +46,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.dao.WSManConfigDao;
+import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -80,9 +82,14 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private WSManConfigDao m_wsManConfigDao;
 
+    @Autowired
+    private WSManDataCollectionConfigDao m_wsManDataCollectionConfigDao;
+
     private Resource m_originalResource;
     private File m_workingCopy;
     private String m_shippedContent;
+    private java.nio.file.Path m_originalHome;
+    private java.nio.file.Path m_workingHome;
 
     public WsmanConfigRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -104,11 +111,26 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_workingCopy.getParentFile().mkdirs();
         Files.write(m_workingCopy.toPath(), m_shippedContent.getBytes(StandardCharsets.UTF_8));
         dao.setConfigResource(new FileSystemResource(m_workingCopy));
+
+        // and a scratch opennms.home holding copies of the data collection files
+        final AbstractMergingJaxbConfigDao<?, ?> dcDao = (AbstractMergingJaxbConfigDao<?, ?>) m_wsManDataCollectionConfigDao;
+        m_originalHome = dcDao.getOpennmsHome();
+        m_workingHome = new File("target/test-work-dir", "wsman-home-" + UUID.randomUUID()).toPath();
+        final java.nio.file.Path etc = m_workingHome.resolve("etc");
+        Files.createDirectories(etc.resolve("wsman-datacollection.d"));
+        Files.copy(m_originalHome.resolve("etc/wsman-datacollection-config.xml"), etc.resolve("wsman-datacollection-config.xml"));
+        try (java.util.stream.Stream<java.nio.file.Path> s = Files.list(m_originalHome.resolve("etc/wsman-datacollection.d"))) {
+            for (final java.nio.file.Path f : (Iterable<java.nio.file.Path>) s::iterator) {
+                Files.copy(f, etc.resolve("wsman-datacollection.d").resolve(f.getFileName()));
+            }
+        }
+        dcDao.setOpennmsHome(m_workingHome);
     }
 
     @After
     public void restoreShippedFile() throws Exception {
         ((AbstractJaxbConfigDao<?, ?>) m_wsManConfigDao).setConfigResource(m_originalResource);
+        ((AbstractMergingJaxbConfigDao<?, ?>) m_wsManDataCollectionConfigDao).setOpennmsHome(m_originalHome);
         // never let a test leave the shipped file modified
         final String now = new String(Files.readAllBytes(m_originalResource.getFile().toPath()), StandardCharsets.UTF_8);
         if (!now.equals(m_shippedContent)) {
@@ -173,11 +195,61 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testDataCollectionFilesCanBeRewrittenWithReferencesChecked() throws Exception {
+        JSONObject dc = new JSONObject(getJson("/wsman-config/data-collection", 200));
+        final int groupsBefore = dc.getJSONArray("groups").length();
+
+        // a new drop-in with a group and a system definition using it
+        String body = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml",
+                "{\"collections\":[],\"groups\":[{\"name\":\"custom-cpu\",\"resourceType\":\"node\",\"resourceUri\":\"http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*\","
+                + "\"filter\":\"select LoadPercentage from Win32_Processor\",\"attributes\":[{\"name\":\"LoadPercentage\",\"alias\":\"cpuLoad\",\"type\":\"gauge\"}]}],"
+                + "\"systemDefinitions\":[{\"name\":\"Custom Windows\",\"rules\":[\"#productVendor matches '^Microsoft.*'\"],\"includedGroups\":[\"custom-cpu\"]}]}", 200).getContentAsString();
+        dc = new JSONObject(body);
+        assertTrue(dc.getJSONArray("sources").toString().contains("custom.xml"));
+        assertEquals(groupsBefore + 1, dc.getJSONArray("groups").length());
+        assertTrue(Files.exists(m_workingHome.resolve("etc/wsman-datacollection.d/custom.xml")));
+        final String customVersion = dc.getJSONObject("versions").getString("custom.xml");
+
+        // a stale version on an existing file is refused; a version on a new name is refused
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml",
+                "{\"version\":\"stale\",\"collections\":[],\"groups\":[],\"systemDefinitions\":[]}", 409);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=other.xml",
+                "{\"version\":\"x\",\"collections\":[],\"groups\":[],\"systemDefinitions\":[]}", 400);
+
+        // removing the group while its system definition still references it is refused
+        final String orphan = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml",
+                "{\"version\":\"" + customVersion + "\",\"collections\":[],\"groups\":[],"
+                + "\"systemDefinitions\":[{\"name\":\"Custom Windows\",\"rules\":[\"true\"],\"includedGroups\":[\"custom-cpu\"]}]}", 400).getContentAsString();
+        assertTrue(orphan, orphan.contains("does not exist"));
+
+        // a name already used by another file is refused, as is a bad RRA or type
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml",
+                "{\"version\":\"" + customVersion + "\",\"collections\":[],\"groups\":[{\"name\":\"drac-system\",\"resourceType\":\"node\",\"resourceUri\":\"x\",\"attributes\":[{\"name\":\"a\",\"alias\":\"a\",\"type\":\"gauge\"}]}],\"systemDefinitions\":[]}", 400);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml",
+                "{\"version\":\"" + customVersion + "\",\"collections\":[{\"name\":\"c\",\"rrdStep\":300,\"rras\":[\"bogus\"],\"includeAllSystemDefinitions\":true}],\"groups\":[],\"systemDefinitions\":[]}", 400);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml",
+                "{\"version\":\"" + customVersion + "\",\"collections\":[],\"groups\":[{\"name\":\"g\",\"resourceType\":\"node\",\"resourceUri\":\"x\",\"attributes\":[{\"name\":\"a\",\"alias\":\"a\",\"type\":\"float\"}]}],\"systemDefinitions\":[]}", 400);
+
+        // the root file keeps its repository when the request does not set it
+        final String rootVersion = dc.getJSONObject("versions").getString("wsman-datacollection-config.xml");
+        body = sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=wsman-datacollection-config.xml",
+                "{\"version\":\"" + rootVersion + "\",\"collections\":[{\"name\":\"default\",\"rrdStep\":600,\"rras\":[\"RRA:AVERAGE:0.5:1:2016\"],\"includeAllSystemDefinitions\":false,\"includedSystemDefinitions\":[\"Custom Windows\"]}],\"groups\":[],\"systemDefinitions\":[]}", 200).getContentAsString();
+        dc = new JSONObject(body);
+        assertEquals(600, dc.getJSONArray("collections").getJSONObject(0).getInt("rrdStep"));
+        assertEquals("Custom Windows", dc.getJSONArray("collections").getJSONObject(0).getJSONArray("includedSystemDefinitions").getString(0));
+        assertFalse(dc.isNull("rrdRepository"));
+        assertTrue(new String(Files.readAllBytes(m_workingHome.resolve("etc/wsman-datacollection-config.xml")), StandardCharsets.UTF_8).startsWith("<?xml version=\"1.0\""));
+        // and the shipped drop-ins are untouched
+        assertEquals(groupsBefore + 1, dc.getJSONArray("groups").length());
+    }
+
+    @Test
     public void testForbiddenForNonAdmin() throws Exception {
         setUser("user", new String[]{ "ROLE_USER" });
         try {
             getJson("/wsman-config", 403);
             getJson("/wsman-config/data-collection", 403);
+            sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml", "{\"collections\":[],\"groups\":[],\"systemDefinitions\":[]}", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", "{\"defaults\":{},\"definitions\":[]}", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });

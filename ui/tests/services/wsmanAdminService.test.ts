@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig } from '@/services/wsmanAdminService'
+import { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -62,9 +62,18 @@ describe('wsmanAdminService', () => {
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { sources: ['wsman-datacollection-config.xml'], collections: [{ name: 'default' }] }})
     const result = await getWsmanDataCollection()
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config/data-collection')
-    expect(result).toEqual({ rrdRepository: null, sources: ['wsman-datacollection-config.xml'], collections: [{ name: 'default' }], groups: [], systemDefinitions: [] })
+    expect(result).toEqual({ rrdRepository: null, sources: ['wsman-datacollection-config.xml'], versions: {}, collections: [{ name: 'default' }], groups: [], systemDefinitions: [] })
     vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
     expect(await getWsmanDataCollection()).toBeNull()
+  })
+
+  it('PUTs a data collection file by name as a query parameter', async () => {
+    const input = { version: 'v', rrdRepository: null, collections: [], groups: [], systemDefinitions: [] }
+    vi.mocked(v2.put).mockResolvedValueOnce({ status: 200, data: {}})
+    expect(await updateWsmanDataCollectionFile('custom.xml', input)).toBeNull()
+    expect(vi.mocked(v2.put).mock.calls[0][0]).toBe('/wsman-config/data-collection?file=custom.xml')
+    vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 409, data: 'custom.xml changed since it was loaded; reload the page and apply the change again.' }})
+    expect(await updateWsmanDataCollectionFile('custom.xml', input)).toContain('changed since')
   })
 
   it('returns null on failure or an unexpected body', async () => {

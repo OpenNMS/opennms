@@ -2,7 +2,7 @@
   <OnmsDialog
     :visible="visible"
     modal
-    :header="index === null ? 'New Definition' : `Edit Definition ${index + 1}`"
+    :header="index === null ? 'New Server Definition' : `Edit Server Definition ${index + 1}`"
     class="wsman-definition-dialog"
     width="min(960px, 95vw)"
     data-test="wsman-definition-dialog"
