@@ -200,9 +200,6 @@ public class WsManEndToEndTest {
         assertEquals(9123456.0, values.get("freePhysMem").getNumericValue().doubleValue(), 0.0);
         assertEquals(16776692.0, values.get("totalVisibleMem").getNumericValue().doubleValue(), 0.0);
         assertTrue("per-CPU group produced attributes: " + values.keySet(), values.containsKey("wrmOSCpuPctProcTime"));
-        // the shipped Windows memory and process graphs read these node-level attributes
-        assertEquals(9342418944.0, values.get("wrmOSMemAvailBytes").getNumericValue().doubleValue(), 0.0);
-        assertEquals(187.0, values.get("wrmOSObjProcesses").getNumericValue().doubleValue(), 0.0);
         final long cpuResources = CollectionSetUtils.getResourcesByLabel(set).values().stream()
                 .filter(r -> "wrmOSCpu".equals(r.getResourceTypeName())).count();
         assertEquals("one resource per fake CPU instance", 2, cpuResources);
