@@ -204,6 +204,10 @@ The JSON representation follows the canonical protobuf JSON mapping of the same 
 Note that JSON messages are larger than their protobuf equivalents; the message splitting described above accounts for the encoded size, so large collection sets may split into more messages when JSON is enabled.
 This setting only affects metrics; events, alarms, nodes, and topology messages are always forwarded as protobuf.
 
+IMPORTANT: JSON has no representation for non-finite numbers, so the protobuf JSON mapping encodes them as the strings `"NaN"`, `"Infinity"`, and `"-Infinity"`.
+A numeric attribute with a missing sample (for example, an uninitialized counter) is therefore forwarded with a string where consumers otherwise see a JSON number.
+Strongly typed consumers must either tolerate this mixed type or parse the payload with a protobuf JSON parser, which accepts these strings for numeric fields.
+
 === Enable exclusive metric forwarding
 
 Once metric forwarding is enabled, you can use this as the exclusive persistence strategy by setting the following system property:
