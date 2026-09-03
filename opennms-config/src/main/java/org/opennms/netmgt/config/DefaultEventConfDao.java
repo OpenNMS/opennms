@@ -250,8 +250,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	}
 
 	/**
-	 * Unmarshalled in parallel, added in order: parsing is nearly all of the cost
-	 * and the load blocks startup, but the order events are added in decides
+	 * Unmarshalled in parallel and added in order: parsing is nearly all of the cost
+	 * and loading blocks startup, but the order events are added in determines
 	 * which definition wins a match. Safe because JaxbUtils holds an unmarshaller
 	 * per thread.
 	 */
