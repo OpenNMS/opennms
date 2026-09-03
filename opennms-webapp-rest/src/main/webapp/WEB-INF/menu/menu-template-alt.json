@@ -300,6 +300,13 @@
           "url": "admin/deleteNodes",
           "locationMatch": "",
           "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+        },
+        {
+          "id": "manageWsman",
+          "name": "Manage WS-Man",
+          "url": "ui/index.html#/admin/wsman-config",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },
