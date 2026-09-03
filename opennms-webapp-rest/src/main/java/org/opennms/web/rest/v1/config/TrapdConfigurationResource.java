@@ -33,6 +33,11 @@ import org.opennms.netmgt.config.TrapdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Component("trapdConfigurationResource")
 public class TrapdConfigurationResource {
@@ -43,8 +48,45 @@ public class TrapdConfigurationResource {
     @Resource(name="trapd-configuration.xml")
     ConfigurationResource<TrapdConfig> m_trapdConfigResource;
     
+    // Documented by example only: the response is the JAXB TrapdConfiguration, which swagger-core
+    // cannot introspect (Jackson sees conflicting array and List setters for snmpv3User). The v1
+    // response carries the XSD attribute names, so the v2 TrapdConfigDto does not describe it either.
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the trapd configuration",
+            description = """
+                    Returns the contents of trapd-configuration.xml, including the SNMPv3 users trapd will
+                    accept traps from. A `threads` value of 0 means trapd sizes the pool from the available
+                    processor count.""",
+            operationId = "getTrapdConfigurationV1")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The current trapd configuration.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "threads": 0,
+                                              "snmp-trap-address": "*",
+                                              "snmp-trap-port": 10162,
+                                              "new-suspect-on-trap": false,
+                                              "include-raw-message": false,
+                                              "queue-size": 10000,
+                                              "batch-size": 1000,
+                                              "batch-interval": 500,
+                                              "snmpv3-user": [],
+                                              "use-address-from-varbind": null
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    examples = @ExampleObject(value = """
+                                            <?xml version="1.0" encoding="UTF-8"?>
+                                            <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd"
+                                                                 snmp-trap-address="*" snmp-trap-port="10162"
+                                                                 new-suspect-on-trap="false" include-raw-message="false"
+                                                                 threads="0" queue-size="10000" batch-size="1000"
+                                                                 batch-interval="500"/>"""))
+                    })
+    })
     public Response getTrapdConfiguration() throws ConfigurationResourceException {
         return Response.ok(m_trapdConfigResource.get()).build();
     }

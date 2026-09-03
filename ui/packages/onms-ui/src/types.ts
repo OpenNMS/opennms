@@ -20,6 +20,9 @@
 /// License.
 ///
 
+/** Clock convention for OnmsDatePicker's time panel. */
+export type OnmsHourFormat = '12' | '24'
+
 export type OnmsTagSeverity = 'secondary' | 'success' | 'info' | 'warn' | 'danger'
 
 // Menu model item in OpenNMS vocabulary (structurally compatible with
