@@ -113,8 +113,12 @@ public class CachingWSManClientFactory implements WSManClientFactory, AutoClosea
                 return m_delegate.getClient(endpoint);
             });
             return new SharedClient(shared);
-        } catch (ExecutionException e) {
-            throw new WSManException("Failed to create WS-Man client for " + endpoint, e.getCause());
+        } catch (ExecutionException | UncheckedExecutionException e) {
+            final Throwable cause = e.getCause();
+            if (cause instanceof WSManException) {
+                throw (WSManException) cause;
+            }
+            throw new WSManException("Failed to create WS-Man client for " + endpoint, cause);
         }
     }
 
