@@ -9,7 +9,6 @@
       :modelValue="modelValue"
       :placeholder="placeholder"
       :aria-label="ariaLabel"
-      :fluid="fluid"
       :data-test="dataTest"
       @update:modelValue="emit('update:modelValue', $event)"
     />
@@ -46,8 +45,7 @@ import OnmsInputText from './OnmsInputText.vue'
 // something to clear (NMS-20160). Replaces every hand-rolled
 // IconField/InputIcon/search-icon/clear-button arrangement. Input-targeting
 // attrs are declared props because fallthrough lands on the container div, not
-// the <input> — `fluid` included: a width class on this component sizes the
-// container, and without `fluid` the input inside keeps its intrinsic width.
+// the <input>.
 const props = withDefaults(defineProps<{
   modelValue?: string
   placeholder?: string
@@ -55,15 +53,13 @@ const props = withDefaults(defineProps<{
   ariaLabel?: string
   dataTest?: string
   clearAriaLabel?: string
-  fluid?: boolean
 }>(), {
   modelValue: undefined,
   placeholder: undefined,
   inputId: undefined,
   ariaLabel: undefined,
   dataTest: undefined,
-  clearAriaLabel: 'Clear search',
-  fluid: undefined
+  clearAriaLabel: 'Clear search'
 })
 
 const emit = defineEmits<{

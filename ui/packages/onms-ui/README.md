@@ -144,14 +144,11 @@ OnmsVirtualScroller and OnmsColorPicker, added for the topology map. The same
 tranche widened six existing wrappers: `size` on OnmsButton, `selectionMode` +
 `row-click` on OnmsTable, `showToggleAll` + `maxSelectedLabels` on
 OnmsMultiSelect, `showButtons` + `buttonLayout` on OnmsInputNumber,
-`completeOnFocus` on OnmsAutoComplete, and `fluid` on OnmsSearchInput. Each
-keeps PrimeVue's own default when unset.
+and `completeOnFocus` on OnmsAutoComplete. Each keeps PrimeVue's own default
+when unset.
 
 Where these diverge from PrimeVue, deliberately:
 
-- **`OnmsSearchInput`'s `fluid`** — a width class sizes the IconField container;
-  the input inside keeps its intrinsic width unless `fluid` is set, so a field
-  that should fill its column needs both.
 - **`OnmsSelectButton`** defaults `allowEmpty` to `false`, since a segmented
   control that can deselect its last option leaves no mode chosen. `change`
   emits the value directly, not `{ originalEvent, value }`, matching

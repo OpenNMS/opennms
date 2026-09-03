@@ -82,10 +82,10 @@ describe('OnmsSearchInput contract', () => {
     wrapper.unmount()
   })
 
-  // A width class on this component sizes the IconField container; the input
-  // inside only follows it when fluid is set.
-  it('widens the input, not just the container, when fluid is set', () => {
-    expect(mountIt().find('input').classes()).not.toContain('p-inputtext-fluid')
-    expect(mountIt({ fluid: true }).find('input').classes()).toContain('p-inputtext-fluid')
+  it('fills its container without being asked to', () => {
+    const wrapper = mountIt()
+    expect(wrapper.find('.p-iconfield').exists()).toBe(true)
+    expect(wrapper.find('input').classes()).not.toContain('p-inputtext-fluid')
+    wrapper.unmount()
   })
 })

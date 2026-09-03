@@ -21,7 +21,7 @@
           aria-label="Color swatches"
         >
           <button
-            v-for="color in swatches"
+            v-for="color in normalizedSwatches"
             :key="color"
             type="button"
             class="onms-color-picker__swatch"
@@ -76,7 +76,7 @@
 // view reads as on-palette. Override with `swatches` for a different set.
 const DEFAULT_SWATCHES = [
   '#000000', '#1d2939', '#334155', '#475569', '#64748b',
-  '#94a3b8', '#cbd5e1', '#e2e8f0', '#f1f5f9', '#ffffff',
+  '#9aa7b8', '#cbd5e1', '#e2e8f0', '#f1f5f9', '#ffffff',
   '#ef4444', '#f97316', '#f59e0b', '#eab308', '#22c55e',
   '#14b8a6', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899',
   '#fca5a5', '#fdba74', '#fcd34d', '#fde047', '#86efac',
@@ -135,11 +135,16 @@ const popoverRef = ref<InstanceType<typeof OnmsPopover>>()
 const customOpen = ref(false)
 
 const normalized = computed(() => toCssHex(props.modelValue))
-const isOffPalette = computed(() => !!normalized.value && !props.swatches.includes(normalized.value))
+// Swatches come from callers and are not constrained to lowercase, so both the
+// selection test and the off-palette test go through the same normalisation as
+// the model value.
+const normalizedSwatches = computed(() => props.swatches.map(toCssHex))
+const isOffPalette = computed(() =>
+  !!normalized.value && !normalizedSwatches.value.includes(normalized.value))
 const triggerLabel = computed(() => `Choose a color, currently ${normalized.value || 'none'}`)
 
 const pick = (color: string) => {
-  emit('update:modelValue', color)
+  emit('update:modelValue', toCssHex(color))
   popoverRef.value?.hide()
 }
 

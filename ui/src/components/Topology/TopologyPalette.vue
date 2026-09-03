@@ -37,7 +37,6 @@ License.
         placeholder="Search nodes..."
         class="palette-search"
         aria-label="Search palette nodes"
-        fluid
       />
       <OnmsMultiSelect
         v-model="selectedCategories"

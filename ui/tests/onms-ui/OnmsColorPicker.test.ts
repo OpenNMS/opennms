@@ -108,4 +108,41 @@ describe('OnmsColorPicker contract', () => {
     expect(wrapper.find('.onms-color-picker__trigger').attributes('disabled')).toBeDefined()
     wrapper.unmount()
   })
+
+  // The other half of case-insensitivity: the swatch list comes from callers,
+  // which nothing constrains to lowercase.
+  it('marks an uppercase swatch that matches the current value', async () => {
+    const wrapper = mountIt({ modelValue: '#ff0000', swatches: ['#FF0000', '#00FF00'] })
+    await openPanel(wrapper)
+
+    expect(swatches()[0].getAttribute('aria-pressed')).toBe('true')
+    expect(swatches()[0].className).toContain('is-selected')
+    expect(swatches()[1].getAttribute('aria-pressed')).toBe('false')
+    wrapper.unmount()
+  })
+
+  it('does not call a color custom when an uppercase swatch holds it', async () => {
+    const wrapper = mountIt({ modelValue: '#FF0000', swatches: ['#FF0000'] })
+    await openPanel(wrapper)
+    expect(document.querySelector('.onms-color-picker__value')?.textContent).not.toContain('custom')
+    wrapper.unmount()
+  })
+
+  it('emits a swatch in the same form it emits a picked color', async () => {
+    const wrapper = mountIt({ modelValue: '#000000', swatches: ['#FF0000'] })
+    await openPanel(wrapper)
+    swatches()[0].click()
+    await nextTick()
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['#ff0000'])
+    wrapper.unmount()
+  })
+
+  // The palette documents itself as carrying the topology map's own defaults.
+  it('carries the link color the topology map ships', async () => {
+    const wrapper = mountIt({ modelValue: '#9aa7b8' })
+    await openPanel(wrapper)
+    expect(document.querySelector('.onms-color-picker__value')?.textContent).not.toContain('custom')
+    wrapper.unmount()
+  })
 })
