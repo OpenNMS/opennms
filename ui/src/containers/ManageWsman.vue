@@ -6,6 +6,12 @@
   </div>
   <div class="manage-wsman-container">
     <h1 class="page-title">Manage WS-Man</h1>
+    <WsmanReadinessBanner
+      v-if="store.readiness"
+      :readiness="store.readiness"
+      :requisitionsUrl="requisitionsUrl"
+      :runAction="runReadinessAction"
+    />
     <WsmanHelpPanel />
 
     <p v-if="store.loadError" class="error" data-test="load-error">
@@ -46,6 +52,7 @@
             @add="openDataCollectionEditor"
             @edit="openDataCollectionEditor"
             @delete="askDeleteDataCollection"
+            @reset="showResetConfirm = true"
           />
           <p v-else class="placeholder" data-test="data-collection-loading">Loading…</p>
         </OnmsTabPanel>
@@ -56,6 +63,21 @@
       <WsmanCollectionDialog v-model:visible="showCollectionDialog" :dataCollection="store.dataCollection" :original="editingCollection" />
       <WsmanSystemDefinitionDialog v-model:visible="showSystemDefinitionDialog" :dataCollection="store.dataCollection" :original="editingSystemDefinition" />
       <WsmanGroupDialog v-model:visible="showGroupDialog" :dataCollection="store.dataCollection" :original="editingGroup" />
+      <OnmsConfirmationDialog
+        :visible="showResetConfirm"
+        title="Reset Data Collection to Defaults"
+        actionButtonText="Reset"
+        @ok="confirmReset"
+        @cancel="showResetConfirm = false"
+      >
+        <template #content>
+          <p data-test="reset-confirm-text">
+            Restore <code>wsman-datacollection-config.xml</code> and the shipped drop-ins to their defaults and
+            remove every other file in <code>wsman-datacollection.d/</code>? Your edits and custom files are lost;
+            the RRD repository setting is kept.
+          </p>
+        </template>
+      </OnmsConfirmationDialog>
       <OnmsConfirmationDialog
         :visible="dataCollectionToDelete !== null"
         title="Delete from Data Collection"
@@ -109,6 +131,7 @@ import { DataCollectionKind, EditableObject, fileInput, remove } from '@/compone
 import WsmanDefinitionsTable from '@/components/ManageWsman/WsmanDefinitionsTable.vue'
 import { configToInput } from '@/components/ManageWsman/wsmanForm'
 import WsmanHelpPanel from '@/components/ManageWsman/WsmanHelpPanel.vue'
+import WsmanReadinessBanner from '@/components/ManageWsman/WsmanReadinessBanner.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { BreadCrumb } from '@/types'
@@ -130,6 +153,16 @@ const editingCollection = ref<WsmanCollectionInfo | null>(null)
 const editingSystemDefinition = ref<WsmanSystemDefinitionInfo | null>(null)
 const editingGroup = ref<WsmanGroupInfo | null>(null)
 const dataCollectionToDelete = ref<{ kind: DataCollectionKind, item: EditableObject } | null>(null)
+const showResetConfirm = ref(false)
+
+const requisitionsUrl = computed<string>(() => `${menuStore.mainMenu.baseHref ?? '/opennms/'}admin/ng-requisitions/index.jsp`)
+
+const runReadinessAction = (action: 'enable-polling' | 'rescan') => store.runReadinessAction(action)
+
+const confirmReset = async () => {
+  showResetConfirm.value = false
+  actionError.value = (await store.resetDataCollection()) ?? ''
+}
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 

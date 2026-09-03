@@ -29,6 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.TreeSet;
+import java.util.Optional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -72,7 +74,14 @@ import org.opennms.netmgt.config.wsman.credentials.Range;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.poller.Monitor;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -102,6 +111,7 @@ import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.AttributeUpda
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.CollectionUpdate;
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.GroupUpdate;
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.SystemDefinitionUpdate;
+import org.opennms.web.rest.v2.model.WsmanReadinessDto;
 import org.opennms.web.rest.v2.model.WsmanStatusDto;
 import org.opennms.web.rest.v2.model.WsmanSyncResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,8 +173,16 @@ public class WsmanConfigRestService {
     @Autowired
     private EventProxy eventProxy;
 
+    @Autowired
+    private CollectdConfigFactory collectdConfigFactory;
+
     // the service provisioning gives a WS-Man server, and what the poller checks
     private static final String WSMAN_SERVICE = "WS-Man";
+    private static final String WSMAN_MONITOR_CLASS = "org.opennms.netmgt.poller.monitors.WsManMonitor";
+    private static final String WSMAN_POLL_RESOURCE_URI = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_OperatingSystem";
+    // the shipped data collection files, bundled by the wsman feature for installs without share/etc-pristine
+    private static final String DEFAULTS_RESOURCE_PREFIX = "wsman-defaults/";
+    private static final String[] DEFAULT_DROP_INS = { "dell-idrac.xml", "microsoft-windows.xml" };
     private static final Pattern REQUISITION_NAME = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._-]*$");
 
     @GET
@@ -377,17 +395,187 @@ public class WsmanConfigRestService {
                 } catch (final IOException e) {
                     throw new WebApplicationException("Unable to save the discovery configuration: " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
                 }
-                try {
-                    eventProxy.send(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Web UI")
-                            .addParam(EventConstants.PARM_DAEMON_NAME, "Discovery").getEvent());
-                    result.setDiscoveryReloadRequested(true);
-                } catch (final EventProxyException e) {
-                    // the ranges are saved; Discovery picks them up on its next reload
-                }
+                sendDaemonReload("Discovery");
+                result.setDiscoveryReloadRequested(true);
             }
         }
         result.getSkippedPatterns().addAll(def.getIpMatch());
         return Response.ok(result).build();
+    }
+
+    @GET
+    @javax.ws.rs.Path("readiness")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(summary = "Whether OpenNMS is set up to poll and collect from WS-Man servers", description = "Checks that a poller package and monitor and a collectd package and collector cover the WS-Man service, and counts servers provisioned with the service that the poller does not check", operationId = "WsmanConfigRestServiceGetReadiness")
+    public Response getReadiness(@Context final SecurityContext securityContext) {
+        requireAdmin(securityContext);
+        return Response.ok(readiness()).build();
+    }
+
+    @POST
+    @javax.ws.rs.Path("readiness/enable-polling")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(summary = "Add the WS-Man service and monitor to the poller configuration", description = "Adds a WS-Man service (Win32_OperatingSystem resource, 5 s timeout, 5 min interval) to the package covering every address and registers the WsManMonitor if missing, saves poller-configuration.xml, and asks Pollerd to reload. Servers provisioned earlier still need their requisition rescanned.", operationId = "WsmanConfigRestServiceEnablePolling")
+    public Response enablePolling(@Context final SecurityContext securityContext) {
+        requireAdmin(securityContext);
+        final PollerConfig pollerConfig = PollerConfigFactory.getInstance();
+        final PollerConfiguration config = pollerConfig.getLocalConfiguration();
+        final Package target = pollerPackageFor(config);
+        if (target == null) {
+            throw badRequest("poller-configuration.xml has no package to add the WS-Man service to.");
+        }
+        boolean changed = false;
+        if (target.getService(WSMAN_SERVICE) == null) {
+            final Service service = new Service(WSMAN_SERVICE, 300000L, "false", "on");
+            service.addParameter("retry", "1");
+            service.addParameter("timeout", "5000");
+            service.addParameter("resource-uri", WSMAN_POLL_RESOURCE_URI);
+            target.addService(service);
+            changed = true;
+        }
+        if (config.getMonitors().stream().noneMatch(m -> WSMAN_SERVICE.equals(m.getService()))) {
+            config.addMonitor(WSMAN_SERVICE, WSMAN_MONITOR_CLASS);
+            changed = true;
+        }
+        if (changed) {
+            try {
+                pollerConfig.save();
+            } catch (final IOException e) {
+                throw new WebApplicationException("Unable to save poller-configuration.xml: " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
+            }
+            sendDaemonReload("Pollerd");
+        }
+        return Response.ok(readiness()).build();
+    }
+
+    @POST
+    @javax.ws.rs.Path("readiness/rescan")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(summary = "Rescan the requisitions holding unpolled WS-Man servers", description = "Imports, with a rescan of existing nodes, every requisition that owns a WS-Man service the poller does not check, so provisioning re-evaluates the service against the poller configuration", operationId = "WsmanConfigRestServiceRescanUnpolled")
+    public Response rescanUnpolled(@Context final SecurityContext securityContext) {
+        requireAdmin(securityContext);
+        final WsmanReadinessDto readiness = readiness();
+        for (final String foreignSource : readiness.getRequisitionsWithUnpolled()) {
+            requisitionAccessService.importRequisition(foreignSource, "true");
+        }
+        return Response.ok(readiness).build();
+    }
+
+    @POST
+    @javax.ws.rs.Path("data-collection/reset")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Reset the WS-Man data collection files to the shipped defaults", description = "Restores wsman-datacollection-config.xml and the shipped drop-ins from share/etc-pristine, or from the copies bundled with the wsman feature, keeps the current RRD repository, and removes every other drop-in.", operationId = "WsmanConfigRestServiceResetDataCollection")
+    public Response resetDataCollection(@Context final SecurityContext securityContext) {
+        requireAdmin(securityContext);
+        synchronized (this) {
+            final Path home = dataCollectionHome();
+            final Path root = home.resolve(DATA_COLLECTION_ROOT);
+            final Path dir = home.resolve(DATA_COLLECTION_DIR);
+            // the repository is site-specific; the pristine root carries a build placeholder
+            String repository = null;
+            try {
+                repository = readDataCollectionFiles().values().iterator().next().config.getRrdRepository();
+            } catch (final RuntimeException e) {
+                // an unreadable root is exactly what a reset is for
+            }
+            try {
+                String rootXml = defaultDataCollection(home, "wsman-datacollection-config.xml");
+                if (repository != null) {
+                    rootXml = rootXml.replaceFirst("rrd-repository=\"[^\"]*\"", "rrd-repository=\"" + repository.replace("\\", "\\\\").replace("$", "\\$") + "\"");
+                }
+                Files.createDirectories(dir);
+                Files.write(root, rootXml.getBytes(StandardCharsets.UTF_8));
+                final Set<String> shipped = new HashSet<>();
+                for (final String dropIn : DEFAULT_DROP_INS) {
+                    Files.write(dir.resolve(dropIn), defaultDataCollection(home, "wsman-datacollection.d/" + dropIn).getBytes(StandardCharsets.UTF_8));
+                    shipped.add(dropIn);
+                }
+                try (Stream<Path> stream = Files.list(dir)) {
+                    for (final Path extra : (Iterable<Path>) stream.filter(f -> f.getFileName().toString().endsWith(".xml") && !shipped.contains(f.getFileName().toString()))::iterator) {
+                        Files.delete(extra);
+                    }
+                }
+            } catch (final IOException e) {
+                throw new WebApplicationException("Unable to reset the data collection files: " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
+            }
+            return Response.ok(readDataCollection()).build();
+        }
+    }
+
+    // share/etc-pristine on packaged installs, else the copies the wsman feature bundles
+    private static String defaultDataCollection(final Path home, final String relative) throws IOException {
+        final Path pristine = home.resolve("share").resolve("etc-pristine").resolve(relative);
+        if (Files.isReadable(pristine)) {
+            return new String(Files.readAllBytes(pristine), StandardCharsets.UTF_8);
+        }
+        try (java.io.InputStream in = org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig.class.getClassLoader().getResourceAsStream(DEFAULTS_RESOURCE_PREFIX + relative)) {
+            if (in == null) {
+                throw new IOException("no shipped copy of " + relative + " is available");
+            }
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private WsmanReadinessDto readiness() {
+        final WsmanReadinessDto r = new WsmanReadinessDto();
+        final PollerConfiguration poller = PollerConfigFactory.getInstance().getLocalConfiguration();
+        for (final Package pkg : poller.getPackages()) {
+            final Service svc = pkg.getService(WSMAN_SERVICE);
+            if (svc != null && !"off".equalsIgnoreCase(svc.getStatus())) {
+                r.setPollerService(true);
+                r.setPollerPackage(pkg.getName());
+                break;
+            }
+        }
+        r.setPollerMonitor(poller.getMonitors().stream().anyMatch(m -> WSMAN_SERVICE.equals(m.getService())));
+        // the collectd Package.getService throws when the name is absent; scan instead
+        r.setCollectdService(collectdConfigFactory.getPackages().stream()
+                .anyMatch(p -> p.getServices().stream().anyMatch(svc -> WSMAN_SERVICE.equals(svc.getName()))));
+        r.setCollectdCollector(collectdConfigFactory.getCollectors().stream().anyMatch(c -> WSMAN_SERVICE.equals(c.getService())));
+        final Set<String> requisitions = new TreeSet<>();
+        int polled = 0;
+        int unpolled = 0;
+        for (final OnmsMonitoredService svc : monitoredServiceDao.findByType(WSMAN_SERVICE)) {
+            if ("A".equals(svc.getStatus())) {
+                polled++;
+            } else {
+                unpolled++;
+                final String fs = svc.getIpInterface() == null || svc.getIpInterface().getNode() == null ? null : svc.getIpInterface().getNode().getForeignSource();
+                if (fs != null) {
+                    requisitions.add(fs);
+                }
+            }
+        }
+        r.setServers(polled + unpolled);
+        r.setPolledServers(polled);
+        r.setUnpolledServers(unpolled);
+        r.getRequisitionsWithUnpolled().addAll(requisitions);
+        return r;
+    }
+
+    // example1 is the shipped catch-all; otherwise the first package whose filter
+    // covers every address, else the first package at all
+    private static Package pollerPackageFor(final PollerConfiguration config) {
+        final Package example = config.getPackages().stream().filter(p -> "example1".equals(p.getName())).findFirst().orElse(null);
+        if (example != null) {
+            return example;
+        }
+        final Optional<Package> catchAll = config.getPackages().stream()
+                .filter(p -> p.getFilter() != null && p.getFilter().getContent() != null && p.getFilter().getContent().replace(" ", "").contains("IPADDR!='0.0.0.0'"))
+                .findFirst();
+        return catchAll.orElse(config.getPackages().isEmpty() ? null : config.getPackages().get(0));
+    }
+
+    private void sendDaemonReload(final String daemon) {
+        try {
+            eventProxy.send(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Web UI")
+                    .addParam(EventConstants.PARM_DAEMON_NAME, daemon).getEvent());
+        } catch (final EventProxyException e) {
+            // the file is saved; the daemon picks it up on its next reload
+        }
     }
 
     @GET

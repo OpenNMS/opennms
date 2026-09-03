@@ -32,7 +32,9 @@
           servers usually means a range or pattern that does not cover them, or servers not yet provisioned.
           A "not polled" count means the servers are provisioned with the WS-Man service but no package in
           <code>poller-configuration.xml</code> includes that service, so the poller never checks them; the
-          shipped configuration has none.
+          shipped configuration has none. The banner at the top of the page says when that is the case and
+          can add the service and reload Pollerd, and can rescan requisitions holding servers provisioned
+          before then.
           Linking a definition to a <strong>requisition</strong> and pressing Sync provisions its specific
           addresses as nodes with the WS-Man service and adds its ranges as scheduled discovery ranges for that
           requisition; sync only ever adds, and the Requisition column shows how many addresses are provisioned. Values may be

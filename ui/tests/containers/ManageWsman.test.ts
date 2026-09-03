@@ -38,7 +38,7 @@ const mountPage = async (state: Record<string, unknown>) => {
   const wrapper = mount(ManageWsman, {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true, initialState: { wsmanAdminStore: state }})],
-      stubs: { WsmanHelpPanel: true, WsmanDefaultsCard: true, WsmanDefinitionsTable: true, WsmanDataCollectionPanel: true, WsmanDefaultsDialog: true, WsmanDefinitionDialog: true, WsmanCollectionDialog: true, WsmanSystemDefinitionDialog: true, WsmanGroupDialog: true, OnmsConfirmationDialog: true, BreadCrumbs: true }
+      stubs: { WsmanHelpPanel: true, WsmanReadinessBanner: true, WsmanDefaultsCard: true, WsmanDefinitionsTable: true, WsmanDataCollectionPanel: true, WsmanDefaultsDialog: true, WsmanDefinitionDialog: true, WsmanCollectionDialog: true, WsmanSystemDefinitionDialog: true, WsmanGroupDialog: true, OnmsConfirmationDialog: true, BreadCrumbs: true }
     }
   })
   await flushPromises()
@@ -105,6 +105,18 @@ describe('ManageWsman.vue (container)', () => {
     await (wrapper.vm as any).syncDefinition(0)
     await flushPromises()
     expect(wrapper.find('[data-test="action-error"]').text()).toContain('not linked')
+  })
+
+  it('resets the data collection after confirmation and surfaces a failure', async () => {
+    const wrapper = await mountPage({ config: CONFIG, loadError: false, dataCollection: { rrdRepository: null, sources: [], versions: {}, collections: [], groups: [], systemDefinitions: [] }, dataCollectionError: false })
+    const store = useWsmanAdminStore()
+    vi.mocked(store.resetDataCollection).mockResolvedValueOnce('Unable to reset the data collection files: boom')
+    ;(wrapper.vm as any).showResetConfirm = true
+    await (wrapper.vm as any).confirmReset()
+    await flushPromises()
+    expect(store.resetDataCollection).toHaveBeenCalledTimes(1)
+    expect(wrapper.find('[data-test="action-error"]').text()).toContain('boom')
+    expect((wrapper.vm as any).showResetConfirm).toBe(false)
   })
 
   it('shows an error instead of an empty configuration when the read fails', async () => {

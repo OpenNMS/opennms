@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanStatus, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
+import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -101,6 +101,21 @@ describe('wsmanAdminService', () => {
     expect(vi.mocked(rest.get).mock.calls[0][0]).toBe('/requisitionNames')
     vi.mocked(rest.get).mockRejectedValueOnce(new Error('500'))
     expect(await getRequisitionNames()).toEqual([])
+  })
+
+  it('reads readiness, runs its actions, and resets the data collection', async () => {
+    const readiness = { ready: false, pollerService: false, pollerMonitor: false, pollerPackage: null, collectdService: true, collectdCollector: true, servers: 0, polledServers: 0, unpolledServers: 0, requisitionsWithUnpolled: [] }
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: readiness })
+    expect(await getWsmanReadiness()).toEqual(readiness)
+    expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config/readiness')
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { ...readiness, ready: true, pollerService: true, pollerMonitor: true }})
+    expect(await runWsmanReadinessAction('enable-polling')).toMatchObject({ ready: true })
+    expect(vi.mocked(v2.post).mock.calls[0][0]).toBe('/wsman-config/readiness/enable-polling')
+    vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 500, data: '<html>' }})
+    expect(await runWsmanReadinessAction('rescan')).toBe('Failed to rescan the requisitions.')
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { sources: ['wsman-datacollection-config.xml'], versions: {}}})
+    expect(await resetWsmanDataCollection()).toMatchObject({ sources: ['wsman-datacollection-config.xml'], groups: [] })
+    expect(vi.mocked(v2.post).mock.calls[2][0]).toBe('/wsman-config/data-collection/reset')
   })
 
   it('returns null on failure or an unexpected body', async () => {

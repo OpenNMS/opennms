@@ -127,6 +127,8 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     private java.nio.file.Path m_discoveryFile;
     private String m_discoveryContent;
+    private java.nio.file.Path m_pollerFile;
+    private String m_pollerContent;
 
     private Resource m_originalResource;
     private File m_workingCopy;
@@ -176,11 +178,19 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // a range sync edits the discovery configuration under opennms.home; put it back afterwards
         m_discoveryFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME).toPath();
         m_discoveryContent = new String(Files.readAllBytes(m_discoveryFile), StandardCharsets.UTF_8);
+        m_pollerFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME).toPath();
+        m_pollerContent = new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8);
     }
 
     @After
     public void restoreShippedFile() throws Exception {
+        // the temporary database is shared across the methods of this class
+        m_databasePopulator.resetDatabase();
         Files.write(m_discoveryFile, m_discoveryContent.getBytes(StandardCharsets.UTF_8));
+        if (!m_pollerContent.equals(new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8))) {
+            Files.write(m_pollerFile, m_pollerContent.getBytes(StandardCharsets.UTF_8));
+            org.opennms.netmgt.config.PollerConfigFactory.init();
+        }
         try {
             m_requisitionAccessService.deletePendingRequisition("wsman-sync");
             m_requisitionAccessService.deleteDeployedRequisition("wsman-sync");
@@ -396,6 +406,68 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         put("{\"defaults\":{},\"definitions\":[{\"requisition\":\"bad name\",\"specifics\":[\"10.20.30.40\"]}]}", 400);
     }
 
+    @Test
+    public void testReadinessEnablePollingAndRescan() throws Exception {
+        // the shipped poller configuration has no WS-Man service or monitor
+        JSONObject r = new JSONObject(getJson("/wsman-config/readiness", 200));
+        assertFalse(r.getBoolean("pollerService"));
+        assertFalse(r.getBoolean("pollerMonitor"));
+        assertFalse(r.getBoolean("ready"));
+        assertTrue("collectd ships with the WS-Man service and collector", r.getBoolean("collectdService") && r.getBoolean("collectdCollector"));
+
+        // a server provisioned before polling is enabled sits unpolled in its requisition
+        m_databasePopulator.populateDatabase();
+        m_sessionUtils.withTransaction(() -> {
+            final OnmsNode node = m_databasePopulator.getNode1();
+            node.setForeignSource("wsman-unpolled");
+            m_databasePopulator.getNodeDao().saveOrUpdate(node);
+            final OnmsMonitoredService svc = addService(node, "192.168.1.1", serviceType("WS-Man"), null);
+            svc.setStatus("N");
+            m_databasePopulator.getMonitoredServiceDao().saveOrUpdate(svc);
+            m_databasePopulator.getMonitoredServiceDao().flush();
+            return null;
+        });
+        r = new JSONObject(getJson("/wsman-config/readiness", 200));
+        assertEquals(1, r.getInt("unpolledServers"));
+        assertEquals("wsman-unpolled", r.getJSONArray("requisitionsWithUnpolled").getString(0));
+
+        r = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/readiness/enable-polling", "", 200).getContentAsString());
+        assertTrue(r.getBoolean("pollerService"));
+        assertTrue(r.getBoolean("pollerMonitor"));
+        assertTrue(r.getBoolean("ready"));
+        assertEquals("example1", r.getString("pollerPackage"));
+        final String poller = new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8);
+        assertTrue(poller.contains("<service name=\"WS-Man\""));
+        assertTrue(poller.contains("WsManMonitor"));
+        // enabling twice adds nothing twice
+        sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/readiness/enable-polling", "", 200);
+        assertEquals(1, new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8).split("<service name=\"WS-Man\"").length - 1);
+
+        // rescan asks provisioning to re-import the requisitions with unpolled servers
+        r = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/readiness/rescan", "", 200).getContentAsString());
+        assertEquals("wsman-unpolled", r.getJSONArray("requisitionsWithUnpolled").getString(0));
+    }
+
+    @Test
+    public void testResetDataCollectionRestoresTheShippedFiles() throws Exception {
+        // damage the root file, add a custom drop-in, then reset
+        final JSONObject before = new JSONObject(getJson("/wsman-config/data-collection", 200));
+        final String repository = before.getString("rrdRepository");
+        final String rootVersion = before.getJSONObject("versions").getString("wsman-datacollection-config.xml");
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=wsman-datacollection-config.xml",
+                "{\"version\":\"" + rootVersion + "\",\"collections\":[{\"name\":\"broken\",\"rrdStep\":1,\"rras\":[\"RRA:AVERAGE:0.5:1:1\"],\"includeAllSystemDefinitions\":true}],\"groups\":[],\"systemDefinitions\":[]}", 200);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml",
+                "{\"collections\":[],\"groups\":[{\"name\":\"custom-g\",\"resourceType\":\"node\",\"resourceUri\":\"x\",\"attributes\":[{\"name\":\"a\",\"alias\":\"a\",\"type\":\"gauge\"}]}],\"systemDefinitions\":[]}", 200);
+
+        final JSONObject after = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/data-collection/reset", "", 200).getContentAsString());
+        assertEquals("[\"wsman-datacollection-config.xml\",\"dell-idrac.xml\",\"microsoft-windows.xml\"]", after.getJSONArray("sources").toString());
+        assertEquals("default", after.getJSONArray("collections").getJSONObject(0).getString("name"));
+        assertEquals(300, after.getJSONArray("collections").getJSONObject(0).getInt("rrdStep"));
+        assertEquals("the site's repository survives a reset", repository, after.getString("rrdRepository"));
+        assertFalse(Files.exists(m_workingHome.resolve("etc/wsman-datacollection.d/custom.xml")));
+        assertEquals(before.getJSONArray("groups").length(), after.getJSONArray("groups").length());
+    }
+
     /**
      * End to end inside one JVM: a definition saved through the API is what the
      * real collector hands to the WS-Man client for a matching server, with no
@@ -474,6 +546,9 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
             getJson("/wsman-config/data-collection", 403);
             getJson("/wsman-config/status", 403);
             sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/definitions/0/sync", "", 403);
+            getJson("/wsman-config/readiness", 403);
+            sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/readiness/enable-polling", "", 403);
+            sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/data-collection/reset", "", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml", "{\"collections\":[],\"groups\":[],\"systemDefinitions\":[]}", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", "{\"defaults\":{},\"definitions\":[]}", 403);
         } finally {
