@@ -45,6 +45,7 @@ import org.w3c.dom.Node;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * A {@link WSManClientFactory} that reuses clients for endpoints with Kerberos
