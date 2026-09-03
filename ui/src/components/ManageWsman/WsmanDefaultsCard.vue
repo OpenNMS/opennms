@@ -2,13 +2,13 @@
   <OnmsCard class="wsman-defaults" data-test="wsman-defaults">
     <template #title>
       <div class="card-header">
-        <span class="card-title">Agent Defaults</span>
+        <span class="card-title">Default Connection Settings</span>
         <OnmsButton label="Edit" variant="outlined" data-test="edit-defaults" @click="emit('edit')" />
       </div>
     </template>
     <template #content>
       <p class="card-note">
-        Applied to every WS-Man agent unless a definition overrides the setting. A dash means the
+        Used for every WS-Man server that no server definition matches, and for any setting a matching definition leaves unset. A dash means the
         setting is not present in <code>wsman-config.xml</code> and the built-in default applies.
       </p>
       <p v-if="status" class="card-note" data-test="defaults-status">

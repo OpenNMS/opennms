@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.TimeSeries;
 import org.opennms.netmgt.config.wsman.Attrib;
 import org.opennms.netmgt.config.wsman.Collection;
 import org.opennms.netmgt.config.wsman.Group;
@@ -138,6 +139,8 @@ public class WsmanDataCollectionDto {
     }
 
     private String rrdRepository;
+    // org.opennms.timeseries.strategy; rrdRepository and the RRAs only matter under "rrd"
+    private final String timeseriesStrategy = System.getProperty(TimeSeries.TIMESERIES_STRATEGY_PROPERTY, TimeSeries.RRD_TIME_SERIES_STRATEGY_NAME);
     private final List<String> sources = new ArrayList<>();
     // content hash per source file; a PUT of that file must present it
     private final Map<String, String> versions = new LinkedHashMap<>();
@@ -146,6 +149,7 @@ public class WsmanDataCollectionDto {
     private final List<SystemDefinitionInfo> systemDefinitions = new ArrayList<>();
 
     public String getRrdRepository() { return rrdRepository; }
+    public String getTimeseriesStrategy() { return timeseriesStrategy; }
     public List<String> getSources() { return sources; }
     public Map<String, String> getVersions() { return versions; }
     public List<CollectionInfo> getCollections() { return collections; }

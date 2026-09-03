@@ -2,7 +2,7 @@
   <OnmsDialog
     :visible="visible"
     modal
-    header="Edit Agent Defaults"
+    header="Edit Default Connection Settings"
     class="wsman-defaults-dialog"
     width="min(900px, 95vw)"
     data-test="wsman-defaults-dialog"
@@ -11,7 +11,7 @@
     <div class="form-column">
       <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
       <p class="dialog-note">
-        These settings apply to every WS-Man agent that no definition matches, and fill in whatever a
+        These settings apply to every WS-Man server that no definition matches, and fill in whatever a
         definition leaves unset.
       </p>
       <WsmanSettingsFields

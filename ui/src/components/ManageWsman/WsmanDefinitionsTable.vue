@@ -10,7 +10,7 @@
       <p class="card-note">
         A server definition names the servers to collect from, by IP range, address or IPLIKE pattern,
         and the connection settings to use for them. The first matching definition wins and anything it
-        leaves unset comes from the agent defaults. The last column counts the servers carrying the WS-Man
+        leaves unset comes from the default connection settings. The last column counts the servers carrying the WS-Man
         service that the definition matches, and how many of them the poller currently sees responding.
       </p>
       <OnmsTable
@@ -19,7 +19,7 @@
         data-test="wsman-definitions-table"
       >
         <template #empty>
-          <span data-test="no-definitions">No server definitions. Every server uses the agent defaults.</span>
+          <span data-test="no-definitions">No server definitions. Every server uses the default connection settings.</span>
         </template>
         <OnmsColumn header="Applies to">
           <template #body="{ data }">

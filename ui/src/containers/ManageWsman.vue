@@ -24,7 +24,7 @@
       <OnmsTabList>
         <OnmsTab :value="0" data-test="tab-definitions">Server Definitions ({{ store.config.definitions.length }})</OnmsTab>
         <OnmsTab :value="1" data-test="tab-data-collection">Data Collection</OnmsTab>
-        <OnmsTab :value="2" data-test="tab-defaults">Agent Defaults</OnmsTab>
+        <OnmsTab :value="2" data-test="tab-defaults">Default Settings</OnmsTab>
       </OnmsTabList>
       <OnmsTabPanels>
         <OnmsTabPanel :value="0">
@@ -107,7 +107,7 @@
       >
         <template #content>
           <p data-test="delete-confirm-text">
-            Delete server definition {{ (deleteIndex ?? 0) + 1 }}? Servers it matched will use the next matching definition or the defaults.
+            Delete server definition {{ (deleteIndex ?? 0) + 1 }}? Servers it matched will use the next matching definition or the default settings.
           </p>
         </template>
       </OnmsConfirmationDialog>

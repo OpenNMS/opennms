@@ -126,4 +126,31 @@ describe('WsmanDefinitionDialog.vue', () => {
     await wrapper.find('[data-test="ipmatch-input"]').setValue('10.0.*.*')
     expect(wrapper.find('[data-test="add-ipmatch"]').attributes('disabled')).toBeUndefined()
   })
+
+  it('keeps the advanced connection settings folded until asked, and opens them when one is set', async () => {
+    await mountDialog(null)
+    expect(wrapper.find('[data-test="username-input"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="ssl-select"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="port-input"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="advanced-summary"]').exists()).toBe(false)
+    await wrapper.find('[data-test="toggle-advanced"]').trigger('click')
+    expect(wrapper.find('[data-test="port-input"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="vendor-input"]').exists()).toBe(true)
+
+    wrapper.unmount()
+    await mountDialog(0)
+    expect(wrapper.find('[data-test="port-input"]').exists()).toBe(false)
+    wrapper.unmount()
+
+    wrapper = mount(WsmanDefinitionDialog, {
+      props: { visible: false, config: { ...CONFIG, definitions: [{ ...CONFIG.definitions[0], port: 5986, productVendor: 'Dell' }] }, index: 0 },
+      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub }}
+    })
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+    expect(wrapper.find('[data-test="port-input"]').exists()).toBe(true)
+    await wrapper.find('[data-test="toggle-advanced"]').trigger('click')
+    expect(wrapper.find('[data-test="port-input"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="advanced-summary"]').text()).toBe('Set: Port, Vendor')
+  })
 })

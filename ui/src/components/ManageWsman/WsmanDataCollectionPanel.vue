@@ -11,8 +11,13 @@
       <OnmsButton variant="outlined" severity="danger" label="Reset to defaults" data-test="reset-data-collection" @click="emit('reset')" />
     </div>
     <dl class="summary">
+      <dt>Time-series storage</dt>
+      <dd data-test="timeseries-strategy">{{ storageLabel }}</dd>
       <dt>RRD repository</dt>
-      <dd data-test="rrd-repository">{{ dataCollection.rrdRepository || NOT_SET }}</dd>
+      <dd data-test="rrd-repository">
+        {{ dataCollection.rrdRepository || NOT_SET }}
+        <span v-if="!usesRrd" class="muted" data-test="rrd-unused">(not used with {{ storageLabel }}; only each collection's step applies)</span>
+      </dd>
       <dt>Source files</dt>
       <dd data-test="sources">{{ dataCollection.sources.join(', ') }}</dd>
     </dl>
@@ -35,10 +40,10 @@
           <template #empty><span>No collections.</span></template>
           <OnmsColumn field="name" header="Name" sortable />
           <OnmsColumn field="source" header="Source" sortable />
-          <OnmsColumn header="RRD step">
+          <OnmsColumn header="Step (s)">
             <template #body="{ data }">{{ data.rrdStep ?? NOT_SET }}</template>
           </OnmsColumn>
-          <OnmsColumn header="RRAs">
+          <OnmsColumn :header="usesRrd ? 'RRAs' : 'RRAs (RRD only)'">
             <template #body="{ data }"><span :title="data.rras.join('\n')">{{ data.rras.length }}</span></template>
           </OnmsColumn>
           <OnmsColumn header="System definitions">
@@ -184,6 +189,18 @@ const filteredGroups = computed(() => {
   return props.dataCollection.groups.filter(g =>
     [g.name, g.source, g.resourceType].some(v => v?.toLowerCase().includes(term)))
 })
+
+const STORAGE_LABELS: Record<string, string> = {
+  rrd: 'RRD files',
+  newts: 'Newts',
+  integration: 'time-series integration plugin',
+  osgi: 'time-series integration plugin',
+  evaluate: 'evaluate (sizing mode, samples discarded)',
+  tcp: 'TCP (protobuf) export'
+}
+const strategy = computed(() => props.dataCollection.timeseriesStrategy || 'rrd')
+const usesRrd = computed(() => strategy.value === 'rrd')
+const storageLabel = computed(() => STORAGE_LABELS[strategy.value] ?? strategy.value)
 </script>
 
 <style lang="scss" scoped>
@@ -276,5 +293,11 @@ const filteredGroups = computed(() => {
     padding: 0.25rem 0.75rem 0.25rem 0;
     border-bottom: 1px solid var(--p-content-border-color, #ddd);
   }
+}
+
+.muted {
+  color: var(--p-text-muted-color);
+  font-size: 0.85rem;
+  margin-left: 0.25rem;
 }
 </style>

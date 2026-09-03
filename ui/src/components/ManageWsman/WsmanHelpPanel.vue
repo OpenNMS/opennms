@@ -23,9 +23,10 @@
       <div class="help-section">
         <div class="section-title">What this page shows</div>
         <p>
-          <strong>Agent Defaults</strong> are the connection settings from the root of
-          <code>wsman-config.xml</code> that apply to every agent. <strong>Server Definitions</strong> name the
-          servers to collect from, by IP range, address or IPLIKE pattern, and override those settings for them;
+          <strong>Server Definitions</strong> name the servers to collect from, by IP range, address or IPLIKE
+          pattern, together with the connection settings that apply to them. <strong>Default Connection
+          Settings</strong> are the settings from the root of <code>wsman-config.xml</code> (which calls
+          servers "agents") used for every server no definition matches, and for any setting a definition leaves unset;
           the first matching definition wins; use the Up and Down actions to change the order. The
           responding / servers column comes from the poller: servers carrying the WS-Man service that the
           definition matches, and how many of them have no open outage right now; a definition matching no
