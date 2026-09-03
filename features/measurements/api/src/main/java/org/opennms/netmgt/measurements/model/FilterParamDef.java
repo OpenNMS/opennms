@@ -21,6 +21,10 @@
  */
 package org.opennms.netmgt.measurements.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -55,10 +59,21 @@ public class FilterParamDef {
         this.value = Preconditions.checkNotNull(value, "value argument");
     }
 
+    @Schema(name = "key", required = true,
+            description = "Parameter name, as reported in the filter's metadata.",
+            example = "cutoffDate")
     public String getKey() {
         return key;
     }
 
+    // @XmlValue alone leaves the property out of the generated OpenAPI document, because swagger's
+    // ModelResolver drops members of an XmlAccessType.NONE class that carry none of @XmlElement,
+    // @XmlAttribute, @XmlElementRef(s) or a Jackson 2 @JsonProperty. Named explicitly so a Jackson 2
+    // consumer serializes the wire name "value".
+    @JsonProperty("value")
+    @Schema(name = "value", required = true,
+            description = "Parameter value, always sent as a string and coerced to the parameter's declared type.",
+            example = "0")
     public String getValue() {
         return value;
     }
