@@ -3080,6 +3080,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.tests</groupId>
+        <artifactId>org.opennms.tests.mock-wsman-agent</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>activemq-dependencies</artifactId>
         <version>${project.version}</version>

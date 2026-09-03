@@ -28,6 +28,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +46,7 @@ import org.junit.Test;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
+import org.opennms.mock.wsman.FakeWsManAgent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSStack;
@@ -51,6 +54,7 @@ import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
+import org.testcontainers.utility.MountableFile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,13 +70,13 @@ public class WsmanConfigIT {
     private static final Logger LOG = LoggerFactory.getLogger(WsmanConfigIT.class);
     private static final ObjectMapper JSON = new ObjectMapper();
 
-    private static final String FAKE_CLASS = "org.opennms.core.wsman.fake.FakeWsManAgent";
+    private static final String FAKE_JAR = "/tmp/mock-wsman-agent.jar";
     private static final int FAKE_PORT = 5985;
     private static final String FAKE_USER = "monitor";
     private static final String FAKE_PASSWORD = "smoke-secret";
     // the shipped Windows system definition matches on vendor and an "OS: ..." version
-    private static final String FAKE_VENDOR = "Microsoft Corporation";
-    private static final String FAKE_VERSION = "OS: 10.0.20348 SP: 0.0 Stack: 3.0";
+    private static final String FAKE_VENDOR = FakeWsManAgent.DEFAULT_VENDOR;
+    private static final String FAKE_VERSION = FakeWsManAgent.DEFAULT_VERSION;
     private static final String REQUISITION = "wsman-smoke";
     private static final String SERVER = "127.0.0.1";
 
@@ -163,9 +167,11 @@ public class WsmanConfigIT {
 
     private void startFakeAgentInContainer() throws Exception {
         final OpenNMSContainer opennms = stack.opennms();
-        // the OpenNMS JVM found by runjava is recorded in etc/java.conf; the fake ships in the wsman feature jar in lib/
+        // the fake is a JDK-only jar from the test dependencies; run it on the container's OpenNMS JVM (etc/java.conf)
+        final Path jar = Paths.get(FakeWsManAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        opennms.copyFileToContainer(MountableFile.forHostPath(jar), FAKE_JAR);
         final String command = "J=$(cat /opt/opennms/etc/java.conf 2>/dev/null); "
-                + "nohup \"${J:-/usr}/bin/java\" -cp '/opt/opennms/lib/*' " + FAKE_CLASS
+                + "nohup \"${J:-/usr}/bin/java\" -cp " + FAKE_JAR + " " + FakeWsManAgent.class.getName()
                 + " --bind 127.0.0.1 --port " + FAKE_PORT + " --user " + FAKE_USER + " --password " + FAKE_PASSWORD
                 + " > /tmp/fake-wsman.log 2>&1 &";
         final ExecResult started = opennms.execInContainer("sh", "-c", command);

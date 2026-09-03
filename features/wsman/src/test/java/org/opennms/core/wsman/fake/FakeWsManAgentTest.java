@@ -35,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.wsman.Identity;
+import org.opennms.mock.wsman.FakeWsManAgent;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.WSManVersion;

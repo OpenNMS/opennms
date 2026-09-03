@@ -190,8 +190,6 @@ public class WsmanConfigRestService {
     private static final String WSMAN_POLL_RESOURCE_URI = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_OperatingSystem";
     // WsManMonitor refuses to poll without a rule; any answer with a Caption counts as up
     private static final String WSMAN_POLL_RULE = "#Caption matches '.*'";
-    // the shipped data collection files, bundled by the wsman feature for installs without share/etc-pristine
-    private static final String DEFAULTS_RESOURCE_PREFIX = "wsman-defaults/";
     private static final String[] DEFAULT_DROP_INS = { "dell-idrac.xml", "microsoft-windows.xml" };
     private static final Pattern REQUISITION_NAME = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._-]*$");
 
@@ -478,7 +476,7 @@ public class WsmanConfigRestService {
     @POST
     @javax.ws.rs.Path("data-collection/reset")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Reset the WS-Man data collection files to the shipped defaults", description = "Restores wsman-datacollection-config.xml and the shipped drop-ins from share/etc-pristine, or from the copies bundled with the wsman feature, keeps the current RRD repository, and removes every other drop-in.", operationId = "WsmanConfigRestServiceResetDataCollection")
+    @Operation(summary = "Reset the WS-Man data collection files to the shipped defaults", description = "Restores wsman-datacollection-config.xml and the shipped drop-ins from the packaged install's share/etc-pristine, keeps the current RRD repository, and removes every other drop-in; 409 when this install has no pristine copies.", operationId = "WsmanConfigRestServiceResetDataCollection")
     public Response resetDataCollection(@Context final SecurityContext securityContext) {
         requireAdmin(securityContext);
         synchronized (this) {
@@ -516,18 +514,13 @@ public class WsmanConfigRestService {
         }
     }
 
-    // share/etc-pristine on packaged installs, else the copies the wsman feature bundles
+    // packaged installs keep the shipped etc/ under share/etc-pristine; there is no other trustworthy copy
     private static String defaultDataCollection(final Path home, final String relative) throws IOException {
         final Path pristine = home.resolve("share").resolve("etc-pristine").resolve(relative);
-        if (Files.isReadable(pristine)) {
-            return new String(Files.readAllBytes(pristine), StandardCharsets.UTF_8);
+        if (!Files.isReadable(pristine)) {
+            throw conflict("This install has no pristine copy of " + relative + " under share/etc-pristine, so the shipped defaults cannot be restored.");
         }
-        try (java.io.InputStream in = org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig.class.getClassLoader().getResourceAsStream(DEFAULTS_RESOURCE_PREFIX + relative)) {
-            if (in == null) {
-                throw new IOException("no shipped copy of " + relative + " is available");
-            }
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
+        return new String(Files.readAllBytes(pristine), StandardCharsets.UTF_8);
     }
 
     private WsmanReadinessDto readiness() {
@@ -952,6 +945,10 @@ public class WsmanConfigRestService {
 
     private static WebApplicationException badRequest(final String message) {
         return new WebApplicationException(Response.status(Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(message).build());
+    }
+
+    private static WebApplicationException conflict(final String message) {
+        return new WebApplicationException(Response.status(Status.CONFLICT).type(MediaType.TEXT_PLAIN).entity(message).build());
     }
 
     // --- file access -------------------------------------------------------

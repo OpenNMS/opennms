@@ -22,7 +22,6 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,7 +61,7 @@ import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.collection.test.CollectionSetUtils;
 import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
-import org.opennms.core.wsman.fake.FakeWsManAgent;
+import org.opennms.mock.wsman.FakeWsManAgent;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -74,6 +73,7 @@ import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.TagMatcher;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -150,9 +150,9 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private RequisitionAccessService m_requisitionAccessService;
 
     private java.nio.file.Path m_discoveryFile;
-    private String m_discoveryContent;
     private java.nio.file.Path m_pollerFile;
-    private String m_pollerContent;
+    private String m_originalHomeProperty;
+    private File m_originalPollerFile;
 
     private Resource m_originalResource;
     private File m_workingCopy;
@@ -199,11 +199,29 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
         dcDao.setOpennmsHome(m_workingHome);
 
-        // a range sync edits the discovery configuration under opennms.home; put it back afterwards
-        m_discoveryFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME).toPath();
-        m_discoveryContent = new String(Files.readAllBytes(m_discoveryFile), StandardCharsets.UTF_8);
-        m_pollerFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME).toPath();
-        m_pollerContent = new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8);
+        // sync and enable-polling rewrite discovery-configuration.xml and poller-configuration.xml,
+        // which the factories resolve through opennms.home on every access: point that at the
+        // scratch home, holding copies, so the tracked files are never touched
+        m_originalHomeProperty = System.getProperty("opennms.home");
+        m_discoveryFile = etc.resolve("discovery-configuration.xml");
+        Files.copy(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME).toPath(), m_discoveryFile);
+        m_pollerFile = etc.resolve("poller-configuration.xml");
+        Files.copy(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME).toPath(), m_pollerFile);
+        // and the pristine copies a packaged install carries, for the reset
+        final java.nio.file.Path pristine = m_workingHome.resolve("share/etc-pristine");
+        Files.createDirectories(pristine.resolve("wsman-datacollection.d"));
+        Files.copy(m_originalHome.resolve("etc/wsman-datacollection-config.xml"), pristine.resolve("wsman-datacollection-config.xml"));
+        try (java.util.stream.Stream<java.nio.file.Path> s = Files.list(m_originalHome.resolve("etc/wsman-datacollection.d"))) {
+            for (final java.nio.file.Path f : (Iterable<java.nio.file.Path>) s::iterator) {
+                Files.copy(f, pristine.resolve("wsman-datacollection.d").resolve(f.getFileName()));
+            }
+        }
+        m_originalPollerFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+        System.setProperty("opennms.home", m_workingHome.toString());
+        DiscoveryConfigFactory.getInstance().reload();
+        // the poller factory caches its file once; point it at the copy explicitly
+        PollerConfigFactory.setPollerConfigFile(m_pollerFile.toFile());
+        PollerConfigFactory.reload();
     }
 
     @After
@@ -211,11 +229,15 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ResourceTypeMapper.getInstance().setResourceTypeMapper(null);
         // the temporary database is shared across the methods of this class
         m_databasePopulator.resetDatabase();
-        Files.write(m_discoveryFile, m_discoveryContent.getBytes(StandardCharsets.UTF_8));
-        if (!m_pollerContent.equals(new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8))) {
-            Files.write(m_pollerFile, m_pollerContent.getBytes(StandardCharsets.UTF_8));
-            org.opennms.netmgt.config.PollerConfigFactory.reload();
+        // back to the tracked home, and the singletons re-read it so nothing leaks into later classes
+        if (m_originalHomeProperty == null) {
+            System.clearProperty("opennms.home");
+        } else {
+            System.setProperty("opennms.home", m_originalHomeProperty);
         }
+        DiscoveryConfigFactory.getInstance().reload();
+        PollerConfigFactory.setPollerConfigFile(m_originalPollerFile);
+        PollerConfigFactory.reload();
         try {
             m_requisitionAccessService.deletePendingRequisition("wsman-sync");
             m_requisitionAccessService.deleteDeployedRequisition("wsman-sync");
@@ -520,6 +542,13 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("the site's repository survives a reset", repository, after.getString("rrdRepository"));
         assertFalse(Files.exists(m_workingHome.resolve("etc/wsman-datacollection.d/custom.xml")));
         assertEquals(before.getJSONArray("groups").length(), after.getJSONArray("groups").length());
+
+        // a dir-style install without share/etc-pristine cannot reset and says so, leaving the files alone
+        Files.delete(m_workingHome.resolve("share/etc-pristine/wsman-datacollection-config.xml"));
+        final String beforeFailedReset = new String(Files.readAllBytes(m_workingHome.resolve("etc/wsman-datacollection-config.xml")), StandardCharsets.UTF_8);
+        final String message = sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/data-collection/reset", "", 409).getContentAsString();
+        assertTrue(message, message.contains("share/etc-pristine"));
+        assertEquals(beforeFailedReset, new String(Files.readAllBytes(m_workingHome.resolve("etc/wsman-datacollection-config.xml")), StandardCharsets.UTF_8));
     }
 
     /**
@@ -535,8 +564,7 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
             // the shipped resource types the Windows groups store their rows under
             final Map<String, ResourceType> resourceTypes = new HashMap<>();
-            try (InputStream in = getClass().getClassLoader().getResourceAsStream("wsman-defaults/resource-types.d/wsman-microsoft-windows.xml")) {
-                assertNotNull("resource types bundled with the wsman feature", in);
+            try (InputStream in = Files.newInputStream(m_originalHome.resolve("etc/resource-types.d/wsman-microsoft-windows.xml"))) {
                 for (final ResourceType type : JaxbUtils.unmarshal(ResourceTypes.class, new InputStreamReader(in, StandardCharsets.UTF_8)).getResourceTypes()) {
                     resourceTypes.put(type.getName(), type);
                 }
