@@ -12,6 +12,13 @@
         />
         <router-link
           v-if="!isSingleGraph"
+          :to="`/resource-graphs/forecast/${label}/${definition}/${resourceId}`"
+          target="_blank"
+        >
+          <OnmsButton variant="outlined" data-test="forecasting-btn">Forecasting</OnmsButton>
+        </router-link>
+        <router-link
+          v-if="!isSingleGraph"
           :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
           target="_blank"
         >

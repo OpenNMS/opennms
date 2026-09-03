@@ -490,12 +490,26 @@ export interface Metric {
   transient?: true | false
 }
 
+/** A measurements filter parameter; every value is sent as a string, even numbers. */
+export interface FilterParamDef {
+  key: string
+  value: string
+}
+
+/** A measurements filter (e.g. Outlier, HoltWinters, Trend, Chomp) and its parameters. */
+export interface FilterDef {
+  name: string
+  parameter: FilterParamDef[]
+}
+
 export interface GraphMetricsPayload {
   end: number
   start: number
   step: number
   source: Metric[]
   expression?: { label: string; transient: boolean; value: string }[]
+  /** Server-side filter chain (JSON key is singular "filter", matching QueryRequest). */
+  filter?: FilterDef[]
   /** Cap on returned rows; the server downsamples further if the step would exceed it. */
   maxrows?: number
   /** When true a missing/unknown source yields NaNs instead of failing the whole query. */
@@ -551,6 +565,9 @@ export interface PrintStatement {
   text?: string
   metric: string
   value: number | typeof NaN
+  // 'ok' when the value is a finite number, 'nodata' when the source had no
+  // valid samples, 'invalid' when it had samples but the result is non-finite
+  dataState?: 'ok' | 'nodata' | 'invalid'
 }
 
 export interface Series {

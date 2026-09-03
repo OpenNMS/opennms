@@ -261,6 +261,12 @@ const router = createRouter({
           props: true
         },
         {
+          path: 'forecast/:label/:forecastDefinition/:forecastResourceId',
+          name: 'Forecast',
+          component: () => import('@/components/Resources/ForecastGraph.vue'),
+          props: true
+        },
+        {
           path: 'graphs',
           name: 'Graphs',
           component: Graphs
