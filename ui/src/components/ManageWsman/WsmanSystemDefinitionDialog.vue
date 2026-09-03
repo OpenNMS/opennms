@@ -12,7 +12,7 @@
       <FormField label="Name" for="sysdef-name" required :error="nameProblem || undefined">
         <OnmsInputText id="sysdef-name" v-model="name" :invalid="!!nameProblem" fluid data-test="name-input" />
       </FormField>
-      <FormField label="File" for="sysdef-source" hint="The file the object is saved in. A new name creates a drop-in under wsman-datacollection.d/.">
+      <FormField label="File" for="sysdef-source" hint="The file the object is saved in.">
         <OnmsSelect v-if="original" inputId="sysdef-source" :modelValue="source" :options="sourceOptions" optionLabel="label" optionValue="value" disabled fluid data-test="source-select" />
         <OnmsSelect v-else inputId="sysdef-source" v-model="source" :options="sourceOptions" optionLabel="label" optionValue="value" editable fluid data-test="source-select" />
       </FormField>

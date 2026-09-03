@@ -31,11 +31,15 @@
           <code>${scv:alias:password}</code>, resolved per node when collecting. Passwords are shown only as
           set or not set, and saving without entering one keeps the stored password. Changes are written to
           <code>wsman-config.xml</code> and picked up by the daemons without a restart. <strong>Data
-          Collection</strong> manages the collections, system definitions and groups the collector merges from
-          <code>wsman-datacollection-config.xml</code> and <code>wsman-datacollection.d/</code>; each object is
-          saved back to the file it lives in, and rewriting a file drops any XML comments it held. Changes are
-          picked up within a few seconds and used from the next collection cycle; only a new collection name
-          wired into <code>collectd-configuration.xml</code> needs a Collectd configuration reload.
+          Collection</strong> shows the collections, system definitions and groups the collector merges from
+          <code>wsman-datacollection-config.xml</code> and <code>wsman-datacollection.d/</code>. Existing
+          objects can be edited or removed and are written back to the file they live in (rewriting a file drops
+          any XML comments); adding new ones is not offered until these files move into the database. Every
+          change is picked up automatically within a few seconds and used from the next poll or collection
+          cycle: no restart is needed. Two exceptions: a collection name newly referenced from
+          <code>collectd-configuration.xml</code> needs a Collectd configuration reload, and a server only
+          gets the WS-Man service through provisioning, so newly matching servers need a requisition import or
+          rescan.
         </p>
       </div>
     </div>
