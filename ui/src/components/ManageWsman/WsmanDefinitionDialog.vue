@@ -55,6 +55,18 @@
       </section>
 
       <section>
+        <h3 class="section-title">Requisition</h3>
+        <p class="dialog-note">
+          Link the requisition these servers are provisioned into. Sync then adds each specific address
+          the requisition lacks as a node with the WS-Man service, and each range as a scheduled discovery
+          range for it; nothing is ever removed.
+        </p>
+        <FormField label="Requisition" for="wsman-definition-requisition" :error="requisitionProblem || undefined" hint="Pick an existing requisition or type a new name.">
+          <OnmsSelect inputId="wsman-definition-requisition" v-model="requisition" :options="requisitionOptions" optionLabel="label" optionValue="value" editable showClear :invalid="!!requisitionProblem" fluid data-test="requisition-select" />
+        </FormField>
+      </section>
+
+      <section>
         <h3 class="section-title">Settings</h3>
         <p class="dialog-note">Anything left unset is inherited from the agent defaults.</p>
         <WsmanSettingsFields
@@ -76,9 +88,10 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { OnmsButton, OnmsChip, OnmsDialog, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 
+import FormField from '@/components/Common/FormField.vue'
 import WsmanSettingsFields from './WsmanSettingsFields.vue'
 import {
   definitionToInput,
@@ -87,10 +100,12 @@ import {
   isIpAddress,
   isIplikePattern,
   rangeProblem,
+  requisitionNameProblem,
   settingsToForm,
   settingsToInput,
   validateSettingsForm
 } from './wsmanForm'
+import API from '@/services'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { WsmanConfig, WsmanDefinitionInput, WsmanRange } from '@/types/wsmanAdmin'
 
@@ -113,14 +128,25 @@ const specifics = ref<string[]>([])
 const ipMatches = ref<string[]>([])
 const newSpecific = ref('')
 const newIpMatch = ref('')
+const requisition = ref<string | null>(null)
+const requisitionNames = ref<string[]>([])
 const saving = ref(false)
 const errorText = ref('')
+
+const requisitionProblem = computed(() => requisitionNameProblem(requisition.value ?? ''))
+const requisitionOptions = computed(() => {
+  const names = new Set(requisitionNames.value)
+  if (requisition.value && !names.has(requisition.value)) {
+    names.add(requisition.value)
+  }
+  return [...names].sort().map(n => ({ label: n, value: n }))
+})
 
 const errors = computed(() => validateSettingsForm(form.value))
 const rangeErrors = computed(() => ranges.value.map(r => rangeProblem(r.begin, r.end)))
 const hasCriteria = computed(() => ranges.value.length + specifics.value.length + ipMatches.value.length > 0)
 const canSave = computed(() =>
-  hasCriteria.value && Object.keys(errors.value).length === 0 && rangeErrors.value.every(e => e === null))
+  hasCriteria.value && Object.keys(errors.value).length === 0 && rangeErrors.value.every(e => e === null) && !requisitionProblem.value)
 
 watch(
   () => props.visible,
@@ -133,7 +159,11 @@ watch(
       ipMatches.value = d ? [...d.ipMatches] : []
       newSpecific.value = ''
       newIpMatch.value = ''
+      requisition.value = d?.requisition ?? null
       errorText.value = ''
+      API.getRequisitionNames().then((names) => {
+        requisitionNames.value = names
+      })
     }
   }
 )
@@ -166,7 +196,8 @@ const save = async () => {
       ranges: ranges.value.map(r => ({ begin: r.begin.trim(), end: r.end.trim() })),
       specifics: [...specifics.value],
       ipMatches: [...ipMatches.value],
-      sourceIndex: props.index
+      sourceIndex: props.index,
+      requisition: requisition.value?.trim() || null
     }
     const definitions = props.config.definitions.map((d, i) => definitionToInput(d, i))
     if (props.index === null) {

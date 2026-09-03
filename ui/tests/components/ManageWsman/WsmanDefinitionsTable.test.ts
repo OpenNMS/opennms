@@ -30,7 +30,7 @@ const OnmsCardStub = { name: 'OnmsCard', template: '<div><slot name="title" /><s
 const BASE = {
   retry: null, timeout: null, username: null, hasPassword: false, port: null, maxElements: null,
   ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null,
-  ranges: [], specifics: [], ipMatches: []
+  ranges: [], specifics: [], ipMatches: [], requisition: null
 }
 
 const mountTable = (definitions: any[], status: any = null) => mount(WsmanDefinitionsTable, {
@@ -69,6 +69,20 @@ describe('WsmanDefinitionsTable.vue', () => {
     const cells = mountTable(defs, status).findAll('[data-test="status-cell"]').map(c => c.text())
     expect(cells).toEqual(['3 / 4', '1 / 1'])
     expect(mountTable(defs).findAll('[data-test="status-unknown"]')).toHaveLength(2)
+  })
+
+  it('shows the linked requisition with its provisioned count and emits sync only when linked', async () => {
+    const defs = [{ ...BASE, specifics: ['10.0.0.1', '10.0.0.2'], requisition: 'windows' }, { ...BASE, specifics: ['10.0.0.3'] }]
+    const status = { serviceName: 'WS-Man', servers: 0, defaults: { servers: 0, responding: 0, down: 0, lastResponse: null },
+      definitions: [{ index: 0, servers: 0, responding: 0, down: 0, lastResponse: null, requisition: 'windows', specificAddresses: 2, provisioned: 1 },
+        { index: 1, servers: 0, responding: 0, down: 0, lastResponse: null, requisition: null, specificAddresses: 1, provisioned: 0 }] }
+    const wrapper = mountTable(defs, status)
+    expect(wrapper.find('[data-test="requisition-0"]').text()).toContain('windows')
+    expect(wrapper.find('[data-test="requisition-0"] [data-test="provisioned"]').text()).toBe('1 of 2 addresses provisioned')
+    const syncs = wrapper.findAll('[data-test="sync-definition"]')
+    expect(syncs[1].attributes('disabled')).toBeDefined()
+    await syncs[0].trigger('click')
+    expect(wrapper.emitted('sync')?.[0]).toEqual([0])
   })
 
   it('emits add, edit, delete and move for the actions', async () => {

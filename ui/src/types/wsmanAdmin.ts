@@ -47,6 +47,8 @@ export interface WsmanDefinition extends WsmanAgentSettings {
   ranges: WsmanRange[]
   specifics: string[]
   ipMatches: string[]
+  // requisition (foreign source) the named servers are provisioned into
+  requisition: string | null
 }
 
 export interface WsmanConfig {
@@ -70,6 +72,7 @@ export interface WsmanDefinitionInput extends WsmanSettingsInput {
   specifics: string[]
   ipMatches: string[]
   sourceIndex: number | null
+  requisition: string | null
 }
 
 export interface WsmanConfigInput {
@@ -177,6 +180,22 @@ export interface WsmanStatusBucket {
 
 export interface WsmanDefinitionStatus extends WsmanStatusBucket {
   index: number
+  requisition: string | null
+  // of the definition's specific addresses, how many exist as a node interface
+  specificAddresses: number
+  provisioned: number
+}
+
+// Result of POST /api/v2/wsman-config/definitions/{index}/sync
+export interface WsmanSyncResult {
+  requisition: string
+  addedNodes: string[]
+  existingNodes: number
+  addedRanges: string[]
+  existingRanges: number
+  skippedPatterns: string[]
+  importRequested: boolean
+  discoveryReloadRequested: boolean
 }
 
 export interface WsmanStatus {

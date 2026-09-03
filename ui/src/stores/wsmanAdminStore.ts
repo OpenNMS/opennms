@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -78,5 +78,14 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     return error
   }
 
-  return { config, loadError, isLoading, status, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile }
+  // the result on success (and the status is re-read), else the reason
+  const syncDefinition = async (index: number): Promise<WsmanSyncResult | string> => {
+    const result = await API.syncWsmanDefinition(index)
+    if (typeof result !== 'string') {
+      status.value = await API.getWsmanStatus()
+    }
+    return result
+  }
+
+  return { config, loadError, isLoading, status, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition }
 })

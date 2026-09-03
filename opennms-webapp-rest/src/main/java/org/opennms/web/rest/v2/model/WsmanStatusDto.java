@@ -58,12 +58,26 @@ public class WsmanStatusDto {
 
     public static class DefinitionStatus extends Bucket {
         private final int index;
+        private String requisition;
+        // of the definition's specific addresses, how many exist as a node interface
+        private int specificAddresses;
+        private int provisioned;
 
         public DefinitionStatus(final int index) {
             this.index = index;
         }
 
         public int getIndex() { return index; }
+        public String getRequisition() { return requisition; }
+        public void setRequisition(final String requisition) { this.requisition = requisition; }
+        public int getSpecificAddresses() { return specificAddresses; }
+        public int getProvisioned() { return provisioned; }
+        public void countSpecific(final boolean isProvisioned) {
+            specificAddresses++;
+            if (isProvisioned) {
+                provisioned++;
+            }
+        }
     }
 
     private final String serviceName;

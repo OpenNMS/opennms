@@ -42,11 +42,20 @@
         <OnmsColumn header="Responding / servers">
           <template #body="{ data }"><WsmanStatusCell :bucket="statusFor(data.index)" /></template>
         </OnmsColumn>
+        <OnmsColumn header="Requisition">
+          <template #body="{ data }">
+            <div class="requisition-cell" :data-test="`requisition-${data.index}`">
+              <span>{{ data.definition.requisition || NOT_SET }}</span>
+              <small v-if="provisionedText(data.index)" class="provisioned" data-test="provisioned">{{ provisionedText(data.index) }}</small>
+            </div>
+          </template>
+        </OnmsColumn>
         <OnmsColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
               <OnmsButton variant="text" label="Up" :disabled="data.index === 0" :title="'Move up (matched earlier)'" data-test="move-up" @click="emit('move', data.index, -1)" />
               <OnmsButton variant="text" label="Down" :disabled="data.index === rows.length - 1" :title="'Move down (matched later)'" data-test="move-down" @click="emit('move', data.index, 1)" />
+              <OnmsButton variant="text" label="Sync" :disabled="!data.definition.requisition" :title="data.definition.requisition ? `Provision into ${data.definition.requisition}` : 'Link a requisition first'" data-test="sync-definition" @click="emit('sync', data.index)" />
               <OnmsIconButton :icon="Edit" :title="`Edit definition ${data.index + 1}`" :aria-label="`Edit definition ${data.index + 1}`" data-test="edit-definition" @click="emit('edit', data.index)" />
               <OnmsIconButton :icon="Delete" severity="danger" :title="`Delete definition ${data.index + 1}`" :aria-label="`Delete definition ${data.index + 1}`" data-test="delete-definition" @click="emit('delete', data.index)" />
             </div>
@@ -76,11 +85,18 @@ const emit = defineEmits<{
   (e: 'edit', index: number): void
   (e: 'delete', index: number): void
   (e: 'move', index: number, delta: number): void
+  (e: 'sync', index: number): void
 }>()
 
 const rows = computed(() => props.definitions.map((definition, index) => ({ index, definition })))
 
 const statusFor = (index: number) => props.status?.definitions.find(d => d.index === index) ?? null
+
+// "provisioned N of M" for the specific addresses; ranges are discovery's job
+const provisionedText = (index: number): string => {
+  const s = statusFor(index)
+  return s && s.specificAddresses > 0 ? `${s.provisioned} of ${s.specificAddresses} addresses provisioned` : ''
+}
 
 const endpointSummary = (d: WsmanDefinition): string => {
   const parts: string[] = []
@@ -142,6 +158,15 @@ const overrideSummary = (d: WsmanDefinition): string => {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+.requisition-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.provisioned {
+  color: var(--p-text-muted-color);
 }
 
 .card-note {

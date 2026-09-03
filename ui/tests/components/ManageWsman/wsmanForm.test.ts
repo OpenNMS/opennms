@@ -23,6 +23,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   configToInput,
+  requisitionNameProblem,
   formToInput,
   isIpAddress,
   isIplikePattern,
@@ -60,14 +61,17 @@ describe('wsmanForm', () => {
       version: 'abc',
       defaults: SETTINGS,
       definitions: [
-        { ...SETTINGS, ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [] },
-        { ...SETTINGS, ranges: [], specifics: ['10.1.1.1'], ipMatches: ['10.2.*.*'] }
+        { ...SETTINGS, ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [], requisition: 'windows' },
+        { ...SETTINGS, ranges: [], specifics: ['10.1.1.1'], ipMatches: ['10.2.*.*'], requisition: null }
       ]
     })
     expect(input.version).toBe('abc')
     expect(input.definitions.map(d => d.sourceIndex)).toEqual([0, 1])
     expect(input.definitions.every(d => d.password === null && !d.clearPassword)).toBe(true)
     expect(input.definitions[1].ipMatches).toEqual(['10.2.*.*'])
+    expect(input.definitions.map(d => d.requisition)).toEqual(['windows', null])
+    expect(requisitionNameProblem('windows-2024')).toBeNull()
+    expect(requisitionNameProblem('bad name')).toContain('letters')
   })
 
   it('flags only what the daemon cannot use, plus a conflicting password request', () => {

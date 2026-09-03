@@ -76,6 +76,10 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.web.svclayer.api.RequisitionAccessService;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -117,6 +121,12 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private SessionUtils m_sessionUtils;
+
+    @Autowired
+    private RequisitionAccessService m_requisitionAccessService;
+
+    private java.nio.file.Path m_discoveryFile;
+    private String m_discoveryContent;
 
     private Resource m_originalResource;
     private File m_workingCopy;
@@ -162,10 +172,21 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
             }
         }
         dcDao.setOpennmsHome(m_workingHome);
+
+        // a range sync edits the discovery configuration under opennms.home; put it back afterwards
+        m_discoveryFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME).toPath();
+        m_discoveryContent = new String(Files.readAllBytes(m_discoveryFile), StandardCharsets.UTF_8);
     }
 
     @After
     public void restoreShippedFile() throws Exception {
+        Files.write(m_discoveryFile, m_discoveryContent.getBytes(StandardCharsets.UTF_8));
+        try {
+            m_requisitionAccessService.deletePendingRequisition("wsman-sync");
+            m_requisitionAccessService.deleteDeployedRequisition("wsman-sync");
+        } catch (final RuntimeException e) {
+            // nothing to remove
+        }
         final AbstractJaxbConfigDao<?, ?> dao = (AbstractJaxbConfigDao<?, ?>) m_wsManConfigDao;
         dao.setConfigResource(m_originalResource);
         dao.afterPropertiesSet();
@@ -328,6 +349,51 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(0, new JSONObject(getJson("/wsman-config/status", 200)).getJSONArray("definitions").getJSONObject(0).getInt("servers"));
     }
 
+    @Test
+    public void testSyncProvisionsSpecificAddressesAndDiscoveryRanges() throws Exception {
+        put("{\"defaults\":{},\"definitions\":[{\"requisition\":\"wsman-sync\",\"specifics\":[\"10.20.30.40\",\"10.20.30.41\"],"
+                + "\"ranges\":[{\"begin\":\"10.30.0.1\",\"end\":\"10.30.0.50\"}],\"ipMatches\":[\"10.40.*.*\"],\"username\":\"monitor\"}]}", 200);
+        assertEquals("wsman-sync", new JSONObject(getJson("/wsman-config", 200)).getJSONArray("definitions").getJSONObject(0).getString("requisition"));
+
+        // nothing provisioned yet
+        JSONObject status = new JSONObject(getJson("/wsman-config/status", 200)).getJSONArray("definitions").getJSONObject(0);
+        assertEquals(2, status.getInt("specificAddresses"));
+        assertEquals(0, status.getInt("provisioned"));
+        assertEquals("wsman-sync", status.getString("requisition"));
+
+        final JSONObject result = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/definitions/0/sync", "", 200).getContentAsString());
+        assertEquals(2, result.getJSONArray("addedNodes").length());
+        assertEquals(0, result.getInt("existingNodes"));
+        assertTrue(result.getBoolean("importRequested"));
+        assertEquals("10.30.0.1 - 10.30.0.50", result.getJSONArray("addedRanges").getString(0));
+        assertEquals("10.40.*.*", result.getJSONArray("skippedPatterns").getString(0));
+
+        // the requisition holds one node per address, each with the WS-Man service
+        final Requisition requisition = m_requisitionAccessService.getRequisition("wsman-sync");
+        assertEquals(2, requisition.getNodes().size());
+        final RequisitionNode node = requisition.getNode("10.20.30.40");
+        assertEquals("10.20.30.40", InetAddressUtils.str(node.getInterfaces().get(0).getIpAddr()));
+        assertEquals("WS-Man", node.getInterfaces().get(0).getMonitoredServices().get(0).getServiceName());
+        // and the discovery configuration carries the range for that foreign source
+        final String discovery = new String(Files.readAllBytes(m_discoveryFile), StandardCharsets.UTF_8);
+        assertTrue(discovery.contains("foreign-source=\"wsman-sync\""));
+        assertTrue(discovery.contains("10.30.0.50"));
+
+        // a second sync adds nothing and removes nothing
+        final JSONObject again = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/definitions/0/sync", "", 200).getContentAsString());
+        assertEquals(0, again.getJSONArray("addedNodes").length());
+        assertEquals(2, again.getInt("existingNodes"));
+        assertEquals(0, again.getJSONArray("addedRanges").length());
+        assertEquals(1, again.getInt("existingRanges"));
+        assertFalse(again.getBoolean("importRequested"));
+        assertEquals(2, m_requisitionAccessService.getRequisition("wsman-sync").getNodes().size());
+
+        // a definition without a requisition cannot be synced; a bad name cannot be saved
+        put("{\"defaults\":{},\"definitions\":[{\"specifics\":[\"10.20.30.40\"]}]}", 200);
+        sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/definitions/0/sync", "", 400);
+        put("{\"defaults\":{},\"definitions\":[{\"requisition\":\"bad name\",\"specifics\":[\"10.20.30.40\"]}]}", 400);
+    }
+
     /**
      * End to end inside one JVM: a definition saved through the API is what the
      * real collector hands to the WS-Man client for a matching server, with no
@@ -405,6 +471,7 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
             getJson("/wsman-config", 403);
             getJson("/wsman-config/data-collection", 403);
             getJson("/wsman-config/status", 403);
+            sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/definitions/0/sync", "", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml", "{\"collections\":[],\"groups\":[],\"systemDefinitions\":[]}", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", "{\"defaults\":{},\"definitions\":[]}", 403);
         } finally {

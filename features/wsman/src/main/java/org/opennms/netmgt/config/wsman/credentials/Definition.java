@@ -76,6 +76,8 @@ public class Definition implements WsmanAgentConfig {
     protected List<String> specific;
     @XmlElement(name = "ip-match")
     protected List<String> ipMatch;
+    @XmlAttribute(name = "requisition")
+    protected String requisition;
     @XmlAttribute(name = "retry")
     protected Integer retry;
     @XmlAttribute(name = "timeout")
@@ -213,6 +215,15 @@ public class Definition implements WsmanAgentConfig {
      *     {@link Integer }
      *     
      */
+    /** The requisition (foreign source) the named servers are provisioned into; optional. */
+    public String getRequisition() {
+        return requisition;
+    }
+
+    public void setRequisition(final String requisition) {
+        this.requisition = requisition;
+    }
+
     public Integer getRetry() {
         return retry;
     }

@@ -21,11 +21,12 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getWsmanConfig, getWsmanDataCollection, getWsmanStatus, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
-import { v2 } from '@/services/axiosInstances'
+import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanStatus, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
+import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
-  v2: { get: vi.fn(), put: vi.fn() }
+  v2: { get: vi.fn(), put: vi.fn(), post: vi.fn() },
+  rest: { get: vi.fn() }
 }))
 vi.mock('@/composables/useSnackbar', () => ({
   default: () => ({ showSnackBar: vi.fn() })
@@ -83,6 +84,23 @@ describe('wsmanAdminService', () => {
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/wsman-config/status')
     vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
     expect(await getWsmanStatus()).toBeNull()
+  })
+
+  it('posts a sync and returns the result or the server reason', async () => {
+    const result = { requisition: 'windows', addedNodes: ['10.0.0.1'], existingNodes: 0, addedRanges: [], existingRanges: 0, skippedPatterns: [], importRequested: true, discoveryReloadRequested: false }
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: result })
+    expect(await syncWsmanDefinition(2)).toEqual(result)
+    expect(vi.mocked(v2.post).mock.calls[0][0]).toBe('/wsman-config/definitions/2/sync')
+    vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 400, data: 'Server definition 3 is not linked to a requisition.' }})
+    expect(await syncWsmanDefinition(2)).toContain('not linked')
+  })
+
+  it('reads the requisition names from the v1 endpoint and tolerates failure', async () => {
+    vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: { count: 2, 'foreign-source': ['a', 'b'] }})
+    expect(await getRequisitionNames()).toEqual(['a', 'b'])
+    expect(vi.mocked(rest.get).mock.calls[0][0]).toBe('/requisitionNames')
+    vi.mocked(rest.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getRequisitionNames()).toEqual([])
   })
 
   it('returns null on failure or an unexpected body', async () => {

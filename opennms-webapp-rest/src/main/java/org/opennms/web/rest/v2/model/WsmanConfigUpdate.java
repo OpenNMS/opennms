@@ -91,6 +91,7 @@ public class WsmanConfigUpdate {
         private List<String> specifics = new ArrayList<>();
         private List<String> ipMatches = new ArrayList<>();
         private Integer sourceIndex;
+        private String requisition;
 
         public List<RangeUpdate> getRanges() { return ranges; }
         public void setRanges(List<RangeUpdate> ranges) { this.ranges = ranges == null ? new ArrayList<>() : ranges; }
@@ -100,6 +101,8 @@ public class WsmanConfigUpdate {
         public void setIpMatches(List<String> ipMatches) { this.ipMatches = ipMatches == null ? new ArrayList<>() : ipMatches; }
         public Integer getSourceIndex() { return sourceIndex; }
         public void setSourceIndex(Integer sourceIndex) { this.sourceIndex = sourceIndex; }
+        public String getRequisition() { return requisition; }
+        public void setRequisition(String requisition) { this.requisition = requisition; }
     }
 
     private SettingsUpdate defaults;

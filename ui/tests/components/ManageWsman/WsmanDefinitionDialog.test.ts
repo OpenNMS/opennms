@@ -27,6 +27,12 @@ import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/stores/wsmanAdminStore')
+// only the requisition-name lookup is faked; the rest of the module must stay
+// real because the shared form components import from it
+vi.mock('@/services', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/services')>()
+  return { ...actual, default: { ...actual.default, getRequisitionNames: vi.fn().mockResolvedValue(['helper-smoke', 'windows']) }}
+})
 
 const DialogStub = {
   name: 'Dialog',
@@ -41,7 +47,7 @@ const SETTINGS = {
 const CONFIG = {
   version: 'v1',
   defaults: { ...SETTINGS, username: 'root', hasPassword: true },
-  definitions: [{ ...SETTINGS, hasPassword: true, username: 'monitor', ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [] }]
+  definitions: [{ ...SETTINGS, hasPassword: true, username: 'monitor', ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [], requisition: 'windows' }]
 }
 
 describe('WsmanDefinitionDialog.vue', () => {
@@ -77,8 +83,8 @@ describe('WsmanDefinitionDialog.vue', () => {
     await flushPromises()
     const input = store.saveConfig.mock.calls[0][0]
     expect(input.definitions).toHaveLength(2)
-    expect(input.definitions[0]).toMatchObject({ sourceIndex: 0, username: 'monitor', password: null })
-    expect(input.definitions[1]).toMatchObject({ sourceIndex: null, specifics: ['10.1.1.1'], ranges: [], ipMatches: [] })
+    expect(input.definitions[0]).toMatchObject({ sourceIndex: 0, username: 'monitor', password: null, requisition: 'windows' })
+    expect(input.definitions[1]).toMatchObject({ sourceIndex: null, specifics: ['10.1.1.1'], ranges: [], ipMatches: [], requisition: null })
     expect(input.version).toBe('v1')
     expect(input.defaults).toMatchObject({ username: 'root', password: null })
   })
@@ -91,7 +97,17 @@ describe('WsmanDefinitionDialog.vue', () => {
     await flushPromises()
     const input = store.saveConfig.mock.calls[0][0]
     expect(input.definitions).toHaveLength(1)
-    expect(input.definitions[0]).toMatchObject({ sourceIndex: 0, username: 'svc-wsman', ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }] })
+    expect(input.definitions[0]).toMatchObject({ sourceIndex: 0, username: 'svc-wsman', ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], requisition: 'windows' })
+  })
+
+  it('offers the existing requisitions and flags an invalid new name', async () => {
+    await mountDialog(0)
+    const select = wrapper.findAllComponents({ name: 'OnmsSelect' }).find(c => c.props('inputId') === 'wsman-definition-requisition')!
+    expect((select.props('options') as any[]).map(o => o.value)).toEqual(['helper-smoke', 'windows'])
+    await select.vm.$emit('update:modelValue', 'bad name')
+    await flushPromises()
+    expect(wrapper.text()).toContain('letters, digits')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
   it('flags a reversed range and blocks saving', async () => {

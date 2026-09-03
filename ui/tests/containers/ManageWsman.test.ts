@@ -90,6 +90,23 @@ describe('ManageWsman.vue (container)', () => {
     expect(wrapper.find('[data-test="action-error"]').exists()).toBe(false)
   })
 
+  it('summarizes a sync and shows the reason when it fails', async () => {
+    const wrapper = await mountPage({ config: { ...CONFIG, definitions: [{ ...SETTINGS, ranges: [], specifics: ['10.0.0.1'], ipMatches: ['10.1.*.*'], requisition: 'windows' }] }, loadError: false })
+    const store = useWsmanAdminStore()
+    vi.mocked(store.syncDefinition).mockResolvedValueOnce({ requisition: 'windows', addedNodes: ['10.0.0.1'], existingNodes: 0, addedRanges: [], existingRanges: 0, skippedPatterns: ['10.1.*.*'], importRequested: true, discoveryReloadRequested: false })
+    await (wrapper.vm as any).syncDefinition(0)
+    await flushPromises()
+    const message = wrapper.find('[data-test="action-message"]').text()
+    expect(message).toContain('1 server(s) added to requisition windows')
+    expect(message).toContain('1 IPLIKE pattern(s) skipped')
+    expect(message).toContain('import requested')
+
+    vi.mocked(store.syncDefinition).mockResolvedValueOnce('Server definition 1 is not linked to a requisition.')
+    await (wrapper.vm as any).syncDefinition(0)
+    await flushPromises()
+    expect(wrapper.find('[data-test="action-error"]').text()).toContain('not linked')
+  })
+
   it('shows an error instead of an empty configuration when the read fails', async () => {
     const wrapper = await mountPage({ config: null, loadError: true })
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(true)
