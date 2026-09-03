@@ -26,7 +26,10 @@
           <strong>Agent Defaults</strong> are the connection settings from the root of
           <code>wsman-config.xml</code> that apply to every agent. <strong>Server Definitions</strong> name the
           servers to collect from, by IP range, address or IPLIKE pattern, and override those settings for them;
-          the first matching definition wins; use the Up and Down actions to change the order. Values may be
+          the first matching definition wins; use the Up and Down actions to change the order. The
+          responding / servers column comes from the poller: servers carrying the WS-Man service that the
+          definition matches, and how many of them have no open outage right now; a definition matching no
+          servers usually means a range or pattern that does not cover them, or servers not yet provisioned. Values may be
           metadata placeholders such as <code>${requisition:wsman:username}</code> or
           <code>${scv:alias:password}</code>, resolved per node when collecting. Passwords are shown only as
           set or not set, and saving without entering one keeps the stored password. Changes are written to

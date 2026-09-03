@@ -24,14 +24,21 @@ package org.opennms.web.rest.v2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.core.MediaType;
 
@@ -45,10 +52,30 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.wsman.WSManClient;
+import org.opennms.core.wsman.WSManClientFactory;
+import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
+import org.opennms.netmgt.collectd.WsManCollector;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -85,6 +112,12 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private WSManDataCollectionConfigDao m_wsManDataCollectionConfigDao;
 
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
+
+    @Autowired
+    private SessionUtils m_sessionUtils;
+
     private Resource m_originalResource;
     private File m_workingCopy;
     private String m_shippedContent;
@@ -111,6 +144,10 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_workingCopy.getParentFile().mkdirs();
         Files.write(m_workingCopy.toPath(), m_shippedContent.getBytes(StandardCharsets.UTF_8));
         dao.setConfigResource(new FileSystemResource(m_workingCopy));
+        // rebuild the reload container on the copy, checking on every access,
+        // so the daemons' view follows the file the service rewrites
+        dao.setReloadCheckInterval(0L);
+        dao.afterPropertiesSet();
 
         // and a scratch opennms.home holding copies of the data collection files
         final AbstractMergingJaxbConfigDao<?, ?> dcDao = (AbstractMergingJaxbConfigDao<?, ?>) m_wsManDataCollectionConfigDao;
@@ -129,7 +166,9 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @After
     public void restoreShippedFile() throws Exception {
-        ((AbstractJaxbConfigDao<?, ?>) m_wsManConfigDao).setConfigResource(m_originalResource);
+        final AbstractJaxbConfigDao<?, ?> dao = (AbstractJaxbConfigDao<?, ?>) m_wsManConfigDao;
+        dao.setConfigResource(m_originalResource);
+        dao.afterPropertiesSet();
         ((AbstractMergingJaxbConfigDao<?, ?>) m_wsManDataCollectionConfigDao).setOpennmsHome(m_originalHome);
         // never let a test leave the shipped file modified
         final String now = new String(Files.readAllBytes(m_originalResource.getFile().toPath()), StandardCharsets.UTF_8);
@@ -244,11 +283,128 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testStatusCountsPolledServersPerDefinition() throws Exception {
+        // two WS-Man services on the populator's nodes: 192.168.1.1 (up) and 192.168.2.1 (down);
+        // the REST test base opens a read-only session, so seed in a write transaction
+        m_databasePopulator.populateDatabase();
+        final AtomicReference<Integer> upId = new AtomicReference<>();
+        m_sessionUtils.withTransaction(() -> {
+            final OnmsServiceType wsman = serviceType("WS-Man");
+            upId.set(addService(m_databasePopulator.getNode1(), "192.168.1.1", wsman, new Date(1700000000000L)).getId());
+            final OnmsMonitoredService down = addService(m_databasePopulator.getNode2(), "192.168.2.1", wsman, null);
+            final OnmsOutage outage = new OnmsOutage();
+            outage.setMonitoredService(down);
+            outage.setIfLostService(new Date());
+            m_databasePopulator.getOutageDao().save(outage);
+            m_databasePopulator.getOutageDao().flush();
+            return null;
+        });
+
+        // one definition covering the 192.168.1.x range; the other server falls through to the defaults
+        put("{\"defaults\":{},\"definitions\":[{\"ranges\":[{\"begin\":\"192.168.1.1\",\"end\":\"192.168.1.254\"}],\"username\":\"monitor\"}]}", 200);
+
+        final JSONObject status = new JSONObject(getJson("/wsman-config/status", 200));
+        assertEquals("WS-Man", status.getString("serviceName"));
+        assertEquals(2, status.getInt("servers"));
+        final JSONObject first = status.getJSONArray("definitions").getJSONObject(0);
+        assertEquals(0, first.getInt("index"));
+        assertEquals(1, first.getInt("servers"));
+        assertEquals(1, first.getInt("responding"));
+        assertEquals(0, first.getInt("down"));
+        assertFalse(first.isNull("lastResponse"));
+        final JSONObject defaults = status.getJSONObject("defaults");
+        assertEquals(1, defaults.getInt("servers"));
+        assertEquals(0, defaults.getInt("responding"));
+        assertEquals(1, defaults.getInt("down"));
+
+        // an unmanaged service is not a server the poller checks
+        m_sessionUtils.withTransaction(() -> {
+            final OnmsMonitoredService up = m_databasePopulator.getMonitoredServiceDao().get(upId.get());
+            up.setStatus("F");
+            m_databasePopulator.getMonitoredServiceDao().saveOrUpdate(up);
+            m_databasePopulator.getMonitoredServiceDao().flush();
+            return null;
+        });
+        assertEquals(0, new JSONObject(getJson("/wsman-config/status", 200)).getJSONArray("definitions").getJSONObject(0).getInt("servers"));
+    }
+
+    /**
+     * End to end inside one JVM: a definition saved through the API is what the
+     * real collector hands to the WS-Man client for a matching server, with no
+     * restart in between (the shared DAO re-reads the rewritten file).
+     */
+    @Test
+    public void testDefinitionSavedThroughTheApiReachesTheCollector() throws Exception {
+        put("{\"defaults\":{\"username\":\"root\"},\"definitions\":[{\"specifics\":[\"10.20.30.40\"],\"username\":\"monitor\",\"password\":\"secret-one\",\"ssl\":false,\"port\":5985,\"path\":\"/wsman\"}]}", 200);
+
+        final AtomicReference<WSManEndpoint> seen = new AtomicReference<>();
+        final WSManClientFactory factory = endpoint -> {
+            seen.set(endpoint);
+            return mock(WSManClient.class);
+        };
+        // the system-definition rules read the node's vendor and model
+        final OnmsNode node = mock(OnmsNode.class);
+        when(node.getAssetRecord()).thenReturn(new OnmsAssetRecord());
+        final NodeDao nodeDao = mock(NodeDao.class);
+        when(nodeDao.get(any(Integer.class))).thenReturn(node);
+
+        final WsManCollector collector = new WsManCollector();
+        collector.setWSManClientFactory(factory);
+        collector.setWSManConfigDao(m_wsManConfigDao);
+        collector.setWSManDataCollectionConfigDao(m_wsManDataCollectionConfigDao);
+        collector.setNodeDao(nodeDao);
+
+        final CollectionAgent agent = mock(CollectionAgent.class);
+        when(agent.getAddress()).thenReturn(InetAddressUtils.addr("10.20.30.40"));
+        when(agent.getNodeId()).thenReturn(1);
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("collection", "default");
+        params.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, params), EmptyScope.EMPTY));
+        final CollectionSet set = collector.collect(agent, params);
+
+        assertEquals(CollectionStatus.SUCCEEDED, set.getStatus());
+        assertEquals("monitor", seen.get().getUsername());
+        assertEquals("secret-one", seen.get().getPassword());
+        assertEquals("http://10.20.30.40:5985/wsman", seen.get().getUrl().toString());
+
+        // a server no definition matches gets the defaults
+        when(agent.getAddress()).thenReturn(InetAddressUtils.addr("10.99.99.99"));
+        final Map<String, Object> defaultParams = new HashMap<>();
+        defaultParams.put("collection", "default");
+        defaultParams.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, defaultParams), EmptyScope.EMPTY));
+        collector.collect(agent, defaultParams);
+        assertEquals("root", seen.get().getUsername());
+    }
+
+    private OnmsServiceType serviceType(final String name) {
+        OnmsServiceType type = m_databasePopulator.getServiceTypeDao().findByName(name);
+        if (type == null) {
+            type = new OnmsServiceType(name);
+            m_databasePopulator.getServiceTypeDao().save(type);
+            m_databasePopulator.getServiceTypeDao().flush();
+        }
+        return type;
+    }
+
+    private OnmsMonitoredService addService(final OnmsNode node, final String ip, final OnmsServiceType type, final Date lastGood) {
+        final OnmsIpInterface iface = m_databasePopulator.getIpInterfaceDao().findByNodeIdAndIpAddress(node.getId(), ip);
+        final OnmsMonitoredService svc = new OnmsMonitoredService(iface, type);
+        svc.setStatus("A");
+        svc.setLastGood(lastGood);
+        m_databasePopulator.getMonitoredServiceDao().save(svc);
+        m_databasePopulator.getMonitoredServiceDao().flush();
+        return svc;
+    }
+
+    @Test
     public void testForbiddenForNonAdmin() throws Exception {
         setUser("user", new String[]{ "ROLE_USER" });
         try {
             getJson("/wsman-config", 403);
             getJson("/wsman-config/data-collection", 403);
+            getJson("/wsman-config/status", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config/data-collection?file=custom.xml", "{\"collections\":[],\"groups\":[],\"systemDefinitions\":[]}", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/wsman-config", "{\"defaults\":{},\"definitions\":[]}", 403);
         } finally {

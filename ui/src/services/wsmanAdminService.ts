@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus } from '@/types/wsmanAdmin'
 import { v2 } from './axiosInstances'
 
 // Manage WS-Man (NMS-20286): wsman-config.xml through /api/v2/wsman-config.
@@ -120,4 +120,19 @@ const updateWsmanDataCollectionFile = async (file: string, input: WsmanDataColle
   }
 }
 
-export { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig, updateWsmanDataCollectionFile }
+// Poller-side view per definition; null on failure (the page then shows no
+// counts rather than zeros, which would read as "no servers").
+const getWsmanStatus = async (): Promise<WsmanStatus | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/status`, { headers: { Accept: 'application/json' }})
+    const data = resp.data
+    if (!data || !Array.isArray(data.definitions) || !data.defaults) {
+      return null
+    }
+    return data as WsmanStatus
+  } catch (_err) {
+    return null
+  }
+}
+
+export { getWsmanConfig, getWsmanDataCollection, getWsmanStatus, updateWsmanConfig, updateWsmanDataCollectionFile }

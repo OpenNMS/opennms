@@ -29,6 +29,7 @@ vi.mock('@/services', () => ({
   default: {
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
+    getWsmanStatus: vi.fn(),
     updateWsmanConfig: vi.fn(),
     updateWsmanDataCollectionFile: vi.fn()
   }
@@ -42,11 +43,14 @@ describe('wsmanAdminStore', () => {
     vi.clearAllMocks()
   })
 
-  it('stores the configuration on success', async () => {
+  it('stores the configuration and the poller status together on success', async () => {
     vi.mocked(API.getWsmanConfig).mockResolvedValue(CONFIG as any)
+    const status = { serviceName: 'WS-Man', servers: 0, definitions: [], defaults: { servers: 0, responding: 0, down: 0, lastResponse: null }}
+    vi.mocked(API.getWsmanStatus).mockResolvedValue(status)
     const store = useWsmanAdminStore()
     await store.getConfig()
     expect(store.config).toEqual(CONFIG)
+    expect(store.status).toEqual(status)
     expect(store.loadError).toBe(false)
     expect(store.isLoading).toBe(false)
   })

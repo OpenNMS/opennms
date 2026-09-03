@@ -165,3 +165,23 @@ export interface WsmanDataCollectionFileInput {
   groups: WsmanGroupInput[]
   systemDefinitions: WsmanSystemDefinitionInput[]
 }
+
+// Wire shape of GET /api/v2/wsman-config/status: what the poller sees for the
+// servers each definition matches. lastResponse is an epoch millis timestamp.
+export interface WsmanStatusBucket {
+  servers: number
+  responding: number
+  down: number
+  lastResponse: number | null
+}
+
+export interface WsmanDefinitionStatus extends WsmanStatusBucket {
+  index: number
+}
+
+export interface WsmanStatus {
+  serviceName: string
+  servers: number
+  definitions: WsmanDefinitionStatus[]
+  defaults: WsmanStatusBucket
+}

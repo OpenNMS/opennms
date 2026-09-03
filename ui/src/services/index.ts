@@ -76,7 +76,7 @@ import {
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
-import { getWsmanConfig, getWsmanDataCollection, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
+import { getWsmanConfig, getWsmanDataCollection, getWsmanStatus, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
   createManagedUser,
   deleteManagedUser,
@@ -228,6 +228,7 @@ export default {
   updateManagedGroup,
   getWsmanConfig,
   getWsmanDataCollection,
+  getWsmanStatus,
   updateWsmanConfig,
   updateWsmanDataCollectionFile
 }

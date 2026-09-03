@@ -11,6 +11,9 @@
         Applied to every WS-Man agent unless a definition overrides the setting. A dash means the
         setting is not present in <code>wsman-config.xml</code> and the built-in default applies.
       </p>
+      <p v-if="status" class="card-note" data-test="defaults-status">
+        Servers no definition matches, responding / total: <WsmanStatusCell :bucket="status.defaults" />
+      </p>
       <dl class="settings">
         <template v-for="row in SETTING_ROWS" :key="row.key">
           <dt>{{ row.label }}</dt>
@@ -23,11 +26,13 @@
 
 <script setup lang="ts">
 import { OnmsButton, OnmsCard } from '@opennms/onms-ui'
-import { WsmanAgentSettings } from '@/types/wsmanAdmin'
+import { WsmanAgentSettings, WsmanStatus } from '@/types/wsmanAdmin'
+import WsmanStatusCell from './WsmanStatusCell.vue'
 import { SETTING_ROWS, formatSetting } from './wsmanDisplay'
 
 defineProps<{
   settings: WsmanAgentSettings
+  status?: WsmanStatus | null
 }>()
 
 const emit = defineEmits<{
