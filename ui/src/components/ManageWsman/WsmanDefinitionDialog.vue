@@ -71,6 +71,7 @@
           <span class="dialog-note">Anything left unset is inherited from the default connection settings.</span>
         </div>
         <WsmanSettingsFields
+          :key="openCount"
           v-model="form"
           idPrefix="wsman-definition"
           :errors="errors"
@@ -150,11 +151,15 @@ const hasCriteria = computed(() => ranges.value.length + specifics.value.length 
 const canSave = computed(() =>
   hasCriteria.value && Object.keys(errors.value).length === 0 && rangeErrors.value.every(e => e === null) && !requisitionProblem.value)
 
+const openCount = ref(0)
+
 watch(
   () => props.visible,
   (isVisible) => {
     if (isVisible) {
       const d = existing.value
+      // remount the settings fields so the advanced fold starts from this definition's values
+      openCount.value++
       form.value = d ? settingsToForm(d) : emptySettingsForm()
       ranges.value = d ? d.ranges.map(r => ({ ...r })) : []
       specifics.value = d ? [...d.specifics] : []

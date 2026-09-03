@@ -153,4 +153,18 @@ describe('WsmanDefinitionDialog.vue', () => {
     expect(wrapper.find('[data-test="port-input"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="advanced-summary"]').text()).toBe('Set: Port, Vendor')
   })
+
+  it('re-evaluates the advanced fold every time the dialog opens', async () => {
+    await mountDialog(null)
+    expect(wrapper.find('[data-test="port-input"]').exists()).toBe(false)
+    await wrapper.setProps({ visible: false })
+    await wrapper.setProps({ config: { ...CONFIG, definitions: [{ ...CONFIG.definitions[0], timeout: 9000 }] }, index: 0 })
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+    expect(wrapper.find('[data-test="timeout-input"]').exists()).toBe(true)
+    await wrapper.setProps({ visible: false })
+    await wrapper.setProps({ index: null, visible: true })
+    await flushPromises()
+    expect(wrapper.find('[data-test="timeout-input"]').exists()).toBe(false)
+  })
 })
