@@ -262,8 +262,15 @@
         {
           "id": "notifications",
           "name": "Notifications",
-          "url": "ui/index.html#/admin/notifications",
+          "url": "notification/index.jsp",
           "locationMatch": "notification",
+          "roles": null
+        },
+        {
+          "id": "notificationsPreview",
+          "name": "Notifications (Preview)",
+          "url": "ui/index.html#/admin/notifications",
+          "locationMatch": null,
           "roles": null
         },
         {
