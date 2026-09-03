@@ -82,7 +82,9 @@ public class WsmanConfigDto {
         private final List<RangeDto> ranges = new ArrayList<>();
         private final List<String> specifics = new ArrayList<>();
         private final List<String> ipMatches = new ArrayList<>();
+        private String requisition;
 
+        public String getRequisition() { return requisition; }
         public List<RangeDto> getRanges() { return ranges; }
         public List<String> getSpecifics() { return specifics; }
         public List<String> getIpMatches() { return ipMatches; }
@@ -116,6 +118,7 @@ public class WsmanConfigDto {
             }
             d.specifics.addAll(def.getSpecific());
             d.ipMatches.addAll(def.getIpMatch());
+            d.requisition = def.getRequisition();
             dto.definitions.add(d);
         }
         return dto;

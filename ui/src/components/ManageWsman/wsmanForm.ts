@@ -150,8 +150,15 @@ export const definitionToInput = (d: WsmanDefinition, sourceIndex: number | null
   ranges: d.ranges.map(r => ({ ...r })),
   specifics: [...d.specifics],
   ipMatches: [...d.ipMatches],
-  sourceIndex
+  sourceIndex,
+  requisition: d.requisition ?? null
 })
+
+// requisition names: letters, digits, dots, dashes and underscores
+export const requisitionNameProblem = (name: string): string | null =>
+  name.trim() && !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(name.trim())
+    ? 'A requisition name uses letters, digits, dots, dashes and underscores only.'
+    : null
 
 export const configToInput = (c: WsmanConfig): WsmanConfigInput => ({
   version: c.version,

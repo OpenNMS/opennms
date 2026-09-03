@@ -30,6 +30,7 @@ vi.mock('@/services', () => ({
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
     getWsmanStatus: vi.fn(),
+    syncWsmanDefinition: vi.fn(),
     updateWsmanConfig: vi.fn(),
     updateWsmanDataCollectionFile: vi.fn()
   }
@@ -96,6 +97,19 @@ describe('wsmanAdminStore', () => {
     vi.mocked(API.getWsmanDataCollection).mockResolvedValueOnce(dc)
     expect(await store.saveDataCollectionFile('custom.xml', { version: 'v2', rrdRepository: null, collections: [], groups: [], systemDefinitions: [] })).toBe('nope')
     expect(API.getWsmanDataCollection).toHaveBeenCalledTimes(2)
+  })
+
+  it('re-reads the status after a successful sync and passes a failure through', async () => {
+    const store = useWsmanAdminStore()
+    const result = { requisition: 'windows', addedNodes: [], existingNodes: 1, addedRanges: [], existingRanges: 0, skippedPatterns: [], importRequested: false, discoveryReloadRequested: false }
+    const status = { serviceName: 'WS-Man', servers: 1, definitions: [], defaults: { servers: 0, responding: 0, down: 0, lastResponse: null }}
+    vi.mocked(API.syncWsmanDefinition).mockResolvedValueOnce(result)
+    vi.mocked(API.getWsmanStatus).mockResolvedValueOnce(status)
+    expect(await store.syncDefinition(0)).toEqual(result)
+    expect(store.status).toEqual(status)
+    vi.mocked(API.syncWsmanDefinition).mockResolvedValueOnce('nope')
+    expect(await store.syncDefinition(0)).toBe('nope')
+    expect(API.getWsmanStatus).toHaveBeenCalledTimes(1)
   })
 
   it('flags a load error and keeps the previous configuration', async () => {

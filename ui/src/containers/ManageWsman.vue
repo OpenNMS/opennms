@@ -12,6 +12,7 @@
       Failed to load the WS-Man configuration. Check that <code>wsman-config.xml</code> is readable, then reload the page.
     </p>
     <p v-if="actionError" class="error" data-test="action-error">{{ actionError }}</p>
+    <p v-if="actionMessage" class="notice" data-test="action-message">{{ actionMessage }}</p>
 
     <OnmsTabs v-if="store.config" v-model:value="activeTab">
       <OnmsTabList>
@@ -28,6 +29,7 @@
             @edit="openDefinition"
             @delete="askDelete"
             @move="moveDefinition"
+            @sync="syncDefinition"
           />
         </OnmsTabPanel>
         <OnmsTabPanel :value="2">
@@ -120,6 +122,7 @@ const showDefinitionDialog = ref(false)
 const editingIndex = ref<number | null>(null)
 const deleteIndex = ref<number | null>(null)
 const actionError = ref('')
+const actionMessage = ref('')
 const showCollectionDialog = ref(false)
 const showSystemDefinitionDialog = ref(false)
 const showGroupDialog = ref(false)
@@ -197,6 +200,29 @@ const confirmDeleteDataCollection = async () => {
   actionError.value = (await store.saveDataCollectionFile(target.item.source, input)) ?? ''
 }
 
+const syncDefinition = async (index: number) => {
+  actionMessage.value = ''
+  const result = await store.syncDefinition(index)
+  if (typeof result === 'string') {
+    actionError.value = result
+    return
+  }
+  actionError.value = ''
+  const parts = [
+    `${result.addedNodes.length} server(s) added to requisition ${result.requisition}, ${result.existingNodes} already there`
+  ]
+  if (result.addedRanges.length || result.existingRanges) {
+    parts.push(`${result.addedRanges.length} discovery range(s) added, ${result.existingRanges} already configured`)
+  }
+  if (result.skippedPatterns.length) {
+    parts.push(`${result.skippedPatterns.length} IPLIKE pattern(s) skipped: patterns cannot be provisioned`)
+  }
+  if (result.importRequested) {
+    parts.push('import requested; the poller checks new servers once provisioning finishes')
+  }
+  actionMessage.value = parts.join('. ') + '.'
+}
+
 const moveDefinition = async (index: number, delta: number) => {
   if (!store.config) {
     return
@@ -229,6 +255,11 @@ const moveDefinition = async (index: number, delta: number) => {
 .error {
   color: var(--p-red-500, #c62828);
   margin: 0;
+}
+
+.notice {
+  margin: 0;
+  color: var(--p-text-muted-color);
 }
 
 .placeholder {

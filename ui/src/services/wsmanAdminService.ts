@@ -22,8 +22,8 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus } from '@/types/wsmanAdmin'
-import { v2 } from './axiosInstances'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { rest, v2 } from './axiosInstances'
 
 // Manage WS-Man (NMS-20286): wsman-config.xml through /api/v2/wsman-config.
 
@@ -135,4 +135,30 @@ const getWsmanStatus = async (): Promise<WsmanStatus | null> => {
   }
 }
 
-export { getWsmanConfig, getWsmanDataCollection, getWsmanStatus, updateWsmanConfig, updateWsmanDataCollectionFile }
+// Provisions a definition's servers into its requisition; the result on
+// success, else the reason to show.
+const syncWsmanDefinition = async (index: number): Promise<WsmanSyncResult | string> => {
+  try {
+    startSpinner()
+    const resp = await v2.post(`${endpoint}/definitions/${index}/sync`, null, { headers: { Accept: 'application/json' }})
+    return resp.data as WsmanSyncResult
+  } catch (err: any) {
+    return errorMessage(err, 'Failed to sync the server definition with its requisition.')
+  } finally {
+    stopSpinner()
+  }
+}
+
+// Requisition names for the definition dialog's picker; [] on failure (the
+// field stays free text, so a missing list is not blocking)
+const getRequisitionNames = async (): Promise<string[]> => {
+  try {
+    const resp = await rest.get('/requisitionNames', { headers: { Accept: 'application/json' }})
+    const names = resp.data?.['foreign-source']
+    return Array.isArray(names) ? names.map(String) : []
+  } catch (_err) {
+    return []
+  }
+}
+
+export { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanStatus, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile }

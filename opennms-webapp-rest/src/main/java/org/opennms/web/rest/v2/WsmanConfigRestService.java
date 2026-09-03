@@ -43,7 +43,9 @@ import java.util.stream.Stream;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -70,9 +72,24 @@ import org.opennms.netmgt.config.wsman.credentials.Range;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.web.svclayer.api.RequisitionAccessService;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.model.WsmanConfigDto;
 import org.opennms.web.rest.v2.model.WsmanConfigUpdate;
@@ -86,6 +103,7 @@ import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.CollectionUpd
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.GroupUpdate;
 import org.opennms.web.rest.v2.model.WsmanDataCollectionFileUpdate.SystemDefinitionUpdate;
 import org.opennms.web.rest.v2.model.WsmanStatusDto;
+import org.opennms.web.rest.v2.model.WsmanSyncResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,6 +153,19 @@ public class WsmanConfigRestService {
 
     @Autowired
     private OutageDao outageDao;
+
+    @Autowired
+    private IpInterfaceDao ipInterfaceDao;
+
+    @Autowired
+    private RequisitionAccessService requisitionAccessService;
+
+    @Autowired
+    private EventProxy eventProxy;
+
+    // the service provisioning gives a WS-Man server, and what the poller checks
+    private static final String WSMAN_SERVICE = "WS-Man";
+    private static final Pattern REQUISITION_NAME = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._-]*$");
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -204,6 +235,23 @@ public class WsmanConfigRestService {
         requireAdmin(securityContext);
         final List<Definition> definitions = readConfig().config.getDefinition();
         final WsmanStatusDto status = new WsmanStatusDto(serviceName, definitions.size());
+        for (int i = 0; i < definitions.size(); i++) {
+            final Definition def = definitions.get(i);
+            final WsmanStatusDto.DefinitionStatus ds = status.getDefinitions().get(i);
+            ds.setRequisition(def.getRequisition());
+            // a specific address is provisioned when some node carries it as an
+            // interface; with a requisition linked, that node must belong to it
+            for (final String specific : def.getSpecific()) {
+                boolean provisioned = false;
+                for (final OnmsIpInterface iface : ipInterfaceDao.findByIpAddress(specific)) {
+                    if (def.getRequisition() == null || def.getRequisition().equals(iface.getNode().getForeignSource())) {
+                        provisioned = true;
+                        break;
+                    }
+                }
+                ds.countSpecific(provisioned);
+            }
+        }
         final Set<Integer> downServiceIds = outageDao.currentOutagesByServiceId().keySet();
         for (final OnmsMonitoredService svc : monitoredServiceDao.findByType(serviceName)) {
             if (!"A".equals(svc.getStatus()) || svc.getIpAddress() == null) {
@@ -243,6 +291,97 @@ public class WsmanConfigRestService {
             }
         }
         return -1;
+    }
+
+    @POST
+    @javax.ws.rs.Path("definitions/{index}/sync")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Provision a server definition's servers into its requisition", description = "Adds each specific address the linked requisition does not yet hold as a node carrying the WS-Man service and imports the requisition; adds each range as a scheduled discovery range with the requisition as foreign source and asks Discovery to reload. IPLIKE patterns cannot be provisioned and are reported as skipped. Never removes anything.", operationId = "WsmanConfigRestServiceSyncDefinition")
+    public Response syncDefinition(@Context final SecurityContext securityContext, @PathParam("index") final int index) {
+        requireAdmin(securityContext);
+        final List<Definition> definitions = readConfig().config.getDefinition();
+        if (index < 0 || index >= definitions.size()) {
+            throw badRequest("There is no server definition " + (index + 1) + "; reload the page.");
+        }
+        final Definition def = definitions.get(index);
+        final String foreignSource = def.getRequisition();
+        if (foreignSource == null || foreignSource.isBlank()) {
+            throw badRequest("Server definition " + (index + 1) + " is not linked to a requisition.");
+        }
+        final WsmanSyncResultDto result = new WsmanSyncResultDto(foreignSource);
+
+        Requisition requisition = requisitionAccessService.getRequisition(foreignSource);
+        if (requisition == null) {
+            requisition = new Requisition(foreignSource);
+            requisitionAccessService.addOrReplaceRequisition(requisition);
+        }
+        final Set<String> present = new HashSet<>();
+        for (final RequisitionNode node : requisition.getNodes()) {
+            for (final RequisitionInterface iface : node.getInterfaces()) {
+                if (iface.getIpAddr() != null) {
+                    present.add(InetAddresses.toAddrString(iface.getIpAddr()));
+                }
+            }
+        }
+        for (final String specific : def.getSpecific()) {
+            final String address = InetAddresses.toAddrString(InetAddresses.forString(specific.trim()));
+            if (present.contains(address)) {
+                result.countExistingNode();
+                continue;
+            }
+            final RequisitionInterface iface = new RequisitionInterface();
+            iface.setIpAddr(address);
+            iface.setManaged(true);
+            iface.setStatus(1);
+            iface.setSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
+            iface.putMonitoredService(new RequisitionMonitoredService(WSMAN_SERVICE));
+            final RequisitionNode node = new RequisitionNode();
+            node.setForeignId(address);
+            node.setNodeLabel(address);
+            node.putInterface(iface);
+            requisitionAccessService.addOrReplaceNode(foreignSource, node);
+            result.getAddedNodes().add(address);
+            present.add(address);
+        }
+        if (!result.getAddedNodes().isEmpty()) {
+            // newly added only: existing nodes keep their own rescan schedule
+            requisitionAccessService.importRequisition(foreignSource, "false");
+            result.setImportRequested(true);
+        }
+
+        if (!def.getRange().isEmpty()) {
+            final DiscoveryConfigFactory factory = DiscoveryConfigFactory.getInstance();
+            final DiscoveryConfiguration config = factory.getConfiguration();
+            for (final Range range : def.getRange()) {
+                final boolean exists = config.getIncludeRanges().stream().anyMatch(r ->
+                        range.getBegin().equals(r.getBegin()) && range.getEnd().equals(r.getEnd())
+                        && foreignSource.equals(r.getForeignSource().orElse(null)));
+                if (exists) {
+                    result.countExistingRange();
+                    continue;
+                }
+                final IncludeRange include = new IncludeRange(range.getBegin(), range.getEnd());
+                include.setForeignSource(foreignSource);
+                config.addIncludeRange(include);
+                result.getAddedRanges().add(range.getBegin() + " - " + range.getEnd());
+            }
+            if (!result.getAddedRanges().isEmpty()) {
+                try {
+                    factory.saveConfiguration(config);
+                } catch (final IOException e) {
+                    throw new WebApplicationException("Unable to save the discovery configuration: " + e.getMessage(), e, Status.INTERNAL_SERVER_ERROR);
+                }
+                try {
+                    eventProxy.send(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Web UI")
+                            .addParam(EventConstants.PARM_DAEMON_NAME, "Discovery").getEvent());
+                    result.setDiscoveryReloadRequested(true);
+                } catch (final EventProxyException e) {
+                    // the ranges are saved; Discovery picks them up on its next reload
+                }
+            }
+        }
+        result.getSkippedPatterns().addAll(def.getIpMatch());
+        return Response.ok(result).build();
     }
 
     @GET
@@ -662,6 +801,11 @@ public class WsmanConfigRestService {
         d.setProductVendor(blankToNull(u.getProductVendor()));
         d.setProductVersion(blankToNull(u.getProductVersion()));
         d.setGssAuth(u.getGssAuth());
+        final String requisition = blankToNull(u.getRequisition());
+        if (requisition != null && !REQUISITION_NAME.matcher(requisition.trim()).matches()) {
+            throw badRequest(label + " has an invalid requisition name: " + requisition.trim() + " (letters, digits, dots, dashes and underscores).");
+        }
+        d.setRequisition(requisition == null ? null : requisition.trim());
 
         for (final RangeUpdate r : u.getRanges()) {
             final InetAddress begin = parseAddress(r.getBegin(), label + " has a range with an invalid begin address");

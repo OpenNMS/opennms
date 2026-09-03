@@ -41,7 +41,7 @@ const SETTINGS = {
 const CONFIG = {
   version: 'v1',
   defaults: SETTINGS,
-  definitions: [{ ...SETTINGS, ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [] }]
+  definitions: [{ ...SETTINGS, ranges: [{ begin: '10.0.0.1', end: '10.0.0.9' }], specifics: [], ipMatches: [], requisition: null }]
 }
 
 describe('WsmanDefaultsDialog.vue', () => {
