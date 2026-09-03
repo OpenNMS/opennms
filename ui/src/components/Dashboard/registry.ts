@@ -87,6 +87,29 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     supportedFilters: ['surveillanceCategories', 'ipMatch'],
     renamable: true,
     collapsible: true
+  },
+  topn: {
+    type: 'topn',
+    title: 'Top N',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/TopnPanel.vue')),
+    defaultSize: { w: 3, h: 4 },
+    minSize: { w: 2, h: 2 },
+    supportsTimeframe: true,
+    renamable: true,
+    collapsible: true
+  },
+  'metric-chart': {
+    type: 'metric-chart',
+    defaultHeightMode: 'fixed',
+    title: 'Metric Chart',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/MetricChartPanel.vue')),
+    defaultSize: { w: 6, h: 5 },
+    minSize: { w: 3, h: 3 },
+    supportsTimeframe: true,
+    renamable: true,
+    collapsible: true
   }
 }
 
