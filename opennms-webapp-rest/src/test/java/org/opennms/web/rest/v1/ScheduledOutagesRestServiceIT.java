@@ -305,4 +305,72 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         Assert.assertEquals("false", sendRequest(GET, "/sched-outages/my-junit-test/interfaceInOutage/1.1.1.1", 200));
         Assert.assertEquals("false", sendRequest(GET, "/sched-outages/interfaceInOutage/1.1.1.1", 200));
     }
+
+    @Test
+    public void testGetApplicability() throws Exception {
+        JSONObject applies = getApplicability("/sched-outages/my-junit-test/applies-to");
+        Assert.assertFalse(applies.getBoolean("notifications"));
+        // every subsystem lists the example1 package, unreferenced initially
+        Assert.assertFalse(appliedFor(applies, "pollers", "example1"));
+        Assert.assertFalse(appliedFor(applies, "collectors", "example1"));
+        Assert.assertFalse(appliedFor(applies, "thresholders", "example1"));
+    }
+
+    @Test
+    public void testApplicabilityReflectsMembership() throws Exception {
+        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 204);
+        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 204);
+
+        JSONObject applies = getApplicability("/sched-outages/my-junit-test/applies-to");
+        Assert.assertTrue(applies.getBoolean("notifications"));
+        Assert.assertTrue(appliedFor(applies, "pollers", "example1"));
+        Assert.assertFalse(appliedFor(applies, "collectors", "example1"));
+
+        // the name-less variant exposes the raw calendars, so the list page can
+        // derive every outage's memberships from a single call
+        JSONObject all = getApplicability("/sched-outages/applies-to");
+        Assert.assertTrue(calendarsFor(all, "pollers", "example1").contains("my-junit-test"));
+        // single-element JAXB lists may collapse to a bare string in JSON
+        Assert.assertTrue(all.get("notification-calendars").toString().contains("my-junit-test"));
+        verify(m_filterDao, atLeastOnce()).validateRule(anyString());
+    }
+
+    @Test
+    public void testGetApplicabilityForNewOutage() throws Exception {
+        // the name-less variant lists packages with nothing applied
+        JSONObject applies = getApplicability("/sched-outages/applies-to");
+        Assert.assertFalse(applies.getBoolean("notifications"));
+        Assert.assertFalse(appliedFor(applies, "pollers", "example1"));
+    }
+
+    private JSONObject getApplicability(String url) throws Exception {
+        MockHttpServletRequest request = createRequest(m_servletContext, GET, url);
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        return new JSONObject(sendRequest(request, 200));
+    }
+
+    private static boolean appliedFor(JSONObject root, String subsystem, String packageName) {
+        JSONObject pkg = packageFor(root, subsystem, packageName);
+        return pkg != null && pkg.getBoolean("applied");
+    }
+
+    private static String calendarsFor(JSONObject root, String subsystem, String packageName) {
+        JSONObject pkg = packageFor(root, subsystem, packageName);
+        // a single-element JAXB list may serialize as a bare string, so compare on toString
+        return pkg == null || !pkg.has("calendars") ? "" : pkg.get("calendars").toString();
+    }
+
+    private static JSONObject packageFor(JSONObject root, String subsystem, String packageName) {
+        org.json.JSONArray packages = root.optJSONArray(subsystem);
+        if (packages == null) {
+            return null;
+        }
+        for (int i = 0; i < packages.length(); i++) {
+            JSONObject pkg = packages.getJSONObject(i);
+            if (packageName.equals(pkg.getString("name"))) {
+                return pkg;
+            }
+        }
+        return null;
+    }
 }
