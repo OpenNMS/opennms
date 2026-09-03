@@ -81,4 +81,11 @@ describe('OnmsSearchInput contract', () => {
     expect(document.activeElement).toBe(wrapper.find('input').element)
     wrapper.unmount()
   })
+
+  it('fills its container without being asked to', () => {
+    const wrapper = mountIt()
+    expect(wrapper.find('.p-iconfield').exists()).toBe(true)
+    expect(wrapper.find('input').classes()).not.toContain('p-inputtext-fluid')
+    wrapper.unmount()
+  })
 })

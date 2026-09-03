@@ -4,6 +4,8 @@
     :min="min"
     :max="max"
     :step="step"
+    :showButtons="showButtons"
+    :buttonLayout="buttonLayout"
     :useGrouping="useGrouping"
     :maxFractionDigits="maxFractionDigits"
     :invalid="invalid"
@@ -44,6 +46,8 @@ const props = withDefaults(defineProps<{
   min?: number
   max?: number
   step?: number
+  showButtons?: boolean
+  buttonLayout?: 'stacked' | 'horizontal' | 'vertical'
   useGrouping?: boolean
   maxFractionDigits?: number
   invalid?: boolean
@@ -58,6 +62,8 @@ const props = withDefaults(defineProps<{
   min: undefined,
   max: undefined,
   step: undefined,
+  showButtons: false,
+  buttonLayout: undefined,
   useGrouping: false,
   maxFractionDigits: undefined,
   invalid: false,
