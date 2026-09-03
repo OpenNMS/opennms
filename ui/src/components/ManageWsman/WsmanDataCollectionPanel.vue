@@ -10,23 +10,6 @@
     <div class="toolbar">
       <OnmsButton variant="outlined" severity="danger" label="Reset to defaults" data-test="reset-data-collection" @click="emit('reset')" />
     </div>
-    <dl class="summary">
-      <dt>Time-series storage</dt>
-      <dd data-test="timeseries-strategy">
-        <span :class="{ unavailable: storage && !storage.available }">{{ storageLabel }}</span>
-        <span v-if="storage?.detail" class="muted" data-test="storage-detail">{{ storage.detail }}</span>
-      </dd>
-      <template v-if="usesRrd">
-        <dt>RRD repository</dt>
-        <dd data-test="rrd-repository">{{ dataCollection.rrdRepository || NOT_SET }}</dd>
-      </template>
-      <template v-else>
-        <dt>RRD settings</dt>
-        <dd data-test="rrd-unused">Not used with {{ storageLabel }}: the RRD repository and RRAs below are ignored, only each collection's step applies.</dd>
-      </template>
-      <dt>Source files</dt>
-      <dd data-test="sources">{{ dataCollection.sources.join(', ') }}</dd>
-    </dl>
 
     <OnmsCard class="section" data-test="collections-card">
       <template #title>
@@ -196,9 +179,8 @@ const filteredGroups = computed(() => {
     [g.name, g.source, g.resourceType].some(v => v?.toLowerCase().includes(term)))
 })
 
-const storage = computed(() => props.dataCollection.storage)
-const usesRrd = computed(() => storage.value?.rrdSettingsUsed ?? true)
-const storageLabel = computed(() => storage.value?.label ?? 'RRD files')
+// the RRD repository and RRAs in these files only matter when RRD is the backend
+const usesRrd = computed(() => props.dataCollection.storage?.rrdSettingsUsed ?? true)
 </script>
 
 <style lang="scss" scoped>
@@ -212,24 +194,6 @@ const storageLabel = computed(() => storage.value?.label ?? 'RRD files')
   margin: 0;
   font-size: 0.9rem;
   color: var(--p-text-muted-color);
-}
-
-.summary {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: 1.5rem;
-  row-gap: 0.3rem;
-  margin: 0;
-  font-size: 0.9rem;
-
-  dt {
-    font-weight: 600;
-  }
-
-  dd {
-    margin: 0;
-    word-break: break-all;
-  }
 }
 
 .section {
@@ -293,14 +257,21 @@ const storageLabel = computed(() => storage.value?.label ?? 'RRD files')
   }
 }
 
-.muted {
-  color: var(--p-text-muted-color);
-  font-size: 0.85rem;
-  margin-left: 0.5rem;
-}
+.summary {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 1.5rem;
+  row-gap: 0.3rem;
+  margin: 0;
+  font-size: 0.9rem;
 
-.unavailable {
-  color: var(--p-red-500);
-  font-weight: 600;
+  dt {
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    word-break: break-all;
+  }
 }
 </style>
