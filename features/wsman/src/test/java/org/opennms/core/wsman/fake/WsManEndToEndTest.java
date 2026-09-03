@@ -35,6 +35,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +46,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.mock.wsman.FakeWsManAgent;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.ResourceTypes;
@@ -80,6 +82,8 @@ import org.springframework.core.io.FileSystemResource;
 public class WsManEndToEndTest {
 
     private static final String WMI = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/";
+    // the files OpenNMS ships, read from the source tree the way other config tests do
+    private static final Path SHIPPED_ETC = Paths.get("../../opennms-base-assembly/src/main/filtered/etc");
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
@@ -109,30 +113,22 @@ public class WsManEndToEndTest {
         configDao.setConfigResource(new FileSystemResource(new File(etc, "wsman-config.xml")));
         configDao.afterPropertiesSet();
 
-        // the shipped data collection files, from the copies bundled for the reset feature
-        copyResource("wsman-defaults/wsman-datacollection-config.xml", new File(etc, "wsman-datacollection-config.xml"));
+        // the shipped data collection files, straight from the base assembly sources
+        Files.copy(SHIPPED_ETC.resolve("wsman-datacollection-config.xml"), new File(etc, "wsman-datacollection-config.xml").toPath());
         final File dropIns = new File(etc, "wsman-datacollection.d");
         dropIns.mkdirs();
-        copyResource("wsman-defaults/wsman-datacollection.d/microsoft-windows.xml", new File(dropIns, "microsoft-windows.xml"));
+        Files.copy(SHIPPED_ETC.resolve("wsman-datacollection.d/microsoft-windows.xml"), new File(dropIns, "microsoft-windows.xml").toPath());
         dataCollectionDao = new WSManDataCollectionConfigDaoJaxb();
         dataCollectionDao.setOpennmsHome(home.toPath());
 
         // the shipped resource types the Windows groups store their rows under
         final Map<String, ResourceType> resourceTypes = new HashMap<>();
-        try (var in = WsManEndToEndTest.class.getClassLoader().getResourceAsStream("wsman-defaults/resource-types.d/wsman-microsoft-windows.xml")) {
-            assertTrue("missing shipped resource types", in != null);
+        try (var in = Files.newInputStream(SHIPPED_ETC.resolve("resource-types.d/wsman-microsoft-windows.xml"))) {
             for (final ResourceType type : JaxbUtils.unmarshal(ResourceTypes.class, new InputStreamReader(in, StandardCharsets.UTF_8)).getResourceTypes()) {
                 resourceTypes.put(type.getName(), type);
             }
         }
         ResourceTypeMapper.getInstance().setResourceTypeMapper(resourceTypes::get);
-    }
-
-    private static void copyResource(final String name, final File target) throws Exception {
-        try (var in = WsManEndToEndTest.class.getClassLoader().getResourceAsStream(name)) {
-            assertTrue("missing bundled resource " + name, in != null);
-            Files.copy(in, target.toPath());
-        }
     }
 
     @After

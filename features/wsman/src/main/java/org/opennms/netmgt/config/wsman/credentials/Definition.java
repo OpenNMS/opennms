@@ -472,7 +472,7 @@ public class Definition implements WsmanAgentConfig {
     @Override
     public int hashCode() {
         return Objects.hash(range, specific, ipMatch, timeout, retry, username, password, port, maxElements,
-                ssl, strictSsl, path, productVendor, productVersion, gssAuth, kerberosEncryption);
+                ssl, strictSsl, path, productVendor, productVersion, gssAuth, kerberosEncryption, requisition);
     }
 
     @Override
@@ -499,6 +499,7 @@ public class Definition implements WsmanAgentConfig {
                 Objects.equals(this.productVendor, other.productVendor) &&
                 Objects.equals(this.productVersion, other.productVersion) &&
                 Objects.equals(this.gssAuth, other.gssAuth) &&
-                Objects.equals(this.kerberosEncryption, other.kerberosEncryption);
+                Objects.equals(this.kerberosEncryption, other.kerberosEncryption) &&
+                Objects.equals(this.requisition, other.requisition);
     }
 }
