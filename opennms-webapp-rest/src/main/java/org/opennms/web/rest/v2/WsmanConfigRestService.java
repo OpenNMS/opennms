@@ -117,7 +117,6 @@ import org.opennms.web.rest.v2.model.WsmanStatusDto;
 import org.opennms.web.rest.v2.model.WsmanSyncResultDto;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.utils.TimeSeries;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.web.rest.v2.model.WsmanStorageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -683,8 +682,7 @@ public class WsmanConfigRestService {
                 break;
             case "integration":
             case "osgi": {
-                final List<String> plugins = serviceRegistry.findProviders(TimeSeriesStorage.class).stream()
-                        .map(plugin -> plugin.getClass().getName()).sorted().collect(Collectors.toList());
+                final List<String> plugins = timeSeriesStoragePlugins();
                 if (plugins.isEmpty()) {
                     storage.setLabel("Time-series plugin (none installed)");
                     storage.setDetail("No TimeSeriesStorage plugin is registered; collected samples are not stored until one is installed.");
@@ -706,6 +704,21 @@ public class WsmanConfigRestService {
                 storage.setLabel(strategy);
         }
         return storage;
+    }
+
+    // the integration API is an optional runtime library of the webapp, so the
+    // storage interface is looked up by name: without it there is no plugin either
+    private static final String TIME_SERIES_STORAGE_CLASS = "org.opennms.integration.api.v1.timeseries.TimeSeriesStorage";
+
+    private List<String> timeSeriesStoragePlugins() {
+        final Class<?> storageInterface;
+        try {
+            storageInterface = Class.forName(TIME_SERIES_STORAGE_CLASS);
+        } catch (final ClassNotFoundException e) {
+            return List.of();
+        }
+        return serviceRegistry.findProviders(storageInterface).stream()
+                .map(plugin -> plugin.getClass().getName()).sorted().collect(Collectors.toList());
     }
 
     private static String pluginLabel(final String className) {

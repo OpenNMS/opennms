@@ -197,12 +197,6 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- WsmanConfigRestService names the time-series storage plugin behind the integration strategy -->
-    <dependency>
-      <groupId>org.opennms.integration.api</groupId>
-      <artifactId>api</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
