@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,9 +37,11 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.core.MediaType;
 
@@ -55,9 +58,18 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.wsman.WSManClient;
-import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.core.wsman.WSManEndpoint;
+import org.opennms.core.collection.test.CollectionSetUtils;
+import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
+import org.opennms.core.wsman.fake.FakeWsManAgent;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.collection.api.ResourceTypeMapper;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.ResourceTypes;
+import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.monitors.WsManMonitor;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.dao.WSManConfigDao;
@@ -189,7 +201,7 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         Files.write(m_discoveryFile, m_discoveryContent.getBytes(StandardCharsets.UTF_8));
         if (!m_pollerContent.equals(new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8))) {
             Files.write(m_pollerFile, m_pollerContent.getBytes(StandardCharsets.UTF_8));
-            org.opennms.netmgt.config.PollerConfigFactory.init();
+            org.opennms.netmgt.config.PollerConfigFactory.reload();
         }
         try {
             m_requisitionAccessService.deletePendingRequisition("wsman-sync");
@@ -439,6 +451,7 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final String poller = new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8);
         assertTrue(poller.contains("<service name=\"WS-Man\""));
         assertTrue(poller.contains("WsManMonitor"));
+        assertTrue("the monitor refuses to poll without a rule", poller.contains("<parameter key=\"rule\""));
         // enabling twice adds nothing twice
         sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/readiness/enable-polling", "", 200);
         assertEquals(1, new String(Files.readAllBytes(m_pollerFile), StandardCharsets.UTF_8).split("<service name=\"WS-Man\"").length - 1);
@@ -469,53 +482,72 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
-     * End to end inside one JVM: a definition saved through the API is what the
-     * real collector hands to the WS-Man client for a matching server, with no
-     * restart in between (the shared DAO re-reads the rewritten file).
+     * End to end inside one JVM against a fake WS-Man agent: a definition saved
+     * through the API is what the real collector and monitor use for a matching
+     * server, with no restart in between (the shared DAO re-reads the rewritten
+     * file), and the poller service enable-polling writes is one the monitor can run.
      */
     @Test
-    public void testDefinitionSavedThroughTheApiReachesTheCollector() throws Exception {
-        put("{\"defaults\":{\"username\":\"root\"},\"definitions\":[{\"specifics\":[\"10.20.30.40\"],\"username\":\"monitor\",\"password\":\"secret-one\",\"ssl\":false,\"port\":5985,\"path\":\"/wsman\"}]}", 200);
+    public void testDefinitionSavedThroughTheApiReachesTheDaemons() throws Exception {
+        try (FakeWsManAgent fake = FakeWsManAgent.onLoopback("monitor", "secret-one").start()) {
+            put("{\"defaults\":{\"username\":\"root\",\"password\":\"calvin\"},\"definitions\":[{\"specifics\":[\"127.0.0.1\"],\"username\":\"monitor\",\"password\":\"secret-one\",\"ssl\":false,\"port\":" + fake.getPort() + ",\"path\":\"/wsman\",\"productVendor\":\"Microsoft\",\"productVersion\":\"" + FakeWsManAgent.DEFAULT_VERSION + "\"}]}", 200);
 
-        final AtomicReference<WSManEndpoint> seen = new AtomicReference<>();
-        final WSManClientFactory factory = endpoint -> {
-            seen.set(endpoint);
-            return mock(WSManClient.class);
-        };
-        // the system-definition rules read the node's vendor and model
-        final OnmsNode node = mock(OnmsNode.class);
-        when(node.getAssetRecord()).thenReturn(new OnmsAssetRecord());
-        final NodeDao nodeDao = mock(NodeDao.class);
-        when(nodeDao.get(any(Integer.class))).thenReturn(node);
+            // the shipped resource types the Windows groups store their rows under
+            final Map<String, ResourceType> resourceTypes = new HashMap<>();
+            try (InputStream in = getClass().getClassLoader().getResourceAsStream("wsman-defaults/resource-types.d/wsman-microsoft-windows.xml")) {
+                assertNotNull("resource types bundled with the wsman feature", in);
+                for (final ResourceType type : JaxbUtils.unmarshal(ResourceTypes.class, new InputStreamReader(in, StandardCharsets.UTF_8)).getResourceTypes()) {
+                    resourceTypes.put(type.getName(), type);
+                }
+            }
+            ResourceTypeMapper.getInstance().setResourceTypeMapper(resourceTypes::get);
 
-        final WsManCollector collector = new WsManCollector();
-        collector.setWSManClientFactory(factory);
-        collector.setWSManConfigDao(m_wsManConfigDao);
-        collector.setWSManDataCollectionConfigDao(m_wsManDataCollectionConfigDao);
-        collector.setNodeDao(nodeDao);
+            final OnmsNode node = mock(OnmsNode.class);
+            when(node.getAssetRecord()).thenReturn(new OnmsAssetRecord());
+            final NodeDao nodeDao = mock(NodeDao.class);
+            when(nodeDao.get(any(Integer.class))).thenReturn(node);
 
-        final CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getAddress()).thenReturn(InetAddressUtils.addr("10.20.30.40"));
-        when(agent.getNodeId()).thenReturn(1);
-        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
+            final WsManCollector collector = new WsManCollector();
+            collector.setWSManClientFactory(new CXFWSManClientFactory());
+            collector.setWSManConfigDao(m_wsManConfigDao);
+            collector.setWSManDataCollectionConfigDao(m_wsManDataCollectionConfigDao);
+            collector.setNodeDao(nodeDao);
 
-        final Map<String, Object> params = new HashMap<>();
-        params.put("collection", "default");
-        params.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, params), EmptyScope.EMPTY));
-        final CollectionSet set = collector.collect(agent, params);
+            final CollectionAgent agent = mock(CollectionAgent.class);
+            when(agent.getAddress()).thenReturn(InetAddressUtils.addr("127.0.0.1"));
+            when(agent.getNodeId()).thenReturn(1);
+            when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
 
-        assertEquals(CollectionStatus.SUCCEEDED, set.getStatus());
-        assertEquals("monitor", seen.get().getUsername());
-        assertEquals("secret-one", seen.get().getPassword());
-        assertEquals("http://10.20.30.40:5985/wsman", seen.get().getUrl().toString());
+            final Map<String, Object> params = new HashMap<>();
+            params.put("collection", "default");
+            params.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, params), EmptyScope.EMPTY));
+            final CollectionSet set = collector.collect(agent, params);
+            assertEquals(CollectionStatus.SUCCEEDED, set.getStatus());
+            assertEquals(9123456.0, CollectionSetUtils.getAttributesByName(set).get("freePhysMem").getNumericValue().doubleValue(), 0.0);
 
-        // a server no definition matches gets the defaults
-        when(agent.getAddress()).thenReturn(InetAddressUtils.addr("10.99.99.99"));
-        final Map<String, Object> defaultParams = new HashMap<>();
-        defaultParams.put("collection", "default");
-        defaultParams.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, defaultParams), EmptyScope.EMPTY));
-        collector.collect(agent, defaultParams);
-        assertEquals("root", seen.get().getUsername());
+            // the poller service enable-polling writes polls up through the monitor
+            sendData(POST, MediaType.APPLICATION_JSON, "/wsman-config/readiness/enable-polling", "", 200);
+            final Service pollerService = PollerConfigFactory.getInstance().getLocalConfiguration().getPackages().stream()
+                    .flatMap(p -> p.getServices().stream()).filter(svc -> "WS-Man".equals(svc.getName())).findFirst().orElseThrow();
+            final Map<String, Object> monitorParams = new HashMap<>();
+            pollerService.getParameters().forEach(parameter -> monitorParams.put(parameter.getKey(), parameter.getValue()));
+            final MonitoredService svc = mock(MonitoredService.class);
+            when(svc.getAddress()).thenReturn(InetAddressUtils.addr("127.0.0.1"));
+            when(svc.getIpAddr()).thenReturn("127.0.0.1");
+            when(svc.getNodeId()).thenReturn(1);
+            final WsManMonitor monitor = new WsManMonitor();
+            monitor.setWSManClientFactory(new CXFWSManClientFactory());
+            monitor.setWSManConfigDao(m_wsManConfigDao);
+            monitorParams.putAll(Interpolator.interpolateAttributes(monitor.getRuntimeAttributes(svc, monitorParams), EmptyScope.EMPTY));
+            assertEquals(PollStatus.SERVICE_AVAILABLE, monitor.poll(svc, monitorParams).getStatusCode());
+
+            // a server no definition matches gets the defaults, which the agent rejects
+            put("{\"defaults\":{\"username\":\"root\",\"password\":\"calvin\",\"port\":" + fake.getPort() + ",\"ssl\":false,\"path\":\"/wsman\"},\"definitions\":[]}", 200);
+            monitorParams.clear();
+            pollerService.getParameters().forEach(parameter -> monitorParams.put(parameter.getKey(), parameter.getValue()));
+            monitorParams.putAll(Interpolator.interpolateAttributes(monitor.getRuntimeAttributes(svc, monitorParams), EmptyScope.EMPTY));
+            assertEquals(PollStatus.SERVICE_UNAVAILABLE, monitor.poll(svc, monitorParams).getStatusCode());
+        }
     }
 
     private OnmsServiceType serviceType(final String name) {
