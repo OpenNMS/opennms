@@ -21,6 +21,8 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.util.List;
 
 /**
@@ -30,8 +32,11 @@ import java.util.List;
  * in the other files are untouched but are consulted so names stay unique
  * and every reference still resolves.
  */
+// read-only fields a client round-trips from a GET body (hasPassword, source) are ignored
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WsmanDataCollectionFileUpdate {
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CollectionUpdate {
         private String name;
         private Integer rrdStep;
@@ -51,6 +56,7 @@ public class WsmanDataCollectionFileUpdate {
         public void setIncludedSystemDefinitions(List<String> includedSystemDefinitions) { this.includedSystemDefinitions = includedSystemDefinitions; }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class AttributeUpdate {
         private String name;
         private String alias;
@@ -70,6 +76,7 @@ public class WsmanDataCollectionFileUpdate {
         public void setFilter(String filter) { this.filter = filter; }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class GroupUpdate {
         private String name;
         private String resourceType;
@@ -92,6 +99,7 @@ public class WsmanDataCollectionFileUpdate {
         public void setAttributes(List<AttributeUpdate> attributes) { this.attributes = attributes; }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class SystemDefinitionUpdate {
         private String name;
         private List<String> rules;
