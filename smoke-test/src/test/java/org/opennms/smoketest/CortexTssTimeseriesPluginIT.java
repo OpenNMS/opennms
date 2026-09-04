@@ -28,15 +28,24 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.utils.CortexTestUtils;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 
+/**
+ * Minimal smoke test: verifies the Cortex TSS plugin feature installs and starts.
+ * Does not validate data flow (see {@link CortexTssPluginIT} for comprehensive tests).
+ *
+ * <p>Requires the Cortex TSS plugin KAR. Set {@code -Dcortex.kar=/path/to/opennms-cortex-tss-plugin.kar}
+ * or use {@code -Dorg.opennms.dev.m2=$HOME/.m2/repository} to make it available.</p>
+ */
 @org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class CortexTssTimeseriesPluginIT {
+
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.minimal(
             b -> b.withInstallFeature("opennms-timeseries-api"),
-            b -> b.withInstallFeature("opennms-plugins-cortex-tss", "opennms-cortex-tss-plugin")
+            b -> b.withInstallFeature("opennms-plugins-cortex-tss", "opennms-cortex-tss-plugin", CortexTestUtils.resolveKarFile())
     );
 
     protected KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
