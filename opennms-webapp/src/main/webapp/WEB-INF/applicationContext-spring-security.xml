@@ -211,6 +211,12 @@
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PUT" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="ROLE_ADMIN" />
 
+    <!-- MIB compiler manages files on the server filesystem; admin-only like the Vaadin MIB compiler UI -->
+    <intercept-url pattern="/api/v2/mibs/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/mibs/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/mibs/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/mibs/**" method="PUT" access="ROLE_ADMIN" />
+
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
