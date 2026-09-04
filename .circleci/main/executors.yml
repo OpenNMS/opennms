@@ -1,7 +1,7 @@
 executors:
   base-executor:
     docker:
-      - image: cimg/base:2026.04
+      - image: cimg/base:2026.09
   build-executor:
     docker:
       - image: opennms/build-environment:21.0-20-3.9.6
@@ -13,10 +13,10 @@ executors:
       - image: opennms/antora:3.1.4-b10433
   integration-test-executor:
     machine:
-      image: ubuntu-2204:2025.09.1
+      image: ubuntu-2204:2026.05.1
   smoke-test-executor:
     machine:
-      image: ubuntu-2204:2025.09.1
+      image: ubuntu-2204:2026.05.1
   ui-executor:
     docker:
       - image: cimg/node:24.14.0
