@@ -202,7 +202,21 @@ This allows the user to also reference credentials stored in the secure credenti
 | Enables GSS authentication.
 When enabled, a reverse lookup is performed on the target IP address to determine the canonical host name.
 | False
+
+| kerberos-encryption
+| Enables Kerberos message encryption (MS-WSMV 2.2.9.1).
+The SOAP payload itself is encrypted, so WS-Management can be used safely over plain HTTP (typically port 5985) without SSL.
+Implies `gss-auth`.
+See xref:configuration/wsman-kerberos.adoc[] for the required setup.
+| False
 |===
+
+[[ga-performance-mgmt-collectors-wsman-kerberos]]
+== Kerberos authentication and message encryption
+
+WS-Management agents can be reached with Kerberos authentication (`gss-auth`) or with Kerberos message encryption (`kerberos-encryption`), which protects the SOAP messages themselves and is safe over plain HTTP.
+Both need a Kerberos environment on the system that performs the polls.
+See xref:configuration/wsman-kerberos.adoc[] for the prerequisites, credentials, system properties, and troubleshooting.
 
 NOTE: If you try to connect against Microsoft Windows Server, make sure to set specific ports for WinRM connections.
 By default, Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.

@@ -9,25 +9,35 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManDetectorFactory" />
-	</service>
+	<!-- Detector factories are top-level beans rather than inlined in their <service> elements:
+	     the Blueprint schema does not allow destroy-method on inlined beans -->
+	<bean id="wsmanDetectorFactory" class="org.opennms.netmgt.provision.detector.wsman.WsManDetectorFactory" destroy-method="destroy" />
+	<service ref="wsmanDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory" />
 
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManWQLDetectorFactory" />
-	</service>
+	<bean id="wsmanWqlDetectorFactory" class="org.opennms.netmgt.provision.detector.wsman.WsManWQLDetectorFactory" destroy-method="destroy" />
+	<service ref="wsmanWqlDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory" />
 
-	<bean id="wsmanCollector" class="org.opennms.netmgt.collectd.WsManCollector" />
+	<bean id="wsmanShellDetectorFactory" class="org.opennms.netmgt.provision.detector.wsman.WsManShellDetectorFactory" destroy-method="destroy" />
+	<service ref="wsmanShellDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory" />
+
+	<bean id="wsmanCollector" class="org.opennms.netmgt.collectd.WsManCollector" destroy-method="destroy" />
 	<service ref="wsmanCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
 		<service-properties>
 			<entry key="type" value="org.opennms.netmgt.collectd.WsManCollector" />
 		</service-properties>
 	</service>
 
-	<bean id="wsmanMonitor" class="org.opennms.netmgt.poller.monitors.WsManMonitor" />
+	<bean id="wsmanMonitor" class="org.opennms.netmgt.poller.monitors.WsManMonitor" destroy-method="destroy" />
 	<service ref="wsmanMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
 			<entry key="type" value="org.opennms.netmgt.poller.monitors.WsManMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="wsmanShellMonitor" class="org.opennms.netmgt.poller.monitors.WsManShellMonitor" destroy-method="destroy" />
+	<service ref="wsmanShellMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.WsManShellMonitor" />
 		</service-properties>
 	</service>
 

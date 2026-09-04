@@ -38,7 +38,7 @@ import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManConstants;
 import org.opennms.core.wsman.WSManEndpoint;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
+import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.netmgt.config.WsManAssetAdapterConfig;
 import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
 import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
@@ -69,7 +69,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
 
     private NodeDao m_nodeDao;
     private WsManAssetAdapterConfig m_config;
-    private WSManClientFactory m_factory = new CXFWSManClientFactory();
+    private WSManClientFactory m_factory = new CachingWSManClientFactory();
     private WSManConfigDao m_wsManConfigDao;
 
     private static final String NAME = "WsManAssetProvisioningAdapter";
@@ -120,12 +120,11 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
             }
             final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(ipaddress);
             final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, ipaddress);
-            final WSManClient client = m_factory.getClient(endpoint);
             LOG.debug("doAdd: m_config: {} ", m_config);
 
             final OnmsAssetRecord asset = node.getAssetRecord();
             m_config.getReadLock().lock();
-            try {
+            try (WSManClient client = m_factory.getClient(endpoint)) {
                 for (final AssetField field : m_config.getAssetFieldsForAddress(ipaddress, vendor)) {
                     try {
                         final String value = fetchWsManAssetString(client, endpoint, field.getWqlObjs(), field.getFormatString());
@@ -241,12 +240,11 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
             }
             final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(ipaddress);
             final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, ipaddress);
-            final WSManClient client = m_factory.getClient(endpoint);
             LOG.debug("doUpdate: m_config: \"{}\"", m_config);
 
             final OnmsAssetRecord asset = node.getAssetRecord();
             m_config.getReadLock().lock();
-            try {
+            try (WSManClient client = m_factory.getClient(endpoint)) {
                 for (final AssetField field : m_config.getAssetFieldsForAddress(ipaddress, vendor)) {
                     try {
                         final String value = fetchWsManAssetString(client, endpoint, field.getWqlObjs(), field.getFormatString());
