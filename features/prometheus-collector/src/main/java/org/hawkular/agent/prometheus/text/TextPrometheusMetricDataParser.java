@@ -24,15 +24,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hawkular.agent.prometheus.PrometheusMetricDataParser;
-import org.hawkular.agent.prometheus.Util;
-import org.hawkular.agent.prometheus.types.Counter;
-import org.hawkular.agent.prometheus.types.Gauge;
-import org.hawkular.agent.prometheus.types.Histogram;
 import org.hawkular.agent.prometheus.types.Metric;
 import org.hawkular.agent.prometheus.types.MetricFamily;
 import org.hawkular.agent.prometheus.types.MetricType;
-import org.hawkular.agent.prometheus.types.Summary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +39,9 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
     private static final Logger log = LoggerFactory.getLogger(TextPrometheusMetricDataParser.class);
 
     private String lastLineReadFromStream; // this is only set when we break from the while loop in parse()
+    
+    private final LineParser sampleLineParser = new LineParser();
+    private final TextFormatStrategy strategy;
 
     /**
      * Provides the input stream where the parser will look for metric data.
@@ -50,8 +49,9 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
      *
      * @param inputStream the stream where the metric data can be found
      */
-    public TextPrometheusMetricDataParser(InputStream inputStream) {
+    public TextPrometheusMetricDataParser(InputStream inputStream, TextFormatStrategy strategy) {
         super(inputStream);
+        this.strategy = strategy;
     }
 
     private class ParserContext {
@@ -62,15 +62,15 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
         public String name = "";
         public String help = "";
         public MetricType type = null;
-        public List<String> allowedNames = new ArrayList<>();
         public List<TextSample> textSamples = new ArrayList<>();
+        public SampleNameValidator sampleNameValidator = SampleNameValidator.rejectAll();
 
         // starts a fresh metric family
         public void clear() {
             name = "";
             help = "";
             type = null;
-            allowedNames.clear();
+            sampleNameValidator = SampleNameValidator.rejectAll();
             textSamples.clear();
         }
 
@@ -92,82 +92,12 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
             // For histogram metrics, we need to combine all bucket samples, sum, and count.
 
             Map<Map<String, String>, Metric.Builder<?>> builders = new LinkedHashMap<>();
+            
+            TextSampleProcessor textSampleProcessor = strategy.getSampleProcessor(type);
 
             for (TextSample textSample : textSamples) {
                 try {
-                    switch (type) {
-                        case COUNTER:
-                            builders.put(textSample.getLabels(),
-                                    new Counter.Builder().setName(name)
-                                            .setValue(Util.convertStringToDouble(textSample.getValue()))
-                                            .addLabels(textSample.getLabels()));
-                            break;
-                        case UNTYPED:
-                        //treat UNTYPED as gauge
-                        case GAUGE:
-                            builders.put(textSample.getLabels(),
-                                    new Gauge.Builder().setName(name)
-                                            .setValue(Util.convertStringToDouble(textSample.getValue()))
-                                            .addLabels(textSample.getLabels()));
-                            break;
-                        case SUMMARY:
-                            // Get the builder that we are using to build up the current metric. Remember we need to
-                            // get the builder for this specific metric identified with a unique set of labels.
-
-                            // First we need to remove any existing quantile label since it isn't a "real" label.
-                            // This is to ensure our lookup uses all but only "real" labels.
-                            String quantileValue = textSample.getLabels().remove("quantile"); // may be null
-
-                            Summary.Builder sBuilder = (Summary.Builder) builders.get(textSample.getLabels());
-                            if (sBuilder == null) {
-                                sBuilder = new Summary.Builder();
-                                builders.put(textSample.getLabels(), sBuilder);
-                            }
-                            sBuilder.setName(name);
-                            sBuilder.addLabels(textSample.getLabels());
-                            if (textSample.getName().endsWith("_count")) {
-                                sBuilder.setSampleCount((long)Util.convertStringToDouble(textSample.getValue()));
-                            } else if (textSample.getName().endsWith("_sum")) {
-                                sBuilder.setSampleSum(Util.convertStringToDouble(textSample.getValue()));
-                            } else {
-                                // This must be a quantile sample
-                                if (quantileValue == null) {
-                                    log.debug("Summary quantile sample is missing the 'quantile' label: {}",
-                                            textSample.getLine());
-                                }
-                                sBuilder.addQuantile(Util.convertStringToDouble(quantileValue),
-                                        Util.convertStringToDouble(textSample.getValue()));
-                            }
-                            break;
-                        case HISTOGRAM:
-                            // Get the builder that we are using to build up the current metric. Remember we need to
-                            // get the builder for this specific metric identified with a unique set of labels.
-
-                            // First we need to remove any existing le label since it isn't a "real" label.
-                            // This is to ensure our lookup uses all but only "real" labels.
-                            String bucket = textSample.getLabels().remove("le"); // may be null
-
-                            Histogram.Builder hBuilder = (Histogram.Builder) builders.get(textSample.getLabels());
-                            if (hBuilder == null) {
-                                hBuilder = new Histogram.Builder();
-                                builders.put(textSample.getLabels(), hBuilder);
-                            }
-                            hBuilder.setName(name);
-                            hBuilder.addLabels(textSample.getLabels());
-                            if (textSample.getName().endsWith("_count")) {
-                                hBuilder.setSampleCount((long)Util.convertStringToDouble(textSample.getValue()));
-                            } else if (textSample.getName().endsWith("_sum")) {
-                                hBuilder.setSampleSum(Util.convertStringToDouble(textSample.getValue()));
-                            } else {
-                                // This must be a bucket sample
-                                if (bucket == null) {
-                                    throw new Exception("Histogram bucket sample is missing the 'le' label");
-                                }
-                                hBuilder.addBucket(Util.convertStringToDouble(bucket),
-                                        (long)Util.convertStringToDouble(textSample.getValue()));
-                            }
-                            break;
-                    }
+                    textSampleProcessor.process(builders, name, textSample);
                 } catch (Exception e) {
                     log.debug("Error processing sample. This metric sample will be ignored: {}",
                             textSample.getLine(), e);
@@ -233,8 +163,8 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
                             // start anew
                             context.clear();
                             context.name = parts[2];
-                            context.type = MetricType.GAUGE; // default in case we don't get a TYPE
-                            context.allowedNames.add(parts[2]);
+                            context.type = MetricType.UNKNOWN; // default in case we don't get a TYPE
+                            context.sampleNameValidator = strategy.getNameValidator(context.type, context.name);
                         }
 
                         if (parts.length == 4) {
@@ -253,36 +183,22 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
                             context.clear();
                             context.name = parts[2];
                         }
-                        context.type = MetricType.valueOf(parts[3].toUpperCase());
-                        context.allowedNames.clear();
-                        switch (context.type) {
-                            case COUNTER:
-                                context.allowedNames.add(context.name);
-                                break;
-                            case GAUGE:
-                                context.allowedNames.add(context.name);
-                                break;
-                            case UNTYPED:
-                                context.allowedNames.add(context.name);
-                                break;
-                            case SUMMARY:
-                                context.allowedNames.add(context.name + "_count");
-                                context.allowedNames.add(context.name + "_sum");
-                                context.allowedNames.add(context.name);
-                                break;
-                            case HISTOGRAM:
-                                context.allowedNames.add(context.name + "_count");
-                                context.allowedNames.add(context.name + "_sum");
-                                context.allowedNames.add(context.name + "_bucket");
-                                break;
+                        String type = parts.length < 4 ? "" : parts[3];
+                        context.type = StringUtils.isEmpty(type) ? MetricType.UNKNOWN : MetricType.tryParse(type);
+                        if(context.type != null) {
+                            context.sampleNameValidator = strategy.getNameValidator(context.type, context.name);
                         }
+                        else {
+                            // we don't recognize this type, so we will ignore all samples for this family
+                            context.clear();
+                        }                        
                     } else {
                         // ignore other tokens - probably a comment
                     }
                 } else {
                     // parse the sample line that contains a single metric (or part of a metric as in summary/histo)
-                    TextSample sample = parseSampleLine(line);
-                    if (!context.allowedNames.contains(sample.getName())) {
+                    TextSample sample = sampleLineParser.parse(line);
+                    if (!context.sampleNameValidator.isValid(sample.getName())) {
                         if (!context.name.isEmpty()) {
                             // break and we'll finish the metric family we previously were building up
                             this.lastLineReadFromStream = line;
@@ -304,133 +220,12 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
             line = readLine(getInputStream());
         }
 
-        if (!context.name.isEmpty()) {
+        if (!context.name.isEmpty() && context.type != null) {
             // finish the metric family we previously were building up
             context.finishMetricFamily();
         }
 
         return context.finishedMetricFamily;
-    }
-
-    private TextSample parseSampleLine(String line) {
-        // algorithm from parser.py
-        StringBuilder name = new StringBuilder();
-        StringBuilder labelname = new StringBuilder();
-        StringBuilder labelvalue = new StringBuilder();
-        StringBuilder value = new StringBuilder();
-        Map<String, String> labels = new LinkedHashMap<>();
-
-        String state = "name";
-
-        for (int c = 0; c < line.length(); c++) {
-            char charAt = line.charAt(c);
-            if (state.equals("name")) {
-                if (charAt == '{') {
-                    state = "startoflabelname";
-                } else if (charAt == ' ' || charAt == '\t') {
-                    state = "endofname";
-                } else {
-                    name.append(charAt);
-                }
-            } else if (state.equals("endofname")) {
-                if (charAt == ' ' || charAt == '\t') {
-                    // do nothing
-                } else if (charAt == '{') {
-                    state = "startoflabelname";
-                } else {
-                    value.append(charAt);
-                    state = "value";
-                }
-            } else if (state.equals("startoflabelname")) {
-                if (charAt == ' ' || charAt == '\t') {
-                    // do nothing
-                } else if (charAt == '}') {
-                    state = "endoflabels";
-                } else {
-                    labelname.append(charAt);
-                    state = "labelname";
-                }
-            } else if (state.equals("labelname")) {
-                if (charAt == '=') {
-                    state = "labelvaluequote";
-                } else if (charAt == '}') {
-                    state = "endoflabels";
-                } else if (charAt == ' ' || charAt == '\t') {
-                    state = "labelvalueequals";
-                } else {
-                    labelname.append(charAt);
-                }
-            } else if (state.equals("labelvalueequals")) {
-                if (charAt == '=') {
-                    state = "labelvaluequote";
-                } else if (charAt == ' ' || charAt == '\t') {
-                    // do nothing
-                } else {
-                    throw new IllegalStateException("Invalid line: " + line);
-                }
-            } else if (state.equals("labelvaluequote")) {
-                if (charAt == '"') {
-                    state = "labelvalue";
-                } else if (charAt == ' ' || charAt == '\t') {
-                    // do nothing
-                } else {
-                    throw new IllegalStateException("Invalid line: " + line);
-                }
-            } else if (state.equals("labelvalue")) {
-                if (charAt == '\\') {
-                    state = "labelvalueslash";
-                } else if (charAt == '"') {
-                    labels.put(labelname.toString(), labelvalue.toString());
-                    labelname.setLength(0);
-                    labelvalue.setLength(0);
-                    state = "nextlabel";
-                } else {
-                    labelvalue.append(charAt);
-                }
-            } else if (state.equals("labelvalueslash")) {
-                state = "labelvalue";
-                if (charAt == '\\') {
-                    labelvalue.append('\\');
-                } else if (charAt == 'n') {
-                    labelvalue.append('\n');
-                } else if (charAt == '"') {
-                    labelvalue.append('"');
-                } else {
-                    labelvalue.append('\\').append(charAt);
-                }
-            } else if (state.equals("nextlabel")) {
-                if (charAt == ',') {
-                    state = "labelname";
-                } else if (charAt == '}') {
-                    state = "endoflabels";
-                } else if (charAt == ' ' || charAt == '\t') {
-                    // do nothing
-                } else {
-                    throw new IllegalStateException("Invalid line: " + line);
-                }
-            } else if (state.equals("endoflabels")) {
-                if (charAt == ' ' || charAt == '\t') {
-                    // do nothing
-                } else {
-                    value.append(charAt);
-                    state = "value";
-                }
-            } else if (state.equals("value")) {
-                if (charAt == ' ' || charAt == '\t') {
-                    break; // timestamps are NOT supported - ignoring
-                } else {
-                    value.append(charAt);
-                }
-            }
-        }
-
-        TextSample sample = new TextSample.Builder()
-                .setLine(line)
-                .setName(name.toString())
-                .setValue(value.toString())
-                .addLabels(labels).build();
-
-        return sample;
     }
 
     private String unescapeHelp(String text) {
