@@ -670,6 +670,18 @@
             <attrib name="TaskQueuePendingCount" alias="ONMSSIPTskQPCnt" type="gauge"/>
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSSIPTskQRCap" type="gauge"/>
          </mbean>
+         <!-- EnhancedLinkd -->
+         <mbean name="OpenNMS EnhancedLinkd" objectname="OpenNMS:Name=EnhancedLinkd">
+            <attrib name="ActiveThreads" alias="ONMSELDThrdAct" type="gauge"/>
+            <attrib name="NumPoolThreads" alias="ONMSELDPoolThrd" type="gauge"/>
+            <attrib name="CorePoolThreads" alias="ONMSELDPoolCore" type="gauge"/>
+            <attrib name="MaxPoolThreads" alias="ONMSELDPoolMax" type="gauge"/>
+            <attrib name="PeakPoolThreads" alias="ONMSELDPoolPeak" type="gauge"/>
+            <attrib name="TasksTotal" alias="ONMSELDTasksTot" type="counter"/>
+            <attrib name="TasksCompleted" alias="ONMSELDTasksCpt" type="counter"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSELDTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSELDTskQRCap" type="gauge"/>
+         </mbean>
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

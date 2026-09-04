@@ -30,4 +30,51 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @version $Id: $
  */
 public interface EnhancedLinkdMBean extends BaseOnmsMBean {
+
+    public long getActiveThreads();
+    
+    /**
+     * @return The cumulative number of EnhancedLinkd discovery tasks scheduled since startup
+     */
+    public long getTasksTotal();
+    
+    /**
+     * @return The cumulative number of EnhancedLinkd discovery tasks completed since startup
+     */
+    public long getTasksCompleted();
+    
+    /**
+     * @return The ratio of completed to scheduled EnhancedLinkd discovery tasks since startup
+     */
+    public double getTaskCompletionRatio();
+    
+     /**
+     * @return The current number of threads in the pool
+     */
+    public long getNumPoolThreads();
+
+    /**
+     * @return The largest size of the EnhancedLinkd thread pool since startup
+     */
+    public long getPeakPoolThreads();
+
+    /**
+     * @return The core number of threads
+     */
+    public long getCorePoolThreads();
+
+    /**
+     * @return The maximum number of threads allowed in the EnhancedLinkd thread pool
+     */
+    public long getMaxPoolThreads();
+
+    /**
+     * @return The number of pending tasks on our ExecutorService
+     */
+    public long getTaskQueuePendingCount();
+
+    /**
+     * @return The number of open slots on our ExecutorService queue.
+     */
+    public long getTaskQueueRemainingCapacity();
 }
