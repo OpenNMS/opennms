@@ -542,6 +542,13 @@
           "url": "ui/index.html#/scv",
           "locationMatch": "configurationManagement",
           "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "daemonManagement",
+          "name": "Daemon Management",
+          "url": "ui/index.html#/daemon-management",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },

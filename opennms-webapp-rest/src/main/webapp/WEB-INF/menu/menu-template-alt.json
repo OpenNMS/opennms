@@ -374,6 +374,13 @@
           "roles": ["ROLE_ADMIN"]
         },
         {
+          "id": "daemonManagement",
+          "name": "Daemon Management",
+          "url": "ui/index.html#/daemon-management",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "fileEditor",
           "name": "File Editor",
           "url": "ui/index.html#/file-editor",
