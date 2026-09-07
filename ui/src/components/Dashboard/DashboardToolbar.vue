@@ -27,7 +27,7 @@ License.
 -->
 <template>
   <div class="dashboard-toolbar">
-    <h2 class="dashboard-toolbar__title">Home</h2>
+    <h2 class="dashboard-toolbar__title">{{ dashboardName }}</h2>
 
     <div class="dashboard-toolbar__controls">
       <DashboardFilterControl />
@@ -87,6 +87,34 @@ License.
         @click="store.togglePaused()"
       />
 
+      <OnmsButton
+        v-if="!editMode"
+        variant="text"
+        icon="pi pi-file-pdf"
+        :label="isExporting ? 'Exporting…' : 'Export to PDF'"
+        title="Save the dashboard as shown right now to a PDF file"
+        :loading="isExporting"
+        :disabled="isExporting"
+        data-test="export-pdf"
+        @click="onExportPdf"
+      />
+      <Teleport to="body">
+        <div
+          v-if="isExporting"
+          class="dashboard-export-overlay"
+          role="status"
+          aria-live="polite"
+          data-test="export-overlay"
+        >
+          <div class="dashboard-export-overlay__card">
+            <OnmsSpinner />
+            <div class="dashboard-export-overlay__title">Generating PDF…</div>
+            <div class="dashboard-export-overlay__detail">
+              {{ exportProgress.total ? `Capturing panel ${Math.min(exportProgress.done + 1, exportProgress.total)} of ${exportProgress.total}` : 'Preparing the dashboard' }}
+            </div>
+          </div>
+        </div>
+      </Teleport>
       <OnmsButton
         variant="text"
         :icon="isFullscreen ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"
@@ -151,13 +179,15 @@ License.
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { OnmsToggleSwitch, OnmsButton, OnmsSelect, OnmsDatePicker } from '@opennms/onms-ui'
+import { OnmsToggleSwitch, OnmsButton, OnmsSelect, OnmsDatePicker, OnmsSpinner } from '@opennms/onms-ui'
 import { TimeframePreset } from '@/types/dashboard'
 import { refreshOptions, timeframeOptions } from './timeframe'
 import { listPanelDefinitions } from './registry'
 import DashboardFilterControl from './DashboardFilterControl.vue'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import useRole from '@/composables/useRole'
+import useSnackbar from '@/composables/useSnackbar'
+import { exportDashboardToPdf } from './utils/dashboardExport'
 
 const store = useDashboardStore()
 const { editMode, isDirty, isSaving, isPaused } = storeToRefs(store)
@@ -168,6 +198,34 @@ const { adminRole } = useRole()
 const canEdit = adminRole
 
 const panelToAdd = ref<string | null>(null)
+
+const { showSnackBar } = useSnackbar()
+const dashboardName = computed(() => store.dashboardName)
+const isExporting = ref(false)
+const exportProgress = ref({ done: 0, total: 0 })
+// NMS-20296: the PDF is a capture of the panels as shown, so it reflects the
+// filters, timeframe and collapsed state on screen. Capturing is CPU-bound and
+// takes seconds, so an overlay tells the user what is happening.
+const onExportPdf = async () => {
+  const root = document.getElementById('dashboard-root')
+  if (!root || isExporting.value) {
+    return
+  }
+  isExporting.value = true
+  exportProgress.value = { done: 0, total: 0 }
+  try {
+    const exported = await exportDashboardToPdf(root, dashboardName.value, {
+      onProgress: (done, total) => {
+        exportProgress.value = { done, total }
+      }
+    })
+    showSnackBar({ msg: exported ? `Exported ${exported} panel${exported === 1 ? '' : 's'} to PDF.` : 'No panels are ready to export yet.' })
+  } catch {
+    showSnackBar({ msg: 'The PDF could not be created.', error: true })
+  } finally {
+    isExporting.value = false
+  }
+}
 
 // Squeeze / free-form layout toggle (persisted on the layout doc; saved on Save).
 const autoCompactModel = computed<boolean>({
@@ -308,5 +366,37 @@ onBeforeUnmount(() => document.removeEventListener('fullscreenchange', onFullscr
     white-space: nowrap;
     cursor: pointer;
   }
+}
+
+.dashboard-export-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.dashboard-export-overlay__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 18rem;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  background: var(--p-content-background, #fff);
+  color: var(--p-text-color, #1f2937);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-export-overlay__title {
+  font-weight: 600;
+}
+
+.dashboard-export-overlay__detail {
+  font-size: 0.9rem;
+  color: var(--p-text-muted-color, #64748b);
 }
 </style>

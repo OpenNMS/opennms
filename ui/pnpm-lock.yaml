@@ -82,6 +82,9 @@ importers:
       grid-layout-plus:
         specifier: ^1.1.1
         version: 1.1.1(vue@3.5.33(typescript@5.9.3))
+      html2canvas:
+        specifier: 1.4.1
+        version: 1.4.1
       ip-regex:
         specifier: ^5.0.0
         version: 5.0.0
@@ -4667,7 +4670,6 @@ snapshots:
   css-line-break@2.1.0:
     dependencies:
       utrie: 1.0.2
-    optional: true
 
   css-select@5.2.2:
     dependencies:
@@ -5249,7 +5251,6 @@ snapshots:
     dependencies:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3
-    optional: true
 
   https-proxy-agent@5.0.1:
     dependencies:
@@ -5829,7 +5830,6 @@ snapshots:
   text-segmentation@1.0.3:
     dependencies:
       utrie: 1.0.2
-    optional: true
 
   time-span@5.1.0:
     dependencies:
@@ -5951,7 +5951,6 @@ snapshots:
   utrie@1.0.2:
     dependencies:
       base64-arraybuffer: 1.0.2
-    optional: true
 
   vite-svg-loader@4.0.0:
     dependencies:
