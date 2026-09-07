@@ -90,6 +90,7 @@ License.
       <component
         :is="panelDef.component"
         v-if="panelDef"
+        :panel-id="panel.id"
         :options="panel.options"
         :filter="resolvedFilter"
         :timeframe="resolvedTimeframe"

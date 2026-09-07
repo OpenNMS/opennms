@@ -6,6 +6,7 @@ import { TimeframePreset } from '@/types/dashboard'
 const mountWith = (url: unknown) =>
   mount(HtmlContentPanel, {
     props: {
+      panelId: 'test-panel',
       options: { url },
       filter: { surveillanceCategories: [], ipMatch: null },
       timeframe: { preset: TimeframePreset.Last24h, from: null, to: null },
