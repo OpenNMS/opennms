@@ -47,6 +47,13 @@ describe('dashboardService', () => {
     expect(await getSystemDashboard()).toEqual(layout)
   })
 
+  it('keeps the dashboard name and defaults it for documents that predate the field', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { ...createDefaultLayout(), name: '  NOC Wall  ' }})
+    expect((await getSystemDashboard()).name).toBe('NOC Wall')
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [] }})
+    expect((await getSystemDashboard()).name).toBe('Home')
+  })
+
   it('normalizes a partial document by filling missing blocks from defaults', async () => {
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [] }})
     const result = await getSystemDashboard()
