@@ -1,28 +1,26 @@
 .Install OpenJDK 21 JRE runtime
 [source, console]
-----
 sudo dnf -y install java-21-openjdk-headless
-----
 
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../repos/rhel-centos/horizon-rhel9.adoc[]
+include::../../../repos/rhel-centos/horizon-rhel10.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../repos/rhel-centos/meridian-rhel9.adoc[]
+include::../../../repos/rhel-centos/meridian-rhel10.adoc[]
 endif::[]
 
-.Install the {page-component-title} Minion package
+.Install {page-component-title} Sentinel
 [source, console, subs="attributes"]
 ----
-sudo dnf -y install {package-prefix}-minion
+sudo dnf -y install {package-prefix}-sentinel
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
-     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-     For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+For this reason, it is recommended to exclude the {page-component-title} packages from updates except when you are planning on performing an upgrade.
 
-.Disable auto updates for {page-component-title} Minion
+.Disable auto updates for {page-component-title} Sentinel
 [source, console]
 ----
 ifeval::["{page-component-title}" == "Horizon"]
@@ -37,24 +35,21 @@ endif::[]
 [source, console]
 ----
 sudo dnf -y install tree
-tree /opt/minion -L 1
+tree /opt/sentinel -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-/opt/minion
+/opt/sentinel
 ├── bin
 ├── COPYING
 ├── deploy
 ├── etc
 ├── lib
-├── repositories
 └── system
 ----
 
-.Enable {page-component-title} Minion on system boot and start immediately
+.Enable {page-component-title} Sentinel on system boot and start immediately
 [source, console]
-----
-sudo systemctl enable --now minion
-----
+sudo systemctl enable --now sentinel

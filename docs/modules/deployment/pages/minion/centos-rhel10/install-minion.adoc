@@ -5,11 +5,11 @@ sudo dnf -y install java-21-openjdk-headless
 ----
 
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../repos/rhel-centos/horizon-rhel9.adoc[]
+include::../../repos/rhel-centos/horizon-rhel10.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../repos/rhel-centos/meridian-rhel9.adoc[]
+include::../../repos/rhel-centos/meridian-rhel10.adoc[]
 endif::[]
 
 .Install the {page-component-title} Minion package
