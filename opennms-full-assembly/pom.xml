@@ -733,23 +733,6 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>remove-superseded-jline</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <delete includeemptydirs="true">
-                  <fileset dir="${project.build.directory}/opennms-repo/org/jline/jline"
-                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
-                  <fileset dir="${project.build.directory}/experimental-repo/org/jline/jline"
-                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
-                </delete>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
             <phase>verify</phase>
             <goals>
               <goal>run</goal>
@@ -876,23 +859,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.cifs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.radius</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -941,18 +907,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>lib</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>io.hawt</groupId>
