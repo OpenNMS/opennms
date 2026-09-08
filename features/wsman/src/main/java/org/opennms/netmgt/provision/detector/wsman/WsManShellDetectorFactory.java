@@ -23,11 +23,11 @@ package org.opennms.netmgt.provision.detector.wsman;
 
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.netmgt.dao.WSManConfigDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
@@ -37,24 +37,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class WsManWQLDetectorFactory extends GenericServiceDetectorFactory<WsManWQLDetector> {
-    private static final Logger LOG = LoggerFactory.getLogger(WsManWQLDetectorFactory.class);
+public class WsManShellDetectorFactory extends GenericServiceDetectorFactory<WsManShellDetector> {
+    private static final Logger LOG = LoggerFactory.getLogger(WsManShellDetectorFactory.class);
 
-    private final WSManClientFactory m_factory = new CachingWSManClientFactory();
+    private final WSManClientFactory m_factory;
 
     @Autowired
     private WSManConfigDao m_wsmanConfigDao;
 
-    @Autowired
-    private NodeDao m_nodeDao;
+    public WsManShellDetectorFactory() {
+        this(new CachingWSManClientFactory());
+    }
 
-    public WsManWQLDetectorFactory() {
-        super(WsManWQLDetector.class);
+    public WsManShellDetectorFactory(WSManClientFactory clientFactory) {
+        super(WsManShellDetector.class);
+        m_factory = Objects.requireNonNull(clientFactory);
     }
 
     @Override
-    public WsManWQLDetector createDetector(Map<String, String> properties) {
-        final WsManWQLDetector detector = new WsManWQLDetector();
+    public WsManShellDetector createDetector(Map<String, String> properties) {
+        final WsManShellDetector detector = new WsManShellDetector();
         setBeanProperties(detector, properties);
         detector.setClientFactory(m_factory);
         return detector;
