@@ -28,6 +28,7 @@
 >
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { whenever } from '@vueuse/core'
 
 import { OnmsToastHost } from '@opennms/onms-ui'
 import startBrowserNotifications from '@/composables/useBrowserNotifications'
