@@ -52,6 +52,7 @@ public class WsmanConfigUpdate {
         private String productVendor;
         private String productVersion;
         private Boolean gssAuth;
+        private Boolean kerberosEncryption;
 
         public Integer getRetry() { return retry; }
         public void setRetry(Integer retry) { this.retry = retry; }
@@ -79,6 +80,8 @@ public class WsmanConfigUpdate {
         public void setProductVersion(String productVersion) { this.productVersion = productVersion; }
         public Boolean getGssAuth() { return gssAuth; }
         public void setGssAuth(Boolean gssAuth) { this.gssAuth = gssAuth; }
+        public Boolean getKerberosEncryption() { return kerberosEncryption; }
+        public void setKerberosEncryption(Boolean kerberosEncryption) { this.kerberosEncryption = kerberosEncryption; }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

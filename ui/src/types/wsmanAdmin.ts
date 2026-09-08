@@ -36,6 +36,8 @@ export interface WsmanAgentSettings {
   productVendor: string | null
   productVersion: string | null
   gssAuth: boolean | null
+  // Kerberos message encryption (implies GSS authentication; safe over plain HTTP)
+  kerberosEncryption: boolean | null
 }
 
 export interface WsmanRange {

@@ -42,7 +42,7 @@ const DialogStub = {
 
 const SETTINGS = {
   retry: null, timeout: null, username: null, hasPassword: false, port: null, maxElements: null,
-  ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null
+  ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null, kerberosEncryption: null
 }
 const CONFIG = {
   version: 'v1',

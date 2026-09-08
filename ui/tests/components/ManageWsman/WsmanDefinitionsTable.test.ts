@@ -29,7 +29,7 @@ const OnmsCardStub = { name: 'OnmsCard', template: '<div><slot name="title" /><s
 
 const BASE = {
   retry: null, timeout: null, username: null, hasPassword: false, port: null, maxElements: null,
-  ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null,
+  ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null, kerberosEncryption: null,
   ranges: [], specifics: [], ipMatches: [], requisition: null
 }
 

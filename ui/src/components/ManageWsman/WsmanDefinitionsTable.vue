@@ -121,13 +121,16 @@ const credentialSummary = (d: WsmanDefinition): string => {
   if (d.gssAuth) {
     parts.push('GSS')
   }
+  if (d.kerberosEncryption) {
+    parts.push('Kerberos encryption')
+  }
   return parts.join(' · ')
 }
 
 // everything not already shown in the endpoint/credential columns
 const OVERRIDE_KEYS = SETTING_ROWS
   .map(r => r.key)
-  .filter(k => !['username', 'hasPassword', 'ssl', 'port', 'path', 'gssAuth'].includes(k))
+  .filter(k => !['username', 'hasPassword', 'ssl', 'port', 'path', 'gssAuth', 'kerberosEncryption'].includes(k))
 
 const overrideSummary = (d: WsmanDefinition): string => {
   const parts = OVERRIDE_KEYS

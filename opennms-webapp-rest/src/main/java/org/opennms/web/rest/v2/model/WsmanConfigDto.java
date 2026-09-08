@@ -50,6 +50,8 @@ public class WsmanConfigDto {
         private String productVendor;
         private String productVersion;
         private Boolean gssAuth;
+        // Kerberos message encryption (MS-WSMV 2.2.9.1); implies GSS authentication
+        private Boolean kerberosEncryption;
 
         public Integer getRetry() { return retry; }
         public Integer getTimeout() { return timeout; }
@@ -63,6 +65,7 @@ public class WsmanConfigDto {
         public String getProductVendor() { return productVendor; }
         public String getProductVersion() { return productVersion; }
         public Boolean getGssAuth() { return gssAuth; }
+        public Boolean getKerberosEncryption() { return kerberosEncryption; }
     }
 
     public static class RangeDto {
@@ -137,5 +140,6 @@ public class WsmanConfigDto {
         target.productVendor = source.getProductVendor();
         target.productVersion = source.getProductVersion();
         target.gssAuth = source.isGssAuth();
+        target.kerberosEncryption = source.isKerberosEncryption();
     }
 }

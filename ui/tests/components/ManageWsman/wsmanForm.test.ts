@@ -34,7 +34,7 @@ import {
 
 const SETTINGS = {
   retry: 1, timeout: 30000, username: 'root', hasPassword: true, port: null, maxElements: null,
-  ssl: true, strictSsl: false, path: '/wsman', productVendor: null, productVersion: null, gssAuth: null
+  ssl: true, strictSsl: false, path: '/wsman', productVendor: null, productVersion: null, gssAuth: null, kerberosEncryption: null
 }
 
 describe('wsmanForm', () => {
@@ -43,9 +43,10 @@ describe('wsmanForm', () => {
     expect(form.ssl).toBe('true')
     expect(form.strictSsl).toBe('false')
     expect(form.gssAuth).toBe('unset')
+    expect(form.kerberosEncryption).toBe('unset')
     expect(form.password).toBe('')
     const input = formToInput(form)
-    expect(input).toMatchObject({ username: 'root', ssl: true, strictSsl: false, gssAuth: null, path: '/wsman', password: null, clearPassword: false })
+    expect(input).toMatchObject({ username: 'root', ssl: true, strictSsl: false, gssAuth: null, kerberosEncryption: null, path: '/wsman', password: null, clearPassword: false })
     expect('hasPassword' in input).toBe(false)
   })
 

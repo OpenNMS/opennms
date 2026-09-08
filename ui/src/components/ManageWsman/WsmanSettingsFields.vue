@@ -35,6 +35,9 @@
     <FormField label="GSS authentication" :for="`${idPrefix}-gss`">
       <OnmsSelect :inputId="`${idPrefix}-gss`" :modelValue="modelValue.gssAuth" :options="triOptions" optionLabel="label" optionValue="value" fluid data-test="gss-select" @update:modelValue="set('gssAuth', $event as TriState)" />
     </FormField>
+    <FormField label="Kerberos encryption" :for="`${idPrefix}-kerberos`" hint="Encrypts the SOAP messages themselves, so plain HTTP is safe; implies GSS authentication.">
+      <OnmsSelect :inputId="`${idPrefix}-kerberos`" :modelValue="modelValue.kerberosEncryption" :options="triOptions" optionLabel="label" optionValue="value" fluid data-test="kerberos-select" @update:modelValue="set('kerberosEncryption', $event as TriState)" />
+    </FormField>
     <FormField label="Port" :for="`${idPrefix}-port`" :error="errors.port">
       <OnmsInputNumber :inputId="`${idPrefix}-port`" :modelValue="modelValue.port" :min="1" :max="65535" :useGrouping="false" :invalid="!!errors.port" fluid data-test="port-input" @update:modelValue="set('port', $event ?? null)" />
     </FormField>
@@ -83,9 +86,9 @@ const emit = defineEmits<{
 
 const triOptions = computed(() => TRI_STATE_OPTIONS(props.unsetLabel))
 
-const ADVANCED_KEYS: (keyof WsmanSettingsForm)[] = ['strictSsl', 'gssAuth', 'port', 'path', 'timeout', 'retry', 'maxElements', 'productVendor', 'productVersion']
+const ADVANCED_KEYS: (keyof WsmanSettingsForm)[] = ['strictSsl', 'gssAuth', 'kerberosEncryption', 'port', 'path', 'timeout', 'retry', 'maxElements', 'productVendor', 'productVersion']
 const ADVANCED_LABELS: Record<string, string> = {
-  strictSsl: 'Strict SSL', gssAuth: 'GSS', port: 'Port', path: 'Path', timeout: 'Timeout', retry: 'Retries',
+  strictSsl: 'Strict SSL', gssAuth: 'GSS', kerberosEncryption: 'Kerberos', port: 'Port', path: 'Path', timeout: 'Timeout', retry: 'Retries',
   maxElements: 'Max elements', productVendor: 'Vendor', productVersion: 'Version'
 }
 const isSet = (value: unknown) => value !== null && value !== undefined && value !== '' && value !== 'unset'
