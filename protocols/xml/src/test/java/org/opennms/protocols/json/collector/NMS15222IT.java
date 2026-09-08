@@ -68,22 +68,22 @@ public class NMS15222IT extends JsonCollectorITCase {
         executeCollectorTest(parameters, 5);
 
         // a key starting with a digit in the middle of an object xpath
-        validateJrb(new File(getSnmpRootDirectory(), "1/http-stats.jrb"),
+        validateRrd(new File(getSnmpRootDirectory(), "1/http-stats.rrd"),
                 new String[] { "ok", "failed" }, new Double[] { 10.0, 3.0 });
 
         // A key starting with a digit that holds an array has to produce one resource per element.
         // If this ever collapses to a single resource, the rewritten form in JsonXpathRewriter no
         // longer behaves like a plain location step.
-        validateJrb(new File(getSnmpRootDirectory(), "1/invalidNameIf/eth0/if-stats.jrb"),
+        validateRrd(new File(getSnmpRootDirectory(), "1/invalidNameIf/eth0/if-stats.rrd"),
                 new String[] { "oneMin", "obrien" }, new Double[] { 1.0, 11.0 });
-        validateJrb(new File(getSnmpRootDirectory(), "1/invalidNameIf/eth1/if-stats.jrb"),
+        validateRrd(new File(getSnmpRootDirectory(), "1/invalidNameIf/eth1/if-stats.rrd"),
                 new String[] { "oneMin", "obrien" }, new Double[] { 2.0, 22.0 });
 
         // the same array, addressed through the multiple-key code path, where one of the
         // key xpaths itself starts with a digit
-        validateJrb(new File(getSnmpRootDirectory(), "1/invalidNameIf2/eth0_alpha/if-keyed.jrb"),
+        validateRrd(new File(getSnmpRootDirectory(), "1/invalidNameIf2/eth0_alpha/if-keyed.rrd"),
                 new String[] { "oneMin" }, new Double[] { 1.0 });
-        validateJrb(new File(getSnmpRootDirectory(), "1/invalidNameIf2/eth1_beta/if-keyed.jrb"),
+        validateRrd(new File(getSnmpRootDirectory(), "1/invalidNameIf2/eth1_beta/if-keyed.rrd"),
                 new String[] { "oneMin" }, new Double[] { 2.0 });
     }
 
