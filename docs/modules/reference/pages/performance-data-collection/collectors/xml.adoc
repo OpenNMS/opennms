@@ -53,6 +53,27 @@ The available handlers include:
 The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
 If the root element is an array, it will be wrapped in an object accessible as `/elements`.
 
+JSON object keys are not restricted the way XML element names are: a key may start with a digit or contain characters that are not allowed in an XML name, for example `2xx` or `o'brien`.
+A plain XPath location step cannot express such a name, so the JSON collection handler rewrites those steps transparently to an equivalent `*[name()='...']` step before evaluating them.
+You can therefore write the key exactly as it appears in the JSON document:
+
+[source, xml]
+----
+<xml-group name="http-stats" resource-type="node" resource-xpath="/stats">
+  <xml-object name="ok" type="GAUGE" xpath="2xx/count"/>
+  <xml-object name="failed" type="GAUGE" xpath="5xx/count"/>
+</xml-group>
+----
+
+This works for `resource-xpath`, `key-xpath`, `timestamp-xpath` and the `xpath` of an `xml-object`, and predicates keep working on a rewritten step, for example `2xx[1]/count`.
+A key that holds an array still produces one resource per array element.
+
+The rewrite applies only to the JSON collection handler and only to steps that are not already a legal XML name.
+It leaves predicates, functions, axis specifiers (`self::`, `child::`), `.`, `..`, `*`, `node()` and `text()` untouched, which has two consequences worth knowing:
+
+* A step written with an explicit axis or namespace prefix is not rewritten -- write `2xx` rather than `child::2xx`.
+* A value that is a full XPath expression rather than a location path, such as a union like `/a | /b`, is left as-is.
+
 
 == XML collection configuration
 
