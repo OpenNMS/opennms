@@ -2812,11 +2812,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.request-tracker</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.phonebook</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3044,11 +3039,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-alarm-northbounder-jms</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3474,11 +3464,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-javamail-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-rt</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
