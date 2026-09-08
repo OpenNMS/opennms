@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-http</artifactId>
+      <artifactId>camel-http4</artifactId>
       <version>${camelVersion}</version>
       <exclusions>
         <exclusion>
@@ -94,6 +94,21 @@
           <artifactId>jaxb-impl</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!--
+      camel-netty4 pulls io.netty:netty-all transitively at Camel's own netty version
+      (4.1.64.Final for Camel 2.25.x). The reactor manages netty to ${netty4Version}, but
+      *plugin* classpaths do not honour the reactor's dependencyManagement, so 4.1.64 leaked
+      into e.g. the jasperreports-maven-plugin classpath in opennms-base-assembly. netty 4.1.64's
+      netty-all/netty-example subtree requests osx-aarch_64 native jars that netty never
+      published at that version (Apple Silicon natives only start around 4.1.70), so the build
+      broke on arm64 macOS. Declaring netty-all here puts it at depth 1 so it wins on
+      nearest-definition in every classpath, managed or not.
+    -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>${netty4Version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

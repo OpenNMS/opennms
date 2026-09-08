@@ -27,10 +27,11 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import org.apache.camel.component.http.HttpClientConfigurer;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.camel.component.http4.HttpClientConfigurer;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,16 +43,22 @@ public class CustomHttpClientConfigurer implements HttpClientConfigurer {
     private String m_username = "admin";
     private String m_password = "admin";
 
+    /**
+     * Note that HttpClient 4.x has no equivalent of the old
+     * {@code setAuthenticationPreemptive(true)}; with camel-http4 that is the
+     * {@code authenticationPreemptive=true} endpoint URI option instead.
+     */
     @Override
-    public void configureHttpClient(final HttpClient client) {
+    public void configureHttpClient(final HttpClientBuilder clientBuilder) {
         try {
             final SSLContext ctx = SSLContext.getInstance("SSL");
             ctx.init(EMPTY_KEYMANAGER_ARRAY, new TrustManager[] { new AnyServerX509TrustManager() }, new SecureRandom());
             SSLContext.setDefault(ctx);
+            clientBuilder.setSSLContext(ctx);
 
-            final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(getUsername(), getPassword());
-            client.getState().setCredentials(AuthScope.ANY, credentials);
-            client.getParams().setAuthenticationPreemptive(true);
+            final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(getUsername(), getPassword()));
+            clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
             LOG.debug("Configuring HTTP client with modified trust manager, username={}, password=xxxxxxxx", getUsername());
         } catch (final Exception e) {
             throw new CustomConfigurerException(e);

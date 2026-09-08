@@ -194,10 +194,21 @@
                   <token>apache-cxf/[\d\.]+</token>
                   <value>apache-cxf/${cxfVersion}</value>
                 </replacement>
-                <!-- fix an issue with resolving multiple versions of spring by forcing the dep to force spring 4.2 -->
+                <!-- No Spring range rewrite needed. Camel 2.21 declared [4.1,5), which matched both the
+                     4.2 and 4.3 "spring" features in spring-legacy.xml, so it had to be pinned. Camel 2.25
+                     declares [4.3,6), which matches only 4.3.30.RELEASE_1 - unambiguous, and the version
+                     camel-spring 2.25 is actually built against. Forcing it back to [4.2,4.3) would also be
+                     futile: it only narrows the *feature* range, while the camel-spring bundle's own
+                     Import-Package stays at [4.3,6) and would fail to wire against Spring 4.2. -->
+                <!-- camel-http4 pins httpclient/httpcore below ours; keep a single version
+                     of these bundles in the container -->
                 <replacement>
-                  <token>\[4\.\d,5\)</token>
-                  <value>[4.2,4.3)</value>
+                  <token>org\.apache\.httpcomponents/httpclient-osgi/4\.[0-9.]+</token>
+                  <value>org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</value>
+                </replacement>
+                <replacement>
+                  <token>org\.apache\.httpcomponents/httpcore-osgi/4\.[0-9.]+</token>
+                  <value>org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</value>
                 </replacement>
                 <!-- standardize on the "final" version of jms-api 2.x -->
                 <replacement>
@@ -213,11 +224,6 @@
                 <replacement>
                   <token>io\.netty/([a-zA-Z0-9._-]+)/4\.[0-9]+\.[0-9]+\.Final</token>
                   <value>io.netty/$1/${netty4Version}</value>
-                </replacement>
-                <!-- upstream Camel typo: the property is never interpolated -->
-                <replacement>
-                  <token>com\.fasterxml\.jackson\.core/jackson-databind/\$\{jackson2-databind-ersion\}</token>
-                  <value>com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</value>
                 </replacement>
                 <replacement>
                   <token>com\.fasterxml\.jackson\.([a-z]+)/([a-zA-Z0-9._-]+)/2\.[0-9]+[0-9.]*</token>
