@@ -57,15 +57,8 @@ const items = computed(() => [
   padding: 15px;
   margin-bottom: 15px;
 
-  .title {
-    padding: 5px 10px 0px 10px;
-  }
-
   .attribute-label {
     font-weight: bold;
   }
-
-  // .attribute-value {
-  // }
 }
 </style>

@@ -53,9 +53,5 @@ const onLinkClick = () => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
   padding: 15px;
   margin-bottom: 15px;
-
-  .title {
-    padding: 5px 10px 0px 10px;
-  }
 }
 </style>

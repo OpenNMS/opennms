@@ -1,14 +1,16 @@
 <template>
   <div class="card">
-    <div class="title headline3">Surveillance Category Memberships</div>
-    <OnmsIconButton
-      v-if="adminRole"
-      text
-      aria-label="Edit"
-      data-test="edit-button"
-      :icon="IconEdit"
-      @click="onEditClick"
-    />
+    <div class="title-row">
+      <div class="title headline3">Surveillance Category Memberships</div>
+      <OnmsIconButton
+        v-if="adminRole"
+        aria-label="Edit"
+        tooltip="Edit"
+        data-test="edit-button"
+        :icon="IconEdit"
+        @click="onEditClick"
+      />
+    </div>
     <div class="onms-row" v-if="props.node?.categories?.length === 0">
       <div class="onms-col-12">
         <span class="attribute-value">This node is not a member of any categories.</span>
@@ -59,8 +61,10 @@ const onEditClick = () => {
   padding: 15px;
   margin-bottom: 15px;
 
-  .title {
-    padding: 5px 10px 0px 10px;
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 }
 </style>
