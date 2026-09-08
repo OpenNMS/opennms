@@ -27,6 +27,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.slf4j.Logger;
@@ -47,6 +48,13 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
 
     protected AsyncDispatcher<SyslogConnection> m_dispatcher;
 
+    /**
+     * The TCP socket, when one is configured. It shares this receiver's dispatcher rather
+     * than being a receiver of its own: the Sink API names its metrics after the module
+     * id, so a second dispatcher for the same module throws and takes its listener down.
+     */
+    private volatile SyslogTcpListener m_tcpListener;
+
     public SinkDispatchingSyslogReceiver(SyslogdConfig config) {
         m_config = Objects.requireNonNull(config);
     }
@@ -59,10 +67,30 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
         // Create an asynchronous dispatcher
         final SyslogSinkModule syslogSinkModule = new SyslogSinkModule(m_config, m_distPollerDao);
         m_dispatcher = m_messageDispatcherFactory.createAsyncDispatcher(syslogSinkModule);
+
+        // Nothing about the TCP configuration may take the receiver down, because the UDP
+        // loop below it is what installs already depend on. Still null-tolerant despite the
+        // interface default, since a mock does not run default methods.
+        try {
+            final SyslogTcpConfig tcpConfig = m_config.getTcpConfig();
+            if (tcpConfig != null && tcpConfig.isEnabled()) {
+                m_tcpListener = new SyslogTcpListener(tcpConfig, m_config.getListenAddress(), m_dispatcher);
+                m_tcpListener.start();
+            }
+        } catch (Throwable e) {
+            LOG.error("Syslog TCP ingestion is misconfigured and will not be started. UDP is unaffected.", e);
+        }
     }
 
     @Override
     public void stop() throws InterruptedException {
+        // Before the dispatcher, so that nothing is still being handed to a dispatcher
+        // that has already been closed.
+        if (m_tcpListener != null) {
+            m_tcpListener.stop();
+            m_tcpListener = null;
+        }
+
         try {
             if (m_dispatcher != null) {
                 m_dispatcher.close();
@@ -71,6 +99,14 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
         } catch (Exception e) {
             LOG.warn("Exception while closing dispatcher.", e);
         }
+    }
+
+    /**
+     * The TCP socket this receiver opened, or null when TCP is not configured or not
+     * started. Exposed for tests and for callers that report listener state.
+     */
+    public SyslogTcpListener getTcpListener() {
+        return m_tcpListener;
     }
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
