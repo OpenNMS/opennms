@@ -46,4 +46,18 @@ describe('OnmsMultiSelect', () => {
     })
     expect(wrapper.findComponent({ name: 'MultiSelect' }).props('placeholder')).toBe('Choose one')
   })
+
+  it('maps showToggleAll and maxSelectedLabels, keeping PrimeVue\'s defaults', () => {
+    const plain = mount(OnmsMultiSelect, { props: { options: [] }, global: globalPlugins })
+    expect(plain.findComponent({ name: 'MultiSelect' }).props('showToggleAll')).toBe(true)
+    // undefined falls back to PrimeVue's own default, which is null
+    expect(plain.findComponent({ name: 'MultiSelect' }).props('maxSelectedLabels')).toBeNull()
+
+    const narrowed = mount(OnmsMultiSelect, {
+      props: { options: [], showToggleAll: false, maxSelectedLabels: 2 },
+      global: globalPlugins
+    })
+    expect(narrowed.findComponent({ name: 'MultiSelect' }).props('showToggleAll')).toBe(false)
+    expect(narrowed.findComponent({ name: 'MultiSelect' }).props('maxSelectedLabels')).toBe(2)
+  })
 })

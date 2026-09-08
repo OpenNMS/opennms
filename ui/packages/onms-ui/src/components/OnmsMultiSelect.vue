@@ -6,6 +6,8 @@
     :dataKey="dataKey"
     :filter="filter"
     :display="display"
+    :showToggleAll="showToggleAll"
+    :maxSelectedLabels="maxSelectedLabels"
     :placeholder="placeholder"
     :inputId="inputId"
     :fluid="fluid"
@@ -25,6 +27,8 @@ withDefaults(defineProps<{
   dataKey?: string
   filter?: boolean
   display?: 'comma' | 'chip'
+  showToggleAll?: boolean
+  maxSelectedLabels?: number
   placeholder?: string
   // PrimeVue MultiSelect exposes inputId (not labelId); forward it so a paired
   // <label for> can associate with the control.
@@ -40,6 +44,8 @@ withDefaults(defineProps<{
   dataKey: undefined,
   filter: false,
   display: 'comma',
+  showToggleAll: true,
+  maxSelectedLabels: undefined,
   placeholder: undefined,
   inputId: undefined,
   fluid: undefined,

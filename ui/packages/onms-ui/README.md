@@ -22,7 +22,8 @@ replaced without rewriting consumers.
    Every use should link a follow-up to promote the need into a real prop.
    Composite components that assemble more than one PrimeVue primitive
    internally (`OnmsSearchInput`, `OnmsConfirmationDialog`, `OnmsMessageDialog`,
-   `OnmsToastHost`) do **not** accept `unsafePt` — there is no single
+   `OnmsToastHost`, `OnmsColorPicker`) do **not** accept
+   `unsafePt` — there is no single
    underlying `pt` root to target, so the escape hatch is omitted rather than
    wired to one arbitrarily-chosen internal.
 4. **No PrimeVue types or values in any public signature.** Exported types are
@@ -127,10 +128,53 @@ OnmsTable (+ the `OnmsTablePageEvent`, `OnmsTableSortEvent`,
 - **`expandedRows`** accepts either an array of row instances or an object
   keyed by `dataKey`, matching PrimeVue's own `DataTableExpandedRows` shape
   for tables that expand by key rather than by row identity.
-- Not exposed (never used anywhere in the app today): selection mode,
+- **`selectionMode`** and the **`row-click`** emit (+ `OnmsTableRowClickEvent`)
+  were added in tranche 4 for the topology browse panel, which is a
+  click-a-row-to-select list. `selection` itself is still not exposed: that
+  panel drives highlighting from its own store rather than from the table.
+- Not exposed (never used anywhere in the app today): the `selection` binding,
   filters, `loading`, removable sort, paginator templates, CSV export. Extend
   the seam (a new prop/emit on `OnmsTable`/`OnmsColumn`) before reaching for
   `unsafePt` if a real need for one of these appears.
+
+## Components (tranche 4)
+
+OnmsSelectButton, OnmsSlider, OnmsContextMenu, OnmsTieredMenu,
+OnmsVirtualScroller and OnmsColorPicker, added for the topology map. The same
+tranche widened six existing wrappers: `size` on OnmsButton, `selectionMode` +
+`row-click` on OnmsTable, `showToggleAll` + `maxSelectedLabels` on
+OnmsMultiSelect, `showButtons` + `buttonLayout` on OnmsInputNumber,
+and `completeOnFocus` on OnmsAutoComplete. Each keeps PrimeVue's own default
+when unset.
+
+Where these diverge from PrimeVue, deliberately:
+
+- **`OnmsSelectButton`** defaults `allowEmpty` to `false`, since a segmented
+  control that can deselect its last option leaves no mode chosen. `change`
+  emits the value directly, not `{ originalEvent, value }`, matching
+  `OnmsListbox`. The dark-mode fix for the checked label lives in
+  `ui/src/theme/opennms-preset.ts` (`components.togglebutton`), not the wrapper.
+- **`OnmsSlider`** is single-value: exposing `range` would widen `modelValue` to
+  `number | number[]` for every consumer. `ariaLabel` is a declared prop, since
+  `role="slider"` sits on the handle and a fall-through attr would miss it.
+- **`OnmsContextMenu`** positions at the pointer coordinates of the event it is
+  handed, where a popup `OnmsMenu` positions against the trigger element. Open
+  from `@contextmenu` via the exposed `show(event)`.
+- **`OnmsTieredMenu`** renders a nested `items` array as hover-opened submenus,
+  where `OnmsMenu` flattens it under a heading. Popup by default; open via the
+  exposed `toggle(event)`. Both reuse `OnmsMenuItem`, which already nests.
+- **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
+  `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
+  4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value
+  normalized to `#rrggbb` both ways -- PrimeVue accepts hex with or without the
+  `#` but always emits it without, which is not a valid CSS color. A value that
+  is not six hex digits passes through untouched. `swatches` defaults to 30
+  colors including the topology map's own shape and label defaults; a value
+  outside the palette shows as "custom" rather than unselected.
+- **`OnmsVirtualScroller`** is for long uniform-height lists that are not tables
+  (`OnmsTable`'s `virtualScrollItemSize` remains the table case). Its `#item`
+  slot exposes `{ item, index }` rather than forwarding PrimeVue's internal
+  `options` bookkeeping.
 
 ## Icons
 
@@ -361,9 +405,10 @@ over time, not grow:
 - `primevue/tieredmenu` in `ui/src/components/Menu/SideMenu.vue` — the side
   navigation drives `TieredMenu` internals directly (dirty-flag tracking, DOM
   queries against `.p-tieredmenu-*` classes) that don't fit a thin prop/slot
-  wrapper. The import carries an inline `eslint-disable-next-line
-  no-restricted-imports` with a comment pointing back to NMS-20081; revisit
-  when the side menu is redesigned.
+  wrapper, so it stays on the direct import even though `OnmsTieredMenu` now
+  exists for the ordinary case. The import carries an inline
+  `eslint-disable-next-line no-restricted-imports` with a comment pointing back
+  to NMS-20081; revisit when the side menu is redesigned.
 
 ## Planned next
 
