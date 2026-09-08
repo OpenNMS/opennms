@@ -762,6 +762,17 @@ public class WsmanConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(saved.getJSONArray("definitions").getJSONObject(0).getBoolean("hasPassword"));
     }
 
+    /** kerberos-encryption (wsman 1.3.7) round-trips through the API and lands in the file. */
+    @Test
+    public void testKerberosEncryptionRoundTrips() throws Exception {
+        final JSONObject saved = new JSONObject(put("{\"defaults\":{\"username\":\"root\",\"kerberosEncryption\":true},\"definitions\":[{\"specifics\":[\"10.20.30.40\"],\"username\":\"monitor\",\"password\":\"s\",\"kerberosEncryption\":true,\"gssAuth\":null}]}", 200));
+        assertTrue(saved.getJSONObject("defaults").getBoolean("kerberosEncryption"));
+        assertTrue(saved.getJSONArray("definitions").getJSONObject(0).getBoolean("kerberosEncryption"));
+        assertTrue(fileContent().contains("kerberos-encryption=\"true\""));
+        // and the daemons see it: the endpoint the DAO builds for that server uses Kerberos encryption
+        assertTrue(m_wsManConfigDao.getEndpoint(InetAddressUtils.addr("10.20.30.40")).isKerberosEncryption());
+    }
+
     @Test
     public void testStaleVersionIsRefused() throws Exception {
         final String stale = currentVersion();

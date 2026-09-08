@@ -42,6 +42,7 @@ export interface WsmanSettingsForm {
   ssl: TriState
   strictSsl: TriState
   gssAuth: TriState
+  kerberosEncryption: TriState
   port: number | null
   timeout: number | null
   retry: number | null
@@ -67,6 +68,7 @@ export const settingsToForm = (s: WsmanAgentSettings): WsmanSettingsForm => ({
   ssl: toTri(s.ssl),
   strictSsl: toTri(s.strictSsl),
   gssAuth: toTri(s.gssAuth),
+  kerberosEncryption: toTri(s.kerberosEncryption),
   port: s.port ?? null,
   timeout: s.timeout ?? null,
   retry: s.retry ?? null,
@@ -78,7 +80,7 @@ export const settingsToForm = (s: WsmanAgentSettings): WsmanSettingsForm => ({
 
 export const emptySettingsForm = (): WsmanSettingsForm => settingsToForm({
   retry: null, timeout: null, username: null, hasPassword: false, port: null, maxElements: null,
-  ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null
+  ssl: null, strictSsl: null, path: null, productVendor: null, productVersion: null, gssAuth: null, kerberosEncryption: null
 })
 
 const blankToNull = (s: string): string | null => (s.trim() ? s.trim() : null)
@@ -91,6 +93,7 @@ export const formToInput = (f: WsmanSettingsForm): WsmanSettingsInput => ({
   ssl: fromTri(f.ssl),
   strictSsl: fromTri(f.strictSsl),
   gssAuth: fromTri(f.gssAuth),
+  kerberosEncryption: fromTri(f.kerberosEncryption),
   port: f.port,
   timeout: f.timeout,
   retry: f.retry,
@@ -134,6 +137,7 @@ export const settingsToInput = (s: WsmanAgentSettings): WsmanSettingsInput => ({
   ssl: s.ssl,
   strictSsl: s.strictSsl,
   gssAuth: s.gssAuth,
+  kerberosEncryption: s.kerberosEncryption,
   port: s.port,
   timeout: s.timeout,
   retry: s.retry,

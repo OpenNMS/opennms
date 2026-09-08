@@ -1069,6 +1069,7 @@ public class WsmanConfigRestService {
         target.setProductVendor(blankToNull(u.getProductVendor()));
         target.setProductVersion(blankToNull(u.getProductVersion()));
         target.setGssAuth(u.getGssAuth());
+        target.setKerberosEncryption(u.getKerberosEncryption());
     }
 
     private static Definition toDefinition(final DefinitionUpdate u, final String keptPassword, final String label) {
@@ -1085,6 +1086,7 @@ public class WsmanConfigRestService {
         d.setProductVendor(blankToNull(u.getProductVendor()));
         d.setProductVersion(blankToNull(u.getProductVersion()));
         d.setGssAuth(u.getGssAuth());
+        d.setKerberosEncryption(u.getKerberosEncryption());
         final String requisition = blankToNull(u.getRequisition());
         if (requisition != null && !REQUISITION_NAME.matcher(requisition.trim()).matches()) {
             throw badRequest(label + " has an invalid requisition name: " + requisition.trim() + " (letters, digits, dots, dashes and underscores).");

@@ -38,7 +38,7 @@
           before then.
           Linking a definition to a <strong>requisition</strong> and pressing Sync provisions its specific
           addresses as nodes with the WS-Man service and adds its ranges as scheduled discovery ranges for that
-          requisition; sync only ever adds, and the Requisition column shows how many addresses are provisioned. Values may be
+          requisition; sync only ever adds, and the Requisition column shows how many addresses are provisioned. <strong>Kerberos encryption</strong> encrypts the SOAP messages themselves, so a definition can use plain HTTP safely; it implies GSS authentication and needs a Kerberos setup on the poller. Values may be
           metadata placeholders such as <code>${requisition:wsman:username}</code> or
           <code>${scv:alias:password}</code>, resolved per node when collecting. Passwords are shown only as
           set or not set, and saving without entering one keeps the stored password. Changes are written to

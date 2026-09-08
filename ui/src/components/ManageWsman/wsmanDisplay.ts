@@ -36,6 +36,7 @@ export const SETTING_ROWS: { key: keyof WsmanAgentSettings, label: string }[] = 
   { key: 'retry', label: 'Retries' },
   { key: 'maxElements', label: 'Max elements' },
   { key: 'gssAuth', label: 'GSS authentication' },
+  { key: 'kerberosEncryption', label: 'Kerberos encryption' },
   { key: 'productVendor', label: 'Product vendor' },
   { key: 'productVersion', label: 'Product version' }
 ]

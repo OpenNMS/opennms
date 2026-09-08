@@ -36,7 +36,7 @@ const DialogStub = {
 
 const SETTINGS = {
   retry: 1, timeout: 30000, username: 'root', hasPassword: true, port: null, maxElements: null,
-  ssl: true, strictSsl: false, path: '/wsman', productVendor: null, productVersion: null, gssAuth: null
+  ssl: true, strictSsl: false, path: '/wsman', productVendor: null, productVersion: null, gssAuth: null, kerberosEncryption: null
 }
 const CONFIG = {
   version: 'v1',
