@@ -232,7 +232,7 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
 import { OnmsButton, OnmsChip, OnmsIcon, OnmsInputText, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
-import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
 
 const router = useRouter()

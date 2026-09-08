@@ -66,11 +66,11 @@ Owned `Onms-` components that wrap PrimeVue 4.x behind a stable, OpenNMS-control
 4. No PrimeVue types or values in any public signature; exported types are defined in OpenNMS vocabulary in `packages/onms-ui/src/types.ts`.
 5. Every new component ships with a contract test in `tests/onms-ui/` asserting prop mapping, emit forwarding, and slot forwarding.
 
-The package covers most of the PrimeVue surface in use: buttons, form inputs (text, number, password, textarea, checkbox, radio, select, multiselect, autocomplete, datepicker, toggle switch, search input, listbox), overlays (dialog, confirmation/message dialogs, drawer, popover, menu), data display (table + column, card, panel, chip, tag, tabs family), plus `OnmsSpinner`, `OnmsToastHost` + `useOnmsToast`, and the `v-onms-tooltip` directive. The authoritative list is `packages/onms-ui/src/components/` and the ESLint `no-restricted-imports` entries in `eslint.config.js` — check there before importing anything from `primevue/*`. Exception: `primevue/tieredmenu` has no wrapper yet and is sanctioned only in `SideMenu.vue` (inline-disabled).
+The package covers most of the PrimeVue surface in use: buttons, form inputs (text, number, password, textarea, checkbox, radio, select, select button, slider, color picker, multiselect, autocomplete, datepicker, toggle switch, search input, listbox), overlays (dialog, confirmation/message dialogs, drawer, popover, menu, tiered menu, context menu), data display (table + column, virtual scroller, card, panel, chip, tag, tabs family), plus `OnmsSpinner`, `OnmsToastHost` + `useOnmsToast`, and the `v-onms-tooltip` directive. The authoritative list is `packages/onms-ui/src/components/` and the ESLint `no-restricted-imports` entries in `eslint.config.js` — check there before importing anything from `primevue/*`. Exception: `SideMenu.vue` keeps a direct `primevue/tieredmenu` import (inline-disabled) because it drives the component's internals rather than its props.
 
 ### UI, theming, layout
 
-- Icons: `OnmsIcon` wrapper + vendored SVG components under `src/components/icons/`
+- Icons: `OnmsIcon` wrapper + vendored SVG components, both in the seam package — `packages/onms-ui/src/icons/<category>/<Name>.vue`. Import via the subpath export, e.g. `import Delete from '@opennms/onms-ui/icons/action/Delete.vue'`. They are deliberately **not** exported from the package barrel (see `packages/onms-ui/README.md`, "Icons"): the barrel is assigned wholesale to `window.OnmsUI`, so a barrel export would force all 262 icons into every bundle.
 - Layout: `OnmsAppLayout` (`src/components/Layout/OnmsAppLayout.vue`)
 - Theming: owned `--onms-*` tokens (`src/styles/onms-theme.scss`, `_onms-tokens.scss`) layered over PrimeVue's `--p-*` tokens; light/dark via `.open-light`/`.open-dark` class on `<html>`/`<body>` (PrimeVue `darkModeSelector`)
 - Typography: owned mixins in `src/styles/_onms-typography.scss` (CSS classes `.headline3`, `.headline4`, `.subtitle1`)
@@ -79,6 +79,14 @@ The package covers most of the PrimeVue surface in use: buttons, form inputs (te
 ### Components: `<script setup>` only
 
 All components use Composition API with `<script setup lang="ts">`, typed `defineProps<{...}>()` and `defineEmits<{...}>()`.
+
+### Tooltips
+
+Use the `tooltip` prop on `OnmsIconButton` rather than `v-onms-tooltip` on the
+component; the directive stays for other hosts (plain elements, `OnmsIcon`,
+`OnmsChip`) and for positioning modifiers like `v-onms-tooltip.top`. See
+"OnmsTooltip" in `packages/onms-ui/README.md` for why that directive is a
+wrapper and not a bare re-export.
 
 ### Form fields: `FormField` wrapper
 

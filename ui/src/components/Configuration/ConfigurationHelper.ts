@@ -44,6 +44,7 @@ import {
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
 import { scheduleTypes, weekTypes, weekNameTypes, dayTypes } from './copy/scheduleTypes'
+import { copyToClipboard } from '@/composables/useClipboard'
 import cronstrue from 'cronstrue'
 import ipRegex from 'ip-regex'
 import isValidDomain from 'is-valid-domain'
@@ -984,37 +985,6 @@ const validateType = (typeName: string) => {
   return !typeName ? ErrorStrings.Required('Type') : ''
 }
 
-/**
- * Allows for copying to clipboard in both HTTPS & HTTP
- * @param text text to copy
- * @returns promise
- */
-const copyToClipboard = (text: string) => {
-  // navigator clipboard api needs a secure context (https)
-  if (navigator.clipboard && window.isSecureContext) {
-    // navigator clipboard api method'
-    return navigator.clipboard.writeText(text)
-  } else {
-    // text area method
-    const textArea = document.createElement('textarea')
-    textArea.value = text
-    // make the textarea out of viewport
-    textArea.style.position = 'fixed'
-    textArea.style.left = '-999999px'
-    textArea.style.top = '-999999px'
-    document.body.appendChild(textArea)
-    textArea.focus()
-    textArea.select()
-    return new Promise<void>((res, rej) => {
-      if (document.execCommand('copy')) {
-        res()
-      } else {
-        rej()
-      }
-      textArea.remove()
-    })
-  }
-}
 
 export const ConfigurationHelper = {
   obfuscatePassword,

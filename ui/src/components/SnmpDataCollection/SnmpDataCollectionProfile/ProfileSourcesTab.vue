@@ -51,7 +51,7 @@
 import { computed, ref } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import Delete from '@/components/icons/action/Delete.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { OnmsAutoComplete, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 

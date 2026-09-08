@@ -21,7 +21,9 @@
  */
 package org.opennms.netmgt.poller.pollables;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,6 +51,9 @@ public class PendingPollEvent extends PollEvent {
     private long m_expirationTimeInMillis;
     private final AtomicBoolean m_pending = new AtomicBoolean(true);
     private final Queue<Runnable> m_pendingOutages = new ConcurrentLinkedQueue<>();
+    // Guards the check-then-act between addPending() and complete()/processPending() so a
+    // runnable can never be queued after processPending() has already drained the queue.
+    private final Object m_lock = new Object();
 
     /**
      * <p>Constructor for PendingPollEvent.</p>
@@ -88,11 +93,13 @@ public class PendingPollEvent extends PollEvent {
      * @param r a {@link java.lang.Runnable} object.
      */
     public void addPending(Runnable r) {
-        if (m_pending.get()) {
-            m_pendingOutages.add(r);
-        } else {
-            r.run();
+        synchronized (m_lock) {
+            if (m_pending.get()) {
+                m_pendingOutages.add(r);
+                return;
+            }
         }
+        r.run();
     }
     
     /**
@@ -133,10 +140,12 @@ public class PendingPollEvent extends PollEvent {
      * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     public void complete(IEvent e) {
-        m_event = e;
-        m_pending.set(false);
+        synchronized (m_lock) {
+            m_event = e;
+            m_pending.set(false);
+        }
     }
-    
+
     /**
      * Synchronously processes all pending tasks attached to this event.
      * It is important that this call be thread-safe and idempotent because
@@ -144,12 +153,16 @@ public class PendingPollEvent extends PollEvent {
      * threads.
      */
     public void processPending() {
-        while (!m_pendingOutages.isEmpty()) {
-            Runnable runnable = m_pendingOutages.poll();
-            if (runnable != null) {
+        final List<Runnable> toRun;
+        synchronized (m_lock) {
+            toRun = new ArrayList<>(m_pendingOutages);
+            m_pendingOutages.clear();
+        }
+        for (final Runnable runnable : toRun) {
+            try {
                 runnable.run();
-            } else {
-                return;
+            } catch (final Throwable e) {
+                LOG.error("processPending: pending outage task failed, remaining tasks will still run: {}", this, e);
             }
         }
     }

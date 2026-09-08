@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.LinkDetailsAware;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.simple.SimpleLeafVertex;
@@ -325,6 +326,29 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, countCDP);
         assertEquals(0, countISIS);
         assertEquals(0, countBRIDGE);
+    }
+
+    /** Real provider-built edges, and clones, which is all getEdges() returns. */
+    @Test
+    public void testEdgesCarryLinkDetails() {
+        m_topologyProvider.refresh();
+
+        int withBothIfIndexes = 0;
+        for (Edge edge : m_topologyProvider.getCurrentGraph().getEdges()) {
+            final LinkdEdge linkdEdge = (LinkdEdge) edge;
+            final LinkDetailsAware link = linkdEdge;
+
+            assertEquals(linkdEdge.getDiscoveredBy().name(), link.getDiscoveryProtocol());
+
+            // A swap would be invisible downstream: same type either way.
+            assertEquals(linkdEdge.getSourcePort().getIfIndex(), link.getSourceIfIndex());
+            assertEquals(linkdEdge.getTargetPort().getIfIndex(), link.getTargetIfIndex());
+
+            if (link.getSourceIfIndex() != null && link.getTargetIfIndex() != null) {
+                withBothIfIndexes++;
+            }
+        }
+        assertTrue("no edge resolved an ifIndex at both ends", withBothIfIndexes > 0);
     }
 
     @Test

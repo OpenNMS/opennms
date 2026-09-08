@@ -88,6 +88,7 @@ import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -336,6 +337,9 @@ public class CollectdIT {
 
         verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
         verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+        // This test actually collects, and the first success transitions out of UNKNOWN and emits
+        // dataCollectionSucceeded. Account for it here so tearDown's verifyNoMoreInteractions passes.
+        verify(m_eventIpcManager, times(1)).sendNow(isA(Event.class));
     }
 
     /**

@@ -23,6 +23,7 @@ package org.opennms.web.springframework.security;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +36,7 @@ public class AuthorityPrincipal implements Principal, Serializable {
         m_name = null;
     }
     public AuthorityPrincipal(final GrantedAuthority authority) {
-        m_name = authority.getAuthority().toLowerCase().replaceFirst("^role_", "");
+        m_name = authority.getAuthority().toLowerCase(Locale.ROOT).replaceFirst("^role_", "");
     }
 
     @Override

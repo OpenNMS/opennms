@@ -39,14 +39,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -89,6 +94,8 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
  * The Abstract Class XML Collection Handler.
@@ -481,9 +488,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     protected Document getXmlDocument(InputStream is, Request request) throws Exception {
         is = preProcessHtml(request, is);
         is = applyXsltTransformation(request, is);
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = newSecureDocumentBuilderFactory();
         factory.setIgnoringComments(true);
-        factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         StringWriter writer = new StringWriter();
         IOUtils.copy(is, writer, StandardCharsets.UTF_8);
@@ -516,15 +522,87 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         File xsltFile = new File(xsltFilename);
         if (!xsltFile.exists())
             return is;
+        // The collected source XML is untrusted, so block XXE/SSRF: deny external URI
+        // resolution (xsl:import/include and document()) and parse with an entity-hardened reader.
         TransformerFactory factory = TransformerFactory.newInstance();
-        Source xslt = new StreamSource(xsltFile);
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        final URIResolver denyExternal = (href, base) -> {
+            throw new TransformerException("External resource resolution disabled for collector XSLT: " + href);
+        };
+        factory.setURIResolver(denyExternal);
+        // The default listener only logs to stderr and continues on error; fail the collection instead.
+        final ErrorListener failLoudly = new ErrorListener() {
+            @Override
+            public void warning(TransformerException e) {
+                LOG.warn("XSLT transform warning: {}", e.getMessage());
+            }
+            @Override
+            public void error(TransformerException e) throws TransformerException {
+                LOG.error("XSLT transform error, failing collection: {}", e.getMessage());
+                throw e;
+            }
+            @Override
+            public void fatalError(TransformerException e) throws TransformerException {
+                LOG.error("XSLT transform fatal error, failing collection: {}", e.getMessage());
+                throw e;
+            }
+        };
+        factory.setErrorListener(failLoudly);
+        Source xslt = new SAXSource(newSecureXmlReader(), new InputSource(xsltFile.toURI().toString()));
         Transformer transformer = factory.newTransformer(xslt);
+        transformer.setURIResolver(denyExternal);
+        transformer.setErrorListener(failLoudly);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            transformer.transform(new StreamSource(is), new StreamResult(baos));
+            Source source = new SAXSource(newSecureXmlReader(), new InputSource(is));
+            transformer.transform(source, new StreamResult(baos));
             return new ByteArrayInputStream(baos.toByteArray());
         } finally {
             IOUtils.closeQuietly(is);
+        }
+    }
+
+    /**
+     * Builds a namespace-aware DocumentBuilderFactory with external entity/DTD resolution disabled (XXE-safe).
+     */
+    private static DocumentBuilderFactory newSecureDocumentBuilderFactory() throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // Block XXE: forbid external entities/DTDs. Not disallow-doctype-decl, since
+        // pre-parse-html produces a benign <!DOCTYPE html>.
+        disableExternalEntities(factory::setFeature);
+        factory.setXIncludeAware(false);
+        factory.setNamespaceAware(true);
+        return factory;
+    }
+
+    /**
+     * Builds a namespace-aware XMLReader with external entity/DTD resolution disabled (XXE-safe).
+     */
+    private static XMLReader newSecureXmlReader() throws Exception {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
+        disableExternalEntities(spf::setFeature);
+        return spf.newSAXParser().getXMLReader();
+    }
+
+    @FunctionalInterface
+    private interface FeatureSetter {
+        void setFeature(String name, boolean value) throws Exception;
+    }
+
+    /**
+     * Applies the XXE hardening features shared by the DOM and SAX parsers.
+     * external-general/parameter-entities are SAX-standard and required; load-external-dtd is
+     * Xerces-specific and set best-effort so a non-Xerces provider does not fail parsing outright.
+     */
+    private static void disableExternalEntities(FeatureSetter parser) throws Exception {
+        parser.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        parser.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        parser.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        try {
+            parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (Exception e) {
+            LOG.debug("XML parser does not support the load-external-dtd feature; skipping");
         }
     }
 

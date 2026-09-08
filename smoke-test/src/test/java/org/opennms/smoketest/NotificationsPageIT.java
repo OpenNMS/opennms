@@ -49,10 +49,11 @@ public class NotificationsPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(3, countElementsMatchingCss("div.card-header"));
+        assertEquals(4, countElementsMatchingCss("div.card-header"));
         findElementByXpath("//span[text()='Notification queries']");
         findElementByXpath("//span[text()='Outstanding and Acknowledged Notices']");
         findElementByXpath("//span[text()='Notification Escalation']");
+        findElementByXpath("//span[text()='Browser Notifications']");
     }
 
     @Test

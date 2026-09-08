@@ -66,8 +66,8 @@
 import { onMounted, ref } from 'vue'
 
 import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
-import Add from '@/components/icons/action/Add.vue'
-import DeleteIcon from '@/components/icons/action/Delete.vue'
+import Add from '@opennms/onms-ui/icons/action/Add.vue'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useNodeListStore } from '@/stores/nodeListStore'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'

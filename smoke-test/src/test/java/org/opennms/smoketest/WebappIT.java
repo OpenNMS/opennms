@@ -22,14 +22,17 @@
 package org.opennms.smoketest;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.After;
@@ -135,6 +138,70 @@ public class WebappIT {
             .statusCode(200)
             .header("Cache-Control", not("no-store"))
             .header("Pragma", not("no-cache"));
+  }
+
+  /**
+   * NMS-20174: the Vue menu bundle must be accessible without authentication.
+   * bootstrap.jsp preloads it from the (unauthenticated) login page; if that
+   * request is answered with an auth redirect instead, Safari and Firefox cache
+   * the text/html response under the asset URL and the menu never mounts on any
+   * JSP page after login.
+   */
+  @Test
+  public void verifyMenuBundleJsAssetIsAnonymouslyAccessible() {
+    given().redirects().follow(false)
+        .get("ui-components/assets/index.js")
+        .then().assertThat()
+        .statusCode(200)
+        .header("Content-Type", containsString("javascript"));
+  }
+
+  @Test
+  public void verifyMenuBundleCssAssetIsAnonymouslyAccessible() {
+    given().redirects().follow(false)
+        .get("ui-components/assets/index.css")
+        .then().assertThat()
+        .statusCode(200)
+        .header("Content-Type", containsString("css"));
+  }
+
+  /**
+   * NMS-20180: only the menu bundle's assets/ directory is anonymous. The
+   * dist-menu artifact also ships an index.html (the Vite build input) at
+   * /ui-components/, which nothing links to and which must keep requiring
+   * authentication like any other page.
+   */
+  @Test
+  public void verifyMenuIndexHtmlRequiresAuthentication() {
+    given().redirects().follow(false)
+        .get("ui-components/index.html")
+        .then().assertThat()
+        .statusCode(302)
+        .header("Location", containsString("login.jsp"));
+  }
+
+  /**
+   * NMS-20174: the login page references the menu bundle only as preload links
+   * (deliberate cache warming for the first post-login page) and must never
+   * execute it. An unauthenticated menu run fires REST calls that trigger the
+   * browser's native basic-auth popup on the login page and pollute the
+   * post-login saved request (the password gate's Skip button then redirects
+   * to /rest, which browsers download as a file).
+   */
+  @Test
+  public void verifyLoginPageDoesNotExecuteMenuBundle() {
+    final String body = given()
+        .get("login.jsp")
+        .then().assertThat()
+        .statusCode(200)
+        .extract().response().body().asString();
+
+    // Positive control: the page still references the bundle (as a preload) —
+    // this keeps the negative assertion below meaningful if URLs change shape.
+    assertTrue("expected login.jsp to preload the menu bundle. Body: " + body,
+        body.contains("ui-components/assets/index.js"));
+    assertFalse("login.jsp must not contain a script tag executing the menu bundle. Body: " + body,
+        Pattern.compile("<script[^>]+ui-components/assets/index\\.js").matcher(body).find());
   }
 
   /**

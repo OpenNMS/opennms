@@ -82,7 +82,7 @@ Use it at your own discretion.
 
 [{tabs}]
 ====
-CentOS 9::
+CentOS/RHEL 9::
 +
 --
 include::centos9/postgresql.adoc[]
@@ -128,7 +128,7 @@ Do not expose the web console or sign-in pages directly to the Internet without 
 
 [{tabs}]
 ====
-CentOS 9::
+CentOS/RHEL 9::
 +
 --
 include::centos9/install-core.adoc[]

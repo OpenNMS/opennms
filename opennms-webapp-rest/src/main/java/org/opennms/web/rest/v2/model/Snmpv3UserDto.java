@@ -21,18 +21,53 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.web.rest.support.MaskedCredential;
 
+@Schema(description = """
+        An SNMPv3 user that trapd accepts traps from.
+
+        `securityName` is the only required field. `authProtocol`/`authPassphrase` and
+        `privacyProtocol`/`privacyPassphrase` each have to be supplied together or not at all, and
+        when `securityLevel` is present it has to agree with which of those pairs are set.
+        Passphrases must be at least 8 bytes and must not begin with `*`.""")
 public class Snmpv3UserDto {
+    @Schema(description = "Stable identifier for this user, assigned on first persist. When it is "
+            + "present on an update, a masked passphrase resolves against the stored value. A new user "
+            + "has none.",
+            example = "b0019905-75f8-4856-8c0b-84381e9485a3")
     private String id;
+
+    @Schema(description = "SNMP engine ID this user is scoped to, as a hex string. Optional.",
+            example = "0x0102030405")
     private String engineId;
+
+    @Schema(description = "SNMPv3 user name. Required.", example = "trapUser", required = true)
     private String securityName;
+
+    @Schema(description = "1 = noAuthNoPriv, 2 = authNoPriv, 3 = authPriv. Optional; when present it must "
+            + "match the credentials supplied.",
+            example = "3", allowableValues = {"1", "2", "3"})
     private Integer securityLevel;
+
+    @Schema(description = "Authentication digest.", example = "SHA-256",
+            allowableValues = {"MD5", "SHA", "SHA-224", "SHA-256", "SHA-512"})
     private String authProtocol;
+
+    @Schema(description = "Authentication passphrase, at least 8 bytes. Read back as `******`; that "
+            + "masked value sent back unchanged keeps the stored passphrase.",
+            example = "******")
     @MaskedCredential
     private String authPassphrase;
+
+    @Schema(description = "Privacy cipher.", example = "AES256",
+            allowableValues = {"DES", "AES", "AES192", "AES256"})
     private String privacyProtocol;
+
+    @Schema(description = "Privacy passphrase, at least 8 bytes. Read back as `******`; that masked "
+            + "value sent back unchanged keeps the stored passphrase.",
+            example = "******")
     @MaskedCredential
     private String privacyPassphrase;
 

@@ -26,6 +26,55 @@ describe('OnmsListbox', () => {
     expect(inner.props('listStyle')).toBe('max-height: 200px')
   })
 
+  it('forwards the multi-select and option-shape props', () => {
+    const objectOptions = [{ id: 'a', name: 'A' }]
+    const inner = mount(OnmsListbox, {
+      props: {
+        options: objectOptions,
+        multiple: true,
+        optionLabel: 'name',
+        dataKey: 'id',
+        checkmark: true,
+        scrollHeight: '18rem',
+        virtualScrollerOptions: { itemSize: 52 },
+        emptyMessage: 'Nothing to show',
+        disabled: true
+      },
+      global: globalPlugins
+    }).findComponent({ name: 'Listbox' })
+    expect(inner.props('multiple')).toBe(true)
+    expect(inner.props('optionLabel')).toBe('name')
+    expect(inner.props('dataKey')).toBe('id')
+    expect(inner.props('checkmark')).toBe(true)
+    expect(inner.props('scrollHeight')).toBe('18rem')
+    expect(inner.props('virtualScrollerOptions')).toEqual({ itemSize: 52 })
+    expect(inner.props('emptyMessage')).toBe('Nothing to show')
+    expect(inner.props('disabled')).toBe(true)
+  })
+
+  it('renders emptyMessage when there are no options', () => {
+    const wrapper = mount(OnmsListbox, {
+      props: { options: [], emptyMessage: 'Nothing to show' },
+      global: globalPlugins
+    })
+    expect(wrapper.text()).toContain('Nothing to show')
+  })
+
+  it('defaults disabled to false', () => {
+    const inner = mount(OnmsListbox, { props: { options }, global: globalPlugins })
+      .findComponent({ name: 'Listbox' })
+    expect(inner.props('disabled')).toBe(false)
+  })
+
+  it('forwards the option slot', () => {
+    const wrapper = mount(OnmsListbox, {
+      props: { options },
+      slots: { option: '<span class="custom-option">custom</span>' },
+      global: globalPlugins
+    })
+    expect(wrapper.findAll('.custom-option').length).toBe(options.length)
+  })
+
   it('re-emits update:modelValue from the inner listbox', () => {
     const wrapper = mount(OnmsListbox, { props: { options }, global: globalPlugins })
     wrapper.findComponent({ name: 'Listbox' }).vm.$emit('update:modelValue', 'b')

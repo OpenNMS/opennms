@@ -26,15 +26,19 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "ip-service-edge")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "An edge pointing at a monitored IP service.")
 public class IpServiceEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
+    @Schema(description = "The monitored IP service this edge points at.")
     @XmlElement(name="ip-service")
     private IpServiceResponseDTO ipService;
 
+    @Schema(description = "Label shown for this edge in the UI.", example = "web front end")
     @XmlElement(name="friendly-name",required = false)
     private String friendlyName;
 
