@@ -208,3 +208,4 @@ The deprecated JMS-Northbounder plugin was removed in this release.
 
 === Juniper TCA Collector plugin (plugin-collector-juniper-tca) removed
 The deprecated Juniper TCA Collector plugin was removed in this release.
+
