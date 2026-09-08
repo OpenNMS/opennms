@@ -1,0 +1,11 @@
+{
+  "collectedAt": { "2timestamp": "2024-01-02 03:04:05" },
+  "stats": {
+    "2xx": { "count": 10 },
+    "5xx": { "count": 3 }
+  },
+  "2interfaces": [
+    { "if": "eth0", "2name": "alpha", "1min": 1, "o'brien": 11 },
+    { "if": "eth1", "2name": "beta", "1min": 2, "o'brien": 22 }
+  ]
+}
