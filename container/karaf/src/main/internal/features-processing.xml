@@ -5,8 +5,6 @@
 >
 
   <bundleReplacements>
-    <!-- NMS-20061: Karaf's framework feature pins jline 3.21.0 (CVE-2026-56740); force jlineVersion. -->
-    <bundle originalUri="mvn:org.jline/jline/[3,4)" replacement="mvn:org.jline/jline/${jlineVersion}" mode="maven"/>
     <!-- the Karaf framework feature pins the pax-logging version it ships with (see etc/startup.properties) -->
     <bundle originalUri="mvn:org.ops4j.pax.logging/pax-logging-api/[2,3)"
             replacement="mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}"
