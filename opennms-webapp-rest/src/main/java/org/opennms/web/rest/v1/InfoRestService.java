@@ -93,7 +93,7 @@ public class InfoRestService extends OnmsRestService {
                             schema = @Schema(implementation = InfoDTO.class),
                             examples = @ExampleObject(value = """
                     {
-                      "displayVersion": "36.0.4",
+                      "displayVersion": "36.0.5-SNAPSHOT",
                       "version": "36.0.4",
                       "packageName": "opennms",
                       "packageDescription": "OpenNMS",
