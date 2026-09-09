@@ -40,10 +40,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -111,65 +112,61 @@ public class EventConfEventOrderConcurrencyIT implements InitializingBean {
     }
 
     /**
-     * Two transactions appending to the same source must not be handed the same eventOrder:
-     * the second allocation has to wait for the first transaction to commit and then see its insert.
+     * Two transactions appending to the same source must not be handed the same eventOrder: the second
+     * allocation must block while the first transaction is open, and see its insert once it committed.
+     * Blocking is verified with latches (the second appender provably makes no progress while the first
+     * holds its transaction open), not with timestamps, which would race the moment of the commit itself.
      */
     @Test
     public void testNextEventOrderSerializesConcurrentAppenders() throws Exception {
         final Long sourceId = m_source.getId();
         final CountDownLatch firstHoldsLock = new CountDownLatch(1);
-        final CountDownLatch secondAsked = new CountDownLatch(1);
+        final CountDownLatch secondAboutToAllocate = new CountDownLatch(1);
+        final CountDownLatch releaseFirst = new CountDownLatch(1);
         final AtomicInteger firstOrder = new AtomicInteger();
         final AtomicInteger secondOrder = new AtomicInteger();
-        final AtomicLong secondObtainedAt = new AtomicLong();
-        final AtomicLong firstCommittedAt = new AtomicLong();
 
-        Thread first = new Thread(() -> m_transactionTemplate.execute(status -> {
+        final Thread first = worker("appender-1", () -> m_transactionTemplate.execute(status -> {
             int order = m_eventDao.nextEventOrder(sourceId);
             firstOrder.set(order);
-            EventConfEvent event = newEvent(m_source, "uei.opennms.org/test/concurrent/first", order);
-            m_eventDao.save(event);
+            m_eventDao.save(newEvent(m_source, "uei.opennms.org/test/concurrent/first", order));
             m_eventDao.flush();
             firstHoldsLock.countDown();
             try {
-                // keep the lock while the second transaction asks for its order
-                assertTrue(secondAsked.await(10, TimeUnit.SECONDS));
-                Thread.sleep(500);
+                // hold the transaction (and with it the source-row lock) open until the main thread
+                // has verified that the second appender is blocked
+                assertTrue(releaseFirst.await(20, TimeUnit.SECONDS));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            firstCommittedAt.set(System.nanoTime());
             return null;
-        }), "appender-1");
+        }));
 
-        Thread second = new Thread(() -> {
-            try {
-                assertTrue(firstHoldsLock.await(10, TimeUnit.SECONDS));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        final Thread second = worker("appender-2", () -> {
+            assertTrue(firstHoldsLock.await(10, TimeUnit.SECONDS));
             m_transactionTemplate.execute(status -> {
-                secondAsked.countDown();
+                secondAboutToAllocate.countDown();
                 int order = m_eventDao.nextEventOrder(sourceId); // blocks until appender-1 commits
-                secondObtainedAt.set(System.nanoTime());
                 secondOrder.set(order);
                 m_eventDao.save(newEvent(m_source, "uei.opennms.org/test/concurrent/second", order));
                 m_eventDao.flush();
                 return null;
             });
-        }, "appender-2");
+        });
 
         first.start();
         second.start();
-        first.join(30_000);
-        second.join(30_000);
-        assertFalse(first.isAlive());
-        assertFalse(second.isAlive());
+
+        // While the first transaction is open, the second appender must not obtain an order.
+        assertTrue(secondAboutToAllocate.await(10, TimeUnit.SECONDS));
+        Thread.sleep(1_000);
+        assertEquals("second appender must be blocked while the first transaction is open", 0, secondOrder.get());
+
+        releaseFirst.countDown();
+        joinAndRethrow(first, second);
 
         assertEquals(5, firstOrder.get());
         assertEquals("second appender must see the first insert", 6, secondOrder.get());
-        assertTrue("second allocation must have waited for the first commit",
-                secondObtainedAt.get() > firstCommittedAt.get());
 
         List<EventConfEvent> events = m_transactionTemplate.execute(status -> m_eventDao.findBySourceId(sourceId));
         assertEquals(6, events.size());
@@ -178,61 +175,52 @@ public class EventConfEventOrderConcurrencyIT implements InitializingBean {
 
 
     /**
-     * Two transactions creating sources must not be handed the same fileOrder either: the
-     * allocation holds the file-order lock until the first creator commits.
+     * Two transactions creating sources at the same time must not be handed the same fileOrder either.
+     * Allocation comes from a sequence, so neither has to wait for the other: the first creator holds its
+     * transaction open while the second allocates, commits and is done, and both values are distinct and
+     * above everything that existed before.
      */
     @Test
-    public void testNextFileOrderSerializesConcurrentCreators() throws Exception {
-        final CountDownLatch firstHoldsLock = new CountDownLatch(1);
-        final CountDownLatch secondAsked = new CountDownLatch(1);
+    public void testNextFileOrderIsUniqueAndLockFreeAcrossCreators() throws Exception {
+        final CountDownLatch firstAllocated = new CountDownLatch(1);
+        final CountDownLatch secondCommitted = new CountDownLatch(1);
         final AtomicInteger firstOrder = new AtomicInteger();
         final AtomicInteger secondOrder = new AtomicInteger();
-        final AtomicLong firstCommittedAt = new AtomicLong();
-        final AtomicLong secondObtainedAt = new AtomicLong();
+        final int maxBefore = m_transactionTemplate.execute(status -> m_eventSourceDao.findMaxFileOrder());
 
-        Thread first = new Thread(() -> m_transactionTemplate.execute(status -> {
+        final Thread first = worker("creator-1", () -> m_transactionTemplate.execute(status -> {
             int order = m_eventSourceDao.nextFileOrder();
             firstOrder.set(order);
             m_eventSourceDao.save(newSource("concurrency-source-a", order));
             m_eventSourceDao.flush();
-            firstHoldsLock.countDown();
+            firstAllocated.countDown();
             try {
-                assertTrue(secondAsked.await(10, TimeUnit.SECONDS));
-                Thread.sleep(500);
+                // the second creator must get through while this transaction is still open
+                assertTrue("second creator must not wait for the first one", secondCommitted.await(10, TimeUnit.SECONDS));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            firstCommittedAt.set(System.nanoTime());
             return null;
-        }), "creator-1");
+        }));
 
-        Thread second = new Thread(() -> {
-            try {
-                assertTrue(firstHoldsLock.await(10, TimeUnit.SECONDS));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        final Thread second = worker("creator-2", () -> {
+            assertTrue(firstAllocated.await(10, TimeUnit.SECONDS));
             m_transactionTemplate.execute(status -> {
-                secondAsked.countDown();
-                int order = m_eventSourceDao.nextFileOrder(); // blocks until creator-1 commits
-                secondObtainedAt.set(System.nanoTime());
+                int order = m_eventSourceDao.nextFileOrder();
                 secondOrder.set(order);
                 m_eventSourceDao.save(newSource("concurrency-source-b", order));
                 m_eventSourceDao.flush();
                 return null;
             });
-        }, "creator-2");
+            secondCommitted.countDown();
+        });
 
         first.start();
         second.start();
-        first.join(30_000);
-        second.join(30_000);
-        assertFalse(first.isAlive());
-        assertFalse(second.isAlive());
+        joinAndRethrow(first, second);
 
-        assertEquals("second creator must see the first insert", firstOrder.get() + 1, secondOrder.get());
-        assertTrue("second allocation must have waited for the first commit",
-                secondObtainedAt.get() > firstCommittedAt.get());
+        assertTrue("both allocations must be above the previous maximum", firstOrder.get() > maxBefore && secondOrder.get() > maxBefore);
+        assertTrue("allocations must be distinct and increasing", secondOrder.get() > firstOrder.get());
 
         m_transactionTemplate.execute(status -> {
             for (String name : List.of("concurrency-source-a", "concurrency-source-b")) {
@@ -278,4 +266,38 @@ public class EventConfEventOrderConcurrencyIT implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
+
+    /** A worker whose failure (assertion or exception) is captured and rethrown by {@link #joinAndRethrow}. */
+    private static Thread worker(final String name, final ThrowingRunnable body) {
+        final Thread t = new Thread(() -> {
+            try {
+                body.run();
+            } catch (Throwable e) {
+                FAILURES.put(Thread.currentThread(), e);
+            }
+        }, name);
+        return t;
+    }
+
+    private static void joinAndRethrow(final Thread... threads) throws Exception {
+        for (Thread t : threads) {
+            t.join(30_000);
+            assertFalse(t.getName() + " is still running", t.isAlive());
+        }
+        for (Thread t : threads) {
+            final Throwable failure = FAILURES.remove(t);
+            if (failure instanceof Exception) {
+                throw (Exception) failure;
+            } else if (failure != null) {
+                throw new AssertionError(t.getName() + " failed", failure);
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface ThrowingRunnable {
+        void run() throws Exception;
+    }
+
+    private static final Map<Thread, Throwable> FAILURES = new ConcurrentHashMap<>();
 }

@@ -305,8 +305,7 @@ public class EventConfRestServiceIT {
         m_source.setName("testEventEnabledFlagTest");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
-        m_source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
+        m_source.setFileOrder(eventConfSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -397,8 +396,7 @@ public class EventConfRestServiceIT {
         source.setName("emptySource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
-        source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
+        source.setFileOrder(eventConfSourceDao.nextFileOrder());
         source.setDescription("Source with no events");
         source.setVendor("TestVendor");
         source.setUploadedBy("JUnitTest");
@@ -595,8 +593,7 @@ public class EventConfRestServiceIT {
         m_source.setName("testEventEnabledFlagTest");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
-        m_source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
+        m_source.setFileOrder(eventConfSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -784,8 +781,7 @@ public class EventConfRestServiceIT {
         source.setName("testGetSource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
-        source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
+        source.setFileOrder(eventConfSourceDao.nextFileOrder());
         source.setDescription("Test source for get by ID");
         source.setVendor("Cisco");
         source.setUploadedBy("JUnitTest");
@@ -823,8 +819,7 @@ public class EventConfRestServiceIT {
         m_source.setName("testGetEventsByVendor");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
-        m_source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
+        m_source.setFileOrder(eventConfSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("test");
         m_source.setUploadedBy("JUnitTest");
@@ -860,8 +855,7 @@ public class EventConfRestServiceIT {
         source.setName("addEventConfSource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        // no allocation lock here: it would deadlock the REQUIRES_NEW transactions the code under test opens
-        source.setFileOrder(eventConfSourceDao.findMaxFileOrder() + 1);
+        source.setFileOrder(eventConfSourceDao.nextFileOrder());
         source.setDescription("Test addEventConfSource");
         source.setVendor("Cisco");
         source.setUploadedBy("JUnitTest");

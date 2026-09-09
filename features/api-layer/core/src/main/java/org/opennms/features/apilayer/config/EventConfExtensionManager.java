@@ -117,8 +117,9 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
             }
 
             return sessionUtils.withTransaction(() -> {
-                // Get or create the plugin source
-                EventConfSource source = getOrCreatePluginSource();
+                // Get or create the plugin source, row-locked and re-read so the metadata written at the
+                // end cannot carry a fileOrder from before a concurrent renumbering
+                EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreatePluginSource().getId());
 
                 // Load existing events from database for this source
                 List<EventConfEvent> dbEvents = eventConfEventDao.findBySourceId(source.getId());

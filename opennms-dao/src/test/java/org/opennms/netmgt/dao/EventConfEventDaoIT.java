@@ -41,6 +41,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Savepoint;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +52,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -478,4 +483,38 @@ public class EventConfEventDaoIT implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
+
+    /**
+     * Two events of one source may not share an eventOrder. The constraint is deferred (so a compaction
+     * can rewrite positions inside a transaction), so it is made immediate here and the violating insert
+     * is wrapped in a savepoint, which keeps the surrounding test transaction usable for the cleanup.
+     */
+    @Test
+    @Transactional
+    public void testEventOrderMustBeUniqueWithinSource() {
+        m_eventDao.flush();
+        final long sourceId = m_source.getId();
+        sessionFactory.getCurrentSession().doWork(connection -> {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("SET CONSTRAINTS ALL IMMEDIATE");
+            }
+            final Savepoint savepoint = connection.setSavepoint();
+            // copy the source's last event onto the very same position
+            final String duplicate = "INSERT INTO eventconf_events (id, source_id, uei, event_label, description, severity, enabled,"
+                    + " xml_content, created_time, last_modified, modified_by, event_order)"
+                    + " SELECT nextval('eventconf_events_id_seq'), source_id, 'uei.opennms.org/test/duplicate-order', event_label, description, severity, enabled,"
+                    + " xml_content, created_time, last_modified, modified_by, event_order"
+                    + " FROM eventconf_events WHERE source_id = ? ORDER BY event_order DESC LIMIT 1";
+            try (PreparedStatement statement = connection.prepareStatement(duplicate)) {
+                statement.setLong(1, sourceId);
+                statement.executeUpdate();
+                fail("duplicate eventOrder within a source must be rejected");
+            } catch (SQLException e) {
+                assertEquals("unique_violation expected: " + e.getMessage(), "23505", e.getSQLState());
+                connection.rollback(savepoint);
+            }
+        });
+        assertEquals("nothing may have been inserted", 0,
+                m_eventDao.findBySourceId(sourceId).stream().filter(e -> "uei.opennms.org/test/duplicate-order".equals(e.getUei())).count());
+    }
 }

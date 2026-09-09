@@ -22,7 +22,6 @@
 package org.opennms.web.rest.v2;
 
 
-import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
@@ -87,10 +86,11 @@ public class EventConfPersistenceService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
+        // An existing source comes back row-locked (see createOrUpdateSource), which serializes us with
+        // concurrent appenders (nextEventOrder locks the same row) so the 1..N numbering below cannot
+        // interleave with a MAX+1 computed against the old events. A new source is invisible to other
+        // transactions until we commit, so it needs no lock.
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
-        // Serialize with concurrent appenders (nextEventOrder locks the same row) so the 1..N
-        // numbering below cannot interleave with a MAX+1 computed against the old events.
-        eventConfSourceDao.lockForUpdate(source.getId());
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
     }
@@ -98,9 +98,10 @@ public class EventConfPersistenceService {
     @Transactional
     public Long addEventConfSourceEvent(final Long sourceId, final String userName, Event event) {
         final Date now = new Date();
-        EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
+        // Lock (and re-read) the source before touching it, so the count below is not a lost update
+        EventConfSource eventConfSource = eventConfSourceDao.lockForUpdate(sourceId);
         Long eventConfId = EventConfServiceHelper.saveEvent(eventConfEventDao, eventConfSource, event, userName, now);
-        eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
+        eventConfSource.setEventCount(eventConfEventDao.countBySourceId(sourceId));
         eventConfSourceDao.saveOrUpdate(eventConfSource);
         return eventConfId;
     }
@@ -130,6 +131,9 @@ public class EventConfPersistenceService {
     public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload) {
 
         try {
+            // Keep deleteEventsForSource's compaction out while this event is rewritten, so the
+            // eventOrder we hold cannot be stale by the time it is flushed
+            eventConfSourceDao.lockForUpdate(sourceId);
             EventConfEvent eventConfEvent = eventConfEventDao.findBySourceIdAndEventId(sourceId,eventId);
             if (eventConfEvent == null) {
                 throw new EntityNotFoundException(String.format("EventConfEvent not found for eventId=%d", eventId));
@@ -149,15 +153,22 @@ public class EventConfPersistenceService {
     }
 
     /**
-     * Persists a new source. A missing or non-positive {@code fileOrder} is allocated here, inside the
-     * transaction, so the value is unique even under concurrent creates.
+     * Persists a new source. Its {@code fileOrder} is always allocated here (see {@link #allocateFileOrder}),
+     * whatever the caller set, so the value is unique and the catch-all cannot end up anywhere but last.
      */
     @Transactional
     public Long createEventConfSource(final EventConfSource eventConfSource) {
-        if (eventConfSource.getFileOrder() == null || eventConfSource.getFileOrder() <= 0) {
-            eventConfSource.setFileOrder(eventConfSourceDao.nextFileOrder());
-        }
+        eventConfSource.setFileOrder(allocateFileOrder(eventConfSource.getName()));
         return eventConfSourceDao.save(eventConfSource);
+    }
+
+    /**
+     * The one place a new source gets its {@code fileOrder}: the catch-all is pinned at 1 (the slot the
+     * migration reserved for it, so it is evaluated after everything else however it is re-created),
+     * every other source takes the next sequence value and is evaluated before all existing ones.
+     */
+    private Integer allocateFileOrder(final String sourceName) {
+        return EventConfSource.CATCH_ALL_SOURCE_NAME.equals(sourceName) ? 1 : eventConfSourceDao.nextFileOrder();
     }
 
     /**
@@ -222,13 +233,14 @@ public class EventConfPersistenceService {
         if (source == null) {
             source = new EventConfSource();
             source.setCreatedTime(eventConfSourceMetadataDto.getNow());
+        } else {
+            // Lock first, then re-read: only then may the row be modified. Otherwise the fileOrder of
+            // the findByName snapshot would be flushed back over a renumbering committed in between.
+            source = eventConfSourceDao.lockForUpdate(source.getId());
         }
-        // fileOrder <= 0 means "decide here": an existing source keeps the position it has in this
-        // transaction's snapshot, a new one is allocated MAX+1 under the allocation lock
-        if (eventConfSourceMetadataDto.getFileOrder() > 0) {
-            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
-        } else if (source.getFileOrder() == null) {
-            source.setFileOrder(eventConfSourceDao.nextFileOrder());
+        // an existing source keeps the position it holds under the lock, a new one is allocated
+        if (source.getFileOrder() == null) {
+            source.setFileOrder(allocateFileOrder(eventConfSourceMetadataDto.getFilename()));
         }
         source.setName(eventConfSourceMetadataDto.getFilename());
         source.setEventCount(eventConfSourceMetadataDto.getEventCount());
@@ -238,7 +250,7 @@ public class EventConfPersistenceService {
         source.setVendor(eventConfSourceMetadataDto.getVendor());
         source.setDescription(eventConfSourceMetadataDto.getDescription());
         eventConfSourceDao.saveOrUpdate(source);
-        return eventConfSourceDao.get(source.getId());
+        return source;
     }
 
     private void saveEvents(EventConfSource source, Events events, String username, Date now) {
@@ -251,28 +263,6 @@ public class EventConfPersistenceService {
     @PreDestroy
     public void shutdown() {
         eventConfExecutor.shutdown();
-    }
-
-    private void saveEventsToDatabase() {
-
-        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
-        int fileOrder = 1;
-        for (Map.Entry<String, Events> entry : fileEventsMap.entrySet()) {
-            String fileName = entry.getKey();
-            if (fileName.startsWith("events/")) {
-                String[] parts = fileName.split("/");
-                fileName = parts[parts.length - 1];
-            }
-            Events events = entry.getValue();
-
-            if (fileName.startsWith("opennms")) {
-                String withoutExtension = fileName.endsWith(".xml")
-                        ? fileName.substring(0, fileName.lastIndexOf(".xml"))
-                        : fileName;
-                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(withoutExtension).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("system-migration").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
-                persistEventConfFile(events, metadataDto);
-            }
-        }
     }
 
     public  void reloadEventsIntoMemory() {
@@ -296,10 +286,9 @@ public class EventConfPersistenceService {
             throw new IllegalArgumentException("Event IDs to delete must not be empty");
         }
 
-        EventConfSource source = eventConfSourceDao.get(sourceId);
-        if (source == null) {
-            throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
-        }
+        // Lock the source before looking at anything (throws EntityNotFoundException if it is gone):
+        // appenders and other deleters wait here, so the event set read below is the one we decide on
+        final EventConfSource source = eventConfSourceDao.lockForUpdate(sourceId);
         final Set<Long> databaseEventIds = source.getEvents()
                 .stream()
                 .map(EventConfEvent::getId)
@@ -313,18 +302,18 @@ public class EventConfPersistenceService {
         if (existingEventIds.isEmpty()) {
             throw new EntityNotFoundException("No matching events found in database for deletion. Request IDs: " + requestEventIds);
         }
-        final var currentCount = source.getEventCount();
         final int deleteCount = existingEventIds.size();
 
-        if (deleteCount >= currentCount) {
+        // Decide on the rows actually present under the lock, never on the eventCount column
+        if (deleteCount == databaseEventIds.size()) {
             LOG.info("Deleting entire sourceId={} as all {} events are removed.", sourceId, deleteCount);
             eventConfSourceDao.delete(source);
         } else {
-            LOG.info("Deleting {} events from sourceId={} (remaining count={})", deleteCount, sourceId, currentCount - deleteCount);
-            eventConfSourceDao.lockForUpdate(sourceId); // keep appenders out while positions are compacted
             eventConfEventDao.deleteByEventIds(sourceId, existingEventIds);
             eventConfEventDao.compactEventOrder(sourceId);
-            source.setEventCount(currentCount - deleteCount);
+            final int remaining = eventConfEventDao.countBySourceId(sourceId);
+            LOG.info("Deleted {} events from sourceId={} (remaining count={})", deleteCount, sourceId, remaining);
+            source.setEventCount(remaining);
             eventConfSourceDao.saveOrUpdate(source);
         }
     }

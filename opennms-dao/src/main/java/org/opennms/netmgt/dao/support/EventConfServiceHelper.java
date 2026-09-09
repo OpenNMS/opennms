@@ -90,9 +90,11 @@ public class EventConfServiceHelper {
         final long startTime = System.currentTimeMillis();
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         List<EventConfGlobalSecurity> globalSecurities = eventConfGlobalSecurityDao.findAll();
+        final long fetchedAt = System.currentTimeMillis();
         eventConfDao.loadEventsFromDB(dbEvents, globalSecurities);
         final long endTime = System.currentTimeMillis();
-        LOG.info("Time to reload {} events from DB: {} ms", dbEvents.size(), (endTime - startTime));
+        LOG.info("Reloaded {} events from the database in {} ms ({} ms database fetch, {} ms in-memory build)",
+                dbEvents.size(), (endTime - startTime), (fetchedAt - startTime), (endTime - fetchedAt));
     }
 
     /**

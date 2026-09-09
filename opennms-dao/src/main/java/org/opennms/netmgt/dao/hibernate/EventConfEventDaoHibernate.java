@@ -29,6 +29,8 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityNotFoundException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,7 +95,7 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
-    public Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String eventOrder, Integer totalRecords, Integer offset, Integer limit) {
+    public Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String sortDirection, Integer totalRecords, Integer offset, Integer limit) {
 
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
@@ -130,17 +132,15 @@ public class EventConfEventDaoHibernate
         if (resultCount > 0) {
 
             String orderBy = "";
-            String sortField = eventSortBy;
 
-            String sortOrder = "ASC".equalsIgnoreCase(eventOrder) ? "ASC" : "DESC";
+            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "severity", "enabled", "createdTime", "eventOrder");
 
-            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "severity", "enabled", "eventOrder");
-
-            if (eventSortBy == null || !allowedSortFields.contains(eventSortBy)) {
-                // Default to evaluation order within the source
-                sortField = "eventOrder";
-                sortOrder = "ASC".equalsIgnoreCase(eventOrder) || eventOrder == null ? "ASC" : "DESC";
-            }
+            // Default to the evaluation order within the source
+            final String sortField = eventSortBy != null && allowedSortFields.contains(eventSortBy) ? eventSortBy : "eventOrder";
+            // Without a direction the evaluation order reads top-down, everything else newest/highest first -
+            // the same whether the field was requested or defaulted
+            final String defaultDirection = "eventOrder".equals(sortField) ? "ASC" : "DESC";
+            final String sortOrder = sortDirection == null ? defaultDirection : ("ASC".equalsIgnoreCase(sortDirection) ? "ASC" : "DESC");
 
             if ("severity".equalsIgnoreCase(sortField)) {
                 orderBy = " order by case upper(e.severity) " +
@@ -277,8 +277,11 @@ public class EventConfEventDaoHibernate
         // Flush first: the source may have been created in this very transaction and the lock
         // query needs its row to exist.
         final var session = getSessionFactory().getCurrentSession();
+        EventConfLocks.applyLockTimeout(session);
         session.flush();
-        session.get(EventConfSource.class, sourceId, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+        if (session.get(EventConfSource.class, sourceId, new LockOptions(LockMode.PESSIMISTIC_WRITE)) == null) {
+            throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
+        }
         return findMaxEventOrder(sourceId) + 1;
     }
 

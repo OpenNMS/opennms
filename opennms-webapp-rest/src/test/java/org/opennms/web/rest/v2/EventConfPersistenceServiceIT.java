@@ -107,7 +107,7 @@ public class EventConfPersistenceServiceIT {
         String filename = "test-events.xml";
         String username = "integration_test_user";
         Date now = new Date();
-        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(1).fileOrder(0).username(username).now(now).vendor("test-vendor").description("integration test file").build();
+        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(1).username(username).now(now).vendor("test-vendor").description("integration test file").build();
         Event event = new Event();
         event.setUei("uei.opennms.org/test/it");
         event.setEventLabel("IT Event");
@@ -144,7 +144,7 @@ public class EventConfPersistenceServiceIT {
         String filename = "existing-source";
         String username = "test_user";
         Date now = new Date();
-        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(2).fileOrder(0).username(username).now(now).vendor("update-vendor").description("original entry").build();
+        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(2).username(username).now(now).vendor("update-vendor").description("original entry").build();
         Event event = new Event();
         event.setUei("uei.opennms.org/test/update");
         event.setEventLabel("Initial Event");
@@ -157,7 +157,7 @@ public class EventConfPersistenceServiceIT {
         // scalar read on purpose: loading the entity here would leave a stale copy in this session
         final Integer originalFileOrder = eventConfSourceDao.findMaxFileOrder();
         assertTrue("a new source is allocated a real fileOrder", originalFileOrder > 0);
-        EventConfSourceMetadataDto updatedMetadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(3).fileOrder(0).username("updated_user").now(new Date()).vendor("updated-vendor").description("updated entry").build();
+        EventConfSourceMetadataDto updatedMetadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(3).username("updated_user").now(new Date()).vendor("updated-vendor").description("updated entry").build();
         Event updatedEvent = new Event();
         updatedEvent.setUei("uei.opennms.org/test/update2");
         updatedEvent.setEventLabel("Updated Event");
@@ -197,7 +197,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto ciscoMetadata = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("Cisco")
@@ -219,7 +218,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto hpMetadata = new EventConfSourceMetadataDto.Builder()
                 .filename(filename2)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("HP")
@@ -274,7 +272,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-1")
@@ -296,7 +293,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename2)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-2")
@@ -345,7 +341,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto ciscoMetadata = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("Cisco")
@@ -367,7 +362,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto hpMetadata = new EventConfSourceMetadataDto.Builder()
                 .filename(filename2)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("HP")
@@ -466,7 +460,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-1")
@@ -488,7 +481,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename2)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-2")
@@ -527,7 +519,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-1")
@@ -549,7 +540,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename2)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-2")
@@ -607,7 +597,6 @@ public class EventConfPersistenceServiceIT {
                 .Builder()
                 .filename(filename1)
                 .eventCount(1)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-1")
@@ -776,7 +765,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(3)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-1")
@@ -842,7 +830,6 @@ public class EventConfPersistenceServiceIT {
         EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(2)
-                .fileOrder(0)
                 .username(username)
                 .now(now)
                 .vendor("vendor-1")
@@ -981,5 +968,42 @@ public class EventConfPersistenceServiceIT {
                 expectedAsc,
                 ascList.stream().map(EventConfEvent::getSeverity).toList());
     }
-}
 
+    /**
+     * A re-created catch-all must land on fileOrder 1 (evaluated last), not on a fresh MAX+1 where it would
+     * swallow every event; any other new source is allocated above everything that exists.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testCatchAllIsPinnedAtFileOrderOneWhenRecreated() {
+        EventConfSource seededCatchAll = eventConfSourceDao.findByName(EventConfSource.CATCH_ALL_SOURCE_NAME);
+        assertNotNull("catch-all is seeded", seededCatchAll);
+        eventConfSourceDao.delete(seededCatchAll);
+        eventConfSourceDao.flush();
+
+        EventConfSource ordinary = newSource("ordinary-source");
+        eventConfPersistenceService.createEventConfSource(ordinary);
+        EventConfSource catchAll = newSource(EventConfSource.CATCH_ALL_SOURCE_NAME);
+        catchAll.setFileOrder(4711); // a caller-supplied position is ignored, the service decides
+        eventConfPersistenceService.createEventConfSource(catchAll);
+        eventConfSourceDao.flush();
+
+        assertEquals(Integer.valueOf(1), eventConfSourceDao.findByName(EventConfSource.CATCH_ALL_SOURCE_NAME).getFileOrder());
+        EventConfSource persistedOrdinary = eventConfSourceDao.findByName("ordinary-source");
+        assertTrue("a new ordinary source is evaluated before everything else",
+                persistedOrdinary.getFileOrder() > 1 && persistedOrdinary.getFileOrder().equals(eventConfSourceDao.findMaxFileOrder()));
+    }
+
+    private static EventConfSource newSource(String name) {
+        EventConfSource source = new EventConfSource();
+        source.setName(name);
+        source.setVendor("test-vendor");
+        source.setEnabled(true);
+        source.setEventCount(0);
+        source.setUploadedBy("integration_test_user");
+        source.setCreatedTime(new Date());
+        source.setLastModified(new Date());
+        return source;
+    }
+}

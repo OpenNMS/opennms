@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.model;
 
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,6 +39,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "eventconf_events")
+@DynamicUpdate // only dirty columns are written, so an unchanged order column is never flushed back
 public class EventConfEvent implements Serializable {
 
     private static final long serialVersionUID = 1L;

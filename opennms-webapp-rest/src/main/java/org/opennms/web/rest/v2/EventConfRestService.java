@@ -60,15 +60,12 @@ import java.io.Serializable;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -76,6 +73,9 @@ import java.util.stream.Collectors;
 public class EventConfRestService implements EventConfRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfRestService.class);
+
+    /** "file" label of the upload report entry describing a failed eventconf.xml ordering step. */
+    static final String EVENTCONF_ORDER_STEP = "eventconf.xml (source order)";
 
     private static final int VENDOR_MAX_LENGTH = 128;
 
@@ -137,12 +137,11 @@ public class EventConfRestService implements EventConfRestApi {
             }
 
             try {
-                // 0 = decided inside the persisting transaction: an existing source keeps its committed
-                // position, a new one is allocated MAX+1 under the allocation lock. Reading the value here,
-                // outside any transaction, could write back a position a concurrent reorder just changed.
+                // the source position is decided inside the persisting transaction: an existing source keeps
+                // its committed position, a new one is allocated there
                 eventConfPersistenceService.persistEventConfFile(
                         fileEvents,
-                        buildMetadata(fileName, "", fileEvents, 0, username, now));
+                        buildMetadata(fileName, "", fileEvents, username, now));
                 successList.add(buildSuccessResponse(fileName, fileEvents));
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
@@ -152,17 +151,23 @@ public class EventConfRestService implements EventConfRestApi {
         final long dbEndTime = System.currentTimeMillis();
         LOG.info("Time to add {} files to DB: {} ms", orderedFiles.size(), (dbEndTime - dbStartTime));
 
+        boolean orderApplied = true;
         if (eventConfOrder != null) {
             try {
                 eventConfPersistenceService.reorderSourcesFromEventConf(eventConfOrder);
             } catch (Exception e) {
-                errorList.add(buildErrorResponse("eventconf", e));
+                // The files above are committed, but eventd would now evaluate them in upload order, not in
+                // the order the eventconf.xml asked for: that is a failed request, not a footnote.
+                LOG.error("Uploaded files were persisted but the eventconf.xml source order could not be applied", e);
+                errorList.add(buildErrorResponse(EVENTCONF_ORDER_STEP, e));
+                orderApplied = false;
             }
         }
 
         eventConfPersistenceService.reloadEventsIntoMemory();
 
-        return Response.ok(Map.of("success", successList, "errors", errorList)).build();
+        final Map<String, Object> report = Map.of("success", successList, "errors", errorList);
+        return (orderApplied ? Response.ok(report) : Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(report)).build();
     }
 
     /**
@@ -676,12 +681,11 @@ public class EventConfRestService implements EventConfRestApi {
         return entry;
     }
 
-    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events, int fileOrder,
+    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events,
                                                      String username, Date now) {
         return new EventConfSourceMetadataDto.Builder()
                 .filename(fileName)
                 .eventCount(events.getEvents().size())
-                .fileOrder(fileOrder)
                 .username(username)
                 .now(now)
                 .vendor(StringUtils.substringBefore(fileName, "."))

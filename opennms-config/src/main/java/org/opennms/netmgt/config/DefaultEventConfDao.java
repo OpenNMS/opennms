@@ -196,6 +196,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void loadEventsFromDB(List<EventConfEvent> dbEvents, List<EventConfGlobalSecurity> eventConfGlobalSecurities) {
+		final long startedAt = System.currentTimeMillis();
 
 		// Group events by source and sort by source fileOrder
 		Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()
@@ -227,17 +228,24 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			rootEvents.setGlobal(global);
 		}
 
+		final long groupedAt = System.currentTimeMillis();
+
 		// Build Events per source
 		for (Map.Entry<String, List<EventConfEvent>> sourceEntry : sortedSources) {
 			Events eventsForSource = buildEventsForSource(sourceEntry.getValue());
 			rootEvents.addLoadedEventFile(sourceEntry.getKey(), eventsForSource);
 		}
+		final long parsedAt = System.currentTimeMillis();
 
 		synchronized (this) {
 			m_partition = new EnterpriseIdPartition();
 			rootEvents.initialize(m_partition, new EventOrdering());
 			m_events = rootEvents;
 		}
+		final long finishedAt = System.currentTimeMillis();
+		LOG.info("Built the in-memory event configuration: {} events in {} sources ({} ms: group/sort {} ms, parse {} ms, index {} ms)",
+				dbEvents.size(), sortedSources.size(), finishedAt - startedAt,
+				groupedAt - startedAt, parsedAt - groupedAt, finishedAt - parsedAt);
 	}
 
 	private List<Map.Entry<String, List<EventConfEvent>>> sortSourcesByFileOrder(Map<String, List<EventConfEvent>> eventsBySource) {

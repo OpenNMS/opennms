@@ -64,11 +64,12 @@ public class EventConfProgrammaticService {
      */
     @Transactional
     public void saveEventToDB(Event event, String username) {
-        EventConfSource source = getOrCreateProgrammaticSource();
+        // Lock (and re-read) the source before appending, so the count below is not a lost update
+        EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreateProgrammaticSource().getId());
         EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, new Date());
 
-        // Update event count
-        source.setEventCount(source.getEventCount() + 1);
+        // Update event count from the table, under the lock
+        source.setEventCount(eventConfEventDao.countBySourceId(source.getId()));
         eventConfSourceDao.save(source);
     }
 
