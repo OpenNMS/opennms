@@ -33,19 +33,15 @@ const nodeStatus = computed(() => {
   return getNodeStatusString(props.node)
 })
 
-const nodeSeverity = computed(() => {
-  const status = nodeStatus.value
+// getNodeStatusString only ever returns these three, but anything it does not recognise reads
+// as unknown rather than as a problem.
+const SEVERITY_BY_STATUS: Record<string, OnmsTagSeverity> = {
+  Active: 'success',
+  Deleted: 'danger',
+  Unknown: 'info'
+}
 
-  if (status === 'Deleted') {
-    return 'danger' as OnmsTagSeverity
-  } else if (status === 'Unknown') {
-    return 'danger' as OnmsTagSeverity
-  } else if (status === 'Active') {
-    return 'danger' as OnmsTagSeverity
-  } else {
-    return 'danger' as OnmsTagSeverity
-  }
-})
+const nodeSeverity = computed<OnmsTagSeverity>(() => SEVERITY_BY_STATUS[nodeStatus.value] ?? 'info')
 </script>
 
 <style lang="scss" scoped>
