@@ -1,0 +1,186 @@
+[[ref-configuration-wsman-kerberos]]
+= WS-Management Kerberos authentication and message encryption
+:description: Configure OpenNMS {page-component-title} to authenticate to Windows Remote Management with Kerberos and to encrypt WS-Management traffic over plain HTTP.
+
+{page-component-title} can authenticate to Windows Remote Management (WinRM) with Kerberos in two ways.
+Both are enabled per agent in `etc/wsman-config.xml` (see xref:performance-data-collection/collectors/wsman.adoc#ga-performance-mgmt-collectors-wsman-agent-config[WS-Management agent configuration]) and apply to everything that uses that file: the WsManCollector, the WsManMonitor and WsManShellMonitor, and the WS-Management detectors.
+
+gss-auth::
+Kerberos is used only to authenticate the HTTP connection (HTTP Negotiate).
+The SOAP messages themselves travel in clear text, so this mode should be combined with `ssl="true"` on port 5986 and a trusted certificate.
+
+kerberos-encryption::
+Kerberos authenticates the connection and then encrypts every SOAP message with the negotiated session key, as described in MS-WSMV section 2.2.9.1.
+This is what the Windows `winrs` and PowerShell remoting clients do by default, and it is safe over plain HTTP on port 5985.
+No certificate is needed on the Windows host, and the WinRM service does not need `AllowUnencrypted` or Basic authentication enabled.
+`kerberos-encryption="true"` implies `gss-auth`.
+
+Only the AES256-CTS-HMAC-SHA1-96 encryption type is supported for message encryption.
+
+== Prerequisites
+
+* An Active Directory account for {page-component-title}.
+Membership in the local `Remote Management Users` group on each target is enough for WS-Management queries and WinRS commands.
+* The account must be allowed to use AES 256 Kerberos encryption.
+In Active Directory Users and Computers this is the *This account supports Kerberos AES 256 bit encryption* option on the *Account* tab.
+Tickets issued with RC4 or AES 128 keys are rejected.
+* Reverse DNS for every target.
+{page-component-title} requests a service ticket for `HTTP/<canonical host name>`, and it obtains that name by a reverse lookup of the interface IP address.
+The lookup must return the host's Active Directory name, for example `dc18.ad.example.com`.
+An entry in `/etc/hosts` on the system that performs the polls also works.
+* Forward DNS for the domain controllers, or explicit `kdc` entries in `krb5.conf`.
+* Clocks synchronized to within five minutes of the domain controllers.
+* Network access from the system that performs the polls: TCP 5985 to each target and TCP and UDP 88 to the domain controllers.
+
+The system that performs the polls is the {page-component-title} core for nodes in the `Default` location, and the Minion for nodes in a Minion location.
+Everything in this section has to be in place on that system.
+
+== Kerberos client configuration
+
+The Java runtime reads its Kerberos settings from `/etc/krb5.conf`, or from the file named by the `java.security.krb5.conf` system property.
+A minimal configuration looks like this:
+
+[source, ini]
+----
+[libdefaults]
+ default_realm = AD.EXAMPLE.COM
+ dns_lookup_kdc = true
+ default_tkt_enctypes = aes256-cts-hmac-sha1-96
+ default_tgs_enctypes = aes256-cts-hmac-sha1-96
+ permitted_enctypes = aes256-cts-hmac-sha1-96
+
+[realms]
+ AD.EXAMPLE.COM = {
+  kdc = dc18.ad.example.com
+ }
+
+[domain_realm]
+ .ad.example.com = AD.EXAMPLE.COM
+ ad.example.com = AD.EXAMPLE.COM
+----
+
+== Credentials
+
+Credentials can come from `wsman-config.xml` or from a keytab.
+
+Username and password::
+Set `username` and `password` on the definition, with the username in `user@REALM` form.
+{page-component-title} obtains a ticket-granting ticket with the password when the first connection is made and renews it before it expires.
+Metadata expressions are expanded in these attributes, so the password can be kept in the secure credentials vault, for example `$\{scv:windows-monitor:password}`.
+
+Keytab::
+Leave `username` and `password` unset and provide a Java Authentication and Authorization Service (JAAS) login configuration with an entry named `WSManClient`.
+Name the file with the `java.security.auth.login.config` system property.
+The keytab must contain an AES 256 key for the principal and must be readable only by the user that runs {page-component-title}.
++
+[source, login.conf]
+----
+WSManClient {
+  com.sun.security.auth.module.Krb5LoginModule required
+  useKeyTab=true
+  useTicketCache=false
+  storeKey=true
+  doNotPrompt=true
+  keyTab="/opt/opennms/etc/opennms-ws.keytab"
+  principal="opennms-ws@AD.EXAMPLE.COM";
+};
+----
+
+== Setting the system properties
+
+.Core, in `$OPENNMS_HOME/etc/opennms.conf`
+[source, shell]
+----
+ADDITIONAL_MANAGER_OPTIONS="${ADDITIONAL_MANAGER_OPTIONS} -Djava.security.krb5.conf=/opt/opennms/etc/krb5.conf -Djava.security.auth.login.config=/opt/opennms/etc/login.conf"
+----
+
+.Minion, in `$MINION_HOME/etc/custom.system.properties`
+[source, custom.system.properties]
+----
+java.security.krb5.conf=/opt/minion/etc/krb5.conf
+java.security.auth.login.config=/opt/minion/etc/login.conf
+----
+
+For the container images, pass the same two properties in the `JAVA_OPTS` environment variable and mount the files into the container.
+The `java.security.krb5.conf` property can be omitted when the host's `/etc/krb5.conf` is already correct.
+The file named by `java.security.auth.login.config` must exist and be readable by the user that runs {page-component-title}; a missing file disables the `opennms` login realm that the message broker and JMX rely on (see <<Troubleshooting>>).
+Restart {page-component-title} or the Minion after changing these settings.
+
+== Agent definition
+
+[source, xml]
+----
+<wsman-config xmlns="http://xmlns.opennms.org/xsd/config/wsman" retry="1" timeout="10000">
+  <!-- Keytab credentials from the WSManClient JAAS entry -->
+  <definition ssl="false" port="5985" path="/wsman" kerberos-encryption="true">
+    <range begin="192.168.1.10" end="192.168.1.99"/>
+  </definition>
+  <!-- Password credentials, kept in the secure credentials vault -->
+  <definition ssl="false" port="5985" path="/wsman" kerberos-encryption="true"
+              username="opennms-ws@AD.EXAMPLE.COM" password="${scv:windows-monitor:password}">
+    <specific>192.168.1.147</specific>
+  </definition>
+</wsman-config>
+----
+
+== Connection handling
+
+Each collector, monitor, and detector keeps one Kerberos session per agent and reuses it for all of its operations, so the login and the handshake are not repeated on every poll.
+Operations on the same agent from the same component run one at a time on that session; this is a constraint of the protocol, because the Windows host binds the session to a single TCP connection.
+The connection is closed after 60 seconds without traffic and re-established transparently on the next poll, which costs one Kerberos exchange with the target but no request to the domain controller.
+A session that stays idle for 15 minutes releases its ticket and login as well; the next poll logs in again.
+
+== Verifying the setup
+
+The WS-Management client library ships a command line tool that uses the same code path as {page-component-title}.
+Download the `org.opennms.core.wsman.cli` jar for the library version listed in the release notes from https://github.com/OpenNMS/wsman/releases[the wsman releases page] and run it on the system that will perform the polls:
+
+[source, shell]
+----
+java -Djava.security.krb5.conf=/opt/opennms/etc/krb5.conf \
+     -Djava.security.auth.login.config=/opt/opennms/etc/login.conf \
+     -jar org.opennms.core.wsman.cli-1.3.4.jar -w WSMAN_1_0 \
+     -r http://dc18.ad.example.com:5985/wsman -kerberosEncryption \
+     -resourceUri http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_OperatingSystem
+----
+
+Add `-u opennms-ws@AD.EXAMPLE.COM -p <password>` instead of the login configuration to test password credentials, or `-o SHELL -- ipconfig /all` to test WinRS command execution.
+
+Once {page-component-title} is polling, `poller.log`, `collectd.log`, and `provisiond.log` record `Creating Kerberos message-encryption session` at DEBUG level when a session is established for an agent.
+
+== Troubleshooting
+
+[options="header"]
+[cols="2,3"]
+|===
+| Symptom
+| Likely cause
+
+| `401 Unauthorized` from the target, while the same credentials work with `winrs` on Windows
+| The service ticket was requested for the wrong name.
+Check that a reverse lookup of the target's IP address returns its Active Directory host name.
+
+| `Pre-authentication information was invalid (24)`
+| Wrong password, or a keytab that no longer matches the account's current key version.
+Re-export the keytab after a password change.
+
+| `KDC has no support for encryption type (14)` or `Encryption type AES256 CTS mode with HMAC SHA1-96 is not supported/enabled`
+| AES 256 is not enabled on the account, or `krb5.conf` lists other encryption types first.
+
+| `Cannot locate KDC` or `Cannot get kdc for realm`
+| The realm has no `kdc` entry in `krb5.conf` and DNS SRV lookups are disabled or failing.
+
+| `Clock skew too great (37)`
+| The system performing the polls is more than five minutes off the domain controller's time.
+
+| `No LoginModules configured for WSManClient` or `Unable to locate a login configuration`
+| The `java.security.auth.login.config` property is not set for the process, or the entry is not named `WSManClient`.
+
+| Polls work from the core but fail for nodes in a Minion location
+| The Kerberos files and system properties are missing on the Minion.
+
+| After setting `java.security.auth.login.config` on the core, Minions can no longer authenticate to the message broker, JMX logins fail, and `output.log` shows `Exception in thread ... SecurityException ... login.conf (No such file or directory)` from `OpenNMSConfiguration`
+| The property points to a file that does not exist or is not readable.
+{page-component-title} adds its own `opennms` login realm on top of the file-based configuration at startup, and it cannot do so when the file cannot be loaded.
+Fix the path or the permissions and restart {page-component-title}.
+|===
