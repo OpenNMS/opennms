@@ -80,8 +80,37 @@ public class HaConfigSyncer {
     private static final Pattern SCV_PATTERN =
             Pattern.compile("^\\$\\{scv:([^:|}]+):([^:|}]+)(?:\\|([^|}]*))?\\}$");
 
+    /** Where a cycle's outcome is published so operators can see it without
+     * reading a standby's log. */
+    public interface StatusRecorder {
+        void syncSucceeded();
+        void syncFailed(String reason);
+        /** A file read only at JVM startup was replaced; this node needs a
+         * restart before the new values take effect. */
+        void bootConfigChanged();
+    }
+
+    private static final StatusRecorder NO_RECORDER = new StatusRecorder() {
+        @Override public void syncSucceeded() {}
+        @Override public void syncFailed(String reason) {}
+        @Override public void bootConfigChanged() {}
+    };
+
+    /** Read once into system properties before services start, so replacing
+     * one leaves the running JVM behind its own files until it restarts. In
+     * practice this fires for opennms.properties.d/, where operator settings
+     * belong; opennms.properties itself is product-owned and identical across
+     * same-version nodes. The credential vault is deliberately absent — it
+     * reloads on change, and flagging routine rotation would devalue the
+     * signal (residual: a rotated credential Bootstrap already expanded from a
+     * ${scv:...} expression stays stale unflagged). */
+    private static final String BOOT_ONLY_DIR = "opennms.properties.d/";
+    private static final List<String> BOOT_ONLY_FILES = List.of(
+            "opennms.properties", "bootstrap.properties", "libraries.properties");
+
     private final Supplier<HaConfiguration> configSupplier;
     private final Supplier<HaInstanceState> stateSupplier;
+    private final StatusRecorder recorder;
     private final HttpClient httpClient;
 
     /** Constructor used in tests and when no state tracking is needed (always treats self as STANDBY). */
@@ -100,8 +129,14 @@ public class HaConfigSyncer {
      * cycle without restarting the syncer.
      */
     public HaConfigSyncer(Supplier<HaConfiguration> configSupplier, Supplier<HaInstanceState> stateSupplier) {
+        this(configSupplier, stateSupplier, NO_RECORDER);
+    }
+
+    public HaConfigSyncer(Supplier<HaConfiguration> configSupplier, Supplier<HaInstanceState> stateSupplier,
+                          StatusRecorder recorder) {
         this.configSupplier = configSupplier;
         this.stateSupplier = stateSupplier;
+        this.recorder = recorder != null ? recorder : NO_RECORDER;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -126,6 +161,7 @@ public class HaConfigSyncer {
 
         if (config.getPartnerRestUrl() == null || config.getPartnerRestUrl().isBlank()) {
             LOG.warn("HA sync: partner-rest-url is not configured; skipping config sync");
+            recorder.syncFailed("partner-rest-url is not configured");
             return;
         }
 
@@ -133,6 +169,7 @@ public class HaConfigSyncer {
         if (config.getSyncUsername() == null || resolvedPassword == null) {
             LOG.warn("HA sync: credentials not available (check SCV entry '{}'); skipping sync",
                     extractScvAlias(config.getSyncPassword()));
+            recorder.syncFailed("credentials not available");
             return;
         }
 
@@ -147,21 +184,31 @@ public class HaConfigSyncer {
         if (!HaSyncFiles.isManifest(manifestText)) {
             LOG.warn("HA sync: response from {} is not an HA manifest; skipping cycle "
                     + "(check partner-rest-url — a wrong host can answer 200 with unrelated text)", baseUrl);
+            recorder.syncFailed("partner response is not an HA manifest");
+            return;
+        }
+        String partnerVersion = HaSyncFiles.parseManifestVersion(manifestText);
+        String localVersion = HaSyncFiles.localVersion();
+        if (partnerVersion != null && localVersion != null && !partnerVersion.equals(localVersion)) {
+            LOG.warn("HA sync: partner runs {} but this node runs {}; skipping cycle until both nodes match "
+                    + "(configuration formats can differ between releases)", partnerVersion, localVersion);
+            recorder.syncFailed("version mismatch: partner " + partnerVersion + ", local " + localVersion);
             return;
         }
         List<HaSyncFiles.Entry> manifest = HaSyncFiles.parseManifestText(manifestText);
         if (manifest.isEmpty()) {
             LOG.warn("HA sync: manifest from {} was empty; skipping cycle (refusing to delete everything)", baseUrl);
+            recorder.syncFailed("partner manifest was empty");
             return;
         }
 
-        Path etcRoot = HaSyncFiles.etcRoot();
         int fetched = 0;
         int failed = 0;
+        boolean bootConfigChanged = false;
         Set<String> manifestPaths = new HashSet<>();
 
         for (HaSyncFiles.Entry entry : manifest) {
-            manifestPaths.add(entry.relativePath());
+            manifestPaths.add(entry.root() + '/' + entry.relativePath());
             // The serving side applies exclusions too, but the local list may
             // legitimately be stricter — never let the partner overwrite an
             // excluded file.
@@ -175,11 +222,15 @@ public class HaConfigSyncer {
                 return;
             }
             try {
-                if (localMatches(etcRoot, entry)) {
+                Path root = HaSyncFiles.root(entry.root());
+                if (localMatches(root, entry)) {
                     continue;
                 }
-                fetchFile(baseUrl, authHeader, etcRoot, entry);
+                fetchFile(baseUrl, authHeader, root, entry);
                 fetched++;
+                if (isBootOnly(entry)) {
+                    bootConfigChanged = true;
+                }
             } catch (Exception e) {
                 if (stateSupplier.get() == HaInstanceState.ACTIVE) {
                     LOG.warn("HA sync: this instance became ACTIVE mid-cycle; aborting sync");
@@ -197,13 +248,29 @@ public class HaConfigSyncer {
         if (excludes != null) {
             deletionExcludes.addAll(excludes);
         }
-        int deleted = propagateDeletions(etcRoot, manifestPaths, deletionExcludes);
+        int deleted = propagateDeletions(config.getSyncRoots(), manifestPaths, deletionExcludes);
 
         if (fetched > 0 || failed > 0 || deleted > 0) {
             LOG.info("HA sync complete: {} files fetched, {} deleted, {} failed", fetched, deleted, failed);
         } else {
             LOG.debug("HA sync complete: no changes");
         }
+        if (bootConfigChanged) {
+            LOG.warn("HA sync: replaced configuration that is only read at startup; this node must be "
+                    + "restarted before those values take effect");
+            recorder.bootConfigChanged();
+        }
+        recorder.syncSucceeded();
+    }
+
+    /** True if the entry is read once at JVM startup (so syncing it leaves the
+     * running process behind its own files until restarted). */
+    private static boolean isBootOnly(HaSyncFiles.Entry entry) {
+        if (!HaSyncFiles.DEFAULT_ROOT.equals(entry.root())) {
+            return false;
+        }
+        String p = entry.relativePath();
+        return BOOT_ONLY_FILES.contains(p) || p.startsWith(BOOT_ONLY_DIR);
     }
 
     // -------------------------------------------------------------------------
@@ -247,7 +314,8 @@ public class HaConfigSyncer {
 
         String encoded = URLEncoder.encode(entry.relativePath(), StandardCharsets.UTF_8);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/rest/ha/sync/file?f=" + encoded))
+                .uri(URI.create(baseUrl + "/rest/ha/sync/file?root="
+                        + URLEncoder.encode(entry.root(), StandardCharsets.UTF_8) + "&f=" + encoded))
                 .header("Authorization", authHeader)
                 .GET()
                 .timeout(Duration.ofSeconds(120))
@@ -286,13 +354,14 @@ public class HaConfigSyncer {
 
     /** Deletes local in-scope files that no longer exist on the partner.
      * {@code excludes} must already be the union of both nodes' exclusions. */
-    private int propagateDeletions(Path etcRoot, Set<String> manifestPaths, List<String> excludes) {
+    private int propagateDeletions(List<String> roots, Set<String> manifestPaths, List<String> excludes) {
         int deleted = 0;
         try {
-            for (HaSyncFiles.Entry local : HaSyncFiles.buildManifest(etcRoot, excludes)) {
-                if (manifestPaths.contains(local.relativePath())) {
+            for (HaSyncFiles.Entry local : HaSyncFiles.buildManifest(roots, excludes)) {
+                if (manifestPaths.contains(local.root() + '/' + local.relativePath())) {
                     continue;
                 }
+                Path etcRoot = HaSyncFiles.root(local.root());
                 if (stateSupplier.get() == HaInstanceState.ACTIVE) {
                     LOG.warn("HA sync: this instance became ACTIVE mid-cycle; aborting deletion propagation");
                     return deleted;

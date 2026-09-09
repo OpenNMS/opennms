@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.ha;
 
+import org.opennms.core.utils.SystemInfoUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -55,11 +57,30 @@ public final class HaSyncFiles {
 
     private HaSyncFiles() {}
 
-    public record Entry(String relativePath, String sha256, long size) {}
+    /** A file in the sync scope. {@code root} is the sync root it belongs to
+     * ("etc", "deploy"); {@code relativePath} is relative to that root. */
+    public record Entry(String root, String relativePath, String sha256, long size) {}
+
+    /** The only root synced unless the operator adds more. */
+    public static final String DEFAULT_ROOT = "etc";
+
+    public static Path home() {
+        return Paths.get(System.getProperty("opennms.home", ".")).toAbsolutePath().normalize();
+    }
+
+    /** Resolves a sync root under {@code $OPENNMS_HOME}, rejecting anything
+     * that is not a plain directory name directly beneath it. */
+    public static Path root(String name) throws IOException {
+        Path h = home();
+        Path r = h.resolve(name).normalize();
+        if (!r.getParent().equals(h)) {
+            throw new IOException("sync root must be a directory directly under the OpenNMS home: " + name);
+        }
+        return r;
+    }
 
     public static Path etcRoot() {
-        String opennmsHome = System.getProperty("opennms.home", ".");
-        return Paths.get(opennmsHome, "etc").toAbsolutePath().normalize();
+        return home().resolve(DEFAULT_ROOT);
     }
 
     /** True if {@code relativePath} is excluded from sync (builtin rules plus
@@ -111,18 +132,24 @@ public final class HaSyncFiles {
     /** Walks {@code root} and builds manifest entries for every regular,
      * non-excluded file. Symlinks are skipped: they are never advertised,
      * served, or deleted — their targets live outside the sync contract. */
-    public static List<Entry> buildManifest(Path root, List<String> configuredExcludes) throws IOException {
+    public static List<Entry> buildManifest(List<String> roots, List<String> configuredExcludes) throws IOException {
         List<Entry> entries = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(root)) {
-            for (Path p : (Iterable<Path>) walk::iterator) {
-                if (!Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS)) {
-                    continue;
+        for (String rootName : roots) {
+            Path root = root(rootName);
+            if (!Files.isDirectory(root)) {
+                continue;
+            }
+            try (Stream<Path> walk = Files.walk(root)) {
+                for (Path p : (Iterable<Path>) walk::iterator) {
+                    if (!Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS)) {
+                        continue;
+                    }
+                    String rel = root.relativize(p).toString().replace('\\', '/');
+                    if (isExcluded(rel, configuredExcludes)) {
+                        continue;
+                    }
+                    entries.add(new Entry(rootName, rel, sha256(p), Files.size(p)));
                 }
-                String rel = root.relativize(p).toString().replace('\\', '/');
-                if (isExcluded(rel, configuredExcludes)) {
-                    continue;
-                }
-                entries.add(new Entry(rel, sha256(p), Files.size(p)));
             }
         }
         return entries;
@@ -134,14 +161,24 @@ public final class HaSyncFiles {
      * the active" when neither side excludes it. */
     static final String EXCLUDE_HEADER_PREFIX = "#exclude ";
 
+    /** Advertises the serving node's release, so a standby can refuse to sync
+     * configuration from a different version. */
+    static final String VERSION_HEADER_PREFIX = "#version ";
+
+    /** Introduces the entries belonging to one sync root. */
+    static final String ROOT_HEADER_PREFIX = "#root ";
+
     /** First line of every manifest. Entry lines are permissive enough that
      * arbitrary text can parse as one, so a response without this marker is
      * never treated as a manifest — least of all as authority to delete. */
     public static final String MANIFEST_MARKER = "#ha-manifest 1";
 
-    public static String toManifestText(List<Entry> entries, List<String> configuredExcludes) {
+    public static String toManifestText(List<Entry> entries, List<String> configuredExcludes, String version) {
         StringBuilder sb = new StringBuilder();
         sb.append(MANIFEST_MARKER).append('\n');
+        if (version != null) {
+            sb.append(VERSION_HEADER_PREFIX).append(version).append('\n');
+        }
         List<String> all = new ArrayList<>(BUILTIN_EXCLUSIONS);
         if (configuredExcludes != null) {
             all.addAll(configuredExcludes);
@@ -149,7 +186,12 @@ public final class HaSyncFiles {
         for (String exclude : all) {
             sb.append(EXCLUDE_HEADER_PREFIX).append(exclude).append('\n');
         }
+        String currentRoot = null;
         for (Entry e : entries) {
+            if (!e.root().equals(currentRoot)) {
+                currentRoot = e.root();
+                sb.append(ROOT_HEADER_PREFIX).append(currentRoot).append('\n');
+            }
             sb.append(e.sha256()).append(' ').append(e.size()).append(' ')
               .append(e.relativePath()).append('\n');
         }
@@ -162,13 +204,18 @@ public final class HaSyncFiles {
      * spelling per file. */
     public static List<Entry> parseManifestText(String text) {
         List<Entry> entries = new ArrayList<>();
+        String root = DEFAULT_ROOT;
         for (String line : text.split("\n")) {
+            if (line.startsWith(ROOT_HEADER_PREFIX)) {
+                root = line.substring(ROOT_HEADER_PREFIX.length()).trim();
+                continue;
+            }
             if (line.isBlank() || line.startsWith("#")) continue;
             int firstSpace = line.indexOf(' ');
             int secondSpace = line.indexOf(' ', firstSpace + 1);
             if (firstSpace < 0 || secondSpace < 0) continue;
             try {
-                entries.add(new Entry(
+                entries.add(new Entry(root,
                         normalizeRelative(line.substring(secondSpace + 1)),
                         line.substring(0, firstSpace),
                         Long.parseLong(line.substring(firstSpace + 1, secondSpace))));
@@ -179,12 +226,28 @@ public final class HaSyncFiles {
         return entries;
     }
 
-    /** Parses the serving node's exclusion patterns from a manifest. */
     /** True if {@code text} is a manifest emitted by {@link #toManifestText}. */
     public static boolean isManifest(String text) {
         return text != null && text.startsWith(MANIFEST_MARKER);
     }
 
+    /** The release this node runs, as advertised in and compared against a
+     * manifest. */
+    public static String localVersion() {
+        return new SystemInfoUtils().getVersion();
+    }
+
+    /** The release the manifest was served by, or null if it carries none. */
+    public static String parseManifestVersion(String text) {
+        for (String line : text.split("\n")) {
+            if (line.startsWith(VERSION_HEADER_PREFIX)) {
+                return line.substring(VERSION_HEADER_PREFIX.length()).trim();
+            }
+        }
+        return null;
+    }
+
+    /** Parses the serving node's exclusion patterns from a manifest. */
     public static List<String> parseManifestExcludes(String text) {
         List<String> excludes = new ArrayList<>();
         for (String line : text.split("\n")) {

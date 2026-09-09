@@ -45,17 +45,17 @@ public class HaConfigSyncerTest {
     @Test
     public void manifestRoundTrips() {
         List<HaSyncFiles.Entry> entries = List.of(
-                new HaSyncFiles.Entry("poller-configuration.xml", "ab12", 1234L),
-                new HaSyncFiles.Entry("events/my events.xml", "cd34", 9L));
-        String text = HaSyncFiles.toManifestText(entries, null);
+                new HaSyncFiles.Entry("etc", "poller-configuration.xml", "ab12", 1234L),
+                new HaSyncFiles.Entry("etc", "events/my events.xml", "cd34", 9L));
+        String text = HaSyncFiles.toManifestText(entries, null, null);
         assertEquals(entries, HaSyncFiles.parseManifestText(text));
     }
 
     @Test
     public void manifestCarriesServerExclusions() {
         List<HaSyncFiles.Entry> entries =
-                List.of(new HaSyncFiles.Entry("ok.xml", "aa", 5L));
-        String text = HaSyncFiles.toManifestText(entries, List.of("node-local/"));
+                List.of(new HaSyncFiles.Entry("etc", "ok.xml", "aa", 5L));
+        String text = HaSyncFiles.toManifestText(entries, List.of("node-local/"), null);
 
         // Header lines advertise the serving node's effective exclusions...
         List<String> excludes = HaSyncFiles.parseManifestExcludes(text);
@@ -76,8 +76,38 @@ public class HaConfigSyncerTest {
                 HaSyncFiles.parseManifestText(bogus).isEmpty());
 
         String real = HaSyncFiles.toManifestText(
-                List.of(new HaSyncFiles.Entry("ok.xml", "aa", 5L)), null);
+                List.of(new HaSyncFiles.Entry("etc", "ok.xml", "aa", 5L)), null, null);
         assertTrue(HaSyncFiles.isManifest(real));
+    }
+
+    @Test
+    public void manifestCarriesTheServingVersion() {
+        String text = HaSyncFiles.toManifestText(
+                List.of(new HaSyncFiles.Entry("etc", "ok.xml", "aa", 5L)), null, "36.0.4");
+        assertEquals("36.0.4", HaSyncFiles.parseManifestVersion(text));
+        assertNull("a manifest without a version must parse as unknown, not fail",
+                HaSyncFiles.parseManifestVersion(
+                        HaSyncFiles.toManifestText(List.of(), null, null)));
+    }
+
+    @Test
+    public void manifestGroupsEntriesByRoot() {
+        String text = HaSyncFiles.toManifestText(List.of(
+                new HaSyncFiles.Entry("etc", "poller-configuration.xml", "aa", 5L),
+                new HaSyncFiles.Entry("deploy", "plugin.kar", "bb", 9L)), null, null);
+        List<HaSyncFiles.Entry> parsed = HaSyncFiles.parseManifestText(text);
+        assertEquals(2, parsed.size());
+        assertEquals("etc", parsed.get(0).root());
+        assertEquals("deploy", parsed.get(1).root());
+        assertEquals("plugin.kar", parsed.get(1).relativePath());
+    }
+
+    @Test
+    public void entriesWithoutARootSectionBelongToEtc() {
+        // headers are skipped by the entry parser, so a manifest that names no
+        // root still resolves against the default one
+        List<HaSyncFiles.Entry> parsed = HaSyncFiles.parseManifestText("#ha-manifest 1\naa 5 ok.xml\n");
+        assertEquals("etc", parsed.get(0).root());
     }
 
     @Test
@@ -99,17 +129,21 @@ public class HaConfigSyncerTest {
 
     @Test
     public void buildManifestIncludesBinaryFilesAndAppliesExclusions() throws Exception {
-        Path etc = tmp.newFolder("etc").toPath();
+        Path home = tmp.newFolder("home-a").toPath();
+        Path etc = Files.createDirectory(home.resolve("etc"));
+        System.setProperty("opennms.home", home.toString());
         Files.write(etc.resolve("scv.jce"), new byte[]{0, 1, 2, (byte) 0xFF}); // binary
         Files.writeString(etc.resolve("ha-configuration.xml"), "<ha/>");       // builtin exclusion
         Files.createDirectories(etc.resolve("local"));
         Files.writeString(etc.resolve("local/keep.xml"), "<x/>");              // operator exclusion
 
-        List<HaSyncFiles.Entry> manifest = HaSyncFiles.buildManifest(etc, List.of("local/"));
+        List<HaSyncFiles.Entry> manifest = HaSyncFiles.buildManifest(List.of("etc"), List.of("local/"));
         assertEquals(1, manifest.size());
         assertEquals("scv.jce", manifest.get(0).relativePath());
         assertEquals(4, manifest.get(0).size());
         assertEquals(HaSyncFiles.sha256(etc.resolve("scv.jce")), manifest.get(0).sha256());
+        assertEquals("etc", manifest.get(0).root());
+        System.clearProperty("opennms.home");
     }
 
     @Test
@@ -172,16 +206,19 @@ public class HaConfigSyncerTest {
 
     @Test
     public void buildManifestSkipsSymlinks() throws Exception {
-        Path etc = tmp.newFolder("etc-manifest").toPath().toAbsolutePath().normalize();
+        Path home = tmp.newFolder("home-b").toPath().toAbsolutePath().normalize();
+        Path etc = Files.createDirectory(home.resolve("etc"));
         Path outside = tmp.newFolder("outside-manifest").toPath().toAbsolutePath().normalize();
+        System.setProperty("opennms.home", home.toString());
         Files.writeString(etc.resolve("real.xml"), "<x/>");
         Files.writeString(outside.resolve("secret.txt"), "s3cret");
         Files.createSymbolicLink(etc.resolve("leak.txt"), outside.resolve("secret.txt"));
 
-        List<HaSyncFiles.Entry> manifest = HaSyncFiles.buildManifest(etc, null);
+        List<HaSyncFiles.Entry> manifest = HaSyncFiles.buildManifest(List.of("etc"), null);
 
         assertEquals(1, manifest.size());
         assertEquals("real.xml", manifest.get(0).relativePath());
+        System.clearProperty("opennms.home");
     }
 
     // -------------------------------------------------------------------------

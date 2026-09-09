@@ -437,6 +437,7 @@ public class HaStartupCoordinator {
             && Objects.equals(a.getPartnerRestUrl(),    b.getPartnerRestUrl())
             && Objects.equals(a.getSyncUsername(),      b.getSyncUsername())
             && Objects.equals(a.getSyncPassword(),      b.getSyncPassword())
+            && Objects.equals(a.getSyncRoots(),         b.getSyncRoots())
             && Objects.equals(a.getSyncExcludes(),      b.getSyncExcludes());
     }
 
@@ -731,7 +732,7 @@ public class HaStartupCoordinator {
             LOG.debug("HA: this instance is ACTIVE; not starting config sync");
             return;
         }
-        HaConfigSyncer syncer = new HaConfigSyncer(this::getConfig, this::getCurrentState);
+        HaConfigSyncer syncer = new HaConfigSyncer(this::getConfig, this::getCurrentState, syncStatusRecorder());
         LOG.info("HA: config sync started — partner {}, interval {}s",
                 cfg.getPartnerRestUrl(), cfg.getSyncIntervalSeconds());
         syncFuture = scheduler.scheduleAtFixedRate(() -> {
@@ -739,6 +740,39 @@ public class HaStartupCoordinator {
                 syncer.sync();
             }
         }, 0, cfg.getSyncIntervalSeconds(), TimeUnit.SECONDS);
+    }
+
+    /** Publishes each sync cycle's outcome into this node's own row, so a
+     * broken sync is visible from the partner instead of only in this node's
+     * log — a gated standby serves no REST and raises no events. */
+    private HaConfigSyncer.StatusRecorder syncStatusRecorder() {
+        return new HaConfigSyncer.StatusRecorder() {
+            @Override public void syncSucceeded() {
+                writeSyncStatus("last_sync_attempt = NOW(), last_sync_success = NOW(), last_sync_error = NULL", null);
+            }
+            @Override public void syncFailed(String reason) {
+                writeSyncStatus("last_sync_attempt = NOW(), last_sync_error = ?", reason);
+            }
+            @Override public void bootConfigChanged() {
+                writeSyncStatus("boot_config_changed_at = NOW()", null);
+            }
+        };
+    }
+
+    private void writeSyncStatus(String assignments, String errorParam) {
+        try (Connection conn = dbFactory.getConnection()) {
+            String sql = "UPDATE ha_instance_status SET " + assignments + " WHERE instance_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                int idx = 1;
+                if (errorParam != null) {
+                    ps.setString(idx++, errorParam);
+                }
+                ps.setString(idx, config.getInstanceId());
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            LOG.debug("HA: could not record sync status", e);
+        }
     }
 
     private static boolean cancelIfActive(ScheduledFuture<?> f) {
@@ -832,6 +866,7 @@ public class HaStartupCoordinator {
                          "current_state = EXCLUDED.current_state, " +
                          "last_heartbeat = NOW(), " +
                          "hostname = EXCLUDED.hostname, " +
+                         "boot_config_changed_at = NULL, " +
                          "active_since = EXCLUDED.active_since";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getInstanceId());

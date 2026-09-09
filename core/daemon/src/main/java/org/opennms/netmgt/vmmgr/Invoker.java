@@ -92,6 +92,11 @@ public class Invoker {
     private List<InvokerService> m_services;
 
     private final Path m_statusPath;
+    /** Written instead of a service list when the process is up but its
+     * services have not been started; bin/opennms reports this distinctly
+     * rather than as a failure to determine status. */
+    public static final String GATED_STATUS_MARKER = "OpenNMS: gated";
+
     private static SignalHandler s_handler;
     
     /**
@@ -168,10 +173,15 @@ public class Invoker {
 
         final var output = new StringBuilder();
 
-        // Before setServices() (e.g. blocked at the HA startup gate) there are
-        // no services to report; an empty status file truthfully reads as such.
-        final List<InvokerService> services = getServices() != null ? getServices() : List.of();
-        for (final var invokerService : services) {
+        // Before setServices() — e.g. blocked at a startup gate — there is no
+        // service to report on. An empty file reads to bin/opennms as "failed
+        // to determine running services", so say what is actually true.
+        if (getServices() == null) {
+            writeStatusFile(GATED_STATUS_MARKER + "\n");
+            return;
+        }
+
+        for (final var invokerService : getServices()) {
             final var serviceName = invokerService.getService().getName();
             for (final var invoke : invokerService.getService().getInvokes()) {
                 if ("status".equals(invoke.getMethod())) {
@@ -188,8 +198,12 @@ public class Invoker {
             }
         }
 
+        writeStatusFile(output.toString());
+    }
+
+    private void writeStatusFile(final String content) {
         try {
-            Files.writeString(m_statusPath, output.toString(), Charset.defaultCharset(), CREATE, TRUNCATE_EXISTING);
+            Files.writeString(m_statusPath, content, Charset.defaultCharset(), CREATE, TRUNCATE_EXISTING);
         } catch (final IOException e) {
             System.err.println("ERROR: failed to write current status to " + m_statusPath);
             e.printStackTrace();
