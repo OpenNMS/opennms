@@ -32,7 +32,7 @@ public class TextPrometheusMetricsProcessor extends PrometheusMetricsProcessor<M
 
     @Override
     public TextPrometheusMetricDataParser createPrometheusMetricDataParser() {
-        return new TextPrometheusMetricDataParser(getInputStream());
+        return new TextPrometheusMetricDataParser(getInputStream(), PrometheusTextFormatStrategy.INSTANCE);
     }
 
     @Override
