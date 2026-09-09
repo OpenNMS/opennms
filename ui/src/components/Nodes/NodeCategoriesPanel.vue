@@ -46,7 +46,7 @@ const { adminRole } = useRole()
 
 const onEditClick = () => {
   if (adminRole.value) {
-    const editUrl = `${props.baseHref}/admin/categories.htm?edit&node=${props.node.id}`
+    const editUrl = `${props.baseHref}admin/categories.htm?edit&node=${props.node.id}`
     window.location.assign(editUrl)
   }
 }
