@@ -24,6 +24,8 @@ package org.opennms.web.rest.model.v2;
 import java.util.List;
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -32,6 +34,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="enlinkd")
 @JsonRootName("enlinkd")
+@Schema(description = "Every link-layer and routing-protocol neighbour discovered for one node, grouped by protocol. The five list fields are always present, empty when nothing was discovered; the four single-element fields are omitted from the response entirely rather than serialized as null.")
 public class EnlinkdDTO {
 
     List<LldpLinkNodeDTO> lldpLinkNodeDTOs;
@@ -57,6 +60,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="lldpLinkNodes")
     @JsonProperty("lldpLinkNodes")
+    @Schema(name = "lldpLinkNodes", description = "LLDP links discovered on this node. Always present, empty when there are none.")
     public List<LldpLinkNodeDTO> getLldpLinkNodeDTOs() {
         return lldpLinkNodeDTOs;
     }
@@ -72,6 +76,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="bridgeLinkNodes")
     @JsonProperty("bridgeLinkNodes")
+    @Schema(name = "bridgeLinkNodes", description = "Bridge-forwarding links discovered on this node. Always present, empty when there are none.")
     public List<BridgeLinkNodeDTO> getBridgeLinkNodeDTOS() {
         return bridgeLinkNodeDTOS;
     }
@@ -87,6 +92,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="cdpLinkNodes")
     @JsonProperty("cdpLinkNodes")
+    @Schema(name = "cdpLinkNodes", description = "CDP links discovered on this node. Always present, empty when there are none.")
     public List<CdpLinkNodeDTO> getCdpLinkNodeDTOS() {
         return cdpLinkNodeDTOS;
     }
@@ -102,6 +108,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="ospfLinkNodes")
     @JsonProperty("ospfLinkNodes")
+    @Schema(name = "ospfLinkNodes", description = "OSPF links discovered on this node. Always present, empty when there are none.")
     public List<OspfLinkNodeDTO> getOspfLinkNodeDTOS() {
         return ospfLinkNodeDTOS;
     }
@@ -117,6 +124,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="isisLinkNodes")
     @JsonProperty("isisLinkNodes")
+    @Schema(name = "isisLinkNodes", description = "IS-IS adjacencies discovered on this node. Always present, empty when there are none.")
     public List<IsisLinkNodeDTO> getIsisLinkNodeDTOS() {
         return isisLinkNodeDTOS;
     }
@@ -132,6 +140,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="lldpElementNode")
     @JsonProperty("lldpElementNode")
+    @Schema(name = "lldpElementNode", description = "The node's own LLDP element. Single-valued, and omitted from the response entirely rather than serialized as null when the node has no LLDP element.")
     public LldpElementNodeDTO getLldpElementNodeDTO() {
         return lldpElementNodeDTO;
     }
@@ -148,6 +157,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="bridgeElementNodes")
     @JsonProperty("bridgeElementNodes")
+    @Schema(name = "bridgeElementNodes", description = "The node's bridge elements, one per discovered VLAN, with a single null-`vlan` entry when the device has no VLAN table. Always present, empty when there are none.")
     public List<BridgeElementNodeDTO> getBridgeElementNodeDTOS() {
         return bridgeElementNodeDTOS;
     }
@@ -163,6 +173,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="cdpElementNode")
     @JsonProperty("cdpElementNode")
+    @Schema(name = "cdpElementNode", description = "The node's own CDP element. Single-valued, and omitted from the response entirely rather than serialized as null when the node has no CDP element.")
     public CdpElementNodeDTO getCdpElementNodeDTO() {
         return cdpElementNodeDTO;
     }
@@ -178,6 +189,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="ospfElementNode")
     @JsonProperty("ospfElementNode")
+    @Schema(name = "ospfElementNode", description = "The node's own OSPF element. Single-valued, and omitted from the response entirely rather than serialized as null when the node has no OSPF element.")
     public OspfElementNodeDTO getOspfElementNodeDTO() {
         return ospfElementNodeDTO;
     }
@@ -193,6 +205,7 @@ public class EnlinkdDTO {
 
     @XmlElement(name="isisElementNode")
     @JsonProperty("isisElementNode")
+    @Schema(name = "isisElementNode", description = "The node's own IS-IS element. Single-valued, and omitted from the response entirely rather than serialized as null when the node has no IS-IS element.")
     public IsisElementNodeDTO getIsisElementNodeDTO() {
         return isisElementNodeDTO;
     }

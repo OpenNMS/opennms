@@ -275,19 +275,21 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
 * <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.
 
+The Kafka Producer additionally uses metadata directly, rather than through the DSL, to decide which topic to publish collected metrics to.
+Define `metricRouting.package` in the `requisition` context on a node, interface, or service, and its metrics are published to the topic of that name -- see <<deep-dive/kafka-producer/configure-kafka.adoc#metric-routing, Route metrics to multiple topics>>.
+The value is used verbatim as the topic name and is not interpolated.
+
 Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scopes `scv` and `env`:
 
 * xref:reference:configuration/core-docker.adoc[Database configuration]: opennms-datasources.xml
 * xref:operation:deep-dive/elasticsearch/introduction.adoc[Elasticsearch integration]: elastic-configuration.xml
 * xref:reference:performance-data-collection/collectors/http.adoc[HTTP/HTTPS collector]: http-datacollection-config.xml
 * xref:operation:deep-dive/alarms/ifttt-integration.adoc[IFTTT integration]: ifttt-config.xml
-* xref:reference:service-assurance/monitors/JCifsMonitor.adoc[JCIFS monitor]: jcifs.properties
 * xref:reference:service-assurance/monitors/JmxMonitor.adoc[JMX monitor], xref:reference:performance-data-collection/collectors/jmx.adoc[JMX collector]: jmx-config.xml, jmx-datacollection-config.xml, jmx-datacollection-config/*.xml
 * xref:operation:deep-dive/notifications/introduction.adoc[Notification configuration]: javamail-configuration.xml, javamail-configuration.properties
 +
 The outbound mail credential fields (`user-auth` on a `sendmail-config` in the XML, `authenticateUser`/`authenticatePassword` in the properties file) additionally resolve the `token` context (`${token:<name>}`), which supplies an access token from a xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] definition.
 This is mainly useful for OAuth2 (XOAUTH2) SMTP authentication.
-* xref:reference:performance-data-collection/collectors/nsclient.adoc[NSClient collector]: nsclient-config.xml
 * xref:operation:deep-dive/database-reports/template-introduction.adoc[Remote Repository configuration]: remote-repository.xml
 * xref:operation:deep-dive/provisioning/xml-samples.adoc[SNMP configuration], xref:operation:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles]: snmp-config.xml
 * xref:reference:ticketing/introduction.adoc[Ticketer configuration]: jira.properties, remedy.properties, tsrm.properties

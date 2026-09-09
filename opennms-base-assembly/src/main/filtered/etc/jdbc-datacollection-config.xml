@@ -33,6 +33,102 @@
                <column name="nodeCount" data-source-name="NodeCount" type="gauge" alias="OnmsNodeCount"/>
             </columns>
          </query>
+         <query name="pg_dead_tuples" recheckInterval="0" ifType="all">
+            <statement>
+               <queryString>
+                    SELECT COALESCE(SUM(n_dead_tup), 0) AS n_dead_tup
+                    FROM pg_stat_all_tables
+                    WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND schemaname NOT LIKE 'pg_toast%'
+                    </queryString>
+            </statement>
+            <columns>
+               <column name="n_dead_tup" data-source-name="n_dead_tup" type="gauge" alias="pg_n_dead_tup"/>
+            </columns>
+         </query>
+         <!--
+              The pg_stat_activity based queries below (backend states, xid horizon,
+              autovacuum workers) need full visibility into other sessions, which
+              PostgreSQL only gives to superusers and members of the pg_monitor role.
+              The OpenNMS installer grants pg_monitor to the OpenNMS database user
+              when it prepares the database; on databases managed outside the
+              installer, run "GRANT pg_monitor TO <opennms-user>;" manually. Without
+              the grant, PostgreSQL nulls out state, backend_xmin, and backend_type
+              for sessions the role does not own: the state counts and horizon ages
+              silently under-report, their thresholds can never fire, and autovacuum
+              workers are never visible at all. The pg_sa_masked datasource counts
+              sessions hidden from the monitoring role and must be 0 on a correctly
+              configured server; a nonzero value means the grant is missing.
+         -->
+         <query name="pg_stat_activity_state" recheckInterval="0" ifType="all">
+            <statement>
+               <queryString>
+                    SELECT COUNT(*) FILTER (WHERE state = 'starting') AS starting,
+                           COUNT(*) FILTER (WHERE state = 'active') AS active,
+                           COUNT(*) FILTER (WHERE state = 'idle') AS idle,
+                           COUNT(*) FILTER (WHERE state = 'idle in transaction') AS idle_in_txn,
+                           COUNT(*) FILTER (WHERE state = 'idle in transaction (aborted)') AS idle_in_txn_abrt,
+                           COUNT(*) FILTER (WHERE state = 'fastpath function call') AS fastpath,
+                           COUNT(*) FILTER (WHERE state = 'disabled') AS disabled,
+                           COUNT(*) FILTER (WHERE backend_type IS NULL) AS masked
+                    FROM pg_stat_activity
+                    </queryString>
+            </statement>
+            <columns>
+               <column name="masked" data-source-name="masked" type="gauge" alias="pg_sa_masked"/>
+               <column name="starting" data-source-name="starting" type="gauge" alias="pg_sa_starting"/>
+               <column name="active" data-source-name="active" type="gauge" alias="pg_sa_active"/>
+               <column name="idle" data-source-name="idle" type="gauge" alias="pg_sa_idle"/>
+               <column name="idle_in_txn" data-source-name="idle_in_txn" type="gauge" alias="pg_sa_idle_txn"/>
+               <column name="idle_in_txn_abrt" data-source-name="idle_in_txn_abrt" type="gauge" alias="pg_sa_idle_txn_abrt"/>
+               <column name="fastpath" data-source-name="fastpath" type="gauge" alias="pg_sa_fastpath"/>
+               <column name="disabled" data-source-name="disabled" type="gauge" alias="pg_sa_disabled"/>
+            </columns>
+         </query>
+         <query name="pg_xid_horizon" recheckInterval="0" ifType="all">
+            <statement>
+               <queryString>
+                    WITH ages AS (
+                        SELECT
+                            (SELECT MAX(AGE(backend_xmin)) FROM pg_stat_activity) AS backend_xmin_age,
+                            (SELECT MAX(AGE(xmin)) FROM pg_replication_slots) AS slot_xmin_age,
+                            (SELECT MAX(AGE(catalog_xmin)) FROM pg_replication_slots) AS slot_catalog_age,
+                            (SELECT MAX(AGE(backend_xmin)) FROM pg_stat_replication) AS standby_xmin_age,
+                            (SELECT MAX(AGE(transaction)) FROM pg_prepared_xacts) AS prepared_xact_age
+                    )
+                    SELECT
+                        COALESCE(backend_xmin_age, 0) AS backend_xmin_age,
+                        COALESCE(slot_xmin_age, 0) AS slot_xmin_age,
+                        COALESCE(slot_catalog_age, 0) AS slot_catalog_age,
+                        COALESCE(standby_xmin_age, 0) AS standby_xmin_age,
+                        COALESCE(prepared_xact_age, 0) AS prepared_xact_age,
+                        COALESCE(GREATEST(backend_xmin_age, slot_xmin_age, standby_xmin_age, prepared_xact_age), 0) AS data_horizon_age,
+                        COALESCE(GREATEST(backend_xmin_age, slot_xmin_age, standby_xmin_age, prepared_xact_age, slot_catalog_age), 0) AS catalog_horizon_age
+                    FROM ages
+                    </queryString>
+            </statement>
+            <columns>
+               <column name="backend_xmin_age" data-source-name="backend_xmin_age" type="gauge" alias="pg_backend_xmin_age"/>
+               <column name="slot_xmin_age" data-source-name="slot_xmin_age" type="gauge" alias="pg_slot_xmin_age"/>
+               <column name="slot_catalog_age" data-source-name="slot_catalog_age" type="gauge" alias="pg_slot_catalog_age"/>
+               <column name="standby_xmin_age" data-source-name="standby_xmin_age" type="gauge" alias="pg_standby_xmin_age"/>
+               <column name="prepared_xact_age" data-source-name="prepared_xact_age" type="gauge" alias="pg_prepared_age"/>
+               <column name="data_horizon_age" data-source-name="data_horizon_age" type="gauge" alias="pg_data_horizon_age"/>
+               <column name="catalog_horizon_age" data-source-name="catalog_horizon_age" type="gauge" alias="pg_cat_horizon_age"/>
+            </columns>
+         </query>
+         <query name="pg_autovacuum" recheckInterval="0" ifType="all">
+            <statement>
+               <queryString>
+                    SELECT
+                        (SELECT COUNT(*) FROM pg_stat_activity WHERE backend_type = 'autovacuum worker') AS av_workers,
+                        current_setting('autovacuum_max_workers')::int AS av_max_workers
+                    </queryString>
+            </statement>
+            <columns>
+               <column name="av_workers" data-source-name="av_workers" type="gauge" alias="pg_av_workers"/>
+               <column name="av_max_workers" data-source-name="av_max_workers" type="gauge" alias="pg_av_max_workers"/>
+            </columns>
+         </query>
       </queries>
    </jdbc-collection>
 </jdbc-datacollection-config>

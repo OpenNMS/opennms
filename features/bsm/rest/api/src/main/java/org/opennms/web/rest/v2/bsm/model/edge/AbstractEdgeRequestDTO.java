@@ -27,14 +27,19 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "Fields shared by every edge request.")
 public abstract class AbstractEdgeRequestDTO {
 
+    @Schema(description = "Map function applied to this edge's severity.")
     @XmlElement(name="map-function")
     private MapFunctionDTO mapFunction;
 
+    @Schema(description = "Relative weight of this edge in the reduce function. Defaults to 1.",
+            example = "1")
     @XmlElement(name="weight", required = true)
     private int weight = 1;
 

@@ -22,6 +22,7 @@
 
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.netmgt.model.EventConfSource;
 
 import java.util.Collections;
@@ -29,20 +30,47 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Schema(name = "EventConfSource", description = "An EventConf source, corresponding to one event configuration file.")
 public class EventConfSourceDto {
 
+    @Schema(description = "Database identifier of the source.", example = "17")
     private Long id;
+
+    @Schema(description = "Source name.",
+            example = "Cisco.syslog.events")
     private String name;
+
+    @Schema(description = "Free-form description of the source.",
+            example = "Syslog events forwarded by Cisco IOS devices")
     private String description;
+
+    @Schema(description = "Vendor the source belongs to.", example = "Cisco")
     private String vendor;
-    /** Stored priority: higher is evaluated first (catch-all is pinned at 1). */
+
+    @Schema(description = "Search order, and the tie-breaker when two sources define the same event: the higher fileOrder wins. The catch-all source is pinned at 1.",
+            example = "24")
     private Integer fileOrder;
-    /** Derived position: 1 = evaluated first. Sort key for the UI. */
+
+    @Schema(description = "Position in which the source is evaluated when matching events: 1 = evaluated first. Derived from fileOrder; read-only.",
+            example = "1")
     private Integer evaluationOrder;
+
+    @Schema(description = "Whether the source participates in event matching.", example = "true")
     private Boolean enabled;
+
+    @Schema(description = "Number of events the source holds.", example = "132")
     private Integer eventCount;
+
+    @Schema(type = "integer", format = "int64", example = "1787670300817",
+            description = "When the source was first stored, as epoch milliseconds.")
     private Date createdTime;
+
+    @Schema(type = "integer", format = "int64", example = "1787670354466",
+            description = "When the source or one of its events last changed, as epoch milliseconds.")
     private Date lastModified;
+
+    @Schema(description = "User who uploaded or created the source, or 'unknown' when the request carried no principal.",
+            example = "admin")
     private String uploadedBy;
 
     // All-args constructor

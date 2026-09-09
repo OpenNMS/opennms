@@ -59,7 +59,6 @@
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
     <module>jdbc-collector</module>
-    <module>juniper-tca-collector</module>
     <module>prometheus-collector</module>
     <module>telemetry</module>
     <module>wsman</module>
@@ -72,7 +71,6 @@
 
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
-    <module>request-tracker</module>
 
     <!-- OpenNMS REST -->
     <module>rest</module>

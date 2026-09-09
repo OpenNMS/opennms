@@ -11,7 +11,7 @@ include::../../../repos/rhel-centos/meridian-rhel9.adoc[]
 endif::[]
 
 .Install {page-component-title} Sentinel
-[source, console]
+[source, console, subs="attributes"]
 ----
 sudo dnf -y install {package-prefix}-sentinel
 ----

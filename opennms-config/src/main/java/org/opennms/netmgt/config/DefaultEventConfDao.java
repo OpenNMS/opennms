@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -249,30 +250,40 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 				.toList();
 	}
 
+	/**
+	 * Unmarshalled in parallel and added in order: parsing is nearly all of the cost
+	 * and loading blocks startup, but the order events are added in determines
+	 * which definition wins a match. Safe because JaxbUtils holds an unmarshaller
+	 * per thread.
+	 */
 	private Events buildEventsForSource(List<EventConfEvent> sourceEvents) {
 		Events eventsForSource = new Events();
-		// Within a source, lower eventOrder is evaluated first (id breaks ties / covers null)
-		final List<EventConfEvent> ordered = sourceEvents.stream()
+		// Within a source, lower eventOrder is evaluated first (id breaks ties / covers null);
+		// parsing runs in parallel, collect() keeps the sorted encounter order
+		List<Event> parsed = sourceEvents.stream()
 				.sorted(Comparator.comparing((EventConfEvent e) -> e.getEventOrder() != null ? e.getEventOrder() : Integer.MAX_VALUE)
 						.thenComparing(e -> e.getId() != null ? e.getId() : Long.MAX_VALUE))
-				.toList();
-		for (EventConfEvent dbEvent : ordered) {
-			parseAndAddEvent(eventsForSource, dbEvent);
+				.collect(Collectors.toList())
+				.parallelStream()
+				.map(this::parseEvent)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+		for (Event event : parsed) {
+			eventsForSource.addEvent(event);
 		}
 		return eventsForSource;
 	}
 
-	private void parseAndAddEvent(Events eventsForSource, EventConfEvent dbEvent) {
+	private Event parseEvent(EventConfEvent dbEvent) {
 		String xmlContent = dbEvent.getXmlContent();
-		if (xmlContent != null && !xmlContent.trim().isEmpty()) {
-			try {
-				Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
-				if (event != null) {
-					eventsForSource.addEvent(event);
-				}
-			} catch (Exception e) {
-				LOG.warn("Failed to parse event XML content for UEI {}", dbEvent.getUei(), e);
-			}
+		if (xmlContent == null || xmlContent.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			return JaxbUtils.unmarshal(Event.class, xmlContent);
+		} catch (Exception e) {
+			LOG.warn("Failed to parse event XML content for UEI {}", dbEvent.getUei(), e);
+			return null;
 		}
 	}
 

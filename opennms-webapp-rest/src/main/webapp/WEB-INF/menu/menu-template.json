@@ -189,6 +189,16 @@
       "items": null
     },
     {
+      "id": "topologyPreviewMenu",
+      "name": "Topology (Preview)",
+      "url": "ui/index.html#/topology",
+      "action": "link",
+      "locationMatch": "topology-preview",
+      "icon": "network/Nodes",
+      "roles": null,
+      "items": null
+    },
+    {
       "id": "metricsMenu",
       "name": "Metrics (Resource Graphs)",
       "url": "#",
