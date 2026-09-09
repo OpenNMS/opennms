@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>integration-tests</artifactId>
-    <version>36.0.3</version>
+    <version>36.0.4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests.config</artifactId>
@@ -143,11 +143,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-alarm-northbounder-jms</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-syslog</artifactId>
       <scope>test</scope>
     </dependency>
@@ -269,7 +264,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson2Version}</version>
+      <version>${jackson2AnnotationsVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

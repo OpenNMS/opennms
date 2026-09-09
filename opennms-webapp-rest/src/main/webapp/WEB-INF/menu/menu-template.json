@@ -189,6 +189,16 @@
       "items": null
     },
     {
+      "id": "topologyPreviewMenu",
+      "name": "Topology (Preview)",
+      "url": "ui/index.html#/topology",
+      "action": "link",
+      "locationMatch": "topology-preview",
+      "icon": "network/Nodes",
+      "roles": null,
+      "items": null
+    },
+    {
       "id": "metricsMenu",
       "name": "Metrics (Resource Graphs)",
       "url": "#",
@@ -207,6 +217,13 @@
           "id": "resourceGraphsPreview",
           "name": "Resource Graphs (Preview)",
           "url": "ui/index.html#/resource-graphs",
+          "locationMatch": "performance",
+          "roles": null
+        },
+        {
+          "id": "adhocGraphs",
+          "name": "Custom Performance Graphs (Preview)",
+          "url": "ui/index.html#/adhoc-graphs",
           "locationMatch": "performance",
           "roles": null
         }

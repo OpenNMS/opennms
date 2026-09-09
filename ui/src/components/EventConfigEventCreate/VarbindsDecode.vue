@@ -124,8 +124,8 @@ import { ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
 import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import Add from '@/components/icons/action/Add.vue'
-import Delete from '@/components/icons/action/Delete.vue'
+import Add from '@opennms/onms-ui/icons/action/Add.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{

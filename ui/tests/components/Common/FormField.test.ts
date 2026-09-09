@@ -22,6 +22,28 @@ describe('FormField.vue', () => {
     expect(withRequired.find('.form-field__required').text()).toBe('*')
   })
 
+  it('reserves the label box with an inert stand-in when reserveLabelSpace is set without a label', () => {
+    const wrapper = mount(FormField, { props: { reserveLabelSpace: true }})
+    const spacer = wrapper.find('label.form-field__label')
+    expect(spacer.exists()).toBe(true)
+    expect(spacer.attributes('aria-hidden')).toBe('true')
+    expect(spacer.attributes('for')).toBeUndefined()
+    expect(spacer.text().trim()).toBe('')
+  })
+
+  it('renders no label at all when reserveLabelSpace is not set', () => {
+    const wrapper = mount(FormField, {})
+    expect(wrapper.find('label').exists()).toBe(false)
+  })
+
+  it('prefers a real label over the reserved stand-in', () => {
+    const wrapper = mount(FormField, { props: { label: 'Port', for: 'trap-port', reserveLabelSpace: true }})
+    const labels = wrapper.findAll('label.form-field__label')
+    expect(labels).toHaveLength(1)
+    expect(labels[0].text()).toContain('Port')
+    expect(labels[0].attributes('aria-hidden')).toBeUndefined()
+  })
+
   it('renders the default slot content (the control)', () => {
     const wrapper = mount(FormField, {
       props: { label: 'Port' },

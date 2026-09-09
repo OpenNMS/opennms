@@ -39,6 +39,12 @@ CentOS/RHEL 9::
 include::centos-rhel9/install-minion.adoc[]
 --
 
+CentOS/RHEL 10::
++
+--
+include::centos-rhel10/install-minion.adoc[]
+--
+
 Docker::
 +
 --
@@ -105,7 +111,7 @@ IMPORTANT: Change the default username and password (_admin/admin_) for the Kara
 
 [{tabs}]
 ====
-Linux::
+CentOS/RHEL::
 +
 --
 include::secure-karaf.adoc[]

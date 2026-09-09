@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.kafka</artifactId>
-    <version>36.0.3</version>
+    <version>36.0.4</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -144,6 +144,18 @@
     <dependency>
       <groupId> com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>${protobufVersion}</version>
+      <exclusions>
+        <!-- not necessary at runtime -->
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

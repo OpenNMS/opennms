@@ -22,12 +22,19 @@
 
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Schema(name = "EventConfSourceNameAndId", description = "An EventConf source reduced to its identifier and name.")
 public class SourceNameDto {
+
+    @Schema(description = "Database identifier of the source.", example = "17")
     private Long id;
+
+    @Schema(description = "Source name.", example = "Cisco.syslog.events")
     private String name;
 
     public SourceNameDto(Long id, String name) {

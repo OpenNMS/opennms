@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.3</version>
+    <version>36.0.4</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -252,7 +252,7 @@
                 <artifactItem>
                   <groupId>com.fasterxml.jackson.core</groupId>
                   <artifactId>jackson-annotations</artifactId>
-                  <version>${jackson2Version}</version>
+                  <version>${jackson2AnnotationsVersion}</version>
                   <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -732,6 +732,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740);
+               force jlineVersion (see root pom.xml) instead of reverting this. -->
           <execution>
             <id>remove-superseded-jline</id>
             <phase>process-classes</phase>
@@ -876,23 +878,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.cifs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.radius</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -941,18 +926,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>lib</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>io.hawt</groupId>

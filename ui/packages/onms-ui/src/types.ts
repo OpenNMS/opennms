@@ -20,6 +20,9 @@
 /// License.
 ///
 
+/** Clock convention for OnmsDatePicker's time panel. */
+export type OnmsHourFormat = '12' | '24'
+
 export type OnmsTagSeverity = 'secondary' | 'success' | 'info' | 'warn' | 'danger'
 
 // Menu model item in OpenNMS vocabulary (structurally compatible with
@@ -58,6 +61,14 @@ export interface OnmsTableSortEvent {
   sortOrder: number | null | undefined
   first?: number
   rows?: number
+}
+
+export interface OnmsTableRowClickEvent {
+  originalEvent?: Event
+  /** Clicked row data */
+  data: any
+  /** Row index */
+  index: number
 }
 
 export interface OnmsTableRowEditSaveEvent {

@@ -91,7 +91,7 @@
       </div>
       <div class="card-body">
         <p>
-         Currently, account self-service is limited to password changes. Note that in environments using a
+         Account self-service is limited to password changes and browser notifications. Note that in environments using a
          reduced sign-on system such as LDAP, changing your password here may have no effect and may not even be
          possible.
          </p>
@@ -101,6 +101,12 @@
          </p>
       </div> <!-- card-body -->
     </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<div class="row">
+  <div class="col-md-6">
+    <jsp:include page="/includes/notification-optin.jsp" flush="false" />
   </div> <!-- column -->
 </div> <!-- row -->
 

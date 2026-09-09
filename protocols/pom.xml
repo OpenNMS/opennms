@@ -3,15 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.3</version>
+    <version>36.0.4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.protocols</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Protocols</name>
   <modules>
-    <module>cifs</module>
-    <module>nsclient</module>
     <module>radius</module>
     <module>xml</module>
     <module>selenium-monitor</module>

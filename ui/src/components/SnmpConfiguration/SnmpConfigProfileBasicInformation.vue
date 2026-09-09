@@ -77,7 +77,7 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpConfigFormErrors, SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'

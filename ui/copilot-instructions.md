@@ -132,7 +132,7 @@ UI components come from PrimeVue (v4.x) plus a small owned layer that insulates
 the app from third-party UI churn (the "seam"). FeatherDS (`@featherds/*`) has
 been fully removed.
 - Buttons/Forms/Overlays: PrimeVue components (`Button`, `Select`, `InputText`, `Checkbox`, `AutoComplete`, `TieredMenu`, `Menubar`, ...) imported from `primevue/*`
-- Icons: `OnmsIcon` wrapper + vendored SVG components under `src/components/icons/`
+- Icons: `OnmsIcon` wrapper + vendored SVG components, both in the seam package — `packages/onms-ui/src/icons/<category>/<Name>.vue`. Import via the subpath export, e.g. `import Delete from '@opennms/onms-ui/icons/action/Delete.vue'`; they are deliberately not exported from the package barrel (see `packages/onms-ui/README.md`, "Icons")
 - Layout: `OnmsAppLayout` (`src/components/Layout/OnmsAppLayout.vue`)
 - Theming: owned `--onms-*` tokens (`src/styles/onms-theme.scss`, `_onms-tokens.scss`) layered over PrimeVue's `--p-*` tokens; light/dark via the `.open-light`/`.open-dark` class on `<html>`/`<body>` (PrimeVue `darkModeSelector`)
 - Typography: owned mixins in `src/styles/_onms-typography.scss` (and CSS classes `.headline3`, `.headline4`, `.subtitle1`)

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.measurements</artifactId>
-    <version>36.0.3</version>
+    <version>36.0.4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.measurements</groupId>
@@ -12,6 +12,13 @@
   <name>OpenNMS :: Features :: Measurements :: ReST</name>
 
   <dependencies>
+    <!-- Annotations only; swagger-annotations already ships in the webapp's WEB-INF/lib. -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Core -->
     <dependency>
       <groupId>org.opennms.core</groupId>

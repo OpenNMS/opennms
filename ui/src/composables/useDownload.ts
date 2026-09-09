@@ -36,7 +36,18 @@ const useDownload = () => {
     generateDownload(blob, name)
   }
 
-  return { downloadFile }
+  /**
+   * Download an already-built Blob (e.g. a client-generated CSV or PDF) under
+   * the given name, reusing the same anchor mechanism as downloadFile.
+   *
+   * @param  {Blob}    blob  the file contents
+   * @param  {string}  name  the download filename
+   */
+  const downloadBlob = (blob: Blob, name: string): void => {
+    generateDownload(blob, name)
+  }
+
+  return { downloadFile, downloadBlob }
 }
 
 export default useDownload

@@ -370,6 +370,32 @@ iframe.vaadin-fullscreen {
   padding-top: var(--onms-legacy-content-offset);
   padding-left: var(--onms-legacy-content-offset);
 
+  // Stack the page in a column at least as tall as the window, so that #footer
+  // ends up at the bottom of the window on a short page instead of stopping
+  // wherever the content happens to end — the same result the Vue SPA gets from
+  // its layout grid's 1fr content row. On a page taller than the window there is
+  // no slack to take and the footer simply follows the content, as before.
+  // `box-sizing: border-box` is global, so 100vh already covers the padding-top
+  // above, and body carries no margin or padding of its own: the column starts at
+  // the top of the viewport and ends exactly at its bottom.
+  //
+  // bootstrap.jsp wraps everything but the footer in #content-body to keep this
+  // container down to two flex items. Page markup must not become flex items
+  // itself: that stretches inline-level children (a .btn-group grew to the full
+  // content width on the outage list), collapses elements whose width comes from
+  // auto margins (<hr> shrank to nothing on the reports page), and stops margin
+  // collapsing. Inside the plain block that is #content-body, all of it lays out
+  // exactly as it did before.
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  // Takes every bit of leftover height (and never shrinks below its content), so
+  // the footer after it is left sitting at the bottom of the column.
+  > #content-body {
+    flex: 1 0 auto;
+  }
+
   // Revert padding as growl added this, which was required in bootstrap 3 but is
   // no longer required, so without this the padding to the right is too much
   .growl-container > .growl-item {

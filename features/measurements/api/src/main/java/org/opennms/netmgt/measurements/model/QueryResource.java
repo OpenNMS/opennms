@@ -23,6 +23,8 @@ package org.opennms.netmgt.measurements.model;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -56,18 +58,31 @@ public class QueryResource {
         this.node = node;
     }
 
+    @Schema(name = "id",
+            description = "Resource ID, matching the resourceId given in the request's source.",
+            example = "node[loopback-lab:lb-001].responseTime[127.0.0.1]")
     public String getId() {
         return this.id;
     }
 
+    // Wire name is "parent-id", not the bean name.
+    @Schema(name = "parent-id",
+            description = "ID of the resource this one hangs off, normally the node resource.",
+            example = "node[loopback-lab:lb-001]")
     public String getParentId() {
         return this.parentId;
     }
 
+    @Schema(name = "label",
+            description = "Display label of the resource.",
+            example = "Response Time for 127.0.0.1")
     public String getLabel() {
         return this.label;
     }
 
+    @Schema(name = "name",
+            description = "Resource name, the instance part of the resource ID.",
+            example = "127.0.0.1")
     public String getName() {
         return this.name;
     }
@@ -76,6 +91,10 @@ public class QueryResource {
         return this.node;
     }
 
+    // Wire name is "node-id", not the bean name.
+    @Schema(name = "node-id",
+            description = "Database ID of the node owning this resource. Cross-references metadata.nodes[].id.",
+            example = "2")
     @XmlAttribute(name="node-id")
     public Integer getNodeId() {
         return this.node == null? null : this.node.getId();

@@ -54,8 +54,8 @@
 import { computed } from 'vue'
 
 import { OnmsButton, OnmsIcon, OnmsTag } from '@opennms/onms-ui'
-import CheckCircle from '@/components/icons/action/CheckCircle.vue'
-import Remove from '@/components/icons/action/Remove.vue'
+import CheckCircle from '@opennms/onms-ui/icons/action/CheckCircle.vue'
+import Remove from '@opennms/onms-ui/icons/action/Remove.vue'
 import { ConfigurationHelper } from '../Configuration/ConfigurationHelper'
 import useSnackbar from '@/composables/useSnackbar'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'

@@ -154,6 +154,12 @@
         </div> <!-- panel -->
       </div> <!-- column -->
     </div> <!-- row -->
+
+    <div class="row top-buffer">
+      <div class="col-md-12">
+        <jsp:include page="/includes/notification-optin.jsp" flush="false" />
+      </div> <!-- column -->
+    </div> <!-- row -->
   </div> <!-- column -->
 </div> <!-- row -->
 

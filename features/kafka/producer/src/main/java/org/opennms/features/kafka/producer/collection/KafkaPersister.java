@@ -23,6 +23,8 @@ package org.opennms.features.kafka.producer.collection;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
@@ -39,6 +41,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +54,14 @@ public class KafkaPersister implements Persister {
 
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
 
+    // NumericAttribute.type must always print: GAUGE is the zero enum value, which the
+    // printer would otherwise omit, leaving gauges without a type key while counters keep theirs
+    private static final JsonFormat.Printer JSON_PRINTER = JsonFormat.printer()
+            .omittingInsignificantWhitespace()
+            .includingDefaultValueFields(Collections.singleton(
+                    CollectionSetProtos.NumericAttribute.getDescriptor()
+                            .findFieldByNumber(CollectionSetProtos.NumericAttribute.TYPE_FIELD_NUMBER)));
+
     private CollectionSetMapper collectionSetMapper;
 
     private final ServiceParameters m_params;
@@ -60,6 +71,8 @@ public class KafkaPersister implements Persister {
     private String topicName = "metrics";
 
     private Boolean disableMetricsSplitting = false;
+
+    private boolean useJson = false;
 
     private Expression metricFilterExpression;
 
@@ -86,7 +99,11 @@ public class KafkaPersister implements Persister {
     }
 
     void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
-        if (!getDisableMetricsSplitting() && checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        final byte[] payload = serializeCollectionSet(collectionSetProto);
+        if (payload == null) {
+            return;
+        }
+        if (!getDisableMetricsSplitting() && checkForMaxSize(payload.length)) {
             if(collectionSetProto.getResourceCount() == 1) {
                 /// Handle the case where resource is only one with too many attributes that can cross max buffer size.
                 CollectionSetProtos.CollectionSetResource collectionSetResource = collectionSetProto.getResource(0);
@@ -120,19 +137,28 @@ public class KafkaPersister implements Persister {
                 bisectAndSendMessageToKafka(secondPartCollectionSet);
             }
         } else {
-            sendMessageToKafka(collectionSetProto);
+            sendMessageToKafka(collectionSetProto, payload);
         }
     }
 
     private void bisectNumericAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
         // Divide numeric attributes into two in recursive way
-        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        final byte[] payload = serializeCollectionSet(collectionSetProto);
+        if (payload == null) {
+            return;
+        }
+        final boolean oversized = checkForMaxSize(payload.length);
+        if (oversized && collectionSetProto.getResource(0).getNumericCount() > 1) {
             Iterator<List<CollectionSetProtos.NumericAttribute>> subList = Iterables.partition(collectionSetProto.getResource(0).getNumericList(),
                     (collectionSetProto.getResource(0).getNumericCount() + 1) / 2).iterator();
             bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()));
             bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()));
         } else {
-            sendMessageToKafka(collectionSetProto);
+            if (oversized) {
+                LOG.warn("A single attribute encodes to {} bytes, exceeding the maximum of {} bytes; it cannot be split further and will be sent as-is",
+                        payload.length, MAX_BUFFER_SIZE_CONFIGURED);
+            }
+            sendMessageToKafka(collectionSetProto, payload);
         }
     }
 
@@ -149,13 +175,22 @@ public class KafkaPersister implements Persister {
 
     private void bisectStringAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
         // Divide string attributes into two in recursive way
-        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        final byte[] payload = serializeCollectionSet(collectionSetProto);
+        if (payload == null) {
+            return;
+        }
+        final boolean oversized = checkForMaxSize(payload.length);
+        if (oversized && collectionSetProto.getResource(0).getStringCount() > 1) {
             Iterator<List<CollectionSetProtos.StringAttribute>> subList = Iterables.partition(collectionSetProto.getResource(0).getStringList(),
                     (collectionSetProto.getResource(0).getStringCount() + 1) / 2).iterator();
             bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()));
             bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()));
         } else {
-            sendMessageToKafka(collectionSetProto);
+            if (oversized) {
+                LOG.warn("A single attribute encodes to {} bytes, exceeding the maximum of {} bytes; it cannot be split further and will be sent as-is",
+                        payload.length, MAX_BUFFER_SIZE_CONFIGURED);
+            }
+            sendMessageToKafka(collectionSetProto, payload);
         }
     }
 
@@ -173,16 +208,33 @@ public class KafkaPersister implements Persister {
     boolean checkForMaxSize(int length) {
         return length > MAX_BUFFER_SIZE_CONFIGURED;
     }
-    
-    private void sendMessageToKafka( CollectionSetProtos.CollectionSet collectionSetProto) {
+
+    /**
+     * Serialize the CollectionSet with the configured output format:
+     * JSON when useJson is enabled, protobuf otherwise.
+     * Returns null if the CollectionSet could not be serialized.
+     */
+    byte[] serializeCollectionSet(CollectionSetProtos.CollectionSet collectionSetProto) {
+        if (useJson) {
+            try {
+                return JSON_PRINTER.print(collectionSetProto).getBytes(StandardCharsets.UTF_8);
+            } catch (InvalidProtocolBufferException e) {
+                LOG.error("Failed to serialize collection set with {} resources (key {}) to JSON, it will not be forwarded",
+                        collectionSetProto.getResourceCount(), deriveKeyFromCollectionSet(collectionSetProto), e);
+                return null;
+            }
+        }
+        return collectionSetProto.toByteArray();
+    }
+
+    private void sendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto, byte[] payload) {
         // If no resources should be persisted, do not send an empty CollectionSet
         if (collectionSetProto.getResourceCount() == 0) {
             return;
         }
         // Derive key, it will be nodeId for all resources except for response time, it would be IpAddress
         final String key = deriveKeyFromCollectionSet(collectionSetProto);
-        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, key,
-                collectionSetProto.toByteArray());
+        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, key, payload);
         producer.send(record, (recordMetadata, e) -> {
             if (e != null) {
                 LOG.warn("Failed to send record to producer: {}.", record, e);
@@ -276,6 +328,10 @@ public class KafkaPersister implements Persister {
 
     public Boolean getDisableMetricsSplitting() {
         return disableMetricsSplitting;
+    }
+
+    public void setUseJson(boolean useJson) {
+        this.useJson = useJson;
     }
 
     public void setMetricFilter(final String metricFilter) {

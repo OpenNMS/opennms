@@ -40,7 +40,7 @@ import { PropType, computed } from 'vue'
 
 import { OnmsIconButton } from '@opennms/onms-ui'
 
-import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { LocalConfiguration } from './configuration.types'
 

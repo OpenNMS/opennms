@@ -43,6 +43,7 @@ public class KafkaPersisterActivator implements BundleActivator {
 
     private static final String DISABLE_METRIC_SPLITTING = "disable.metrics.splitting";
     private static final String METRIC_FILTER = "metricFilter";
+    private static final String METRICS_USE_JSON = "metrics.useJson";
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -50,6 +51,7 @@ public class KafkaPersisterActivator implements BundleActivator {
         Boolean forwardMetrics = false;
         String metricTopic = null;
         boolean disableMetricsSplitting = false;
+        boolean useJson = false;
         String metricFilter = null;
         try {
             configAdmin = context.getService(context.getServiceReference(ConfigurationAdmin.class));
@@ -67,6 +69,9 @@ public class KafkaPersisterActivator implements BundleActivator {
                     }
                     if (properties.get(METRIC_FILTER) instanceof String) {
                         metricFilter = (String) properties.get(METRIC_FILTER);
+                    }
+                    if (properties.get(METRICS_USE_JSON) instanceof String) {
+                        useJson = Boolean.parseBoolean((String) properties.get(METRICS_USE_JSON));
                     }
                 }
             }
@@ -88,6 +93,7 @@ public class KafkaPersisterActivator implements BundleActivator {
                 kafkaPersisterFactory.init();
                 kafkaPersisterFactory.setTopicName(metricTopic);
                 kafkaPersisterFactory.setDisableMetricsSplitting(disableMetricsSplitting);
+                kafkaPersisterFactory.setUseJson(useJson);
                 kafkaPersisterFactory.setMetricFilter(metricFilter);
                 Dictionary<String, String> props = new Hashtable<String, String>();
                 // needed to register to onms registry.

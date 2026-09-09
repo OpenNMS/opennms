@@ -72,6 +72,13 @@ public class WsmanConfigTest extends XmlTestNoCastor<WsmanConfig> {
         definition.setProductVersion("OS: Vista");
         wsmanConfig.getDefinition().add(definition);
 
+        Definition kerberosDefinition = new Definition();
+        kerberosDefinition.setSsl(false);
+        kerberosDefinition.setPort(5985);
+        kerberosDefinition.setKerberosEncryption(true);
+        kerberosDefinition.getSpecific().add("172.23.1.3");
+        wsmanConfig.getDefinition().add(kerberosDefinition);
+
         return wsmanConfig;
     }
 }

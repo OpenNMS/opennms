@@ -43,7 +43,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
-import Delete from '@/components/icons/action/Remove.vue'
+import Delete from '@opennms/onms-ui/icons/action/Remove.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'

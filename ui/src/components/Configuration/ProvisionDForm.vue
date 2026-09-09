@@ -22,7 +22,7 @@
       <div class="icon">
         <OnmsIconButton
           aria-label="Help"
-          v-onms-tooltip="'Help'"
+          tooltip="Help"
           :icon="Help"
           @click="() => props.toggleHelp()"
         />
@@ -136,7 +136,7 @@ import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requis
 import { rescanItems } from './copy/rescanItems'
 import { OnmsIconButton, OnmsInputText, OnmsRadioButton, OnmsSelect } from '@opennms/onms-ui'
 import { PropType, computed, ref, watch } from 'vue'
-import Help from '@/components/icons/action/Help.vue'
+import Help from '@opennms/onms-ui/icons/action/Help.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCronSelector from './ConfigurationCronSelector.vue'

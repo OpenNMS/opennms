@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>36.0.3</version>
+  <version>36.0.4</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1678,7 +1678,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>36.0.3</opennms.osgi.version>
+    <opennms.osgi.version>36.0.4</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1783,7 +1783,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.12.0</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.11</cxfVersion>
+    <cxfVersion>3.6.12</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1828,12 +1828,18 @@
     <httpcoreVersion>4.4.16</httpcoreVersion>
     <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
+    <!-- HttpComponents 5.x arrives transitively only (OWASP ESAPI -> AntiSamy, Apache Thrift).
+         Pinned here because AntiSamy 1.7.x lags behind the httpcore5 CVE fixes. -->
+    <httpcore5Version>5.4.3</httpcore5Version>
+    <httpclient5Version>5.6.4</httpclient5Version>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.18.9</jackson2Version>
-    <cxfJackson2Version>2.21.5</cxfJackson2Version>
+    <jackson2Version>2.22.1</jackson2Version>
+    <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
+    <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
     <jmsApiVersion>2.0.1</jmsApiVersion>
-    <snakeyamlVersion>2.3</snakeyamlVersion>
+    <!-- jackson-dataformat-yaml 2.21+ imports org.yaml.snakeyaml;version="[2.5,3)" -->
+    <snakeyamlVersion>2.5</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
     <jasperreportsVersion>7.0.7</jasperreportsVersion>
@@ -1907,9 +1913,12 @@
     <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
     <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
-    <paxLoggingVersion>2.3.0</paxLoggingVersion>
+    <paxLoggingVersion>2.3.5</paxLoggingVersion>
     <paxSwissboxVersion>1.9.0</paxSwissboxVersion>
     <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
+    <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
+         container/pax-url-aether-patch to replace the plexus-utils it shades
+         (CVE-2025-67030); keep ${plexusUtilsVersion} in mind when bumping this -->
     <paxUrlAetherVersion>2.6.17</paxUrlAetherVersion>
     <paxWebVersion>8.0.34</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
@@ -1919,7 +1928,7 @@
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
-    <log4j2Version>2.25.5</log4j2Version>
+    <log4j2Version>2.26.1</log4j2Version>
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
@@ -1927,11 +1936,14 @@
     <minaVersion>2.2.9</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.2.16.Final</netty4Version>
+    <netty4Version>4.2.17.Final</netty4Version>
     <newtsVersion>3.0.1</newtsVersion>
     <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
+    <!-- used to replace the vulnerable plexus-utils shaded into pax-url-aether,
+         see container/pax-url-aether-patch -->
+    <plexusUtilsVersion>3.6.1</plexusUtilsVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.25.5</protobufVersion>
     <postgresqlVersion>42.7.13</postgresqlVersion>
@@ -1940,8 +1952,8 @@
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>4.9.2</okhttp3Version>
     <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
-    <opennmsApiVersion>2.0.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>2.0.1</opennmsApiVersion>
+    <opennmsApiVersionOsgi>2.0.1</opennmsApiVersionOsgi>
     <osgiVersion>8.0.0</osgiVersion>
     <osgiAnnotationVersion>8.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1990,7 +2002,7 @@
     <xmlSchemaVersion>2.3.1</xmlSchemaVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xstreamVersion>1.4.21</xstreamVersion>
-    <wsmanVersion>1.3.3</wsmanVersion>
+    <wsmanVersion>1.3.7</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.15.0</minaSshdVersion>
@@ -2800,11 +2812,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.request-tracker</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.phonebook</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3032,11 +3039,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-alarm-northbounder-jms</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3462,11 +3464,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-javamail-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-rt</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -4187,6 +4184,21 @@
           </exclusion>
         </exclusions>
      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${httpcore5Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5-h2</artifactId>
+        <version>${httpcore5Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${httpclient5Version}</version>
+      </dependency>
      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
@@ -4496,7 +4508,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson2Version}</version>
+        <version>${jackson2AnnotationsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>

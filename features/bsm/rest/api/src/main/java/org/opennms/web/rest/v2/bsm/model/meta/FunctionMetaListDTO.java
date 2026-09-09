@@ -26,10 +26,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "functions")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "The available map or reduce functions.")
 public class FunctionMetaListDTO {
     private List<FunctionMetaDTO> functions;
 
