@@ -20,6 +20,7 @@
             <th sort order="'ifName'"  by="snmpOrder" reverse="snmpReverse">SNMP ifName</th>
             <th sort order="'ifAlias'" by="snmpOrder" reverse="snmpReverse">SNMP ifAlias</th>
             <th>Collect</th>
+            <th>User-specified</th>
           </tr>
         </thead>
         <tbody>
@@ -31,6 +32,9 @@
             <td>{{ intf.ifAlias || 'N/A' }}</td>
             <td>
               <input type="checkbox" ng-checked="isCollectionEnabled(intf)" ng-click="updateCollection($event, intf)" uib-tooltip="Check to enable collection, or uncheck to disable collection">
+            </td>
+            <td>
+              <input type="checkbox" ng-checked="isCollectionUserSpecified(intf)" ng-click="updateUserSpecified($event, intf)" uib-tooltip="Check to enable user-specified flag, or uncheck to disable user-specified flag">
             </td>
           </tr>
        </tbody>
