@@ -38,9 +38,21 @@ export const useEventStore = defineStore('eventStore', () => {
     }
   }
 
+  /**
+   * Fetch events matching the given query WITHOUT publishing them into `events`/`totalCount`,
+   * and hand them back to the caller. Keeps a download from disturbing the page the events
+   * table is currently showing, whatever query the download runs.
+   */
+  const getEventsForExport = async (queryParameters?: QueryParameters): Promise<Event[]> => {
+    const resp = await API.getEvents(queryParameters)
+
+    return resp ? resp.event : []
+  }
+
   return {
     events,
     totalCount,
-    getEvents
+    getEvents,
+    getEventsForExport
   }
 })

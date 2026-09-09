@@ -21,7 +21,9 @@
 ///
 
 import EventsTable from '@/components/Nodes/EventsTable.vue'
+import NodeDownloadDropdown from '@/components/Nodes/NodeDownloadDropdown.vue'
 import { useEventStore } from '@/stores/eventStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -33,6 +35,9 @@ const mockNodeId = '42'
 vi.mock('vue-router', () => ({
   useRoute: () => ({ params: { id: mockNodeId }})
 }))
+
+const { showSnackBar } = vi.hoisted(() => ({ showSnackBar: vi.fn() }))
+vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 
 const mockEvent = {
   id: 101,
@@ -148,6 +153,163 @@ describe('EventsTable.vue', () => {
 
       const rows = wrapper.findAll('tbody tr')
       expect(rows[0].html()).toContain('<p>A test log message</p>')
+    })
+  })
+
+  describe('Card and title row', () => {
+    it('wraps the panel content in a card with the title and both action buttons on one row', () => {
+      expect(wrapper.find('.card').exists()).toBe(true)
+
+      const titleRow = wrapper.find('.title-row')
+      expect(titleRow.text()).toContain('Recent Events')
+      expect(titleRow.find('[data-test="events-for-node-button"]').exists()).toBe(true)
+      expect(titleRow.find('[data-test="download-button"]').exists()).toBe(true)
+    })
+  })
+
+  describe('Events for this Node link', () => {
+    it('navigates to the legacy event list filtered to this node', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      useMenuStore().mainMenu = { baseHref: '/opennms/' } as any
+      await nextTick()
+
+      await wrapper.find('[data-test="events-for-node-button"]').trigger('click')
+
+      expect(assign).toHaveBeenCalledWith(`/opennms/event/list?filter=node%3D${mockNodeId}`)
+      vi.unstubAllGlobals()
+    })
+  })
+
+  describe('Download', () => {
+    // Drive the real menu wiring rather than the component internals: the dropdown owns the
+    // CSV/JSON menu items and calls back into the table.
+    const runDownload = async (label: string) => {
+      const items = wrapper.findComponent(NodeDownloadDropdown).vm.items as Array<{ label: string, command: () => void }>
+      await items.find(i => i.label === label)!.command()
+      await flushPromises()
+    }
+
+    let blobs: Blob[]
+    let downloadNames: string[]
+
+    beforeEach(() => {
+      blobs = []
+      downloadNames = []
+
+      vi.stubGlobal('URL', {
+        createObjectURL: (blob: Blob) => {
+          blobs.push(blob)
+          return 'blob:fake'
+        }
+      } as any)
+
+      const realCreateElement = document.createElement.bind(document)
+      vi.spyOn(document, 'createElement').mockImplementation(((tag: string, options?: any) => {
+        const el = realCreateElement(tag, options)
+        if (tag === 'a') {
+          Object.defineProperty(el, 'click', { value: () => downloadNames.push((el as HTMLAnchorElement).download) })
+        }
+        return el
+      }) as any)
+    })
+
+    it('requests the default page size for the node, leaving the visible page untouched', async () => {
+      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
+      eventStore.events = [mockEvent] as any
+      eventStore.totalCount = 1
+
+      await runDownload('Download CSV...')
+
+      expect(eventStore.getEventsForExport).toHaveBeenCalledWith({
+        limit: 5,
+        offset: 0,
+        _s: `node.id==${mockNodeId}`
+      })
+      expect(eventStore.events).toEqual([mockEvent])
+      expect(eventStore.totalCount).toBe(1)
+    })
+
+    // The download is the page the paginator is showing, so raising rows-per-page is how a user
+    // downloads more; the whole set comes from the Events page instead.
+    it('follows the paginator when the user changes page or rows-per-page', async () => {
+      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
+
+      await wrapper.vm.onPage({ first: 20, rows: 20, page: 1, pageCount: 2 })
+      await flushPromises()
+      await runDownload('Download CSV...')
+
+      expect(eventStore.getEventsForExport).toHaveBeenCalledWith({
+        limit: 20,
+        offset: 20,
+        _s: `node.id==${mockNodeId}`
+      })
+    })
+
+    it('downloads a CSV of every event field, quoting values that contain commas or quotes', async () => {
+      eventStore.getEventsForExport = vi.fn().mockResolvedValue([
+        {
+          id: 101,
+          severity: 'Major',
+          logMessage: '<p>Interface "eth0" down, node 42</p>',
+          serviceType: { id: 3, name: 'ICMP' }
+        }
+      ])
+
+      await runDownload('Download CSV...')
+
+      expect(downloadNames).toEqual(['Events.csv'])
+      expect(blobs[0].type).toBe('text/csv')
+      expect(await blobs[0].text()).toBe(
+        'id,severity,logMessage,serviceType\n' +
+        '101,Major,"<p>Interface ""eth0"" down, node 42</p>",ICMP'
+      )
+    })
+
+    // The table only shows 4 columns, but the export is the whole record.
+    it('includes CSV columns for fields the table does not display', async () => {
+      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
+
+      await runDownload('Download CSV...')
+
+      const [header] = (await blobs[0].text()).split('\n')
+      expect(header.split(',')).toEqual(Object.keys(mockEvent))
+    })
+
+    // parameters is the other non-primitive field on an event; String() on it would put
+    // '[object Object]' in the cell.
+    it('keeps other non-primitive CSV fields readable as JSON', async () => {
+      eventStore.getEventsForExport = vi.fn().mockResolvedValue([
+        { id: 101, parameters: [{ name: 'p1', value: 'v1' }] }
+      ])
+
+      await runDownload('Download CSV...')
+
+      expect(await blobs[0].text()).toBe(
+        'id,parameters\n' +
+        '101,"[{""name"":""p1"",""value"":""v1""}]"'
+      )
+    })
+
+    it('downloads JSON of the full event records', async () => {
+      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
+
+      await runDownload('Download JSON...')
+
+      expect(downloadNames).toEqual(['Events.json'])
+      expect(blobs[0].type).toBe('application/json')
+      expect(JSON.parse(await blobs[0].text())).toEqual([mockEvent])
+    })
+
+    it('shows an error snackbar and downloads nothing when the node has no events', async () => {
+      eventStore.getEventsForExport = vi.fn().mockResolvedValue([])
+
+      await runDownload('Download CSV...')
+
+      expect(downloadNames).toEqual([])
+      expect(showSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({ error: true })
+      )
     })
   })
 
