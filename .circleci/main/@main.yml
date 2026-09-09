@@ -32,3 +32,4 @@ jobs:
   #jobs:create-merge-meridian-branch#
   #jobs:merge-poweredby-branch#
   #jobs:publish#
+  #jobs:publish-docker#
