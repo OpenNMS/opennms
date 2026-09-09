@@ -22,6 +22,8 @@
 
 import { Node } from '@/types'
 
+// The node action links, shared by every place the actions menu is rendered: the Node Details
+// title row and each row of the node list.
 export const linkItems = [
   { name: 'events', label: 'Events' },
   { name: 'alarms', label: 'Alarms' },
@@ -34,10 +36,10 @@ export const linkItems = [
   { name: 'graphs', label: 'Resource Graphs' },
   { name: 'rescan', label: 'Node Rescan' },
   { name: 'admin', label: 'Admin / Node Management' },
-  { name: 'node-link-details', label: 'Node Link Details' },
   { name: 'updateSnmp', label: 'Update SNMP Information' },
   { name: 'schedule-outage', label: 'Schedule an Outage' },
-  { name: 'topology', label: 'View Topology Map' }
+  { name: 'topology', label: 'View Topology Map' },
+  { name: 'node-link', label: 'Node Link Details' }
 ]
 
 export const mapLink = (name: string, node: Node) => {
@@ -69,8 +71,6 @@ export const mapLink = (name: string, node: Node) => {
       return `element/rescan.jsp?node=${node.id}`
     case 'admin':
       return `admin/nodemanagement/index.jsp?node=${node.id}`
-    case 'node-link-details':
-      return `element/linkednode.jsp?node=${node.id}`
     case 'updateSnmp':
       // TODO: Get IP Address
       return `admin/updateSnmp.jsp?node=${node.id}&ipaddr=0.0.0.0`
@@ -78,6 +78,9 @@ export const mapLink = (name: string, node: Node) => {
       return `admin/sched-outages/editoutage.jsp?newName=${node.label}&addNew=true&nodeID=${node.id}`
     case 'topology':
       return `topology?provider=Enhanced+Linkd&szl=1&focus-vertices=${node.id}`
+    // The legacy node page links to this as "View Node Link Detailed Info".
+    case 'node-link':
+      return `element/linkednode.jsp?node=${node.id}`
     default: return ''
   }
 }

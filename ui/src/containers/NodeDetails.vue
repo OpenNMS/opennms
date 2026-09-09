@@ -17,7 +17,7 @@
     </div>
     <div class="onms-row">
       <div class="onms-col-12">
-        <NodeDetailsHeader :node="nodeStore.node" :base-href="baseHref" />
+        <NodeDetailsHeader :node="nodeStore.node" />
       </div>
     </div>
     <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">

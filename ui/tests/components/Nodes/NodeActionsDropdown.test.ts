@@ -22,18 +22,43 @@ describe('NodeActionsDropdown.vue', () => {
     expect(items).toHaveLength(15) // Info + 14 links
   })
 
-  it('offers Node Link Detailed Info last', () => {
-    const wrapper = mountIt()
+  // Driven by the shared nodeActionLinks list, which filters a Site Status link the node
+  // cannot supply a building for.
+  it('offers Site Status for a node with a building', () => {
+    const wrapper = mountIt({ node: { ...node, assetRecord: { building: 'HQ 1' }}})
     const items = (wrapper.vm as any).items as Array<{ label: string }>
-    expect(items[items.length - 1].label).toBe('Node Link Detailed Info')
+    expect(items.map(i => i.label)).toContain('Site Status')
+    expect(items).toHaveLength(16) // Info + 15 links
   })
 
-  it('Node Link Detailed Info navigates to the linked node page', () => {
+  it('omits Site Status for a node with no building', () => {
+    const wrapper = mountIt()
+    const items = (wrapper.vm as any).items as Array<{ label: string }>
+    expect(items.map(i => i.label)).not.toContain('Site Status')
+  })
+
+  it('Site Status navigates to the site status view', () => {
+    const assign = vi.fn()
+    vi.stubGlobal('location', { assign } as any)
+    const wrapper = mountIt({ node: { ...node, assetRecord: { building: 'HQ 1' }}})
+    const items = (wrapper.vm as any).items as Array<{ label: string, command: () => void }>
+    items.find(i => i.label === 'Site Status')!.command()
+    expect(assign).toHaveBeenCalledWith('/opennms/siteStatusView.htm?statusSite=HQ%201')
+    vi.unstubAllGlobals()
+  })
+
+  it('offers Node Link Details last', () => {
+    const wrapper = mountIt()
+    const items = (wrapper.vm as any).items as Array<{ label: string }>
+    expect(items[items.length - 1].label).toBe('Node Link Details')
+  })
+
+  it('Node Link Details navigates to the linked node page', () => {
     const assign = vi.fn()
     vi.stubGlobal('location', { assign } as any)
     const wrapper = mountIt()
     const items = (wrapper.vm as any).items as Array<{ label: string, command: () => void }>
-    items.find(i => i.label === 'Node Link Detailed Info')!.command()
+    items.find(i => i.label === 'Node Link Details')!.command()
     expect(assign).toHaveBeenCalledWith('/opennms/element/linkednode.jsp?node=42')
     vi.unstubAllGlobals()
   })
