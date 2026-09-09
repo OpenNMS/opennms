@@ -166,6 +166,18 @@ describe('NodesTable.vue', () => {
     expect(headers.some(h => /Node Label/i.test(h))).toBe(true)
   })
 
+  // The actions menu owns the per-node link list, so every node row must carry one for the
+  // node list to offer the same actions as the Node Details page.
+  it('renders a node actions menu for each node row', async () => {
+    const wrapper = mountTable()
+    const ns = useNodeStore()
+    ns.nodes = [{ id: 1, label: 'node-1' }, { id: 2, label: 'node-2' }] as any
+    ns.totalCount = 2
+    await nextTick()
+
+    expect(wrapper.findAllComponents({ name: 'NodeActionsDropdown' }).length).toBe(2)
+  })
+
   it('onSort updates query order and refetches — descending', () => {
     const wrapper = mountTable()
     const ns = useNodeStore()

@@ -35,6 +35,7 @@ describe('NodeDetails.vue', () => {
           BreadCrumbs: true,
           NodeAvailabilityGraph: true,
           NodeCategoriesPanel: true,
+          NodeActionsDropdown: { name: 'NodeActionsDropdown', template: '<div></div>', props: ['baseHref', 'node'] },
           NodeDetailsHeader: true,
           NodeNotificationsPanel: true,
           NodeSnmpAttributes: true,
@@ -65,6 +66,15 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(true)
+  })
+
+  it('puts the node actions menu on the title row', async () => {
+    const { wrapper } = mountComponent()
+    await flushPromises()
+
+    const header = wrapper.find('.header')
+    expect(header.text()).toContain('Node Details for')
+    expect(header.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(true)
   })
 
   it('calls nodeStore.getNodeById with the id prop on mount', async () => {

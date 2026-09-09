@@ -9,6 +9,11 @@
       <div class="heading">
         <h2>Node Details for {{ nodeStore.node?.label }}</h2>
       </div>
+      <NodeActionsDropdown
+        v-if="nodeStore.node"
+        :baseHref="baseHref"
+        :node="nodeStore.node"
+      />
     </div>
     <div class="onms-row">
       <div class="onms-col-12">
@@ -40,6 +45,7 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
 import EventsTable from '@/components/Nodes/EventsTable.vue'
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
