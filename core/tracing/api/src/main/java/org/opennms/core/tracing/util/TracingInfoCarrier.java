@@ -145,7 +145,7 @@ public class TracingInfoCarrier implements TextMap {
         private static XmlHandler<TracingInfoCarrier> createXmlHandler() {
             XmlHandler<TracingInfoCarrier> xmlHandler = xmlHandlerThreadLocal.get();
             if (xmlHandler == null) {
-                xmlHandler = new XmlHandler<>(TracingInfoCarrier.class);
+                xmlHandler = XmlHandler.forWire(TracingInfoCarrier.class);
                 xmlHandlerThreadLocal.set(xmlHandler);
             }
             return xmlHandler;

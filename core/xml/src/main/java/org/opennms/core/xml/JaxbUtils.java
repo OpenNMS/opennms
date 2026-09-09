@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +58,12 @@ import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -74,10 +79,25 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public abstract class JaxbUtils {
     private static final Logger LOG = LoggerFactory.getLogger(JaxbUtils.class);
+
+    public enum MarshallerProfile {
+        /**
+         * Compact output without marshal-time XSD validation. Use for RPC, sink, tracing,
+         * and other in-process wire payloads where objects are already constructed in Java.
+         */
+        WIRE,
+        /**
+         * Pretty-printed output with marshal-time XSD validation when an XSD is available.
+         * Use for config files and other human-oriented XML persisted to disk.
+         */
+        CONFIG
+    }
 
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
@@ -95,8 +115,9 @@ public abstract class JaxbUtils {
     }
 
     private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
-    private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
+    private static ThreadLocal<Map<Class<?>, Map<MarshallerProfile, Marshaller>>> m_marshallers = new ThreadLocal<>();
     private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
+    private static final ThreadLocal<DocumentBuilder> m_threadLocalDocumentBuilder = new ThreadLocal<>();
     private static final Map<Class<?>,JAXBContext> m_contexts = Collections.synchronizedMap(new WeakHashMap<Class<?>,JAXBContext>());
     private static final Map<Class<?>,Schema> m_schemas = Collections.synchronizedMap(new WeakHashMap<Class<?>,Schema>());
     private static final Map<String,Class<?>> m_elementClasses = Collections.synchronizedMap(new WeakHashMap<String,Class<?>>());
@@ -321,45 +342,118 @@ public abstract class JaxbUtils {
         return filter;
     }
 
+    /**
+     * Marshaller for machine-oriented XML (RPC/sink payloads): no pretty-print, no schema validation.
+     */
+    public static Marshaller createWireMarshaller(final JAXBContext context) throws JAXBException {
+        return createMarshaller(context, null, MarshallerProfile.WIRE);
+    }
+
+    /**
+     * Marshal a JAXB root object to a DOM element using {@link MarshallerProfile#WIRE}.
+     *
+     * <p>Package-private so callers outside {@code org.opennms.core.xml} must pass an explicit
+     * {@link MarshallerProfile}. Config-file embeds should use
+     * {@link #marshalToDomElement(Object, MarshallerProfile)} with {@link MarshallerProfile#CONFIG}
+     * or {@link JaxbClassObjectAdapter}.</p>
+     */
+    static Element marshalToDomElement(final Object obj) {
+        return marshalToDomElement(obj, MarshallerProfile.WIRE);
+    }
+
+    /**
+     * Marshal a JAXB root object to a DOM element for embedding without marshal-to-string +
+     * {@link DocumentBuilder#parse}. The profile selects compact wire output or validated config output.
+     */
+    public static Element marshalToDomElement(final Object obj, final MarshallerProfile profile) {
+        try {
+            final Class<?> clazz = obj.getClass();
+            final Marshaller marshaller = getMarshallerFor(clazz, null, profile);
+            final Document doc = getThreadLocalDocumentBuilder().newDocument();
+            final DOMResult domResult = new DOMResult(doc);
+            marshaller.marshal(obj, domResult);
+            final Element root = doc.getDocumentElement();
+            if (root == null) {
+                throw new IllegalStateException("JAXB produced no document element for " + clazz.getName());
+            }
+            return root;
+        } catch (final JAXBException e) {
+            throw EXCEPTION_TRANSLATOR.translate("marshalling embedded " + obj.getClass().getSimpleName(), e);
+        }
+    }
+
+    private static DocumentBuilder getThreadLocalDocumentBuilder() {
+        DocumentBuilder builder = m_threadLocalDocumentBuilder.get();
+        if (builder != null) {
+            return builder;
+        }
+        try {
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            builder = dbf.newDocumentBuilder();
+        } catch (final ParserConfigurationException e) {
+            throw EXCEPTION_TRANSLATOR.translate("creating DocumentBuilder for embedded JAXB marshal", e);
+        }
+        m_threadLocalDocumentBuilder.set(builder);
+        return builder;
+    }
+
     public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext) {
+        return getMarshallerFor(obj, jaxbContext, MarshallerProfile.CONFIG);
+    }
+
+    public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext, final MarshallerProfile profile) {
         final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
-        Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
         if (jaxbContext == null) {
+            Map<Class<?>, Map<MarshallerProfile, Marshaller>> marshallers = m_marshallers.get();
             if (marshallers == null) {
-                marshallers = new WeakHashMap<Class<?>, Marshaller>();
+                marshallers = new WeakHashMap<>();
                 m_marshallers.set(marshallers);
             }
-            if (marshallers.containsKey(clazz)) {
-                LOG.trace("found unmarshaller for {}", clazz);
-                return marshallers.get(clazz);
+            final Map<MarshallerProfile, Marshaller> byProfile = marshallers.get(clazz);
+            if (byProfile != null && byProfile.containsKey(profile)) {
+                LOG.trace("found marshaller for {} ({})", clazz, profile);
+                return byProfile.get(profile);
+            }
+            LOG.trace("creating marshaller for {} ({})", clazz, profile);
+            try {
+                final Marshaller marshaller = createMarshaller(getContextFor(clazz), clazz, profile);
+                Map<MarshallerProfile, Marshaller> profileMap = byProfile;
+                if (profileMap == null) {
+                    profileMap = new EnumMap<>(MarshallerProfile.class);
+                    marshallers.put(clazz, profileMap);
+                }
+                profileMap.put(profile, marshaller);
+                return marshaller;
+            } catch (final JAXBException e) {
+                throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
             }
         }
-        LOG.trace("creating unmarshaller for {}", clazz);
 
+        LOG.trace("creating marshaller for {} ({}) with explicit context", clazz, profile);
         try {
-            final JAXBContext context;
-            if (jaxbContext == null) {
-                context = getContextFor(clazz);
-            } else {
-                context = jaxbContext;
-            }
-            final Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
-                marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
-                marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, true);
-            }
-            final Schema schema = getValidatorFor(clazz);
-            marshaller.setSchema(schema);
-            if (jaxbContext == null) marshallers.put(clazz, marshaller);
-
-            return marshaller;
+            return createMarshaller(jaxbContext, clazz, profile);
         } catch (final JAXBException e) {
             throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
         }
+    }
+
+    private static Marshaller createMarshaller(final JAXBContext context, final Class<?> clazz, final MarshallerProfile profile) throws JAXBException {
+        final Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, profile == MarshallerProfile.CONFIG);
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
+            marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
+            marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.TRUE);
+        }
+        if (profile == MarshallerProfile.WIRE) {
+            marshaller.setSchema(null);
+        } else {
+            marshaller.setSchema(getValidatorFor(clazz));
+        }
+        return marshaller;
     }
 
     /**
