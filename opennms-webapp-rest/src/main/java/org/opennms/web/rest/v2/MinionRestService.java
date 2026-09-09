@@ -195,7 +195,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
                                 "location": "Default",
                                 "type": "Minion",
                                 "status": "Started",
-                                "version": "36.0.4-SNAPSHOT",
+                                "version": "36.0.4",
                                 "date": 1787727804037,
                                 "lastCheckedIn": null,
                                 "properties": { }
@@ -204,7 +204,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsMinionCollection.class),
                                     examples = @ExampleObject(value = """
                             <minions count="1" offset="0" totalCount="1">
-                              <minion id="00000000-0000-0000-0000-000000ddba11" label="minion-01" location="Default" type="Minion" date="2026-08-26T03:03:24.037-04:00" status="Started" version="36.0.4-SNAPSHOT">
+                              <minion id="00000000-0000-0000-0000-000000ddba11" label="minion-01" location="Default" type="Minion" date="2026-08-26T03:03:24.037-04:00" status="Started" version="36.0.4">
                                 <properties/>
                               </minion>
                             </minions>"""))
@@ -307,14 +307,14 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
                               "location": "Default",
                               "type": "Minion",
                               "status": "Started",
-                              "version": "36.0.4-SNAPSHOT",
+                              "version": "36.0.4",
                               "date": 1787727804037,
                               "lastCheckedIn": null,
                               "properties": { }
                             }""")),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsMinion.class),
                                     examples = @ExampleObject(value = """
-                            <minion status="Started" version="36.0.4-SNAPSHOT" id="00000000-0000-0000-0000-000000ddba11" label="minion-01" location="Default" type="Minion" date="2026-08-26T03:03:24.037-04:00">
+                            <minion status="Started" version="36.0.4" id="00000000-0000-0000-0000-000000ddba11" label="minion-01" location="Default" type="Minion" date="2026-08-26T03:03:24.037-04:00">
                               <properties/>
                             </minion>"""))
                     }),
@@ -436,7 +436,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
                               "location": "Default",
                               "type": "Minion",
                               "status": "Stopped",
-                              "version": "36.0.4-SNAPSHOT"
+                              "version": "36.0.4"
                             }""")),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsMinion.class),
                                     examples = @ExampleObject(value = """
