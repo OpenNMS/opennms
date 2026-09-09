@@ -1,21 +1,18 @@
 <template>
-  <div class="card">
-    <div class="title-row">
-      <div class="title headline3">Recent Events</div>
-      <div class="action-buttons-container">
-        <OnmsIconButton
-          aria-label="Events for this Node"
-          tooltip="Events for this Node"
-          data-test="events-for-node-button"
-          :icon="IconViewDetails"
-          @click="onEventsForNodeClick"
-        />
-        <NodeDownloadDropdown
-          :onCsvDownload="onCsvDownload"
-          :onJsonDownload="onJsonDownload"
-        />
-      </div>
-    </div>
+  <NodeDetailsPanel title="Recent Events">
+    <template #actions>
+      <OnmsIconButton
+        aria-label="Events for this Node"
+        tooltip="Events for this Node"
+        data-test="events-for-node-button"
+        :icon="IconViewDetails"
+        @click="onEventsForNodeClick"
+      />
+      <NodeDownloadDropdown
+        :onCsvDownload="onCsvDownload"
+        :onJsonDownload="onJsonDownload"
+      />
+    </template>
     <OnmsTable
       lazy
       :value="eventStore.events"
@@ -51,7 +48,7 @@
         <EmptyList :content="emptyListContent" data-test="empty-list" />
       </template>
     </OnmsTable>
-  </div>
+  </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
@@ -60,6 +57,7 @@ import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
+import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useEventStore } from '@/stores/eventStore'
@@ -202,29 +200,6 @@ defineExpose({ onPage })
 </script>
 
 <style lang="scss" scoped>
-.card {
-  background: var(--p-content-background);
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-  padding: 15px;
-  margin-bottom: 15px;
-
-  .title-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .action-buttons-container {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-  }
-}
-
 .log-message {
   p {
     margin: 0;

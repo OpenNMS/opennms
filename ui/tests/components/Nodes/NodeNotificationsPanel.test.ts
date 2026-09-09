@@ -7,19 +7,24 @@ import { describe, expect, it, vi } from 'vitest'
 import { useAuthStore } from '@/stores/authStore'
 import PrimeVue from 'primevue/config'
 
+// One pinia for the whole file, with store state set BEFORE mounting. useRole caches the auth
+// store the first time it reads a role (module-level `computed(() => useAuthStore())`), so a
+// fresh createTestingPinia per mount would leave later tests reading the first test's roles.
+const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+
 const mountPanel = (username = 'admin', node: any = { id: '1' }, roles: string[] = ['ROLE_ADMIN']) => {
+  const menuStore = useMenuStore(pinia)
+  menuStore.mainMenu = { baseHref: '/opennms/', username } as any
+
+  const authStore = useAuthStore(pinia)
+  authStore.whoAmI = { id: 'admin', fullName: 'Administrator', internal: true, roles }
+
   const wrapper = mount(NodeNotificationsPanel, {
     props: { node, baseHref: '/opennms/' },
     global: {
-      plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue]
+      plugins: [pinia, PrimeVue]
     }
   })
-
-  const menuStore = useMenuStore()
-  menuStore.mainMenu = { baseHref: '/opennms/', username } as any
-
-  const authStore = useAuthStore()
-  authStore.whoAmI = { id: 'admin', fullName: 'Administrator', internal: true, roles }
 
   return { wrapper, menuStore, authStore }
 }
@@ -100,5 +105,13 @@ describe('NodeNotificationsPanel.vue', () => {
 
     expect(assign).toHaveBeenCalledWith('/opennms/notification/index.jsp')
     vi.unstubAllGlobals()
+  })
+  it('puts the title-row button in a right-aligned container', async () => {
+    const { wrapper } = mountPanel()
+    await wrapper.vm.$nextTick()
+
+    const buttons = wrapper.find('.title-row .action-buttons-container')
+    expect(buttons.exists()).toBe(true)
+    expect(buttons.find('[data-test="notifications-link-button"]').exists()).toBe(true)
   })
 })

@@ -1,16 +1,14 @@
 <template>
-  <div class="card">
-    <div class="title-row">
-      <div class="title headline3">Surveillance Category Memberships</div>
+  <NodeDetailsPanel title="Surveillance Category Memberships">
+    <template v-if="adminRole" #actions>
       <OnmsIconButton
-        v-if="adminRole"
         aria-label="Edit"
         tooltip="Edit"
         data-test="edit-button"
         :icon="IconEdit"
         @click="onEditClick"
       />
-    </div>
+    </template>
     <div class="onms-row" v-if="props.node?.categories?.length === 0">
       <div class="onms-col-12">
         <span class="attribute-value">This node is not a member of any categories.</span>
@@ -21,13 +19,14 @@
         <span class="attribute-value">{{ item.name }}</span>
       </div>
     </div>
-  </div>
+  </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { OnmsIconButton } from '@opennms/onms-ui'
 import IconEdit from '@opennms/onms-ui/icons/action/Edit.vue'
+import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import useRole from '@/composables/useRole'
 import { Node } from '@/types'
 
@@ -51,20 +50,3 @@ const onEditClick = () => {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.card {
-  background: var(--p-content-background);
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-  padding: 15px;
-  margin-bottom: 15px;
-
-  .title-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-}
-</style>

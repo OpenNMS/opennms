@@ -1,7 +1,6 @@
 <template>
-  <div class="card">
-    <div class="title-row">
-      <div class="title headline3">Notifications</div>
+  <NodeDetailsPanel title="Notifications">
+    <template #actions>
       <OnmsIconButton
         aria-label="View Notifications"
         tooltip="View Notifications"
@@ -9,7 +8,7 @@
         :icon="IconViewDetails"
         @click="onLinkClick"
       />
-    </div>
+    </template>
     <div class="onms-row" v-for="link in links" :key="link.dataTest">
       <div class="onms-col-12">
         <a
@@ -18,13 +17,14 @@
         >{{ link.label }}</a>
       </div>
     </div>
-  </div>
+  </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
 import { OnmsIconButton } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
+import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { Node } from '@/types'
 
@@ -82,20 +82,3 @@ const onLinkClick = () => {
   window.location.assign(`${props.baseHref}${NOTIFICATION_INDEX_PATH}`)
 }
 </script>
-
-<style lang="scss" scoped>
-.card {
-  background: var(--p-content-background);
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-  padding: 15px;
-  margin-bottom: 15px;
-
-  .title-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-}
-</style>

@@ -21,6 +21,7 @@
 ///
 
 import OutagesTable from '@/components/Nodes/OutagesTable.vue'
+import NodeDownloadDropdown from '@/components/Nodes/NodeDownloadDropdown.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
@@ -95,6 +96,29 @@ describe('OutagesTable.vue', () => {
       expect(rows[0].text()).toContain('192.168.1.1')
       expect(rows[0].text()).toContain('host1.example.com')
       expect(rows[0].text()).toContain('ICMP')
+    })
+  })
+
+  describe('Card and title row', () => {
+    it('wraps the panel content in a card with the title and both action buttons on one row', () => {
+      expect(wrapper.find('.card').exists()).toBe(true)
+
+      const titleRow = wrapper.find('.title-row')
+      expect(titleRow.text()).toContain('Recent Outages')
+      expect(titleRow.find('[data-test="view-outages-button"]').exists()).toBe(true)
+      expect(titleRow.find('[data-test="download-button"]').exists()).toBe(true)
+    })
+
+    // Not wired up yet (next set of work); the placeholders must at least be inert rather
+    // than throwing when clicked.
+    it('offers CSV and JSON downloads that do nothing yet', async () => {
+      const items = wrapper.findComponent(NodeDownloadDropdown).vm.items as Array<{ label: string, command: () => void }>
+      expect(items.map(i => i.label)).toEqual(['Download CSV...', 'Download JSON...'])
+
+      for (const item of items) {
+        expect(() => item.command()).not.toThrow()
+      }
+      await wrapper.find('[data-test="view-outages-button"]').trigger('click')
     })
   })
 
