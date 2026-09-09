@@ -62,8 +62,7 @@ import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeExport } from './hooks/useNodeExport'
-import { Event, ServiceType } from '@/types'
+import { useRecordDownload } from './hooks/useRecordDownload'
 
 // The legacy event list page, which accepts a node filter.
 // Will need to replace with the Vue page once it's implemented.
@@ -74,7 +73,7 @@ const menuStore = useMenuStore()
 const route = useRoute()
 
 const { showSnackBar } = useSnackbar()
-const { generateBlob, generateDownload } = useNodeExport()
+const { downloadRecords } = useRecordDownload()
 
 const nodeId = computed(() => route.params.id)
 
@@ -102,56 +101,6 @@ const onEventsForNodeClick = () => {
   window.location.assign(`${menuStore.mainMenu.baseHref}${EVENT_LIST_PATH}?filter=node%3D${nodeId.value}`)
 }
 
-// The CSV columns are whatever fields the events actually carry, in the order the API returns
-// them, rather than the four the table displays. Taken from the data and not from the Event type,
-// which does not declare every field the API sends (serviceType among them).
-const getCsvColumns = (events: Record<string, unknown>[]) => {
-  const columns: string[] = []
-
-  for (const event of events) {
-    for (const field of Object.keys(event)) {
-      if (!columns.includes(field)) {
-        columns.push(field)
-      }
-    }
-  }
-
-  return columns
-}
-
-// serviceType arrives as an object; its name is the part worth a CSV cell. Anything else
-// non-primitive keeps its JSON form rather than stringifying to '[object Object]'.
-const flattenCsvValue = (field: string, value: unknown) => {
-  if (value === null || value === undefined) {
-    return ''
-  }
-
-  if (field === 'serviceType') {
-    return (value as ServiceType).name ?? ''
-  }
-
-  return typeof value === 'object' ? JSON.stringify(value) : String(value)
-}
-
-// Quote a field only when it needs it, doubling any embedded quote, per RFC 4180. Event log
-// messages carry markup and commas, so unquoted values would break the row apart.
-const toCsvValue = (value: string) =>
-  /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value
-
-const buildCsv = (events: Event[]) => {
-  // Read the records as plain field bags: the export covers whatever the API sent, including
-  // the fields Event does not declare.
-  const rows = events as unknown as Record<string, unknown>[]
-  const columns = getCsvColumns(rows)
-
-  return [
-    columns.join(','),
-    ...rows.map(row => columns.map(field => toCsvValue(flattenCsvValue(field, row[field]))).join(','))
-  ].join('\n')
-}
-
-const buildJson = (events: Event[]) => JSON.stringify(events, null, 2)
-
 const onDownload = async (format: 'csv' | 'json') => {
   // The paginator's current page: its limit/offset are already tracked in queryParameters, so
   // raising rows-per-page is how a user downloads more than the default 5.
@@ -166,10 +115,7 @@ const onDownload = async (format: 'csv' | 'json') => {
     return
   }
 
-  const contentType = format === 'json' ? 'application/json' : 'text/csv'
-  const data = format === 'json' ? buildJson(events) : buildCsv(events)
-
-  generateDownload(generateBlob(data, contentType), `Events.${format}`)
+  downloadRecords(events, 'Events', format)
 }
 
 const onCsvDownload = async () => {

@@ -198,6 +198,17 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  /**
+   * Fetch a node's outages WITHOUT publishing them into `outages`/`outagesTotalCount`, and hand
+   * them back to the caller. Keeps a download from disturbing the page the outages table is
+   * currently showing, whatever query the download runs.
+   */
+  const getNodeOutagesForExport = async (payload: { id: string; queryParameters?: QueryParameters }): Promise<Outage[]> => {
+    const resp = await API.getNodeOutages(payload.id, payload.queryParameters)
+
+    return resp ? resp.outage : []
+  }
+
   const setNodeQueryParameters = async (params: QueryParameters) => {
     nodeQueryParameters.value = {
       ...params
@@ -226,6 +237,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeIpInterfaces,
     getNodeAvailabilityPercentage,
     getNodeOutages,
+    getNodeOutagesForExport,
     setNodeQueryParameters
   }
 })

@@ -24,12 +24,13 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useNodeStore } from '@/stores/nodeStore'
 import API from '@/services'
-import { IpInterface, SnmpInterface } from '@/types'
+import { IpInterface, Outage, SnmpInterface } from '@/types'
 
 vi.mock('@/services', () => ({
   default: {
     getSnmpInterfaces: vi.fn(),
-    getIpInterfaces: vi.fn()
+    getIpInterfaces: vi.fn(),
+    getNodeOutages: vi.fn()
   }
 }))
 
@@ -262,5 +263,43 @@ describe('useNodeStore', () => {
 
       expect(store.nodeToIpInterfaceMap.size).toEqual(0)
     })
+  })
+})
+
+describe('nodeStore outage export', () => {
+  const outage = { id: 2435, ipAddress: '10.0.0.44', serviceId: 3 } as unknown as Outage
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  it('getNodeOutagesForExport returns the fetched outages', async () => {
+    vi.mocked(API.getNodeOutages).mockResolvedValue({ outage: [outage], totalCount: 1, count: 1, offset: 0 })
+    const store = useNodeStore()
+
+    await expect(store.getNodeOutagesForExport({ id: '144' })).resolves.toEqual([outage])
+  })
+
+  // A download runs its own query; publishing the result into the store would replace the
+  // page the outages table is showing.
+  it('getNodeOutagesForExport leaves the currently displayed page untouched', async () => {
+    const displayed = { id: 7 } as unknown as Outage
+    vi.mocked(API.getNodeOutages).mockResolvedValue({ outage: [outage], totalCount: 500, count: 500, offset: 0 })
+    const store = useNodeStore()
+    store.outages = [displayed]
+    store.outagesTotalCount = 1
+
+    await store.getNodeOutagesForExport({ id: '144' })
+
+    expect(store.outages).toEqual([displayed])
+    expect(store.outagesTotalCount).toBe(1)
+  })
+
+  it('getNodeOutagesForExport returns an empty list when the request fails', async () => {
+    vi.mocked(API.getNodeOutages).mockResolvedValue(false)
+    const store = useNodeStore()
+
+    await expect(store.getNodeOutagesForExport({ id: '144' })).resolves.toEqual([])
   })
 })
