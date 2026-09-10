@@ -34,6 +34,7 @@ import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -41,9 +42,11 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ApplicationResponseDTO {
 
+    @Schema(description = "Application id.", example = "1")
     @XmlElement(name="id")
     private int m_id;
 
+    @Schema(description = "Application name.", example = "Review Billing")
     @XmlElement(name="application-name")
     private String m_applicationName;
 

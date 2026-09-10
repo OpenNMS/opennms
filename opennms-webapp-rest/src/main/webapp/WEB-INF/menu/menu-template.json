@@ -189,6 +189,16 @@
       "items": null
     },
     {
+      "id": "topologyPreviewMenu",
+      "name": "Topology (Preview)",
+      "url": "ui/index.html#/topology",
+      "action": "link",
+      "locationMatch": "topology-preview",
+      "icon": "network/Nodes",
+      "roles": null,
+      "items": null
+    },
+    {
       "id": "metricsMenu",
       "name": "Metrics (Resource Graphs)",
       "url": "#",
@@ -264,6 +274,13 @@
           "name": "Notifications",
           "url": "notification/index.jsp",
           "locationMatch": "notification",
+          "roles": null
+        },
+        {
+          "id": "notificationsPreview",
+          "name": "Notifications (Preview)",
+          "url": "ui/index.html#/admin/notifications",
+          "locationMatch": null,
           "roles": null
         },
         {
@@ -729,21 +746,21 @@
       {
         "id": "userNotificationConfiguration",
         "name": null,
-        "url": "admin/notification/index.jsp",
+        "url": "ui/index.html#/admin/notifications",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationUser",
         "name": null,
-        "url": "notification/browse?acktype=unack&filter=user==$USER",
+        "url": "ui/index.html#/admin/notifications?preset=yourOutstanding",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationTeam",
         "name": null,
-        "url": "notification/browse?acktype=unack",
+        "url": "ui/index.html#/admin/notifications?preset=teamOutstanding",
         "locationMatch": null,
         "roles": null
       },

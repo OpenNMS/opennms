@@ -32,6 +32,11 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
@@ -66,6 +71,7 @@ public class RequisitionNamesRestService extends OnmsRestService {
          * @return the names
          */
         @XmlElement(name="foreign-source")
+        @Schema(description = "Foreign source name of each requisition, pending and deployed.", example = "[\"selfmonitor\"]")
         public List<String> getNames() {
             return getObjects();
         }
@@ -89,6 +95,32 @@ public class RequisitionNamesRestService extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the foreign source name of every requisition",
+            description = """
+                    Returns the names only, taken from the same union of pending and deployed requisitions that
+                    `GET /requisitions` returns. `totalCount`, `count` and `offset` are inherited from the list
+                    wrapper; `totalCount` and `count` come back as `null` when the list is empty.""",
+            operationId = "getRequisitionNames")
+    @ApiResponse(responseCode = "200", description = "Requisition names, sorted as the requisition list is sorted.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = RequisitionCollection.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "totalCount": 2,
+                                      "count": 2,
+                                      "offset": 0,
+                                      "foreign-source": [ "selfmonitor", "datacenter-east" ]
+                                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = RequisitionCollection.class),
+                            examples = @ExampleObject(value = """
+                                    <foreign-sources count="2" offset="0" totalCount="2">
+                                      <foreign-source>selfmonitor</foreign-source>
+                                      <foreign-source>datacenter-east</foreign-source>
+                                    </foreign-sources>"""))
+            })
     public RequisitionCollection getRequisitionNames() throws ParseException {
         RequisitionCollection names = new RequisitionCollection();
         m_accessService.getRequisitions().forEach(r -> names.add(r.getForeignSource()));

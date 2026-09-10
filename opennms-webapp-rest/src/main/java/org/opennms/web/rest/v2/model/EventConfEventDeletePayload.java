@@ -21,9 +21,15 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
 
+@Schema(name = "EventConfEventDeletePayload", description = "Identifies the events to delete from a single EventConf source.")
 public class EventConfEventDeletePayload {
+
+    @Schema(description = "IDs of the events to delete. Must contain at least one ID.",
+            example = "[42, 43]", required = true)
     private List<Long> eventIds;
 
     public EventConfEventDeletePayload() {

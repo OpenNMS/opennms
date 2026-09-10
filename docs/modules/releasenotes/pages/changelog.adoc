@@ -2,12 +2,183 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.4]]
+
+== Release 36.0.4
+
+=== Bug
+
+* /notifications/summary counts notification deliveries instead of notifications (Issue https://issues.opennms.org/browse/NMS-20283[NMS-20283])
+* Bump Apache CXF (Issue https://issues.opennms.org/browse/NMS-20205[NMS-20205])
+* Event Translator bug with SQL cases and reloads (Issue https://issues.opennms.org/browse/NMS-20258[NMS-20258])
+* Eventd drops every event until the webapp loads the database eventconf (Issue https://issues.opennms.org/browse/NMS-20289[NMS-20289])
+* Fix OpenNMS Browser notification Bug (Firefox and chrome) (Issue https://issues.opennms.org/browse/NMS-20200[NMS-20200])
+* Fix regression CXF 3.6.12 caused by hardcoded default cap of 50 multipart attachments per request (Issue https://issues.opennms.org/browse/NMS-20216[NMS-20216])
+* Improve handling of failed collection alarms for restarts/reloads (Issue https://issues.opennms.org/browse/NMS-19979[NMS-19979])
+* Intermittent deadlock in DataBlocksOffHeapQueue during memory to off-heap transition (Issue https://issues.opennms.org/browse/NMS-20271[NMS-20271])
+* Update Jetty (Issue https://issues.opennms.org/browse/NMS-20088[NMS-20088])
+* Kafka sink consumer manager tracks unstarted consumers, leaking live ones on reload (Issue https://issues.opennms.org/browse/NMS-20203[NMS-20203])
+* Missing authorization on /api/v2 PATCH endpoints (Issue https://issues.opennms.org/browse/NMS-20248[NMS-20248])
+* Outage records can permanently miss their event ID under a race condition (Issue https://issues.opennms.org/browse/NMS-20260[NMS-20260])
+* Reduce per-event overhead in the event translator (Issue https://issues.opennms.org/browse/NMS-20204[NMS-20204])
+* Restoring a JSON snmp-config download wipes inherited timeout and retry values (Issue https://issues.opennms.org/browse/NMS-20262[NMS-20262])
+* Improper handling of user-supplied report parameters in shipped JasperReports templates (ROLE_USER) (Issue https://issues.opennms.org/browse/NMS-20245[NMS-20245])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-20226[NMS-20226])
+* Update com.fasterxml.jackson.core:jackson-databind library (Issue https://issues.opennms.org/browse/NMS-20227[NMS-20227])
+* Update com.mchange:mchange-commons-java library (Issue https://issues.opennms.org/browse/NMS-20236[NMS-20236])
+* Update curl-minimal library (Issue https://issues.opennms.org/browse/NMS-19982[NMS-19982])
+* Update io.netty:netty-codec library (Issue https://issues.opennms.org/browse/NMS-20237[NMS-20237])
+* Update io.netty:netty-codec-http library (Issue https://issues.opennms.org/browse/NMS-20238[NMS-20238])
+* Update io.netty:netty-transport-sctp library (Issue https://issues.opennms.org/browse/NMS-20251[NMS-20251])
+* Update libcurl-minimal library (Issue https://issues.opennms.org/browse/NMS-19983[NMS-19983])
+* Update org.apache.httpcomponents.core5:httpcore5 library (Issues https://issues.opennms.org/browse/NMS-20228[NMS-20228], https://issues.opennms.org/browse/NMS-20231[NMS-20231])
+* Update org.apache.httpcomponents.core5:httpcore5-h2 library (Issues https://issues.opennms.org/browse/NMS-20229[NMS-20229], https://issues.opennms.org/browse/NMS-20232[NMS-20232])
+* Update org.bouncycastle:bcprov-jdk18on library (Issue https://issues.opennms.org/browse/NMS-20239[NMS-20239])
+* Update org.codehaus.plexus:plexus-utils library (Issues https://issues.opennms.org/browse/NMS-19667[NMS-19667], https://issues.opennms.org/browse/NMS-20222[NMS-20222])
+* Update org.eclipse.jetty:jetty-http library (Issue https://issues.opennms.org/browse/NMS-20196[NMS-20196])
+* Update org.eclipse.jetty:jetty-security library (Issue https://issues.opennms.org/browse/NMS-20184[NMS-20184])
+* Update org.jline:jline-remote-telnet library (Issue https://issues.opennms.org/browse/NMS-20223[NMS-20223])
+* Update org.snmp4j:snmp4j-agent library (Issue https://issues.opennms.org/browse/NMS-20275[NMS-20275])
+* Update python3 library (Issue https://issues.opennms.org/browse/NMS-20220[NMS-20220])
+* Update python3-libs library (Issue https://issues.opennms.org/browse/NMS-20221[NMS-20221])
+* Update vim-minimal library (Issue https://issues.opennms.org/browse/NMS-19958[NMS-19958])
+* Improper XML parsing in the XML collector could allow unauthorized file access on the OpenNMS host (Issue https://issues.opennms.org/browse/NMS-20206[NMS-20206])
+* XmlCollect unable to collect entities that begin with a number (Issue https://issues.opennms.org/browse/NMS-15222[NMS-15222])
+* container-based upgrade from 35.0.5 to 36.0.3 fails due to java.lang.ClassNotFoundException: org.opennms.netmgt.ticketd.NullTicketerPlugin (Issue https://issues.opennms.org/browse/NMS-20259[NMS-20259])
+* upgrade of container-based 35.0.5 to 36.0.3 fails with error: Unexpected exception while starting Karaf java.lang.RuntimeException: Could not resolve mvn:org.apache.felix/org.apache.felix.framework/6.0.5 (Issue https://issues.opennms.org/browse/NMS-20261[NMS-20261])
+* v1 /rest/alarms returns a corrupt response body when an alarm's lastEvent is deleted concurrently (Issue https://issues.opennms.org/browse/NMS-20161[NMS-20161])
+
+=== Enhancement
+
+* Importing our OPENNMS-GPG-KEY is violating security policy in CentOS 10+ (Issue https://issues.opennms.org/browse/NMS-19071[NMS-19071])
+* Improve shipped OpenAPI/Swagger Docs (Issue https://issues.opennms.org/browse/NMS-20263[NMS-20263])
+* Kafka producer json payloads (Issue https://issues.opennms.org/browse/NMS-19840[NMS-19840])
+* Move java.io.tmpdir out of $OPENNMS_HOME/data/ so Karaf cache cleanup can't destroy JVM tmp state (Issue https://issues.opennms.org/browse/NMS-19841[NMS-19841])
+* Replace the JSP "adhoc graphs" workflow with a Vue-based SPA (Issue https://issues.opennms.org/browse/NMS-20208[NMS-20208])
+* Small improvements to our docs (Issue https://issues.opennms.org/browse/NMS-20292[NMS-20292])
+* Topology (Preview): new Vue topology map (compose, discover, inspect) (Issue https://issues.opennms.org/browse/NMS-19878[NMS-19878])
+* Update WSMan library in OpenNMS (Issue https://issues.opennms.org/browse/NMS-20287[NMS-20287])
+
+=== New Feature
+
+* Expose a discovered link's interfaces on its graph API edge (Issue https://issues.opennms.org/browse/NMS-20254[NMS-20254])
+
+=== Story
+
+* Prevent shutdown delays from active daemon executor tasks (Issue https://issues.opennms.org/browse/NMS-20050[NMS-20050])
+
+=== Task
+
+* Add tooltip to OnmsIconButton (Issue https://issues.opennms.org/browse/NMS-20162[NMS-20162])
+* Deprecate some plugins that we ship as part of opennms-plugins rpm (Issue https://issues.opennms.org/browse/NMS-19458[NMS-19458])
+* Fix Alarm table checkboxes in dark mode (Issue https://issues.opennms.org/browse/NMS-20170[NMS-20170])
+* Fix dependabot alerts for core/web-assets, August 2026 (Issue https://issues.opennms.org/browse/NMS-20250[NMS-20250])
+* Make top menubar more responsive (Issue https://issues.opennms.org/browse/NMS-20201[NMS-20201])
+* More menu issues to fix (Issue https://issues.opennms.org/browse/NMS-20180[NMS-20180])
+* Move icons into onms-ui (Issue https://issues.opennms.org/browse/NMS-20243[NMS-20243])
+* OnmsTimePicker control and Time support for OnmsDatePicker (Issue https://issues.opennms.org/browse/NMS-20280[NMS-20280])
+* SideMenu: Flyout on hover fixes (Issue https://issues.opennms.org/browse/NMS-20273[NMS-20273])
+* Unit test to confirm availability of static assets (Issue https://issues.opennms.org/browse/NMS-20246[NMS-20246])
+* Update OnmsSearchInput to have 'clear' icon (Issue https://issues.opennms.org/browse/NMS-20160[NMS-20160])
+* Update apacheThriftVersion (Issue https://issues.opennms.org/browse/NMS-20213[NMS-20213])
+* Update log4j to newer version (Issue https://issues.opennms.org/browse/NMS-20177[NMS-20177])
+* Various UI Fixes - dark mode, scrolling (Issue https://issues.opennms.org/browse/NMS-20182[NMS-20182])
+
+[[releasenotes-changelog-36.0.4]]
+
+== Release 36.0.4
+
+=== Bug
+
+* /notifications/summary counts notification deliveries instead of notifications (Issue https://issues.opennms.org/browse/NMS-20283[NMS-20283])
+* Bump Apache CXF (Issue https://issues.opennms.org/browse/NMS-20205[NMS-20205])
+* Event Translator bug with SQL cases and reloads (Issue https://issues.opennms.org/browse/NMS-20258[NMS-20258])
+* Eventd drops every event until the webapp loads the database eventconf (Issue https://issues.opennms.org/browse/NMS-20289[NMS-20289])
+* Fix OpenNMS Browser notification Bug (Firefox and chrome) (Issue https://issues.opennms.org/browse/NMS-20200[NMS-20200])
+* Fix regression CXF 3.6.12 caused by hardcoded default cap of 50 multipart attachments per request (Issue https://issues.opennms.org/browse/NMS-20216[NMS-20216])
+* Improve handling of failed collection alarms for restarts/reloads (Issue https://issues.opennms.org/browse/NMS-19979[NMS-19979])
+* Intermittent deadlock in DataBlocksOffHeapQueue during memory to off-heap transition (Issue https://issues.opennms.org/browse/NMS-20271[NMS-20271])
+* Update Jetty library (Issue https://issues.opennms.org/browse/NMS-20088[NMS-20088])
+* Kafka sink consumer manager tracks unstarted consumers, leaking live ones on reload (Issue https://issues.opennms.org/browse/NMS-20203[NMS-20203])
+* Missing authorization on /api/v2 PATCH endpoints (Issue https://issues.opennms.org/browse/NMS-20248[NMS-20248])
+* Outage records can permanently miss their event ID under a race condition (Issue https://issues.opennms.org/browse/NMS-20260[NMS-20260])
+* Reduce per-event overhead in the event translator (Issue https://issues.opennms.org/browse/NMS-20204[NMS-20204])
+* Restoring a JSON snmp-config download wipes inherited timeout and retry values (Issue https://issues.opennms.org/browse/NMS-20262[NMS-20262])
+* Improper handling of user-supplied report parameters in shipped JasperReports templates (ROLE_USER) (Issue https://issues.opennms.org/browse/NMS-20245[NMS-20245])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-20226[NMS-20226])
+* Update com.fasterxml.jackson.core:jackson-databind library (Issue https://issues.opennms.org/browse/NMS-20227[NMS-20227])
+* Update com.mchange:mchange-commons-java library (Issue https://issues.opennms.org/browse/NMS-20236[NMS-20236])
+* Update curl-minimal library (Issue https://issues.opennms.org/browse/NMS-19982[NMS-19982])
+* Update io.netty:netty-codec library (Issue https://issues.opennms.org/browse/NMS-20237[NMS-20237])
+* Update io.netty:netty-codec-http library (Issue https://issues.opennms.org/browse/NMS-20238[NMS-20238])
+* Update io.netty:netty-transport-sctp library (Issue https://issues.opennms.org/browse/NMS-20251[NMS-20251])
+* Update libcurl-minimal library (Issue https://issues.opennms.org/browse/NMS-19983[NMS-19983])
+* Update org.apache.httpcomponents.core5:httpcore5 library (Issues https://issues.opennms.org/browse/NMS-20228[NMS-20228], https://issues.opennms.org/browse/NMS-20231[NMS-20231])
+* Update org.apache.httpcomponents.core5:httpcore5-h2 library (Issues https://issues.opennms.org/browse/NMS-20229[NMS-20229], https://issues.opennms.org/browse/NMS-20232[NMS-20232])
+* Update org.bouncycastle:bcprov-jdk18on library (Issue https://issues.opennms.org/browse/NMS-20239[NMS-20239])
+* Update org.codehaus.plexus:plexus-utils library (Issues https://issues.opennms.org/browse/NMS-19667[NMS-19667], https://issues.opennms.org/browse/NMS-20222[NMS-20222])
+* Update org.eclipse.jetty:jetty-http library (Issue https://issues.opennms.org/browse/NMS-20196[NMS-20196])
+* Update org.eclipse.jetty:jetty-security library (Issue https://issues.opennms.org/browse/NMS-20184[NMS-20184])
+* Update org.jline:jline-remote-telnet library (Issue https://issues.opennms.org/browse/NMS-20223[NMS-20223])
+* Update org.snmp4j:snmp4j-agent library (Issue https://issues.opennms.org/browse/NMS-20275[NMS-20275])
+* Update python3 library (Issue https://issues.opennms.org/browse/NMS-20220[NMS-20220])
+* Update python3-libs library (Issue https://issues.opennms.org/browse/NMS-20221[NMS-20221])
+* Update vim-minimal library (Issue https://issues.opennms.org/browse/NMS-19958[NMS-19958])
+* Improper XML parsing in the XML collector could allow unauthorized file access on the OpenNMS host (Issue https://issues.opennms.org/browse/NMS-20206[NMS-20206])
+* XmlCollect unable to collect entities that begin with a number (Issue https://issues.opennms.org/browse/NMS-15222[NMS-15222])
+* container-based upgrade from 35.0.5 to 36.0.3 fails due to java.lang.ClassNotFoundException: org.opennms.netmgt.ticketd.NullTicketerPlugin (Issue https://issues.opennms.org/browse/NMS-20259[NMS-20259])
+* upgrade of container-based 35.0.5 to 36.0.3 fails with error: Unexpected exception while starting Karaf java.lang.RuntimeException: Could not resolve mvn:org.apache.felix/org.apache.felix.framework/6.0.5 (Issue https://issues.opennms.org/browse/NMS-20261[NMS-20261])
+* v1 /rest/alarms returns a corrupt response body when an alarm's lastEvent is deleted concurrently (Issue https://issues.opennms.org/browse/NMS-20161[NMS-20161])
+
+=== Enhancement
+
+* Importing our OPENNMS-GPG-KEY is violating security policy in CentOS 10+ (Issue https://issues.opennms.org/browse/NMS-19071[NMS-19071])
+* Improve shipped OpenAPI/Swagger Docs (Issue https://issues.opennms.org/browse/NMS-20263[NMS-20263])
+* Kafka producer json payloads (Issue https://issues.opennms.org/browse/NMS-19840[NMS-19840])
+* Move java.io.tmpdir out of $OPENNMS_HOME/data/ so Karaf cache cleanup can't destroy JVM tmp state (Issue https://issues.opennms.org/browse/NMS-19841[NMS-19841])
+* Replace the JSP "adhoc graphs" workflow with a Vue-based SPA (Issue https://issues.opennms.org/browse/NMS-20208[NMS-20208])
+* Small improvements to our docs (Issue https://issues.opennms.org/browse/NMS-20292[NMS-20292])
+* Topology (Preview): new Vue topology map (compose, discover, inspect) (Issue https://issues.opennms.org/browse/NMS-19878[NMS-19878])
+* Update WSMan library in OpenNMS (Issue https://issues.opennms.org/browse/NMS-20287[NMS-20287])
+
+=== New Feature
+
+* Expose a discovered link's interfaces on its graph API edge (Issue https://issues.opennms.org/browse/NMS-20254[NMS-20254])
+
+=== Story
+
+* Prevent shutdown delays from active daemon executor tasks (Issue https://issues.opennms.org/browse/NMS-20050[NMS-20050])
+
+=== Task
+
+* Add tooltip to OnmsIconButton (Issue https://issues.opennms.org/browse/NMS-20162[NMS-20162])
+* Deprecate some plugins that we ship as part of opennms-plugins rpm (Issue https://issues.opennms.org/browse/NMS-19458[NMS-19458])
+* Fix Alarm table checkboxes in dark mode (Issue https://issues.opennms.org/browse/NMS-20170[NMS-20170])
+* Fix dependabot alerts for core/web-assets, August 2026 (Issue https://issues.opennms.org/browse/NMS-20250[NMS-20250])
+* Make top menubar more responsive (Issue https://issues.opennms.org/browse/NMS-20201[NMS-20201])
+* More menu issues to fix (Issue https://issues.opennms.org/browse/NMS-20180[NMS-20180])
+* Move icons into onms-ui (Issue https://issues.opennms.org/browse/NMS-20243[NMS-20243])
+* OnmsTimePicker control and Time support for OnmsDatePicker (Issue https://issues.opennms.org/browse/NMS-20280[NMS-20280])
+* SideMenu: Flyout on hover fixes (Issue https://issues.opennms.org/browse/NMS-20273[NMS-20273])
+* Unit test to confirm availability of static assets (Issue https://issues.opennms.org/browse/NMS-20246[NMS-20246])
+* Update OnmsSearchInput to have 'clear' icon (Issue https://issues.opennms.org/browse/NMS-20160[NMS-20160])
+* Update apacheThriftVersion (Issue https://issues.opennms.org/browse/NMS-20213[NMS-20213])
+* Update log4j to newer version (Issue https://issues.opennms.org/browse/NMS-20177[NMS-20177])
+* Various UI Fixes - dark mode, scrolling (Issue https://issues.opennms.org/browse/NMS-20182[NMS-20182])
+
 [[releasenotes-changelog-36.0.3]]
 
 == Release 36.0.3
 
+Thanks to the following researchers for responsibly disclosing security issues in this release:
+
+* Santosh Kumar Puppala reported issue https://issues.opennms.org/browse/NMS-20030[NMS-20030]
+* Xanlar Agamalizade and tinyb0y reported issue https://issues.opennms.org/browse/NMS-20051[NMS-20051]
+
 === Bug
 
+* v2 AlarmRestService ackUser credential check is inverted — allows audit-log impersonation and read-only bypass (Issue https://issues.opennms.org/browse/NMS-20030[NMS-20030])
+* JEXL sandbox bypass in Measurements REST API allows ROLE_USER to load arbitrary classes (Issue https://issues.opennms.org/browse/NMS-20051[NMS-20051])
 * ActiveMQ security vulnerabilities (Issue https://issues.opennms.org/browse/NMS-20087[NMS-20087])
 * Collectd shutdown can block for several minutes waiting for active collection RPCs (Issue https://issues.opennms.org/browse/NMS-20046[NMS-20046])
 * Dangling nodeParentID references in node table (Issue https://issues.opennms.org/browse/NMS-19971[NMS-19971])

@@ -26,7 +26,6 @@
         <include>org.opennms.core:org.opennms.core.db:jar:xsds:${project.version}</include>
         <include>org.opennms.core:org.opennms.core.soa:jar:xsds:${project.version}</include>
         <include>org.opennms.features:org.opennms.features.jdbc-collector:jar:xsds:${project.version}</include>
-        <include>org.opennms.features:org.opennms.features.juniper-tca-collector:jar:xsds:${project.version}</include>
         <include>org.opennms.features:org.opennms.features.wsman:jar:xsds:${project.version}</include>
         <include>org.opennms.features.reporting:org.opennms.features.reporting.availability:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-config-jaxb:jar:xsds:${project.version}</include>
@@ -37,13 +36,11 @@
         <include>org.opennms:opennms-webapp:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-alarm-api:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-alarm-northbounder-email:jar:xsds:${project.version}</include>
-        <include>org.opennms:opennms-alarm-northbounder-jms:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-alarm-northbounder-snmptrap:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-alarm-northbounder-syslog:jar:xsds:${project.version}</include>
 
         <include>org.opennms.features.bsm:org.opennms.features.bsm.rest.api:jar:xsds:${project.version}</include>
 
-        <include>org.opennms.protocols:org.opennms.protocols.nsclient:jar:xsds:${project.version}</include>
         <include>org.opennms.protocols:org.opennms.protocols.xml:jar:xsds:${project.version}</include>
         <include>org.opennms.features.telemetry.config:org.opennms.features.telemetry.config.jaxb:jar:xsds:${project.version}</include>
         <include>org.opennms.features.enlinkd:org.opennms.features.enlinkd.config:jar:xsds:${project.version}</include>

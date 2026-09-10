@@ -55,8 +55,8 @@
                 hourFormat="12"
                 placeholder="Start date and time"
                 :maxDate="endDateRef"
-                @show="openPickerCount++"
-                @hide="openPickerCount--"
+                @show="onPickerShow"
+                @hide="onPickerHide"
               />
             </FormField>
             <FormField
@@ -72,8 +72,8 @@
                 hourFormat="12"
                 placeholder="End date and time"
                 :minDate="startDateRef"
-                @show="openPickerCount++"
-                @hide="openPickerCount--"
+                @show="onPickerShow"
+                @hide="onPickerHide"
               />
             </FormField>
             <OnmsButton
@@ -130,6 +130,20 @@ const selectedTime = ref('Last day')
 // How many picker overlays are on screen (there are two, and both can be open in
 // sequence). Fed by OnmsDatePicker's show/hide.
 const openPickerCount = ref(0)
+
+const onPickerShow = () => {
+  openPickerCount.value++
+}
+
+// Clamped, not a bare decrement: a hide with no matching show (unmount
+// ordering, or a third picker added later) would otherwise drive the count
+// negative, and a subsequent show would only bring it back to 0 -- the latch
+// below reads `> 0`, so it would see "no picker open" while one is on screen and
+// take the next preset click as a selection. Only `> 0` is ever read, so that
+// failure is silent; the clamp makes the latch immune to it.
+const onPickerHide = () => {
+  openPickerCount.value = Math.max(0, openPickerCount.value - 1)
+}
 
 /**
  * Latched on mousedown over the preset list, NOT read at click time.
