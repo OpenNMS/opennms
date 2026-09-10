@@ -36,6 +36,14 @@ export const useNodeStore = defineStore('nodeStore', () => {
   // consumers cannot tell an unfetched node from a fetched one -- `node` starts as {}, which is
   // truthy and answers undefined for every field.
   const nodeLoaded = ref(false)
+
+  // Whether the last attempt to fetch a node failed, as distinct from not having finished:
+  // a page mid-fetch has nothing to say yet, a failed one has nothing to show at all.
+  const nodeLoadFailed = ref(false)
+
+  // Address of the node's SNMP-primary interface, which the node payload does not carry
+  // (OnmsNode.getPrimaryInterface is @Transient @JsonIgnore). Undefined when the node has none.
+  const snmpPrimaryIpAddress = ref<string | undefined>(undefined)
   const snmpInterfaces = ref([] as SnmpInterface[])
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
@@ -71,12 +79,48 @@ export const useNodeStore = defineStore('nodeStore', () => {
     // user navigated away from.
     node.value = {} as Node
     nodeLoaded.value = false
+    nodeLoadFailed.value = false
 
     const resp = await API.getNodeById(n.id)
 
     if (resp) {
       node.value = resp
       nodeLoaded.value = true
+
+      return
+    }
+
+    nodeLoadFailed.value = true
+
+    // Every panel fetches by node id on its own and only replaces its rows on a successful
+    // response, so without this the previous node's data stays on screen under an id that has
+    // no node. Events live in their own store and are cleared by the page.
+    ipInterfaces.value = []
+    ipInterfacesTotalCount.value = 0
+    snmpInterfaces.value = []
+    snmpInterfacesTotalCount.value = 0
+    outages.value = []
+    outagesTotalCount.value = 0
+    availability.value = {} as NodeAvailability
+    snmpPrimaryIpAddress.value = undefined
+  }
+
+  /**
+   * Fetch the address of the node's SNMP-primary interface, which the "Update SNMP Information"
+   * action needs. Asked for directly rather than read off `ipInterfaces`: that holds whatever
+   * page the IP Interfaces table is showing, which need not include the primary.
+   */
+  const getNodeSnmpPrimaryInterface = async (id: string) => {
+    snmpPrimaryIpAddress.value = undefined
+
+    const resp = await API.getNodeIpInterfaces(id, {
+      limit: 1,
+      offset: 0,
+      _s: 'snmpPrimary==P'
+    })
+
+    if (resp) {
+      snmpPrimaryIpAddress.value = resp.ipInterface[0]?.ipAddress
     }
   }
 
@@ -210,17 +254,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
-  /**
-   * Fetch a node's outages WITHOUT publishing them into `outages`/`outagesTotalCount`, and hand
-   * them back to the caller. Keeps a download from disturbing the page the outages table is
-   * currently showing, whatever query the download runs.
-   */
-  const getNodeOutagesForExport = async (payload: { id: string; queryParameters?: QueryParameters }): Promise<Outage[]> => {
-    const resp = await API.getNodeOutages(payload.id, payload.queryParameters)
-
-    return resp ? resp.outage : []
-  }
-
   const setNodeQueryParameters = async (params: QueryParameters) => {
     nodeQueryParameters.value = {
       ...params
@@ -232,6 +265,8 @@ export const useNodeStore = defineStore('nodeStore', () => {
     totalCount,
     node,
     nodeLoaded,
+    nodeLoadFailed,
+    snmpPrimaryIpAddress,
     snmpInterfaces,
     snmpInterfacesTotalCount,
     ipInterfaces,
@@ -250,7 +285,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeIpInterfaces,
     getNodeAvailabilityPercentage,
     getNodeOutages,
-    getNodeOutagesForExport,
+    getNodeSnmpPrimaryInterface,
     setNodeQueryParameters
   }
 })

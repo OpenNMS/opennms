@@ -1,6 +1,7 @@
 import NodeDetails from '@/containers/NodeDetails.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { useEventStore } from '@/stores/eventStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
@@ -23,6 +24,7 @@ describe('NodeDetails.vue', () => {
 
     const nodeStore = useNodeStore()
     nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
 
     if (loaded) {
       nodeStore.node = { id: '42', label: 'srv-42' } as any
@@ -40,7 +42,11 @@ describe('NodeDetails.vue', () => {
           BreadCrumbs: true,
           NodeAvailabilityGraph: true,
           NodeCategoriesPanel: true,
-          NodeActionsDropdown: { name: 'NodeActionsDropdown', template: '<div></div>', props: ['baseHref', 'node'] },
+          NodeActionsDropdown: {
+            name: 'NodeActionsDropdown',
+            template: '<div></div>',
+            props: ['baseHref', 'node', 'snmpPrimaryIpAddress']
+          },
           NodeDetailsHeader: true,
           NodeNotificationsPanel: true,
           NodeSnmpAttributes: true,
@@ -71,6 +77,64 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeCategoriesPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
+  })
+
+  // A 404 for a nonexistent node id leaves nothing to name in the heading.
+  it('titles the page N/A when the node could not be fetched', async () => {
+    const { wrapper } = mountComponent()
+    useNodeStore().nodeLoadFailed = true
+    await flushPromises()
+
+    expect(wrapper.find('h2').text()).toBe('Node Details for N/A')
+  })
+
+  it('leaves the title unnamed while the node is still being fetched', async () => {
+    const { wrapper } = mountComponent()
+    await flushPromises()
+
+    expect(wrapper.find('h2').text()).toBe('Node Details for')
+  })
+
+  // The Update SNMP action needs the SNMP-primary address, which the node payload does not
+  // carry and the IP Interfaces table only holds a page of, so the page asks for it directly.
+  it('asks for the node SNMP-primary address and hands it to the actions menu', async () => {
+    const { wrapper, nodeStore } = mountComponent('42', true)
+    await flushPromises()
+
+    expect(nodeStore.getNodeSnmpPrimaryInterface).toHaveBeenCalledWith('42')
+
+    nodeStore.snmpPrimaryIpAddress = '10.0.0.44'
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('snmpPrimaryIpAddress'))
+      .toBe('10.0.0.44')
+  })
+
+  // The events table fetches by node id on its own and only replaces its rows on a successful
+  // response, so a node that 404s would otherwise keep the previous node's events on screen.
+  it('clears the events when the node fails to load', async () => {
+    const { wrapper, nodeStore } = mountComponent()
+    nodeStore.getNodeById = vi.fn().mockImplementation(async () => {
+      nodeStore.nodeLoadFailed = true
+    })
+    const eventStore = useEventStore()
+    eventStore.clearEvents = vi.fn()
+
+    await wrapper.vm.$nextTick()
+    await (wrapper.vm as any).fetchNode()
+
+    expect(eventStore.clearEvents).toHaveBeenCalled()
+  })
+
+  it('leaves the events alone when the node loads', async () => {
+    const { wrapper, nodeStore } = mountComponent('42', true)
+    nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
+    const eventStore = useEventStore()
+    eventStore.clearEvents = vi.fn()
+
+    await (wrapper.vm as any).fetchNode()
+
+    expect(eventStore.clearEvents).not.toHaveBeenCalled()
   })
 
   it('renders the four child components', async () => {

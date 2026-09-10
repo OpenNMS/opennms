@@ -106,12 +106,6 @@ export const useNodeListStore = defineStore('nodeListStore', () => {
     return allServiceTypes.value.find(serviceType => serviceType.name.toLocaleLowerCase() === name.toLocaleLowerCase())
   }
 
-  // Outage records carry only a serviceId, so callers resolve the display name from here. A
-  // linear scan over the handful of service types an installation has is not worth indexing.
-  const getServiceTypeById = (id: number): ServiceType | undefined => {
-    return allServiceTypes.value.find(serviceType => serviceType.id === id)
-  }
-
   const isAnyFilterSelected = () => {
     return (
       queryFilter.value.searchTerm?.length > 0 ||
@@ -543,7 +537,6 @@ export const useNodeListStore = defineStore('nodeListStore', () => {
     getMonitoringLocations: fetchMonitoringLocations,
     getServiceTypes: fetchServiceTypes,
     getServiceTypeByName,
-    getServiceTypeById,
     getNodePreferences,
     isAnyFilterSelected,
     resetColumnSelectionToDefault,

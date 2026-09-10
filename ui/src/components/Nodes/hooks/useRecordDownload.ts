@@ -20,21 +20,34 @@
 /// License.
 ///
 
-import { ServiceType } from '@/types'
 import { useNodeExport } from './useNodeExport'
 
 export type RecordDownloadFormat = 'csv' | 'json'
 
 /**
- * The CSV columns are whatever fields the records actually carry, in the order the API returns
- * them. Taken from the data rather than from a type, since the API sends fields the types do not
- * all declare (Event.serviceType among them).
+ * Flatten a record into dotted leaf paths: `monitoredService.serviceType.name` rather than a
+ * JSON blob in one cell. Arrays stay whole -- their length varies per row, so they cannot be
+ * columns -- and are emitted as JSON.
  */
-const getCsvColumns = (records: Record<string, unknown>[]) => {
+const toCsvLeaves = (value: unknown, prefix = ''): Array<[string, unknown]> => {
+  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    return Object.entries(value as Record<string, unknown>)
+      .flatMap(([key, child]) => toCsvLeaves(child, prefix ? `${prefix}.${key}` : key))
+  }
+
+  return [[prefix, value]]
+}
+
+/**
+ * The CSV columns are whatever leaves the records actually carry, in the order the API returns
+ * them. Taken from the data rather than from a type, since the API sends fields the types do
+ * not all declare.
+ */
+const getCsvColumns = (rows: Array<Map<string, unknown>>) => {
   const columns: string[] = []
 
-  for (const record of records) {
-    for (const field of Object.keys(record)) {
+  for (const row of rows) {
+    for (const field of row.keys()) {
       if (!columns.includes(field)) {
         columns.push(field)
       }
@@ -45,34 +58,32 @@ const getCsvColumns = (records: Record<string, unknown>[]) => {
 }
 
 /**
- * serviceType arrives as an object; its name is the part worth a CSV cell. Anything else
- * non-primitive keeps its JSON form rather than stringifying to '[object Object]'.
+ * Quote a field only when it needs it, doubling any embedded quote, per RFC 4180. Event log
+ * messages carry markup and commas, so unquoted values would break the row apart.
+ *
+ * A leading = + - @ tab or CR is also neutralised with a single quote: this data comes from
+ * traps and syslog, and a spreadsheet would otherwise run it as a formula. Numbers are left
+ * alone -- they cannot be formulas, and guarding them would corrupt a legitimate negative.
+ * Same treatment the notices table and the resource-graph export already apply.
  */
-const flattenCsvValue = (field: string, value: unknown) => {
+const toCsvValue = (value: unknown) => {
   if (value === null || value === undefined) {
     return ''
   }
 
-  if (field === 'serviceType') {
-    return (value as ServiceType).name ?? ''
-  }
+  const raw = typeof value === 'object' ? JSON.stringify(value) : String(value)
+  const guarded = typeof value !== 'number' && /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw
 
-  return typeof value === 'object' ? JSON.stringify(value) : String(value)
+  return /[",\r\n]/.test(guarded) ? `"${guarded.replace(/"/g, '""')}"` : guarded
 }
 
-/**
- * Quote a field only when it needs it, doubling any embedded quote, per RFC 4180. Event log
- * messages carry markup and commas, so unquoted values would break the row apart.
- */
-const toCsvValue = (value: string) =>
-  /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value
-
-const buildCsv = (records: Record<string, unknown>[]) => {
-  const columns = getCsvColumns(records)
+const buildCsv = (records: unknown[]) => {
+  const rows = records.map(record => new Map(toCsvLeaves(record)))
+  const columns = getCsvColumns(rows)
 
   return [
     columns.join(','),
-    ...records.map(record => columns.map(field => toCsvValue(flattenCsvValue(field, record[field]))).join(','))
+    ...rows.map(row => columns.map(field => toCsvValue(row.get(field))).join(','))
   ].join('\n')
 }
 
@@ -86,12 +97,8 @@ export const useRecordDownload = () => {
   const { generateBlob, generateDownload } = useNodeExport()
 
   const downloadRecords = (records: unknown[], baseName: string, format: RecordDownloadFormat) => {
-    // Read the records as plain field bags: the export covers whatever the API sent, including
-    // the fields the record types do not declare.
-    const rows = records as Record<string, unknown>[]
-
     const contentType = format === 'json' ? 'application/json' : 'text/csv'
-    const data = format === 'json' ? buildJson(records) : buildCsv(rows)
+    const data = format === 'json' ? buildJson(records) : buildCsv(records)
 
     generateDownload(generateBlob(data, contentType), `${baseName}.${format}`)
   }

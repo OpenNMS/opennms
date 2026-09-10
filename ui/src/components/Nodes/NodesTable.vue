@@ -239,6 +239,7 @@
                 <NodeActionsDropdown
                   :baseHref="mainMenu.baseHref"
                   :node="data"
+                  :snmpPrimaryIpAddress="snmpPrimaryIpAddressFor(data.id)"
                   :triggerNodeInfo="onNodeInfo"
                   class="triple-icon"
                 />
@@ -342,6 +343,7 @@ import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import ManagementIPTooltipCell from './ManagementIPTooltipCell.vue'
 import NodeActionsDropdown from './NodeActionsDropdown.vue'
+import { getSnmpPrimaryIpAddress } from './nodeActionLinks'
 import NodeAdvancedFiltersDrawer from './NodeAdvancedFiltersDrawer.vue'
 import NodeDetailsDialog from './NodeDetailsDialog.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
@@ -464,6 +466,11 @@ const onNodeInfo = (node: Node) => {
   dialogNode.value = node
   dialogVisible.value = true
 }
+
+// The node payload carries no interfaces, so the Update SNMP action's address comes from the
+// interfaces already fetched for the list.
+const snmpPrimaryIpAddressFor = (nodeId: string) =>
+  getSnmpPrimaryIpAddress(nodeStore.nodeToIpInterfaceMap.get(nodeId) ?? [])
 
 const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`

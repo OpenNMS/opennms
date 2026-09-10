@@ -94,7 +94,11 @@ const stubs = {
   ColumnSelectionDrawer: { name: 'ColumnSelectionDrawer', template: '<div></div>' },
   NodeDetailsDialog: { name: 'NodeDetailsDialog', template: '<div></div>', props: ['visible', 'node', 'computeNodeLink', 'computeNodeIpInterfaceLink'] },
   NodeDownloadDropdown: { name: 'NodeDownloadDropdown', template: '<div></div>', props: ['onCsvDownload', 'onJsonDownload'] },
-  NodeActionsDropdown: { name: 'NodeActionsDropdown', template: '<div></div>', props: ['baseHref', 'node', 'triggerNodeInfo'] },
+  NodeActionsDropdown: {
+    name: 'NodeActionsDropdown',
+    template: '<div></div>',
+    props: ['baseHref', 'node', 'triggerNodeInfo', 'snmpPrimaryIpAddress']
+  },
   NodeTooltipCell: { name: 'NodeTooltipCell', template: '<span></span>', props: ['text'] },
   ManagementIPTooltipCell: { name: 'ManagementIPTooltipCell', template: '<span></span>', props: ['computeNodeIpInterfaceLink', 'node', 'nodeToIpInterfaceMap'] },
   FlowTooltipCell: { name: 'FlowTooltipCell', template: '<span></span>', props: ['node'] },
@@ -176,6 +180,25 @@ describe('NodesTable.vue', () => {
     await nextTick()
 
     expect(wrapper.findAllComponents({ name: 'NodeActionsDropdown' }).length).toBe(2)
+  })
+
+  // Same as the Node Details page: the Update SNMP action needs the SNMP-primary address, and
+  // the node list already holds every node's interfaces.
+  it('hands each row actions menu that node SNMP-primary address', async () => {
+    const wrapper = mountTable()
+    const ns = useNodeStore()
+    ns.nodes = [{ id: '1', label: 'node-1' }] as any
+    ns.totalCount = 1
+    ns.nodeToIpInterfaceMap = new Map([
+      ['1', [
+        { id: 'ip1', ipAddress: '10.0.0.1', snmpPrimary: 'N' },
+        { id: 'ip2', ipAddress: '10.0.0.44', snmpPrimary: 'P' }
+      ]]
+    ]) as any
+    await nextTick()
+
+    expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('snmpPrimaryIpAddress'))
+      .toBe('10.0.0.44')
   })
 
   it('onSort updates query order and refetches — descending', () => {

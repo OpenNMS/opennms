@@ -221,61 +221,42 @@ describe('EventsTable.vue', () => {
       }) as any)
     })
 
-    it('requests the default page size for the node, leaving the visible page untouched', async () => {
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
+    // The download is the page the paginator is showing, which the store already holds: no
+    // second request, and no way for the file to disagree with the table.
+    it('exports the rows the table is showing without another request', async () => {
       eventStore.events = [mockEvent] as any
       eventStore.totalCount = 1
+      vi.clearAllMocks()
 
       await runDownload('Download CSV...')
 
-      expect(eventStore.getEventsForExport).toHaveBeenCalledWith({
-        limit: 5,
-        offset: 0,
-        _s: `node.id==${mockNodeId}`
-      })
-      expect(eventStore.events).toEqual([mockEvent])
-      expect(eventStore.totalCount).toBe(1)
-    })
-
-    // The download is the page the paginator is showing, so raising rows-per-page is how a user
-    // downloads more; the whole set comes from the Events page instead.
-    it('follows the paginator when the user changes page or rows-per-page', async () => {
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
-
-      await wrapper.vm.onPage({ first: 20, rows: 20, page: 1, pageCount: 2 })
-      await flushPromises()
-      await runDownload('Download CSV...')
-
-      expect(eventStore.getEventsForExport).toHaveBeenCalledWith({
-        limit: 20,
-        offset: 20,
-        _s: `node.id==${mockNodeId}`
-      })
+      expect(eventStore.getEvents).not.toHaveBeenCalled()
+      expect(downloadNames).toEqual(['Events.csv'])
+      expect(await blobs[0].text()).toContain(String(mockEvent.id))
     })
 
     it('downloads a CSV of every event field, quoting values that contain commas or quotes', async () => {
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([
+      eventStore.events = [
         {
           id: 101,
           severity: 'Major',
-          logMessage: '<p>Interface "eth0" down, node 42</p>',
-          serviceType: { id: 3, name: 'ICMP' }
+          logMessage: '<p>Interface "eth0" down, node 42</p>'
         }
-      ])
+      ] as any
 
       await runDownload('Download CSV...')
 
       expect(downloadNames).toEqual(['Events.csv'])
       expect(blobs[0].type).toBe('text/csv')
       expect(await blobs[0].text()).toBe(
-        'id,severity,logMessage,serviceType\n' +
-        '101,Major,"<p>Interface ""eth0"" down, node 42</p>",ICMP'
+        'id,severity,logMessage\n' +
+        '101,Major,"<p>Interface ""eth0"" down, node 42</p>"'
       )
     })
 
     // The table only shows 4 columns, but the export is the whole record.
     it('includes CSV columns for fields the table does not display', async () => {
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
+      eventStore.events = [mockEvent] as any
 
       await runDownload('Download CSV...')
 
@@ -285,10 +266,8 @@ describe('EventsTable.vue', () => {
 
     // parameters is the other non-primitive field on an event; String() on it would put
     // '[object Object]' in the cell.
-    it('keeps other non-primitive CSV fields readable as JSON', async () => {
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([
-        { id: 101, parameters: [{ name: 'p1', value: 'v1' }] }
-      ])
+    it('keeps array CSV fields readable as JSON', async () => {
+      eventStore.events = [{ id: 101, parameters: [{ name: 'p1', value: 'v1' }] }] as any
 
       await runDownload('Download CSV...')
 
@@ -299,7 +278,7 @@ describe('EventsTable.vue', () => {
     })
 
     it('downloads JSON of the full event records', async () => {
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([mockEvent])
+      eventStore.events = [mockEvent] as any
 
       await runDownload('Download JSON...')
 
@@ -309,7 +288,7 @@ describe('EventsTable.vue', () => {
     })
 
     it('shows an error snackbar and downloads nothing when the node has no events', async () => {
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([])
+      eventStore.events = [] as any
 
       await runDownload('Download CSV...')
 
@@ -323,23 +302,12 @@ describe('EventsTable.vue', () => {
   describe('Node changes under the same component instance', () => {
     // /node/42 -> /node/99 reuses this instance, so a table that only reads the route id at
     // setup would keep showing node 42 while the panel's other links point at 99.
-    it('refetches for the new node and exports that node', async () => {
-      // Empty, so the download stops at the snackbar: what matters here is the node it asked
-      // for, not the file it would have produced.
-      eventStore.getEventsForExport = vi.fn().mockResolvedValue([])
+    it('refetches for the new node', async () => {
       ;(useRoute() as any).params.id = '99'
       await flushPromises()
 
       expect(eventStore.getEvents).toHaveBeenCalledWith(
         expect.objectContaining({ _s: 'node.id==99', offset: 0, limit: 5 })
-      )
-
-      const items = wrapper.findComponent(NodeDownloadDropdown).vm.items as Array<{ label: string, command: () => void }>
-      await items[0].command()
-      await flushPromises()
-
-      expect(eventStore.getEventsForExport).toHaveBeenCalledWith(
-        expect.objectContaining({ _s: 'node.id==99' })
       )
     })
   })

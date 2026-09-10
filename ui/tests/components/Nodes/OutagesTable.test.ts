@@ -24,7 +24,6 @@ import OutagesTable from '@/components/Nodes/OutagesTable.vue'
 import NodeDownloadDropdown from '@/components/Nodes/NodeDownloadDropdown.vue'
 import { OnmsTag } from '@opennms/onms-ui'
 import { useNodeStore } from '@/stores/nodeStore'
-import { useNodeListStore } from '@/stores/nodeListStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
@@ -51,6 +50,7 @@ const mockOutage = {
   id: 2435,
   ipAddress: '10.0.0.44',
   serviceId: 3,
+  monitoredService: { id: 99, serviceType: { id: 3, name: 'ICMP' }},
   ifLostService: 1700000000000,
   ifRegainedService: 1700009999000,
   hostname: 'host1.example.com',
@@ -60,7 +60,6 @@ const mockOutage = {
 describe('OutagesTable.vue', () => {
   let wrapper: VueWrapper<any>
   let nodeStore: ReturnType<typeof useNodeStore>
-  let nodeListStore: ReturnType<typeof useNodeListStore>
 
   // The store action must be mocked BEFORE mounting — the component fetches in
   // onMounted, and an unmocked action would fire a real network request.
@@ -68,8 +67,6 @@ describe('OutagesTable.vue', () => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     nodeStore = useNodeStore(pinia)
     nodeStore.getNodeOutages = vi.fn().mockResolvedValue(undefined)
-    nodeListStore = useNodeListStore(pinia)
-    nodeListStore.allServiceTypes = [{ id: 3, name: 'ICMP' }, { id: 8, name: 'HTTPS' }]
     useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as any
 
     return mount(OutagesTable, {
@@ -175,7 +172,9 @@ describe('OutagesTable.vue', () => {
       expect(links[1].attributes('href')).toBe(`/opennms/element/interface.jsp?node=${mockNodeId}&intf=10.0.0.44`)
     })
 
-    it('resolves the service name from the id and links it to the service page', async () => {
+    // The row carries monitoredService.serviceType.name, so the name needs no lookup against
+    // the service types the app loads at startup -- and cannot read N/A while that is in flight.
+    it('takes the service name from the row and links it to the service page', async () => {
       const links = await cellLinks()
 
       expect(links[2].text()).toBe('ICMP')
@@ -196,7 +195,7 @@ describe('OutagesTable.vue', () => {
     })
 
     it('shows a known service name without a link when the outage has no IP address', async () => {
-      nodeStore.outages = [{ id: 1, serviceId: 3 }] as any
+      nodeStore.outages = [{ id: 1, serviceId: 3, monitoredService: { serviceType: { name: 'ICMP' }}}] as any
       nodeStore.outagesTotalCount = 1
       await nextTick()
 
@@ -281,36 +280,22 @@ describe('OutagesTable.vue', () => {
       }) as any)
     })
 
-    it('requests the displayed page of outages for the node, leaving it untouched', async () => {
-      nodeStore.getNodeOutagesForExport = vi.fn().mockResolvedValue([mockOutage])
+    // The download is the page the paginator is showing, which the store already holds: no
+    // second request, and no way for the file to disagree with the table.
+    it('exports the rows the table is showing without another request', async () => {
       nodeStore.outages = [mockOutage] as any
       nodeStore.outagesTotalCount = 1
+      vi.clearAllMocks()
 
       await runDownload('Download CSV...')
 
-      expect(nodeStore.getNodeOutagesForExport).toHaveBeenCalledWith({
-        id: mockNodeId,
-        queryParameters: { limit: 5, offset: 0 }
-      })
-      expect(nodeStore.outages).toEqual([mockOutage])
-      expect(nodeStore.outagesTotalCount).toBe(1)
-    })
-
-    it('follows the paginator when the user changes page or rows-per-page', async () => {
-      nodeStore.getNodeOutagesForExport = vi.fn().mockResolvedValue([mockOutage])
-
-      await wrapper.vm.onPage({ first: 20, rows: 20, page: 1, pageCount: 2 })
-      await flushPromises()
-      await runDownload('Download CSV...')
-
-      expect(nodeStore.getNodeOutagesForExport).toHaveBeenCalledWith({
-        id: mockNodeId,
-        queryParameters: { limit: 20, offset: 20 }
-      })
+      expect(nodeStore.getNodeOutages).not.toHaveBeenCalled()
+      expect(downloadNames).toEqual(['Outages.csv'])
+      expect(await blobs[0].text()).toContain(String(mockOutage.id))
     })
 
     it('downloads a CSV of every outage field', async () => {
-      nodeStore.getNodeOutagesForExport = vi.fn().mockResolvedValue([{ id: 2435, ipAddress: '10.0.0.44' }])
+      nodeStore.outages = [{ id: 2435, ipAddress: '10.0.0.44' }] as any
 
       await runDownload('Download CSV...')
 
@@ -319,8 +304,43 @@ describe('OutagesTable.vue', () => {
       expect(await blobs[0].text()).toBe('id,ipAddress\n2435,10.0.0.44')
     })
 
+    // Log messages and service names come from traps and syslog, so a leading = + - @ or tab
+    // would execute as a formula when the file is opened in a spreadsheet.
+    it('neutralises spreadsheet formulas in CSV text cells', async () => {
+      nodeStore.outages = [{ id: 1, ipAddress: '=cmd|calc!A1' }] as any
+
+      await runDownload('Download CSV...')
+
+      expect(await blobs[0].text()).toBe('id,ipAddress\n1,\'=cmd|calc!A1')
+    })
+
+    // A number cannot be a formula, and guarding one would corrupt a legitimate negative.
+    it('leaves negative numbers alone', async () => {
+      nodeStore.outages = [{ id: -5, ipAddress: '10.0.0.44' }] as any
+
+      await runDownload('Download CSV...')
+
+      expect(await blobs[0].text()).toBe('id,ipAddress\n-5,10.0.0.44')
+    })
+
+    // Only serviceType used to be special-cased, so an outage's monitoredService landed in one
+    // cell as a JSON blob.
+    it('expands nested objects into their own CSV columns', async () => {
+      nodeStore.outages = [{
+        id: 1,
+        monitoredService: { id: 99, serviceType: { id: 3, name: 'ICMP' }}
+      }] as any
+
+      await runDownload('Download CSV...')
+
+      expect(await blobs[0].text()).toBe(
+        'id,monitoredService.id,monitoredService.serviceType.id,monitoredService.serviceType.name\n' +
+        '1,99,3,ICMP'
+      )
+    })
+
     it('downloads JSON of the full outage records', async () => {
-      nodeStore.getNodeOutagesForExport = vi.fn().mockResolvedValue([mockOutage])
+      nodeStore.outages = [mockOutage] as any
 
       await runDownload('Download JSON...')
 
@@ -330,7 +350,7 @@ describe('OutagesTable.vue', () => {
     })
 
     it('shows an error snackbar and downloads nothing when the node has no outages', async () => {
-      nodeStore.getNodeOutagesForExport = vi.fn().mockResolvedValue([])
+      nodeStore.outages = [] as any
 
       await runDownload('Download CSV...')
 
@@ -340,10 +360,7 @@ describe('OutagesTable.vue', () => {
   })
 
   describe('Node changes under the same component instance', () => {
-    it('refetches for the new node and exports that node', async () => {
-      // Empty, so the download stops at the snackbar: what matters here is the node it asked
-      // for, not the file it would have produced.
-      nodeStore.getNodeOutagesForExport = vi.fn().mockResolvedValue([])
+    it('refetches for the new node', async () => {
       ;(useRoute() as any).params.id = '99'
       await flushPromises()
 
@@ -351,14 +368,6 @@ describe('OutagesTable.vue', () => {
         id: '99',
         queryParameters: { limit: 5, offset: 0 }
       })
-
-      const items = wrapper.findComponent(NodeDownloadDropdown).vm.items as Array<{ label: string, command: () => void }>
-      await items[0].command()
-      await flushPromises()
-
-      expect(nodeStore.getNodeOutagesForExport).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '99' })
-      )
     })
   })
 

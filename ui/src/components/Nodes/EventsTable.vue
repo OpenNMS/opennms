@@ -105,10 +105,11 @@ const onEventsForNodeClick = () => {
   window.location.assign(`${menuStore.mainMenu.baseHref}${EVENT_LIST_PATH}?filter=node%3D${nodeId.value}`)
 }
 
-const onDownload = async (format: 'csv' | 'json') => {
-  // The paginator's current page: its limit/offset are already tracked in queryParameters, so
-  // raising rows-per-page is how a user downloads more than the default 5.
-  const events = await eventStore.getEventsForExport(queryParameters.value)
+// The download is the page the paginator is showing, which the store already holds -- no
+// second request, and no way for the file to disagree with the table. Raising rows-per-page is
+// how a user takes more than the default page.
+const onDownload = (format: 'csv' | 'json') => {
+  const events = eventStore.events
 
   if (!events || events.length === 0) {
     showSnackBar({
@@ -122,12 +123,12 @@ const onDownload = async (format: 'csv' | 'json') => {
   downloadRecords(events, 'Events', format)
 }
 
-const onCsvDownload = async () => {
-  return onDownload('csv')
+const onCsvDownload = () => {
+  onDownload('csv')
 }
 
-const onJsonDownload = async () => {
-  return onDownload('json')
+const onJsonDownload = () => {
+  onDownload('json')
 }
 
 const onPage = (event: OnmsTablePageEvent) => {

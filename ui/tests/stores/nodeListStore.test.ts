@@ -657,22 +657,6 @@ describe('useNodeListStore', () => {
       expect(store.allServiceTypes).toEqual([{ id: 1, name: 'HTTP' }, { id: 8, name: 'HTTPS' }])
     })
 
-    it('getServiceTypeById finds the service type with that id', async () => {
-      const store = useNodeListStore()
-      vi.mocked(API.getServiceTypes).mockResolvedValue([{ id: 1, name: 'HTTP' }, { id: 8, name: 'HTTPS' }])
-      await store.getServiceTypes()
-
-      expect(store.getServiceTypeById(8)).toEqual({ id: 8, name: 'HTTPS' })
-    })
-
-    it('getServiceTypeById returns undefined for an unknown id', async () => {
-      const store = useNodeListStore()
-      vi.mocked(API.getServiceTypes).mockResolvedValue([{ id: 1, name: 'HTTP' }])
-      await store.getServiceTypes()
-
-      expect(store.getServiceTypeById(99)).toBeUndefined()
-    })
-
     it('updateSelectedServices updates selectedServices and queryFilter', () => {
       const store = useNodeListStore()
       store.updateSelectedServices([{ _value: 8, _text: 'HTTPS' }])

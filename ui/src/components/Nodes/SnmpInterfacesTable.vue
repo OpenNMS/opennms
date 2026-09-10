@@ -71,8 +71,7 @@ onMounted(fetchInterfaces)
 // about the new node.
 watch(nodeId, () => {
   first.value = 0
-  pageSize.value = DEFAULT_PAGE_SIZE
-  queryParameters.value = { ...queryParameters.value, offset: 0, limit: DEFAULT_PAGE_SIZE }
+  queryParameters.value = { ...queryParameters.value, offset: 0 }
   fetchInterfaces()
 })
 

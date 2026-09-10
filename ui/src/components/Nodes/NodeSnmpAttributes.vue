@@ -1,6 +1,5 @@
 <template>
-  <div class="card">
-    <div class="title headline3">SNMP Attributes</div>
+  <NodeDetailsPanel title="SNMP Attributes">
     <div class="onms-row" v-for="item in items" :key="item.label">
       <div class="onms-col-3">
         <span class="attribute-label">{{ item.label }}:</span>
@@ -9,11 +8,12 @@
         <span class="attribute-value">{{ item.value }}</span>
       </div>
     </div>
-  </div>
+  </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
 import { computed, PropType } from 'vue'
+import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import { Node } from '@/types'
 
 const props = defineProps({
@@ -48,17 +48,7 @@ const items = computed(() => [
 </script>
 
 <style lang="scss" scoped>
-
-.card {
-  background: var(--p-content-background);
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-  padding: 15px;
-  margin-bottom: 15px;
-
-  .attribute-label {
-    font-weight: bold;
-  }
+.attribute-label {
+  font-weight: bold;
 }
 </style>

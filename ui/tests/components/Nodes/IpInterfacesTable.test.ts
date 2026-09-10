@@ -180,7 +180,8 @@ describe('IpInterfacesTable.vue', () => {
     // /node/42 -> /node/99 reuses this instance, so a table that only reads the route id at
     // mount would keep showing the interfaces of the node the user navigated away from.
     it('refetches for the new node and returns to the first page', async () => {
-      await wrapper.vm.onPage({ first: 10, rows: 5, page: 2, pageCount: 3 } as any)
+      // rows-per-page is the user's choice and survives the node change; only the page resets.
+      await wrapper.vm.onPage({ first: 20, rows: 10, page: 2, pageCount: 3 } as any)
       await flushPromises()
       vi.clearAllMocks()
 
@@ -189,7 +190,7 @@ describe('IpInterfacesTable.vue', () => {
 
       expect(nodeStore.getNodeIpInterfaces).toHaveBeenCalledWith({
         id: '99',
-        queryParameters: { limit: 5, offset: 0, _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M' }
+        queryParameters: { limit: 10, offset: 0, _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M' }
       })
       ;(useRoute() as any).params.id = '42'
     })

@@ -24,14 +24,15 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useNodeStore } from '@/stores/nodeStore'
 import API from '@/services'
-import { IpInterface, Node, Outage, SnmpInterface } from '@/types'
+import { IpInterface, Node, SnmpInterface } from '@/types'
 
 vi.mock('@/services', () => ({
   default: {
     getSnmpInterfaces: vi.fn(),
     getIpInterfaces: vi.fn(),
     getNodeOutages: vi.fn(),
-    getNodeById: vi.fn()
+    getNodeById: vi.fn(),
+    getNodeIpInterfaces: vi.fn()
   }
 }))
 
@@ -267,44 +268,6 @@ describe('useNodeStore', () => {
   })
 })
 
-describe('nodeStore outage export', () => {
-  const outage = { id: 2435, ipAddress: '10.0.0.44', serviceId: 3 } as unknown as Outage
-
-  beforeEach(() => {
-    setActivePinia(createPinia())
-    vi.clearAllMocks()
-  })
-
-  it('getNodeOutagesForExport returns the fetched outages', async () => {
-    vi.mocked(API.getNodeOutages).mockResolvedValue({ outage: [outage], totalCount: 1, count: 1, offset: 0 })
-    const store = useNodeStore()
-
-    await expect(store.getNodeOutagesForExport({ id: '144' })).resolves.toEqual([outage])
-  })
-
-  // A download runs its own query; publishing the result into the store would replace the
-  // page the outages table is showing.
-  it('getNodeOutagesForExport leaves the currently displayed page untouched', async () => {
-    const displayed = { id: 7 } as unknown as Outage
-    vi.mocked(API.getNodeOutages).mockResolvedValue({ outage: [outage], totalCount: 500, count: 500, offset: 0 })
-    const store = useNodeStore()
-    store.outages = [displayed]
-    store.outagesTotalCount = 1
-
-    await store.getNodeOutagesForExport({ id: '144' })
-
-    expect(store.outages).toEqual([displayed])
-    expect(store.outagesTotalCount).toBe(1)
-  })
-
-  it('getNodeOutagesForExport returns an empty list when the request fails', async () => {
-    vi.mocked(API.getNodeOutages).mockResolvedValue(false)
-    const store = useNodeStore()
-
-    await expect(store.getNodeOutagesForExport({ id: '144' })).resolves.toEqual([])
-  })
-})
-
 describe('nodeStore getNodeById', () => {
   const node = { id: '42', label: 'srv-42' } as unknown as Node
 
@@ -346,7 +309,7 @@ describe('nodeStore getNodeById', () => {
   })
 
   // A failed fetch must not leave the previous node's data on screen, nor claim to be loaded.
-  it('leaves no node loaded when the request fails', async () => {
+  it('leaves no node loaded when the request fails, and records the failure', async () => {
     vi.mocked(API.getNodeById).mockResolvedValue(node)
     const store = useNodeStore()
     await store.getNodeById({ id: '42' } as Node)
@@ -356,5 +319,102 @@ describe('nodeStore getNodeById', () => {
 
     expect(store.node).toEqual({})
     expect(store.nodeLoaded).toBe(false)
+    expect(store.nodeLoadFailed).toBe(true)
+  })
+
+  // The interface tables fetch by node id on their own, and only replace their rows on a
+  // successful response -- so a 404 for the node would otherwise leave the previous node's
+  // interfaces sitting under the new id.
+  it('clears the interfaces when the request fails', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.ipInterfaces = [{ id: 'ip1' }] as never
+    store.ipInterfacesTotalCount = 1
+    store.snmpInterfaces = [{ id: 5 }] as never
+    store.snmpInterfacesTotalCount = 1
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.ipInterfaces).toEqual([])
+    expect(store.ipInterfacesTotalCount).toBe(0)
+    expect(store.snmpInterfaces).toEqual([])
+    expect(store.snmpInterfacesTotalCount).toBe(0)
+  })
+
+  // Everything this store holds is scoped to the node that failed to load, so none of it
+  // should stay on screen under an id that has no node. Events belong to their own store and
+  // are cleared by the page.
+  it('clears the outages and availability when the request fails', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.outages = [{ id: 1 }] as never
+    store.outagesTotalCount = 1
+    store.availability = { availability: 98.7 } as never
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.outages).toEqual([])
+    expect(store.outagesTotalCount).toBe(0)
+    expect(store.availability).toEqual({})
+  })
+
+  it('clears the failure flag when a later fetch succeeds', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    await store.getNodeById({ id: '99' } as Node)
+
+    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    await store.getNodeById({ id: '42' } as Node)
+
+    expect(store.nodeLoadFailed).toBe(false)
+    expect(store.nodeLoaded).toBe(true)
+  })
+})
+
+describe('nodeStore getNodeSnmpPrimaryInterface', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  // The node payload carries no interfaces, and the IP Interfaces table only holds its current
+  // page, so the address the Update SNMP action needs is asked for directly.
+  it('asks for the node SNMP-primary interface and keeps its address', async () => {
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValue({
+      ipInterface: [{ id: 'ip2', ipAddress: '10.0.0.44', snmpPrimary: 'P' }],
+      totalCount: 1, count: 1, offset: 0
+    } as never)
+    const store = useNodeStore()
+
+    await store.getNodeSnmpPrimaryInterface('42')
+
+    expect(API.getNodeIpInterfaces).toHaveBeenCalledWith('42', {
+      limit: 1,
+      offset: 0,
+      _s: 'snmpPrimary==P'
+    })
+    expect(store.snmpPrimaryIpAddress).toBe('10.0.0.44')
+  })
+
+  it('holds no address for a node with no SNMP-primary interface', async () => {
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValue({
+      ipInterface: [], totalCount: 0, count: 0, offset: 0
+    } as never)
+    const store = useNodeStore()
+    store.snmpPrimaryIpAddress = '10.0.0.1'
+
+    await store.getNodeSnmpPrimaryInterface('42')
+
+    expect(store.snmpPrimaryIpAddress).toBeUndefined()
+  })
+
+  it('holds no address when the request fails', async () => {
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.snmpPrimaryIpAddress = '10.0.0.1'
+
+    await store.getNodeSnmpPrimaryInterface('42')
+
+    expect(store.snmpPrimaryIpAddress).toBeUndefined()
   })
 })

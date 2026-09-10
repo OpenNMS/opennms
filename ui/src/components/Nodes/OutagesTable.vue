@@ -73,7 +73,6 @@ import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeListStore } from '@/stores/nodeListStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useRecordDownload } from './hooks/useRecordDownload'
 import { Outage } from '@/types'
@@ -89,7 +88,6 @@ const INTERFACE_PATH = 'element/interface.jsp'
 const SERVICE_PATH = 'element/service.jsp'
 
 const menuStore = useMenuStore()
-const nodeListStore = useNodeListStore()
 const nodeStore = useNodeStore()
 const route = useRoute()
 
@@ -128,21 +126,18 @@ const interfaceLink = (outage: Outage) =>
 const serviceLink = (outage: Outage) =>
   `${baseHref.value}${SERVICE_PATH}${nodeAndInterfaceQuery(outage)}&service=${outage.serviceId}`
 
-// An outage carries only its serviceId, so the display name comes from the service types the
-// app loaded at startup. They arrive asynchronously, hence a computed read rather than a
-// snapshot: the name fills in once they land.
-const serviceName = (outage: Outage) => nodeListStore.getServiceTypeById(outage.serviceId)?.name
+// Every outage carries its service inline, so the name needs no lookup: OnmsMonitoredService
+// requires a serviceType, and the outage row nests it.
+const serviceName = (outage: Outage) => outage.monitoredService?.serviceType?.name
 
 // Still down: the service was lost and has not come back, so the lost time is called out.
 const isUnresolved = (outage: Outage) => !!outage.ifLostService && !outage.ifRegainedService
 
-const onDownload = async (format: 'csv' | 'json') => {
-  // The paginator's current page: its limit/offset are already tracked in queryParameters, so
-  // raising rows-per-page is how a user downloads more than the default page.
-  const outages = await nodeStore.getNodeOutagesForExport({
-    id: nodeId.value,
-    queryParameters: queryParameters.value
-  })
+// The download is the page the paginator is showing, which the store already holds -- no
+// second request, and no way for the file to disagree with the table. Raising rows-per-page is
+// how a user takes more than the default page.
+const onDownload = (format: 'csv' | 'json') => {
+  const outages = nodeStore.outages
 
   if (!outages || outages.length === 0) {
     showSnackBar({
@@ -156,12 +151,12 @@ const onDownload = async (format: 'csv' | 'json') => {
   downloadRecords(outages, 'Outages', format)
 }
 
-const onCsvDownload = async () => {
-  return onDownload('csv')
+const onCsvDownload = () => {
+  onDownload('csv')
 }
 
-const onJsonDownload = async () => {
-  return onDownload('json')
+const onJsonDownload = () => {
+  onDownload('json')
 }
 
 const fetchOutages = () => {

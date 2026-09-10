@@ -31,6 +31,13 @@ const props = defineProps({
     required: true,
     type: Object as PropType<Node>
   },
+  // Supplied by the call site from its interface data; without it the Update SNMP action is
+  // omitted rather than pointed at an address that is not the node's.
+  snmpPrimaryIpAddress: {
+    required: false,
+    type: String,
+    default: undefined
+  },
   triggerNodeInfo: {
     required: false,
     type: Function as PropType<(node: Node) => void>,
@@ -53,7 +60,7 @@ const items = computed<OnmsMenuItem[]>(() => {
   // Status for a node with no building.
   return [
     ...infoItem,
-    ...createLinkItemsList(props.node).map(li => ({
+    ...createLinkItemsList(props.node, { snmpPrimaryIpAddress: props.snmpPrimaryIpAddress }).map(li => ({
       label: li.label,
       command: () => window.location.assign(`${props.baseHref}${li.link}`)
     }))

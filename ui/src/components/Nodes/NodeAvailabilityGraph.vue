@@ -1,7 +1,5 @@
 <template>
-  <div class="card">
-    <div class="title headline3">Availability</div>
-
+  <NodeDetailsPanel title="Availability">
     <div class="flex-container availability-header headline4">
       <div class="onms-row">
           <div class="onms-col-12">
@@ -60,11 +58,12 @@
         </div>
       </template>
     </template>
-  </div>
+  </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, PropType, watch } from 'vue'
+import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeListStore } from '@/stores/nodeListStore'
 
@@ -126,14 +125,6 @@ watch(() => props.node?.id, (id) => {
 </script>
 
 <style lang="scss" scoped>
-.card {
-  background: var(--p-content-background);
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-  padding: 15px;
-  margin-bottom: 15px;
-}
 .service {
   min-width: 103px;
   margin-left: 8px;

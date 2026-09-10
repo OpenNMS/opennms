@@ -40,6 +40,21 @@ describe('eventStore', () => {
     vi.clearAllMocks()
   })
 
+  describe('clearEvents', () => {
+    // The Node Details page clears these when its node fails to load: the events table fetches
+    // by node id on its own and only replaces its rows on a successful response.
+    it('empties the events and the count', () => {
+      const store = useEventStore()
+      store.events = [event]
+      store.totalCount = 1
+
+      store.clearEvents()
+
+      expect(store.events).toEqual([])
+      expect(store.totalCount).toBe(0)
+    })
+  })
+
   describe('getEvents', () => {
     it('publishes the fetched page into events/totalCount', async () => {
       vi.mocked(API.getEvents).mockResolvedValue({ event: [event], totalCount: 1, count: 1, offset: 0 })
@@ -49,37 +64,6 @@ describe('eventStore', () => {
 
       expect(store.events).toEqual([event])
       expect(store.totalCount).toBe(1)
-    })
-  })
-
-  describe('getEventsForExport', () => {
-    it('returns the fetched events', async () => {
-      vi.mocked(API.getEvents).mockResolvedValue({ event: [event], totalCount: 1, count: 1, offset: 0 })
-      const store = useEventStore()
-
-      await expect(store.getEventsForExport({ limit: 0, offset: 0 })).resolves.toEqual([event])
-    })
-
-    // A download runs its own query; publishing the result into the store would replace the
-    // page the events table is showing.
-    it('leaves the currently displayed page untouched', async () => {
-      const displayed = { id: 7 } as unknown as Event
-      vi.mocked(API.getEvents).mockResolvedValue({ event: [event], totalCount: 500, count: 500, offset: 0 })
-      const store = useEventStore()
-      store.events = [displayed]
-      store.totalCount = 1
-
-      await store.getEventsForExport({ limit: 0, offset: 0 })
-
-      expect(store.events).toEqual([displayed])
-      expect(store.totalCount).toBe(1)
-    })
-
-    it('returns an empty list when the request fails', async () => {
-      vi.mocked(API.getEvents).mockResolvedValue(false)
-      const store = useEventStore()
-
-      await expect(store.getEventsForExport({ limit: 0, offset: 0 })).resolves.toEqual([])
     })
   })
 })

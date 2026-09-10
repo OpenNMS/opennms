@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { Node } from '@/types'
+import { IpInterface, Node } from '@/types'
 
 // The node action links, shared by every place the actions menu is rendered: the Node Details
 // title row and each row of the node list.
@@ -42,7 +42,22 @@ export const linkItems = [
   { name: 'node-link', label: 'Node Link Details' }
 ]
 
-export const mapLink = (name: string, node: Node) => {
+/**
+ * The address the Update SNMP action targets: the node's SNMP-primary interface, matching the
+ * legacy node page's `model.snmpPrimaryIntf`. Undefined when the node has none, in which case
+ * the action is not offered at all.
+ */
+export const getSnmpPrimaryIpAddress = (ipInterfaces: IpInterface[]): string | undefined =>
+  ipInterfaces.find(ipInterface => ipInterface.snmpPrimary === 'P')?.ipAddress
+
+// Data a link needs that the node payload does not carry. /api/v2/nodes sends no interfaces
+// (OnmsNode.getPrimaryInterface is @Transient @JsonIgnore), so the caller supplies the
+// SNMP-primary address from the interface data it has.
+export interface NodeActionLinkContext {
+  snmpPrimaryIpAddress?: string
+}
+
+export const mapLink = (name: string, node: Node, context: NodeActionLinkContext = {}) => {
   switch (name) {
     case 'events':
       return `event/list?filter=node%3D${node.id}`
@@ -71,9 +86,16 @@ export const mapLink = (name: string, node: Node) => {
       return `element/rescan.jsp?node=${node.id}`
     case 'admin':
       return `admin/nodemanagement/index.jsp?node=${node.id}`
-    case 'updateSnmp':
-      // TODO: Get IP Address
-      return `admin/updateSnmp.jsp?node=${node.id}&ipaddr=0.0.0.0`
+    case 'updateSnmp': {
+      // The legacy node page shows this only for a node with an SNMP-primary interface, and
+      // points it at that address. Without one there is nothing safe to link to: the form
+      // would rewrite SNMP configuration for whatever address it was handed.
+      if (!context.snmpPrimaryIpAddress) {
+        return ''
+      }
+
+      return `admin/updateSnmp.jsp?node=${node.id}&ipaddr=${encodeURIComponent(context.snmpPrimaryIpAddress)}`
+    }
     case 'schedule-outage':
       // The label goes into a query parameter, so it has to be encoded: an & or # in it would
       // otherwise swallow the parameters that follow.
@@ -87,10 +109,10 @@ export const mapLink = (name: string, node: Node) => {
   }
 }
 
-export const createLinkItemsList = (node: Node) => {
+export const createLinkItemsList = (node: Node, context: NodeActionLinkContext = {}) => {
   return linkItems.map(li => ({
     label: li.label,
-    link: mapLink(li.name, node)
+    link: mapLink(li.name, node, context)
   }))
     .filter(li => li.link)
 }

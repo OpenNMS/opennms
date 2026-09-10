@@ -37,10 +37,9 @@ describe('nodeActionLinks', () => {
     expect(linkItems.map(li => li.name)).toContain('siteStatus')
   })
 
-  // 'node-link-details' pointed at the same page as 'node-link', so only one of the two
-  // survived the merge into this list.
-  it('has no leftover duplicate of the linked-node action', () => {
-    expect(linkItems.map(li => li.name)).not.toContain('node-link-details')
+  // Two entries pointed at the linked-node page before these lists were merged, under
+  // different labels. Only one should reach the menu.
+  it('offers the linked-node page exactly once', () => {
     expect(linkItems.filter(li => mapLink(li.name, node).startsWith('element/linkednode.jsp'))).toHaveLength(1)
   })
 
@@ -54,6 +53,26 @@ describe('nodeActionLinks', () => {
 
     expect(mapLink('schedule-outage', awkward))
       .toBe('admin/sched-outages/editoutage.jsp?newName=srv%20%26%20%231&addNew=true&nodeID=42')
+  })
+
+  // The legacy node page shows Update SNMP only when the node has an SNMP-primary interface,
+  // and points it at that interface's address. A hardcoded 0.0.0.0 would have the form rewrite
+  // SNMP config for an address that is not the node's.
+  it('points Update SNMP Information at the SNMP-primary address', () => {
+    expect(mapLink('updateSnmp', node, { snmpPrimaryIpAddress: '10.0.0.44' }))
+      .toBe('admin/updateSnmp.jsp?node=42&ipaddr=10.0.0.44')
+  })
+
+  it('drops Update SNMP Information when no SNMP-primary address is known', () => {
+    expect(mapLink('updateSnmp', node)).toBe('')
+    expect(createLinkItemsList(node).map(li => li.label)).not.toContain('Update SNMP Information')
+  })
+
+  it('createLinkItemsList keeps Update SNMP Information when the address is known', () => {
+    expect(createLinkItemsList(node, { snmpPrimaryIpAddress: '10.0.0.44' })).toContainEqual({
+      label: 'Update SNMP Information',
+      link: 'admin/updateSnmp.jsp?node=42&ipaddr=10.0.0.44'
+    })
   })
 
   it('createLinkItemsList drops Site Status for a node with no building', () => {

@@ -19,7 +19,7 @@ describe('NodeActionsDropdown.vue', () => {
     expect(items[0].label).toBe('Info...')
     expect(items.map(i => i.label)).toContain('Events')
     expect(items.map(i => i.label)).toContain('View Topology Map')
-    expect(items).toHaveLength(15) // Info + 14 links
+    expect(items).toHaveLength(14) // Info + 13 links; Update SNMP needs an address
   })
 
   // Driven by the shared nodeActionLinks list, which filters a Site Status link the node
@@ -28,7 +28,7 @@ describe('NodeActionsDropdown.vue', () => {
     const wrapper = mountIt({ node: { ...node, assetRecord: { building: 'HQ 1' }}})
     const items = (wrapper.vm as any).items as Array<{ label: string }>
     expect(items.map(i => i.label)).toContain('Site Status')
-    expect(items).toHaveLength(16) // Info + 15 links
+    expect(items).toHaveLength(15) // Info + 14 links; Update SNMP needs an address
   })
 
   it('omits Site Status for a node with no building', () => {
@@ -44,6 +44,21 @@ describe('NodeActionsDropdown.vue', () => {
     const items = (wrapper.vm as any).items as Array<{ label: string, command: () => void }>
     items.find(i => i.label === 'Site Status')!.command()
     expect(assign).toHaveBeenCalledWith('/opennms/siteStatusView.htm?statusSite=HQ%201')
+    vi.unstubAllGlobals()
+  })
+
+  it('offers Update SNMP Information only when given the SNMP-primary address', () => {
+    const without = (mountIt().vm as any).items as Array<{ label: string }>
+    expect(without.map(i => i.label)).not.toContain('Update SNMP Information')
+
+    const wrapper = mountIt({ snmpPrimaryIpAddress: '10.0.0.44' })
+    const items = (wrapper.vm as any).items as Array<{ label: string, command: () => void }>
+    expect(items.map(i => i.label)).toContain('Update SNMP Information')
+
+    const assign = vi.fn()
+    vi.stubGlobal('location', { assign } as any)
+    items.find(i => i.label === 'Update SNMP Information')!.command()
+    expect(assign).toHaveBeenCalledWith('/opennms/admin/updateSnmp.jsp?node=42&ipaddr=10.0.0.44')
     vi.unstubAllGlobals()
   })
 
@@ -73,7 +88,7 @@ describe('NodeActionsDropdown.vue', () => {
     const items = (wrapper.vm as any).items as Array<{ label: string }>
     expect(items.map(i => i.label)).not.toContain('Info...')
     expect(items[0].label).toBe('Events')
-    expect(items).toHaveLength(14)
+    expect(items).toHaveLength(13)
   })
 
   it('Info... command calls triggerNodeInfo with the node', () => {

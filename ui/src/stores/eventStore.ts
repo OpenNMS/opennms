@@ -39,20 +39,19 @@ export const useEventStore = defineStore('eventStore', () => {
   }
 
   /**
-   * Fetch events matching the given query WITHOUT publishing them into `events`/`totalCount`,
-   * and hand them back to the caller. Keeps a download from disturbing the page the events
-   * table is currently showing, whatever query the download runs.
+   * Drop the events on hand. The Node Details page calls this when its node fails to load:
+   * the events table fetches by node id itself and only replaces its rows on success, so the
+   * previous node's events would otherwise stay on screen.
    */
-  const getEventsForExport = async (queryParameters?: QueryParameters): Promise<Event[]> => {
-    const resp = await API.getEvents(queryParameters)
-
-    return resp ? resp.event : []
+  const clearEvents = () => {
+    events.value = []
+    totalCount.value = 0
   }
 
   return {
     events,
     totalCount,
     getEvents,
-    getEventsForExport
+    clearEvents
   }
 })
