@@ -141,7 +141,7 @@
           label="Add Coverage"
           icon="pi pi-plus"
           data-test="add-entry-button"
-          :disabled="!entryUser || !entryStart || !entryEnd || !!entryRangeProblem || saving"
+          :disabled="!serverZone || !entryUser || !entryStart || !entryEnd || !!entryRangeProblem || saving"
           @click="addEntry"
         />
       </div>
@@ -270,6 +270,8 @@ const load = async () => {
   ])
   if (calendarResult) {
     calendar.value = calendarResult
+  } else if (!calendar.value) {
+    errorText.value = 'The schedule calendar could not be loaded, so coverage cannot be added.'
   }
   if (roleResult) {
     role.value = roleResult
