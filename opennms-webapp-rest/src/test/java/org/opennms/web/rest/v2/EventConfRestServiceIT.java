@@ -72,6 +72,7 @@ import java.util.Comparator;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -1267,6 +1268,30 @@ public class EventConfRestServiceIT {
         EventConfSourceDto cisco = dtos.stream().filter(d -> "Cisco.airespace".equals(d.getName())).findFirst().orElseThrow();
         Response one = eventConfRestApi.getEventConfSourceById(cisco.getId(), securityContext);
         assertEquals(cisco.getEvaluationOrder(), ((EventConfSourceDto) one.getEntity()).getEvaluationOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testUploadWithMalformedEventConfXml_FailsTheRequestButPersistsFiles() throws Exception {
+        Response resp = eventConfRestApi.uploadEventConfFiles(List.of(
+                mockAttachment("eventconf.xml", "/EVENTS-CONF/test.invalid.xml"),
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+
+        // the requested order could not be applied -> failed request, but with the full report
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
+        @SuppressWarnings("unchecked") List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
+
+        assertEquals(1, success.size());
+        assertEquals("opennms.alarm.events", success.get(0).get("file"));
+        assertEquals(1, errors.size());
+        assertEquals(EventConfRestService.EVENTCONF_ORDER_STEP, errors.get(0).get("file"));
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        assertNotNull("files are still persisted", eventConfSourceDao.findByName("opennms.alarm.events"));
+        assertNull("the manifest must not be stored as a source", eventConfSourceDao.findByName("eventconf"));
     }
 
 }

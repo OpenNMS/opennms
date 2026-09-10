@@ -228,6 +228,8 @@ public class EventConfEventDaoHibernate
         }
 
         var session = getSessionFactory().getCurrentSession();
+        // bound the wait: this UPDATE queues behind whoever holds the source's event rows (e.g. an upload)
+        EventConfLocks.applyLockTimeout(session);
         String hql = "update EventConfEvent e set e.enabled = :enabled " +
                 "where e.source.id = :sourceId and e.id in (:eventIds)";
 

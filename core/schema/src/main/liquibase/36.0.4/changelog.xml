@@ -112,48 +112,6 @@
         </rollback>
     </changeSet>
 
-    <!-- eventconf_sources.name is the identity a re-upload, the eventconf.xml renumbering and the plugin /
-         programmatic sources are looked up by; the code always assumed it unique but only an index existed,
-         so two concurrent creates of the same name could both succeed. Rename any duplicates (the newest row
-         keeps the name) and then enforce it. -->
-    <changeSet author="cgorantla" id="36.0.4-eventconf-sources-name-dedupe">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="eventconf_sources"/>
-            <not>
-                <sqlCheck expectedResult="0">
-                    SELECT COUNT(*) FROM (
-                        SELECT name FROM eventconf_sources GROUP BY name HAVING COUNT(*) > 1
-                    ) d
-                </sqlCheck>
-            </not>
-        </preConditions>
-        <sql>
-            UPDATE eventconf_sources s
-            SET name = s.name || '-' || s.id
-            FROM (
-                SELECT id, ROW_NUMBER() OVER (PARTITION BY name ORDER BY id DESC) AS rn
-                FROM eventconf_sources
-            ) r
-            WHERE s.id = r.id
-              AND r.rn > 1;
-        </sql>
-        <rollback/>
-    </changeSet>
-
-    <changeSet author="cgorantla" id="36.0.4-eventconf-sources-name-unique">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="eventconf_sources"/>
-            <sqlCheck expectedResult="0">
-                SELECT COUNT(*) FROM pg_constraint WHERE conname = 'uk_eventconf_sources_name'
-            </sqlCheck>
-        </preConditions>
-        <addUniqueConstraint tableName="eventconf_sources" columnNames="name"
-                             constraintName="uk_eventconf_sources_name"/>
-        <rollback>
-            <dropUniqueConstraint tableName="eventconf_sources" constraintName="uk_eventconf_sources_name"/>
-        </rollback>
-    </changeSet>
-
     <!-- file_order 1 is reserved for the catch-all (the source that must be evaluated last). Move any other
          source off it and put the catch-all there, so allocation can pin the catch-all at 1 without ever
          having to shift other rows at runtime. -->

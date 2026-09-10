@@ -114,7 +114,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         // An eventconf.xml in the upload dictates the source order; it is applied after the files are
         // persisted (see reorderSourcesFromEventConf), so it is not stored as a source itself.
-        final List<String> eventConfOrder = parseEventConfOrder(fileMap);
+        final ManifestOrder manifest = parseEventConfOrder(fileMap);
 
         List<String> orderedFiles = new ArrayList<>(fileMap.keySet());
 
@@ -151,10 +151,13 @@ public class EventConfRestService implements EventConfRestApi {
         final long dbEndTime = System.currentTimeMillis();
         LOG.info("Time to add {} files to DB: {} ms", orderedFiles.size(), (dbEndTime - dbStartTime));
 
-        boolean orderApplied = true;
-        if (eventConfOrder != null) {
+        boolean orderApplied = manifest.failure == null;
+        if (manifest.failure != null) {
+            errorList.add(buildErrorResponse(EVENTCONF_ORDER_STEP, manifest.failure));
+        }
+        if (manifest.order != null) {
             try {
-                eventConfPersistenceService.reorderSourcesFromEventConf(eventConfOrder);
+                eventConfPersistenceService.reorderSourcesFromEventConf(manifest.order);
             } catch (Exception e) {
                 // The files above are committed, but eventd would now evaluate them in upload order, not in
                 // the order the eventconf.xml asked for: that is a failed request, not a footnote.
@@ -176,10 +179,22 @@ public class EventConfRestService implements EventConfRestApi {
      * Returns null when there is no eventconf.xml, it lists no files, or it cannot be parsed
      * (in which case it is left in the map so it shows up in the error list).
      */
-    private List<String> parseEventConfOrder(final Map<String, Attachment> fileMap) {
+    /** Result of looking for an ordering manifest (eventconf.xml) in an upload. */
+    private static final class ManifestOrder {
+        static final ManifestOrder ABSENT = new ManifestOrder(null, null);
+        final List<String> order;   // null unless a usable order was parsed
+        final Exception failure;    // non-null when a manifest was present but unparseable
+
+        private ManifestOrder(final List<String> order, final Exception failure) {
+            this.order = order;
+            this.failure = failure;
+        }
+    }
+
+    private ManifestOrder parseEventConfOrder(final Map<String, Attachment> fileMap) {
         final Attachment eventConfAttachment = fileMap.get("eventconf");
         if (eventConfAttachment == null) {
-            return null;
+            return ManifestOrder.ABSENT;
         }
         fileMap.remove("eventconf");
         try (InputStream stream = eventConfAttachment.getObject(InputStream.class)) {
@@ -194,14 +209,15 @@ public class EventConfRestService implements EventConfRestApi {
             }
             if (eventConfOrder.isEmpty()) {
                 LOG.info("eventconf.xml contained no <event-file> entries, falling back to default ordering");
-                return null;
+                return ManifestOrder.ABSENT;
             }
             LOG.info("Parsed eventconf.xml with {} event-file entries for ordering", eventConfOrder.size());
-            return eventConfOrder;
+            return new ManifestOrder(eventConfOrder, null);
         } catch (Exception e) {
-            LOG.warn("Failed to parse eventconf.xml for file ordering, falling back to default order: {}", e.getMessage());
-            fileMap.put("eventconf", eventConfAttachment);
-            return null;
+            // A manifest was supplied but cannot be honored: that fails the request (see the caller),
+            // it must not silently degrade into "default order"
+            LOG.error("Failed to parse the uploaded eventconf.xml, its source order cannot be applied", e);
+            return new ManifestOrder(null, e);
         }
     }
 
