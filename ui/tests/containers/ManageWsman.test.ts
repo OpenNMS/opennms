@@ -23,9 +23,9 @@
 import ManageWsman from '@/containers/ManageWsman.vue'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, afterEach } from 'vitest'
 
 const SETTINGS = {
   retry: 1, timeout: 30000, username: 'root', hasPassword: true, port: null, maxElements: null,
@@ -33,6 +33,8 @@ const SETTINGS = {
 }
 
 const CONFIG = { version: 'v1', defaults: SETTINGS, definitions: [] }
+
+const mounted: VueWrapper<any>[] = []
 
 const mountPage = async (state: Record<string, unknown>) => {
   const wrapper = mount(ManageWsman, {
@@ -42,10 +44,19 @@ const mountPage = async (state: Record<string, unknown>) => {
     }
   })
   await flushPromises()
+  mounted.push(wrapper)
   return wrapper
 }
 
 describe('ManageWsman.vue (container)', () => {
+  // PrimeVue's TabList positions its ink bar from a 150 ms timer it never clears;
+  // let it fire while the DOM still exists, then unmount, or vitest reports an
+  // unhandled ReferenceError after this file's environment is torn down.
+  afterEach(async () => {
+    await new Promise(resolve => setTimeout(resolve, 200))
+    mounted.splice(0).forEach(w => w.unmount())
+  })
+
   it('loads the configuration on mount and renders the page title', async () => {
     const wrapper = await mountPage({ config: CONFIG, loadError: false })
     const store = useWsmanAdminStore()
