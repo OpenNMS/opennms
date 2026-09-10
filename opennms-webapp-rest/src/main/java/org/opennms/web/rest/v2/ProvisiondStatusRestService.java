@@ -23,7 +23,9 @@ package org.opennms.web.rest.v2;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,9 +56,58 @@ public class ProvisiondStatusRestService {
     @GET
     @Path("status")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get all jobs status", description = "Get all recent provisiond jobs status.", operationId = "ProvisiondStatusRestServiceGETStatusOfJobs")
+    @Operation(summary = "Get all jobs status",
+            description = """
+        Every provisioning job monitor provisiond still holds, keyed by job id. The set is a bounded,
+        expiring cache rather than a history: old entries fall out, so an id that worked earlier can
+        stop resolving.
+
+        Each value is a Dropwizard-metrics snapshot: nine timers (`loadingTimer`, `auditTimer`,
+        `importTimer`, `schedulingTimer`, `relateTimer`, `scanEventTimer`, `scanningTimer`,
+        `persistingTimer`, `eventTimer`), each with a percentile snapshot and one/five/fifteen-minute
+        and mean rates, plus `nodeCount`, `name`, `startTime`, `endTime` and `currentNodes`. Timer
+        values are nanoseconds; `startTime` and `endTime` are epoch milliseconds, with `endTime` unset
+        until the job finishes.
+
+        The keys are metric names built from the requisition URL plus a timestamp, so they contain `/`
+        and `:` characters.""",
+            operationId = "ProvisiondStatusRestServiceGETStatusOfJobs")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "all jobs current monitor object.", content = @Content(schema = @Schema(type = "Map<String, TimeTrackingMonitor>")))
+            @ApiResponse(responseCode = "200", description = "Job monitors keyed by job id, empty when provisiond has run nothing recently.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            // The handler returns a Map, so the document can only
+                            // carry a free-form object plus this example.
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = """
+                    {
+                      "file:/opt/opennms/etc/imports/pending/Routers.xml.20260826025715": {
+                        "loadingTimer": {
+                          "snapshot": {
+                            "values": [9353170],
+                            "mean": 9353170.0,
+                            "stdDev": 0.0,
+                            "min": 9353170,
+                            "max": 9353170,
+                            "median": 9353170.0,
+                            "75thPercentile": 9353170.0,
+                            "95thPercentile": 9353170.0,
+                            "98thPercentile": 9353170.0,
+                            "99thPercentile": 9353170.0,
+                            "999thPercentile": 9353170.0
+                          },
+                          "fifteenMinuteRate": 0.1945208954232697,
+                          "fiveMinuteRate": 0.18400888292586465,
+                          "meanRate": 0.031371987477271615,
+                          "oneMinuteRate": 0.1318481260400888,
+                          "count": 1
+                        },
+                        "nodeCount": 3,
+                        "name": "file:/opt/opennms/etc/imports/pending/Routers.xml.20260826025715",
+                        "startTime": 1787727435506,
+                        "endTime": 1787727442797,
+                        "currentNodes": {}
+                      }
+                    }""")))
     })
     public Response getAllJobStatus() {
         MonitorHolder monitorHolder = getMonitorHolder();
@@ -66,14 +117,29 @@ public class ProvisiondStatusRestService {
     @GET
     @Path("status/{jobId}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get single job status", description = "Get single provisiond job status by jobId", operationId = "ProvisiondStatusRestServiceGETStatusOfJobByJobId")
+    @Operation(summary = "Get single job status",
+            description = """
+        One job's monitor, looked up by the same key `GET /provisiond/status` uses.
+
+        Real job ids are metric names derived from the requisition URL and so contain `/` characters.
+        A JAX-RS path template does not match across `/`, and percent-encoding the separator as `%2F`
+        does not reach the handler either, so such an id cannot be addressed here.""",
+            operationId = "ProvisiondStatusRestServiceGETStatusOfJobByJobId")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The current job status.",
-                    content = @Content(schema = @Schema(implementation = TimeTrackingMonitor.class))),
-            @ApiResponse(responseCode = "404", description = "jobId not exist.",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "The job monitor. Same shape as one value of the all-jobs map.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = TimeTrackingMonitor.class))),
+            @ApiResponse(responseCode = "404", description = """
+                    No monitor is held under that id, either because it never existed or because it has
+                    expired out of the cache. The body is empty.""")
     })
-    public Response getJobStatus(@PathParam("jobId") String jobId) {
+    public Response getJobStatus(@Parameter(description = """
+                    A key from `GET /provisiond/status`. URL-triggered import jobs are keyed by their
+                    `file:/...` URL, which contains `/` and cannot be expressed in this path segment, so
+                    those jobs are not reachable here; only keys without `/`, such as a scheduled
+                    requisition's job name, can be looked up.""",
+                    required = true, example = "Routers")
+                                 @PathParam("jobId") String jobId) {
         MonitorHolder monitorHolder = getMonitorHolder();
         ProvisionMonitor monitor = monitorHolder.getMonitors().get(jobId);
         if (monitor != null) {

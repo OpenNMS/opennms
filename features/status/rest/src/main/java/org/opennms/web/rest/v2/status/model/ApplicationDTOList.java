@@ -29,10 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="applications")
 @JsonRootName("applications")
+@Schema(description = "One page of applications with their rolled-up severity. `count` is the page size, `totalCount` the number of matches.")
 public class ApplicationDTOList extends JaxbListWrapper<ApplicationDTO> {
 
     private static final long serialVersionUID = 1L;

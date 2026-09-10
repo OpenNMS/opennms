@@ -35,6 +35,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -104,7 +112,67 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsMonitoredServiceList getServices(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
+    @Operation(
+            summary = "List the monitored services on one IP interface",
+            description = """
+                    Returns every monitored service on the interface. The whole set is returned; this endpoint
+                    takes no paging or filter parameters, so `offset` is always 0 and `count` equals `totalCount`.
+
+                    `status` is the stored one-character poller state and `statusLong` its label: `A` Managed,
+                    `N` Not Monitored, `U` Unmanaged, `D` Deleted, `F` Forced Unmanaged, `R` Rescan to Resume,
+                    `S` Rescan to Suspend, `X` Remotely Monitored.""",
+            operationId = "listInterfaceServices"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The interface's monitored services.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsMonitoredServiceList.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 1,
+                      "count": 1,
+                      "offset": 0,
+                      "service": [
+                        {
+                          "source": null,
+                          "qualifier": null,
+                          "status": "A",
+                          "down": false,
+                          "notify": null,
+                          "lastGood": null,
+                          "lastFail": null,
+                          "serviceType": { "id": 1, "name": "ICMP" },
+                          "statusLong": "Managed",
+                          "ipInterfaceId": 23601,
+                          "id": 23616
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsMonitoredServiceList.class),
+                                    examples = @ExampleObject(value = """
+                    <services count="1" offset="0" totalCount="1">
+                      <service down="false" status="A" statusLong="Managed" id="23616">
+                        <ipInterfaceId>23601</ipInterfaceId>
+                        <serviceType id="1">
+                          <name>ICMP</name>
+                        </serviceType>
+                      </service>
+                    </services>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, or the node has no interface with that address.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = {
+                                    @ExampleObject(name = "unknownNode", value = "Node 999999 was not found."),
+                                    @ExampleObject(name = "unknownInterface", value = "IP Interface 192.0.2.99 was not found on node 258.")
+                            }))
+    })
+    public OnmsMonitoredServiceList getServices(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                                @PathParam("nodeCriteria") String nodeCriteria,
+                                                @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                                                @PathParam("ipAddress") String ipAddress) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
@@ -127,7 +195,58 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{service}")
-    public OnmsMonitoredService getService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
+    @Operation(
+            summary = "Get one monitored service by service name",
+            description = """
+                    Returns the monitored service with the given service name on the interface. The path segment
+                    is the service *name*, such as `ICMP` or `HTTP`, not the numeric service id used by
+                    `/ifservices/{id}`. Matching is exact and case-sensitive.""",
+            operationId = "getInterfaceService"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The monitored service.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsMonitoredService.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "source": null,
+                      "qualifier": null,
+                      "status": "A",
+                      "down": false,
+                      "notify": null,
+                      "lastGood": null,
+                      "lastFail": null,
+                      "serviceType": { "id": 1, "name": "ICMP" },
+                      "statusLong": "Managed",
+                      "ipInterfaceId": 23601,
+                      "id": 23616
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsMonitoredService.class),
+                                    examples = @ExampleObject(value = """
+                    <service down="false" status="A" statusLong="Managed" id="23616">
+                      <ipInterfaceId>23601</ipInterfaceId>
+                      <serviceType id="1">
+                        <name>ICMP</name>
+                      </serviceType>
+                    </service>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, or the node has no interface with that address.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "IP Interface 192.0.2.99 was not found on node 258."))),
+            @ApiResponse(responseCode = "404", description = "The interface carries no service with that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Monitored Service NOSUCH was not found on IP Interface 192.0.2.10 and node 258.")))
+    })
+    public OnmsMonitoredService getService(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                           @PathParam("nodeCriteria") String nodeCriteria,
+                                           @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                                           @PathParam("ipAddress") String ipAddress,
+                                           @Parameter(description = "Service name, as it appears in `serviceType.name`.", example = "ICMP")
+                                           @PathParam("service") String service) {
         final OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
@@ -153,7 +272,63 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addService(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
+    @Operation(
+            summary = "Add a monitored service to an IP interface",
+            description = """
+                    Attaches a monitored service to the interface and publishes `nodeGainedService`.
+
+                    The service type is looked up by `serviceType.name` and created if it does not exist. A
+                    service type created this way stays in the `service` table after the monitored service is
+                    deleted.
+
+                    Both XML and JSON bodies are accepted; a form-encoded body is rejected with 415. In XML
+                    `status` is an attribute on `service` and `serviceType` is a nested element; in JSON both are
+                    plain fields. `serviceType` is required: a body without it fails with 500, not 400.
+
+                    The `status` sent in the body is stored, and pollerd can change it immediately afterwards.""",
+            operationId = "addInterfaceService"
+    )
+    @RequestBody(
+            required = true,
+            description = "The service to add. `serviceType.name` is required.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = OnmsMonitoredService.class),
+                            examples = @ExampleObject(value = """
+                    <service status="A">
+                      <serviceType>
+                        <name>ICMP</name>
+                      </serviceType>
+                    </service>""")),
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsMonitoredService.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "status": "A",
+                      "serviceType": { "name": "ICMP" }
+                    }"""))
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created. `Location` points at the service, keyed by name."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, or the node has no interface with that address.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = {
+                                    @ExampleObject(name = "unknownNode", value = "Node 999999 was not found."),
+                                    @ExampleObject(name = "unknownInterface", value = "IP Interface 192.0.2.99 was not found on node 258.")
+                            })),
+            @ApiResponse(responseCode = "415", description = "The body was form-encoded. Send XML or JSON."),
+            @ApiResponse(responseCode = "500", description = "The body carried no `serviceType`, or publishing `nodeGainedService` failed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"org.opennms.netmgt.model.OnmsServiceType.getName()\" because the return value of \"org.opennms.netmgt.model.OnmsMonitoredService.getServiceType()\" is null")))
+    })
+    public Response addService(@Context final UriInfo uriInfo,
+                               @Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                               @PathParam("nodeCriteria") final String nodeCriteria,
+                               @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                               @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
         writeLock();
         
         try {
@@ -206,7 +381,49 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{service}")
-    public Response updateService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update one monitored service",
+            description = """
+                    Applies form-encoded fields to one monitored service. Keys are bean property names on
+                    `OnmsMonitoredService`; `id`, `dbId`, `nodeId`, `authorizedGroups`, `foreignSource`,
+                    `foreignId` and `type` are protected and dropped with a log warning, and unresolvable keys are
+                    ignored, so a request naming only such keys comes back 304.
+
+                    `status` is handled specially. `S`, and a move from `A` to `F`, store `F` and publish
+                    `suspendPollingService`. `R`, and a move from `F` to `A`, store `A` and publish
+                    `resumePollingService`. So `R` and `S` are request codes that are never themselves stored.""",
+            operationId = "updateInterfaceService"
+    )
+    @RequestBody(
+            required = true,
+            description = "Form-encoded service properties to set.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "string"),
+                    examples = {
+                            @ExampleObject(name = "suspend", summary = "Stop polling the service",
+                                    value = "status=F"),
+                            @ExampleObject(name = "resume", summary = "Resume polling the service",
+                                    value = "status=A")
+                    })
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "At least one field was written. No body."),
+            @ApiResponse(responseCode = "304", description = "No key in the body resolved to a writable, unprotected property."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, the node has no interface with that address, or the interface carries no service with that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Monitored Service NOSUCH was not found on IP Interface 192.0.2.10 and node 258."))),
+            @ApiResponse(responseCode = "500", description = "Publishing the suspend or resume event failed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot send event uei.opennms.org/internal/poller/suspendPollingService : connection refused")))
+    })
+    public Response updateService(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                  @PathParam("nodeCriteria") String nodeCriteria,
+                                  @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                                  @PathParam("ipAddress") String ipAddress,
+                                  @Parameter(description = "Service name, as it appears in `serviceType.name`.", example = "ICMP")
+                                  @PathParam("service") String serviceName, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -264,7 +481,37 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @DELETE
     @Path("{service}")
-    public Response deleteService(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, @PathParam("service") final String serviceName) {
+    @Operation(
+            summary = "Delete one monitored service",
+            description = """
+                    Publishes `deleteService` and returns immediately. The deletion is carried out asynchronously,
+                    so the service is normally still readable for a moment after the 202.
+
+                    The service type row itself is left in place, so a service name introduced by a POST here
+                    stays defined after its last monitored service is gone.""",
+            operationId = "deleteInterfaceService"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "The delete request was published. No body. Completion is not confirmed."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, or the node has no interface with that address.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "IP Interface 192.0.2.99 was not found on node 258."))),
+            @ApiResponse(responseCode = "409", description = "The interface carries no service with that name. This path reports the missing service as a conflict, not a 404.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Monitored Service NOSUCH was not found on IP Interface 192.0.2.10 and node 258."))),
+            @ApiResponse(responseCode = "500", description = "Publishing `deleteService` failed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot send event uei.opennms.org/nodes/deleteService : connection refused")))
+    })
+    public Response deleteService(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                  @PathParam("nodeCriteria") final String nodeCriteria,
+                                  @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                                  @PathParam("ipAddress") final String ipAddress,
+                                  @Parameter(description = "Service name, as it appears in `serviceType.name`.", example = "ICMP")
+                                  @PathParam("service") final String serviceName) {
         writeLock();
         
         try {

@@ -21,13 +21,22 @@
  */
 package org.opennms.web.rest.v2.status.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.features.status.api.SeveritySupplier;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+@Schema(description = "One entity and the severity rolled up onto it.")
 public class StatusDTO implements SeveritySupplier {
 
+    @Schema(description = "Database id of the entity.", example = "1")
     private Integer id;
+
+    @Schema(description = "Node label, application name or business service name.", example = "loopback-001")
     private String name;
+
+    @Schema(description = "Rolled-up severity, serialized as the enum constant name rather than the label.",
+            example = "MINOR",
+            allowableValues = {"INDETERMINATE", "CLEARED", "NORMAL", "WARNING", "MINOR", "MAJOR", "CRITICAL"})
     private OnmsSeverity severity;
 
     @Override

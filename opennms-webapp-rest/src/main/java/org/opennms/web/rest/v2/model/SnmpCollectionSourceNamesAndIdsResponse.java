@@ -21,13 +21,19 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Schema(description = "One SNMP data collection source reduced to its id and name.")
 public class SnmpCollectionSourceNamesAndIdsResponse {
 
+    @Schema(description = "Source id.", example = "24")
     private Integer id;
+
+    @Schema(description = "Source name.", example = "Cisco")
     private String name;
 
     public SnmpCollectionSourceNamesAndIdsResponse(Integer id, String name) {

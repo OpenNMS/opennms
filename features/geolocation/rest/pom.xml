@@ -16,7 +16,29 @@
     <bundle.namespace>org.opennms.web.rest.v2</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <!-- Swagger annotations are compile-time only; Sentinel and Minion do not ship the bundle. -->
+            <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,io.swagger.v3.oas.annotations.*;resolution:=optional,*</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
+    <!-- Annotations only; swagger-annotations already ships in the webapp's WEB-INF/lib. -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>

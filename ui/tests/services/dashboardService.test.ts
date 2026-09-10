@@ -17,6 +17,30 @@ const axios404 = () => {
 describe('dashboardService', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  it('omits the news-feed panel from the default layout when the feed is disabled', async () => {
+    // server 204 on /newsfeed = opennms.newsFeedPanel.show=false; the legacy
+    // homepage omitted the box entirely rather than showing a dead 9-row panel
+    vi.mocked(v2.get).mockImplementation(async (url: string) => {
+      if (url === '/newsfeed') {
+        return { status: 204, data: null }
+      }
+      throw axios404()
+    })
+    const layout = await getSystemDashboard()
+    expect(layout.panels.some(p => p.type === 'newsfeed')).toBe(false)
+  })
+
+  it('keeps the news-feed panel in the default layout when the feed is enabled', async () => {
+    vi.mocked(v2.get).mockImplementation(async (url: string) => {
+      if (url === '/newsfeed') {
+        return { status: 200, data: { items: [] }}
+      }
+      throw axios404()
+    })
+    const layout = await getSystemDashboard()
+    expect(layout.panels.some(p => p.type === 'newsfeed')).toBe(true)
+  })
+
   it('returns the stored layout when it looks valid', async () => {
     const layout = createDefaultLayout()
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: layout })
@@ -32,7 +56,6 @@ describe('dashboardService', () => {
     expect(typeof result.refresh.seconds).toBe('number')
     expect(result.globalTimeframe.preset).toBeTruthy()
     expect(result.globalFilter.surveillanceCategories).toEqual([])
-    expect(Array.isArray(result.panels)).toBe(true)
     // a doc predating the squeeze option defaults to packed (true)
     expect(result.autoCompact).toBe(true)
   })
@@ -56,11 +79,10 @@ describe('dashboardService', () => {
     expect(result.panels.map(p => p.id)).toEqual(['ok', 'bad-type'])
   })
 
-  it('falls back to the (empty) default on 404 (nothing saved yet)', async () => {
+  it('falls back to the default on 404 (nothing saved yet)', async () => {
     vi.mocked(v2.get).mockRejectedValue(axios404())
     const result = await getSystemDashboard()
-    expect(Array.isArray(result.panels)).toBe(true)
-    expect(result.refresh).toBeDefined()
+    expect(result.panels.length).toBeGreaterThan(0)
   })
 
   it('propagates non-404 failures instead of fabricating the default', async () => {

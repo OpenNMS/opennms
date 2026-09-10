@@ -203,6 +203,11 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin/notifications',
+      name: 'Notifications',
+      component: () => import('@/containers/Notifications.vue')
+    },
+    {
       path: '/admin/groups',
       name: 'Manage Groups',
       component: () => import('@/containers/ManageGroups.vue'),
@@ -237,6 +242,18 @@ const router = createRouter({
           component: () => import('@/components/Map/MapNodesGrid.vue')
         }
       ]
+    },
+    {
+      // Topology type lives in the path (custom today; enlinkd-l2/bsm/... later);
+      // the specific view is a `?view=<name>` query so it's bookmarkable.
+      // Bare /topology redirects to the custom catalog.
+      path: '/topology',
+      redirect: '/topology/custom'
+    },
+    {
+      path: '/topology/:source',
+      name: 'Topology',
+      component: () => import('@/containers/Topology.vue')
     },
     {
       path: '/nodes',

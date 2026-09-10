@@ -22,11 +22,23 @@
 
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Schema(description = """
+        Request body for creating an empty SNMP data collection source. Both fields are required.""")
 public class SnmpCollectionCreateSourceDto {
+    @Schema(description = "Source name, unique across sources. Surrounding whitespace is trimmed. This "
+            + "becomes the `<datacollection-group name=...>` of the source and the value profiles "
+            + "reference in `sourceNames`.",
+            example = "Acme Packet", required = true)
     private String name;
+
+    @Schema(description = "Names of existing profiles to attach the new source to. At least one is "
+            + "required, and every name has to already exist.",
+            example = "[\"default\"]", required = true)
     private List<String> profiles = new ArrayList<>();
 
     public String getName() {
