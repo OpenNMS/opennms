@@ -350,6 +350,9 @@ export interface MonitoredService {
 
 // Mirrors what /api/v2/outages actually returns. It sends no hostname and no serviceName --
 // OnmsOutage has neither -- so the service name is resolved from serviceId by the caller.
+// perspective is the monitoring location NAME, not the location: OnmsOutage.getPerspective
+// returns an OnmsMonitoringLocation, but MonitoringLocationJsonSerializer writes it out as
+// just getLocationName() (and the XML adapter does the same).
 export interface Outage {
   id: number
   ifLostService: Date | null
@@ -359,7 +362,7 @@ export interface Outage {
   monitoredService?: MonitoredService
   nodeId: number
   nodeLabel: string
-  perspective?: MonitoringLocation
+  perspective?: string
   serviceId: number
   suppressTime?: Date | null
   suppressedBy?: string | null
