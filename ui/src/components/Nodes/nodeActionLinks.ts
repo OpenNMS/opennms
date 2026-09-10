@@ -75,7 +75,9 @@ export const mapLink = (name: string, node: Node) => {
       // TODO: Get IP Address
       return `admin/updateSnmp.jsp?node=${node.id}&ipaddr=0.0.0.0`
     case 'schedule-outage':
-      return `admin/sched-outages/editoutage.jsp?newName=${node.label}&addNew=true&nodeID=${node.id}`
+      // The label goes into a query parameter, so it has to be encoded: an & or # in it would
+      // otherwise swallow the parameters that follow.
+      return `admin/sched-outages/editoutage.jsp?newName=${encodeURIComponent(node.label)}&addNew=true&nodeID=${node.id}`
     case 'topology':
       return `topology?provider=Enhanced+Linkd&szl=1&focus-vertices=${node.id}`
     // The legacy node page links to this as "View Node Link Detailed Info".

@@ -17,12 +17,17 @@ vi.mock('vue-router', () => ({
 }))
 
 describe('NodeDetails.vue', () => {
-  const mountComponent = (id = '42') => {
+  const mountComponent = (id = '42', loaded = false) => {
     const pinia = createTestingPinia({ stubActions: false })
     setActivePinia(pinia)
 
     const nodeStore = useNodeStore()
     nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
+
+    if (loaded) {
+      nodeStore.node = { id: '42', label: 'srv-42' } as any
+      nodeStore.nodeLoaded = true
+    }
 
     const menuStore = useMenuStore()
     menuStore.mainMenu = { homeUrl: '/home', baseHref: '/base' } as any
@@ -53,8 +58,23 @@ describe('NodeDetails.vue', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the four child components', async () => {
+  // node starts as {} in the store -- truthy, and undefined for every field -- so panels that
+  // read it must wait for a real one rather than render "Label: undefined" and
+  // element/rescan.jsp?node=undefined.
+  it('renders no node panels until the node has loaded', async () => {
     const { wrapper } = mountComponent()
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeSnmpAttributes' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeCategoriesPanel' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
+  })
+
+  it('renders the four child components', async () => {
+    const { wrapper } = mountComponent('42', true)
     await flushPromises()
 
     expect(wrapper.findComponent({ name: 'BreadCrumbs' }).exists()).toBe(true)
@@ -69,7 +89,7 @@ describe('NodeDetails.vue', () => {
   })
 
   it('puts the node actions menu on the title row', async () => {
-    const { wrapper } = mountComponent()
+    const { wrapper } = mountComponent('42', true)
     await flushPromises()
 
     const header = wrapper.find('.header')

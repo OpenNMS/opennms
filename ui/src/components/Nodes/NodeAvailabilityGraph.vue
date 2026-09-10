@@ -12,7 +12,7 @@
         <div class="onms-col-10">
         </div>
         <div class="onms-col-2">
-          <div class="timeline" ref="timeline">{{ Math.round(100 * availability.availability) / 100 }}%</div>
+          <div class="timeline">{{ Math.round(100 * availability.availability) / 100 }}%</div>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
           </div>
           <div class="onms-col-6 timeline-header">
             <img
-              :src="`${baseHref}rest/timeline/header/${startTime}/${endTime}/${width}`"
+              :src="`${baseHref}rest/timeline/header/${startTime}/${endTime}/${TIMELINE_WIDTH}`"
               :data-imgsrc="`${baseHref}rest/timeline/header/${startTime}/${endTime}/`"
             />
           </div>
@@ -64,11 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, PropType, watch } from 'vue'
+import { computed, ref, PropType, watch } from 'vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeListStore } from '@/stores/nodeListStore'
 
-import { debounce } from 'lodash'
 import { sub, getUnixTime } from 'date-fns'
 import { Node } from '@/types'
 
@@ -83,24 +82,15 @@ const props = defineProps({
   }
 })
 
-// const baseUrl = ref(import.meta.env.VITE_BASE_URL || '')
 const nodeStore = useNodeStore()
 const nodeListStore = useNodeListStore()
 const now = new Date()
 const startTime = ref(getUnixTime(sub(now, { days: 1 })))
 const endTime = ref(getUnixTime(now))
-// const width = ref(200)
-const width = ref(400)
-const timeline = ref<any>(null)
 
-const recalculateWidth = debounce(() => {
-  if (!timeline.value) {
-    return
-  }
-  // width.value = timeline.value.clientWidth - 60
-  // width.value = Math.max(timeline.value.clientWidth - 60, 300)
-  width.value = 400
-}, 500)
+// Width the timeline strips are requested at. Fixed for now; sizing them to the panel is part
+// of the rework this panel is due.
+const TIMELINE_WIDTH = 400
 
 const availability = computed(() => nodeStore.availability)
 
@@ -118,22 +108,21 @@ const getServiceAvailabilityImageLink = (ipinterface: any, service: any) => {
     return '#'
   }
 
-  return `${props.baseHref}rest/timeline/image/${props.node.id}/${ipinterface.address}/${serviceId}/${startTime.value}/${endTime.value}/${width.value}`
+  // The address is a path segment here, so it has to be encoded: a scope-qualified IPv6
+  // address (fe80::1%eth0) would otherwise leave a bare % and an invalid escape.
+  return `${props.baseHref}rest/timeline/image/${props.node.id}/${encodeURIComponent(ipinterface.address)}/${serviceId}/${startTime.value}/${endTime.value}/${TIMELINE_WIDTH}`
 }
 
-watch([() => props.node?.id], () => {
-  nodeStore.getNodeAvailabilityPercentage(props.node.id)
-})
+// immediate, because the details page keeps one instance of this panel across node ids and the
+// node store is never reset: on a return visit to the same node nothing changes, so a
+// change-only watch would leave the availability from the last fetch -- or none at all.
+watch(() => props.node?.id, (id) => {
+  if (!id) {
+    return
+  }
 
-onMounted(async () => {
-  recalculateWidth()
-  window.addEventListener('resize', recalculateWidth)
-})
-
-onUnmounted(() => {
-  recalculateWidth.cancel()
-  window.removeEventListener('resize', recalculateWidth)
-})
+  nodeStore.getNodeAvailabilityPercentage(id)
+}, { immediate: true })
 </script>
 
 <style lang="scss" scoped>

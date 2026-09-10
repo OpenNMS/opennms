@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
@@ -75,9 +75,11 @@ const route = useRoute()
 const { showSnackBar } = useSnackbar()
 const { downloadRecords } = useRecordDownload()
 
-const nodeId = computed(() => route.params.id)
+const nodeId = computed(() => route.params.id as string)
 
-const pageSize = ref(5)
+const DEFAULT_PAGE_SIZE = 5
+
+const pageSize = ref(DEFAULT_PAGE_SIZE)
 const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
 
@@ -91,10 +93,12 @@ const severityMap: Record<string, OnmsTagSeverity> = {
   indeterminate: 'secondary'
 }
 
+const nodeFilter = (id: string) => `node.id==${id}`
+
 const queryParameters = ref({
-  limit: 5,
+  limit: DEFAULT_PAGE_SIZE,
   offset: 0,
-  _s: `node.id==${route.params.id}`
+  _s: nodeFilter(nodeId.value)
 })
 
 const onEventsForNodeClick = () => {
@@ -133,12 +137,26 @@ const onPage = (event: OnmsTablePageEvent) => {
     ...queryParameters.value,
     offset: event.first,
     limit: event.rows,
-    _s: `node.id==${route.params.id}`
+    _s: nodeFilter(nodeId.value)
   }
   eventStore.getEvents(queryParameters.value)
 }
 
 onMounted(() => {
+  eventStore.getEvents(queryParameters.value)
+})
+
+// The details page keeps one instance of this panel across node ids, so the id has to be
+// followed rather than read once: otherwise the table, its "Events for this Node" link and its
+// downloads would disagree about which node they are for. Back to the first page, since the
+// page the user was on says nothing about the new node.
+watch(nodeId, (id) => {
+  first.value = 0
+  queryParameters.value = {
+    ...queryParameters.value,
+    offset: 0,
+    _s: nodeFilter(id)
+  }
   eventStore.getEvents(queryParameters.value)
 })
 

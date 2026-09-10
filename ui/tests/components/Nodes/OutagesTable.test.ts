@@ -31,12 +31,18 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 const mockNodeId = '42'
 
-vi.mock('vue-router', () => ({
-  useRoute: () => ({ params: { id: mockNodeId }})
-}))
+// A reactive route, so a test can change the node id the way navigating to another node does.
+// The details page keeps one component instance across those changes.
+vi.mock('vue-router', async () => {
+  const { reactive } = await import('vue')
+  const route = reactive({ params: { id: '42' }})
+
+  return { useRoute: () => route }
+})
 
 const { showSnackBar } = vi.hoisted(() => ({ showSnackBar: vi.fn() }))
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
@@ -84,6 +90,7 @@ describe('OutagesTable.vue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    ;(useRoute() as any).params.id = mockNodeId
     wrapper = mountTable()
     nodeStore.outages = []
     nodeStore.outagesTotalCount = 0
@@ -329,6 +336,29 @@ describe('OutagesTable.vue', () => {
 
       expect(downloadNames).toEqual([])
       expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    })
+  })
+
+  describe('Node changes under the same component instance', () => {
+    it('refetches for the new node and exports that node', async () => {
+      // Empty, so the download stops at the snackbar: what matters here is the node it asked
+      // for, not the file it would have produced.
+      nodeStore.getNodeOutagesForExport = vi.fn().mockResolvedValue([])
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+
+      expect(nodeStore.getNodeOutages).toHaveBeenCalledWith({
+        id: '99',
+        queryParameters: { limit: 5, offset: 0 }
+      })
+
+      const items = wrapper.findComponent(NodeDownloadDropdown).vm.items as Array<{ label: string, command: () => void }>
+      await items[0].command()
+      await flushPromises()
+
+      expect(nodeStore.getNodeOutagesForExport).toHaveBeenCalledWith(
+        expect.objectContaining({ id: '99' })
+      )
     })
   })
 

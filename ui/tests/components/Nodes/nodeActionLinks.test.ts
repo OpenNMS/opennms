@@ -48,6 +48,14 @@ describe('nodeActionLinks', () => {
     expect(mapLink('node-link', node)).toBe('element/linkednode.jsp?node=42')
   })
 
+  // A label with & or # would otherwise corrupt the query string, losing addNew and nodeID.
+  it('url-encodes the node label in the schedule-outage link', () => {
+    const awkward = { ...node, id: 42, label: 'srv & #1' } as unknown as Node
+
+    expect(mapLink('schedule-outage', awkward))
+      .toBe('admin/sched-outages/editoutage.jsp?newName=srv%20%26%20%231&addNew=true&nodeID=42')
+  })
+
   it('createLinkItemsList drops Site Status for a node with no building', () => {
     expect(createLinkItemsList(node).map(li => li.label)).not.toContain('Site Status')
   })

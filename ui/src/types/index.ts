@@ -348,8 +348,9 @@ export interface MonitoredService {
   ipInterface?: IpInterface
 }
 
+// Mirrors what /api/v2/outages actually returns. It sends no hostname and no serviceName --
+// OnmsOutage has neither -- so the service name is resolved from serviceId by the caller.
 export interface Outage {
-  hostname: string
   id: number
   ifLostService: Date | null
   ifRegainedService: Date | null
@@ -360,7 +361,6 @@ export interface Outage {
   nodeLabel: string
   perspective?: MonitoringLocation
   serviceId: number
-  serviceName: string
   suppressTime?: Date | null
   suppressedBy?: string | null
 }

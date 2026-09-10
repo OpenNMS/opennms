@@ -10,28 +10,34 @@
         <h2>Node Details for {{ nodeStore.node?.label }}</h2>
       </div>
       <NodeActionsDropdown
-        v-if="nodeStore.node"
+        v-if="nodeLoaded"
         :baseHref="baseHref"
         :node="nodeStore.node"
       />
     </div>
-    <div class="onms-row">
-      <div class="onms-col-12">
-        <NodeDetailsHeader :node="nodeStore.node" />
+    <template v-if="nodeLoaded">
+      <div class="onms-row">
+        <div class="onms-col-12">
+          <NodeDetailsHeader :node="nodeStore.node" />
+        </div>
       </div>
-    </div>
+      <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
+        <div class="onms-col-6">
+          <NodeSnmpAttributes :node="nodeStore.node" />
+        </div>
+        <div class="onms-col-6">
+          <NodeCategoriesPanel :node="nodeStore.node" :base-href="baseHref" />
+          <NodeNotificationsPanel :node="nodeStore.node" :base-href="baseHref" />
+        </div>
+      </div>
+    </template>
     <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
       <div class="onms-col-6">
-        <NodeSnmpAttributes :node="nodeStore.node" />
-      </div>
-      <div class="onms-col-6">
-        <NodeCategoriesPanel :node="nodeStore.node" :base-href="baseHref" />
-        <NodeNotificationsPanel :node="nodeStore.node" :base-href="baseHref" />
-      </div>
-    </div>
-    <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
-      <div class="onms-col-6">
-        <NodeAvailabilityGraph :node="nodeStore.node" :base-href="baseHref" />
+        <NodeAvailabilityGraph
+          v-if="nodeLoaded"
+          :node="nodeStore.node"
+          :base-href="baseHref"
+        />
         <InterfacesTabs />
       </div>
       <div class="onms-col-6">
@@ -68,6 +74,11 @@ const props = defineProps({
 })
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+
+// Panels that read the node wait for a real one: the store's node starts as {}, which is
+// truthy and answers undefined for every field. The events, outages and interface tables fetch
+// by node id themselves and do not need it.
+const nodeLoaded = computed<boolean>(() => nodeStore.nodeLoaded)
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const items = computed<BreadCrumb[]>(() => [

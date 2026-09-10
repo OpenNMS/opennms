@@ -31,6 +31,11 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])
   const totalCount = ref(0)
   const node = ref({} as Node)
+
+  // Whether `node` holds a real node. The store is global and outlives any one page, so
+  // consumers cannot tell an unfetched node from a fetched one -- `node` starts as {}, which is
+  // truthy and answers undefined for every field.
+  const nodeLoaded = ref(false)
   const snmpInterfaces = ref([] as SnmpInterface[])
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
@@ -61,10 +66,17 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeById = async (n: Node) => {
+    // Clear first: until this resolves there is no node to show, and the previous one belongs
+    // to a different page. A failed request leaves nothing loaded rather than the node the
+    // user navigated away from.
+    node.value = {} as Node
+    nodeLoaded.value = false
+
     const resp = await API.getNodeById(n.id)
 
     if (resp) {
       node.value = resp
+      nodeLoaded.value = true
     }
   }
 
@@ -219,6 +231,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodes,
     totalCount,
     node,
+    nodeLoaded,
     snmpInterfaces,
     snmpInterfacesTotalCount,
     ipInterfaces,

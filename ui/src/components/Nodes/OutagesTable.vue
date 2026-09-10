@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
@@ -164,15 +164,27 @@ const onJsonDownload = async () => {
   return onDownload('json')
 }
 
+const fetchOutages = () => {
+  nodeStore.getNodeOutages({ id: nodeId.value, queryParameters: queryParameters.value })
+}
+
 const onPage = (event: OnmsTablePageEvent) => {
   first.value = event.first
   pageSize.value = event.rows
   queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }
-  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: queryParameters.value })
+  fetchOutages()
 }
 
-onMounted(() => {
-  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: queryParameters.value })
+onMounted(fetchOutages)
+
+// The details page keeps one instance of this panel across node ids, so the id has to be
+// followed rather than read once: otherwise the table, its "View Outages for this Node" link
+// and its downloads would disagree about which node they are for. Back to the first page,
+// since the page the user was on says nothing about the new node.
+watch(nodeId, () => {
+  first.value = 0
+  queryParameters.value = { ...queryParameters.value, offset: 0 }
+  fetchOutages()
 })
 
 defineExpose({ onPage })

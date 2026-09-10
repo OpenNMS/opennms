@@ -24,13 +24,14 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useNodeStore } from '@/stores/nodeStore'
 import API from '@/services'
-import { IpInterface, Outage, SnmpInterface } from '@/types'
+import { IpInterface, Node, Outage, SnmpInterface } from '@/types'
 
 vi.mock('@/services', () => ({
   default: {
     getSnmpInterfaces: vi.fn(),
     getIpInterfaces: vi.fn(),
-    getNodeOutages: vi.fn()
+    getNodeOutages: vi.fn(),
+    getNodeById: vi.fn()
   }
 }))
 
@@ -301,5 +302,59 @@ describe('nodeStore outage export', () => {
     const store = useNodeStore()
 
     await expect(store.getNodeOutagesForExport({ id: '144' })).resolves.toEqual([])
+  })
+})
+
+describe('nodeStore getNodeById', () => {
+  const node = { id: '42', label: 'srv-42' } as unknown as Node
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  it('publishes the fetched node and marks it loaded', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    const store = useNodeStore()
+
+    await store.getNodeById({ id: '42' } as Node)
+
+    expect(store.node).toEqual(node)
+    expect(store.nodeLoaded).toBe(true)
+  })
+
+  // The store is global and outlives the page. Without a reset, a second node's page renders
+  // the first node's label and ids until the new fetch lands.
+  it('clears the previous node before fetching another', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    const store = useNodeStore()
+    await store.getNodeById({ id: '42' } as Node)
+
+    let nodeDuringFetch: unknown
+    let loadedDuringFetch: unknown
+    vi.mocked(API.getNodeById).mockImplementation(async () => {
+      nodeDuringFetch = { ...store.node }
+      loadedDuringFetch = store.nodeLoaded
+      return { id: '99', label: 'srv-99' } as unknown as Node
+    })
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(nodeDuringFetch).toEqual({})
+    expect(loadedDuringFetch).toBe(false)
+    expect(store.node).toEqual({ id: '99', label: 'srv-99' })
+  })
+
+  // A failed fetch must not leave the previous node's data on screen, nor claim to be loaded.
+  it('leaves no node loaded when the request fails', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    const store = useNodeStore()
+    await store.getNodeById({ id: '42' } as Node)
+
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.node).toEqual({})
+    expect(store.nodeLoaded).toBe(false)
   })
 })
