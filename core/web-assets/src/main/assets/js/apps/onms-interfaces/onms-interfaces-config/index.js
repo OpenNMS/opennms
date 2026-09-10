@@ -122,8 +122,16 @@ angular.module('onms-interfaces-config', [
     return intf.collectFlag === 'C' || intf.collectFlag === 'UC' || intf.collectFlag === 'PC';
   };
 
+  $scope.isCollectionUserSpecified = function(intf) {
+    return intf.collectFlag.startsWith('U');
+  };
+
   $scope.updateCollection = function($event, intf) {
     $scope.enableCollection(intf, $event.target.checked);
+  };
+
+  $scope.updateUserSpecified = function($event, intf) {
+    $scope.enableUserSpecified(intf, $event.target.checked);
   };
 
   $scope.enableCollection = function(intf, enable) {
@@ -137,6 +145,20 @@ angular.module('onms-interfaces-config', [
     }, function() {
       growl.error('Cannot set data collection flag for interface ' + intf.ifName);
     });
+  };
+
+  $scope.enableUserSpecified = function(intf, enable) {
+    const flag = intf.collectFlag.endsWith('C') ? 'C' : 'N';
+    intf.collectFlag = enable ? 'U' + flag : flag;
+    $http.put('rest/nodes/' + $scope.nodeId + '/snmpinterfaces/' + intf.ifIndex, 'collect=' + intf.collectFlag, {
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    })
+        .then(function() {
+          const action = $scope.isUserSpecified(intf) ? 'enabled' : 'disabled';
+          growl.success('User-specified flag was successfully ' + action + ' for interface ' + intf.ifName);
+        }, function() {
+          growl.error('Cannot set user-specified flag for interface ' + intf.ifName);
+        });
   };
 
   $scope.updateFilteredSnmpInterfaces = function() {
