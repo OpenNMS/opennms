@@ -96,7 +96,14 @@ License.
         </text>
       </template>
     </svg>
-    <div ref="canvasEl" class="topology-canvas" />
+    <div v-if="!webglAvailable" class="topology-no-webgl" role="alert">
+      <h3 class="topology-no-webgl__title">This view needs WebGL</h3>
+      <p>
+        The topology map draws through WebGL, and this browser will not provide
+        it. Enabling hardware acceleration usually resolves it.
+      </p>
+    </div>
+    <div v-show="webglAvailable" ref="canvasEl" class="topology-canvas" />
     <div class="topology-labels-layer">
       <!-- Labels are reactively positioned in viewport space via
            cameraVersion (bumped on sigma's afterRender); references it
@@ -210,6 +217,7 @@ import Graph from 'graphology'
 import Sigma from 'sigma'
 import EdgeCurveProgram from '@sigma/edge-curve'
 import { createNodeImageProgram } from '@sigma/node-image'
+import { hasWebGL } from '@/components/Topology/webgl'
 import { drawDiscNodeLabel } from 'sigma/rendering'
 import { downloadAsImage } from '@sigma/export-image'
 import { PALETTE_DRAG_MIME, type PaletteDragPayload } from '@/components/Topology/dragTypes'
@@ -277,6 +285,10 @@ const emit = defineEmits<{
 }>()
 
 const canvasEl = ref<HTMLDivElement>()
+
+// Probed once: the answer cannot change within a page, and each probe costs a
+// context on browsers that ration them.
+const webglAvailable = ref<boolean>(hasWebGL())
 const linkCount = ref(0)
 const placedCount = ref(0)
 const isDropHover = ref(false)
@@ -462,6 +474,11 @@ const mountSigma = (g: Graph) => {
     resizeObserver = null
   }
   if (!canvasEl.value) {
+    return
+  }
+  // Nothing below survives without a context: createNodeImageProgram reads
+  // MAX_TEXTURE_SIZE off it unchecked.
+  if (!webglAvailable.value) {
     return
   }
   sigma = new Sigma(g, canvasEl.value, {
@@ -2721,6 +2738,27 @@ defineExpose({
   gap: 1rem;
   pointer-events: none;
   font-family: monospace;
+}
+
+.topology-no-webgl {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--onms-secondary-text-on-surface);
+}
+
+.topology-no-webgl p {
+  max-width: 34rem;
+}
+
+.topology-no-webgl__title {
+  margin: 0;
+  color: var(--onms-primary-text-on-surface);
 }
 
 .topology-canvas {
