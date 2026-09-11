@@ -14,6 +14,12 @@
       role="alert"
       data-test="dialog-error"
     >{{ errorText }}</div>
+    <div
+      v-if="calendarError"
+      class="dialog-error"
+      role="alert"
+      data-test="calendar-load-error"
+    >{{ calendarError }}</div>
     <div class="calendar-controls">
       <OnmsIconButton
         :icon="ChevronLeft"
@@ -209,6 +215,7 @@ const entryStart = ref<Date | null>(null)
 const entryEnd = ref<Date | null>(null)
 const saving = ref(false)
 const errorText = ref('')
+const calendarError = ref('')
 const showRemoveConfirmation = ref(false)
 const scheduleToRemove = ref<{ index: number, schedule: OnCallSchedule } | null>(null)
 
@@ -268,10 +275,14 @@ const load = async () => {
     store.getCalendar(props.roleName, year.value, month.value),
     store.getRole(props.roleName)
   ])
+  // a month that failed to load must not keep the previous month's entries under
+  // its label, and without the zone it reports no entry can be stored
   if (calendarResult) {
     calendar.value = calendarResult
-  } else if (!calendar.value) {
-    errorText.value = 'The schedule calendar could not be loaded, so coverage cannot be added.'
+    calendarError.value = ''
+  } else {
+    calendar.value = null
+    calendarError.value = `The schedule for ${monthLabel.value} could not be loaded, so coverage cannot be added.`
   }
   if (roleResult) {
     role.value = roleResult

@@ -51,6 +51,12 @@ const open = async () => {
 }
 
 const inDialog = (selector: string) => document.querySelector(`.p-dialog ${selector}`)
+const addButton = () => inDialog('[data-test="add-entry-button"]') as HTMLButtonElement
+
+const september = {
+  role: 'NOC', year: 2026, month: 9, 'time-zone': 'UTC',
+  day: [{ date: '2026-09-01', entry: [{ start: 1788606000000, end: 1788634800000, user: ['alice'], supervisor: false }] }]
+}
 
 describe('RoleCalendarDialog', () => {
   beforeEach(() => {
@@ -67,11 +73,12 @@ describe('RoleCalendarDialog', () => {
   })
 
   it('shows the server zone once the calendar loads', async () => {
-    getOnCallCalendar.mockResolvedValue({ role: 'NOC', year: 2026, month: 9, 'time-zone': 'UTC', day: [] })
+    getOnCallCalendar.mockResolvedValue(september)
     await open()
 
     expect(inDialog('[data-test="zone-hint"]')?.textContent).toContain('server time (UTC)')
-    expect(inDialog('[data-test="dialog-error"]')).toBeNull()
+    expect(inDialog('[data-test="calendar-load-error"]')).toBeNull()
+    expect(document.querySelectorAll('.p-dialog .entry').length).toBe(1)
   })
 
   it('refuses to add coverage when the calendar, and so the server zone, failed to load', async () => {
@@ -79,7 +86,33 @@ describe('RoleCalendarDialog', () => {
     await open()
 
     expect(inDialog('[data-test="zone-hint"]')).toBeNull()
-    expect(inDialog('[data-test="dialog-error"]')?.textContent).toContain('could not be loaded')
-    expect((inDialog('[data-test="add-entry-button"]') as HTMLButtonElement).disabled).toBe(true)
+    expect(inDialog('[data-test="calendar-load-error"]')?.textContent).toContain('could not be loaded')
+    expect(addButton().disabled).toBe(true)
+  })
+
+  it('drops the previous month and disables adding when a month change fails to load', async () => {
+    getOnCallCalendar.mockResolvedValueOnce(september).mockResolvedValueOnce(null)
+    await open()
+    expect(document.querySelectorAll('.p-dialog .entry').length).toBe(1)
+
+    ;(inDialog('[data-test="next-month-button"]') as HTMLButtonElement).click()
+    await flushPromises()
+
+    expect(document.querySelectorAll('.p-dialog .entry').length).toBe(0)
+    expect(inDialog('[data-test="zone-hint"]')).toBeNull()
+    expect(inDialog('[data-test="calendar-load-error"]')?.textContent).toContain('could not be loaded')
+    expect(addButton().disabled).toBe(true)
+  })
+
+  it('clears the load error once a later month loads', async () => {
+    getOnCallCalendar.mockResolvedValueOnce(null).mockResolvedValueOnce(september)
+    await open()
+    expect(inDialog('[data-test="calendar-load-error"]')).not.toBeNull()
+
+    ;(inDialog('[data-test="next-month-button"]') as HTMLButtonElement).click()
+    await flushPromises()
+
+    expect(inDialog('[data-test="calendar-load-error"]')).toBeNull()
+    expect(inDialog('[data-test="zone-hint"]')?.textContent).toContain('server time (UTC)')
   })
 })
