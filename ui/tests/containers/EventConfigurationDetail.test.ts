@@ -55,6 +55,7 @@ describe('EventConfigurationDetail.vue', () => {
     enabled: true,
     eventCount: 5,
     fileOrder: 1,
+    evaluationOrder: 1,
     uploadedBy: 'test-user',
     createdTime: new Date(),
     lastModified: new Date()

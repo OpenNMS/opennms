@@ -51,6 +51,18 @@
         style="width: 3rem"
       />
       <OnmsColumn
+        field="eventOrder"
+        sortable
+        style="width: 6rem"
+      >
+        <template #header>
+          <span
+            title="Order in which the events of this source are evaluated: 1 is evaluated first."
+            data-test="order-header"
+          >Order</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn
         field="uei"
         header="Event UEI"
         sortable
@@ -203,7 +215,7 @@ const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onEventsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
-    store.onEventsSortChange('createdTime', 'desc')
+    store.onEventsSortChange('eventOrder', 'asc')
   }
 }
 
