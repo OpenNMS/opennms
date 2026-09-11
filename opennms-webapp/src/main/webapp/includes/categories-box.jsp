@@ -80,7 +80,11 @@
 	}
 	String titleName = "Availability Over the Past " + windowHours + " Hours";
 	if (opennmsDisconnect) {
-		titleName = "Waiting for availability data. One or more categories have not been calculated yet.";
+		if (earliestUpdate > 0) {
+			titleName = "Availability data is stale. Oldest category was calculated " + new Date(earliestUpdate) + ". Is the Availability daemon running?";
+		} else {
+			titleName = "Waiting for availability data. One or more categories have not been calculated yet.";
+		}
 	}
 %>
 

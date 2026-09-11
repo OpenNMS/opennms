@@ -67,8 +67,6 @@ public class JdbcCategoryAvailabilityCalculator implements CategoryAvailabilityC
         Assert.state(m_dataSource != null, "dataSource must be set");
         Assert.state(m_filterDao != null, "filterDao must be set");
         m_jdbcTemplate = new JdbcTemplate(m_dataSource);
-        // Stream large result sets instead of buffering the whole category in the driver.
-        m_jdbcTemplate.setFetchSize(1000);
     }
 
     @Override
@@ -101,7 +99,6 @@ public class JdbcCategoryAvailabilityCalculator implements CategoryAvailabilityC
         params.add(start); // GREATEST(iflostservice, start)
         params.add(end);   // iflostservice <= end
         params.add(start); // ifregainedservice > start
-        params.add(end);   // ifregainedservice <= end
 
         final String sql = buildSql(nodeIdSelect, servicePredicate);
         LOG.debug("Calculating availability for category '{}' with rule '{}' over {} .. {}", label, filterRule, windowStart, windowEnd);
@@ -181,7 +178,7 @@ public class JdbcCategoryAvailabilityCalculator implements CategoryAvailabilityC
              + "      JOIN member_services ms ON ms.ifserviceid = o.ifserviceid\n"
              + "     WHERE o.perspective IS NULL\n"
              + "       AND o.iflostservice <= ?\n"
-             + "       AND (o.ifregainedservice IS NULL OR (o.ifregainedservice > ? AND o.ifregainedservice <= ?))\n"
+             + "       AND (o.ifregainedservice IS NULL OR o.ifregainedservice > ?)\n"
              + "     GROUP BY ms.nodeid\n"
              + ")\n"
              + "SELECT mn.nodeid,\n"

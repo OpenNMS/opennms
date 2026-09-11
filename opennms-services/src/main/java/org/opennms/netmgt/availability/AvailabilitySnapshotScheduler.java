@@ -43,8 +43,10 @@ import org.slf4j.LoggerFactory;
  * Every category is refreshed on its own schedule. After each refresh the
  * next one is scheduled at a multiple of how long the refresh took, clamped
  * between a floor and a ceiling. Small installations therefore refresh close
- * to the floor, large ones back off on their own, and one slow category never
- * delays the others.
+ * to the floor and large ones back off on their own. Refreshes share a pool
+ * of one thread by default, so they run one after another and a slow
+ * category delays the ones queued behind it; raise the thread count to let
+ * categories refresh concurrently at the cost of concurrent database load.
  *
  * Tunables, read from system properties (opennms.properties):
  * <ul>

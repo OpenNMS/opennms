@@ -161,6 +161,8 @@ public class AuthenticationIT implements InitializingBean {
         Assert.assertFalse("retired roles are not offered for assignment", roles.contains("ROLE_RTC"));
         Assert.assertTrue(Authentication.isValidRole("ROLE_RTC"));
         Assert.assertTrue(Authentication.isRetiredRole("ROLE_RTC"));
+        Assert.assertFalse(Authentication.isAssignableRole("ROLE_RTC"));
+        Assert.assertTrue(Authentication.isAssignableRole("ROLE_USER"));
     }
 
     @Test

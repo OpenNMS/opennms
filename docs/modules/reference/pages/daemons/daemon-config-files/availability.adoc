@@ -7,6 +7,8 @@ Calculates the availability percentages of the categories defined in `categories
 Each category is computed inside the database from the current outages and stored as a snapshot.
 Categories are refreshed independently on a self-pacing schedule: the next refresh of a category happens after the previous refresh's duration multiplied by a pacing factor, clamped to a configurable range.
 Small installations therefore refresh about once a minute while very large installations back off on their own.
+With the default of one refresh thread the categories refresh one after another; raise `org.opennms.availability.refresh.threads` to overlap them.
+The home page and the REST API flag a category as stale when its snapshot is older than twice `refresh.maxSeconds`, which means the daemon is not running.
 
 When a category's availability falls below its `warning` threshold from `categories.xml`, the daemon raises `uei.opennms.org/availability/categoryBelowWarningThreshold`.
 When it climbs back to or above that threshold, it raises `uei.opennms.org/availability/categoryAboveWarningThreshold`, which clears the alarm the first event created.

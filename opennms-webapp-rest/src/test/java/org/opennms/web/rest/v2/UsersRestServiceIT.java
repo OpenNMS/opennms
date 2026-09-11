@@ -328,6 +328,12 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testRetiredRoleCannotBeAssigned() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"legacy\",\"password\":\"pw\",\"roles\":[\"ROLE_RTC\"]}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"legacy\",\"password\":\"pw\",\"roles\":[\"ROLE_USER\"]}", 201);
+    }
+
+    @Test
     public void testPartialUpdatePreservesRolesAndSchedules() throws Exception {
         sendData(POST, MediaType.APPLICATION_JSON, "/users",
                 "{\"userId\":\"partial\",\"password\":\"pw\",\"roles\":[\"ROLE_USER\"],\"dutySchedules\":[\"MoWeFr800-1700\"]}", 201);

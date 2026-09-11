@@ -121,7 +121,7 @@ public class UserRestService extends OnmsRestService {
                           "full-name": "Network Operator",
                           "user-comments": "Read-only operations account",
                           "email": "operator@example.com",
-                          "password": "sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX",
+                          "password": "YorghoYSKs3/u4pnm0ztqR6LqQURM2qE/6DEoCAgGI70wKp0bcLc/LsFNrkEene5",
                           "passwordSalt": true,
                           "duty-schedule": [],
                           "role": [ "ROLE_READONLY" ]
@@ -390,7 +390,7 @@ public class UserRestService extends OnmsRestService {
             if (!hasEditRights(securityContext)) {
                 throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
-            if (! Authentication.isValidRole(roleName)) {
+            if (! Authentication.isAssignableRole(roleName)) {
                 throw getException(Status.BAD_REQUEST, "Invalid role {}!", roleName);
             }
             final OnmsUser user = getOnmsUser(userCriteria);
@@ -494,7 +494,7 @@ public class UserRestService extends OnmsRestService {
             if (!hasEditRights(securityContext)) {
                 throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
-            if (! Authentication.isValidRole(roleName)) {
+            if (! Authentication.isAssignableRole(roleName)) {
                 throw getException(Status.BAD_REQUEST, "Invalid role {}!", roleName);
             }
             final OnmsUser user = getOnmsUser(userCriteria);

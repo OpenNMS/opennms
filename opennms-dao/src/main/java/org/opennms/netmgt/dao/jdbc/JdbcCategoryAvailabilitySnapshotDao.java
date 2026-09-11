@@ -28,7 +28,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,9 +51,14 @@ import org.springframework.util.Assert;
 
 /**
  * Stores snapshots in the category_availability and
- * category_node_availability tables. A save deletes and reinserts the
- * category inside one transaction, so readers see either the old snapshot or
- * the new one, never a partial one.
+ * category_node_availability tables.
+ *
+ * A save runs in one transaction, so readers see either the old snapshot or
+ * the new one. It rewrites only what changed: node rows whose figures differ
+ * are upserted, rows for nodes that left the category are deleted, and rows
+ * whose figures are unchanged are left alone. Most nodes have no outage in
+ * the window, so a refresh of a very large category touches few rows and
+ * generates little dead-tuple and WAL churn.
  */
 public class JdbcCategoryAvailabilitySnapshotDao implements CategoryAvailabilitySnapshotDao, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcCategoryAvailabilitySnapshotDao.class);
@@ -71,7 +78,6 @@ public class JdbcCategoryAvailabilitySnapshotDao implements CategoryAvailability
         Assert.state(m_dataSource != null, "dataSource must be set");
         Assert.state(m_transactionManager != null, "transactionManager must be set");
         m_jdbc = new JdbcTemplate(m_dataSource);
-        m_jdbc.setFetchSize(1000);
         m_transaction = new TransactionTemplate(m_transactionManager);
     }
 
@@ -83,10 +89,12 @@ public class JdbcCategoryAvailabilitySnapshotDao implements CategoryAvailability
         }
         final String label = availability.getLabel();
         final long began = System.nanoTime();
+        final int[] counts = new int[2]; // changed, removed
         m_transaction.executeWithoutResult(status -> {
-            m_jdbc.update("DELETE FROM category_node_availability WHERE label = ?", label);
-            m_jdbc.update("DELETE FROM category_availability WHERE label = ?", label);
-            m_jdbc.update("INSERT INTO category_availability (" + SUMMARY_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            m_jdbc.update("INSERT INTO category_availability (" + SUMMARY_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                    + " ON CONFLICT (label) DO UPDATE SET window_start = EXCLUDED.window_start, window_end = EXCLUDED.window_end,"
+                    + " computed_at = EXCLUDED.computed_at, node_count = EXCLUDED.node_count, service_count = EXCLUDED.service_count,"
+                    + " services_down = EXCLUDED.services_down, downtime_ms = EXCLUDED.downtime_ms",
                     label,
                     new Timestamp(availability.getWindowStart().getTime()),
                     new Timestamp(availability.getWindowEnd().getTime()),
@@ -96,10 +104,44 @@ public class JdbcCategoryAvailabilitySnapshotDao implements CategoryAvailability
                     availability.getServicesDown(),
                     availability.getDowntimeMillis());
 
-            final List<NodeAvailability> nodes = availability.getNodes();
-            for (int from = 0; from < nodes.size(); from += BATCH_SIZE) {
-                final List<NodeAvailability> chunk = nodes.subList(from, Math.min(nodes.size(), from + BATCH_SIZE));
-                m_jdbc.batchUpdate("INSERT INTO category_node_availability (label, " + NODE_COLUMNS + ") VALUES (?, ?, ?, ?, ?)",
+            // figures currently stored, keyed by node id
+            final Map<Integer, long[]> stored = new HashMap<>();
+            m_jdbc.query("SELECT " + NODE_COLUMNS + " FROM category_node_availability WHERE label = ?",
+                    rs -> { stored.put(rs.getInt("nodeid"), new long[] { rs.getLong("service_count"), rs.getLong("services_down"), rs.getLong("downtime_ms") }); },
+                    label);
+
+            final List<NodeAvailability> changed = new ArrayList<>();
+            for (final NodeAvailability node : availability.getNodes()) {
+                final long[] current = stored.remove(node.getNodeId());
+                if (current == null || current[0] != node.getServiceCount() || current[1] != node.getServicesDown() || current[2] != node.getDowntimeMillis()) {
+                    changed.add(node);
+                }
+            }
+            // whatever is left in the map belongs to nodes that are no longer members
+            final List<Integer> removed = new ArrayList<>(stored.keySet());
+            counts[0] = changed.size();
+            counts[1] = removed.size();
+
+            for (int from = 0; from < removed.size(); from += BATCH_SIZE) {
+                final List<Integer> chunk = removed.subList(from, Math.min(removed.size(), from + BATCH_SIZE));
+                m_jdbc.batchUpdate("DELETE FROM category_node_availability WHERE label = ? AND nodeid = ?",
+                        new BatchPreparedStatementSetter() {
+                            @Override
+                            public void setValues(final PreparedStatement ps, final int i) throws SQLException {
+                                ps.setString(1, label);
+                                ps.setInt(2, chunk.get(i));
+                            }
+                            @Override
+                            public int getBatchSize() {
+                                return chunk.size();
+                            }
+                        });
+            }
+            for (int from = 0; from < changed.size(); from += BATCH_SIZE) {
+                final List<NodeAvailability> chunk = changed.subList(from, Math.min(changed.size(), from + BATCH_SIZE));
+                m_jdbc.batchUpdate("INSERT INTO category_node_availability (label, " + NODE_COLUMNS + ") VALUES (?, ?, ?, ?, ?)"
+                        + " ON CONFLICT (label, nodeid) DO UPDATE SET service_count = EXCLUDED.service_count,"
+                        + " services_down = EXCLUDED.services_down, downtime_ms = EXCLUDED.downtime_ms",
                         new BatchPreparedStatementSetter() {
                             @Override
                             public void setValues(final PreparedStatement ps, final int i) throws SQLException {
@@ -117,7 +159,8 @@ public class JdbcCategoryAvailabilitySnapshotDao implements CategoryAvailability
                         });
             }
         });
-        LOG.debug("Saved availability snapshot for '{}' with {} nodes in {} ms", label, availability.getNodeCount(), (System.nanoTime() - began) / 1_000_000L);
+        LOG.debug("Saved availability snapshot for '{}': {} nodes, {} rows changed, {} rows removed, in {} ms",
+                label, availability.getNodeCount(), counts[0], counts[1], (System.nanoTime() - began) / 1_000_000L);
     }
 
     @Override

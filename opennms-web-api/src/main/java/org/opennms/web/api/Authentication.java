@@ -128,6 +128,11 @@ public final class Authentication extends Object {
         return s_retiredRoles.contains(role);
     }
 
+    /** True for a role that may be put on an account now: known and not retired. Use this when validating role assignments. */
+    public static boolean isAssignableRole(String role) {
+        return isValidRole(role) && !isRetiredRole(role);
+    }
+
     private static void loadRoles() {
         File configFile = new File(ConfigFileConstants.getHome(), "etc" + File.separator + ROLE_CONFIGURATION_FILE);
         if (configFile.exists() && configFile.lastModified() > lastModified) {

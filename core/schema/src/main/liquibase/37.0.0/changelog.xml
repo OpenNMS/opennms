@@ -8,7 +8,12 @@
     <!-- Snapshots of category availability, computed on a schedule from the outages and ifservices
          tables and read by the home page and the /rest/availability API. One row per category in
          category_availability, one row per member node in category_node_availability. Replaces the
-         in-memory copy the web tier used to receive from rtcd over HTTP. -->
+         in-memory copy the web tier used to receive from rtcd over HTTP.
+
+         There is deliberately no foreign key from category_node_availability.nodeid to node: the rows
+         are derived data rewritten on every refresh, and a foreign key would make a node deletion
+         wait on, or deadlock with, a refresh that is writing a very large category. A row for a node
+         that no longer exists is harmless and disappears at the next refresh. -->
 
     <changeSet author="dyancey" id="37.0.0-category-availability">
         <preConditions onFail="MARK_RAN">
@@ -74,10 +79,6 @@
         <addForeignKeyConstraint constraintName="fk_category_node_availability_label"
                                  baseTableName="category_node_availability" baseColumnNames="label"
                                  referencedTableName="category_availability" referencedColumnNames="label"
-                                 onDelete="CASCADE"/>
-        <addForeignKeyConstraint constraintName="fk_category_node_availability_nodeid"
-                                 baseTableName="category_node_availability" baseColumnNames="nodeid"
-                                 referencedTableName="node" referencedColumnNames="nodeid"
                                  onDelete="CASCADE"/>
         <rollback>
             <dropTable tableName="category_node_availability"/>

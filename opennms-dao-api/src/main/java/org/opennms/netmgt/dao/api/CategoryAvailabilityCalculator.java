@@ -48,7 +48,9 @@ public interface CategoryAvailabilityCalculator {
      *                     service. A name starting with a tilde is treated as
      *                     a regular expression against the service name.
      * @param windowStart  start of the window, inclusive
-     * @param windowEnd    end of the window, inclusive; normally "now"
+     * @param windowEnd    end of the window, inclusive; normally "now", but a
+     *                     window entirely in the past is supported and outages
+     *                     still open at its end count up to that end
      * @return the category availability with one entry per member node,
      *         including nodes that have no covered services
      * @throws IllegalArgumentException if the rule cannot be parsed or the

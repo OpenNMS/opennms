@@ -22,12 +22,14 @@
 package org.opennms.netmgt.availability;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.CategoryAvailabilityCalculator;
@@ -90,5 +93,65 @@ public class AvailabilitySnapshotSchedulerTest {
         verify(dao).retainOnly(Arrays.asList("Web Servers", "Email Servers"));
         verify(calculator).calculate(eq("Web Servers"), eq("isHTTP"), eq(Arrays.asList("HTTP")), any(), any());
         verify(calculator).calculate(eq("Email Servers"), eq("isSMTP"), eq(Collections.emptyList()), any(), any());
+    }
+
+    private static CategoryAvailability empty(final String label) {
+        final Date now = new Date();
+        return new CategoryAvailability(label, new Date(now.getTime() - 3600_000L), now, now, Collections.emptyList());
+    }
+
+    @Test
+    public void failedRefreshIsRetriedAndLaterSucceeds() throws Exception {
+        final CategoryDefinition web = new CategoryDefinition("Web Servers", "isHTTP", Collections.emptyList());
+        final AtomicInteger calls = new AtomicInteger();
+        final CategoryAvailabilityCalculator calculator = mock(CategoryAvailabilityCalculator.class);
+        when(calculator.calculate(any(), any(), anyList(), any(), any())).thenAnswer(invocation -> {
+            if (calls.incrementAndGet() == 1) {
+                throw new IllegalStateException("database went away");
+            }
+            return empty("Web Servers");
+        });
+        final CategoryAvailabilitySnapshotDao dao = mock(CategoryAvailabilitySnapshotDao.class);
+        final CountDownLatch saved = new CountDownLatch(1);
+        doAnswer(invocation -> { saved.countDown(); return null; }).when(dao).save(any());
+
+        final AvailabilitySnapshotScheduler scheduler = new AvailabilitySnapshotScheduler(calculator, dao, () -> Collections.singletonList(web));
+        scheduler.setMinIntervalMillis(50);
+        scheduler.setMaxIntervalMillis(100); // a failure reschedules at the ceiling
+        scheduler.start();
+        try {
+            assertTrue("the retry after the failure should save", saved.await(10, TimeUnit.SECONDS));
+        } finally {
+            scheduler.stop();
+        }
+        assertTrue("expected at least two calculations", calls.get() >= 2);
+        verify(dao, times(1)).save(any());
+    }
+
+    @Test
+    public void stopDuringARefreshSchedulesNothingFurther() throws Exception {
+        final CategoryDefinition web = new CategoryDefinition("Web Servers", "isHTTP", Collections.emptyList());
+        final CountDownLatch started = new CountDownLatch(1);
+        final CountDownLatch release = new CountDownLatch(1);
+        final CategoryAvailabilityCalculator calculator = mock(CategoryAvailabilityCalculator.class);
+        when(calculator.calculate(any(), any(), anyList(), any(), any())).thenAnswer(invocation -> {
+            started.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return empty("Web Servers");
+        });
+        final CategoryAvailabilitySnapshotDao dao = mock(CategoryAvailabilitySnapshotDao.class);
+
+        final AvailabilitySnapshotScheduler scheduler = new AvailabilitySnapshotScheduler(calculator, dao, () -> Collections.singletonList(web));
+        scheduler.setMinIntervalMillis(20);
+        scheduler.setMaxIntervalMillis(40);
+        scheduler.start();
+        assertTrue(started.await(10, TimeUnit.SECONDS));
+        scheduler.stop();
+        release.countDown();
+
+        // give a wrongly rescheduled run ample time to show up
+        Thread.sleep(300);
+        verify(calculator, times(1)).calculate(any(), any(), anyList(), any(), any());
+        assertFalse(scheduler.isRunning());
     }
 }

@@ -78,7 +78,6 @@ public class JdbcCategoryAvailabilitySnapshotDaoIT implements TemporaryDatabaseA
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
-        // the node table must hold the nodes a snapshot refers to
         m_db.populate(new MockNetwork().createStandardNetwork());
         m_now = new Date();
         m_start = new Date(m_now.getTime() - DAY);
@@ -133,6 +132,25 @@ public class JdbcCategoryAvailabilitySnapshotDaoIT implements TemporaryDatabaseA
     }
 
     @Test
+    public void saveUpdatesChangedRowsAndKeepsUnchangedOnes() {
+        m_dao.save(snapshot("Web Servers", node(1, 4, 0, 0), node(2, 2, 0, 0), node(3, 4, 0, 0)));
+        // node 2 changes, node 3 leaves, node 4 is not in the standard network but that must not matter
+        m_dao.save(snapshot("Web Servers", node(1, 4, 0, 0), node(2, 2, 1, 120_000L), node(99, 1, 0, 0)));
+
+        final CategoryAvailability full = m_dao.findWithNodes("Web Servers").get();
+        assertEquals(Arrays.asList(1, 2, 99), m_dao.findNodeIds("Web Servers"));
+        assertEquals(node(1, 4, 0, 0), full.getNodes().get(0));
+        assertEquals(node(2, 2, 1, 120_000L), full.getNodes().get(1));
+        assertEquals(node(99, 1, 0, 0), full.getNodes().get(2));
+        assertEquals(3, full.getNodeCount());
+        assertEquals(120_000L, full.getDowntimeMillis());
+
+        // saving the same figures again is a no-op for the node rows
+        m_dao.save(snapshot("Web Servers", node(1, 4, 0, 0), node(2, 2, 1, 120_000L), node(99, 1, 0, 0)));
+        assertEquals(full.getNodes(), m_dao.findWithNodes("Web Servers").get().getNodes());
+    }
+
+    @Test
     public void emptyCategoryIsStoredWithoutNodes() {
         m_dao.save(snapshot("Nothing"));
         final CategoryAvailability summary = m_dao.findSummary("Nothing").get();
@@ -165,13 +183,6 @@ public class JdbcCategoryAvailabilitySnapshotDaoIT implements TemporaryDatabaseA
         assertTrue(m_dao.findNodes("Nope", 0, 0).isEmpty());
         assertTrue(m_dao.findNodeIds("Nope").isEmpty());
         assertFalse(m_dao.findNode("Nope", 1).isPresent());
-    }
-
-    @Test
-    public void deletingANodeRemovesItFromSnapshots() {
-        m_dao.save(snapshot("Web Servers", node(1, 4, 0, 0), node(2, 2, 0, 0)));
-        m_db.update("DELETE FROM node WHERE nodeid = ?", 2);
-        assertEquals(Arrays.asList(1), m_dao.findNodeIds("Web Servers"));
     }
 
     private CategoryAvailability snapshot(final String label, final NodeAvailability... nodes) {

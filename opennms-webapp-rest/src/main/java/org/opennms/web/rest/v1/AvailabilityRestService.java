@@ -92,7 +92,8 @@ import org.springframework.transaction.annotation.Transactional;
         Categories are addressed by name in the path. Names commonly contain spaces, so they have to be
         percent-encoded (`Web%20Servers`); the handler URL-decodes the path segment before looking the
         category up. Categories can contain every node in the system, so node lists are omitted from
-        summaries and paged on the nodes resource.""")
+        summaries and paged on the nodes resource. `stale` is true when a category's snapshot is older than
+        twice the daemon's maximum refresh interval, which means the daemon is not running.""")
 @Transactional
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 public class AvailabilityRestService extends OnmsRestService {

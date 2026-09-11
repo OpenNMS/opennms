@@ -38,6 +38,7 @@ Categories that fall below their `warning` threshold now raise `uei.opennms.org/
 The `rtc` user account, the `ROLE_RTC` role, the `rtc-configuration.xml` file, the `opennms.rtc-client.*` properties, and the `/opennms/rtc/post` endpoint are gone.
 Upgraded installations should delete the `rtc` account; its `ROLE_RTC` is retired, grants no permissions, and can no longer be assigned.
 The service is named `OpenNMS:Name=Availability` in `service-configuration.xml`, toggled by `CORE_SERVICE_AVAILABILITY_ENABLED`; a leftover `Rtcd` entry is ignored with a warning.
+Because the old entry is ignored, a site that had disabled `rtcd` gets the new daemon enabled by default and has to disable `Availability` explicitly if it still does not want the calculation.
 The SLM pages moved from `/opennms/rtc/` to `/opennms/availability/`.
 In `/rest/availability`, category summaries no longer list every member node id but carry `node-count`; a single category accepts `includeNodes=true`, and the nodes resource pages with `limit` and `offset`.
 

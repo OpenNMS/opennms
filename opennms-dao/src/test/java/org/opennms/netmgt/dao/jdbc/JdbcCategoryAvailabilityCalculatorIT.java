@@ -234,6 +234,15 @@ public class JdbcCategoryAvailabilityCalculatorIT implements TemporaryDatabaseAw
     }
 
     @Test
+    public void outageRegainedAfterWindowEndCountsUpToTheEnd() {
+        // window ends an hour ago; the outage ran from two hours ago until thirty minutes ago
+        createOutage(service(1, "192.168.1.1", "ICMP"), hoursAgo(2), minutesAgo(30));
+        final CategoryAvailability cat = m_calculator.calculate("NOC", NODES_1_AND_2, null, hoursAgo(25), hoursAgo(1));
+        assertNode(cat, 1, 4, 0, HOUR);
+        assertEquals(DAY, cat.getWindowMillis());
+    }
+
+    @Test
     public void openOutageOlderThanWindowCountsTheWholeWindow() {
         createOutage(service(1, "192.168.1.1", "ICMP"), hoursAgo(72), null);
         final CategoryAvailability cat = calculate("NOC", NODES_1_AND_2, null);

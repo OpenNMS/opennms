@@ -209,12 +209,12 @@ public class CategoryList {
 
     /**
      * True when at least one displayed category has no availability snapshot
-     * yet, for example right after startup or while the availability daemon
-     * is disabled.
+     * yet, or when the oldest snapshot is older than {@link Category#staleAfterMillis()},
+     * which means the availability daemon is stopped, disabled, or stuck.
      *
      * @param earliestUpdate the value from {@link #getEarliestUpdate(Map)}
      */
     public boolean isDisconnected(long earliestUpdate) {
-        return earliestUpdate < 1;
+        return earliestUpdate < 1 || earliestUpdate + Category.staleAfterMillis() < System.currentTimeMillis();
     }
 }

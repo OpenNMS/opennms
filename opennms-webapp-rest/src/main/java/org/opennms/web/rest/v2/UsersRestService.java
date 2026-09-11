@@ -377,8 +377,10 @@ public class UsersRestService implements UsersRestApi {
         }
         if (dto.getRoles() != null) {
             for (final String role : dto.getRoles()) {
-                if (!Authentication.isValidRole(role)) {
-                    throw new IllegalArgumentException("Unknown security role: " + role);
+                if (!Authentication.isAssignableRole(role)) {
+                    throw new IllegalArgumentException(Authentication.isRetiredRole(role)
+                            ? "Security role " + role + " is retired and cannot be assigned"
+                            : "Unknown security role: " + role);
                 }
             }
         }

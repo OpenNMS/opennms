@@ -56,6 +56,30 @@ public class Category {
     /** The most recent snapshot, or null when none has been computed. */
     protected final CategoryAvailability m_availability;
 
+    /** Property that also bounds the daemon's refresh interval; a snapshot older than a few of these is stale. */
+    public static final String MAX_REFRESH_SECONDS_PROPERTY = "org.opennms.availability.refresh.maxSeconds";
+    private static final long DEFAULT_MAX_REFRESH_SECONDS = 900;
+    private static final long STALE_AFTER_REFRESH_INTERVALS = 2;
+
+    /**
+     * Age after which a snapshot is considered stale: twice the longest
+     * refresh interval the daemon is allowed. Beyond that the daemon is
+     * stopped, disabled, or stuck, and the figures must not be presented as
+     * current.
+     */
+    public static long staleAfterMillis() {
+        long maxSeconds = DEFAULT_MAX_REFRESH_SECONDS;
+        final String configured = System.getProperty(MAX_REFRESH_SECONDS_PROPERTY);
+        if (configured != null && !configured.trim().isEmpty()) {
+            try {
+                maxSeconds = Long.parseLong(configured.trim());
+            } catch (final NumberFormatException e) {
+                // keep the default
+            }
+        }
+        return Math.max(1, maxSeconds) * 1000L * STALE_AFTER_REFRESH_INTERVALS;
+    }
+
     protected Category() {
         m_categoryDef = new org.opennms.netmgt.config.categories.Category();
         m_availability = null;
@@ -134,6 +158,17 @@ public class Category {
     /** Whether a snapshot has been computed for this category. */
     public boolean hasData() {
         return m_availability != null;
+    }
+
+    /** True when a snapshot exists but is older than {@link #staleAfterMillis()}. */
+    public boolean isStale() {
+        return m_availability != null && m_availability.getComputedAt().getTime() + staleAfterMillis() < System.currentTimeMillis();
+    }
+
+    /** Marshalled as "stale"; omitted when there is no snapshot at all. */
+    @XmlElement(name="stale")
+    public Boolean getStale() {
+        return m_availability == null ? null : isStale();
     }
 
     /** The snapshot, or null. */
