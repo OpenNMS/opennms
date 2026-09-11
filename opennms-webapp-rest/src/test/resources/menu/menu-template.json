@@ -192,13 +192,6 @@
           "roles": null
         },
         {
-          "id": "charts",
-          "name": "Charts",
-          "url": "charts/index.jsp",
-          "locationMatch": "chart",
-          "roles": null
-        },
-        {
           "id": "resourceGraphs",
           "name": "Resource Graphs",
           "url": "graph/index.jsp",
