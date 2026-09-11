@@ -22,7 +22,6 @@
   <service enabled="\${env:CORE_SERVICE_VACUUMD_ENABLED|true}"><name>OpenNMS:Name=Vacuumd</name></service>
   <service enabled="\${env:CORE_SERVICE_EVENTTRANSLATOR_ENABLED|true}"><name>OpenNMS:Name=EventTranslator</name></service>
   <service enabled="\${env:CORE_SERVICE_PASSIVESTATUSD_ENABLED|true}"><name>OpenNMS:Name=PassiveStatusd</name></service>
-  <service enabled="\${env:CORE_SERVICE_STATSD_ENABLED|true}"><name>OpenNMS:Name=Statsd</name></service>
   <service enabled="\${env:CORE_SERVICE_PROVISIOND_ENABLED|true}"><name>OpenNMS:Name=Provisiond</name></service>
   <service enabled="\${env:CORE_SERVICE_ACKD_ENABLED|true}"><name>OpenNMS:Name=Ackd</name></service>
   <service enabled="\${env:CORE_SERVICE_KARAF_ENABLED|true}"><name>OpenNMS:Name=Karaf</name></service>

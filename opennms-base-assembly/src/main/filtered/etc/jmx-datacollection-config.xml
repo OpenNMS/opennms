@@ -63,12 +63,6 @@
             <attrib name="HttpConnectionsOpen" alias="HttpConnOpen" type="gauge"/>
             <attrib name="HttpConnectionsOpenMax" alias="HttpConnOpenMax" type="gauge"/>
          </mbean>
-         <mbean name="OpenNMS.Statsd" objectname="OpenNMS:Name=Statsd">
-            <attrib name="ReportsStarted" alias="StaReportsStarted" type="counter"/>
-            <attrib name="ReportsCompleted" alias="StaReportsCompleted" type="counter"/>
-            <attrib name="ReportsPersisted" alias="StaReportsPersisted" type="counter"/>
-            <attrib name="ReportRunTime" alias="StaReportRunTime" type="counter"/>
-         </mbean>
          <mbean name="OpenNMS.Trapd" objectname="OpenNMS:Name=Trapd">
             <attrib name="TrapsDiscarded" alias="TrapsDiscarded" type="counter"/>
             <attrib name="TrapsErrored" alias="TrapsErrored" type="counter"/>
