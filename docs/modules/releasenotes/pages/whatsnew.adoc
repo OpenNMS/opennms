@@ -101,6 +101,31 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 
 To keep the previous behavior, see xref:operation:deep-dive/admin/configuration/startup.adoc[Startup Configuration], or xref:reference:configuration/core-docker.adoc[Core Docker] for container deployments.
 
+=== WSMan WinRS support, WsManShellMonitor, and WsManShellDetector
+The OpenNMS WSMan library has added support for WinRS remote shell commands.
+A corresponding monitor and detector have been added to leverage these new capabilities.
+
+=== WSMan kerberos mesage encryption
+The OpenNMS WSMan library has added support for kerberos message encryption over unencrypted channels.
+The existing configuration has been extended to take advantage of this new feature.
+This should greatly reduce friction when deploying WS-Man / WinRM-based monitoring on Windows.
+
+=== Custom Performance Graphs preview
+A preview interface has been added to eventually replace the previous Ad-Hoc Graphing workflow with a more modern UI that takes advantage of current OpenNMS REST APIs for nodes, resources, and metric measurements.
+
+=== Notifd modernization
+The `notifd` daemon has had much of its underlying software infrastructure modernized, including mail libraries, to improve support for modern protocols.
+
+=== Kafka producer JSON payloads for metrics
+The Kafka producer feature now supports producing metric payloads to Kafka as JSON format.
+
+=== OpenAPI docs improvements
+There are extensive improvements to how our OpenAPI docs are generated and rendered.
+This includes more reliabe rendering with reduced load times as well as expected payloads and responses for many more API endpoints.
+
+=== Karaf shell pubkey auth
+Support has been added for configuring Karaf shell authentication using ssh public keys.
+
 == Breaking changes
 
 === Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support
