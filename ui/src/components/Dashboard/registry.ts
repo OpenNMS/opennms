@@ -51,7 +51,23 @@ export interface PanelDefinition {
   // not offered in the "Add panel" picker; still renders if a layout references
   // it (dev/debug panels like 'sample')
   hidden?: boolean
+  // seeded into a new panel's options, for types that are one component
+  // configured several ways (the shipped charts)
+  defaultOptions?: Record<string, unknown>
 }
+
+const configuredChart = (type: string, title: string, chart: string, category: PanelDefinition['category']): PanelDefinition => ({
+  type,
+  title,
+  category,
+  defaultHeightMode: 'fixed',
+  component: defineAsyncComponent(() => import('./panels/ConfiguredChartPanel.vue')),
+  defaultSize: { w: 4, h: 5 },
+  minSize: { w: 3, h: 4 },
+  defaultOptions: { chart },
+  renamable: true,
+  collapsible: true
+})
 
 export const panelRegistry: Record<string, PanelDefinition> = {
   'pending-situations': {
@@ -208,6 +224,10 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  // the three charts of the legacy Charts page, from etc/chart-configuration.xml
+  'chart-alarms': configuredChart('chart-alarms', 'Charts - Alarms', 'sample-bar-chart', 'status'),
+  'chart-outages': configuredChart('chart-outages', 'Charts - Last 7 Day Outages', 'sample-bar-chart2', 'status'),
+  'chart-node-inventory': configuredChart('chart-node-inventory', 'Charts - Node Inventory', 'sample-bar-chart3', 'inventory'),
   'html-content': {
     type: 'html-content',
     defaultHeightMode: 'fixed',

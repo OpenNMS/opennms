@@ -97,6 +97,26 @@ License.
         </small>
       </div>
 
+      <div
+        v-else-if="isChartPanel"
+        class="opts__field"
+      >
+        <label class="opts__label">Chart</label>
+        <OnmsSelect
+          v-model="chartName"
+          :options="chartChoices"
+          optionLabel="title"
+          optionValue="name"
+          :placeholder="chartChoices.length ? 'Select a chart' : 'No charts configured'"
+          :disabled="!chartChoices.length"
+          class="opts__control"
+          data-test="chart-select"
+        />
+        <small class="opts__hint">
+          Any bar chart defined in <code>etc/chart-configuration.xml</code> can be shown here.
+        </small>
+      </div>
+
 
     </div>
 
@@ -116,7 +136,9 @@ License.
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { OnmsDialog, OnmsTextarea, OnmsInputText, OnmsButton } from '@opennms/onms-ui'
+import { OnmsDialog, OnmsTextarea, OnmsInputText, OnmsButton, OnmsSelect } from '@opennms/onms-ui'
+import type { ChartSummary } from '@/types/charts'
+import { getCharts } from '@/services/chartService'
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
@@ -139,6 +161,11 @@ const heightMode = ref<PanelHeightMode>('auto')
 const shade = ref(false)
 const notesText = ref('')
 const htmlUrl = ref('')
+const chartName = ref('')
+const chartChoices = ref<ChartSummary[]>([])
+
+// every chart panel type shares one component; the type only picks the default
+const isChartPanel = computed(() => props.panel.type.startsWith('chart-'))
 
 // panels that support optional severity row shading (legacy-style)
 const SHADEABLE = ['pending-situations', 'nodes-with-alarms', 'availability']
@@ -169,6 +196,12 @@ const syncFromPanel = () => {
   shade.value = !!props.panel.options?.shade
   notesText.value = String(props.panel.options?.text ?? '')
   htmlUrl.value = String(props.panel.options?.url ?? '')
+  chartName.value = String(props.panel.options?.chart ?? '')
+  if (isChartPanel.value) {
+    getCharts().then((charts) => {
+      chartChoices.value = charts ?? []
+    })
+  }
 }
 
 watch(
@@ -194,6 +227,9 @@ const apply = () => {
   }
   if (props.panel.type === 'html-content') {
     opts.url = htmlUrl.value.trim()
+  }
+  if (isChartPanel.value) {
+    opts.chart = chartName.value
   }
   store.setPanelOptions(props.panel.id, opts)
   visibleModel.value = false
