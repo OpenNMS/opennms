@@ -21,6 +21,9 @@
  */
 package org.opennms.netmgt.model;
 
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Formula;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,9 +41,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "eventconf_sources")
+@DynamicUpdate // only dirty columns are written, so an unchanged order column is never flushed back
 public class EventConfSource implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /** The source that is always evaluated last; it is pinned at {@code fileOrder} 1. */
+    public static final String CATCH_ALL_SOURCE_NAME = "opennms.catch-all.events";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "source_seq")
@@ -56,8 +63,20 @@ public class EventConfSource implements Serializable {
     @Column(length = 128)
     private String vendor;
 
+    /**
+     * Source precedence: higher is evaluated first. Unique across sources
+     * ({@code uk_eventconf_sources_file_order}); the catch-all source is pinned at 1.
+     * Allocate new values with {@code EventConfSourceDao.nextFileOrder()}.
+     */
     @Column(name = "file_order", nullable = false)
     private Integer fileOrder;
+
+    /**
+     * Position in which this source is evaluated when matching events: 1 = evaluated first.
+     * Derived from the unique {@link #fileOrder}, so it is a dense 1..N rank. Read-only.
+     */
+    @Formula("(SELECT COUNT(*) + 1 FROM eventconf_sources o WHERE o.file_order > file_order)")
+    private Integer evaluationOrder;
 
     @Column(nullable = false)
     private Boolean enabled = true;
@@ -117,6 +136,10 @@ public class EventConfSource implements Serializable {
 
     public void setFileOrder(Integer fileOrder) {
         this.fileOrder = fileOrder;
+    }
+
+    public Integer getEvaluationOrder() {
+        return evaluationOrder;
     }
 
     public Boolean getEnabled() {

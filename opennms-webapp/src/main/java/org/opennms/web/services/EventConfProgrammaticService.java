@@ -64,11 +64,12 @@ public class EventConfProgrammaticService {
      */
     @Transactional
     public void saveEventToDB(Event event, String username) {
-        EventConfSource source = getOrCreateProgrammaticSource();
+        // Lock (and re-read) the source before appending, so the count below is not a lost update
+        EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreateProgrammaticSource().getId());
         EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, new Date());
 
-        // Update event count
-        source.setEventCount(source.getEventCount() + 1);
+        // Update event count from the table, under the lock
+        source.setEventCount(eventConfEventDao.countBySourceId(source.getId()));
         eventConfSourceDao.save(source);
     }
 
@@ -96,9 +97,8 @@ public class EventConfProgrammaticService {
             source.setCreatedTime(now);
             source.setLastModified(now);
 
-            // Get max file order and add 1 to ensure programmatic events are loaded last
-            Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
-            source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
+            // Higher fileOrder is evaluated first, so max + 1 puts programmatic events ahead of all other sources
+            source.setFileOrder(eventConfSourceDao.nextFileOrder());
 
             eventConfSourceDao.saveOrUpdate(source);
         }
