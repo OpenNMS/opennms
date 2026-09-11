@@ -208,7 +208,7 @@ export const useDashboardStore = defineStore('dashboardStore', {
         filterOverride: null,
         timeframeOverride: null,
         refreshSeconds: null,
-        options: {}
+        options: { ...(def.defaultOptions ?? {}) }
       })
       this.isDirty = true
     },

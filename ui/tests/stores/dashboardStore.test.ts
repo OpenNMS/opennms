@@ -91,6 +91,16 @@ describe('useDashboardStore', () => {
     expect(store.isDirty).toBe(true)
   })
 
+  it('addPanel seeds the options a chart panel type is pinned to', () => {
+    store.addPanel('chart-node-inventory')
+    const added = store.layout.panels[store.layout.panels.length - 1]
+    expect(added.options).toEqual({ chart: 'sample-bar-chart3' })
+
+    // and leaves other panels with the empty options they had before
+    store.addPanel('notes')
+    expect(store.layout.panels[store.layout.panels.length - 1].options).toEqual({})
+  })
+
   it('addPanel ignores unknown panel types', () => {
     const before = store.layout.panels.length
     store.addPanel('no-such-panel')
