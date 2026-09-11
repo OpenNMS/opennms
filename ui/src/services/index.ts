@@ -75,6 +75,7 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import { deleteMinion, getMinionNodeIds, listMinions, updateMinion } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import {
   createManagedUser,
@@ -121,6 +122,10 @@ import {
 } from './groupAdminService'
 
 export default {
+  getMinionNodeIds,
+  listMinions,
+  updateMinion,
+  deleteMinion,
   search,
   getSystemReportPlugins,
   getSystemReportFormatters,
