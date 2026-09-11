@@ -59,6 +59,10 @@ public class OpenApiDocsContentTest {
         // org.opennms.features.measurements.rest
         assertHasPath(document, "/measurements");
 
+        // WireFormatModelResolver: JAXB names on the wire, not bean names
+        assertSchemaProperty(document, "RequisitionNode", "meta-data", true);
+        assertSchemaProperty(document, "RequisitionNode", "metaData", false);
+
         assertPathCountAtLeast(document, "v1", 180);
     }
 
@@ -81,6 +85,8 @@ public class OpenApiDocsContentTest {
         // org.opennms.features.geolocation.rest
         assertHasPath(document, "/geolocation");
 
+        assertSchemaProperty(document, "OnmsMonitoringLocation", "location-name", true);
+
         assertPathCountAtLeast(document, "v2", 200);
     }
 
@@ -99,6 +105,13 @@ public class OpenApiDocsContentTest {
     private static void assertBasicAuth(final JsonNode document) {
         assertEquals("http", document.at("/components/securitySchemes/basicAuth/type").asText());
         assertEquals("basic", document.at("/components/securitySchemes/basicAuth/scheme").asText());
+    }
+
+    private static void assertSchemaProperty(final JsonNode document, final String schema, final String property,
+                                             final boolean expected) {
+        final JsonNode node = document.at("/components/schemas/" + schema + "/properties/" + property);
+        assertEquals(schema + (expected ? " should document " : " should not document ") + property,
+                expected, node.isObject());
     }
 
     private static void assertHasPath(final JsonNode document, final String path) {
