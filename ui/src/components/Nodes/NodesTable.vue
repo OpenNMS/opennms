@@ -307,20 +307,7 @@
 </template>
 
 <script setup lang="ts">
-import useSnackbar from '@/composables/useSnackbar'
-import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStore } from '@/stores/nodeStore'
-import { useNodeListStore } from '@/stores/nodeListStore'
-import {
-  ExtendedSearchValue,
-  FilterTypeEnum,
-  Node,
-  NodeColumnSelectionItem,
-  QueryParameters,
-  UpdateModelFunction
-} from '@/types'
-import { MainMenu } from '@/types/mainMenu'
-import { IAutocompleteItemType } from '@/types'
+import { computed, nextTick, ref, watch } from 'vue'
 import {
   OnmsButton,
   OnmsChip,
@@ -333,31 +320,43 @@ import {
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
 import FilterAlt from '@opennms/onms-ui/icons/action/FilterAlt.vue'
-import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
-import RowExpandedIcon from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
+import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import RowCollapsedIcon from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
-import { SORT } from '@/types'
-import { computed, nextTick, ref, watch } from 'vue'
+import RowExpandedIcon from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import { useMenuStore } from '@/stores/menuStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
+import { useNodeStore } from '@/stores/nodeStore'
+import {
+  ExtendedSearchValue,
+  FilterTypeEnum,
+  IAutocompleteItemType,
+  Node,
+  NodeColumnSelectionItem,
+  QueryParameters,
+  SORT,
+  UpdateModelFunction
+} from '@/types'
+import { MainMenu } from '@/types/mainMenu'
+import {
+  countInterfaceRowsForNode,
+  getInterfaceListMode
+} from './hooks/useInterfaceListing'
+import { useNodeExport } from './hooks/useNodeExport'
+import { useNodeQuery } from './hooks/useNodeQuery'
+import { getAssetColumnLabel } from './hooks/queryStringParser'
+import { getSnmpPrimaryIpAddress } from './nodeActionLinks'
+import { buildSnmpNarrowing } from './utils'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import ManagementIPTooltipCell from './ManagementIPTooltipCell.vue'
 import NodeActionsDropdown from './NodeActionsDropdown.vue'
-import { getSnmpPrimaryIpAddress } from './nodeActionLinks'
 import NodeAdvancedFiltersDrawer from './NodeAdvancedFiltersDrawer.vue'
 import NodeDetailsDialog from './NodeDetailsDialog.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeInterfacesPanel from './NodeInterfacesPanel.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
-import { useNodeExport } from './hooks/useNodeExport'
-import { useNodeQuery } from './hooks/useNodeQuery'
-import {
-  countInterfaceRowsForNode,
-  getInterfaceListMode,
-  normalizeMacSearch,
-  type InterfaceListMode
-} from './hooks/useInterfaceListing'
-import { getAssetColumnLabel } from './hooks/queryStringParser'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '../Common/FormField.vue'
 
@@ -567,42 +566,6 @@ const toggleRowExpanded = (node: Node) => {
     updated[node.id] = true
   }
   expandedRows.value = updated
-}
-
-// Characters that make a value unsafe to splice raw into the FIQL attribute-narrowing term below:
-// - '%' / '_' are SQL-LIKE wildcards to the server's FIQL '==*value*' match (literal), while
-//   useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards — the
-//   server narrowing would no longer be a superset of the client match.
-// - ',' / ';' are FIQL set operators (OR / AND). sanitizeSearchTerm neutralizes them in other FIQL
-//   builders by replacing them with spaces, but doing that here has the same superset problem as
-//   '%'/'_': the narrowing sent to the server would search for something other than the exact
-//   value, so it could exclude rows the client-side match still considers a hit.
-// - '(' / ')' are FIQL grouping delimiters. Left in raw, they can produce an unbalanced FIQL
-//   expression that fails to parse server-side — surfacing client-side as "No interfaces".
-// If the value contains any of these, omit the attribute narrowing entirely; the node.id scoping
-// alone still limits the fetch to the current page, and exact contains/equals semantics are
-// re-applied client-side anyway (see buildSnmpNarrowing below).
-const UNSAFE_NARROWING_CHARS = /[%_,;()]/
-
-// Build the FIQL narrowing expression passed to nodeStore.getSnmpInterfacesForNodes so we only
-// fetch the SNMP interfaces relevant to the active maclike/snmpParm mode (see
-// getNodeSnmpInterfaceQuery).
-const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
-  if (mode.mode === 'maclike') {
-    // normalizeMacSearch strips every non-hex character, so the result can never contain any of
-    // UNSAFE_NARROWING_CHARS above — no further guard needed here.
-    return `physAddr==*${normalizeMacSearch(mode.mac)}*`
-  }
-
-  if (mode.mode === 'snmpParm') {
-    if (UNSAFE_NARROWING_CHARS.test(mode.value)) {
-      return undefined
-    }
-
-    return `${mode.attr}==*${mode.value}*`
-  }
-
-  return undefined
 }
 
 const hasTopologySearch = computed(() => {

@@ -656,7 +656,7 @@ const buildMaclikeQuery = (macAddress?: string) => {
   // The backend maclike behavior does a case-insensitive ANYWHERE match, so a partial MAC is fine.
   // normalizeMacSearch strips every non-hex character, not just legacy's '[:-]' -- see its doc
   // comment in useInterfaceListing.ts for why that's a deliberate improvement, not parity. Shared
-  // with useInterfaceListing.ts's client-side maclike match and NodesTable.vue's buildSnmpNarrowing
+  // with useInterfaceListing.ts's client-side maclike match and utils.ts's buildSnmpNarrowing
   // so all three normalize a MAC-like value identically.
   const stripped = normalizeMacSearch(macAddress)
 
