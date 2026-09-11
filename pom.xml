@@ -1669,8 +1669,7 @@
     <fopVersion>2.10</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
-    <!-- this has to match FST's direct dependency because we specify it in karaf features -->
-    <objenesisVersion>2.5.1</objenesisVersion>
+    <objenesisVersion>3.5</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
@@ -3936,6 +3935,11 @@
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.xstream</artifactId>
         <version>${xstreamVersion}_1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>${objenesisVersion}</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
