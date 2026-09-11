@@ -74,9 +74,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Dashboards", "Database Reports");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[@data-name='report-templates']")));
 
-        clickMenuItem("Dashboards", "Metrics Statistics (statsd)");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span")));
-
         clickMenuItem("Dashboards", "Graph Collections");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
 
@@ -398,9 +395,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         pageContainsText("Report Schedules");
         pageContainsText("Persisted Reports");
 
-        reportsPage();
-        findElementByLink("Statistics Reports").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
     }
 
     @Test

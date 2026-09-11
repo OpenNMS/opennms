@@ -130,7 +130,7 @@ All run every 24 hours by default.
 
 | `purgeStatisticsReports`
 | 1 hour
-| `DELETE FROM statisticsReport WHERE purgeDate < now()`. The `purgeDate` is set by the statistics reporting subsystem when each report is generated.
+| `DELETE FROM statisticsReport WHERE purgeDate < now()`. Removes reports that the Statsd daemon of earlier releases persisted with a `purgeDate`.
 
 | `clearPathOutages`
 | 30 seconds
