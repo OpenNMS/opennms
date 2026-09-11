@@ -75,4 +75,9 @@ public abstract class UnimplementedFilterDao implements FilterDao {
     public void validateRule(String rule) throws FilterParseException {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
+
+    @Override
+    public String getNodeIdSelectStatement(String rule) throws FilterParseException {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
 }

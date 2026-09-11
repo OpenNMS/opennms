@@ -113,4 +113,19 @@ public interface FilterDao {
      */
     void validateRule(String rule) throws FilterParseException;
 
+    /**
+     * Render the given rule as a SQL statement that selects the distinct
+     * IDs of the nodes matching the rule. The statement produces a single
+     * integer column and carries no bind parameters, so it can be embedded
+     * verbatim as a subquery, for example inside an IN clause.
+     *
+     * Use this when the matching node set is expected to be large: it keeps
+     * the set inside the database instead of materializing it as a Java
+     * collection and sending it back as bind parameters.
+     *
+     * @param rule the filter rule
+     * @return a SELECT statement yielding one column of node IDs
+     * @throws FilterParseException if the rule cannot be parsed
+     */
+    String getNodeIdSelectStatement(String rule) throws FilterParseException;
 }

@@ -511,6 +511,16 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return "SELECT DISTINCT " + columns.toString() + " " + from + " " + where;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getNodeIdSelectStatement(final String rule) throws FilterParseException {
+        final List<Table> tables = new ArrayList<>();
+        final String column = m_databaseSchemaConfigFactory.addColumn(tables, "nodeID");
+        final String where = parseRule(tables, rule);
+        final String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
+        return "SELECT DISTINCT " + column + " " + from + " " + where;
+    }
+
     /**
      * <p>getNodeIPServiceMappingStatement</p>
      *

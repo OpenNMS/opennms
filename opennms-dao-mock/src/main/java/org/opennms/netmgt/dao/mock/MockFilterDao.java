@@ -133,4 +133,8 @@ public class MockFilterDao implements FilterDao, InitializingBean {
         m_ipInterfaceDao = dao;
     }
 
+    @Override
+    public String getNodeIdSelectStatement(final String rule) throws FilterParseException {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
 }

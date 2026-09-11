@@ -118,4 +118,8 @@ public class ConfigTesterFilterDao implements FilterDao {
     public void validateRule(String rule) throws FilterParseException {
     }
 
+    @Override
+    public String getNodeIdSelectStatement(String rule) throws FilterParseException {
+        return "SELECT nodeid FROM node WHERE false";
+    }
 }

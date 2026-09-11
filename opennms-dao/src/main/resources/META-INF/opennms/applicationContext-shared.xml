@@ -282,6 +282,13 @@
     <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
     <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/>
 
+    <!-- Set-based category availability, computed inside the database -->
+    <bean id="categoryAvailabilityCalculator" class="org.opennms.netmgt.dao.jdbc.JdbcCategoryAvailabilityCalculator">
+        <property name="dataSource" ref="dataSource" />
+        <property name="filterDao" ref="filterDao" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.CategoryAvailabilityCalculator" ref="categoryAvailabilityCalculator"/>
+
     <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
