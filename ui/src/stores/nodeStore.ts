@@ -73,7 +73,24 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  // Every fetch below is sequenced the same way, mirroring getIpInterfacesForNodes: the details
+  // page fires one per node id as the user moves between nodes, and the paginated ones fire
+  // again per page, so responses can come back in any order. A response applies only if no
+  // newer call has started since its request was issued.
+  let nodeSnmpInterfacesRequestId = 0
+  let nodeIpInterfacesRequestId = 0
+  let outagesRequestId = 0
+  let availabilityRequestId = 0
+
+  // Monotonic id sequencing getNodeById requests, mirroring getIpInterfacesForNodes below: the
+  // details page fires one per node id as the user moves between nodes, and the responses can
+  // come back in any order. Without this a slow response for the node the user left would
+  // overwrite the one they are on -- and a slow FAILURE would wipe every panel's data.
+  let nodeRequestId = 0
+
   const getNodeById = async (n: Node) => {
+    const requestId = ++nodeRequestId
+
     // Clear first: until this resolves there is no node to show, and the previous one belongs
     // to a different page. A failed request leaves nothing loaded rather than the node the
     // user navigated away from.
@@ -82,6 +99,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeLoadFailed.value = false
 
     const resp = await API.getNodeById(n.id)
+
+    if (requestId !== nodeRequestId) {
+      return
+    }
 
     if (resp) {
       node.value = resp
@@ -105,12 +126,16 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpPrimaryIpAddress.value = undefined
   }
 
+  let snmpPrimaryRequestId = 0
+
   /**
    * Fetch the address of the node's SNMP-primary interface, which the "Update SNMP Information"
    * action needs. Asked for directly rather than read off `ipInterfaces`: that holds whatever
    * page the IP Interfaces table is showing, which need not include the primary.
    */
   const getNodeSnmpPrimaryInterface = async (id: string) => {
+    const requestId = ++snmpPrimaryRequestId
+
     snmpPrimaryIpAddress.value = undefined
 
     const resp = await API.getNodeIpInterfaces(id, {
@@ -119,13 +144,26 @@ export const useNodeStore = defineStore('nodeStore', () => {
       _s: 'snmpPrimary==P'
     })
 
+    // Sequenced like getNodeById above. A stale address here is worse than a missing one: the
+    // Update SNMP action would point at an address that is not this node's, and the form
+    // rewrites SNMP configuration for whatever address it is handed.
+    if (requestId !== snmpPrimaryRequestId) {
+      return
+    }
+
     if (resp) {
       snmpPrimaryIpAddress.value = resp.ipInterface[0]?.ipAddress
     }
   }
 
   const getNodeSnmpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++nodeSnmpInterfacesRequestId
+
     const resp = await API.getNodeSnmpInterfaces(payload.id, payload.queryParameters)
+
+    if (requestId !== nodeSnmpInterfacesRequestId) {
+      return
+    }
 
     if (resp) {
       snmpInterfaces.value = resp.snmpInterface
@@ -134,7 +172,13 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeIpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++nodeIpInterfacesRequestId
+
     const resp = await API.getNodeIpInterfaces(payload.id, payload.queryParameters)
+
+    if (requestId !== nodeIpInterfacesRequestId) {
+      return
+    }
 
     if (resp) {
       ipInterfaces.value = resp.ipInterface
@@ -238,7 +282,13 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeAvailabilityPercentage = async (id: string) => {
+    const requestId = ++availabilityRequestId
+
     const av = await API.getNodeAvailabilityPercentage(id)
+
+    if (requestId !== availabilityRequestId) {
+      return
+    }
 
     if (av) {
       availability.value = av
@@ -246,7 +296,13 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeOutages = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++outagesRequestId
+
     const resp = await API.getNodeOutages(payload.id, payload.queryParameters)
+
+    if (requestId !== outagesRequestId) {
+      return
+    }
 
     if (resp) {
       outages.value = resp.outage

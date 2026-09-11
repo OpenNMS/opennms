@@ -29,8 +29,19 @@ export const useEventStore = defineStore('eventStore', () => {
   const events = ref([] as Event[])
   const totalCount = ref(0)
 
+  // Monotonic id sequencing getEvents requests, mirroring the node store's fetches: the events
+  // table fires one per node id as the user moves between nodes and again per page, so a slow
+  // response from a superseded request must not land under the current paginator state.
+  let eventsRequestId = 0
+
   const getEvents = async (queryParameters?: QueryParameters) => {
+    const requestId = ++eventsRequestId
+
     const resp = await API.getEvents(queryParameters)
+
+    if (requestId !== eventsRequestId) {
+      return
+    }
 
     if (resp) {
       events.value = resp.event

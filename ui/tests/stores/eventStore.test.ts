@@ -66,4 +66,37 @@ describe('eventStore', () => {
       expect(store.totalCount).toBe(1)
     })
   })
+
+  // Fired per node id as the user moves between nodes, and per page as the paginator moves:
+  // a page-2-then-page-3 click can land page 2's rows under page 3's paginator state.
+  describe('stale responses', () => {
+    it('discards a response a newer request has superseded', async () => {
+      const deferredPage = <T>() => {
+        let resolve: (value: T) => void = () => undefined
+        const promise = new Promise<T>((r) => {
+          resolve = r
+        })
+
+        return { promise, resolve }
+      }
+
+      const page2 = deferredPage<unknown>()
+      const page3 = deferredPage<unknown>()
+      vi.mocked(API.getEvents)
+        .mockImplementationOnce(() => page2.promise as never)
+        .mockImplementationOnce(() => page3.promise as never)
+      const store = useEventStore()
+
+      const page2Call = store.getEvents({ limit: 5, offset: 5 })
+      const page3Call = store.getEvents({ limit: 5, offset: 10 })
+
+      page3.resolve({ event: [{ id: 3 }], totalCount: 1, count: 1, offset: 10 })
+      await page3Call
+      page2.resolve({ event: [{ id: 2 }], totalCount: 9, count: 9, offset: 5 })
+      await page2Call
+
+      expect(store.events).toEqual([{ id: 3 }])
+      expect(store.totalCount).toBe(1)
+    })
+  })
 })
