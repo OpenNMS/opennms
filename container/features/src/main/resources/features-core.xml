@@ -152,26 +152,13 @@
     </feature>
 
     <!-- don't rely on dependency="true" for things that want specific versions -->
-    <feature name="guava17" version="17.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/17.0</bundle>
-    </feature>
-
     <!-- don't rely on dependency="true" for things that want specific versions -->
     <feature name="guava18" version="18.0" description="Google :: Guava">
         <bundle>mvn:com.google.guava/guava/18.0</bundle>
     </feature>
 
     <!-- don't rely on dependency="true" for things that want specific versions -->
-    <feature name="guava21" version="21.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/21.0</bundle>
-    </feature>
-
     <!-- don't rely on dependency="true" for things that want specific versions -->
-    <feature name="guava31" version="31.1" description="Google :: Guava">
-        <feature prerequisite="true">guava-dependencies</feature>
-        <bundle start-level="${earlyStartLevel}">mvn:com.google.guava/guava/31.1-jre</bundle>
-    </feature>
-
     <!-- don't rely on dependency="true" for things that want specific versions -->
     <feature name="guava32" version="32.1" description="Google :: Guava">
         <feature prerequisite="true">guava-dependencies</feature>
