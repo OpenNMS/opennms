@@ -355,15 +355,6 @@ var config = {
         }]
       },
       {
-        test: require.resolve('jquery-sparkline/dist/jquery.sparkline'),
-        use: [{
-          loader: 'imports-loader',
-          options: {
-            additionalCode: 'var define = false; /* Disable AMD for misbehaving libraries */',
-          },
-        }]
-      },
-      {
         test: require.resolve('leaflet'),
         use: [{
           loader: 'expose-loader',
