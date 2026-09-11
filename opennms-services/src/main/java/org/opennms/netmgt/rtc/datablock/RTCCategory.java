@@ -68,19 +68,6 @@ public class RTCCategory extends Category {
     /**
      * Add to the nodes in this category
      *
-     * @param node
-     *            the node to add
-     */
-    public void addNode(RTCNode node) {
-        Integer longnodeid = node.getNodeID();
-
-        if (!m_nodes.contains(longnodeid))
-            m_nodes.add(longnodeid);
-    }
-
-    /**
-     * Add to the nodes in this category
-     *
      * @param nodeid
      *            the node ID to add
      */
