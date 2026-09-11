@@ -19,32 +19,13 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.rtc;
+package org.opennms.netmgt.availability;
 
-import java.util.Map;
-
-import org.opennms.netmgt.rtc.datablock.RTCCategory;
-import org.opennms.netmgt.xml.rtc.EuiLevel;
+import java.util.List;
 
 /**
- * This interface contains all of the methods that RTC needs to fetch availability
- * data when posting the data to the web UI.
- * 
- * @author Seth
+ * Supplies the categories whose availability should be kept up to date.
  */
-public interface AvailabilityService {
-
-    /**
-     * Builds a map of configured categories, keyed by label.
-     *
-     * @return the categories
-     */
-    Map<String, RTCCategory> getCategories();
-
-    /**
-     * Retrieves the availability statistics for the given category
-     *
-     * @return a {@link org.opennms.netmgt.xml.rtc.EuiLevel} object.
-     */
-    EuiLevel getEuiLevel(RTCCategory category);
+public interface CategoryDefinitionProvider {
+    List<CategoryDefinition> getDefinitions();
 }

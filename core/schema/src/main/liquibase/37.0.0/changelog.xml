@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Snapshots of category availability, computed on a schedule from the outages and ifservices
+         tables and read by the home page and the /rest/availability API. One row per category in
+         category_availability, one row per member node in category_node_availability. Replaces the
+         in-memory copy the web tier used to receive from rtcd over HTTP. -->
+
+    <changeSet author="dyancey" id="37.0.0-category-availability">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="category_availability"/>
+            </not>
+        </preConditions>
+        <createTable tableName="category_availability">
+            <column name="label" type="text">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_category_availability"/>
+            </column>
+            <column name="window_start" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="window_end" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="computed_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="node_count" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_count" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="services_down" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="downtime_ms" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="category_availability"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="dyancey" id="37.0.0-category-node-availability">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="category_node_availability"/>
+            </not>
+        </preConditions>
+        <createTable tableName="category_node_availability">
+            <column name="label" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nodeid" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_count" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="services_down" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="downtime_ms" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="category_node_availability" columnNames="label, nodeid" constraintName="pk_category_node_availability"/>
+        <addForeignKeyConstraint constraintName="fk_category_node_availability_label"
+                                 baseTableName="category_node_availability" baseColumnNames="label"
+                                 referencedTableName="category_availability" referencedColumnNames="label"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_category_node_availability_nodeid"
+                                 baseTableName="category_node_availability" baseColumnNames="nodeid"
+                                 referencedTableName="node" referencedColumnNames="nodeid"
+                                 onDelete="CASCADE"/>
+        <rollback>
+            <dropTable tableName="category_node_availability"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Events raised by the availability daemon when a category's availability crosses the
+         warning threshold from categories.xml. Both correlate on the category label so the
+         "above" event clears the alarm the "below" event raised. -->
+
+    <changeSet author="dyancey" id="37.0.0-availability-category-below-warning-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.internal.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events
+                    WHERE uei = 'uei.opennms.org/availability/categoryBelowWarningThreshold'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events
+            (id, source_id, event_order, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity)
+            VALUES (Nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.internal.events'),
+                    (SELECT COALESCE(MAX(event_order), 0) + 1 FROM eventconf_events WHERE source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.internal.events')),
+                    'uei.opennms.org/availability/categoryBelowWarningThreshold',
+                    'OpenNMS-defined availability event: categoryBelowWarningThreshold',
+                    '&lt;p>Availability of category %parm[label]% dropped to %parm[availability]%%, below its warning threshold of %parm[warningThreshold]%%.&lt;/p>',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/availability/categoryBelowWarningThreshold&lt;/uei>
+&lt;event-label>OpenNMS-defined availability event: categoryBelowWarningThreshold&lt;/event-label>
+&lt;descr>&amp;lt;p>Availability of category %parm[label]% dropped to %parm[availability]%%, below its warning threshold of %parm[warningThreshold]%%.&amp;lt;/p>
+&amp;lt;p>%parm[servicesDown]% of %parm[serviceCount]% services on %parm[nodeCount]% nodes are down. Window: %parm[windowStart]% to %parm[windowEnd]%.&amp;lt;/p>&lt;/descr>
+&lt;logmsg dest="logndisplay">
+    Availability of category %parm[label]% is %parm[availability]%%, below the warning threshold of %parm[warningThreshold]%%.
+&lt;/logmsg>
+&lt;severity>Warning&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+&lt;/event>',
+                    Current_timestamp, Current_timestamp, 'system-migration', 'Warning');
+        </sql>
+        <rollback>
+            <sql>DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/availability/categoryBelowWarningThreshold'</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="dyancey" id="37.0.0-availability-category-above-warning-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.internal.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events
+                    WHERE uei = 'uei.opennms.org/availability/categoryAboveWarningThreshold'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events
+            (id, source_id, event_order, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity)
+            VALUES (Nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.internal.events'),
+                    (SELECT COALESCE(MAX(event_order), 0) + 1 FROM eventconf_events WHERE source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.internal.events')),
+                    'uei.opennms.org/availability/categoryAboveWarningThreshold',
+                    'OpenNMS-defined availability event: categoryAboveWarningThreshold',
+                    '&lt;p>Availability of category %parm[label]% recovered to %parm[availability]%%, at or above its warning threshold of %parm[warningThreshold]%%.&lt;/p>',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/availability/categoryAboveWarningThreshold&lt;/uei>
+&lt;event-label>OpenNMS-defined availability event: categoryAboveWarningThreshold&lt;/event-label>
+&lt;descr>&amp;lt;p>Availability of category %parm[label]% recovered to %parm[availability]%%, at or above its warning threshold of %parm[warningThreshold]%%.&amp;lt;/p>
+&amp;lt;p>%parm[servicesDown]% of %parm[serviceCount]% services on %parm[nodeCount]% nodes are down. Window: %parm[windowStart]% to %parm[windowEnd]%.&amp;lt;/p>&lt;/descr>
+&lt;logmsg dest="logndisplay">
+    Availability of category %parm[label]% is %parm[availability]%%, back at or above the warning threshold of %parm[warningThreshold]%%.
+&lt;/logmsg>
+&lt;severity>Normal&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/availability/categoryBelowWarningThreshold:%parm[label]%" auto-clean="false"/>
+&lt;/event>',
+                    Current_timestamp, Current_timestamp, 'system-migration', 'Normal');
+        </sql>
+        <rollback>
+            <sql>DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/availability/categoryAboveWarningThreshold'</sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

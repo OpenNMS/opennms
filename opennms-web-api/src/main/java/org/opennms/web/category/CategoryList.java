@@ -59,7 +59,6 @@ public class CategoryList {
      */
     protected final List<Section> m_sections;
 
-    protected final int m_disconnectTimeout;
 
     /**
      * <p>Constructor for CategoryList.</p>
@@ -75,7 +74,6 @@ public class CategoryList {
         }
 
         List<Section> sections = Collections.emptyList();
-        int disconnectTimeout = 130000;
         try {
             ViewsDisplayFactory.init();
             ViewsDisplayFactory viewsDisplayFactory = ViewsDisplayFactory.getInstance();
@@ -84,7 +82,6 @@ public class CategoryList {
 
             if (view != null) {
                 sections = view.getSections();
-                disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
                 LOG.debug("found display rules from viewsdisplay.xml");
             } else {
                 LOG.debug("did not find display rules from viewsdisplay.xml");
@@ -94,7 +91,6 @@ public class CategoryList {
         }
 
         m_sections = sections;
-        m_disconnectTimeout = disconnectTimeout;
     }
 
 
@@ -212,16 +208,13 @@ public class CategoryList {
     }
 
     /**
-     * <p>isDisconnected</p>
+     * True when at least one displayed category has no availability snapshot
+     * yet, for example right after startup or while the availability daemon
+     * is disabled.
      *
-     * @param earliestUpdate a long.
-     * @return a boolean.
+     * @param earliestUpdate the value from {@link #getEarliestUpdate(Map)}
      */
     public boolean isDisconnected(long earliestUpdate) {
-        if (earliestUpdate < 1 || (earliestUpdate + m_disconnectTimeout) < System.currentTimeMillis()) {
-            return true;
-        } else {
-            return false;
-        }
+        return earliestUpdate < 1;
     }
 }

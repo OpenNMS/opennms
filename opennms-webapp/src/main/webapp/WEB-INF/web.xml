@@ -415,8 +415,7 @@
   <!-- WARMERGE: insert filter-mapping -->
 
   <!--
-    This listener handles setting OpenNMS-specific context properties
-    and starts and stops the RTC subscription timer.
+    This listener handles setting OpenNMS-specific context properties.
   -->
   <listener>
     <listener-class>org.opennms.web.servlet.InitializerServletContextListener</listener-class>
@@ -846,19 +845,6 @@
   </servlet>
 
   <servlet>
-    <servlet-name>rtcPost</servlet-name>
-    <servlet-class>org.opennms.web.category.RTCPostServlet</servlet-class>
-    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>rtcRaw</servlet-name>
-    <servlet-class>org.opennms.web.category.RTCDebugServlet</servlet-class>
-    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet>
     <servlet-name>sendMail</servlet-name>
     <servlet-class>org.opennms.web.mail.MailerServlet</servlet-class>
     <init-param>
@@ -1085,15 +1071,6 @@
   <servlet-mapping>
         <servlet-name>updateServiceNotify</servlet-name>
         <url-pattern>/admin/updateServiceNotify</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rtcPost</servlet-name>
-    <url-pattern>/rtc/post/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rtcRaw</servlet-name>
-    <url-pattern>/rtc/raw</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

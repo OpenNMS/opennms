@@ -1,33 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:tx="http://www.springframework.org/schema/tx"
   xmlns:context="http://www.springframework.org/schema/context"
-  xmlns:util="http://www.springframework.org/schema/util"
-  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
-  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
-  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
 
   <context:annotation-config />
 
-  <bean name="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
+  <!-- Category definitions come from categories.xml; the calculator and the snapshot store come from the DAO context. -->
+  <bean id="categoryDefinitionProvider" class="org.opennms.netmgt.availability.CategoriesXmlDefinitionProvider"/>
 
-  <bean id="availabilityServiceHibernateImpl" class="org.opennms.netmgt.rtc.AvailabilityServiceHibernateImpl"/>
-
-  <!-- This EventListener listens for subscribe and unsubscribe events -->
-  <bean id="dataSenderListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener" ref="dataSender" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  <bean id="categoryAvailabilityThresholdNotifier" class="org.opennms.netmgt.availability.CategoryAvailabilityThresholdNotifier">
+    <constructor-arg>
+      <onmsgi:reference interface="org.opennms.netmgt.events.api.EventForwarder"/>
+    </constructor-arg>
   </bean>
 
-  <bean name="dataSender" class="org.opennms.netmgt.rtc.DataSender">
-    <constructor-arg ref="availabilityServiceHibernateImpl"/>
-    <constructor-arg ref="rtcConfigFactory"/>
+  <bean id="availabilitySnapshotScheduler" class="org.opennms.netmgt.availability.AvailabilitySnapshotScheduler">
+    <constructor-arg ref="categoryAvailabilityCalculator"/>
+    <constructor-arg ref="categoryAvailabilitySnapshotDao"/>
+    <constructor-arg ref="categoryDefinitionProvider"/>
+    <property name="thresholdNotifier" ref="categoryAvailabilityThresholdNotifier"/>
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.rtc.RTCManager"/>

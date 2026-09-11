@@ -36,7 +36,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.xml.rtc.Node;
+import org.opennms.netmgt.model.availability.NodeAvailability;
 
 @XmlRootElement(name="node")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -64,11 +64,11 @@ public class AvailabilityNode {
         m_serviceDownCount = 0l;
     }
 
-    public AvailabilityNode(final Node node) {
-        m_nodeId = node.getNodeid();
-        m_availability = node.getNodevalue();
-        m_serviceCount = node.getNodesvccount();
-        m_serviceDownCount = node.getNodesvcdowncount();
+    public AvailabilityNode(final NodeAvailability node) {
+        m_nodeId = (long) node.getNodeId();
+        m_availability = node.getAvailability();
+        m_serviceCount = node.getServiceCount();
+        m_serviceDownCount = node.getServicesDown();
     }
 
     public AvailabilityNode(final OnmsNode node, final double availability) {

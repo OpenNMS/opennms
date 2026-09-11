@@ -27,10 +27,11 @@
 	import="
 		org.opennms.web.category.*,
 		org.opennms.web.api.Util,
-		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.servlet.MissingParameterException,
 		java.util.*,
-		org.opennms.netmgt.xml.rtc.Node,
+		org.opennms.core.spring.BeanUtils,
+		org.opennms.netmgt.dao.api.NodeDao,
+		org.opennms.netmgt.model.availability.NodeAvailability,
 		org.opennms.web.servlet.XssRequestWrapper,
 		org.opennms.web.springframework.security.AclUtils,
 		org.springframework.security.core.context.SecurityContextHolder
@@ -62,35 +63,32 @@
         throw new MissingParameterException("category");
     }
 
-    Category category = this.model.getCategory(categoryName);
-
+    Category category = this.model.getCategoryWithNodes(categoryName);
     if (category == null) {
         throw new CategoryNotFoundException(categoryName);
     }
-    
+
     AclUtils.NodeAccessChecker accessChecker = AclUtils.getNodeAccessChecker(getServletContext());
 
-    // put the nodes in a tree map to sort by name
-    TreeMap<String,Node> nodeMap = new TreeMap<String,Node>();
-    for (Node node : category.getNode()) {
-        int nodeId = (int)(node.getNodeid());
-        String nodeLabel =
-		NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
-        // nodeMap.put( nodeLabel, node );
+    // one query for every label instead of one per node; categories can be very large
+    Map<Integer, String> nodeLabels = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class).getAllLabelsById();
 
+    // put the nodes in a tree map to sort by name
+    TreeMap<String,NodeAvailability> nodeMap = new TreeMap<String,NodeAvailability>();
+    for (NodeAvailability node : category.getNodeAvailabilities()) {
+        int nodeId = node.getNodeId();
+        String nodeLabel = nodeLabels.get(nodeId);
         if (accessChecker.isNodeAccessible(nodeId)) {
             if (nodeLabel != null && !nodeMap.containsKey(nodeLabel)) {
                 nodeMap.put(nodeLabel, node);
             } else if (nodeLabel != null) {
-                nodeMap.put(nodeLabel+" (nodeid="+node.getNodeid()+")", node);
+                nodeMap.put(nodeLabel+" (nodeid="+nodeId+")", node);
             } else {
-                nodeMap.put("nodeId=" + node.getNodeid(), node);
+                nodeMap.put("nodeId=" + nodeId, node);
             }
         }
     }
 %>
-
-
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle(category.getName())
@@ -148,7 +146,7 @@
         <tr>
           <th>Nodes</th>
           <th>Outages</th>
-          <th>24hr Availability</th>
+          <th><%= category.getWindowMillis() == null ? 24 : Math.max(1, category.getWindowMillis() / (60L * 60L * 1000L)) %>hr Availability</th>
         </tr>
         </thead>
       
@@ -158,13 +156,13 @@
         
         if (nodeMap.size() > 0) {
             for (String nodeLabel : nodeMap.keySet()) {
-                Node node = nodeMap.get(nodeLabel);
+                NodeAvailability node = nodeMap.get(nodeLabel);
                 
-                double value = node.getNodevalue();
+                double value = node.getAvailability();
         
                 if( value >= 0 ) {
-                    long serviceCount = node.getNodesvccount();        
-                    long serviceDownCount = node.getNodesvcdowncount();
+                    long serviceCount = node.getServiceCount();        
+                    long serviceDownCount = node.getServicesDown();
                     double servicePercentage = 100.0;
                 
                     if( serviceCount > 0 ) {
@@ -176,7 +174,7 @@
 
                     if ( showoutages.equals("all") || (showoutages.equals("outages") && serviceDownCount > 0 ) || (showoutages.equals("avail") && value < 100 ) ) { %>
                     <tr>
-                      <td><a href="element/node.jsp?node=<%=node.getNodeid()%>"><c:out value="<%=nodeLabel%>"/></a></td>
+                      <td><a href="element/node.jsp?node=<%=node.getNodeId()%>"><c:out value="<%=nodeLabel%>"/></a></td>
                       <td class="bright severity-<%=outageClass%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
                       <td class="bright severity-<%=availClass%>" align="right" width="30%"><b><%=CategoryUtil.formatValue(value)%>%</b></td>
                     </tr>
@@ -205,6 +203,10 @@
     </table>
   </div>
 
+  <% if (category.getLastUpdated() != null) { %>
   <p>Last updated: <onms:datetime date="<%=category.getLastUpdated()%>"/></p>
+  <% } else { %>
+  <p>Availability for this category has not been calculated yet.</p>
+  <% } %>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

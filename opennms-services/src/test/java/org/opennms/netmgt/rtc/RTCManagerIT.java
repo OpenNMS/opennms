@@ -21,10 +21,14 @@
  */
 package org.opennms.netmgt.rtc;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.availability.AvailabilitySnapshotScheduler;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,7 +40,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-		"classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-rtc.xml"
 })
@@ -44,12 +48,18 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 public class RTCManagerIT {
 
-	@Autowired
-	RTCManager rtc;
+    @Autowired
+    private RTCManager m_daemon;
 
-	@Test
-	public void testStart() throws Exception {
-		rtc.init();
-		rtc.start();
-	}
+    @Autowired
+    private AvailabilitySnapshotScheduler m_scheduler;
+
+    @Test
+    public void startsAndStopsTheScheduler() throws Exception {
+        m_daemon.init();
+        m_daemon.start();
+        assertTrue(m_scheduler.isRunning());
+        m_daemon.stop();
+        assertFalse(m_scheduler.isRunning());
+    }
 }

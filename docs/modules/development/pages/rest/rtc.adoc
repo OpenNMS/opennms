@@ -1,41 +1,45 @@
 
-= Realtime Console Data
+= Category Availability Data
 
-The Realtime Console (RTC) calculates the availability for monitored services.
-Data provided from the RTC is available to the REST API.
+Availability of the categories defined in `$OPENNMS_HOME/etc/categories.xml` is recomputed on a schedule by the availability daemon over a rolling window (24 hours by default) and stored in the database.
+The REST API reads those stored figures; it does not recompute on request.
+A category that has not been computed yet reports `Calculating...` and `Indeterminate`.
 
 == GETs (Reading Data)
 
 [caption=]
-.Realtime Console Data API GET functions
+.Category availability API GET functions
 [cols="2,3"]
 |===
 | Resource  | Description
 
 | /availability
-| Get availability data for all SLA categories.
+| Get availability data for all categories, grouped as in `viewsdisplay.xml`.
+`node-count` gives the number of nodes in each category; node ids are not listed here.
 
 | /availability/categories/\{category}
-| Get all nodes and availability data from a given SLA category filter (for example, Web Servers (Web+Servers)).
+| Get availability data for one category.
+Pass `includeNodes=true` to include the list of member node ids; prefer the nodes resource for large categories.
 
 | /availability/categories/\{category}/nodes
-| Get node availability data for each node of a given SLA category filter.
+| Get per-node availability for the category, sorted by node id.
+Page with `limit` and `offset`; `totalCount` is the number of nodes in the category.
 
 | /availability/categories/\{category}/nodes/\{nodeid}
-| Get detailed service availability for a given node in a given SLA category filter.
+| Get detailed service availability for a node that is a member of the category.
 
 | /availability/nodes/\{nodeid}
-| Get detailed availability for all services on a given node.
+| Get detailed availability for all services on a node.
 |===
 
-IMPORTANT: The categories referenced above are RTC categories defined in `$OPENNMS_HOME/etc/categories.xml`, not tags assigned to nodes.
+IMPORTANT: The categories referenced above are the availability categories defined in `$OPENNMS_HOME/etc/categories.xml`, not tags assigned to nodes.
 
 == Example
 
 [source, bash]
 ----
 curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers
-curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers/nodes
+curl -u demo:demo "http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers/nodes?limit=100&offset=0"
 curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers/nodes/31
 curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/nodes/31
 ----

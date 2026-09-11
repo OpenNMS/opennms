@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.netmgt.model.availability.NodeAvailability;
 
 @XmlRootElement(name="nodes")
 @JsonRootName("nodes")
@@ -41,9 +42,9 @@ public class NodeList extends JaxbListWrapper<AvailabilityNode> {
         super(nodes);
     }
 
-    public static NodeList forNodes(final Collection<? extends org.opennms.netmgt.xml.rtc.Node> nodes) {
+    public static NodeList forNodes(final Collection<? extends NodeAvailability> nodes) {
         final NodeList nl = new NodeList();
-        for (final org.opennms.netmgt.xml.rtc.Node n : nodes) {
+        for (final NodeAvailability n : nodes) {
             nl.add(new AvailabilityNode(n));
         }
         return nl;

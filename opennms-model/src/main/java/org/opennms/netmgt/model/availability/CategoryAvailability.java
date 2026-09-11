@@ -34,7 +34,10 @@ import java.util.Objects;
  * breakdown it was computed from. Category totals are the sums of the node
  * figures, and the category percentage weights every covered service equally.
  *
- * Instances are immutable. Nodes are held sorted by node ID.
+ * Instances are immutable. Nodes are held sorted by node ID. A summary
+ * instance created through {@link #withTotals} carries the stored totals and
+ * node count but no node list, for callers that only need the headline
+ * figures of a very large category.
  */
 public final class CategoryAvailability implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -44,6 +47,7 @@ public final class CategoryAvailability implements Serializable {
     private final Date m_windowEnd;
     private final Date m_computedAt;
     private final List<NodeAvailability> m_nodes;
+    private final long m_nodeCount;
     private final long m_serviceCount;
     private final long m_servicesDown;
     private final long m_downtimeMillis;
@@ -70,10 +74,38 @@ public final class CategoryAvailability implements Serializable {
             servicesDown += node.getServicesDown();
             downtime += node.getDowntimeMillis();
         }
+        m_nodeCount = m_nodes.size();
         m_serviceCount = serviceCount;
         m_servicesDown = servicesDown;
         m_downtimeMillis = downtime;
         m_availability = NodeAvailability.percentage(downtime, getWindowMillis(), serviceCount);
+    }
+
+    private CategoryAvailability(final String label, final Date windowStart, final Date windowEnd, final Date computedAt,
+            final long nodeCount, final long serviceCount, final long servicesDown, final long downtimeMillis) {
+        m_label = Objects.requireNonNull(label, "label");
+        m_windowStart = new Date(Objects.requireNonNull(windowStart, "windowStart").getTime());
+        m_windowEnd = new Date(Objects.requireNonNull(windowEnd, "windowEnd").getTime());
+        if (!m_windowStart.before(m_windowEnd)) {
+            throw new IllegalArgumentException("windowStart must be before windowEnd");
+        }
+        m_computedAt = new Date(Objects.requireNonNull(computedAt, "computedAt").getTime());
+        m_nodes = Collections.emptyList();
+        m_nodeCount = nodeCount;
+        m_serviceCount = serviceCount;
+        m_servicesDown = servicesDown;
+        m_downtimeMillis = downtimeMillis;
+        m_availability = NodeAvailability.percentage(downtimeMillis, getWindowMillis(), serviceCount);
+    }
+
+    /**
+     * Create a summary that carries stored totals without the node list.
+     * {@link #getNodes()} on the result is empty while {@link #getNodeCount()}
+     * reports the real number of member nodes.
+     */
+    public static CategoryAvailability withTotals(final String label, final Date windowStart, final Date windowEnd, final Date computedAt,
+            final long nodeCount, final long serviceCount, final long servicesDown, final long downtimeMillis) {
+        return new CategoryAvailability(label, windowStart, windowEnd, computedAt, nodeCount, serviceCount, servicesDown, downtimeMillis);
     }
 
     public String getLabel() {
@@ -96,9 +128,22 @@ public final class CategoryAvailability implements Serializable {
         return new Date(m_computedAt.getTime());
     }
 
-    /** Nodes in the category, sorted by node ID. Never null. */
+    /**
+     * Nodes in the category, sorted by node ID. Never null, but empty on a
+     * summary created with {@link #withTotals}; compare with {@link #getNodeCount()}.
+     */
     public List<NodeAvailability> getNodes() {
         return m_nodes;
+    }
+
+    /** Number of member nodes, whether or not they are loaded. */
+    public long getNodeCount() {
+        return m_nodeCount;
+    }
+
+    /** True when {@link #getNodes()} holds every member node. */
+    public boolean hasNodes() {
+        return m_nodeCount == 0 || !m_nodes.isEmpty();
     }
 
     public long getServiceCount() {
@@ -121,7 +166,8 @@ public final class CategoryAvailability implements Serializable {
     public String toString() {
         return "CategoryAvailability[label=" + m_label
                 + ", window=" + m_windowStart + ".." + m_windowEnd
-                + ", nodes=" + m_nodes.size()
+                + ", nodeCount=" + m_nodeCount
+                + ", nodesLoaded=" + m_nodes.size()
                 + ", serviceCount=" + m_serviceCount
                 + ", servicesDown=" + m_servicesDown
                 + ", downtimeMillis=" + m_downtimeMillis

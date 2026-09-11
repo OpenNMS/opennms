@@ -32,12 +32,19 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.api.CatFactory;
+import org.opennms.netmgt.config.categories.CategoryGroup;
+import org.opennms.netmgt.dao.api.CategoryAvailabilitySnapshotDao;
+import org.opennms.netmgt.model.availability.CategoryAvailability;
+import org.opennms.netmgt.model.availability.NodeAvailability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,11 +79,11 @@ public class CategoryModel extends Object {
         return m_instance;
     }
 
-    /** A mapping of category names to category instances. */
-    private Map<String, Category> m_categoryMap = new HashMap<String, Category>();
+    /** Explicit snapshot store for tests; null means look it up in the DAO context on every call. */
+    private final CategoryAvailabilitySnapshotDao m_snapshotDao;
 
     /** A reference to the CategoryFactory to get to category definitions. */
-    private CatFactory m_factory = null;
+    private final CatFactory m_factory;
 
     /**
      * Create the instance of the CategoryModel.
@@ -84,32 +91,116 @@ public class CategoryModel extends Object {
     private CategoryModel() throws IOException {
         CategoryFactory.init();
         m_factory = CategoryFactory.getInstance();
+        m_snapshotDao = null;
 
         LOG.debug("The CategoryModel object was created");
     }
 
-    /**
-     * Return the <code>Category</code> instance for the given category name.
-     * Return null if there is no match for the given name.
-     *
-     * @param categoryName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.category.Category} object.
-     */
-    public Category getCategory(String categoryName) {
-        if (categoryName == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return m_categoryMap.get(categoryName);
+    /** For tests: build a model on explicit collaborators. */
+    CategoryModel(final CatFactory factory, final CategoryAvailabilitySnapshotDao snapshotDao) {
+        m_factory = factory;
+        m_snapshotDao = snapshotDao;
     }
 
     /**
-     * Return a mapping of category names to instances.
+     * The snapshot store. Looked up on every call rather than cached: the
+     * lookup is a map access against the current Spring context, and caching
+     * it would pin this singleton to a context that may since have been
+     * replaced.
+     */
+    private CategoryAvailabilitySnapshotDao snapshotDao() {
+        if (m_snapshotDao != null) {
+            return m_snapshotDao;
+        }
+        return BeanUtils.getBean("daoContext", "categoryAvailabilitySnapshotDao", CategoryAvailabilitySnapshotDao.class);
+    }
+
+    private org.opennms.netmgt.config.categories.Category definition(final String categoryName) {
+        m_factory.getReadLock().lock();
+        try {
+            return m_factory.getCategory(categoryName);
+        } finally {
+            m_factory.getReadLock().unlock();
+        }
+    }
+
+    /**
+     * Return the <code>Category</code> for the given name with its headline
+     * figures but without its node list. Returns null when categories.xml does
+     * not define a category of that name. A defined category without a
+     * snapshot yet is returned with no data.
+     */
+    public Category getCategory(final String categoryName) {
+        if (categoryName == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+        final org.opennms.netmgt.config.categories.Category def = definition(categoryName);
+        if (def == null) {
+            return null;
+        }
+        return new Category(def, snapshotDao().findSummary(categoryName).orElse(null));
+    }
+
+    /**
+     * Like {@link #getCategory(String)} but with every member node loaded.
+     * Prefer {@link #getCategoryNodes(String, int, int)} for large categories.
+     */
+    public Category getCategoryWithNodes(final String categoryName) {
+        if (categoryName == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+        final org.opennms.netmgt.config.categories.Category def = definition(categoryName);
+        if (def == null) {
+            return null;
+        }
+        return new Category(def, snapshotDao().findWithNodes(categoryName).orElse(null));
+    }
+
+    /**
+     * A page of a category's member nodes sorted by node ID, with the total
+     * count and offset set on the returned list.
      *
-     * @return a {@link java.util.Map} object.
+     * @param limit maximum nodes to return; zero or negative returns them all
+     */
+    public NodeList getCategoryNodes(final String categoryName, final int offset, final int limit) {
+        final Optional<CategoryAvailability> summary = snapshotDao().findSummary(categoryName);
+        final NodeList nodes = NodeList.forNodes(summary.isPresent() ? snapshotDao().findNodes(categoryName, offset, limit) : Collections.emptyList());
+        nodes.setTotalCount((int) summary.map(CategoryAvailability::getNodeCount).orElse(0L).longValue());
+        nodes.setOffset(offset);
+        return nodes;
+    }
+
+    /** One member node of a category, or null if the node is not in it. */
+    public AvailabilityNode getCategoryNode(final String categoryName, final long nodeId) {
+        final long windowMillis = snapshotDao().findSummary(categoryName).map(CategoryAvailability::getWindowMillis).orElse(0L);
+        if (windowMillis <= 0) {
+            return null;
+        }
+        return snapshotDao().findNode(categoryName, (int) nodeId).map(AvailabilityNode::new).orElse(null);
+    }
+
+    /**
+     * Return a mapping of category names to instances for every category
+     * defined in categories.xml, each with its headline figures if a snapshot
+     * exists.
      */
     public Map<String, Category> getCategoryMap() {
-        return Collections.unmodifiableMap(new HashMap<String, Category>(m_categoryMap));
+        final Map<String, CategoryAvailability> summaries = new HashMap<>();
+        for (final CategoryAvailability summary : snapshotDao().findAllSummaries()) {
+            summaries.put(summary.getLabel(), summary);
+        }
+        final Map<String, Category> categories = new HashMap<>();
+        m_factory.getReadLock().lock();
+        try {
+            for (final CategoryGroup group : m_factory.getConfig().getCategoryGroups()) {
+                for (final org.opennms.netmgt.config.categories.Category def : group.getCategories()) {
+                    categories.put(def.getLabel(), new Category(def, summaries.get(def.getLabel())));
+                }
+            }
+        } finally {
+            m_factory.getReadLock().unlock();
+        }
+        return Collections.unmodifiableMap(categories);
     }
 
     /**
@@ -166,33 +257,6 @@ public class CategoryModel extends Object {
         }
 
         return comment;
-    }
-
-    /**
-     * Update a category with new values.
-     *
-     * @param rtcCategory a {@link org.opennms.netmgt.xml.rtc.Category} object.
-     */
-    public void updateCategory(final org.opennms.netmgt.xml.rtc.Category rtcCategory) {
-        if (rtcCategory == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        final String categoryName = rtcCategory.getCatlabel();
-        
-        m_factory.getWriteLock().lock();
-        try {
-            org.opennms.netmgt.config.categories.Category categoryDef = m_factory.getCategory(categoryName);
-            org.opennms.web.category.Category category = new org.opennms.web.category.Category(categoryDef, rtcCategory, new Date());
-    
-            synchronized (m_categoryMap) {
-                m_categoryMap.put(categoryName, category);
-            }
-        } finally {
-            m_factory.getWriteLock().unlock();
-        }
-
-        LOG.debug("{} was updated", categoryName);
     }
 
     /**

@@ -34,7 +34,9 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -82,15 +84,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("availabilityRestService")
 @Path("availability")
 @Tag(name = "Availability", description = """
-        Availability figures come from the RTC (real-time console) rolling window rather than from a fresh
-        query, and are recomputed on the RTC's own schedule. All percentages are 0 to 100.
-
+        Availability figures come from snapshots that the availability daemon recomputes on its own schedule
+        over a rolling window (24 hours by default) rather than from a fresh query. All percentages are 0 to 100.
         The category groupings and their thresholds come from `categories.xml`. `last-updated` on a category
-        is serialised as epoch milliseconds, not as the date-time string the derived schema shows.
-
+        is when its snapshot was computed, serialised as epoch milliseconds, not as the date-time string the
+        derived schema shows. A category with no snapshot yet reports `Calculating...` and `Indeterminate`.
         Categories are addressed by name in the path. Names commonly contain spaces, so they have to be
         percent-encoded (`Web%20Servers`); the handler URL-decodes the path segment before looking the
-        category up.""")
+        category up. Categories can contain every node in the system, so node lists are omitted from
+        summaries and paged on the nodes resource.""")
 @Transactional
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 public class AvailabilityRestService extends OnmsRestService {
@@ -185,10 +187,10 @@ public class AvailabilityRestService extends OnmsRestService {
     @Operation(
             summary = "Get availability for one category",
             description = """
-        Return the current availability figures for a single category from `categories.xml`, including the
-        list of node ids it covers. `outage-class` and `availability-class` are the RTC's own severity
-        labels, derived from the category's `normal-threshold` and `warning-threshold`. `last-updated` is
-        epoch milliseconds.""",
+        Return the current availability figures for a single category from `categories.xml`. `outage-class`
+        and `availability-class` are severity labels derived from the category's `normal-threshold` and
+        `warning-threshold`. `last-updated` is epoch milliseconds. The `nodes` array of member node ids is
+        omitted unless `includeNodes=true` is passed; prefer the paged nodes resource for large categories.""",
             operationId = "getAvailabilityCategory"
     )
     @ApiResponses(value = {
@@ -231,10 +233,13 @@ public class AvailabilityRestService extends OnmsRestService {
     public Category getCategory(
             @Parameter(description = "Category name from categories.xml, percent-encoded. Case sensitive.",
                     required = true, example = "Web Servers")
-            @PathParam("category") final String categoryName) {
+            @PathParam("category") final String categoryName,
+            @Parameter(description = "Include the `nodes` array of member node ids. Off by default because a category can hold every node.")
+            @QueryParam("includeNodes") @DefaultValue("false") final boolean includeNodes) {
         try {
             final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
-            final Category cat = CategoryModel.getInstance().getCategory(category);
+            final CategoryModel model = CategoryModel.getInstance();
+            final Category cat = includeNodes ? model.getCategoryWithNodes(category) : model.getCategory(category);
             if (cat == null) {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
             }
@@ -250,8 +255,10 @@ public class AvailabilityRestService extends OnmsRestService {
     @Operation(
             summary = "List the nodes in a category with their availability",
             description = """
-        Return one entry per node in the category, each with the node's availability and service counts.
-        The `ipinterfaces` array is empty on this operation.""",
+        Return one entry per node in the category, sorted by node id, each with the node's availability and
+        service counts. The `ipinterfaces` array is empty on this operation. Use `limit` and `offset` to page
+        through large categories; `totalCount` is the number of nodes in the category and `count` the number
+        in this response.""",
             operationId = "getAvailabilityCategoryNodes"
     )
     @ApiResponses(value = {
@@ -289,14 +296,18 @@ public class AvailabilityRestService extends OnmsRestService {
     public NodeList getCategoryNodes(
             @Parameter(description = "Category name from categories.xml, percent-encoded. Case sensitive.",
                     required = true, example = "Web Servers")
-            @PathParam("category") final String categoryName) {
+            @PathParam("category") final String categoryName,
+            @Parameter(description = "Number of nodes to skip.", example = "0")
+            @QueryParam("offset") @DefaultValue("0") final int offset,
+            @Parameter(description = "Maximum number of nodes to return; 0 returns all remaining nodes.", example = "100")
+            @QueryParam("limit") @DefaultValue("0") final int limit) {
         try {
             final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
-            final Category cat = CategoryModel.getInstance().getCategory(category);
-            if (cat == null) {
+            final CategoryModel model = CategoryModel.getInstance();
+            if (model.getCategory(category) == null) {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
             }
-            return cat.getNodes();
+            return model.getCategoryNodes(category, Math.max(0, offset), Math.max(0, limit));
         } catch (final IOException e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
             throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
@@ -362,11 +373,11 @@ public class AvailabilityRestService extends OnmsRestService {
             @PathParam("nodeId") final Long nodeId) {
         try {
             final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
-            final Category cat = CategoryModel.getInstance().getCategory(category);
-            if (cat == null) {
+            final CategoryModel model = CategoryModel.getInstance();
+            if (model.getCategory(category) == null) {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
             }
-            final AvailabilityNode node = cat.getNode(nodeId);
+            final AvailabilityNode node = model.getCategoryNode(category, nodeId);
             if (node == null) {
                 throw getException(Status.NOT_FOUND, "Node {} was not found for category {}.", Long.toString(nodeId), categoryName);
             }

@@ -69,14 +69,18 @@
 	long earliestUpdate = m_category_list.getEarliestUpdate(categoryData);
 	boolean opennmsDisconnect = m_category_list.isDisconnected(earliestUpdate);
 
-	String titleName = "Availability Over the Past 24 Hours";
-	if (opennmsDisconnect) {
-		titleName = "Waiting for availability data. ";
-		if (earliestUpdate > 0) {
-			titleName += new Date(earliestUpdate).toString();
-		} else {
-			titleName += "One or more categories have never been updated.";
+	long windowHours = 24;
+	for (List<Category> categories : categoryData.values()) {
+		for (Category category : categories) {
+			if (category.getWindowMillis() != null) {
+				windowHours = Math.max(1, category.getWindowMillis() / (60L * 60L * 1000L));
+				break;
+			}
 		}
+	}
+	String titleName = "Availability Over the Past " + windowHours + " Hours";
+	if (opennmsDisconnect) {
+		titleName = "Waiting for availability data. One or more categories have not been calculated yet.";
 	}
 %>
 

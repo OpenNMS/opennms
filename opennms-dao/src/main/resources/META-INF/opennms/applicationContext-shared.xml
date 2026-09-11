@@ -289,6 +289,12 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.CategoryAvailabilityCalculator" ref="categoryAvailabilityCalculator"/>
 
+    <bean id="categoryAvailabilitySnapshotDao" class="org.opennms.netmgt.dao.jdbc.JdbcCategoryAvailabilitySnapshotDao">
+        <property name="dataSource" ref="dataSource" />
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.CategoryAvailabilitySnapshotDao" ref="categoryAvailabilitySnapshotDao"/>
+
     <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
