@@ -32,6 +32,8 @@ See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upg
 === Heatmap, Trends, Charts and Statsd removed
 The Heatmap, Trends, Charts and Metrics Statistics (statsd) pages have been removed from the Dashboards menu and from the product, together with the Statsd daemon.
 The `etc/statsd-configuration.xml` and `etc/trend-configuration.xml` files, the `CORE_SERVICE_STATSD_ENABLED` variable, the `/rest/heatmap` endpoint and the `org.opennms.heatmap.*` system properties are no longer read.
+On upgrade, the Statsd entry is removed from `etc/service-configuration.xml` and any `statsd-configuration.xml` or `trend-configuration.xml` is moved to `etc_archive/`.
+The "TOP 20 nodes by I/O Wait" database report and the response-time offenders section of the Response Time Summary report, which only Statsd could feed, are removed as well.
 Existing rows in the `statisticsreport` tables are left in place and continue to be purged by Vacuumd.
 `etc/chart-configuration.xml` is kept.
 

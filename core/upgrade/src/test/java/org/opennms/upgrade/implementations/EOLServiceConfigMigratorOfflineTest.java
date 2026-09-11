@@ -60,8 +60,7 @@ public class EOLServiceConfigMigratorOfflineTest {
             "OpenNMS:Name=Xmlrpcd",
             "OpenNMS:Name=XmlrpcProvisioner",
             "OpenNMS:Name=AccessPointMonitor",
-            "OpenNMS:Name=PollerBackEnd",
-            "OpenNMS:Name=Statsd"
+            "OpenNMS:Name=PollerBackEnd"
     );
 
     public EOLServiceConfigMigratorOfflineTest(final String testFile, final int totalBefore, final int totalAfter, final int enabledAfter) {
