@@ -104,6 +104,20 @@ describe('RoleCalendarDialog', () => {
     expect(addButton().disabled).toBe(true)
   })
 
+  it('does not carry a load error into a reopen without a role', async () => {
+    getOnCallCalendar.mockResolvedValue(null)
+    const wrapper = await open()
+    expect(inDialog('[data-test="calendar-load-error"]')).not.toBeNull()
+
+    await wrapper.setProps({ visible: false })
+    await wrapper.setProps({ roleName: '' })
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+
+    expect(inDialog('[data-test="calendar-load-error"]')).toBeNull()
+    expect(getOnCallCalendar).toHaveBeenCalledTimes(1)
+  })
+
   it('clears the load error once a later month loads', async () => {
     getOnCallCalendar.mockResolvedValueOnce(null).mockResolvedValueOnce(september)
     await open()

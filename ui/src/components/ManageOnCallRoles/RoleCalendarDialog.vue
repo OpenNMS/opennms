@@ -268,7 +268,10 @@ const memberOptions = computed(() => {
 })
 
 const load = async () => {
+  // no role means nothing to show, including whatever the last role left behind
   if (!props.roleName) {
+    calendar.value = null
+    calendarError.value = ''
     return
   }
   const [calendarResult, roleResult] = await Promise.all([
