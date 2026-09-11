@@ -42,6 +42,12 @@
       <groupId>org.opennms.newts</groupId>
       <artifactId>newts-api</artifactId>
       <version>${newtsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
