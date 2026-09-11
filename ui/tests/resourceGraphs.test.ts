@@ -22,7 +22,7 @@
 
 import { PrintStatement } from '@/types'
 import { assert, test } from 'vitest'
-import { tokenizeStatement, TOKENS, formatStatement } from '@/components/Resources/utils/LegendFormatter'
+import { tokenizeStatement, TOKENS, formatStatement, getFormattedLegendStatements } from '@/components/Resources/utils/LegendFormatter'
 
 test('Tokenizing a statement', () => {
   let tokens = tokenizeStatement('Max  : %8.2lf %s\\n')
@@ -81,4 +81,62 @@ test('Format statement', () => {
   assert.equal(renderer.texts[0], ' Avg: ')
   assert.equal(renderer.texts[1].trim(), '1.02k')
   assert.equal(renderer.texts[4], '\n')
+})
+
+const renderStatement = (statement: PrintStatement) => {
+  const r = { texts: [] as string[], drawText: (t: string) => r.texts.push(t), drawNewline: () => r.texts.push('\n') }
+  formatStatement(statement, r)
+  return r.texts.join('')
+}
+
+test('Legend renders No Data / Invalid Data instead of NaN', () => {
+  // a real value of 0 must render "0.00", not "NaN" (formatPrefix can't prefix 0)
+  const ok = renderStatement({ format: 'Min: %8.2lf %s', metric: 'm', value: 0, dataState: 'ok' })
+  assert.include(ok, '0.00')
+  assert.notInclude(ok, 'NaN')
+  assert.notInclude(ok, 'No Data')
+
+  const okNonZero = renderStatement({ format: 'Avg: %8.2lf %s', metric: 'm', value: 1024, dataState: 'ok' })
+  assert.include(okNonZero, '1.02k')
+
+  const noData = renderStatement({ format: 'Min: %8.2lf %s', metric: 'm', value: NaN, dataState: 'nodata' })
+  assert.include(noData, 'No Data')
+  assert.notInclude(noData, 'NaN')
+
+  const invalid = renderStatement({ format: 'Max: %8.2lf %s', metric: 'm', value: NaN, dataState: 'invalid' })
+  assert.include(invalid, 'Invalid Data')
+  assert.notInclude(invalid, 'NaN')
+})
+
+test('Legend classifies non-finite stats: no valid samples -> nodata, some samples -> invalid', () => {
+  const stat = (value: number) => ({ metricName: 's', consolidate: () => [undefined, value] })
+
+  // column has no finite samples -> "No Data"
+  const noData: any = { labels: ['s'], timestamps: [1, 2], columns: [{ values: [NaN, NaN] }] }
+  let converted: any = {
+    metrics: [{ name: 's' }],
+    printStatements: [{ format: 'Min: %8.2lf %s', metric: 'v1', value: NaN }],
+    values: [{ name: 'v1', expression: stat(NaN) }]
+  }
+  getFormattedLegendStatements(noData, converted)
+  assert.equal(converted.printStatements[0].dataState, 'nodata')
+
+  // column has a finite sample but the aggregation is still non-finite -> "Invalid Data"
+  const hasData: any = { labels: ['s'], timestamps: [1, 2], columns: [{ values: [0, 5] }] }
+  converted = {
+    metrics: [{ name: 's' }],
+    printStatements: [{ format: 'Min: %8.2lf %s', metric: 'v1', value: NaN }],
+    values: [{ name: 'v1', expression: stat(NaN) }]
+  }
+  getFormattedLegendStatements(hasData, converted)
+  assert.equal(converted.printStatements[0].dataState, 'invalid')
+
+  // finite aggregation -> "ok"
+  converted = {
+    metrics: [{ name: 's' }],
+    printStatements: [{ format: 'Min: %8.2lf %s', metric: 'v1', value: 3 }],
+    values: [{ name: 'v1', expression: stat(3) }]
+  }
+  getFormattedLegendStatements(hasData, converted)
+  assert.equal(converted.printStatements[0].dataState, 'ok')
 })
