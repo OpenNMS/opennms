@@ -197,8 +197,6 @@
         <property name="businessServiceManager" ref="businessServiceManager"/>
     </bean>
 
-
-
     <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
         <property name="successView" value="application/summary-box"/>
         <property name="applicationDao" ref="applicationDao"/>
@@ -533,8 +531,6 @@
         <property name="kscReportService" ref="kscReportService"/>
         <property name="resourceService" ref="resourceService"/>
     </bean>
-
-
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>

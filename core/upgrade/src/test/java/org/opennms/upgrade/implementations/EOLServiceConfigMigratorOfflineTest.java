@@ -60,7 +60,8 @@ public class EOLServiceConfigMigratorOfflineTest {
             "OpenNMS:Name=Xmlrpcd",
             "OpenNMS:Name=XmlrpcProvisioner",
             "OpenNMS:Name=AccessPointMonitor",
-            "OpenNMS:Name=PollerBackEnd"
+            "OpenNMS:Name=PollerBackEnd",
+            "OpenNMS:Name=Statsd"
     );
 
     public EOLServiceConfigMigratorOfflineTest(final String testFile, final int totalBefore, final int totalAfter, final int enabledAfter) {
@@ -97,12 +98,12 @@ public class EOLServiceConfigMigratorOfflineTest {
         return Arrays.asList(new Object[][] {
             // service config, total before migration, total after migration,
             // enabled after projecting the legacy overrides onto the current catalog
-            { "target/home/etc/service-configuration-1.8.17.xml",  38, 38, 28 },
-            { "target/home/etc/service-configuration-1.10.14.xml", 38, 38, 28 },
-            { "target/home/etc/service-configuration-1.12.9.xml",  39, 39, 28 },
-            { "target/home/etc/service-configuration-14.0.3.xml",  38, 38, 25 },
-            { "target/home/etc/service-configuration-15.0.2.xml",  38, 38, 25 },
-            { "target/home/etc/service-configuration-16.0.4.xml",  37, 37, 25 }
+            { "target/home/etc/service-configuration-1.8.17.xml",  38, 38, 27 },
+            { "target/home/etc/service-configuration-1.10.14.xml", 38, 38, 27 },
+            { "target/home/etc/service-configuration-1.12.9.xml",  39, 39, 27 },
+            { "target/home/etc/service-configuration-14.0.3.xml",  38, 38, 24 },
+            { "target/home/etc/service-configuration-15.0.2.xml",  38, 38, 24 },
+            { "target/home/etc/service-configuration-16.0.4.xml",  37, 37, 24 }
         });
     }
 

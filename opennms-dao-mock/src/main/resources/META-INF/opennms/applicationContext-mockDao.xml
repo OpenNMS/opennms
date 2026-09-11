@@ -123,8 +123,6 @@
     <bean id="resourceDao" class="org.opennms.netmgt.dao.mock.MockResourceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao"/>
     
-    <bean id="resourceReferenceDao" class="org.opennms.netmgt.dao.mock.MockResourceReferenceDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceReferenceDao" ref="resourceReferenceDao"/>
     
     <bean id="rrdDao" class="org.opennms.netmgt.dao.mock.MockRrdDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao"/>
@@ -134,8 +132,6 @@
 
     <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" ref="snmpInterfaceDao" />
-
-
 
     <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
