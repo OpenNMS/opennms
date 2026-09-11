@@ -149,7 +149,6 @@
                 <feature>spring-tx/${springVersion}</feature>
                 <feature>spring-web/${springVersion}</feature>
                 <feature>spring-web-portlet/${springVersion}</feature>
-                <feature>spring-websocket/${springVersion}</feature>
 
               </features>
               <repository>${project.build.directory}/paxexam/test-repo</repository>
