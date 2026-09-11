@@ -121,7 +121,7 @@ The Kafka producer feature now supports producing metric payloads to Kafka as JS
 
 === OpenAPI docs improvements
 There are extensive improvements to how our OpenAPI docs are generated and rendered.
-This includes more reliabe rendering with reduced load times as well as expected payloads and responses for many more API endpoints.
+This includes more reliable rendering with reduced load times as well as expected payloads and responses for many more API endpoints.
 
 === Karaf shell pubkey auth
 Support has been added for configuring Karaf shell authentication using ssh public keys.
