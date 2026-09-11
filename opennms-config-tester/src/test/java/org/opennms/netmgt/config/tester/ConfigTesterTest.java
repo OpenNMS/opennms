@@ -348,11 +348,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testRtcConfiguration() {
-        testConfigFile("rtc-configuration.xml");
-    }
-
-    @Test
     public void testTelemetrydConfiguration() {
         testConfigFile("telemetryd-configuration.xml");
     }

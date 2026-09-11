@@ -51,4 +51,4 @@ export interface ManagedUserCreate extends ManagedUser {
 
 // System accounts the server refuses to delete or rename; mirrored here so
 // the UI can disable the controls with an explanation instead of a 400.
-export const PROTECTED_USER_IDS = ['admin', 'rtc']
+export const PROTECTED_USER_IDS = ['admin']

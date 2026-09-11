@@ -117,14 +117,14 @@ public class UserRestService extends OnmsRestService {
                               "role": [ "ROLE_ADMIN" ]
                             },
                         {
-                          "user-id": "rtc",
-                          "full-name": "RTC",
-                          "user-comments": "RTC user, do not delete",
-                          "email": "",
+                          "user-id": "operator",
+                          "full-name": "Network Operator",
+                          "user-comments": "Read-only operations account",
+                          "email": "operator@example.com",
                           "password": "sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX",
                           "passwordSalt": true,
                           "duty-schedule": [],
-                          "role": [ "ROLE_RTC" ]
+                          "role": [ "ROLE_READONLY" ]
                         }
                       ]
                     }"""))),

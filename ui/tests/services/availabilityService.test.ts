@@ -8,7 +8,7 @@ describe('getAvailability', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('returns null when the fetch fails, so the panel can show "Waiting for availability data"', async () => {
-    vi.mocked(rest.get).mockRejectedValue(new Error('rtc disconnected'))
+    vi.mocked(rest.get).mockRejectedValue(new Error('fetch failed'))
     expect(await getAvailability()).toBeNull()
   })
 

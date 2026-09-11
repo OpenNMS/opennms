@@ -54,7 +54,7 @@ import org.springframework.stereotype.Component;
 /**
  * Versioned user management on top of {@link UserManager}: users.xml remains
  * the system of record and hand-editing keeps working. Unlike the legacy JSPs
- * (which only hid the buttons), the admin/rtc delete and rename protections
+ * (which only hid the buttons), the admin delete and rename protections
  * are enforced here, server-side. The password hash is never serialized.
  *
  * Mutations validate the full request up front and then apply it to a
@@ -71,7 +71,7 @@ public class UsersRestService implements UsersRestApi {
     private static final Logger LOG = LoggerFactory.getLogger(UsersRestService.class);
 
     /** System accounts that must not be deleted or renamed. */
-    private static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
+    private static final Set<String> PROTECTED_USERS = Set.of("admin");
 
     /**
      * Rejects markup (legacy servlet rule) plus characters that break how the

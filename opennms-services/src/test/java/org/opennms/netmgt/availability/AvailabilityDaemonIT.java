@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.rtc;
+package org.opennms.netmgt.availability;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.availability.AvailabilitySnapshotScheduler;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -42,14 +41,14 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-rtc.xml"
+        "classpath:/META-INF/opennms/applicationContext-availability.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class RTCManagerIT {
+public class AvailabilityDaemonIT {
 
     @Autowired
-    private RTCManager m_daemon;
+    private AvailabilityDaemon m_daemon;
 
     @Autowired
     private AvailabilitySnapshotScheduler m_scheduler;

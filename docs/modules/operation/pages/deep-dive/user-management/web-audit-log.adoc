@@ -75,5 +75,3 @@ These settings can be adjusted in the `WebAuditFile` appender section of `log4j2
 == SIEM integration
 
 The `web-audit.log` file is an append-only log file that can be consumed by any SIEM by tailing the file.
-
-NOTE: The internal `rtc` system user is excluded from the audit log.

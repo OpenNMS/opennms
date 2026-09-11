@@ -94,15 +94,16 @@ public class AuthenticationIT implements InitializingBean {
     }
 
 
+    /** An account whose only role is retired keeps that inert role rather than falling back to ROLE_USER. */
     @Test
-    public void testAuthenticateRtc() {
+    public void testAuthenticateWithRetiredRole() {
         org.springframework.security.core.Authentication authentication = new UsernamePasswordAuthenticationToken("rtc", "rtc");
         org.springframework.security.core.Authentication authenticated = m_provider.authenticate(authentication);
         assertNotNull("authenticated Authentication object not null", authenticated);
         Collection<? extends GrantedAuthority> authorities = authenticated.getAuthorities();
         assertNotNull("GrantedAuthorities should not be null", authorities);
         assertEquals("GrantedAuthorities size", 1, authorities.size());
-        assertContainsAuthority(Authentication.ROLE_RTC, authorities);
+        assertContainsAuthority("ROLE_RTC", authorities);
     }
 
     @Test
@@ -157,6 +158,9 @@ public class AuthenticationIT implements InitializingBean {
         Assert.assertTrue(roles.contains("ROLE_MANAGER"));
         Assert.assertTrue(roles.contains("ROLE_OPERATOR"));
         Assert.assertTrue(roles.contains("ROLE_USER"));
+        Assert.assertFalse("retired roles are not offered for assignment", roles.contains("ROLE_RTC"));
+        Assert.assertTrue(Authentication.isValidRole("ROLE_RTC"));
+        Assert.assertTrue(Authentication.isRetiredRole("ROLE_RTC"));
     }
 
     @Test

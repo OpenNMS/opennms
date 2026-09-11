@@ -84,7 +84,7 @@
       <jsp:param name="asset-type" value="js" />
     </jsp:include>
 
-    <title>RTC Console</title>
+    <title>Availability Console</title>
 </head>
 <body>
     <jsp:include page="/includes/categories-box.jsp" flush="false"/>

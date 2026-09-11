@@ -110,8 +110,13 @@ public class SpringSecurityUserDaoImplIT implements InitializingBean {
         assertNoWarningsOrGreater();
     }
 
+    /**
+     * Upgraded installations may still carry the old rtc account with its
+     * ROLE_RTC. The role is retired and grants nothing, but it is kept on the
+     * account so that the account does not fall back to ROLE_USER.
+     */
     @Test
-    public void testGetByUsernameRtc() {
+    public void testGetByUsernameWithRetiredRole() {
         SpringSecurityUser user = m_springSecurityDao.getByUsername("rtc");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "rtc", user.getUsername());
@@ -122,7 +127,7 @@ public class SpringSecurityUserDaoImplIT implements InitializingBean {
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.size());
-        assertContainsAuthority(Authentication.ROLE_RTC, authorities);
+        assertContainsAuthority("ROLE_RTC", authorities);
         assertNoWarningsOrGreater();
     }
 

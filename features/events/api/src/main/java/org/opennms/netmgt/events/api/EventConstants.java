@@ -105,7 +105,6 @@ public abstract class EventConstants {
      */
     public static final String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
 
-
     /**
      * The node location changed event UEI.
      */
@@ -352,16 +351,6 @@ public abstract class EventConstants {
      */
 
     public static final String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
-
-    /**
-     * The RTC subscribe event.
-     */
-    public static final String RTC_SUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/subscribe";
-
-    /**
-     * The RTC unsubscribe event.
-     */
-    public static final String RTC_UNSUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/unsubscribe";
 
     
     /**
@@ -817,16 +806,10 @@ public abstract class EventConstants {
     public static final String PARM_QUALIFIER = "qualifier";
 
     /**
-     * The URL to which information is to be sent, sent as a parm to the rtc
-     * subscribe and unsubscribe events.
+     * A URL carried as an event parameter, for example the requisition URL on
+     * import events.
      */
     public static final String PARM_URL = "url";
-
-    /**
-     * The category for which information is to be sent, sent as a parm to the
-     * RTC subscribe event
-     */
-    public static final String PARM_CAT_LABEL = "catlabel";
 
     /**
      * Used to indicate categories added on a {@link #NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI} event.
@@ -839,14 +822,9 @@ public abstract class EventConstants {
     public static final String PARM_CATEGORIES_DELETED = "categoriesDeleted";
 
     /**
-     * The username when sent as a parameter(like for the RTC subscribe)
+     * The username when sent as a parameter
      */
     public static final String PARM_USER = "user";
-
-    /**
-     * The passwd when sent as a parameter(like for the RTC subscribe)
-     */
-    public static final String PARM_PASSWD = "passwd";
 
     /**
      * The status of a service as returned from a service monitor

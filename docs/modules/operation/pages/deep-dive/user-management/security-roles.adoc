@@ -1,7 +1,7 @@
 
 [[ga-role-user-management-roles]]
 = Assign User Permissions
-:description: How to assign user permissions in {page-component-title}: default security roles (admin, RTC, asset editor, etc.) and creating custom security roles.
+:description: How to assign user permissions in {page-component-title}: default security roles (admin, asset editor, etc.) and creating custom security roles.
 
 You can control user permission levels by creating and assigning security roles.
 These roles regulate access to the {page-component-title} web UI and the REST API to exchange monitoring and inventory information.
@@ -70,9 +70,6 @@ Does not allow user to change alarm states or notifications.
 
 | ROLE_REST
 | Permissions to interact with the entire {page-component-title} REST API.
-
-| ROLE_RTC *
-| Permissions to exchange information with the {page-component-title} Real-Time Console for availability calculations.
 
 | ROLE_USER *
 | Default permissions for a new user to interact with the web UI.

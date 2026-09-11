@@ -224,12 +224,4 @@ public class ViewsDisplayFactory {
         m_instance.initialized = true;
     }
 
-    /**
-     * <p>getDisconnectTimeout</p>
-     *
-     * @return a int.
-     */
-    public int getDisconnectTimeout() {
-        return m_viewInfo.getDisconnectTimeout();
-    }
 }

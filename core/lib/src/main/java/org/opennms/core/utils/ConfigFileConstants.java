@@ -96,10 +96,6 @@ public abstract class ConfigFileConstants {
      */
     public static final int SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME;
 
-    /**
-     * The opennms rtc config file
-     */
-    public static final int RTC_CONFIG_FILE_NAME;
 
     /**
      * The opennms trapd config file
@@ -394,7 +390,6 @@ public abstract class ConfigFileConstants {
         POLLER_CONFIG_FILE_NAME = 8;
         POLL_OUTAGES_CONFIG_FILE_NAME = 9;
 
-        RTC_CONFIG_FILE_NAME = 10;
         TRAPD_CONFIG_FILE_NAME = 11;
         MANAGER_CONFIG_FILE_NAME = 12;
         SERVICE_CONF_FILE_NAME = 13;
@@ -487,7 +482,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[POLLER_CONFIG_FILE_NAME] = "poller-configuration.xml";
         FILE_ID_TO_NAME[POLL_OUTAGES_CONFIG_FILE_NAME] = "poll-outages.xml";
 
-        FILE_ID_TO_NAME[RTC_CONFIG_FILE_NAME] = "rtc-configuration.xml";
         FILE_ID_TO_NAME[TRAPD_CONFIG_FILE_NAME] = "trapd-configuration.xml";
         FILE_ID_TO_NAME[MANAGER_CONFIG_FILE_NAME] = "manager-configuration.xml";
         FILE_ID_TO_NAME[SERVICE_CONF_FILE_NAME] = "service-configuration.xml";

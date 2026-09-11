@@ -321,10 +321,10 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_JSON, "/users/admin/rename", "{\"newUserId\":\"root\"}", 400);
         sendRequest(GET, "/users/admin", 200);
 
-        // the protection is by name, wherever the account came from
+        // only the admin account is protected; any other account can be renamed and deleted
         sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"rtc\",\"password\":\"pw\"}", 201);
-        sendRequest(DELETE, "/users/rtc", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users/rtc/rename", "{\"newUserId\":\"rtc2\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/users/rtc/rename", "{\"newUserId\":\"rtc2\"}", 204);
+        sendRequest(DELETE, "/users/rtc2", 204);
     }
 
     @Test

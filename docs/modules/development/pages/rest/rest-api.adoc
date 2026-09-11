@@ -94,12 +94,12 @@ Using `/events` as a base, the following table shows examples of REST calls with
 |===
 | Resource  | Description
 
-| /events?eventUei=uei.opennms.org/internal/rtc/subscribe
-| Returns the first 10 events with the rtc subscribe UEI.
+| /events?eventUei=uei.opennms.org/nodes/nodeDown
+| Returns the first 10 events with the nodeDown UEI.
 `10` is the default limit for events.
 
-| /events?eventUei=uei.opennms.org/internal/rtc/subscribe&limit=0
-| Returns all rtc subscribe events.
+| /events?eventUei=uei.opennms.org/nodes/nodeDown&limit=0
+| Returns all nodeDown events.
 This could potentially return quite a few results, and may impact performance.
 
 | /events?id=100&comparator=gt

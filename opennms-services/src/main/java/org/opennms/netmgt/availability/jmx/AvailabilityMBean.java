@@ -19,13 +19,12 @@
  * language governing permissions and limitations under the
  * License.
  */
-@XmlSchema(
-           namespace = "http://xmlns.opennms.org/xsd/config/rtc",
-           elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-           xmlns={
-                   @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/rtc"),
-           }
-        )
-package org.opennms.netmgt.config.rtc;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.netmgt.availability.jmx;
+
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
+
+/**
+ * JMX interface of the availability daemon.
+ */
+public interface AvailabilityMBean extends BaseOnmsMBean {
+}

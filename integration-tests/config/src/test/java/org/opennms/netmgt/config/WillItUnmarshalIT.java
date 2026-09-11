@@ -91,7 +91,6 @@ import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reporting.OpennmsReports;
-import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
@@ -238,7 +237,6 @@ public class WillItUnmarshalIT {
         //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);
-        addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, true, null);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, true, null);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, false, null);
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, true, null);

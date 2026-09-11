@@ -170,4 +170,16 @@
         </rollback>
     </changeSet>
 
+    <!-- The real-time console daemon is gone; nothing sends or handles its subscription events any more. -->
+    <changeSet author="dyancey" id="37.0.0-remove-rtc-subscription-events">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+        </preConditions>
+        <sql>
+            DELETE FROM eventconf_events
+            WHERE uei IN ('uei.opennms.org/internal/rtc/subscribe', 'uei.opennms.org/internal/rtc/unsubscribe');
+        </sql>
+        <rollback/>
+    </changeSet>
+
 </databaseChangeLog>

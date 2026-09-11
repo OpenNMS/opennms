@@ -9,7 +9,7 @@
   <service><name>OpenNMS:Name=Queued</name></service>
   <service><name>OpenNMS:Name=Notifd</name></service>
   <service><name>OpenNMS:Name=Scriptd</name></service>
-  <service><name>OpenNMS:Name=Rtcd</name></service>
+  <service><name>OpenNMS:Name=Availability</name></service>
   <service><name>OpenNMS:Name=Pollerd</name></service>
   <service enabled="false"><name>OpenNMS:Name=SnmpPoller</name></service>
   <service><name>OpenNMS:Name=EnhancedLinkd</name></service>

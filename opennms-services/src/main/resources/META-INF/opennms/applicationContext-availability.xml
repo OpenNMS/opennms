@@ -27,6 +27,6 @@
     <property name="thresholdNotifier" ref="categoryAvailabilityThresholdNotifier"/>
   </bean>
 
-  <bean name="daemon" class="org.opennms.netmgt.rtc.RTCManager"/>
+  <bean name="daemon" class="org.opennms.netmgt.availability.AvailabilityDaemon"/>
 
 </beans>

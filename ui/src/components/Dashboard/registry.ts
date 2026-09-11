@@ -124,7 +124,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     type: 'availability',
     defaultHeightMode: 'fixed',
     title: 'Availability Over the Past 24 Hours',
-    titleHref: '/opennms/rtc/index.jsp',
+    titleHref: '/opennms/availability/index.jsp',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/AvailabilityPanel.vue')),
     defaultSize: { w: 6, h: 4 },

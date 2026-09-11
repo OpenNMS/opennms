@@ -13,7 +13,7 @@
   <service enabled="\${env:CORE_SERVICE_QUEUED_ENABLED|true}"><name>OpenNMS:Name=Queued</name></service>
   <service enabled="\${env:CORE_SERVICE_NOTIFD_ENABLED|true}"><name>OpenNMS:Name=Notifd</name></service>
   <service enabled="\${env:CORE_SERVICE_SCRIPTD_ENABLED|true}"><name>OpenNMS:Name=Scriptd</name></service>
-  <service enabled="\${env:CORE_SERVICE_RTCD_ENABLED|true}"><name>OpenNMS:Name=Rtcd</name></service>
+  <service enabled="\${env:CORE_SERVICE_AVAILABILITY_ENABLED|true}"><name>OpenNMS:Name=Availability</name></service>
   <service enabled="\${env:CORE_SERVICE_POLLERD_ENABLED|true}"><name>OpenNMS:Name=Pollerd</name></service>
   <service enabled="\${env:CORE_SERVICE_SNMPPOLLER_ENABLED|false}"><name>OpenNMS:Name=SnmpPoller</name></service>
   <service enabled="\${env:CORE_SERVICE_ENHANCEDLINKD_ENABLED|true}"><name>OpenNMS:Name=EnhancedLinkd</name></service>

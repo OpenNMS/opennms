@@ -46,16 +46,16 @@
 	m_category_list = new CategoryList();
     }
 
-	// Creates a link to the rtc/category.jsp according to the selected outagesType.
+	// Creates a link to availability/category.jsp according to the selected outagesType.
 	public String createCategoriesOutageLink(HttpServletResponse response, Category category, String outagesType, String linkTitle, String linkText) {
 		if (category.getLastUpdated() != null) {
 			if (linkTitle == null) {
 				return String.format("<a href=\"%s\">%s</a>",
-						response.encodeURL("/opennms/rtc/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
+						response.encodeURL("/opennms/availability/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
 						linkText);
 			}
 			return String.format("<a href=\"%s\" title=\"%s\">%s</a>",
-					response.encodeURL("/opennms/rtc/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
+					response.encodeURL("/opennms/availability/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
 					linkTitle,
 					linkText);
 		}

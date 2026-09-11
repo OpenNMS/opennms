@@ -19,10 +19,9 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.rtc;
+package org.opennms.netmgt.availability;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.availability.AvailabilitySnapshotScheduler;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,18 +29,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  * The daemon that keeps category availability snapshots current. It runs
  * the {@link AvailabilitySnapshotScheduler}; the web tier and the REST API
  * read the snapshots from the database.
- *
- * The class and service name are kept from the original real-time console
- * daemon so that existing service-configuration.xml entries keep working.
  */
-public final class RTCManager extends AbstractServiceDaemon {
+public final class AvailabilityDaemon extends AbstractServiceDaemon {
+
+    public static final String LOG4J_CATEGORY = "availability";
 
     @Autowired
     private AvailabilitySnapshotScheduler m_scheduler;
 
-    public RTCManager() {
-        super("rtc");
-        Logging.putPrefix("rtc");
+    public AvailabilityDaemon() {
+        super(LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     @Override

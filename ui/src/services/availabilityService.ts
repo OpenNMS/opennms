@@ -22,7 +22,7 @@
 
 import { rest } from './axiosInstances'
 
-// Front-page RTC availability per category (legacy categories-box), from
+// Front-page availability per category (legacy categories-box), from
 // GET /rest/availability → { section: [{ name, categories: { category: [...] } }] }.
 export interface AvailabilityCategory {
   name: string
@@ -41,7 +41,7 @@ export interface AvailabilitySection {
 // JAXB-style JSON collapses single-element arrays to objects; normalize.
 const toArray = <T>(v: T | T[] | undefined | null): T[] => (v == null ? [] : Array.isArray(v) ? v : [v])
 
-// null distinguishes a data-source error (RTC disconnected / fetch failed) from a
+// null distinguishes a data-source error (fetch failed) from a
 // genuinely empty set ([]) so the panel can show "Waiting for availability data"
 // like the legacy categories box, instead of a bare "No availability data".
 export const getAvailability = async (): Promise<AvailabilitySection[] | null> => {

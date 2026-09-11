@@ -93,8 +93,8 @@ can override these defaults and support environment variable interpolation using
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="true">
-    <name>OpenNMS:Name=Rtcd</name>
-    <class-name>org.opennms.netmgt.rtc.jmx.Rtcd</class-name>
+    <name>OpenNMS:Name=Availability</name>
+    <class-name>org.opennms.netmgt.availability.jmx.Availability</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>

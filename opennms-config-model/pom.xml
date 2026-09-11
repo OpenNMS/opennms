@@ -67,7 +67,6 @@
               org.opennms.netmgt.config.provisiond.*;version="${project.version}",
               org.opennms.netmgt.config.reportd.*;version="${project.version}",
               org.opennms.netmgt.config.reporting.*;version="${project.version}",
-              org.opennms.netmgt.config.rtc.*;version="${project.version}",
               org.opennms.netmgt.config.scriptd.*;version="${project.version}",
               org.opennms.netmgt.config.server.*;version="${project.version}",
               org.opennms.netmgt.config.service.*;version="${project.version}",
@@ -89,7 +88,6 @@
               org.opennms.netmgt.config.webuiColors.*;version="${project.version}",
               org.opennms.netmgt.eventd.datablock.*;version="${project.version}",
               org.opennms.netmgt.xml.eventconf.*;version="${project.version}",
-              org.opennms.netmgt.xml.rtc.*;version="${project.version}"
             </Export-Package>
             <Import-Package>
               org.eclipse.persistence.internal.jaxb;resolution:=optional,

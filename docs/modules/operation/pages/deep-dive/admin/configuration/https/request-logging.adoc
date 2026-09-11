@@ -46,5 +46,4 @@ After restarting {page-component-title}, request logs should be available in `lo
 8.0.3029.110 Safari/537.36"
 127.0.0.1 - anonymousUser [02/Jun/2017:09:16:39 -0500] "GET /opennms/ HTTP/1.1" 302 0 "-" "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
 127.0.0.1 - admin [02/Jun/2017:09:16:46 -0500] "POST /opennms/rest/datachoices?action=enable HTTP/1.1" 200 0 "http://127.0.0.1:8980/opennms/index.jsp" "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
-127.0.0.1 - rtc [02/Jun/2017:09:16:45 -0500] "POST /opennms/rtc/post/DNS+and+DHCP+Servers HTTP/1.1" 200 35 "-" "Java/1.8.0_121"
 ----

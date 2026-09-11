@@ -38,7 +38,7 @@ public class CategoriesBoxIT extends OpenNMSSeleniumIT {
         // Hit the default "Network Interfaces" link on the startpage
         findElementByLink("Network Interfaces").click();
         // check for correct url...
-        wait.until(ExpectedConditions.urlContains("/opennms/rtc/category.jsp"));
+        wait.until(ExpectedConditions.urlContains("/opennms/availability/category.jsp"));
         // ...and header cell
         findElementByXpath("//th[text()='24hr Availability']");
     }

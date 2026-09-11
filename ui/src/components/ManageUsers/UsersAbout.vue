@@ -26,7 +26,7 @@
     <p>
       <strong>Rename</strong> keeps group memberships intact — the user stays in all their
       groups under the new id. <strong>Delete</strong> also removes the user from every group.
-      The <em>admin</em> and <em>rtc</em> accounts are system accounts and cannot be deleted
+      The <em>admin</em> account is a system account and cannot be deleted
       or renamed. All of this is also available to your own tooling through the versioned
       <code>/api/v2/users</code> REST API.
     </p>

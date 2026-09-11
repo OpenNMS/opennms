@@ -14,8 +14,10 @@ Assigning different <<deep-dive/user-management/security-roles.adoc#ga-role-user
 In addition to local users, you can configure external authentication services including https://opennms.discourse.group/t/spring-security-and-ldap/1425[LDAP and LDAPS], https://opennms.discourse.group/t/spring-security-and-radius/1424[RADIUS], and https://opennms.discourse.group/t/single-sign-on-sso-using-spring-security-and-kerberos/[Single Sign On] (SSO).
 Specific configuration instructions for these services are outside the scope of this documentation.
 
-WARNING: Do not delete the default `admin` and `rtc` user profiles.
-The start page uses the `rtc` profile to communicate with the xref:development:rest/rtc.adoc[Real-Time Console] to calculate node and service availability.
+WARNING: Do not delete the default `admin` user profile.
+
+NOTE: Releases before 37 shipped an `rtc` system account that the start page used to receive availability data.
+It is no longer needed and can be deleted after upgrading.
 
 [[ga-user-create]]
 == Create a user

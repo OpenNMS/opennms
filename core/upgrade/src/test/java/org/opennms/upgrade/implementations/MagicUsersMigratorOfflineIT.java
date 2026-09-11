@@ -157,10 +157,11 @@ public class MagicUsersMigratorOfflineIT {
     private void validateMigration() throws Exception {
         Userinfo userInfo = JaxbUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("target/home/etc/users.xml")));
 
+        // the rtc account keeps its retired ROLE_RTC, which grants nothing
         final User rtc = getUser(userInfo, "rtc");
         Assert.assertNotNull(rtc);
         Assert.assertEquals(1, rtc.getRoles().size());
-        Assert.assertTrue(rtc.getRoles().contains(Authentication.ROLE_RTC));
+        Assert.assertTrue(rtc.getRoles().contains("ROLE_RTC"));
 
         final User admin = getUser(userInfo, "admin");
         Assert.assertNotNull(admin);

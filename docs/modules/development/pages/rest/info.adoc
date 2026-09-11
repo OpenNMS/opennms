@@ -40,7 +40,7 @@ Service that provides information about the {page-component-title} instance.
         "Queued": "running",
         "Notifd": "running",
         "Scriptd": "running",
-        "Rtcd": "running",
+        "Availability": "running",
         "Pollerd": "running",
         "SnmpPoller": "running",
         "EnhancedLinkd": "running",

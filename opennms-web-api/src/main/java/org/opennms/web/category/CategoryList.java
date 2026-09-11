@@ -174,7 +174,7 @@ public class CategoryList {
      *
      * @param categoryData
      *            category data to evaluate. From getCategoryData().
-     * @returns the earliest update time. If one of the categories has no RTC
+     * @returns the earliest update time. If one of the categories has no availability
      *          data, -1 is returned. If no categories exist in categoryData, 0
      *          is returned.
      * @return a long.

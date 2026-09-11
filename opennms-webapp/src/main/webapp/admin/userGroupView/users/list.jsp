@@ -152,7 +152,7 @@
               String sanitizedUserId = WebSecurityUtils.sanitizeString(curUser.getUserId());
          %>
          <tr id="user-<%= userid %>">
-          <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
+          <% if (!curUser.getUserId().equals("admin")) { %>
           <td rowspan="2" class="text-center"> 
             <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fas fa-trash-can fa-2x"></i></a>
           </td>

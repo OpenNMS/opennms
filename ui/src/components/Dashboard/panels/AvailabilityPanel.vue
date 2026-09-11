@@ -102,21 +102,21 @@ const allSections = ref<AvailabilitySection[]>([])
 // our own, which previously produced a duplicate).
 const isTotal = (s: AvailabilitySection) => s.name === 'Total'
 
-// Category name links to the legacy RTC outage detail page (categories-box.jsp).
+// Category name links to the category availability detail page.
 const categoryLink = (name: string) =>
-  `/opennms/rtc/category.jsp?showoutages=avail&category=${encodeURIComponent(name)}`
+  `/opennms/availability/category.jsp?showoutages=avail&category=${encodeURIComponent(name)}`
 
 const load = async () => {
   loading.value = true
   const result = await getAvailability()
-  // null => data source unavailable (RTC disconnected / fetch failed), as opposed
+  // null => data source unavailable (fetch failed), as opposed
   // to a genuinely empty [] — mirrors the legacy "Waiting for availability data" guard
   disconnected.value = result === null
   allSections.value = result ?? []
   loading.value = false
 }
 
-// The global filter does NOT apply here: RTC availability categories come from
+// The global filter does NOT apply here: availability categories come from
 // etc/categories.xml ("Network Interfaces", "Web Servers", …), a different
 // namespace from the surveillance categories the filter selects — with no
 // stock overlap, filtering by name blanked the panel for any selection.

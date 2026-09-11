@@ -94,7 +94,7 @@
           .headTitle(category.getName())
           .headTitle("Category")
           .headTitle("SLM")
-          .breadcrumb("SLM", "rtc/index.jsp")
+          .breadcrumb("SLM", "availability/index.jsp")
           .breadcrumb(category.getName())
           .build(request);
 %>
@@ -118,21 +118,21 @@
   <button 
     type="button" 
     class="btn btn-secondary <%=(showoutages.equals("all") ? "active" : "")%>"
-    onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=all") %>'"
+    onclick="top.location = '<%= Util.calculateUrlBase( req , "availability/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=all") %>'"
   >
     All
   </button>
   <button 
     type="button" 
     class="btn btn-secondary <%=(showoutages.equals("outages") ? "active" : "")%>"
-    onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=outages") %>'"
+    onclick="top.location = '<%= Util.calculateUrlBase( req , "availability/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=outages") %>'"
   >
     With outages
   </button>
   <button 
     type="button" 
     class="btn btn-secondary <%=(showoutages.equals("avail") ? "active" : "")%>"
-    onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=avail") %>'"
+    onclick="top.location = '<%= Util.calculateUrlBase( req , "availability/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=avail") %>'"
   >
     With availability less than 100%
   </button>

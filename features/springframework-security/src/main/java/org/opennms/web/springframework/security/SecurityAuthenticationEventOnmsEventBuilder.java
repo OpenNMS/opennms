@@ -51,7 +51,6 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
 public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener<ApplicationEvent>, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SecurityAuthenticationEventOnmsEventBuilder.class);
     private static final Logger AUDIT = LoggerFactory.getLogger("web-audit");
-    private static final String RTC_USER = "rtc";
     /** Constant <code>SUCCESS_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
     /** Constant <code>FAILURE_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
@@ -138,9 +137,6 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
                 WebAuthenticationDetails webDetails = (WebAuthenticationDetails) authEvent.getAuthentication().getDetails();
                 ip = webDetails.getRemoteAddress();
             }
-        }
-        if (RTC_USER.equals(user)) {
-            return;
         }
         if (reason != null) {
             AUDIT.info("LOGIN {} user={} ip={} reason={}", outcome, user, ip, reason);

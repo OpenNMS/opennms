@@ -1,6 +1,6 @@
 
 = Step 1: First-Time Sign In
-:description: Step 1 to set up {page-component-title}: usage statistics, creating a user, default admin and rtc accounts.
+:description: Step 1 to set up {page-component-title}: usage statistics, creating a user, the default admin account.
 
 As part of the installation process, we recommend signing in using the default `admin` account.
 If you have not already done so, sign in for the first time and change the `admin` account password to a secure one (see xref:deployment:core/install.adoc#ga-data-choices[First-time sign in and usage statistics]).
@@ -32,6 +32,5 @@ Follow these steps to create your user account:
 *** (Optional) Add other contact information (for example, a mobile phone number) as desired.
 . Click *Finish* at the bottom of the screen to create the account.
 
-WARNING: Do not delete the default `admin` and `rtc` user accounts.
-The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+WARNING: Do not delete the default `admin` user account.
 You should still change the password of the `admin` user to be more secure.

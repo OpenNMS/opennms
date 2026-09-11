@@ -1,0 +1,53 @@
+[[ref-daemon-config-files-availability]]
+= Availability
+:description: Learn about the availability daemon, which calculates the category availability percentages shown on the OpenNMS {page-component-title} home page.
+
+Calculates the availability percentages of the categories defined in `categories.xml`, which the {page-component-title} home page and the `/rest/availability` API display.
+
+Each category is computed inside the database from the current outages and stored as a snapshot.
+Categories are refreshed independently on a self-pacing schedule: the next refresh of a category happens after the previous refresh's duration multiplied by a pacing factor, clamped to a configurable range.
+Small installations therefore refresh about once a minute while very large installations back off on their own.
+
+When a category's availability falls below its `warning` threshold from `categories.xml`, the daemon raises `uei.opennms.org/availability/categoryBelowWarningThreshold`.
+When it climbs back to or above that threshold, it raises `uei.opennms.org/availability/categoryAboveWarningThreshold`, which clears the alarm the first event created.
+
+NOTE: This daemon replaces the real-time console daemon (`rtcd`) of earlier releases.
+It reads and writes the database directly; the `rtc` user account and the `rtc-configuration.xml` file are no longer used and should be removed from upgraded installations.
+The `ROLE_RTC` role is retired: it grants no permissions and cannot be assigned.
+
+.Availability configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| categories.xml
+| Defines categories for grouping availability data and which nodes apply to the categories.
+These are independent of node tags, and can use node tags to define the filter rules.
+| no
+| yes
+
+| viewsdisplay.xml
+| Defines which categories from `categories.xml` the home page displays.
+| no
+| yes
+
+| opennms.properties
+| Holds the refresh tunables, all optional: `org.opennms.availability.window.minutes` (default 1440), `org.opennms.availability.refresh.minSeconds` (60), `org.opennms.availability.refresh.maxSeconds` (900), `org.opennms.availability.refresh.pacingFactor` (5), and `org.opennms.availability.refresh.threads` (1).
+| no
+| yes
+|===
+
+.Availability log file overview
+[options="header"]
+[cols="2,3"]
+|===
+| File
+| Description
+
+| availability.log
+| Logs relating to availability calculations and threshold events.
+|===

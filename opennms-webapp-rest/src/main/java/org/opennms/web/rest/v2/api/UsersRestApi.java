@@ -92,6 +92,6 @@ public interface UsersRestApi {
 
     @DELETE
     @Path("{userId}")
-    @Operation(summary = "Delete a user (also removes group memberships; admin and rtc are protected)", operationId = "deleteUser")
+    @Operation(summary = "Delete a user (also removes group memberships; admin is protected)", operationId = "deleteUser")
     Response deleteUser(@Context SecurityContext securityContext, @PathParam("userId") String userId);
 }

@@ -346,7 +346,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/rtc/category.jsp</url-pattern>
+    <url-pattern>/availability/category.jsp</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>

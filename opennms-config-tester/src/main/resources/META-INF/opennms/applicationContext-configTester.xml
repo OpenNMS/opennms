@@ -67,7 +67,6 @@
         <entry key="response-adhoc-graph.properties" value="responseAdhocGraph"/>
         <entry key="response-graph.properties" value="responsePrefabGraph"/>
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
-        <entry key="rtc-configuration.xml" value="rtcConfigFactory"/>
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>
         <entry key="service-configuration.xml" value="serviceConfigFactory"/>
         <entry key="site-status-views.xml" value="siteStatusViewConfigDao"/>
@@ -344,7 +343,6 @@
     <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdConfig.getProperties</value></property>
   </bean>
 
-  <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
 
   <bean id="scriptdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.ScriptdConfigFactory.init</value></property>

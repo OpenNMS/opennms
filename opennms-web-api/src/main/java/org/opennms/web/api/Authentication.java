@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -66,7 +67,6 @@ public final class Authentication extends Object {
     public static final String ROLE_READONLY = "ROLE_READONLY";
     public static final String ROLE_DASHBOARD = "ROLE_DASHBOARD";
     public static final String ROLE_DELEGATE = "ROLE_DELEGATE";
-    public static final String ROLE_RTC = "ROLE_RTC";
     public static final String ROLE_PROVISION = "ROLE_PROVISION";
     public static final String ROLE_REST = "ROLE_REST";
     public static final String ROLE_ASSET_EDITOR = "ROLE_ASSET_EDITOR";
@@ -78,6 +78,15 @@ public final class Authentication extends Object {
     public static final String ROLE_FLOW_MANAGER = "ROLE_FLOW_MANAGER";
     public static final String ROLE_DEVICE_CONFIG_BACKUP = "ROLE_DEVICE_CONFIG_BACKUP";
 
+    /**
+     * Roles that no longer grant anything but are still recognized, so that
+     * accounts carrying them from older installations keep them instead of
+     * falling back to ROLE_USER. They are not offered when assigning roles.
+     * ROLE_RTC belonged to the rtc account of the real-time console daemon,
+     * which was replaced in 37.
+     */
+    private static final Set<String> s_retiredRoles = Set.of("ROLE_RTC");
+
     private static List<String> s_availableRoles = new ArrayList<>();
     private static long lastModified = 0;
 
@@ -87,7 +96,6 @@ public final class Authentication extends Object {
         s_availableRoles.add(ROLE_READONLY);
         s_availableRoles.add(ROLE_DASHBOARD);
         s_availableRoles.add(ROLE_DELEGATE);
-        s_availableRoles.add(ROLE_RTC);
         s_availableRoles.add(ROLE_PROVISION);
         s_availableRoles.add(ROLE_REST);
         s_availableRoles.add(ROLE_ASSET_EDITOR);
@@ -109,9 +117,15 @@ public final class Authentication extends Object {
         return Collections.unmodifiableList(s_availableRoles);
     }
 
+    /** True for every role that may appear on an account, including retired ones. */
     public static boolean isValidRole(String role) {
         loadRoles();
-        return s_availableRoles.contains(role);
+        return s_availableRoles.contains(role) || s_retiredRoles.contains(role);
+    }
+
+    /** True for a role that is still accepted on existing accounts but grants nothing and cannot be assigned. */
+    public static boolean isRetiredRole(String role) {
+        return s_retiredRoles.contains(role);
     }
 
     private static void loadRoles() {
