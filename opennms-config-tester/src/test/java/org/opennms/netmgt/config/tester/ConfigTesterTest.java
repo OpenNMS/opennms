@@ -426,10 +426,6 @@ public class ConfigTesterTest {
         testConfigFile("snmptrap-northbounder-configuration.xml");
     }
 
-    @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
 
     @Test
     public void testSurveillanceViews() {
@@ -471,10 +467,6 @@ public class ConfigTesterTest {
         ignoreConfigFile("trapd-configuration.xml");
     }
 
-    @Test
-    public void testTrendConfiguration() {
-        ignoreConfigFile("trend-configuration.xml");
-    }
 
     @Test
     public void testUsers() {
