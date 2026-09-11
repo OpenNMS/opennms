@@ -27,6 +27,7 @@
 
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
 import { useNodeStore } from '@/stores/nodeStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { NodeAvailability } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { mount, VueWrapper } from '@vue/test-utils'
@@ -76,6 +77,33 @@ describe('NodeAvailabilityGraph.vue', () => {
     wrapper.unmount()
   })
 
+  // The details page keeps one component instance across node ids and the node store is never
+  // reset, so a panel that only fetches when props.node.id CHANGES never fetches at all on a
+  // return visit to the same node.
+  it('fetches availability on mount', () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: true })
+    const w = mount(NodeAvailabilityGraph, {
+      props: { baseHref: '/opennms/', node: { id: '101' } as any },
+      global: { plugins: [pinia, PrimeVue] }
+    })
+    const store = useNodeStore()
+
+    expect(store.getNodeAvailabilityPercentage).toHaveBeenCalledWith('101')
+    w.unmount()
+  })
+
+  it('does not fetch availability before the node is known', () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: true })
+    const w = mount(NodeAvailabilityGraph, {
+      props: { baseHref: '/opennms/', node: {} as any },
+      global: { plugins: [pinia, PrimeVue] }
+    })
+    const store = useNodeStore()
+
+    expect(store.getNodeAvailabilityPercentage).not.toHaveBeenCalled()
+    w.unmount()
+  })
+
   it('renders without errors', () => {
     expect(wrapper.exists()).toBe(true)
   })
@@ -97,6 +125,30 @@ describe('NodeAvailabilityGraph.vue', () => {
     await w.vm.$nextTick()
     // 98.76 rounded to 2 decimal places = 98.76
     expect(w.text()).toContain('98.76%')
+    w.unmount()
+  })
+
+  // A scope-qualified IPv6 address (fe80::1%eth0) leaves a bare % in the path, which is an
+  // invalid escape: the request is rejected and the strip silently fails to render.
+  it('url-encodes the interface address in the timeline image path', async () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: true })
+    const w = mount(NodeAvailabilityGraph, {
+      props: { baseHref: '/opennms/', node: { id: '101' } as any },
+      global: { plugins: [pinia, PrimeVue] }
+    })
+    const store = useNodeStore()
+    // stubActions also stubs the setup store's plain functions, so the service lookup the link
+    // depends on has to be supplied here.
+    const listStore = useNodeListStore()
+    listStore.getServiceTypeByName = vi.fn(() => ({ id: 10, name: 'ICMP' }))
+    store.availability = {
+      ...seedAvailability,
+      ipinterfaces: [{ ...seedAvailability.ipinterfaces[0], address: 'fe80::1%eth0' }]
+    }
+    await w.vm.$nextTick()
+
+    const src = w.findAll('img').map(i => i.attributes('src')).find(s => s?.includes('timeline/image'))
+    expect(src).toContain('/fe80%3A%3A1%25eth0/')
     w.unmount()
   })
 
