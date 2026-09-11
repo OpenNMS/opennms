@@ -1,6 +1,6 @@
 
 = Step 9: Visualize Data
-:description: Step 9 of {page-component-title} setup: how to visualize your environment's data with dashboard, surveillance view, heatmap, and trend page.
+:description: Step 9 of {page-component-title} setup: how to visualize your environment's data with dashboard, surveillance view, and trend page.
 
 
 This section describes how to visualize your environment's data (using the dashboard, graphs, and so on) in {page-component-title}.
@@ -78,15 +78,6 @@ For this example, we use "Production".
 
 NOTE: The Surveillance View dashboard component includes a menu where you can select the view to be displayed.
 Its default visualization is defined separately from the Surveillance View itself.
-
-== Heatmap
-
-You can use the heatmap to display either unacknowledged alarms or ongoing node outages.
-Each visualization can be applied to categories, foreign sources, or node services.
-Click menu:Dashboards[Heatmap] in the side menu to view the heatmap.
-
-For more information, see xref:deep-dive/visualizations/heatmap.adoc[] in the Deep Dive section.
-
 == Trend
 
 The Trend page displays small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).

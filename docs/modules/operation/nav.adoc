@@ -220,7 +220,6 @@
 ** xref:deep-dive/visualizations/introduction.adoc[]
 *** xref:deep-dive/visualizations/dashboard.adoc[]
 *** xref:deep-dive/visualizations/grafana-dashboard-box.adoc[]
-*** xref:deep-dive/visualizations/heatmap.adoc[]
 *** xref:deep-dive/visualizations/ksc-reports.adoc[]
 *** xref:deep-dive/visualizations/surveillance-view.adoc[]
 *** xref:deep-dive/visualizations/trends.adoc[]

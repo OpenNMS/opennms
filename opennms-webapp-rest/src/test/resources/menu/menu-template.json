@@ -154,13 +154,6 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
           "id": "trend",
           "name": "Trend",
           "url": "trend/index.jsp",

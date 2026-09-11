@@ -163,9 +163,6 @@ importers:
       jquery-ui:
         specifier: ~1.13.3
         version: 1.13.3
-      jquery-ui-treemap:
-        specifier: https://github.com/RangerRick/jsTreemap#master
-        version: jsTreemap@https://codeload.github.com/RangerRick/jsTreemap/tar.gz/4c5eeb923d74cccf5aa163f4a11ec9ddf63ba402
       jquery.flot.tooltip:
         specifier: ^0.9.0
         version: 0.9.0
@@ -1521,6 +1518,7 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@webassemblyjs/ast@1.9.0':
     resolution: {integrity: sha512-C6wW5L+b7ogSDVqymbkkvuW9kruN//YisMED04xzeBBqjHa2FYnmvOlS6Xj68xWQRgWvI9cIglsjFowH/RJyEA==}
@@ -2282,6 +2280,7 @@ packages:
   cron-parser@4.9.0:
     resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
     engines: {node: '>=12.0.0'}
+    deprecated: v4 is no longer maintained, upgrade to v5
 
   cross-env@10.1.0:
     resolution: {integrity: sha512-GsYosgnACZTADcmEyJctkJIoqAhHjttw7RsFrVoJNXbsWWqaq6Ym+7kZjq6mS45O0jij6vtiReppKQEtqWy6Dw==}
@@ -3647,10 +3646,6 @@ packages:
   js-yaml@3.15.1:
     resolution: {integrity: sha512-S99WuO3HlhO3XN41EtYUNl9zzXjoJx7QvmipxsJVxtCBT0YHEFy+iOJhjSvrmV12nYhWpZaM8lPHkJm0yUMbag==}
     hasBin: true
-
-  jsTreemap@https://codeload.github.com/RangerRick/jsTreemap/tar.gz/4c5eeb923d74cccf5aa163f4a11ec9ddf63ba402:
-    resolution: {tarball: https://codeload.github.com/RangerRick/jsTreemap/tar.gz/4c5eeb923d74cccf5aa163f4a11ec9ddf63ba402}
-    version: 2.1.2
 
   jsdom@20.0.3:
     resolution: {integrity: sha512-SYhBvTh89tTfCD/CRdSOm13mOBa42iTaTyfyEWBdKcGdPxPtLFBXuHR8XHb33YNYaP+lLbmSvBTsnoesCNJEsQ==}
@@ -9563,11 +9558,6 @@ snapshots:
     dependencies:
       argparse: 1.0.10
       esprima: 4.0.1
-
-  jsTreemap@https://codeload.github.com/RangerRick/jsTreemap/tar.gz/4c5eeb923d74cccf5aa163f4a11ec9ddf63ba402:
-    dependencies:
-      jquery: 3.7.1
-      jquery-ui: 1.13.3
 
   jsdom@20.0.3:
     dependencies:
