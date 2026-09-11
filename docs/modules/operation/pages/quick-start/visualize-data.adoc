@@ -1,6 +1,6 @@
 
 = Step 9: Visualize Data
-:description: Step 9 of {page-component-title} setup: how to visualize your environment's data with dashboard, surveillance view, heatmap, and trend page.
+:description: Step 9 of {page-component-title} setup: how to visualize your environment's data with dashboard, surveillance view, and heatmap.
 
 
 This section describes how to visualize your environment's data (using the dashboard, graphs, and so on) in {page-component-title}.
@@ -86,14 +86,6 @@ Each visualization can be applied to categories, foreign sources, or node servic
 Click menu:Dashboards[Heatmap] in the side menu to view the heatmap.
 
 For more information, see xref:deep-dive/visualizations/heatmap.adoc[] in the Deep Dive section.
-
-== Trend
-
-The Trend page displays small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
-Click menu:Dashboards[Trends] in the side menu to view it.
-
-For more information, see xref:deep-dive/visualizations/trends.adoc[] in the Deep Dive section.
-
 == Beyond Quick Start
 
 Refer to Visualizations in the Deep Dive section for more information on the available visualizations.

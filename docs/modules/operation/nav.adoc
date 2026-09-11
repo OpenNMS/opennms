@@ -223,7 +223,6 @@
 *** xref:deep-dive/visualizations/heatmap.adoc[]
 *** xref:deep-dive/visualizations/ksc-reports.adoc[]
 *** xref:deep-dive/visualizations/surveillance-view.adoc[]
-*** xref:deep-dive/visualizations/trends.adoc[]
 
 ** {page-component-title} Administration
 *** xref:deep-dive/admin/configuration/introduction.adoc[]
