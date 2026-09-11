@@ -394,10 +394,7 @@
                           <feature>fst</feature>
                           <feature>guava</feature>
                           <feature>guava-dependencies</feature>
-                          <feature>guava17</feature>
                           <feature>guava18</feature>
-                          <feature>guava21</feature>
-                          <feature>guava31</feature>
                           <feature>jackson-core</feature>
                           <feature>jackson-dataformat-xml</feature>
                           <feature>jackson-dataformat-yaml</feature>
