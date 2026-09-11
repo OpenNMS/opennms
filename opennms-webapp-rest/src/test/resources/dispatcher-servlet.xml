@@ -413,11 +413,6 @@
                                 <property name="locationMatch" value="surveillance-view"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Heatmap"/>
-                                <property name="url" value="heatmap/index.jsp"/>
-                                <property name="locationMatch" value="heatmap"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Trend"/>
                                 <property name="url" value="trend/index.jsp"/>
                                 <property name="locationMatch" value="trend"/>
