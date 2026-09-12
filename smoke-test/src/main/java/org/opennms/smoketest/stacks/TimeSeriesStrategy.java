@@ -22,9 +22,16 @@
 package org.opennms.smoketest.stacks;
 
 /**
- * RRD vs Newts
+ * Time series persistence strategy.
+ *
+ * <ul>
+ *   <li>{@link #RRD} - JRobin/RRDtool (default)</li>
+ *   <li>{@link #NEWTS} - Apache Cassandra via Newts</li>
+ *   <li>{@link #INTEGRATION} - Plugin-based via the OpenNMS Integration API TimeSeriesStorage SPI</li>
+ * </ul>
  */
 public enum TimeSeriesStrategy {
     RRD,
-    NEWTS
+    NEWTS,
+    INTEGRATION
 }

@@ -38,6 +38,8 @@ import org.opennms.smoketest.containers.MinionContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.containers.PostgreSQLContainer;
 import org.opennms.smoketest.containers.SentinelContainer;
+import org.opennms.smoketest.containers.ThanosQueryContainer;
+import org.opennms.smoketest.containers.ThanosReceiveContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -101,6 +103,10 @@ public final class OpenNMSStack implements TestRule {
 
     private final OpenNMSCassandraContainer cassandraContainer;
 
+    private final ThanosReceiveContainer thanosReceiveContainer;
+
+    private final ThanosQueryContainer thanosQueryContainer;
+
     private final List<MinionContainer> minionContainers;
 
     private final List<SentinelContainer> sentinelContainers;
@@ -128,6 +134,8 @@ public final class OpenNMSStack implements TestRule {
         elasticsearchContainer = null;
         kafkaContainer = null;
         cassandraContainer = null;
+        thanosReceiveContainer = null;
+        thanosQueryContainer = null;
         opennmsContainer = new LocalOpenNMS();
         minionContainers = Collections.EMPTY_LIST;
         sentinelContainers = Collections.EMPTY_LIST;
@@ -173,6 +181,16 @@ public final class OpenNMSStack implements TestRule {
             chain = chain.around(cassandraContainer);
         } else {
             cassandraContainer = null;
+        }
+
+        if (TimeSeriesStrategy.INTEGRATION.equals(model.getTimeSeriesStrategy())) {
+            thanosReceiveContainer = new ThanosReceiveContainer();
+            chain = chain.around(thanosReceiveContainer);
+            thanosQueryContainer = new ThanosQueryContainer();
+            chain = chain.around(thanosQueryContainer);
+        } else {
+            thanosReceiveContainer = null;
+            thanosQueryContainer = null;
         }
 
         opennmsContainer = new OpenNMSContainer(model, model.getOpenNMS());
@@ -245,6 +263,20 @@ public final class OpenNMSStack implements TestRule {
             throw new IllegalStateException("Kafka container is not enabled in this stack.");
         }
         return kafkaContainer;
+    }
+
+    public ThanosReceiveContainer thanosReceive() {
+        if (thanosReceiveContainer == null) {
+            throw new IllegalStateException("Thanos Receive container is not enabled in this stack. Use TimeSeriesStrategy.INTEGRATION.");
+        }
+        return thanosReceiveContainer;
+    }
+
+    public ThanosQueryContainer thanosQuery() {
+        if (thanosQueryContainer == null) {
+            throw new IllegalStateException("Thanos Query container is not enabled in this stack. Use TimeSeriesStrategy.INTEGRATION.");
+        }
+        return thanosQueryContainer;
     }
 
     @Override

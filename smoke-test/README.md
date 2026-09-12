@@ -73,6 +73,97 @@ Smoke tests will run against this image in your local Docker image repo.
 When you want to use the latest **published** Horizon docker image, make sure to remove the local image with `docker image rm opennms/horizon:latest`.
 You can do the same for the Minion and Sentinel.
 
+## Time Series Strategy: INTEGRATION
+
+The smoke test infrastructure supports pluggable time series storage (TSS) backends via `TimeSeriesStrategy.INTEGRATION`. This enables end-to-end testing of TSS plugins (e.g., the Cortex TSS plugin) with real Prometheus-compatible backends.
+
+### Architecture
+
+```mermaid
+graph LR
+    subgraph TestContainers Stack
+        PG[PostgreSQL]
+        TR[Thanos Receive<br/>:19291 write<br/>:10901 gRPC<br/>:10902 HTTP]
+        TQ[Thanos Query<br/>:9090 HTTP<br/>:10903 gRPC]
+        ONMS[OpenNMS Horizon<br/>:8980 Web/REST<br/>:8101 Karaf SSH]
+    end
+
+    subgraph OpenNMS Internals
+        COL[Collectd] -->|samples| TSS[TimeSeries<br/>Storage Manager]
+        TSS -->|Prom remote write| CORTEX[Cortex TSS Plugin]
+        MEAS[Measurements API] -->|Prom query API| CORTEX
+    end
+
+    CORTEX -->|write| TR
+    CORTEX -->|read| TQ
+    TQ -->|gRPC store| TR
+    ONMS --- PG
+
+    TEST[CortexTssPluginIT] -->|REST API| ONMS
+    TEST -->|Prom query API| TQ
+```
+
+### Data Flow
+
+1. **Write path**: OpenNMS Collectd collects JVM/DB/SNMP metrics every 30s (self-monitor node) -> `TimeseriesStorageManager` -> Cortex TSS plugin -> Prometheus remote write to Thanos Receive
+2. **Read path**: Test queries OpenNMS Measurements API -> Cortex TSS plugin -> Prometheus query API on Thanos Query -> data returned through OpenNMS REST response
+
+### Prerequisites
+
+The Cortex TSS plugin is built separately from OpenNMS. You need the plugin KAR file before running these tests.
+
+```bash
+# 1. Clone and build the plugin
+git clone https://github.com/OpenNMS/opennms-cortex-tss-plugin.git
+cd opennms-cortex-tss-plugin
+mvn clean install -DskipTests
+
+# 2. Run the smoke tests with the KAR path
+cd /path/to/opennms
+./compile.pl -t -Dsmoke -Dsmoke.flaky \
+    -Dcortex.kar=/path/to/opennms-cortex-tss-plugin/assembly/kar/target/opennms-cortex-tss-plugin.kar \
+    --projects :smoke-test install
+
+# Alternative: bind-mount your entire Maven repo into the container
+./compile.pl -t -Dsmoke -Dsmoke.flaky \
+    -Dorg.opennms.dev.m2=$HOME/.m2/repository \
+    --projects :smoke-test install
+```
+
+### Container Setup
+
+```java
+@ClassRule
+public static OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+        .withTimeSeriesStrategy(TimeSeriesStrategy.INTEGRATION)
+        .withOpenNMS(OpenNMSProfile.newBuilder()
+                .withInstallFeature("opennms-plugins-cortex-tss", "opennms-cortex-tss-plugin")
+                .build())
+        .build());
+```
+
+This wires up:
+- **ThanosReceiveContainer** (write endpoint) and **ThanosQueryContainer** (read endpoint) in the RuleChain
+- Cortex plugin config (`org.opennms.plugins.tss.cortex.cfg`) pointing at the Thanos containers
+- `org.opennms.timeseries.strategy=integration` in system properties
+- `opennms-timeseries-api` feature in Karaf boot
+
+### Validation Utilities
+
+`TimeSeriesValidationUtils` provides strategy-agnostic validation methods reusable with any TSS backend:
+
+- `validateResourceTree(restClient, nodeCriteria)` — verifies the resource tree is populated with child resources
+- `validateMeasurements(restClient, resourceId, attribute, aggregation)` — verifies data round-trips through the measurements API
+- `validateMeasurementsMetadata(restClient, resourceId, attribute)` — verifies measurement metadata (node labels, resource info)
+
+### Available Containers
+
+| Container | Class | Default Ports | Purpose |
+|-----------|-------|---------------|---------|
+| Thanos Receive | `ThanosReceiveContainer` | 19291 (write), 10901 (gRPC), 10902 (HTTP) | Accepts Prometheus remote write |
+| Thanos Query | `ThanosQueryContainer` | 9090 (HTTP), 10903 (gRPC) | Prometheus-compatible query API |
+| Prometheus | `PrometheusContainer` | 9090 (HTTP) | Standalone building block (not used by default INTEGRATION stack) |
+
 ## Writing system tests
 
 When writing a new test, use the stack rule to setup the environment:
