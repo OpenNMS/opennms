@@ -41,52 +41,60 @@ License.
     >
       No availability data.
     </p>
-    <table
-      v-else
-      class="avail__table"
-    >
-      <thead>
-        <tr>
-          <th class="avail__cat">Categories</th>
-          <th class="avail__num">Outages</th>
-          <th class="avail__num">Availability</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template
-          v-for="section in sections"
-          :key="section.name"
-        >
-          <tr
-            v-for="cat in section.categories"
-            :key="section.name + '/' + cat.name"
-            :class="{ 'avail__total': isTotal(section) }"
-            :style="shade && !isTotal(section) ? { backgroundColor: severityTint(cat.availabilityClass) } : undefined"
-          >
-            <td class="avail__cat">
-              <a
-                v-if="!isTotal(section)"
-                :href="categoryLink(cat.name)"
-                :title="`Outage details for ${cat.name}`"
-              >{{ cat.name }}</a>
-              <template v-else>{{ cat.name }}</template>
-            </td>
-            <td class="avail__num">{{ cat.outageText }}</td>
-            <td
-              class="avail__num"
-              :style="{ color: severityColor(cat.availabilityClass) }"
-            >{{ cat.availabilityText }}</td>
+    <template v-else>
+      <p
+        v-if="stale"
+        class="avail__stale"
+        role="alert"
+      >
+        Availability data is stale.
+        <template v-if="staleSince">Oldest category was calculated {{ staleSince }}.</template>
+        Is the Availability daemon running?
+      </p>
+      <table class="avail__table">
+        <thead>
+          <tr>
+            <th class="avail__cat">Categories</th>
+            <th class="avail__num">Outages</th>
+            <th class="avail__num">Availability</th>
           </tr>
-        </template>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <template
+            v-for="section in sections"
+            :key="section.name"
+          >
+            <tr
+              v-for="cat in section.categories"
+              :key="section.name + '/' + cat.name"
+              :class="{ 'avail__total': isTotal(section) }"
+              :style="shade && !isTotal(section) ? { backgroundColor: severityTint(cat.availabilityClass) } : undefined"
+            >
+              <td class="avail__cat">
+                <a
+                  v-if="!isTotal(section)"
+                  :href="categoryLink(cat.name)"
+                  :title="`Outage details for ${cat.name}`"
+                >{{ cat.name }}</a>
+                <template v-else>{{ cat.name }}</template>
+              </td>
+              <td class="avail__num">{{ cat.outageText }}</td>
+              <td
+                class="avail__num"
+                :style="{ color: severityColor(cat.availabilityClass) }"
+              >{{ cat.availabilityText }}</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
-import { getAvailability, type AvailabilitySection } from '@/services/availabilityService'
+import { getAvailability, staleness, type AvailabilitySection } from '@/services/availabilityService'
 import { severityColor, severityTint } from '../severity'
 
 const props = defineProps<PanelComponentProps>()
@@ -122,6 +130,14 @@ const load = async () => {
 // stock overlap, filtering by name blanked the panel for any selection.
 const sections = computed<AvailabilitySection[]>(() => allSections.value)
 
+// The REST API flags a category as stale when its snapshot is older than the
+// daemon's staleness threshold. The figures are still shown, as on the legacy
+// home page, but under a warning so they are not read as current.
+const staleInfo = computed(() => staleness(sections.value))
+const stale = computed(() => staleInfo.value.stale)
+const staleSince = computed(() =>
+  staleInfo.value.oldest === null ? '' : new Date(staleInfo.value.oldest).toLocaleString())
+
 onMounted(load)
 watch(() => props.refreshTick, load)
 </script>
@@ -132,6 +148,15 @@ watch(() => props.refreshTick, load)
 
   &__muted {
     color: var(--p-text-muted-color, #666);
+  }
+
+  &__stale {
+    margin: 0 0 0.5rem;
+    padding: 0.35rem 0.5rem;
+    font-weight: 600;
+    color: var(--p-orange-800, #7a3e00);
+    background: var(--p-orange-100, #fff3e0);
+    border-left: 4px solid var(--p-orange-500, #ff9800);
   }
 
   &__table {

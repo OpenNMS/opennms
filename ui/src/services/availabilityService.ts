@@ -31,6 +31,12 @@ export interface AvailabilityCategory {
   availability: number
   availabilityClass: string
   outageClass: string
+  // when the snapshot behind this row was computed (epoch millis), or null
+  // when the category has never been calculated
+  lastUpdated: number | null
+  // true when the snapshot is older than the daemon's staleness threshold,
+  // which means the Availability daemon is not running; false without a snapshot
+  stale: boolean
 }
 
 export interface AvailabilitySection {
@@ -58,10 +64,33 @@ export const getAvailability = async (): Promise<AvailabilitySection[] | null> =
         availabilityText: c['availability-text'] ?? '',
         availability: Number(c.availability ?? 0),
         availabilityClass: c['availability-class'] ?? 'Normal',
-        outageClass: c['outage-class'] ?? 'Normal'
+        outageClass: c['outage-class'] ?? 'Normal',
+        lastUpdated: c['last-updated'] == null ? null : Number(c['last-updated']),
+        // JAXB JSON may serialise the boolean as a string
+        stale: c.stale === true || c.stale === 'true'
       }))
     }))
   } catch {
     return null
   }
+}
+
+// Staleness across the whole response: whether any category is stale, and the
+// oldest snapshot among the stale ones (null when unknown). Mirrors the legacy
+// categories box, which warns on the oldest category rather than per row.
+export const staleness = (sections: AvailabilitySection[]): { stale: boolean, oldest: number | null } => {
+  let stale = false
+  let oldest: number | null = null
+  for (const section of sections) {
+    for (const cat of section.categories) {
+      if (!cat.stale) {
+        continue
+      }
+      stale = true
+      if (cat.lastUpdated != null && (oldest === null || cat.lastUpdated < oldest)) {
+        oldest = cat.lastUpdated
+      }
+    }
+  }
+  return { stale, oldest }
 }
