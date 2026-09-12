@@ -85,8 +85,8 @@ public class UsageStatisticsIT {
 
         final Map<String, Boolean> services = (Map<String, Boolean>) usageReport.get("services");
 
-        assertEquals(28, services.size());
-        assertEquals(26, services.entrySet().stream().filter(Map.Entry::getValue).count());
+        assertEquals(27, services.size());
+        assertEquals(25, services.entrySet().stream().filter(Map.Entry::getValue).count());
         assertEquals(2, services.entrySet().stream().filter(e -> !e.getValue()).count());
 
         assertThat((String) usageReport.get("systemId"), matchesPattern("^\\S+-\\S+-\\S+-\\S+-\\S+$"));
