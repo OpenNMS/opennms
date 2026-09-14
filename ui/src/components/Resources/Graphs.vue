@@ -7,7 +7,10 @@
   <div class="onms-row">
     <div class="onms-col-11" ref="graphsContainerRef">
       <div class="controls">
-        <TimeControls @updateTime="updateTime" />
+        <TimeControls
+          label="Time Range:"
+          @updateTime="updateTime"
+        />
         <div class="controls-right" v-if="!singleGraphDefinition">
           <OnmsIconButton
             variant="outlined"
@@ -47,7 +50,7 @@ import { useDebounceFn, useScroll } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
 import GraphContainer from './GraphContainer.vue'
-import TimeControls from './TimeControls.vue'
+import TimeControls from '@/components/Common/TimeControls.vue'
 import { exportGraphsToPdf } from './utils/graphExport'
 import useSnackbar from '@/composables/useSnackbar'
 import { sub, getUnixTime } from 'date-fns'

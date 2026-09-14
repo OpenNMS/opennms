@@ -21,11 +21,17 @@
  */
 package org.opennms.web.rest.v1.config;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "TicketerConfig", description = "State of the trouble ticketer integration.")
 public class TicketerConfig {
     /**
      * The plugin currently in use. If enabled is false, this should be null.
      */
+    @Schema(description = "Class name of the ticketer plugin in use. Null when the ticketer is disabled.", example = "org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin")
     private String plugin;
+
+    @Schema(description = "Whether the trouble ticketer is enabled, from opennms.alarmTroubleTicketEnabled in opennms.properties.", example = "false")
     private boolean enabled;
 
     public void setPlugin(String plugin) {

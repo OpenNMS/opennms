@@ -31,6 +31,19 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])
   const totalCount = ref(0)
   const node = ref({} as Node)
+
+  // Whether `node` holds a real node. The store is global and outlives any one page, so
+  // consumers cannot tell an unfetched node from a fetched one -- `node` starts as {}, which is
+  // truthy and answers undefined for every field.
+  const nodeLoaded = ref(false)
+
+  // Whether the last attempt to fetch a node failed, as distinct from not having finished:
+  // a page mid-fetch has nothing to say yet, a failed one has nothing to show at all.
+  const nodeLoadFailed = ref(false)
+
+  // Address of the node's SNMP-primary interface, which the node payload does not carry
+  // (OnmsNode.getPrimaryInterface is @Transient @JsonIgnore). Undefined when the node has none.
+  const snmpPrimaryIpAddress = ref<string | undefined>(undefined)
   const snmpInterfaces = ref([] as SnmpInterface[])
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
@@ -60,16 +73,97 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  // Every fetch below is sequenced the same way, mirroring getIpInterfacesForNodes: the details
+  // page fires one per node id as the user moves between nodes, and the paginated ones fire
+  // again per page, so responses can come back in any order. A response applies only if no
+  // newer call has started since its request was issued.
+  let nodeSnmpInterfacesRequestId = 0
+  let nodeIpInterfacesRequestId = 0
+  let outagesRequestId = 0
+  let availabilityRequestId = 0
+
+  // Monotonic id sequencing getNodeById requests, mirroring getIpInterfacesForNodes below: the
+  // details page fires one per node id as the user moves between nodes, and the responses can
+  // come back in any order. Without this a slow response for the node the user left would
+  // overwrite the one they are on -- and a slow FAILURE would wipe every panel's data.
+  let nodeRequestId = 0
+
   const getNodeById = async (n: Node) => {
+    const requestId = ++nodeRequestId
+
+    // Clear first: until this resolves there is no node to show, and the previous one belongs
+    // to a different page. A failed request leaves nothing loaded rather than the node the
+    // user navigated away from.
+    node.value = {} as Node
+    nodeLoaded.value = false
+    nodeLoadFailed.value = false
+
     const resp = await API.getNodeById(n.id)
+
+    if (requestId !== nodeRequestId) {
+      return
+    }
 
     if (resp) {
       node.value = resp
+      nodeLoaded.value = true
+
+      return
+    }
+
+    nodeLoadFailed.value = true
+
+    // Every panel fetches by node id on its own and only replaces its rows on a successful
+    // response, so without this the previous node's data stays on screen under an id that has
+    // no node. Events live in their own store and are cleared by the page.
+    ipInterfaces.value = []
+    ipInterfacesTotalCount.value = 0
+    snmpInterfaces.value = []
+    snmpInterfacesTotalCount.value = 0
+    outages.value = []
+    outagesTotalCount.value = 0
+    availability.value = {} as NodeAvailability
+    snmpPrimaryIpAddress.value = undefined
+  }
+
+  let snmpPrimaryRequestId = 0
+
+  /**
+   * Fetch the address of the node's SNMP-primary interface, which the "Update SNMP Information"
+   * action needs. Asked for directly rather than read off `ipInterfaces`: that holds whatever
+   * page the IP Interfaces table is showing, which need not include the primary.
+   */
+  const getNodeSnmpPrimaryInterface = async (id: string) => {
+    const requestId = ++snmpPrimaryRequestId
+
+    snmpPrimaryIpAddress.value = undefined
+
+    const resp = await API.getNodeIpInterfaces(id, {
+      limit: 1,
+      offset: 0,
+      _s: 'snmpPrimary==P'
+    })
+
+    // Sequenced like getNodeById above. A stale address here is worse than a missing one: the
+    // Update SNMP action would point at an address that is not this node's, and the form
+    // rewrites SNMP configuration for whatever address it is handed.
+    if (requestId !== snmpPrimaryRequestId) {
+      return
+    }
+
+    if (resp) {
+      snmpPrimaryIpAddress.value = resp.ipInterface[0]?.ipAddress
     }
   }
 
   const getNodeSnmpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++nodeSnmpInterfacesRequestId
+
     const resp = await API.getNodeSnmpInterfaces(payload.id, payload.queryParameters)
+
+    if (requestId !== nodeSnmpInterfacesRequestId) {
+      return
+    }
 
     if (resp) {
       snmpInterfaces.value = resp.snmpInterface
@@ -78,7 +172,13 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeIpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++nodeIpInterfacesRequestId
+
     const resp = await API.getNodeIpInterfaces(payload.id, payload.queryParameters)
+
+    if (requestId !== nodeIpInterfacesRequestId) {
+      return
+    }
 
     if (resp) {
       ipInterfaces.value = resp.ipInterface
@@ -182,7 +282,13 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeAvailabilityPercentage = async (id: string) => {
+    const requestId = ++availabilityRequestId
+
     const av = await API.getNodeAvailabilityPercentage(id)
+
+    if (requestId !== availabilityRequestId) {
+      return
+    }
 
     if (av) {
       availability.value = av
@@ -190,7 +296,13 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeOutages = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++outagesRequestId
+
     const resp = await API.getNodeOutages(payload.id, payload.queryParameters)
+
+    if (requestId !== outagesRequestId) {
+      return
+    }
 
     if (resp) {
       outages.value = resp.outage
@@ -208,6 +320,9 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodes,
     totalCount,
     node,
+    nodeLoaded,
+    nodeLoadFailed,
+    snmpPrimaryIpAddress,
     snmpInterfaces,
     snmpInterfacesTotalCount,
     ipInterfaces,
@@ -226,6 +341,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeIpInterfaces,
     getNodeAvailabilityPercentage,
     getNodeOutages,
+    getNodeSnmpPrimaryInterface,
     setNodeQueryParameters
   }
 })

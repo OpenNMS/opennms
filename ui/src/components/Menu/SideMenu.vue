@@ -4,6 +4,8 @@
     id="opennms-sidemenu-vue-container"
     class="onms-side-menu"
     :class="{ 'onms-side-menu--open': isPinned }"
+    @mouseover="onRailMouseOver"
+    @mouseleave="onRailMouseLeave"
   >
     <button
       type="button"
@@ -27,7 +29,7 @@
         <a
           class="onms-side-menu__link"
           v-bind="props.action"
-          v-onms-tooltip="{ value: item.label, disabled: isPinned || !item.topLevel, showDelay: 300 }"
+          v-onms-tooltip="{ value: item.label, disabled: isPinned || !item.topLevel || hasSubmenu, showDelay: HOVER_OPEN_DELAY_MS }"
           :href="item.url || undefined"
           :target="item.target || undefined"
         >
@@ -46,8 +48,9 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 // We are using PrimeVue TieredMenu directly here, rather than wrapping it in an OnmsUI component.
-// We are reaching into TieredMenu internals (DOM queries in positionFlyouts, hide() in togglePinned),
-// and also not using this anywhere else in the app, so we don't want to add a new OnmsUI component for it.
+// We are reaching into TieredMenu internals (DOM queries in positionFlyouts, hide() in togglePinned,
+// the `dirty` hover flag in the collapsed-rail hover handlers below), and also not using this
+// anywhere else in the app, so we don't want to add a new OnmsUI component for it.
 // If we ever need to use TieredMenu elsewhere, we can wrap it in an OnmsUI component at that time.
 // eslint-disable-next-line no-restricted-imports
 import TieredMenu from 'primevue/tieredmenu'
@@ -86,10 +89,10 @@ const { getIcon } = useMenuIcons()
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
 
-// isPinned is the persisted expanded/collapsed state (toggle button). The rail
-// no longer expands on hover (NMS-20167): submenus follow PrimeVue TieredMenu's
-// default interaction — click to open, hover-to-switch only after that first
-// click — and TieredMenu's own outside-click listener closes any open flyout.
+// isPinned is the persisted expanded/collapsed state (toggle button), and the
+// only thing that sets the rail's width. The rail itself never resizes on
+// hover (NMS-20167) — hover only opens the flyouts, in either state; see the
+// hover handlers below.
 const isPinned = ref<boolean>(menuStore.sideMenuExpanded() ?? false)
 
 const onPerformLogout = async () => {
@@ -113,21 +116,158 @@ const topPanels = computed<OnmsMenuItem[]>(() => {
 
 const tieredMenuRef = ref<any>(null)
 
+// Close any open flyout and drop out of hover mode, so the next hover has to
+// dwell again.
+//
+// With nothing open, clearing `dirty` is the whole job (hide() would have done
+// it as a side effect): TieredMenu leaves it set after hovering an entry that
+// has no submenu, so skipping this would keep the rail in hover mode with no
+// flyout to show for it, and the next hover would open instantly with no dwell.
+//
+// hide() also resets focusedItemInfo to index -1. That is right for a flyout
+// the pointer merely hovered open — hover never focuses the menubar, so there
+// is no position to lose — but not for one the user clicked or tabbed into,
+// where it would discard their place in the menu. So when the menu actually
+// holds focus, put the focused index back on the root entry that was open,
+// which is where TieredMenu itself lands after closing a submenu (see its
+// onItemClick). A deeper position is not restored as-is: it points into a
+// submenu that is now closed, and TieredMenu would resolve the stale index
+// against the root list.
+const closeFlyouts = () => {
+  const menu = tieredMenuRef.value
+
+  if (!menu) {
+    return
+  }
+
+  if (!menu.activeItemPath?.length) {
+    menu.dirty = false
+    return
+  }
+
+  const rootItem = menu.activeItemPath.find((item: { parentKey: string }) => item.parentKey === '')
+  const keepFocus = menu.focused && rootItem
+
+  menu.hide?.()
+
+  if (keepFocus) {
+    menu.focusedItemInfo = { index: rootItem.index, level: 0, parentKey: '' }
+  }
+}
+
 const togglePinned = () => {
   isPinned.value = !isPinned.value
   menuStore.setSideMenuExpanded(isPinned.value)
 
-  // Close any open flyout. Clicking the toggle button already does this via
-  // TieredMenu's outside-click listener; this makes the keyboard shortcut
-  // behave the same — otherwise the flyout would be repositioned mid-way
-  // through the rail's 0.1s width transition and end up with a stale left
-  // offset once the transition finishes. Guarded on an actually-open flyout
-  // (activeItemPath non-empty) because hide() also resets TieredMenu's
-  // focusedItemInfo — calling it unconditionally would throw away a keyboard
-  // user's arrow-navigation position even when there was nothing to close.
-  if (tieredMenuRef.value?.activeItemPath?.length) {
-    tieredMenuRef.value.hide?.()
+  // The rail is mid-resize and any open flyout is about to be closed below, so
+  // a pending dwell or close timer has nothing left to act on. Dropping
+  // hoveredItem also means the next mouseover re-arms the dwell from scratch.
+  clearHoverTimers()
+  hoveredItem = null
+
+  // Clicking the toggle button already closes the flyout via TieredMenu's
+  // outside-click listener; this makes the keyboard shortcut behave the same —
+  // otherwise the flyout would be repositioned mid-way through the rail's 0.1s
+  // width transition and end up with a stale left offset once the transition
+  // finishes.
+  closeFlyouts()
+}
+
+// --- Hover-to-open flyouts (NMS-20273) -----------------------------------
+//
+// Hovering a top-level entry flies its submenu out, in either rail state. What
+// the rail never does on hover is change its own width: an earlier iteration
+// expanded it from under the pointer, and that — rather than the flyouts — was
+// the jarring part. While collapsed, entries that are direct links (Topology,
+// the maps) have no submenu, so they get a label tooltip on the same beat
+// instead; see the v-onms-tooltip binding in the template, which shares this
+// delay. Expanded, their labels are already visible and it stays suppressed.
+//
+// TieredMenu already opens submenus on hover, but only once its internal
+// `dirty` flag is set — normally by a first click. Setting `dirty` the moment
+// the pointer touches the rail makes flyouts fire at every entry the pointer
+// merely passes over on its way elsewhere. So the FIRST entry has to be
+// dwelled on: a delegated mouseover starts the timer, and when it elapses we
+// set `dirty` and re-dispatch mouseenter on the item so PrimeVue's own
+// onItemMouseEnter handler does the opening. After that the rail is in hover
+// mode and TieredMenu switches between entries on its own, with no further
+// dwell, until the pointer leaves the rail.
+const HOVER_OPEN_DELAY_MS = 150
+// Grace period on the way out: a flyout can be clamped away from its item's
+// row (see positionFlyouts), so reaching it may take the pointer briefly
+// outside the rail. Closing instantly would cut that travel off.
+const HOVER_CLOSE_DELAY_MS = 200
+
+let hoverOpenTimer = 0
+let hoverCloseTimer = 0
+let hoveredItem: HTMLElement | null = null
+
+const clearHoverTimers = () => {
+  window.clearTimeout(hoverOpenTimer)
+  window.clearTimeout(hoverCloseTimer)
+  hoverOpenTimer = 0
+  hoverCloseTimer = 0
+}
+
+// mouseover bubbles (mouseenter does not), so one listener on the nav covers
+// every item. An item's open flyout is a DOM descendant of that item, so
+// hovering into the flyout resolves back to the same root item and is a no-op.
+const onRailMouseOver = (event: MouseEvent) => {
+  // Back inside the rail: cancel any pending close.
+  window.clearTimeout(hoverCloseTimer)
+
+  const target = event.target as HTMLElement | null
+  const item = target?.closest<HTMLElement>('.p-tieredmenu-root-list > .p-tieredmenu-item') ?? null
+
+  if (item === hoveredItem) {
+    return
   }
+
+  // Also covers the pointer landing on the rail's own chrome — the toggle
+  // button, the gap below the last entry — where item is null. The dwell has
+  // to be cancelled there too: its only guard is `hoveredItem !== item`, so
+  // leaving hoveredItem set would let it fire for an entry the pointer has
+  // already left, opening a flyout under it (reaching for the toggle is the
+  // common case). Clearing hoveredItem also re-arms the dwell if the pointer
+  // comes back to that same entry.
+  window.clearTimeout(hoverOpenTimer)
+  hoveredItem = item
+
+  if (!item) {
+    return
+  }
+
+  // Already in hover mode: TieredMenu's own mouseenter handler switches
+  // flyouts, so no dwell and nothing for us to do.
+  if (tieredMenuRef.value?.dirty) {
+    return
+  }
+
+  hoverOpenTimer = window.setTimeout(() => {
+    // The pointer may have moved on, or left the rail, while the timer was
+    // pending.
+    if (!tieredMenuRef.value || hoveredItem !== item) {
+      return
+    }
+
+    // TieredMenu binds @mouseenter on the item's content wrapper, not on the
+    // <li>, and mouseenter does not bubble — so dispatch it there.
+    const content = item.querySelector<HTMLElement>(':scope > .p-tieredmenu-item-content')
+
+    if (!content) {
+      return
+    }
+
+    tieredMenuRef.value.dirty = true
+    content.dispatchEvent(new MouseEvent('mouseenter'))
+  }, HOVER_OPEN_DELAY_MS)
+}
+
+const onRailMouseLeave = () => {
+  clearHoverTimers()
+  hoveredItem = null
+
+  hoverCloseTimer = window.setTimeout(closeFlyouts, HOVER_CLOSE_DELAY_MS)
 }
 
 // Global shortcut: Ctrl+\ toggles the rail expand/collapse, so the menu can be
@@ -306,6 +446,7 @@ onBeforeUnmount(() => {
   }
 
   window.clearTimeout(vaadinResizeTimer)
+  clearHoverTimers()
   document.documentElement.style.removeProperty('--onms-side-menu-offset')
 
   flyoutObserver?.disconnect()

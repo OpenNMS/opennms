@@ -38,6 +38,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
@@ -88,6 +94,11 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="suggestions")
+    @Schema(name = "AssetSuggestions",
+            description = """
+                    Distinct values already stored for each asset-record field, keyed by field name. In JSON the
+                    document is a plain object whose keys are the field names; in XML the same data is emitted as
+                    `suggestions/mappings/entry` elements with `key` and `value` children.""")
     public static class Suggestions extends TreeMap<String, SuggestionList> {
 
         /**
@@ -106,6 +117,8 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="suggestions")
+    @Schema(name = "AssetSuggestionList",
+            description = "Distinct values recorded for one asset-record field, sorted. `totalCount` and `count` are null when the list is empty.")
     public static class SuggestionList extends JaxbListWrapper<String> {
 
         /**
@@ -145,6 +158,46 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
     @GET
     @Path("suggestions")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List distinct asset-record values per field",
+            description = """
+                    Returns the distinct values already stored across all nodes, for every asset-record field
+                    except `class`, `geolocation`, `lastModifiedDate` and `lastModifiedBy`. Fields with no stored
+                    value still appear, with an empty list. An empty string counts as a value, so lists often
+                    contain "".""",
+            operationId = "getAssetSuggestions"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Suggestions for every non-excluded asset field.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = Suggestions.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "address1": { "totalCount": 1, "count": 1, "offset": 0, "suggestion": ["1 Example St"] },
+                      "address2": { "totalCount": null, "count": null, "offset": 0, "suggestion": [] },
+                      "building": { "totalCount": 3, "count": 3, "offset": 0, "suggestion": ["", "Annex", "HQ"] },
+                      "city": { "totalCount": 2, "count": 2, "offset": 0, "suggestion": ["Pittsboro", "Raleigh"] }
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = Suggestions.class),
+                                    examples = @ExampleObject(value = """
+                    <suggestions>
+                      <mappings>
+                        <entry>
+                          <key>address1</key>
+                          <value count="1" offset="0" totalCount="1">
+                            <suggestion>1 Example St</suggestion>
+                          </value>
+                        </entry>
+                        <entry>
+                          <key>address2</key>
+                          <value offset="0"/>
+                        </entry>
+                      </mappings>
+                    </suggestions>"""))
+                    })
+    })
     public Suggestions getAssetSuggestions() {
         final Suggestions suggestions = new Suggestions();
         final List<OnmsAssetRecord> distinctAssetProperties = m_assetDao.getDistinctProperties();

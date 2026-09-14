@@ -22,7 +22,7 @@
 
 import { defineStore } from 'pinia'
 import type { DashboardFilter, DashboardLayout, DashboardPanel, PanelHeightMode, Timeframe } from '@/types/dashboard'
-import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout, ROW_PX } from '@/components/Dashboard/defaultLayout'
 import { getPanelDefinition } from '@/components/Dashboard/registry'
 import { getSystemDashboard, saveSystemDashboard } from '@/services/dashboardService'
 
@@ -201,7 +201,8 @@ export const useDashboardStore = defineStore('dashboardStore', {
         x: 0,
         y: nextY,
         w: def.defaultSize.w,
-        h: def.defaultSize.h,
+        // defaultSize.h is authored in rows; the layout stores pixels
+        h: def.defaultSize.h * ROW_PX,
         collapsed: false,
         titleOverride: null,
         filterOverride: null,

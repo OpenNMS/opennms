@@ -331,7 +331,7 @@ const buildSnmpInterfaceRow = (
  * Cisco-style dotted MAC like 'aabb.ccdd' never matched anything there. Stripping every non-hex
  * character means our maclike/snmpParm matching treats 'aabb.ccdd', 'aabb:ccdd', and 'aabbccdd' as
  * the same search, which is an improvement, not a port of the old behavior. Shared by the
- * client-side maclike match here, NodesTable.vue's buildSnmpNarrowing, and useNodeQuery.ts's
+ * client-side maclike match here, utils.ts's buildSnmpNarrowing, and useNodeQuery.ts's
  * buildMaclikeQuery so all three treat a given input identically.
  */
 export const normalizeMacSearch = (mac: string): string => mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()

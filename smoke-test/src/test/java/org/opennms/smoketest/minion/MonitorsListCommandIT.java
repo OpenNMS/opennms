@@ -111,6 +111,7 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.VmwareMonitor",
             "org.opennms.netmgt.poller.monitors.VmwareCimMonitor",
             "org.opennms.netmgt.poller.monitors.WsManMonitor",
+            "org.opennms.netmgt.poller.monitors.WsManShellMonitor",
             "org.opennms.netmgt.poller.monitors.DhcpMonitor")
             .build();
 

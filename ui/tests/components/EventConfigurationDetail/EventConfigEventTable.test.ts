@@ -45,6 +45,7 @@ describe('EventConfigEventTable.vue', () => {
       eventLabel: 'Test Event',
       severity: 'Major',
       enabled: true,
+      eventOrder: 7,
       description: '<p>An event description</p>'
     } as any
     disabledEvent = { ...mockEvent, id: 2, eventLabel: 'Disabled Event', enabled: false } as any
@@ -55,7 +56,7 @@ describe('EventConfigEventTable.vue', () => {
     store.events = []
     store.eventsSearchTerm = ''
     store.eventsPagination = { page: 1, pageSize: 10, total: 0 }
-    store.eventsSorting = { sortKey: 'createdTime', sortOrder: 'desc' }
+    store.eventsSorting = { sortKey: 'eventOrder', sortOrder: 'asc' }
     store.selectedSource = mockSource
     store.refreshEventConfigEvents = vi.fn().mockResolvedValue(undefined)
     store.onChangeEventsSearchTerm = vi.fn().mockResolvedValue(undefined)
@@ -116,6 +117,14 @@ describe('EventConfigEventTable.vue', () => {
       expect(wrapper.text()).toContain('uei.opennms.org/test')
       expect(wrapper.text()).toContain('Test Event')
       expect(wrapper.text()).toContain('Major')
+    })
+
+    it('renders a sortable Order column showing eventOrder', () => {
+      const header = wrapper.find('[data-test="order-header"]')
+      expect(header.exists()).toBe(true)
+      expect(header.text()).toBe('Order')
+      expect(header.attributes('title')).toContain('evaluated first')
+      expect(wrapper.findAll('tbody tr')[0].text()).toContain('7')
     })
 
     it('applies the severity color class to the severity tag', () => {
@@ -193,7 +202,7 @@ describe('EventConfigEventTable.vue', () => {
 
     it('falls back to default sort when no field is present', () => {
       wrapper.vm.onSort({ sortField: null, sortOrder: 1 })
-      expect(store.onEventsSortChange).toHaveBeenCalledWith('createdTime', 'desc')
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('eventOrder', 'asc')
     })
 
     it('maps a page event to onEventsPageChange (1-based)', () => {
