@@ -59,7 +59,7 @@ via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/s
 | `OPENNMS_RRD_STOREBYFOREIGNSOURCE` | Store timeseries data by foreign source instead of the database node id | optional | `true`
 | `OPENNMS_RRD_STRATEGYCLASS`        | Java RRD Strategy class                                                 | optional | `org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy`
 | `OPENNMS_RRD_INTERFACEJAR`         | Java RRD Interface library                                              | optional | `/usr/share/java/jrrd2.jar`
-| `OPENNMS_LIBRARY_JRRD2`            | JRRD2 library path                                                      | optional | `/usr/lib64/libjrrd2.so`
+| `OPENNMS_LIBRARY_JRRD2`            | JRRD2 library path                                                      | optional | `/usr/lib/jni/libjrrd2.so`
 |===
 
 .SNMP Trap receiver configuration in trapd-configuration.xml
@@ -89,7 +89,7 @@ via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/s
 |===
 | Environment variable           | Description                                                               | Required | Default value
 | `REPLICATION_FACTOR`           | Set Cassandra replication factor for the newts keyspace if Newts is used. | optional | `1`
-| `OPENNMS_CASSANDRA_HOSTNAME`   | A comma-separated list with Cassandra hosts for Newts                     | optional | `localhost`
+| `OPENNMS_CASSANDRA_HOSTNAME`   | A comma-separated list with Cassandra hosts for Newts                     | optional | `hostname`
 | `OPENNMS_CASSANDRA_KEYSPACE`   | Name of the keyspace used by Newts                                        | optional | `newts`
 | `OPENNMS_CASSANDRA_PORT`       | Cassandra server port                                                     | optional | `9042`
 | `OPENNMS_CASSANDRA_USERNAME`   | Username with access to Cassandra                                         | optional | `cassandra`
