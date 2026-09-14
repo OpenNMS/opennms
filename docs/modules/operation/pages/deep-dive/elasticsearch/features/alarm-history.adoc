@@ -17,6 +17,9 @@ A simple REST API also lets you evaluate the results, verify stored data, and pr
 
 NOTE: This feature requires Elasticsearch 7.0+.
 
+NOTE: Alarm history is written to time-based indices that {page-component-title} does not expire.
+See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>> to avoid filling the Elasticsearch disk.
+
 == Alarm history indexing
 
 When alarms are created, a document that includes all alarm fields and additional details on related objects (for example, the node), is pushed to Elasticsearch.

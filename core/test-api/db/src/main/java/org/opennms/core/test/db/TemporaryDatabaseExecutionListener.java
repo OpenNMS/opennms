@@ -123,7 +123,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
     private static JUnitTemporaryDatabase findAnnotation(final TestContext testContext) {
         JUnitTemporaryDatabase jtd = null;
-        final Method testMethod = testContext.getTestMethod();
+        final Method testMethod = getTestMethodOrNull(testContext);
         if (testMethod != null) {
             jtd = testMethod.getAnnotation(JUnitTemporaryDatabase.class);
         }
@@ -132,6 +132,16 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
             jtd = testClass.getAnnotation(JUnitTemporaryDatabase.class);
         }
         return jtd;
+    }
+
+    private static Method getTestMethodOrNull(final TestContext testContext) {
+        // Spring 5's getTestMethod() throws during class-level callbacks such as
+        // prepareTestInstance; this restores the Spring 4 null contract
+        try {
+            return testContext.getTestMethod();
+        } catch (final IllegalStateException e) {
+            return null;
+        }
     }
 
     @Override

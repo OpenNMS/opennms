@@ -21,16 +21,17 @@
 ///
 
 import { defineStore } from 'pinia'
-import { SORT } from '@featherds/table'
+import { SORT } from '@/types'
 import { latLng, LatLngBounds } from 'leaflet'
 import { orderBy } from 'lodash'
 import { numericSeverityLevel } from '@/components/Map/utils'
 import API from '@/services'
+import { ref } from 'vue'
 import {
   Alarm,
   AlarmModificationQueryVariable,
   Coordinates,
-  FeatherSortObject,
+  ISortObject,
   Node,
   QueryParameters
 } from '@/types'
@@ -44,8 +45,8 @@ export const useMapStore = defineStore('mapStore', () => {
   const mapBounds = ref<LatLngBounds | undefined>(undefined)
   const selectedSeverity = ref('NORMAL')
   const searchedNodeLabels = ref([] as string[])
-  const nodeSortObject = ref({ property: 'label', value: SORT.ASCENDING } as FeatherSortObject)
-  const alarmSortObject = ref({ property: 'id', value: SORT.DESCENDING } as FeatherSortObject)
+  const nodeSortObject = ref({ property: 'label', value: SORT.ASCENDING } as ISortObject)
+  const alarmSortObject = ref({ property: 'id', value: SORT.DESCENDING } as ISortObject)
   const nodeSearchTerm = ref('')
 
   const getNodeAlarmSeverityMap = () => {
@@ -95,7 +96,7 @@ export const useMapStore = defineStore('mapStore', () => {
 
     // filter for nodes that have been searched for
     if (searchedNodeLabels.value.length) {
-      nodes = nodes.filter((node) => searchedNodeLabels.value.includes(node.label))
+      nodes = nodes.filter(node => searchedNodeLabels.value.includes(node.label))
     }
 
     return nodes
@@ -123,7 +124,7 @@ export const useMapStore = defineStore('mapStore', () => {
 
     if (resp) {
       const nodes = resp.node.filter(
-        (node) =>
+        node =>
           !(node.assetRecord.latitude == null || node.assetRecord.latitude.length === 0) &&
           !(node.assetRecord.longitude == null || node.assetRecord.longitude.length === 0)
       )
@@ -155,7 +156,7 @@ export const useMapStore = defineStore('mapStore', () => {
       const edgeValues: [number, number][] = []
 
       resp.edges.forEach((e) => {
-        const edge: [number,number] = [e.source.id, e.target.id]
+        const edge: [number, number] = [e.source.id, e.target.id]
         edgeValues.push(edge)
       })
 
@@ -188,11 +189,11 @@ export const useMapStore = defineStore('mapStore', () => {
     searchedNodeLabels.value = nodeLabels
   }
 
-  const setNodeSortObject = (sortObj: FeatherSortObject) => {
+  const setNodeSortObject = (sortObj: ISortObject) => {
     nodeSortObject.value = sortObj
   }
 
-  const setAlarmSortObject = (sortObj: FeatherSortObject) => {
+  const setAlarmSortObject = (sortObj: ISortObject) => {
     alarmSortObject.value = sortObj
   }
 

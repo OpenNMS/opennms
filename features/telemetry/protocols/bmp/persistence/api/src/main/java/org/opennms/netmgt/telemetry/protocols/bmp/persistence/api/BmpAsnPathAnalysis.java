@@ -43,7 +43,7 @@ public class BmpAsnPathAnalysis implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpAsnPathSequence")
-    @SequenceGenerator(name = "bmpAsnPathSequence", sequenceName = "bmpasnpathnxtid")
+    @SequenceGenerator(name = "bmpAsnPathSequence", sequenceName = "bmpasnpathnxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

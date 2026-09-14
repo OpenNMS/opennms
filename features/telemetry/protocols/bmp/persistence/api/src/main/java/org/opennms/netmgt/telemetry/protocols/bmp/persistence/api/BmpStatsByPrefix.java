@@ -43,7 +43,7 @@ public class BmpStatsByPrefix implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpStatsByPrefixSequence")
-    @SequenceGenerator(name = "bmpStatsByPrefixSequence", sequenceName = "bmpstatsbyprefixnxtid")
+    @SequenceGenerator(name = "bmpStatsByPrefixSequence", sequenceName = "bmpstatsbyprefixnxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

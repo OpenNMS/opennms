@@ -1,0 +1,3 @@
+<template>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24"><defs><symbol id="material_system_icon_border" data-name="material_system_icon_border" viewBox="0 0 48 48"><rect width="48" height="48" fill="none"></rect></symbol></defs><g><path d="M12,4a8,8,0,1,1-8,8,8,8,0,0,1,8-8m0-2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Z"></path><use width="48" height="48" transform="translate(0 24) rotate(-90) scale(0.5)" xlink:href="#material_system_icon_border"></use></g><path d="M11.06,16.94a1.05,1.05,0,0,1-.71-.29L7,13.29a1,1,0,0,1,1.41-1.41L11,14.46l4.53-5.4a1,1,0,1,1,1.53,1.29l-5.23,6.23a1,1,0,0,1-.73.36Z"></path></svg>
+</template>

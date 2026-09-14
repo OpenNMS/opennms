@@ -175,8 +175,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
         <!-- Configure ThreadPool -->
         <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
         <prop key="org.quartz.threadPool.threadCount">1</prop>
-        <!-- Configure JobStore -->
-        <prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreCMT</prop>
+        <!-- Configure JobStore. Do NOT set org.quartz.jobStore.class: because a Spring-managed dataSource is
+             provided above, SchedulerFactoryBean installs its own LocalDataSourceJobStore (a JobStoreCMT
+             subclass) that supplies both the managed and non-managed-TX connections from that dataSource.
+             Spring 5 honours an explicit JobStoreCMT, which then fails at init for want of a
+             nonManagedTXDataSource ("Non-ManagedTX DataSource name not set!"). -->
         <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
         <!-- Configure Plugins -->
         <prop key="org.quartz.plugin.shutdownHook.class">org.quartz.plugins.management.ShutdownHookPlugin</prop>
@@ -193,12 +196,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </bean>
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
-  </bean>
-  <!-- Node List page -->
-  <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
   </bean>
   <bean id="rtcService" class="org.opennms.web.svclayer.support.DefaultRtcService">
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>

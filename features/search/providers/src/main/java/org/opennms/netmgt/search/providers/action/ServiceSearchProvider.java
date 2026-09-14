@@ -35,6 +35,7 @@ import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
 import org.opennms.netmgt.search.api.QueryUtils;
+import org.opennms.netmgt.search.api.UrlUtils;
 
 public class ServiceSearchProvider implements SearchProvider {
 
@@ -62,7 +63,7 @@ public class ServiceSearchProvider implements SearchProvider {
             final SearchResultItem searchResultItem = new SearchResultItem();
             searchResultItem.setIdentifier(service.getId().toString());
             searchResultItem.setLabel("Show nodes with service '" + service.getName() + "'");
-            searchResultItem.setUrl("element/nodeList.htm?service=" + service.getId());
+            searchResultItem.setUrl("ui/#/nodes?monitoredService=" + UrlUtils.encode(service.getName()));
             return searchResultItem;
         }).collect(Collectors.toList());
         final SearchResult searchResult = new SearchResult(Contexts.Action).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);

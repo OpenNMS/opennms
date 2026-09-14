@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>36.0.4-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.karaf-features-core-patch</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Container :: karaf-features-core Patch</name>
+    <description>
+        NMS-19841: org.apache.karaf.features.core's SimpleDownloadTask (used to stage
+        wrap:/blueprint:/spring: bundle URLs, e.g. wrap:mvn:.../protobuf-java/... , into a
+        local file before the OSGi framework installs them) picks a destination filename
+        derived only from the URL, then does:
+
+            if (file.exists() &amp;&amp; !file.delete()) throw ...;
+            tmpFile.renameTo(file);
+
+        Two overlapping resolutions of the same URL - each with their own DownloadManager,
+        e.g. Karaf's own boot feature install racing a feature install triggered shortly
+        after by container startup tooling - can each pass the initial "does file already
+        exist" check before either finishes, and the second one's delete() can remove the
+        first one's freshly written file out from under a reader that is mid-open, raising
+        FileNotFoundException. This is a genuine bug in Karaf itself: it is still present,
+        unsynchronized, in the same form on the Karaf project's main branch, so bumping the
+        Karaf version does not fix it.
+
+        This module rebuilds org.apache.karaf.features.core with a patched
+        SimpleDownloadTask that replaces the delete-then-renameTo sequence with
+        Files.move(..., REPLACE_EXISTING[, ATOMIC_MOVE]), so a concurrent reader always
+        observes either the old or the new (equivalent) file, never a missing one. The
+        assembly module (container/karaf, used by the Horizon/core distribution) copies
+        this over the bundle that Karaf's framework feature put into its assembled
+        system/ directory.
+
+        Filed upstream as https://github.com/apache/karaf/issues/2808 . Should Apache
+        Karaf fix this, this module can be deleted once that fixed version is picked up.
+    </description>
+
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+        <karafFeaturesCoreJar>org.apache.karaf.features.core-${karafVersion}.jar</karafFeaturesCoreJar>
+    </properties>
+
+    <dependencies>
+        <!-- provides the classes SimpleDownloadTask compiles against (its sibling
+             classes in the same package, plus the embedded org.apache.karaf.util
+             classes) - not shipped, only used to build the compile classpath -->
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.core</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4jVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-original-karaf-features-core</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.features</groupId>
+                                    <artifactId>org.apache.karaf.features.core</artifactId>
+                                    <version>${karafVersion}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/original</outputDirectory>
+                                    <destFileName>${karafFeaturesCoreJar}</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- packaging is "pom" so the default lifecycle does not bind
+                     compilation on its own - compile the one patched class
+                     explicitly, matching the original's class file version (55 =
+                     Java 11) so it drops into the bundle unchanged otherwise -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile-patched-simple-download-task</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>11</release>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven.antrun.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>patch-karaf-features-core-simple-download-task</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <unzip src="${project.build.directory}/original/${karafFeaturesCoreJar}"
+                                       dest="${project.build.directory}/bundle"/>
+
+                                <!-- overlay the recompiled class over the original -->
+                                <copy overwrite="true"
+                                      file="${project.build.directory}/classes/org/apache/karaf/features/internal/download/impl/SimpleDownloadTask.class"
+                                      tofile="${project.build.directory}/bundle/org/apache/karaf/features/internal/download/impl/SimpleDownloadTask.class"/>
+
+                                <!-- repack; passing the original manifest keeps the OSGi
+                                     headers untouched and writes META-INF/MANIFEST.MF as
+                                     the first entry, which Karaf's JarInputStream based
+                                     manifest readers depend on -->
+                                <jar destfile="${project.build.directory}/${karafFeaturesCoreJar}"
+                                     basedir="${project.build.directory}/bundle"
+                                     manifest="${project.build.directory}/bundle/META-INF/MANIFEST.MF"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-patched-karaf-features-core</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${karafFeaturesCoreJar}</file>
+                                    <type>jar</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

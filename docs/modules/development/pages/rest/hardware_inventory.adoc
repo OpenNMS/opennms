@@ -1,0 +1,88 @@
+
+= Hardware Inventory API
+
+The Hardware Inventory API manages the ENTITY-MIB hardware inventory tree associated with a node.
+
+NOTE: This is a sub-resource of the xref:rest/nodes.adoc[Nodes API]. All resources are reached under the parent path `/rest/nodes/\{nodeCriteria}`, where `\{nodeCriteria}` is either a node database ID or a `foreignSource:foreignId` tuple.
+
+== GETs (reading data)
+
+[caption=]
+.Hardware Inventory API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/nodes/\{nodeCriteria}/hardwareInventory`                    | Fetches the root hardware entity (the full inventory tree) for the node. Produces `application/xml`, `application/json`.
+| `/nodes/\{nodeCriteria}/hardwareInventory/\{entPhysicalIndex}` | Fetches a single hardware entity by its `entPhysicalIndex`. Produces `application/xml`, `application/json`.
+
+|===
+
+== POSTs (Creating Data)
+
+`POST` consumes `application/xml` or `application/json`.
+
+[caption=]
+.Hardware Inventory API POST functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/nodes/\{nodeCriteria}/hardwareInventory`                          | Sets (or overrides) the root hardware entity for the node.
+| `/nodes/\{nodeCriteria}/hardwareInventory/\{parentEntPhysicalIndex}` | Adds or replaces a child entity beneath the entity identified by `parentEntPhysicalIndex`.
+
+|===
+
+== PUT (modifying data)
+
+`PUT` consumes `application/x-www-form-urlencoded`.
+
+[caption=]
+.Hardware Inventory API PUT function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/nodes/\{nodeCriteria}/hardwareInventory/\{entPhysicalIndex}` | Updates properties of the entity identified by `entPhysicalIndex`.
+
+|===
+
+== DELETEs (Removing Data)
+
+[caption=]
+.Hardware Inventory API DELETE function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/nodes/\{nodeCriteria}/hardwareInventory/\{entPhysicalIndex}` | Deletes the entity identified by `entPhysicalIndex`.
+
+|===
+
+== Examples using cURL
+
+.Fetch the hardware inventory for a node
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/nodes/1/hardwareInventory"
+----
+
+.Fetch a single hardware entity
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/nodes/1/hardwareInventory/1"
+----
+
+.Update a hardware entity property
+[source,bash]
+----
+curl -u admin:admin -X PUT \
+  -d "entPhysicalName=Slot 1" \
+  "http://127.0.0.1:8980/opennms/rest/nodes/1/hardwareInventory/1"
+----
+
+.Delete a hardware entity
+[source,bash]
+----
+curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/rest/nodes/1/hardwareInventory/5"
+----

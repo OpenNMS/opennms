@@ -37,9 +37,9 @@
         <property name="order" value="0"/>
     </bean>
 
-    <!-- These HandlerMapping beans ensure that @RequestMapping-annotated classes and methods are resolvable -->
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+    <!-- @RequestMapping classes/methods are handled by <mvc:annotation-driven/> below
+         (RequestMappingHandlerMapping/Adapter). The old DefaultAnnotationHandlerMapping +
+         AnnotationMethodHandlerAdapter were removed in Spring 5.0. -->
 
     <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
@@ -303,11 +303,6 @@
                     <property name="url" value="dashboard.jsp"/>
                     <property name="locationMatch" value="dashboard"/>
                 </bean>
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Ops Board"/>
-                    <property name="url" value="vaadin-wallboard"/>
-                    <property name="locationMatch" value="vaadin-wallboard"/>
-                </bean>
             </list>
         </property>
     </bean>
@@ -331,11 +326,6 @@
                     <property name="url" value="#" />
                     <property name="entries">
                         <list>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Nodes"/>
-                                <property name="url" value="element/nodeList.htm"/>
-                                <property name="locationMatch" value="nodelist"/>
-                            </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Assets"/>
                                 <property name="url" value="asset/index.jsp"/>

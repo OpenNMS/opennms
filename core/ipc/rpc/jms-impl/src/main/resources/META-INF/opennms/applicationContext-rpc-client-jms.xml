@@ -44,6 +44,7 @@
         init-method="start" destroy-method="stop" >
      <property name="location" ref="location"/>
      <property name="metrics" ref="jmsRpcMetricRegistry"/>
+     <property name="camelContext" ref="rpcClient"/>
   </bean>
 
   <onmsgi:service ref="camelRpcClientFactory" interface="org.opennms.core.rpc.api.RpcClientFactory" />
@@ -52,15 +53,15 @@
         init-method="start" destroy-method="stop" />
 
    <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
-  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.engine.DefaultShutdownStrategy">
       <property name="timeout" value="15"/>
   </bean>
 
-  <camelContext id="rpcClient" registerEndpointIdsFromRoute="true" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="rpcClient" xmlns="http://camel.apache.org/schema/spring">
     <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
-    <properties>
-      <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
-    </properties>
+    <globalOptions>
+      <globalOption key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
+    </globalOptions>
 
     <!-- Define a default thread profile with the same defaults as Camel
          (see http://camel.apache.org/threading-model.html), but allow

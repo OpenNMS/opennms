@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Permissive stand-in for the Gemini spring-osgi schema. The extender only
+     implements <osgi:reference/>; validation is intentionally lax (xsd:anyType),
+     unsupported elements fail at parse time with a clear Spring error instead. -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.springframework.org/schema/osgi"
+            elementFormDefault="qualified">
+
+    <xsd:element name="reference" type="xsd:anyType"/>
+    <xsd:element name="service" type="xsd:anyType"/>
+    <xsd:element name="list" type="xsd:anyType"/>
+    <xsd:element name="set" type="xsd:anyType"/>
+    <xsd:element name="bundle" type="xsd:anyType"/>
+
+</xsd:schema>

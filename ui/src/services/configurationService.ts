@@ -30,8 +30,8 @@ const getProvisionDService = async () => {
     if (response.status === 200) {
       return response.data
     }
-  } catch (err) {
-    console.error('issue with getProvisionDService api', err)
+  } catch (_err) {
+    console.error('issue with getProvisionDService api', _err)
   }
 }
 

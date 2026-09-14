@@ -40,7 +40,7 @@ interface Token {
 
 const formatTimestamps = (metrics: GraphMetricsResponse, format: string): GraphMetricsResponse => {
   const timestamps = metrics.timestamps
-  metrics.formattedTimestamps = timestamps.map((timestamp) => formatTimestamp(timestamp, format))
+  metrics.formattedTimestamps = timestamps.map(timestamp => formatTimestamp(timestamp, format))
   return metrics
 }
 
@@ -125,9 +125,9 @@ const getFormattedLegendStatements = (
 }
 
 /* eslint-disable no-prototype-builtins */
-/* 
+/*
   Updated from https://github.com/OpenNMS/flot-legend/blob/master/src/main.js
-  Logic to apply specified gprint format to legend values 
+  Logic to apply specified gprint format to legend values
 */
 const TOKENS = Object.freeze({
   Text: 'text',
@@ -206,13 +206,13 @@ const tokenizeStatement = (value: string) => {
       let length = NaN
       try {
         length = parseInt(match[1])
-      } catch (err) {
+      } catch (_err) {
         // pass
       }
       let precision = NaN
       try {
         precision = parseInt(match[3])
-      } catch (err) {
+      } catch (_err) {
         // pass
       }
 
@@ -250,7 +250,9 @@ const formatStatement = (statement: PrintStatement, renderer: Renderer) => {
 
   for (const token of tokens) {
     if (token.type === TOKENS.Text) {
-      if (token.value) renderer.drawText(' ' + token.value)
+      if (token.value) {
+        renderer.drawText(' ' + token.value)
+      }
     } else if (token.type === TOKENS.Newline) {
       renderer.drawNewline()
     } else if (token.type === TOKENS.Unit) {

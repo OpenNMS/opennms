@@ -307,7 +307,10 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
         }
 
         outage.setIfRegainedService(new Date());
-        this.outageDao.update(outage);
+        this.sessionUtils.withTransaction(() -> {
+            this.outageDao.update(outage);
+            return null;
+        });
     }
 
     public static JobKey buildJobKey(final PerspectiveServiceTracker.ServicePerspectiveRef servicePerspective) {
@@ -452,7 +455,10 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
             final OnmsMonitoringLocation perspective = monitoringLocationDao.get(e.getParm("perspective").getValue().getContent());
             final OnmsOutage onmsOutage = new OnmsOutage(onmsEvent.getEventCreateTime(), onmsEvent, service);
             onmsOutage.setPerspective(perspective);
-            outageDao.save(onmsOutage);
+            sessionUtils.withTransaction(() -> {
+                outageDao.save(onmsOutage);
+                return null;
+            });
 
             final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_CREATED_EVENT_UEI, NAME)
                     .setNodeid(onmsEvent.getNodeId())
@@ -486,7 +492,10 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
                 final OnmsOutage onmsOutage = onmsOutages.get(0);
                 onmsOutage.setIfRegainedService(onmsEvent.getEventCreateTime());
                 onmsOutage.setServiceRegainedEvent(onmsEvent);
-                outageDao.update(onmsOutage);
+                sessionUtils.withTransaction(() -> {
+                    outageDao.update(onmsOutage);
+                    return null;
+                });
 
                 final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, NAME)
                         .setNodeid(onmsEvent.getNodeId())

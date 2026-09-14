@@ -9,7 +9,7 @@ import FileEditor from './FileEditor.svg'
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 .file-editor {
   color: var($secondary-text-on-surface);
 }

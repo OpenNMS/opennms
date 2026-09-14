@@ -36,6 +36,7 @@ import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
+import org.opennms.netmgt.model.SnmpCollectionProfileDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.netmgt.model.SnmpCollectionSourceDto;
 import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
+import org.opennms.web.rest.v2.model.SnmpCollectionCreateSourceDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.DataCollectionConfRestApi;
@@ -264,7 +266,6 @@ public class DataCollectionConfRestServiceIT {
         List<?> list6 = (List<?>) map6.get("snmpCollectionSourceList");
         Assert.assertEquals(1, list6.size());
         Assert.assertEquals("opennms.test.snmp", ((SnmpCollectionSourceDto) list6.get(0)).getName());
-
     }
 
     @Test
@@ -367,8 +368,6 @@ public class DataCollectionConfRestServiceIT {
         List<?> pagedList = (List<?>) map7.get("dataCollectionMibGroupList");
         Assert.assertEquals(1, pagedList.size());
         Assert.assertEquals("ip-mib", ((SnmpCollectionMibGroupDto) pagedList.get(0)).getName());
-
-
     }
 
     @Test
@@ -445,7 +444,6 @@ public class DataCollectionConfRestServiceIT {
         dtoList = (List<SnmpCollectionResourceTypeDto>) result.get("dataCollectionResourceTypeList");
         Assert.assertEquals(1, dtoList.size());
 
-
         // 8. Null filter (should return all for group), ascending by label
         rs = dataCollectionConfRestApi.filterDataCollectionResourceTypeByCollectionSourceId(src.getId(), null, "label", "ASC", 0, 0, 10, securityContext);
         result = (Map<String, Object>) rs.getEntity();
@@ -454,14 +452,11 @@ public class DataCollectionConfRestServiceIT {
         dtoList = (List<SnmpCollectionResourceTypeDto>) result.get("dataCollectionResourceTypeList");
         Assert.assertEquals(2, dtoList.size());
 
-
         // 9. Invalid sortBy field defaults to name ascending
         rs = dataCollectionConfRestApi.filterDataCollectionResourceTypeByCollectionSourceId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10, securityContext);
         result = (Map<String, Object>) rs.getEntity();
         totalRecords = (Number) result.get("totalRecords");
         Assert.assertEquals(2, totalRecords.intValue());
-
-
     }
 
     @Test
@@ -550,7 +545,6 @@ public class DataCollectionConfRestServiceIT {
         totalRecords = (Number) result.get("totalRecords");
         Assert.assertEquals(2, totalRecords.intValue());
         dtoList = (List<SnmpCollectionSystemDefDto>) result.get("dataCollectionSystemDefsList");
-
     }
 
     @Test
@@ -733,13 +727,11 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals("IF-MIB::ifEntry,IF-MIB::ifXEntry", created.getMibGroupNames());
         Assert.assertEquals("ifIndex,ifDescr,ifOperStatus", created.getMibObjects());
         Assert.assertEquals("{\"property\":\"value\"}", created.getMibObjProperties());
-
     }
 
     @Test
     @Transactional
     public void testAddResourceTypeToSnmpCollectionSources() throws Exception {
-
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("group.snmp.source.add.resourceType");
         src.setVendor("opennms");
@@ -1048,8 +1040,8 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals("systemdef-1-updated", updated.getName());
         Assert.assertEquals(".1.3.6.1.4.1.9999", updated.getSysoidMask());
         Assert.assertEquals(".1.3.6.1.4.1.9999.1", updated.getSysoid());
-
     }
+
     @Test
     @Transactional
     public void testDownloadDataCollectionXmlBySourceId() throws Exception {
@@ -1135,14 +1127,13 @@ public class DataCollectionConfRestServiceIT {
         throw new AssertionError("Unexpected entity type: " + entity.getClass());
     }
 
-
     private static void assertLooksLikeXml(String label, String xml) {
         assertNotNull(label + " should not be null", xml);
         /** Helper to create a mocked Attachment for a given file */
         String normalized = stripUtf8Bom(xml).trim();
         assertFalse(label + " should not be empty", normalized.isEmpty());
         assertTrue(label + " should start with '<' but starts with: " +
-                        normalized.substring(0, Math.min(80, normalized.length())),
+                normalized.substring(0, Math.min(80, normalized.length())),
                 normalized.startsWith("<"));
     }
 
@@ -1181,7 +1172,6 @@ public class DataCollectionConfRestServiceIT {
         Response ok = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(List.of(src1.getId(), src2.getId()), securityContext);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
         Assert.assertEquals("Snmp Data Collection deleted successfully", ok.getEntity());
-
     }
 
     @Test
@@ -1350,8 +1340,8 @@ public class DataCollectionConfRestServiceIT {
         Response filter = dataCollectionConfRestApi.filterDataCollectionSystemDefByCollectionSourceId(
                 src.getId(), "delete-me-systemdef", "name", "ASC", 0, 0, 10, securityContext);
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), filter.getStatus());
-
     }
+
     @Test
     @Transactional
     public void testEnableDisableSnmpDataCollectionSources_success_enable() throws Exception {
@@ -1435,7 +1425,6 @@ public class DataCollectionConfRestServiceIT {
         snmpCollectionSourceDao.saveOrUpdate(source);
         snmpCollectionSourceDao.flush();
 
-
         SnmpCollectionMibGroup group1 = new SnmpCollectionMibGroup();
         group1.setCollectionSource(source);
         group1.setName("if-mib-interfaces");
@@ -1455,7 +1444,6 @@ public class DataCollectionConfRestServiceIT {
         group2.setMibObjProperties("{\"property\":\"value\"}");
         snmpCollectionMibGroupDao.saveOrUpdate(group2);
         snmpCollectionMibGroupDao.flush();
-
 
         Integer sourceId = source.getId();
         List<Integer> ids = Arrays.asList(group1.getId(), group2.getId());
@@ -1487,7 +1475,6 @@ public class DataCollectionConfRestServiceIT {
         snmpCollectionSourceDao.saveOrUpdate(source);
         snmpCollectionSourceDao.flush();
 
-
         SnmpCollectionMibGroup group1 = new SnmpCollectionMibGroup();
         group1.setCollectionSource(source);
         group1.setName("if-mib-interfaces");
@@ -1508,7 +1495,6 @@ public class DataCollectionConfRestServiceIT {
         snmpCollectionMibGroupDao.saveOrUpdate(group2);
         snmpCollectionMibGroupDao.flush();
 
-
         Integer sourceId = source.getId();
         List<Integer> ids = Arrays.asList(group1.getId(), group2.getId());
 
@@ -1525,7 +1511,6 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertFalse(r1.getEnabled());
         Assert.assertFalse(r2.getEnabled());
     }
-
 
     @Test
     @Transactional
@@ -1749,7 +1734,214 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertFalse(r2.getEnabled());
     }
 
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_NullName_ReturnsBadRequest() {
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setProfiles(List.of("some-profile"));
 
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("Request must include a non-empty name.", resp.getEntity());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_BlankName_ReturnsBadRequest() {
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("   ");
+        req.setProfiles(List.of("some-profile"));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("Request must include a non-empty name.", resp.getEntity());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_EmptyProfiles_ReturnsBadRequest() {
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("my-source");
+        req.setProfiles(List.of());
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("Request must include at least one profile.", resp.getEntity());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_AllBlankProfiles_ReturnsBadRequest() {
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("my-source");
+        req.setProfiles(new ArrayList<>(Arrays.asList("  ", null, "\t")));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("Request must include at least one profile.", resp.getEntity());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_DuplicateName_ReturnsBadRequest() {
+        SnmpCollectionSource existing = new SnmpCollectionSource();
+        existing.setName("duplicate-source");
+        existing.setCreatedTime(new Date());
+        snmpCollectionSourceDao.saveOrUpdate(existing);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("duplicate-source");
+        req.setProfiles(List.of("some-profile"));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("A source named 'duplicate-source' already exists.", resp.getEntity());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_UnknownProfiles_ReturnsBadRequest() {
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("new-source");
+        req.setProfiles(List.of("nonexistent-profile"));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertTrue(resp.getEntity().toString().contains("nonexistent-profile"));
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_Success() {
+        // Create a profile to attach the new source to
+        SnmpCollectionProfileDto profileDto = new SnmpCollectionProfileDto();
+        profileDto.setName("create-source-test-profile");
+        profileDto.setRrdStep(300);
+        profileDto.setEnabled(true);
+        profileDto.setRrdRras(List.of("RRA:AVERAGE:0.5:1:600"));
+        profileDto.setStorageFlag("select");
+        Response profileResp = dataCollectionConfRestApi.createSnmpCollectionProfile(profileDto, securityContext);
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), profileResp.getStatus());
+
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("create-source-test");
+        req.setProfiles(List.of("create-source-test-profile"));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+        Assert.assertNotNull(resp.getEntity());
+        Integer sourceId = (Integer) resp.getEntity();
+        Assert.assertTrue(sourceId > 0);
+
+        // Verify the source exists in the DB
+        Response getResp = dataCollectionConfRestApi.getSnmpDataCollectionSourceById(sourceId, securityContext);
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), getResp.getStatus());
+        SnmpCollectionSourceDto source = (SnmpCollectionSourceDto) getResp.getEntity();
+        Assert.assertEquals("create-source-test", source.getName());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_NullProfiles_ReturnsBadRequest() {
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("my-source");
+        req.setProfiles(null);
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("Request must include at least one profile.", resp.getEntity());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_UntrimmedName_IsNormalized() {
+        SnmpCollectionProfileDto profileDto = new SnmpCollectionProfileDto();
+        profileDto.setName("trim-name-test-profile");
+        profileDto.setRrdStep(300);
+        profileDto.setEnabled(true);
+        profileDto.setRrdRras(List.of("RRA:AVERAGE:0.5:1:600"));
+        profileDto.setStorageFlag("select");
+        Response profileResp = dataCollectionConfRestApi.createSnmpCollectionProfile(profileDto, securityContext);
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), profileResp.getStatus());
+
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("  trim-name-source  ");
+        req.setProfiles(List.of("trim-name-test-profile"));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+        Integer sourceId = (Integer) resp.getEntity();
+
+        Response getResp = dataCollectionConfRestApi.getSnmpDataCollectionSourceById(sourceId, securityContext);
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), getResp.getStatus());
+        SnmpCollectionSourceDto source = (SnmpCollectionSourceDto) getResp.getEntity();
+        Assert.assertEquals("trim-name-source", source.getName());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_UntrimmedNameDetectsDuplicate() {
+        SnmpCollectionSource existing = new SnmpCollectionSource();
+        existing.setName("trim-dup-source");
+        existing.setCreatedTime(new Date());
+        snmpCollectionSourceDao.saveOrUpdate(existing);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("  trim-dup-source  ");
+        req.setProfiles(List.of("any-profile"));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("A source named 'trim-dup-source' already exists.", resp.getEntity());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_UntrimmedProfileName_IsNormalized() {
+        SnmpCollectionProfileDto profileDto = new SnmpCollectionProfileDto();
+        profileDto.setName("trim-profile");
+        profileDto.setRrdStep(300);
+        profileDto.setEnabled(true);
+        profileDto.setRrdRras(List.of("RRA:AVERAGE:0.5:1:600"));
+        profileDto.setStorageFlag("select");
+        Response profileResp = dataCollectionConfRestApi.createSnmpCollectionProfile(profileDto, securityContext);
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), profileResp.getStatus());
+
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("trim-profile-src");
+        req.setProfiles(List.of("  trim-profile  "));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+        Integer sourceId = (Integer) resp.getEntity();
+        Assert.assertTrue(sourceId > 0);
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSnmpDataCollectionSource_BlankEntriesFiltered_RemainingEntriesValidated() {
+        SnmpCollectionCreateSourceDto req = new SnmpCollectionCreateSourceDto();
+        req.setName("my-source");
+        req.setProfiles(new ArrayList<>(Arrays.asList("  ", null, "nonexistent-profile")));
+
+        Response resp = dataCollectionConfRestApi.createSnmpDataCollectionSource(req, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        Assert.assertTrue(resp.getEntity().toString().contains("nonexistent-profile"));
+    }
 
     private static String stripUtf8Bom(String s) {
         if (s == null || s.isEmpty()) {
@@ -1758,7 +1950,6 @@ public class DataCollectionConfRestServiceIT {
         // UTF-8 BOM char (U+FEFF) sometimes appears as the first char and breaks XML parsing
         return (s.charAt(0) == '\uFEFF') ? s.substring(1) : s;
     }
-
 
     /**
      * Helper to create a mocked Attachment for a given file

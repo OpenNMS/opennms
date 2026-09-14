@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { TileProviderItem } from '@/types/index'
+import { ref } from 'vue'
 
 export const useGeolocationStore = defineStore('geolocationStore', () => {
   const userDefinedTileProvider = ref<TileProviderItem>()
@@ -84,7 +85,7 @@ export const useGeolocationStore = defineStore('geolocationStore', () => {
       // set user defined as first and visible one,
       // set default tile providers as secondary and non-visible
       const defaultProviders = getDefaultTileProviders()
-      const defaultProvidersUpdated = defaultProviders.map(p => {
+      const defaultProvidersUpdated = defaultProviders.map((p) => {
         return {
           ...p,
           visible: false

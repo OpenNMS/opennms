@@ -161,7 +161,7 @@ public class OnmsOutage implements Serializable {
     @Id
     @XmlAttribute(name="id")
     @Column(name="outageId", nullable=false)
-    @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId")
+    @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId", allocationSize = 1)
     @GeneratedValue(generator="outageSequence")
     public Integer getId() {
         return m_id;

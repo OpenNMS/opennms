@@ -1,0 +1,299 @@
+
+= Webhook Notifications
+:description: How to configure {page-component-title} to send notifications to an arbitrary HTTP webhook, with examples for Slack, Mattermost, Microsoft Teams, and Discord.
+
+The webhook notification strategy posts a notice to an HTTP endpoint that you describe in the notification command.
+Because the request method, headers, and body all come from the command, one strategy can target most webhook receivers, including team chat platforms that each expect a different payload.
+
+This strategy replaces the earlier Slack and Mattermost strategies.
+If you are migrating from those, see <<migrating-from-slack-and-mattermost>>.
+
+== Setup
+
+Add a command to `notificationCommands.xml` that names the strategy and supplies at least a URL and a body.
+The examples below are complete commands; pick the one that matches your receiver and change the URL.
+
+Once the command exists, reference it from a destination path in the usual way.
+See xref:operation:deep-dive/notifications/concepts.adoc[Concepts] for how commands and destination paths fit together.
+
+== Command options
+
+Each option is read from the notification parameter whose name matches the switch, then from the switch's `<substitution>` value, then from a system property.
+Only `-url` is required.
+
+[options="header"]
+[cols="1,3"]
+|===
+| Switch
+| Description
+
+| `-url`
+| Target URL. Required.
+
+| `-method`
+| `POST` (default), `PUT`, `PATCH`, `GET`, or `DELETE`. `GET` and `DELETE` requests do not carry a body.
+
+| `-content-type`
+| Defaults to `application/json`.
+
+| `-body`
+| The request body, with substitutions as described in <<body-templates>>.
+
+| `-header-<name>`
+| Sets the `<name>` request header. Repeat the switch for as many headers as you need.
+
+| `-success-match`
+| A regular expression that the response body must match. See <<deciding-whether-a-notice-succeeded>>.
+
+| `-connect-timeout`, `-socket-timeout`
+| Milliseconds. Both default to 3000.
+
+| `-useSystemProxy`
+| Set to `true` to route the request through the configured system proxy. Defaults to `false`.
+
+| `-name`
+| An optional label that gives this command its own set of system properties, so that several webhook commands can coexist.
+|===
+
+The matching system properties are `org.opennms.netmgt.notifd.webhook.url`, `.method`, `.contentType`, `.body`, `.successMatch`, `.connectTimeout`, `.socketTimeout`, `.useSystemProxy`, and `.header.<name>`.
+When a command sets `-name`, the strategy looks for `org.opennms.netmgt.notifd.webhook.<name>.url` first and falls back to the unqualified property.
+
+A header is only sent if the command declares its `-header-<name>` argument, so the `.header.<name>` property supplies the value for a declared header rather than adding one on its own.
+
+Setting the URL through a system property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/` keeps the webhook token out of `notificationCommands.xml`.
+
+[[body-templates]]
+== Body templates
+
+Within `-body`, `$\{name}` is replaced by the value of the notification command argument called `-name`.
+Declare an `<argument>` for every token the template uses; a token with no matching argument is replaced with an empty string.
+
+Substitution applies to the body only.
+A `${...}` token in `-url` or in a header value is left as written, so values that vary per notice belong in the body or in a notification parameter.
+
+`$\{subject}` and `$\{textMessage}` cover most cases.
+`$\{textMessage}` and `$\{numericMessage}` are friendlier spellings of the `-tm` and `-nm` switches.
+
+When the content type is JSON, substituted values are escaped so that a subject containing a quotation mark or a line break still produces a valid payload.
+Add `|raw` to a token, as in `${customBlocks|raw}`, when the value is itself a fragment of JSON that should be inserted verbatim.
+After substitution, a JSON body is parsed before it is sent; if it does not parse, the notice is not sent and the rendered body is written to the log.
+
+Metadata expressions are also available, but only in values that reach the strategy as notification parameters.
+A `${scv:...}` expression in a `<substitution>` or in a system property is not expanded, because notifd resolves metadata against the notification's parameters before the command runs.
+To use a credential from the secure credentials vault, set the value in a `<parameter>` on the notification in `notifications.xml`:
+
+[source, xml]
+----
+<parameter name="-header-Authorization" value="Bearer ${scv:webhook:token}"/>
+----
+
+For more information, see xref:operation:deep-dive/meta-data.adoc[Metadata].
+
+[[deciding-whether-a-notice-succeeded]]
+== Deciding whether a notice succeeded
+
+Any 2xx response counts as success, which covers receivers that reply `200 ok` and those that reply `204` with no body at all.
+
+Some receivers report a problem in the body of a 200 response.
+Set `-success-match` to a regular expression in that case: the notice counts as delivered only if the status is 2xx *and* the response body matches.
+A matching body does not rescue a non-2xx status.
+
+== Examples
+
+=== Slack
+
+Create an incoming webhook in your Slack settings, then use its URL.
+For more information, see the https://api.slack.com/messaging/webhooks[Slack API] documentation.
+
+[source, xml]
+----
+<command binary="false">
+  <name>slack</name>
+  <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
+  <comment>Send a notice to a Slack channel</comment>
+  <argument streamed="false">
+    <substitution>https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX</substitution>
+    <switch>-url</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>{"text": "*${subject}*\n${textMessage}"}</substitution>
+    <switch>-body</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+A modern Slack webhook posts to the channel chosen when the webhook was created; the channel cannot be overridden in the payload.
+To reach a second channel, create a second webhook and a second command.
+
+=== Mattermost
+
+Create an incoming webhook in your Mattermost settings.
+For more information, see the https://docs.mattermost.com/developer/webhooks-incoming.html[Mattermost Integration Guide].
+
+[source, xml]
+----
+<command binary="false">
+  <name>mattermost</name>
+  <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
+  <comment>Send a notice to a Mattermost channel</comment>
+  <argument streamed="false">
+    <substitution>https://mattermost.example.org/hooks/bf980352b5f7232efe721dbf0626bee1</substitution>
+    <switch>-url</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>{"username": "opennms", "text": "**${subject}**\n${textMessage}"}</substitution>
+    <switch>-body</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Mattermost also accepts `channel`, `icon_url`, and `icon_emoji` keys in the payload.
+Support for these varies by Mattermost version, and a webhook may be locked to one channel, so test any additions against your own server.
+
+=== Microsoft Teams
+
+Teams webhooks are created through a Power Automate workflow, which expects an Adaptive Card.
+For more information, see the https://learn.microsoft.com/en-us/power-automate/[Power Automate] documentation.
+
+[source, xml]
+----
+<command binary="false">
+  <name>teams</name>
+  <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
+  <comment>Send a notice to a Microsoft Teams channel</comment>
+  <argument streamed="false">
+    <substitution>https://prod-00.westus.logic.azure.com:443/workflows/00000000/triggers/manual/paths/invoke?...</substitution>
+    <switch>-url</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>{"type": "message", "attachments": [{"contentType": "application/vnd.microsoft.card.adaptive", "content": {"type": "AdaptiveCard", "$schema": "http://adaptivecards.io/schemas/adaptive-card.json", "version": "1.4", "body": [{"type": "TextBlock", "weight": "Bolder", "text": "${subject}"}, {"type": "TextBlock", "wrap": true, "text": "${textMessage}"}]}}]}</substitution>
+    <switch>-body</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Older Teams integrations used Office 365 connectors and a `MessageCard` payload.
+Microsoft has been retiring connectors in favor of workflows, so a connector URL may no longer work.
+If you still have a working connector, the same command shape applies with the `MessageCard` body that connector expects.
+
+=== Discord
+
+Create a webhook in the channel's integration settings.
+For more information, see the https://discord.com/developers/docs/resources/webhook[Discord developer] documentation.
+
+[source, xml]
+----
+<command binary="false">
+  <name>discord</name>
+  <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
+  <comment>Send a notice to a Discord channel</comment>
+  <argument streamed="false">
+    <substitution>https://discord.com/api/webhooks/000000000000000000/XXXXXXXXXXXXXXXXXXXXXXXX</substitution>
+    <switch>-url</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>{"username": "OpenNMS", "content": "**${subject}**\n${textMessage}"}</substitution>
+    <switch>-body</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Discord replies with `204` and an empty body on success.
+
+=== A webhook that is not a chat platform
+
+Nothing about the strategy is chat-specific.
+This example posts to an internal service with a bearer token and treats the notice as delivered only if the response says so:
+
+[source, xml]
+----
+<command binary="false">
+  <name>incidentApi</name>
+  <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
+  <comment>Raise an incident through an internal API</comment>
+  <argument streamed="false">
+    <substitution>https://incidents.example.org/api/v1/incidents</substitution>
+    <switch>-url</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-header-Authorization</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>"accepted"\s*:\s*true</substitution>
+    <switch>-success-match</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>{"title": "${subject}", "detail": "${textMessage}", "node": "${nodeid}", "source": "opennms"}</substitution>
+    <switch>-body</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-nodeid</switch>
+  </argument>
+</command>
+----
+
+The `-header-Authorization` argument has no substitution, so its value comes from the notification, which lets the token live in the secure credentials vault as shown in <<body-templates>>.
+
+[[migrating-from-slack-and-mattermost]]
+== Migrating from Slack and Mattermost
+
+The `SlackNotificationStrategy` and `MattermostNotificationStrategy` classes have been removed.
+A command that still names either class fails when a notice is sent, and notifd logs an error for each attempt.
+
+Replace the `<execute>` element with `org.opennms.netmgt.notifd.WebhookNotificationStrategy` and add `-url` and `-body` arguments, as in the examples above.
+The old strategies built the payload themselves, so the settings they took as switches or properties are now expressed in the body:
+
+[options="header"]
+[cols="1,2"]
+|===
+| Old setting
+| Replacement
+
+| `-url`, `org.opennms.netmgt.notifd.slack.webhookURL`, `org.opennms.netmgt.notifd.mattermost.webhookURL`
+| `-url`, or `org.opennms.netmgt.notifd.webhook.url`
+
+| `-username`, `...username`
+| A `username` key in the body
+
+| `-channel`, `...channel`
+| A `channel` key in the body, where the receiver still honors one
+
+| `-iconurl`, `-iconemoji`, `...iconURL`, `...iconEmoji`
+| An `icon_url` or `icon_emoji` key in the body
+
+| `...useSystemProxy`
+| `-useSystemProxy`. The old strategies defaulted this to `true`; the webhook strategy defaults to `false`, so set it explicitly if you send notices through a proxy.
+|===
+
+The old strategies prefixed the subject with Markdown emphasis automatically.
+The example commands above keep that formatting in the template, where you can change it.

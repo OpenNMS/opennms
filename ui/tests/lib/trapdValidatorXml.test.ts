@@ -2,7 +2,6 @@ import { XMLParser, XMLValidator } from 'fast-xml-parser'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import {
   AUTH_PROTOCOL_OPTIONS,
-  AuthProtocol,
   AuthProtocols,
   MAX_PORT,
   MIN_PORT,
@@ -48,7 +47,9 @@ class FakeElement {
   getElementsByTagName(tagName: string): FakeElement[] {
     const results: FakeElement[] = []
     for (const child of this.children) {
-      if (child.localName === tagName) results.push(child)
+      if (child.localName === tagName) {
+        results.push(child)
+      }
       results.push(...child.getElementsByTagName(tagName))
     }
     return results
@@ -91,7 +92,7 @@ function buildElement(tagName: string, node: Record<string, unknown>): FakeEleme
 const fxpParser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
-  isArray: (name) => name === 'snmpv3-user',
+  isArray: name => name === 'snmpv3-user',
   parseAttributeValue: false,
   trimValues: false
 })
@@ -102,7 +103,7 @@ class FakeDOMParser {
     const validation = XMLValidator.validate(xmlString)
     if (validation !== true) {
       const errEl = new FakeElement('parsererror', {})
-      errEl.textContent = (validation as { err: { msg: string } }).err?.msg ?? 'parse error'
+      errEl.textContent = (validation as { err: { msg: string }}).err?.msg ?? 'parse error'
       const dummyRoot = new FakeElement('parsererror', {})
       return new FakeDocument(dummyRoot, errEl)
     }
@@ -271,7 +272,7 @@ describe('SECURITY_LEVEL_OPTIONS', () => {
   })
 
   it('has correct _value strings for all three levels', () => {
-    const values = SECURITY_LEVEL_OPTIONS.map((o) => o._value)
+    const values = SECURITY_LEVEL_OPTIONS.map(o => o._value)
     expect(values).toContain(String(SecurityLevel.NoAuthNoPriv))
     expect(values).toContain(String(SecurityLevel.AuthNoPriv))
     expect(values).toContain(String(SecurityLevel.AuthPriv))
@@ -284,7 +285,7 @@ describe('AUTH_PROTOCOL_OPTIONS', () => {
   })
 
   it('maps protocol values correctly', () => {
-    const values = AUTH_PROTOCOL_OPTIONS.map((o) => o._value)
+    const values = AUTH_PROTOCOL_OPTIONS.map(o => o._value)
     expect(values).toEqual(['MD5', 'SHA', 'SHA-224', 'SHA-256', 'SHA-512'])
   })
 })
@@ -295,7 +296,7 @@ describe('PRIVACY_PROTOCOL_OPTIONS', () => {
   })
 
   it('maps protocol values correctly', () => {
-    const values = PRIVACY_PROTOCOL_OPTIONS.map((o) => o._value)
+    const values = PRIVACY_PROTOCOL_OPTIONS.map(o => o._value)
     expect(values).toContain(PrivacyProtocol.DES)
     expect(values).toContain(PrivacyProtocol.AES)
     expect(values).toContain(PrivacyProtocol.AES256)
@@ -331,13 +332,13 @@ describe('validateTrapdXml – XML structure', () => {
   it('returns invalid for wrong xmlns', () => {
     const result = validateTrapdXml(buildXml({ xmlns: 'http://wrong.namespace' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'xmlns')).toBe(true)
+    expect(result.errors.some(e => e.field === 'xmlns')).toBe(true)
   })
 
   it('returns invalid when xmlns is omitted', () => {
     const result = validateTrapdXml(buildXml({ xmlns: null }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'xmlns')).toBe(true)
+    expect(result.errors.some(e => e.field === 'xmlns')).toBe(true)
   })
 
   it('returns valid for minimal correct XML', () => {
@@ -351,7 +352,7 @@ describe('validateTrapdXml – snmp-trap-address', () => {
   it('accepts omitted snmp-trap-address because the XSD defaults it to "*"', () => {
     const result = validateTrapdXml(buildXml({ address: null }))
     expect(result.valid).toBe(true)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-address')).toBe(false)
+    expect(result.errors.some(e => e.field === 'snmp-trap-address')).toBe(false)
   })
 
   it('accepts wildcard "*"', () => {
@@ -367,13 +368,13 @@ describe('validateTrapdXml – snmp-trap-address', () => {
   it('returns error for invalid IPv4 address', () => {
     const result = validateTrapdXml(buildXml({ address: '999.0.0.1' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-address')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmp-trap-address')).toBe(true)
   })
 
   it('returns error for hostname (not IPv4)', () => {
     const result = validateTrapdXml(buildXml({ address: 'localhost' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-address')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmp-trap-address')).toBe(true)
   })
 })
 
@@ -381,7 +382,7 @@ describe('validateTrapdXml – snmp-trap-port', () => {
   it('returns error when snmp-trap-port is missing', () => {
     const result = validateTrapdXml(buildXml({ port: null }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-port')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmp-trap-port')).toBe(true)
   })
 
   it('accepts MIN_PORT boundary', () => {
@@ -397,25 +398,25 @@ describe('validateTrapdXml – snmp-trap-port', () => {
   it('returns error for port 0 (below MIN_PORT)', () => {
     const result = validateTrapdXml(buildXml({ port: '0' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-port')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmp-trap-port')).toBe(true)
   })
 
   it('returns error for port 65536 (above MAX_PORT)', () => {
     const result = validateTrapdXml(buildXml({ port: '65536' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-port')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmp-trap-port')).toBe(true)
   })
 
   it('returns error for non-numeric port', () => {
     const result = validateTrapdXml(buildXml({ port: 'abc' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-port')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmp-trap-port')).toBe(true)
   })
 
   it('returns error for partially-numeric port', () => {
     const result = validateTrapdXml(buildXml({ port: '162abc' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-port')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmp-trap-port')).toBe(true)
   })
 })
 
@@ -438,7 +439,7 @@ describe('validateTrapdXml – new-suspect-on-trap', () => {
   it('returns error for invalid value', () => {
     const result = validateTrapdXml(buildXml({ suspect: 'yes' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'new-suspect-on-trap')).toBe(true)
+    expect(result.errors.some(e => e.field === 'new-suspect-on-trap')).toBe(true)
   })
 })
 
@@ -446,26 +447,26 @@ describe('validateTrapdXml – snmpv3-user: security-name and security-level', (
   it('returns error when security-name is missing', () => {
     const user = buildUser({ 'security-level': '1' })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('security-name'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('security-name'))).toBe(true)
   })
 
   it('returns error for missing security-level', () => {
     const user = buildUser({ 'security-name': 'user1' })
     const result = validateTrapdXml(buildXml({ users: user }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field.includes('security-level'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('security-level'))).toBe(true)
   })
 
   it('returns error for security-level 0 (None)', () => {
     const user = buildUser({ 'security-name': 'user1', 'security-level': '0' })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('security-level'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('security-level'))).toBe(true)
   })
 
   it('returns error for security-level 4 (out of range)', () => {
     const user = buildUser({ 'security-name': 'user1', 'security-level': '4' })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('security-level'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('security-level'))).toBe(true)
   })
 })
 
@@ -484,7 +485,7 @@ describe('validateTrapdXml – snmpv3-user: level 1 (NoAuthNoPriv)', () => {
       'auth-passphrase': 'pass'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-protocol'))).toBe(true)
   })
 
   it('returns error when auth-passphrase is present at level 1', () => {
@@ -494,7 +495,7 @@ describe('validateTrapdXml – snmpv3-user: level 1 (NoAuthNoPriv)', () => {
       'auth-passphrase': 'pass'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-passphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-passphrase'))).toBe(true)
   })
 
   it('returns error when privacy-protocol is present at level 1', () => {
@@ -505,7 +506,7 @@ describe('validateTrapdXml – snmpv3-user: level 1 (NoAuthNoPriv)', () => {
       'privacy-passphrase': 'priv'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('privacy-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacy-protocol'))).toBe(true)
   })
 
   it('returns error when privacy-passphrase is present at level 1', () => {
@@ -515,7 +516,7 @@ describe('validateTrapdXml – snmpv3-user: level 1 (NoAuthNoPriv)', () => {
       'privacy-passphrase': 'priv'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('privacy-passphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacy-passphrase'))).toBe(true)
   })
 })
 
@@ -538,7 +539,7 @@ describe('validateTrapdXml – snmpv3-user: level 2 (AuthNoPriv)', () => {
       'auth-passphrase': 'secret'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-protocol'))).toBe(true)
   })
 
   it('returns error when auth-passphrase is missing at level 2', () => {
@@ -548,7 +549,7 @@ describe('validateTrapdXml – snmpv3-user: level 2 (AuthNoPriv)', () => {
       'auth-protocol': 'MD5'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-passphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-passphrase'))).toBe(true)
   })
 
   it('returns error when privacy-protocol is present at level 2', () => {
@@ -561,7 +562,7 @@ describe('validateTrapdXml – snmpv3-user: level 2 (AuthNoPriv)', () => {
       'privacy-passphrase': 'priv'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('privacy-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacy-protocol'))).toBe(true)
   })
 
   it('returns error when privacy-passphrase is present at level 2', () => {
@@ -573,7 +574,7 @@ describe('validateTrapdXml – snmpv3-user: level 2 (AuthNoPriv)', () => {
       'privacy-passphrase': 'priv'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('privacy-passphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacy-passphrase'))).toBe(true)
   })
 })
 
@@ -596,28 +597,28 @@ describe('validateTrapdXml – snmpv3-user: level 3 (AuthPriv)', () => {
     const { 'auth-protocol': omittedAuthProtocol, ...attrs } = validLevel3
     void omittedAuthProtocol
     const result = validateTrapdXml(buildXml({ users: buildUser(attrs) }))
-    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-protocol'))).toBe(true)
   })
 
   it('returns error when auth-passphrase is missing at level 3', () => {
     const { 'auth-passphrase': omittedAuthPassphrase, ...attrs } = validLevel3
     void omittedAuthPassphrase
     const result = validateTrapdXml(buildXml({ users: buildUser(attrs) }))
-    expect(result.errors.some((e) => e.field.includes('auth-passphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-passphrase'))).toBe(true)
   })
 
   it('returns error when privacy-protocol is missing at level 3', () => {
     const { 'privacy-protocol': omittedPrivacyProtocol, ...attrs } = validLevel3
     void omittedPrivacyProtocol
     const result = validateTrapdXml(buildXml({ users: buildUser(attrs) }))
-    expect(result.errors.some((e) => e.field.includes('privacy-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacy-protocol'))).toBe(true)
   })
 
   it('returns error when privacy-passphrase is missing at level 3', () => {
     const { 'privacy-passphrase': omittedPrivacyPassphrase, ...attrs } = validLevel3
     void omittedPrivacyPassphrase
     const result = validateTrapdXml(buildXml({ users: buildUser(attrs) }))
-    expect(result.errors.some((e) => e.field.includes('privacy-passphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacy-passphrase'))).toBe(true)
   })
 })
 
@@ -630,7 +631,7 @@ describe('validateTrapdXml – auth-protocol values', () => {
       'auth-passphrase': 'secret'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(false)
+    expect(result.errors.some(e => e.field.includes('auth-protocol'))).toBe(false)
   })
 
   it('rejects undashed SHA-2 auth-protocol values', () => {
@@ -641,7 +642,7 @@ describe('validateTrapdXml – auth-protocol values', () => {
       'auth-passphrase': 'secret'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-protocol'))).toBe(true)
   })
 
   it('rejects completely unknown auth-protocol value', () => {
@@ -652,7 +653,7 @@ describe('validateTrapdXml – auth-protocol values', () => {
       'auth-passphrase': 'secret'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-protocol'))).toBe(true)
   })
 
   it('rejects unknown privacy-protocol value', () => {
@@ -665,7 +666,7 @@ describe('validateTrapdXml – auth-protocol values', () => {
       'privacy-passphrase': 'priv'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('privacy-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacy-protocol'))).toBe(true)
   })
 })
 
@@ -679,7 +680,7 @@ describe('validateTrapdXml – privacy-protocol without auth-protocol', () => {
       'auth-passphrase': 'secret'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('auth-protocol'))).toBe(true)
   })
 })
 
@@ -702,7 +703,7 @@ describe('validateTrapdXml – multiple snmpv3-user elements', () => {
     const user2 = buildUser({ 'security-name': 'userB', 'security-level': '99' })
     const result = validateTrapdXml(buildXml({ users: user1 + user2 }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field.includes('snmpv3-user[1]'))).toBe(true)
-    expect(result.errors.some((e) => e.field.includes('snmpv3-user[2]'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('snmpv3-user[1]'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('snmpv3-user[2]'))).toBe(true)
   })
 })

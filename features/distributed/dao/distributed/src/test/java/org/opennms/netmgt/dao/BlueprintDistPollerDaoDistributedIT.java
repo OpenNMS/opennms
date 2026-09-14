@@ -70,7 +70,7 @@ public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
     // The location of our Blueprint XML file to be used for testing
     @Override
     protected String getBlueprintDescriptor() {
-        return "file:src/main/resources/OSGI-INF/blueprint/blueprint-distPollerDao.xml,blueprint-empty-camel-context.xml";
+        return "OSGI-INF/blueprint/blueprint-distPollerDao.xml,blueprint-empty-camel-context.xml";
     }
 
     @Test

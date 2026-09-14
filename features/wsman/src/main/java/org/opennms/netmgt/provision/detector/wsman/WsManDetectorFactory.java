@@ -25,9 +25,10 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
+import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectResults;
@@ -37,19 +38,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDetector> {
     private static final Logger LOG = LoggerFactory.getLogger(WsManDetectorFactory.class);
 
-    private final WSManClientFactory m_factory = new CXFWSManClientFactory();
+    private final WSManClientFactory m_factory = new CachingWSManClientFactory();
 
     @Autowired
     private WSManConfigDao m_wsmanConfigDao;
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private SessionUtils m_sessionUtils;
 
     public WsManDetectorFactory() {
         super(WsManDetector.class);
@@ -73,7 +76,6 @@ public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDet
      * after the service was successfully detected.
      */
     @Override
-    @Transactional
     public void afterDetect(DetectRequest request, DetectResults results, Integer nodeId) {
         if (!results.isServiceDetected() || nodeId == null) {
             return;
@@ -88,16 +90,37 @@ public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDet
             return;
         }
 
-        final OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null) {
-            LOG.warn("No node was found with id: {}", nodeId);
-            return;
-        }
+        // This is a plain Blueprint bean (no <tx:annotation-driven/>) invoked from an async detector
+        // callback, so a Spring @Transactional here never took effect. Under Hibernate 5 the node
+        // update must run in an explicit committing transaction, or it is rejected in read-only
+        // FlushMode.MANUAL.
+        m_sessionUtils.withTransaction(() -> {
+            final OnmsNode node = m_nodeDao.get(nodeId);
+            if (node == null) {
+                LOG.warn("No node was found with id: {}", nodeId);
+                return null;
+            }
 
-        LOG.debug("Updating vendor and modelNumber assets on node[{}] with '{}' and '{}'",
-                nodeId, productVendor, productVersion);
-        node.getAssetRecord().setVendor(productVendor);
-        node.getAssetRecord().setModelNumber(productVersion);
-        m_nodeDao.update(node);
+            LOG.debug("Updating vendor and modelNumber assets on node[{}] with '{}' and '{}'",
+                    nodeId, productVendor, productVersion);
+            node.getAssetRecord().setVendor(productVendor);
+            node.getAssetRecord().setModelNumber(productVersion);
+            m_nodeDao.update(node);
+            return null;
+        });
+    }
+
+    /**
+     * Releases any clients the factory is holding on to. Called by the blueprint
+     * container when the bundle stops.
+     */
+    public void destroy() {
+        if (m_factory instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) m_factory).close();
+            } catch (Exception e) {
+                LOG.debug("Error closing WS-Man client factory", e);
+            }
+        }
     }
 }

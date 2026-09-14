@@ -59,10 +59,11 @@ POST requires XML using `application/xml` as its Content-Type.
 
 | api/v2/nodes/\{id\}/metadata
 | Adds a metadata entry to the given node.
-| api/v2/nodes/\{id\}/\{ipinterface\}/metadata
+
+| api/v2/nodes/\{id\}/ipinterfaces/\{ipinterface\}/metadata
 | Adds a metadata entry to the given interface.
 
-| api/v2/nodes/\{id\}/\{ipinterface\}/services/\{service\}/metadata`
+| api/v2/nodes/\{id\}/ipinterfaces/\{ipinterface\}/services/\{service\}/metadata
 | Adds a metadata entry to the given service.
 |===
 

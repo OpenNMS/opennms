@@ -85,8 +85,6 @@ public class RadixTreeParser implements ByteBufferParser<SyslogMessage> {
 
 //	private static final ExecutorService m_executor = Executors.newSingleThreadExecutor();
 
-//	private final ExecutorService m_executor = new ExecutorFactoryCassandraSEPImpl().newExecutor("StagedParser", "StageExecutor");
-
 //	private final ExecutorService m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 	/**

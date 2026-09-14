@@ -25,6 +25,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
 import java.io.StringReader;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.smoketest.selenium.ResponseData;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -209,21 +211,42 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
 
             driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=smoketests:nodeForeignId");
 
-            await().atMost(5, SECONDS)
-                    .pollInterval(1, SECONDS)
+            // Fail fast (and clearly) if the session bounced us to the login page instead
+            // of the node page -- that's an environmental/auth issue, not a timeline one,
+            // and without this guard the wait below would burn the full LOAD_TIMEOUT
+            // hunting for timeline images a login page will never have. getCurrentUrl() is
+            // immediate; testing for the login form via findElements would instead block
+            // on the implicit wait whenever the form is (correctly) absent.
+            final String currentUrl = getDriver().getCurrentUrl();
+            Assert.assertFalse("Expected the node detail page but was redirected to the login page "
+                    + "(session not authenticated); URL: " + currentUrl, currentUrl.contains("login.jsp"));
+
+            // Use the suite's standard page-load budget rather than a tight 5s: node.jsp
+            // injects the timeline <img>s via JS after load and the PNGs are rendered
+            // server-side, which can take longer than 5s on a busy CI host. The DOM churns
+            // while those images are added, so an <img> found in one poll can be replaced
+            // before we read it -- ignore only that StaleElementReferenceException so a real
+            // page-load/JS failure still surfaces immediately instead of after the timeout.
+            await().atMost(Duration.ofMillis(LOAD_TIMEOUT))
+                    .pollInterval(Duration.ofSeconds(1))
+                    .ignoreExceptionsInstanceOf(StaleElementReferenceException.class)
                     .until(() -> {
-                        final List<WebElement> timelineImages = getDriver().findElements(By.tagName("img")).stream().filter(i -> i.getAttribute("src").contains("timeline")).collect(Collectors.toList());
-                        if (timelineImages.size() >= 2) {
-                            for (final WebElement timelineImage : timelineImages) {
-                                final Object result = ((JavascriptExecutor) driver).executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", timelineImage);
-                                if (!(result instanceof Boolean) || !((Boolean) result).booleanValue()) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        } else {
+                        final List<WebElement> timelineImages = getDriver().findElements(By.tagName("img")).stream()
+                                .filter(i -> {
+                                    final String src = i.getAttribute("src");
+                                    return src != null && src.contains("timeline");
+                                })
+                                .collect(Collectors.toList());
+                        if (timelineImages.size() < 2) {
                             return false;
                         }
+                        for (final WebElement timelineImage : timelineImages) {
+                            final Object result = ((JavascriptExecutor) driver).executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", timelineImage);
+                            if (!(result instanceof Boolean) || !((Boolean) result).booleanValue()) {
+                                return false;
+                            }
+                        }
+                        return true;
                     });
         } finally {
             sendDelete("rest/nodes/smoketests:nodeForeignId", 202);

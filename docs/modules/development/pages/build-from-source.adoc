@@ -28,7 +28,7 @@ Ensure your user account has administrative permissions with `sudo`.
 
 To build and run {page-component-title} from source, you must install the following components on your system:
 
-* OpenJDK 17 development kit; verify the correct `javac` and `java` executables are in your search path
+* OpenJDK 21 development kit; verify the correct `javac` and `java` executables are in your search path
 * xref:deployment:core/install.adoc#install-core-instance[OpenNMS package repositories]
 * JICMP and JICMP6 packages to allow sending ICMP messages with Java
 * RRDtool from the official package repositories and JRRD2 to use RRDtool as it is now the default

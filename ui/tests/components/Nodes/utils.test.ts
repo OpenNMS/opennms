@@ -44,7 +44,7 @@ describe('Nodes utils test', () => {
     ]
 
     result = getTableCssClasses(defaultColumns)
-    
+
     // tl1: implicit 'action' column
     // tr2: 'id' column is right-aligned
     // tc10: 'flows' column is center-aligned

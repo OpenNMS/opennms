@@ -1,38 +1,40 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
-      <div v-if="resources.length">
-        <FeatherButton primary @click="selectAll">Select All</FeatherButton>
-        <FeatherButton primary @click="clearAll">Clear All</FeatherButton>
-        <FeatherButton primary @click="graphAll">Graph All</FeatherButton>
-        <FeatherButton primary @click="graphSelected" :disabled="!resourceIsSelected">Graph Selected</FeatherButton>
+  <div class="onms-row">
+    <div class="onms-col-12">
+      <div class="action-buttons" v-if="resources.length">
+        <OnmsButton @click="selectAll">Select All</OnmsButton>
+        <OnmsButton @click="clearAll">Clear All</OnmsButton>
+        <OnmsButton @click="graphAll">Graph All</OnmsButton>
+        <OnmsButton @click="graphSelected" :disabled="!resourceIsSelected">Graph Selected</OnmsButton>
       </div>
-      <FeatherList>
+      <ul class="onms-list">
         <template v-for="(resources, header) in groupedResourcesObject" :key="header">
-          <FeatherListHeader>{{ header }}</FeatherListHeader>
-          <FeatherListItem v-for="resource in resources" :key="resource.label">
-            <FeatherCheckbox
+          <li class="list-header">{{ header }}</li>
+          <li
+            class="list-item"
+            v-for="resource in resources"
+            :key="resource.label"
+          >
+            <OnmsCheckbox
+              :inputId="`resource-${resource.id}`"
               @update:modelValue="selectCheckbox(resource.id)"
               :modelValue="selectedResourceObject[resource.id]"
-            >{{ resource.label }}</FeatherCheckbox>
-          </FeatherListItem>
-          <FeatherListSeparator />
+            />
+            <label :for="`resource-${resource.id}`">{{ resource.label }}</label>
+          </li>
+          <li class="list-separator" aria-hidden="true"></li>
         </template>
-      </FeatherList>
+      </ul>
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { groupBy } from 'lodash'
-import { FeatherCheckbox } from '@featherds/checkbox'
-import { FeatherButton } from '@featherds/button'
-import {
-  FeatherListHeader,
-  FeatherListItem,
-  FeatherList,
-  FeatherListSeparator
-} from '@featherds/list'
+import { OnmsButton, OnmsCheckbox } from '@opennms/onms-ui'
 import { useGraphStore } from '@/stores/graphStore'
 import { useResourceStore } from '@/stores/resourceStore'
 import { Resource } from '@/types'
@@ -76,7 +78,45 @@ const graphSelected = async () => {
 
 const graphAll = async () => {
   const resourceIds = resources.value.map(resource => resource.id)
-  graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
+  // Await the definitions before navigating: Graphs.vue snapshots
+  // graphStore.definitionsList on mount, so if this fetch is still in flight
+  // the graph list is empty and nothing renders on the first attempt.
+  await graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
   router.push('/resource-graphs/graphs')
 }
 </script>
+
+<style lang="scss" scoped>
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.onms-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  .list-header {
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    color: var(--p-text-muted-color);
+  }
+
+  .list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+
+    label {
+      cursor: pointer;
+    }
+  }
+
+  .list-separator {
+    border-bottom: 1px solid var(--p-content-border-color);
+    margin: 0.25rem 0;
+  }
+}
+</style>

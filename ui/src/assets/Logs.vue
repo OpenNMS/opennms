@@ -9,7 +9,7 @@ import Logs from './Logs.svg'
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 .logs {
   color: var($secondary-text-on-surface);
 }

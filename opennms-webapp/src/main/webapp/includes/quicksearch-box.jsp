@@ -34,50 +34,66 @@
   pageContext.setAttribute("serviceNameMap", new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
 %>
 
+<script>
+function submitNodeSearch(params) {
+  var parts = [];
+  var keys = Object.keys(params);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var v = params[k];
+    if (v !== '' && v !== null && v !== undefined) {
+      parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+    }
+  }
+  var query = parts.join('&');
+  window.location.href = 'ui/#/nodes' + (query ? '?' + query : '');
+}
+</script>
+
 <div class="card">
   <div class="card-header">
     <span>Quick Search</span>
   </div>
   <div class="card-body">
-    <form class="form-group" action="element/nodeList.htm" method="get">
+    <%-- Node ID: submit directly to node detail page --%>
+    <form class="form-group" action="element/node.jsp" method="get">
       <label for="nodeId" class=" col-form-label ">Node ID</label>
       <div class="input-group">
-        <input class="form-control" type="text" id="nodeId" name="nodeId" placeholder="Node ID"/>
-        <input type="hidden" name="listInterfaces" value="false"/>
+        <input class="form-control" type="text" id="nodeId" name="node" placeholder="Node ID"/>
         <div class="input-group-append">
           <button name="nodeIdSearchButton" class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
       </div>
     </form>
-    <form class="form-group" action="element/nodeList.htm" method="get">
+    <%-- Node label --%>
+    <form class="form-group" action="#" method="get" onsubmit="submitNodeSearch({nodename: this.nodename.value}); return false;">
       <label for="nodename" class=" col-form-label ">Node label</label>
       <div class="input-group">
         <input class="form-control" type="text" id="nodename" name="nodename" placeholder="localhost"/>
-        <input type="hidden" name="listInterfaces" value="true"/>
         <div class="input-group-append">
           <button class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
       </div>
     </form>
-    <form class="form-group" action="element/nodeList.htm" method="get">
+    <%-- TCP/IP Address --%>
+    <form class="form-group" action="#" method="get" onsubmit="submitNodeSearch({iplike: this.iplike.value}); return false;">
       <label for="iplike" class=" col-form-label ">TCP/IP Address</label>
       <div class="input-group">
         <input class="form-control" type="text" id="iplike" name="iplike" placeholder="*.*.*.* or *:*:*:*:*:*:*:*"/>
-        <input type="hidden" name="listInterfaces" value="false"/>
         <div class="input-group-append">
           <button class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
       </div>
     </form>
-    <form class="form-group" action="element/nodeList.htm" method="get">
-      <label for="service" class=" col-form-label ">Providing service</label>
+    <%-- Service (by name) --%>
+    <form class="form-group" action="#" method="get" onsubmit="submitNodeSearch({monitoredService: this.monitoredService.value}); return false;">
+      <label for="monitoredService" class=" col-form-label ">Providing service</label>
       <div class="input-group">
-        <select class="custom-select" id="service" name="service">
+        <select class="custom-select" id="monitoredService" name="monitoredService">
           <c:forEach var="serviceNameId" items="${serviceNameMap}">
-            <option value="${serviceNameId.value}">${serviceNameId.key}</option>
+            <option value="${serviceNameId.key}">${serviceNameId.key}</option>
           </c:forEach>
         </select>
-        <input type="hidden" name="listInterfaces" value="false"/>
         <div class="input-group-append">
           <button class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>

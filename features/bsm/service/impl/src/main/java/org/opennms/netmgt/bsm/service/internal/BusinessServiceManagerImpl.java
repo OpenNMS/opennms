@@ -74,6 +74,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Autowired
@@ -204,6 +205,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    @Transactional
     public void saveBusinessService(BusinessService service) {
         BusinessServiceEntity entity = getBusinessServiceEntity(service);
         getDao().saveOrUpdate(entity);
@@ -225,6 +227,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    @Transactional
     public void deleteBusinessService(BusinessService businessService) {
         BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
         // remove all parent -> child associations
@@ -484,6 +487,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    @Transactional
     public void setMapFunction(final Edge edge, final MapFunction mapFunction) {
         // This is a workaround for a hibernate bug which does not remove
         // orphan elements if the element is replaced using the setter. See:
@@ -500,6 +504,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    @Transactional
     public void setReduceFunction(final BusinessService businessService, final ReductionFunction reductionFunction) {
         // This is a workaround for a hibernate bug which does not remove
         // orphan elements if the element is replaced using the setter. See:

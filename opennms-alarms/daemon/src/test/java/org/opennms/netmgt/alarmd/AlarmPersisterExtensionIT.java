@@ -54,6 +54,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -89,6 +90,9 @@ public class AlarmPersisterExtensionIT implements TemporaryDatabaseAware<MockDat
     @Autowired
     private AlarmPersisterImpl m_alarmPersister;
 
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
     private MockDatabase m_database;
 
     @Autowired
@@ -99,17 +103,20 @@ public class AlarmPersisterExtensionIT implements TemporaryDatabaseAware<MockDat
         // Async.
         m_eventMgr.setSynchronous(false);
 
-        // Events need database IDs to make alarmd happy
-        m_database.setDistPoller(m_distPollerDao.whoami().getId());
-        m_eventMgr.setEventWriter(m_database);
+        transactionTemplate.execute(status -> {
+            // Events need database IDs to make alarmd happy
+            m_database.setDistPoller(m_distPollerDao.whoami().getId());
+            m_eventMgr.setEventWriter(m_database);
 
-        // Events need to real nodes too
-        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
-        node.setId(1);
-        m_nodeDao.save(node);
+            // Events need to real nodes too
+            final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
+            node.setId(1);
+            m_nodeDao.save(node);
 
-        // Register!
-        m_alarmPersister.onExtensionRegistered(this, Collections.emptyMap());
+            // Register!
+            m_alarmPersister.onExtensionRegistered(this, Collections.emptyMap());
+            return null;
+        });
 
         // Fire it up
         m_alarmd.start();

@@ -48,6 +48,8 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.CollectorAdaptor;
+import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.Persister;
@@ -117,6 +119,9 @@ public class CollectCommand implements Action {
     @Reference
     private PersisterFactory persisterFactory;
 
+    @Reference
+    public List<CollectorAdaptor> adaptors;
+
 
     @Override
     public Void execute() {
@@ -136,15 +141,21 @@ public class CollectCommand implements Action {
         }
 
         final CollectionAgent agent = getCollectionAgent();
-        final CompletableFuture<CollectionSet> future = locationAwareCollectorClient.collect()
+        CollectorRequestBuilder builder = locationAwareCollectorClient.collect()
                 .withAgent(agent)
                 .withSystemId(systemId)
                 // For Service collectors that implement integration api will have proxy collectors.
                 // fetching class name from proxy won't match with class name in collector registry.
                 .withCollectorClassName(className)
                 .withTimeToLive(ttlInMs)
-                .withAttributes(parse(attributes))
-                .execute();
+                .withAttributes(parse(attributes));
+        // Register every CollectorAdaptor published in OSGi so adaptors
+        // such as TokenAuthCollectorAdaptor (which resolves
+        // ${token:NAME} placeholders) run on the ad-hoc collect path
+        // the same way they run on the scheduled path via
+        // CollectionSpecification.
+        builder = registerAdaptors(builder);
+        final CompletableFuture<CollectionSet> future = builder.execute();
 
         Persister persister = null;
         if (persist) {
@@ -189,6 +200,16 @@ public class CollectCommand implements Action {
             System.out.flush();
         }
         return null;
+    }
+
+    CollectorRequestBuilder registerAdaptors(CollectorRequestBuilder builder) {
+        if (adaptors == null) {
+            return builder;
+        }
+        for (final CollectorAdaptor adaptor : adaptors) {
+            builder = builder.withAdaptor(adaptor);
+        }
+        return builder;
     }
 
     private CollectionAgent getCollectionAgent() {

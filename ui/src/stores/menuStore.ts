@@ -25,6 +25,7 @@ import API from '@/services'
 import { MainMenu, NotificationSummary } from '@/types/mainMenu'
 import { defaultNotificationSummary } from './fakeMenuData'
 import { getIsSideMenuExpanded, loadIsSideMenuExpanded, setIsSideMenuExpanded } from '@/services/menuService'
+import { ref } from 'vue'
 
 // Set this to true to use local/fake data instead of making API call
 const useFakeUserNotificationData = false

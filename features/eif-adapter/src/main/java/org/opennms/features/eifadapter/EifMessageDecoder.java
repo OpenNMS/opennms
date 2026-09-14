@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.camel.component.netty4.ChannelHandlerFactory;
+import org.apache.camel.component.netty.ChannelHandlerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.dao.api.NodeDao;

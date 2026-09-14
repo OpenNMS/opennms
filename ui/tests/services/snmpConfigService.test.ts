@@ -51,7 +51,7 @@ describe('snmpConfigService', () => {
 
   describe('getSnmpConfig', () => {
     it('should call GET /snmp-config', async () => {
-      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: {} })
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: {}})
 
       await getSnmpConfig()
 
@@ -61,7 +61,7 @@ describe('snmpConfigService', () => {
 
   describe('lookupSnmpConfig', () => {
     it('should call GET /snmp-config/lookup with ipAddress and location params', async () => {
-      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { version: 2 } })
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { version: 2 }})
 
       await lookupSnmpConfig('192.168.1.1', 'Default')
 
@@ -71,7 +71,7 @@ describe('snmpConfigService', () => {
     })
 
     it('should encode special characters in ipAddress and location', async () => {
-      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { version: 2 } })
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { version: 2 }})
 
       await lookupSnmpConfig('192.168.1.1/24', 'Location With Spaces')
 

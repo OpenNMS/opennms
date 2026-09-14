@@ -28,7 +28,7 @@ const getOpenApi = async (): Promise<Record<string, unknown>> => {
   try {
     const resp = await v2.get(endpoint)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return {}
   }
 }
@@ -37,7 +37,7 @@ const getOpenApiV1 = async (): Promise<Record<string, unknown>> => {
   try {
     const resp = await rest.get(endpoint)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return {}
   }
 }

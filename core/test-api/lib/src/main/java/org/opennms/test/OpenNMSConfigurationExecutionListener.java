@@ -36,7 +36,7 @@ public class OpenNMSConfigurationExecutionListener extends AbstractTestExecution
 
     private JUnitConfigurationEnvironment findAnnotation(final TestContext testContext) {
         JUnitConfigurationEnvironment anno = null;
-        final Method testMethod = testContext.getTestMethod();
+        final Method testMethod = getTestMethodOrNull(testContext);
         if (testMethod != null) {
             anno = testMethod.getAnnotation(JUnitConfigurationEnvironment.class);
         }
@@ -45,6 +45,16 @@ public class OpenNMSConfigurationExecutionListener extends AbstractTestExecution
             anno = testClass.getAnnotation(JUnitConfigurationEnvironment.class);
         }
         return anno;
+    }
+
+    private static Method getTestMethodOrNull(final TestContext testContext) {
+        // Spring 5's getTestMethod() throws during class-level callbacks such as
+        // prepareTestInstance; this restores the Spring 4 null contract
+        try {
+            return testContext.getTestMethod();
+        } catch (final IllegalStateException e) {
+            return null;
+        }
     }
 
     @Override

@@ -93,6 +93,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.collect.Sets;
@@ -1474,12 +1475,15 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         // Remove the reference to the lost service event from all of the outages,
         // and let's pretend that they weren't even there in the first place
         Set<Integer> outageIds = new HashSet<>();
-        for (OnmsOutage outage : m_outageDao.findAll()) {
-            outage.setServiceLostEvent(null);
-            m_outageDao.update(outage);
-            outageIds.add(outage.getId());
-        }
-        m_outageDao.flush();
+        m_transactionTemplate.execute(status -> {
+            for (OnmsOutage outage : m_outageDao.findAll()) {
+                outage.setServiceLostEvent(null);
+                m_outageDao.update(outage);
+                outageIds.add(outage.getId());
+            }
+            m_outageDao.flush();
+            return null;
+        });
 
         // We should get another node down
         m_eventMgr.getEventAnticipator().anticipateEvent(node.createDownEvent());

@@ -27,6 +27,7 @@ import org.opennms.netmgt.enlinkd.model.UserDefinedLink;
 import org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class UserDefinedLinkTopologyServiceImpl extends TopologyServiceImpl implements UserDefinedLinkTopologyService {
 
@@ -39,6 +40,7 @@ public class UserDefinedLinkTopologyServiceImpl extends TopologyServiceImpl impl
     }
 
     @Override
+    @Transactional
     public void saveOrUpdate(UserDefinedLink udl) {
         userDefinedLinkDao.save(udl);
         userDefinedLinkDao.flush();
@@ -46,6 +48,7 @@ public class UserDefinedLinkTopologyServiceImpl extends TopologyServiceImpl impl
     }
 
     @Override
+    @Transactional
     public void delete(UserDefinedLink udl) {
         userDefinedLinkDao.delete(udl);
         userDefinedLinkDao.flush();
@@ -53,6 +56,7 @@ public class UserDefinedLinkTopologyServiceImpl extends TopologyServiceImpl impl
     }
 
     @Override
+    @Transactional
     public void delete(Integer udlLinkId) {
         userDefinedLinkDao.delete(udlLinkId);
         userDefinedLinkDao.flush();

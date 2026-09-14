@@ -22,7 +22,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +52,7 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 import com.google.common.collect.Lists;
 
@@ -112,17 +111,17 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
     @Override
     public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
-        return findUnique("from OnmsOutage as o where o.perspective is null and o.monitoredService = ? and o.ifRegainedService is null", service);
+        return findUnique("from OnmsOutage as o where o.perspective is null and o.monitoredService = ?1 and o.ifRegainedService is null", service);
     }
 
     @Override
     public OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective) {
-        return findUnique("from OnmsOutage as o where o.monitoredService = ? and o.perspective = ? and o.ifRegainedService is null", service, perspective);
+        return findUnique("from OnmsOutage as o where o.monitoredService = ?1 and o.perspective = ?2 and o.ifRegainedService is null", service, perspective);
     }
 
     @Override
     public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service) {
-        return find("from OnmsOutage as o where o.monitoredService = ?  and o.perspective is not null and o.ifRegainedService is null", service);
+        return find("from OnmsOutage as o where o.monitoredService = ?1  and o.perspective is not null and o.ifRegainedService is null", service);
     }
 
     /** {@inheritDoc} */
@@ -132,7 +131,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
             @SuppressWarnings("unchecked")
             @Override
-            public Collection<OnmsOutage> doInHibernate(final Session session) throws HibernateException, SQLException {
+            public Collection<OnmsOutage> doInHibernate(final Session session) throws HibernateException {
                 return session.createCriteria(OnmsOutage.class)
                         .setFirstResult(offset)
                         .setMaxResults(limit)
@@ -148,7 +147,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         return getHibernateTemplate().execute(new HibernateCallback<List<CurrentOutageDetails>>() {
             @Override
             @SuppressWarnings("unchecked")
-            public List<CurrentOutageDetails> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<CurrentOutageDetails> doInHibernate(Session session) throws HibernateException {
                 final StringBuilder query = new StringBuilder()
                         .append("SELECT DISTINCT\n")
                         .append("        outages.outageId,\n")
@@ -172,7 +171,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                 query.append("ORDER BY outages.outageId\n")
                 .append(";\n");
 
-                Query sqlQuery = session.createSQLQuery( query.toString() );
+                Query sqlQuery = session.createNativeQuery( query.toString() );
                 if (serviceNames.size() > 0) {
                     sqlQuery = sqlQuery.setParameterList("serviceNames", serviceNames);
                 }
@@ -274,7 +273,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             @SuppressWarnings("unchecked")
-            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException {
 
                 // We can't use a prepared statement here as the variables are column names, and postgres
                 // does not allow for parameter binding of column names.
@@ -306,7 +305,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
 
 
-                Query query = session.createSQLQuery(queryStr);
+                Query query = session.createNativeQuery(queryStr);
                 if (restrictionColumn != null) {
                     query.setParameter("restrictionValue", restrictionValue, StringType.INSTANCE);
                 }
@@ -337,8 +336,8 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     public Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId) {
         return find("SELECT DISTINCT o FROM OnmsOutage o " +
                         "WHERE o.perspective IS NOT NULL AND " +
-                        "o.monitoredService.id IN (SELECT m.id FROM OnmsApplication a LEFT JOIN a.monitoredServices m WHERE a.id = ?) AND " +
-                        "o.perspective.id IN (SELECT p.id FROM OnmsApplication a LEFT JOIN a.perspectiveLocations p WHERE a.id = ?) AND " +
-                        "((o.ifRegainedService >= ? AND o.ifLostService <= ?) OR (o.ifLostService <= ? AND o.ifRegainedService IS NULL))", applicationId, applicationId, startDate, endDate, endDate);
+                        "o.monitoredService.id IN (SELECT m.id FROM OnmsApplication a LEFT JOIN a.monitoredServices m WHERE a.id = ?1) AND " +
+                        "o.perspective.id IN (SELECT p.id FROM OnmsApplication a LEFT JOIN a.perspectiveLocations p WHERE a.id = ?2) AND " +
+                        "((o.ifRegainedService >= ?3 AND o.ifLostService <= ?4) OR (o.ifLostService <= ?5 AND o.ifRegainedService IS NULL))", applicationId, applicationId, startDate, endDate, endDate);
     }
 }

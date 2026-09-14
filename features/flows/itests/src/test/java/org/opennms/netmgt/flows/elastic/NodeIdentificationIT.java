@@ -63,6 +63,8 @@ import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -96,6 +98,9 @@ public class NodeIdentificationIT {
     @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     private int nodeAId;
     private int nodeBId;
     private int nodeCId;
@@ -107,11 +112,15 @@ public class NodeIdentificationIT {
         BeanUtils.assertAutowiring(this);
         this.databasePopulator.populateDatabase();
 
-        nodeAId = this.databasePopulator.getNodeDao().save(buildNodeA());
-        nodeBId = this.databasePopulator.getNodeDao().save(buildNodeB());
-        nodeCId = this.databasePopulator.getNodeDao().save(buildNodeC());
-        nodeDId = this.databasePopulator.getNodeDao().save(buildNodeD());
-        nodeEId = this.databasePopulator.getNodeDao().save(buildNodeE());
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            nodeAId = this.databasePopulator.getNodeDao().save(buildNodeA());
+            nodeBId = this.databasePopulator.getNodeDao().save(buildNodeB());
+            nodeCId = this.databasePopulator.getNodeDao().save(buildNodeC());
+            nodeDId = this.databasePopulator.getNodeDao().save(buildNodeD());
+            nodeEId = this.databasePopulator.getNodeDao().save(buildNodeE());
+            this.databasePopulator.getNodeDao().flush();
+            return null;
+        });
 
         this.interfaceToNodeCache.dataSourceSync();
     }

@@ -1,32 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sample-report" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<style name="Title" isDefault="false" fontName="SansSerif" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
-	<style name="SubTitle" isDefault="false" forecolor="#666666" fontName="SansSerif" fontSize="18"/>
-	<style name="Column header" isDefault="false" forecolor="#666666" fontName="SansSerif" fontSize="12" isBold="true"/>
-	<style name="Detail" isDefault="false" fontName="SansSerif" fontSize="12"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT * FROM node;]]>
-	</queryString>
+<jasperReport name="sample-report" language="java" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="753422b2-a416-4a77-bf07-c240d64251f3">
+	<style name="Title" fontName="SansSerif" fontSize="26.0" bold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="SansSerif" fontSize="18.0"/>
+	<style name="Column header" forecolor="#666666" fontName="SansSerif" fontSize="12.0" bold="true"/>
+	<style name="Detail" fontName="SansSerif" fontSize="12.0"/>
+	<query language="SQL"><![CDATA[SELECT * FROM node;]]></query>
 	<field name="nodelabel" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+		<description><![CDATA[]]></description>
 	</field>
 	<field name="nodesysname" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+		<description><![CDATA[]]></description>
 	</field>
 	<group name="nodelabel">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<expression><![CDATA[$F{nodelabel}]]></expression>
 		<groupHeader>
 			<band height="40">
-				<textField>
-					<reportElement style="SubTitle" x="47" y="13" width="506" height="24" forecolor="#006600"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
-				</textField>
-				<rectangle>
-					<reportElement mode="Opaque" x="0" y="13" width="36" height="24" forecolor="#CCCCCC" backcolor="#CCCCCC"/>
-				</rectangle>
+				<element kind="textField" uuid="f56f0ea3-1cb0-4818-aba7-0d0cebfb21c0" x="47" y="13" width="506" height="24" forecolor="#006600" bold="true" style="SubTitle">
+					<expression><![CDATA[$F{nodelabel}]]></expression>
+				</element>
+				<element kind="rectangle" uuid="9ffe493a-b42a-4572-ae9f-d0397c2c08e6" mode="Opaque" x="0" y="13" width="36" height="24" forecolor="#CCCCCC" backcolor="#CCCCCC"/>
 			</band>
 		</groupHeader>
 		<groupFooter>
@@ -34,94 +25,52 @@
 		</groupFooter>
 	</group>
 	<group name="nodesysname">
-		<groupExpression><![CDATA[$F{nodesysname}]]></groupExpression>
+		<expression><![CDATA[$F{nodesysname}]]></expression>
 		<groupHeader>
 			<band height="30">
-				<textField>
-					<reportElement style="SubTitle" x="0" y="4" width="460" height="20"/>
-					<textElement>
-						<font size="16" isBold="true"/>
-					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodesysname}]]></textFieldExpression>
-				</textField>
+				<element kind="textField" uuid="d52c68ea-a7cc-456a-abe9-d328720798bd" x="0" y="4" width="460" height="20" fontSize="16.0" bold="true" style="SubTitle">
+					<expression><![CDATA[$F{nodesysname}]]></expression>
+				</element>
 			</band>
 		</groupHeader>
 	</group>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="70" splitType="Stretch">
-			<image>
-				<reportElement x="275" y="0" width="300" height="64"/>
-				<imageExpression class="java.lang.String"><![CDATA["/opt/opennms/etc/report-templates/leaf_banner_green.png"]]></imageExpression>
-			</image>
-			<staticText>
-				<reportElement style="Title" x="0" y="13" width="263" height="33"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Node List]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title height="70" splitType="Stretch">
+		<element kind="image" uuid="2a79e8af-1be5-4ed1-ac5d-94cb8b6b00f5" x="275" y="0" width="300" height="64">
+			<expression><![CDATA["/opt/opennms/etc/report-templates/leaf_banner_green.png"]]></expression>
+		</element>
+		<element kind="staticText" uuid="c09b304a-6d6c-4b1f-8438-9394a34809db" x="0" y="13" width="263" height="33" vTextAlign="Middle" style="Title">
+			<text><![CDATA[Node List]]></text>
+		</element>
 	</title>
-	<pageHeader>
-		<band splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band height="36" splitType="Stretch">
-			<line>
-				<reportElement positionType="FixRelativeToBottom" x="0" y="35" width="555" height="1"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
-				</graphicElement>
-			</line>
-		</band>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader height="36" splitType="Stretch">
+		<element kind="line" uuid="5993ac88-3bd6-43f9-b455-ced5cb7f9bc7" positionType="FixRelativeToBottom" x="0" y="35" width="555" height="1">
+			<pen lineWidth="0.5" lineColor="#999999"/>
+		</element>
 	</columnHeader>
 	<detail>
 		<band height="16" splitType="Stretch">
-			<line>
-				<reportElement positionType="FixRelativeToBottom" x="0" y="15" width="555" height="1"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
-				</graphicElement>
-			</line>
+			<element kind="line" uuid="f2ee0356-d28a-454f-bac0-997a68854397" positionType="FixRelativeToBottom" x="0" y="15" width="555" height="1">
+				<pen lineWidth="0.5" lineColor="#999999"/>
+			</element>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch">
-			<line>
-				<reportElement positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
-				</graphicElement>
-			</line>
-		</band>
+	<columnFooter height="45" splitType="Stretch">
+		<element kind="line" uuid="351c2b3b-b393-4474-b2a3-a902c1d49014" positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1">
+			<pen lineWidth="0.5" lineColor="#999999"/>
+		</element>
 	</columnFooter>
-	<pageFooter>
-		<band height="20" splitType="Stretch">
-			<textField>
-				<reportElement style="Column header" x="433" y="0" width="80" height="20"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report">
-				<reportElement style="Column header" x="513" y="0" width="40" height="20"/>
-				<textElement>
-					<font size="10" isBold="false"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField pattern="EEEEE dd MMMMM yyyy">
-				<reportElement style="Column header" x="0" y="0" width="197" height="20"/>
-				<textElement>
-					<font size="10" isBold="false"/>
-				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-		</band>
+	<pageFooter height="20" splitType="Stretch">
+		<element kind="textField" uuid="25d1fe3b-8b27-45b0-af22-7c45d4506665" x="433" y="0" width="80" height="20" fontSize="10.0" bold="false" hTextAlign="Right" style="Column header">
+			<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+		</element>
+		<element kind="textField" uuid="86983474-4594-49f6-997e-d6a05e9c3ef3" x="513" y="0" width="40" height="20" fontSize="10.0" evaluationTime="Report" bold="false" style="Column header">
+			<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+		<element kind="textField" uuid="862ef120-4e13-48bf-8da3-a8a1011b920c" x="0" y="0" width="197" height="20" fontSize="10.0" pattern="EEEEE dd MMMMM yyyy" bold="false" style="Column header">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
 	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
+	<summary splitType="Stretch"/>
 </jasperReport>

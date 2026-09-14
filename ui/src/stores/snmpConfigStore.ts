@@ -28,6 +28,7 @@ import { deleteSnmpDefinition, deleteSnmpProfile, getSnmpConfig, lookupSnmpConfi
 import { MonitoringLocation } from '@/types'
 import { IpAddressRange, SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
 import { ValidationResult } from '@/types/validation'
+import { computed, ref } from 'vue'
 
 export enum SnmpLookupEditMode {
   Lookup = 'lookup',
@@ -162,7 +163,7 @@ export const getMockSnmpConfiguration = () => {
 }
 
 /**
- * 
+ *
  */
 export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const config = ref<SnmpConfig>({

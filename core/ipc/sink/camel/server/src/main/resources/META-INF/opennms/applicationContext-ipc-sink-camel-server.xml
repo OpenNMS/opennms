@@ -35,15 +35,15 @@
   <onmsgi:service ref="camelMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
   <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
-  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.engine.DefaultShutdownStrategy">
     <property name="timeout" value="15"/>
   </bean>
 
-  <camelContext id="sinkServer" registerEndpointIdsFromRoute="true" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="sinkServer" xmlns="http://camel.apache.org/schema/spring">
     <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
-    <properties>
-      <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
-    </properties>
+    <globalOptions>
+      <globalOption key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
+    </globalOptions>
 
     <!-- The routes are managed by the CamelMessageConsumerManager -->
   </camelContext>

@@ -21,10 +21,38 @@
  */
 package org.opennms.netmgt.scheduler;
 
-import org.opennms.netmgt.scheduler.ReadyRunnable;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
-public interface PriorityReadyRunnable extends ReadyRunnable {
-    void setPriority(Integer priority);
-    Integer getPriority();
+public interface PriorityReadyRunnable extends ReadyRunnable, Delayed {
+    void setPriority(int priority);
+    int getPriority();
     String getInfo();
+
+    void setDelayUntil(long timestampMs);
+    long getDelayUntil();
+
+    default void applyBackoffDelay(long baseMs, long maxMs) {
+        int p = getPriority();
+        if (p <= 0) {
+            setDelayUntil(0);
+            return;
+        }
+        long delay = Math.min(maxMs, baseMs * (1L << Math.min(p - 1, 10)));
+        long jitter = (long) (delay * 0.1 * (ThreadLocalRandom.current().nextDouble() * 2 - 1));
+        setDelayUntil(System.currentTimeMillis() + delay + jitter);
+    }
+
+    @Override
+    default long getDelay(TimeUnit unit) {
+        long remaining = getDelayUntil() - System.currentTimeMillis();
+        return unit.convert(Math.max(0, remaining), TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    default int compareTo(Delayed other) {
+        return Long.compare(this.getDelay(TimeUnit.MILLISECONDS),
+                           other.getDelay(TimeUnit.MILLISECONDS));
+    }
 }

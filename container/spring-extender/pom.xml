@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>36.0.1-SNAPSHOT</version>
+        <version>36.0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -24,7 +24,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>org.opennms.netmgt.shared.bootstrap.Activator</Bundle-Activator>
-                        <Embed-Dependency>groupId=org.eclipse.gemini.blueprint</Embed-Dependency>
+                        <Export-Package>org.opennms.netmgt.shared.bootstrap</Export-Package>
+                        <!-- Spring infrastructure classes (tx/aop interceptors, ...) referenced by the
+                             managed contexts but not imported by their bundles are loaded through this
+                             bundle as fallback; resolve them lazily against the Spring 5.3 class space. -->
+                        <DynamicImport-Package>org.springframework.*;version="[5.3,6)",org.aopalliance.*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -42,39 +46,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint</groupId>
-            <artifactId>gemini-blueprint-core</artifactId>
-            <version>${eclipseGeminiVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint</groupId>
-            <artifactId>gemini-blueprint-extender</artifactId>
-            <version>${eclipseGeminiVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint</groupId>
-            <artifactId>gemini-blueprint-io</artifactId>
-            <version>${eclipseGeminiVersion}</version>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.sysprops</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
@@ -82,14 +56,22 @@
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-test-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-    <!-- override a bad repo that's causing issues -->
-    <repositories>
-        <repository>
-            <id>spring-ext</id>
-            <name>OpenNMS Mega-Repository (spring-ext override)</name>
-            <url>https://maven.opennms.org/repository/everything/</url>
-        </repository>
-    </repositories>
 </project>

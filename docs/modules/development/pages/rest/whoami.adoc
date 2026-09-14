@@ -1,0 +1,30 @@
+
+= Whoami API
+
+The `/whoami` endpoint returns information about the currently authenticated user, including their roles and (for internal users defined in `users.xml`) details such as full name and email address. It produces `application/json`.
+
+== GETs (reading data)
+
+[caption=]
+.Whoami API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/whoami` | Returns information about the currently authenticated user: the user ID, assigned roles, whether the user is internal, and (for internal users) email and full name.
+
+|===
+
+== Examples using cURL
+
+.Get information about the current user
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/whoami"
+----
+
+.Response
+[source,json]
+----
+{"id":"admin","roles":["ROLE_ADMIN","ROLE_USER"],"internal":true,"email":"admin@example.com","fullName":"Administrator"}
+----

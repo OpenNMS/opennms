@@ -31,6 +31,7 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms13923NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -49,9 +50,11 @@ public class Nms13923EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=srv005_IP, port=161, resource=srv005_RESOURCE)
     })
     public void testLldpSrv005Links() {
-        m_nodeDao.save(builder.getSrv005());
-
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getSrv005());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);

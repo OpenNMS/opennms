@@ -1,0 +1,41 @@
+
+= Provisiond Status API
+
+The `/provisiond` endpoint exposes the status of recent Provisiond jobs. All operations produce `application/json`.
+
+== GETs (reading data)
+
+[caption=]
+.Provisiond Status API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/provisiond/status`          | Fetches the status of all recent Provisiond jobs as a map of `jobId` to the job's monitor object.
+| `/api/v2/provisiond/status/\{jobId}` | Fetches the status of a single Provisiond job identified by `jobId`. Returns `404` if the `jobId` does not exist.
+
+|===
+
+== Examples using cURL
+
+.Get the status of all jobs
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/provisiond/status"
+----
+
+.Response
+[source,json]
+----
+{
+  "job-1234": {
+    "name": "job-1234"
+  }
+}
+----
+
+.Get the status of a single job
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/provisiond/status/job-1234"
+----

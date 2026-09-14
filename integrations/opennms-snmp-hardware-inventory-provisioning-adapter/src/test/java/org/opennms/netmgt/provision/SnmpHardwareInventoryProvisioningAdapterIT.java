@@ -49,7 +49,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -122,6 +124,10 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
     @Autowired
     private HwEntityDao m_entityDao;
 
+    /** The transaction manager. */
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     /** The operations. */
     private List<TestOperation> m_operations = new ArrayList<>();
 
@@ -140,40 +146,47 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
      */
     @BeforeTransaction
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging(true);
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            MockLogAppender.setupLogging(true);
 
-        NetworkBuilder nb = new NetworkBuilder();
+            NetworkBuilder nb = new NetworkBuilder();
 
-        nb.addNode("R1").setForeignSource("Cisco").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
-        nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
-        m_nodeDao.save(nb.getCurrentNode());
+            nb.addNode("R1").setForeignSource("Cisco").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+            nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
+            m_nodeDao.save(nb.getCurrentNode());
 
-        nb.addNode("R2").setForeignSource("Cisco").setForeignId("2").setSysObjectId(".1.3.6.1.4.1.9.1.222");
-        nb.addInterface("192.168.0.2").setIsSnmpPrimary("P").setIsManaged("P");
-        m_nodeDao.save(nb.getCurrentNode());
+            nb.addNode("R2").setForeignSource("Cisco").setForeignId("2").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+            nb.addInterface("192.168.0.2").setIsSnmpPrimary("P").setIsManaged("P");
+            m_nodeDao.save(nb.getCurrentNode());
 
-        nb.addNode("R3").setForeignSource("Cisco").setForeignId("3").setSysObjectId(".1.3.6.1.4.1.9.1.222");
-        nb.addInterface("192.168.0.3").setIsSnmpPrimary("P").setIsManaged("P");
-        m_nodeDao.save(nb.getCurrentNode());
+            nb.addNode("R3").setForeignSource("Cisco").setForeignId("3").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+            nb.addInterface("192.168.0.3").setIsSnmpPrimary("P").setIsManaged("P");
+            m_nodeDao.save(nb.getCurrentNode());
 
-        nb.addNode("R4").setForeignSource("Cisco").setForeignId("4").setSysObjectId(".1.3.6.1.4.1.9.1.222");
-        nb.addInterface("192.168.0.4").setIsSnmpPrimary("P").setIsManaged("P");
-        m_nodeDao.save(nb.getCurrentNode());
+            nb.addNode("R4").setForeignSource("Cisco").setForeignId("4").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+            nb.addInterface("192.168.0.4").setIsSnmpPrimary("P").setIsManaged("P");
+            m_nodeDao.save(nb.getCurrentNode());
 
-        nb.addNode("R5").setForeignSource("Cisco").setForeignId("5").setSysObjectId(".1.3.6.1.4.1.9.1.222");
-        nb.addInterface("192.168.0.5").setIsSnmpPrimary("P").setIsManaged("P");
-        m_nodeDao.save(nb.getCurrentNode());
+            nb.addNode("R5").setForeignSource("Cisco").setForeignId("5").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+            nb.addInterface("192.168.0.5").setIsSnmpPrimary("P").setIsManaged("P");
+            m_nodeDao.save(nb.getCurrentNode());
 
-        m_nodeDao.flush();
+            m_nodeDao.flush();
 
-        m_adapter.afterPropertiesSet();
+            try {
+                m_adapter.afterPropertiesSet();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
-        for (int i=1; i<=5; i++) {
-            Integer nodeId = m_nodeDao.findByForeignId("Cisco", Integer.toString(i)).getId();
-            AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);        
-            AdapterOperation op = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
-            m_operations.add(new TestOperation(nodeId, op));
-        }
+            for (int i=1; i<=5; i++) {
+                Integer nodeId = m_nodeDao.findByForeignId("Cisco", Integer.toString(i)).getId();
+                AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);
+                AdapterOperation op = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
+                m_operations.add(new TestOperation(nodeId, op));
+            }
+            return null;
+        });
     }
 
     /**

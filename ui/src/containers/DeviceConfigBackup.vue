@@ -1,12 +1,12 @@
 <template>
   <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <div class="dcb-container">
           <div class="table-container">
             <div class="title-search">
@@ -25,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
+
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
@@ -49,25 +51,24 @@ onMounted(() => deviceStore.getDeviceConfigBackups(true))
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
 
 @mixin status-bar($color) {
   background: $color;
   background: linear-gradient(90deg, $color 1%, rgba(255, 255, 255, 0) 9%);
 }
 :deep(.success) {
-  @include status-bar(var($success));
+  @include status-bar(var(--p-green-500));
 }
 :deep(.failed) {
-  @include status-bar(var($error));
+  @include status-bar(var(--p-red-500));
 }
 :deep(.none) {
-  @include status-bar(var($shade-4));
+  @include status-bar(var(--p-datatable-header-cell-background));
 }
 
 .card {
-  background: var($surface);
+  background: var(--p-content-background);
   padding: 0px 20px 20px 20px;
 
   .dcb-container {
@@ -82,13 +83,13 @@ onMounted(() => deviceStore.getDeviceConfigBackups(true))
         justify-content: space-between;
 
         .title {
-          @include headline1;
+          @include onms-headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }
 
         .dcb-search {
-          width: 250px;
+          width: 30rem;
           margin-top: 16px;
         }
       }
@@ -97,14 +98,6 @@ onMounted(() => deviceStore.getDeviceConfigBackups(true))
     .filters-container {
       width: 15rem;
     }
-  }
-}
-</style>
-
-<style lang="scss">
-.dcb-search {
-  .feather-input-content {
-    margin-top: 0px;
   }
 }
 </style>

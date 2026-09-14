@@ -44,7 +44,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 import com.google.common.collect.Lists;
 
@@ -62,7 +62,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	/** {@inheritDoc} */
         @Override
 	public OnmsApplication findByName(final String name) {
-		return findUnique("from OnmsApplication as app where app.name = ?", name);
+		return findUnique("from OnmsApplication as app where app.name = ?1", name);
 	}
 
 	@Override
@@ -145,14 +145,17 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	}
 
 	public List<OnmsMonitoringLocation> getPerspectiveLocationsForService(final int nodeId, final InetAddress ipAddress, final String serviceName) {
-		return (List<OnmsMonitoringLocation>) getHibernateTemplate().find("select distinct perspectiveLocation " +
-																		  "from OnmsMonitoredService service " +
-																		  "join service.applications application " +
-																		  "join application.perspectiveLocations perspectiveLocation " +
-																		  "where service.ipInterface.node.id = ? and " +
-																		  "      service.ipInterface.ipAddress = ? and " +
-																		  "      service.serviceType.name = ?",
-																		  nodeId, ipAddress, serviceName);
+		// HibernateTemplate.find binds positional parameters 0-based, which Hibernate 5 rejects
+		// for ?1-style ordinals; findObjects binds them 1-based.
+		return findObjects(OnmsMonitoringLocation.class,
+						   "select distinct perspectiveLocation " +
+						   "from OnmsMonitoredService service " +
+						   "join service.applications application " +
+						   "join application.perspectiveLocations perspectiveLocation " +
+						   "where service.ipInterface.node.id = ?1 and " +
+						   "      service.ipInterface.ipAddress = ?2 and " +
+						   "      service.serviceType.name = ?3",
+						   nodeId, ipAddress, serviceName);
 	}
 
 	@Override

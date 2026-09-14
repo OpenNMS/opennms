@@ -52,6 +52,7 @@ export interface TrapConfig {
 }
 
 export interface SnmpV3User {
+  id?: string
   engineId: string | null
   securityName: string
   securityLevel: number

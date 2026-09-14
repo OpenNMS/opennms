@@ -105,7 +105,13 @@ public class DefaultGraphRepository implements GraphRepository {
 
     @Override
     public void deleteContainer(String containerId) {
-        graphContainerDao.delete(containerId);
+        // Wrap in a committing transaction like the sibling write methods: this is a Blueprint bean
+        // (no @Transactional proxy), so under Hibernate 5 the delete would otherwise be rejected in
+        // read-only FlushMode.MANUAL.
+        sessionUtils.withTransaction(() -> {
+            graphContainerDao.delete(containerId);
+            return null;
+        });
     }
 
     @Override

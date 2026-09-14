@@ -82,13 +82,6 @@
         {
           "id": "nodes",
           "name": "Nodes",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },
-        {
-          "id": "structuredNodeList",
-          "name": "Structured Node List",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null
@@ -205,13 +198,6 @@
           "roles": null
         },
         {
-          "id": "opsBoard",
-          "name": "Wallboard",
-          "url": "vaadin-wallboard",
-          "locationMatch": "vaadin-wallboard",
-          "roles": null
-        },
-        {
           "id": "heatmap",
           "name": "Heatmap",
           "url": "heatmap/index.jsp",
@@ -248,7 +234,7 @@
         },
         {
           "id": "kscReports",
-          "name": "Metrics Dashboard (KSC Reports)",
+          "name": "Graph Collections",
           "url": "KSC/index.jsp",
           "locationMatch": "ksc",
           "roles": null
@@ -484,13 +470,6 @@
           "roles": null
         },
         {
-          "id": "wallboardConfiguration",
-          "name": "Wallboard Configuration",
-          "url": "admin/wallboardConfig.jsp",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
           "id": "productUpdateEnrollment",
           "name": "Product Update Enrollment",
           "url": "admin/product-update-enrollment/index.jsp",
@@ -547,7 +526,7 @@
       "items": [
         {
           "id": "restOpenApiDocumentation",
-          "name": "REST Open API Documentation",
+          "name": "OpenAPI Documentation",
           "url": "ui/index.html#/open-api",
           "locationMatch": "",
           "roles": null
@@ -555,7 +534,7 @@
         {
           "id": "restApiReferenceDocumentation",
           "name": "REST API Reference Documentation",
-          "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
+          "url": "https://docs.opennms.com/horizon/latest/development/rest/rest-api.html",
           "isExternalLink": true,
           "linkTarget": "_blank",
           "locationMatch": "",

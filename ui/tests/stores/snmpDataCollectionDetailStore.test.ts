@@ -2193,4 +2193,3 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
   })
 })
-

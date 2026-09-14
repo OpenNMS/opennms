@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-08-25T10:31:03 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Early-Morning-Report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2ccb7e05-ef47-49aa-83b8-9a38061a95ca">
+<jasperReport name="Early-Morning-Report" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2ccb7e05-ef47-49aa-83b8-9a38061a95ca">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<subDataset name="outages_24h" uuid="584cad90-ea4d-4f92-b243-450cebb3f6c4">
-		<queryString>
-			<![CDATA[SELECT
+	<dataset name="outages_24h" uuid="584cad90-ea4d-4f92-b243-450cebb3f6c4">
+		<query language="sql"><![CDATA[SELECT
 	detailed_outages_24h.unresolved AS unresolved, detailed_outages_24h.resolved AS resolved, SUM(detailed_outages_24h.node_outage) AS node_outages_24h, SUM(detailed_outages_24h.interface_outage) AS interface_outage_24h, SUM(detailed_outages_24h.service_outage) AS service_outages_24h, SUM(detailed_outages_24h.management_outage) AS management_outages_24h
 FROM
 	(SELECT
@@ -83,30 +79,28 @@ FROM
 	ON
 		event_outages_24h.nodeid = node.nodeid) AS detailed_outages_24h
 GROUP BY
-	detailed_outages_24h.unresolved, detailed_outages_24h.resolved]]>
-		</queryString>
+	detailed_outages_24h.unresolved, detailed_outages_24h.resolved]]></query>
 		<field name="unresolved" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="resolved" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="node_outages_24h" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="interface_outage_24h" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="service_outages_24h" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="management_outages_24h" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-	</subDataset>
-	<subDataset name="notify_last24h" uuid="c04fc5c8-e80f-418f-aa8e-7784facbca95">
-		<queryString>
-			<![CDATA[SELECT
+	</dataset>
+	<dataset name="notify_last24h" uuid="c04fc5c8-e80f-418f-aa8e-7784facbca95">
+		<query language="sql"><![CDATA[SELECT
 	COUNT
 		(CASE
 			WHEN notifications.answeredby is null THEN CAST('1' AS INTEGER)
@@ -118,18 +112,16 @@ GROUP BY
 FROM
 	notifications
 WHERE
-	notifications.pagetime > now() - INTERVAL '23 hour']]>
-		</queryString>
+	notifications.pagetime > now() - INTERVAL '23 hour']]></query>
 		<field name="unacknowledged" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="acknowledged" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-	</subDataset>
-	<subDataset name="events_histogramm_last24h" uuid="dcf6cf80-4a6f-42e3-95a7-151588b68551">
-		<queryString>
-			<![CDATA[SELECT
+	</dataset>
+	<dataset name="events_histogramm_last24h" uuid="dcf6cf80-4a6f-42e3-95a7-151588b68551">
+		<query language="sql"><![CDATA[SELECT
 	series.day_hours, SUM(indeterminate) AS indeterminate, SUM(cleared) AS cleared, SUM(normal) AS normal, SUM(warning) AS warning, SUM(minor) AS minor, SUM(major) AS major, SUM(critical) AS critical
 FROM
 	(SELECT
@@ -174,36 +166,34 @@ ON
 GROUP BY
 	day_hours
 ORDER BY
-	day_hours]]>
-		</queryString>
+	day_hours]]></query>
 		<field name="day_hours" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="indeterminate" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="cleared" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="normal" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="warning" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="minor" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="major" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="critical" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-	</subDataset>
-	<subDataset name="top_20_event_nodes" uuid="08f5a3d4-3979-4e98-b715-a23431d8a861">
-		<queryString>
-			<![CDATA[SELECT
+	</dataset>
+	<dataset name="top_20_event_nodes" uuid="08f5a3d4-3979-4e98-b715-a23431d8a861">
+		<query language="sql"><![CDATA[SELECT
 	nodelabel, SUM(indeterminate) AS indeterminate, SUM(cleared) AS cleared, SUM(normal) AS normal, SUM(warning) AS warning, SUM(minor) AS minor, SUM(major) AS major, SUM(critical) AS critical, SUM(indeterminate + cleared + normal + warning + minor + major + critical) AS total
 FROM
 	(SELECT
@@ -245,39 +235,37 @@ GROUP BY
 	nodelabel
 ORDER BY
 	total DESC
-LIMIT '20']]>
-		</queryString>
+LIMIT '20']]></query>
 		<field name="nodelabel" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="indeterminate" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="cleared" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="normal" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="warning" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="minor" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="major" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="critical" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="total" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-	</subDataset>
-	<subDataset name="outages_details" uuid="bbc36c5e-3187-4444-81ec-d12779b4c84f">
-		<queryString language="SQL">
-			<![CDATA[SELECT
+	</dataset>
+	<dataset name="outages_details" uuid="bbc36c5e-3187-4444-81ec-d12779b4c84f">
+		<query language="SQL"><![CDATA[SELECT
 		detailed_outages_24h.nodelabel, detailed_outages_24h.outage_status, COUNT(detailed_outages_24h.outage_type) AS count, detailed_outages_24h.outage_type
 	FROM
 		(SELECT
@@ -334,24 +322,22 @@ LIMIT '20']]>
 	GROUP BY
 		detailed_outages_24h.nodelabel, detailed_outages_24h.outage_status, detailed_outages_24h.outage_type
 	ORDER BY
-		outage_type, nodelabel, outage_status]]>
-		</queryString>
+		outage_type, nodelabel, outage_status]]></query>
 		<field name="nodelabel" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="outage_status" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="count" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="outage_type" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-	</subDataset>
-	<subDataset name="outage_timeline_24h" uuid="fd813ff8-9050-4c06-b8d4-27877be27ce0">
-		<queryString>
-			<![CDATA[SELECT
+	</dataset>
+	<dataset name="outage_timeline_24h" uuid="fd813ff8-9050-4c06-b8d4-27877be27ce0">
+		<query language="sql"><![CDATA[SELECT
 	series.day_hours, SUM(CAST (resolved AS INTEGER)) AS resolved, SUM(CAST (current AS INTEGER)) AS current
 FROM
 	(SELECT
@@ -377,24 +363,22 @@ ON
 GROUP BY
 	day_hours
 ORDER BY
-	day_hours]]>
-		</queryString>
+	day_hours]]></query>
 		<field name="day_hours" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="resolved" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="current" class="java.lang.Long">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-	</subDataset>
-	<subDataset name="outage_statistics" uuid="239a4d99-a465-402a-adcf-e2ebc22abac4">
+	</dataset>
+	<dataset name="outage_statistics" uuid="239a4d99-a465-402a-adcf-e2ebc22abac4">
 		<parameter name="outage_type" class="java.lang.String">
 			<defaultValueExpression><![CDATA["current"]]></defaultValueExpression>
 		</parameter>
-		<queryString language="SQL">
-			<![CDATA[SELECT
+		<query language="SQL"><![CDATA[SELECT
 	detailed_outage_24h.nodelabel,
 	detailed_outage_24h.outage_type,
 	detailed_outage_24h.state,
@@ -485,70 +469,68 @@ GROUP BY
 	detailed_outage_24h.outage_type,
 	detailed_outage_24h.state
 ORDER BY
-	state, outage_type, nodelabel]]>
-		</queryString>
+	state, outage_type, nodelabel]]></query>
 		<field name="nodelabel" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="outage_type" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="state" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="current" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="resolved" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="node_outage_24h" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="interface_outage_24h" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="service_outage_24h" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="management_outage_24h" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-		<variable name="node_outages_SUM" class="java.lang.Integer" calculation="Sum">
-			<variableExpression><![CDATA[$F{node_outage_24h}]]></variableExpression>
+		<variable name="node_outages_SUM" calculation="Sum" class="java.lang.Integer">
+			<expression><![CDATA[$F{node_outage_24h}]]></expression>
 			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
 		</variable>
-		<variable name="interface_outages_SUM" class="java.lang.Integer" calculation="Sum">
-			<variableExpression><![CDATA[$F{interface_outage_24h}]]></variableExpression>
+		<variable name="interface_outages_SUM" calculation="Sum" class="java.lang.Integer">
+			<expression><![CDATA[$F{interface_outage_24h}]]></expression>
 			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
 		</variable>
-		<variable name="service_outages_SUM" class="java.lang.Integer" calculation="Sum">
-			<variableExpression><![CDATA[$F{service_outage_24h}]]></variableExpression>
+		<variable name="service_outages_SUM" calculation="Sum" class="java.lang.Integer">
+			<expression><![CDATA[$F{service_outage_24h}]]></expression>
 			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
 		</variable>
-		<variable name="management_outages_SUM" class="java.lang.Integer" calculation="Sum">
-			<variableExpression><![CDATA[$F{management_outage_24h}]]></variableExpression>
+		<variable name="management_outages_SUM" calculation="Sum" class="java.lang.Integer">
+			<expression><![CDATA[$F{management_outage_24h}]]></expression>
 			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
 		</variable>
 		<group name="node_outages">
-			<groupExpression><![CDATA[$F{node_outage_24h}]]></groupExpression>
+			<expression><![CDATA[$F{node_outage_24h}]]></expression>
 		</group>
 		<group name="interface_outages">
-			<groupExpression><![CDATA[$F{interface_outage_24h}]]></groupExpression>
+			<expression><![CDATA[$F{interface_outage_24h}]]></expression>
 		</group>
 		<group name="service_outages">
-			<groupExpression><![CDATA[$F{service_outage_24h}]]></groupExpression>
+			<expression><![CDATA[$F{service_outage_24h}]]></expression>
 		</group>
 		<group name="management_outages">
-			<groupExpression><![CDATA[$F{management_outage_24h}]]></groupExpression>
+			<expression><![CDATA[$F{management_outage_24h}]]></expression>
 		</group>
-	</subDataset>
-	<subDataset name="notification_statistics" uuid="178ac654-e3b8-4d28-84b0-5165d976d2ec">
+	</dataset>
+	<dataset name="notification_statistics" uuid="178ac654-e3b8-4d28-84b0-5165d976d2ec">
 		<parameter name="notification_state" class="java.lang.String">
 			<defaultValueExpression><![CDATA["acknowledged"]]></defaultValueExpression>
 		</parameter>
-		<queryString>
-			<![CDATA[SELECT
+		<query language="sql"><![CDATA[SELECT
 	outstanding, acknowledged, state, userid, media
 FROM
 	(SELECT
@@ -578,374 +560,206 @@ FROM
 		state, userid, media)
 	AS notifications_24h
 WHERE
-	state like $P{notification_state}]]>
-		</queryString>
+	state like $P{notification_state}]]></query>
 		<field name="outstanding" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="acknowledged" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="state" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="userid" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
 		<field name="media" class="java.lang.String">
-			<fieldDescription><![CDATA[]]></fieldDescription>
+			<description><![CDATA[]]></description>
 		</field>
-		<variable name="notified_acked_SUM" class="java.lang.Integer" calculation="Sum">
-			<variableExpression><![CDATA[$F{acknowledged}]]></variableExpression>
+		<variable name="notified_acked_SUM" calculation="Sum" class="java.lang.Integer">
+			<expression><![CDATA[$F{acknowledged}]]></expression>
 			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
 		</variable>
-		<variable name="notified_outstanding_SUM" class="java.lang.Integer" calculation="Sum">
-			<variableExpression><![CDATA[$F{outstanding}]]></variableExpression>
+		<variable name="notified_outstanding_SUM" calculation="Sum" class="java.lang.Integer">
+			<expression><![CDATA[$F{outstanding}]]></expression>
 			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
 		</variable>
 		<group name="notification_state">
-			<groupExpression><![CDATA[$F{state}]]></groupExpression>
+			<expression><![CDATA[$F{state}]]></expression>
 		</group>
 		<group name="notified_user">
-			<groupExpression><![CDATA[$F{userid}]]></groupExpression>
+			<expression><![CDATA[$F{userid}]]></expression>
 		</group>
 		<group name="notification_media">
-			<groupExpression><![CDATA[$F{media}]]></groupExpression>
+			<expression><![CDATA[$F{media}]]></expression>
 		</group>
-	</subDataset>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+	</dataset>
+	<parameter name="ONMS_REPORT_DIR" forPrompting="false" class="java.lang.String">
+		<description><![CDATA[The directory where all reports can be found]]></description>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
-		<![CDATA[select now() as current_time;]]>
-	</queryString>
+	<query language="sql"><![CDATA[select now() as current_time;]]></query>
 	<field name="current_time" class="java.sql.Timestamp">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+		<description><![CDATA[]]></description>
 	</field>
 	<group name="outage_overview">
-		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<expression><![CDATA[$F{current_time}]]></expression>
 		<groupHeader>
 			<band height="147">
-				<pie3DChart>
-					<chart theme="default">
-						<reportElement mode="Opaque" x="280" y="39" width="275" height="96" uuid="d98da47f-83d1-43f8-b6d1-366bf25077bd"/>
-						<chartTitle>
-							<font fontName="SansSerif" size="10" isBold="true"/>
-							<titleExpression><![CDATA["Resolved outages"]]></titleExpression>
-						</chartTitle>
-						<chartSubtitle>
-							<font fontName="SansSerif" size="8"/>
-							<subtitleExpression><![CDATA["begun in last 24 hours"]]></subtitleExpression>
-						</chartSubtitle>
-						<chartLegend position="Right">
-							<font fontName="SansSerif" size="8"/>
-						</chartLegend>
-					</chart>
-					<pieDataset>
-						<dataset>
-							<datasetRun subDataset="outage_statistics" uuid="02ad443b-ef98-47a6-8df5-92f8ce72d60e">
-								<datasetParameter name="outage_type">
-									<datasetParameterExpression><![CDATA["resolved"]]></datasetParameterExpression>
-								</datasetParameter>
-							</datasetRun>
-						</dataset>
-						<pieSeries>
+				<element kind="chart" chartType="pie3D" uuid="d98da47f-83d1-43f8-b6d1-366bf25077bd" mode="Opaque" x="280" y="39" width="275" height="96" theme="default" legendPosition="Right">
+					<titleFont fontName="SansSerif" fontSize="10.0" bold="true"/>
+					<subtitleFont fontName="SansSerif" fontSize="8.0"/>
+					<legendFont fontName="SansSerif" fontSize="8.0"/>
+					<titleExpression><![CDATA["Resolved outages"]]></titleExpression>
+					<subtitleExpression><![CDATA["begun in last 24 hours"]]></subtitleExpression>
+					<dataset kind="pie">
+						<datasetRun uuid="02ad443b-ef98-47a6-8df5-92f8ce72d60e" subDataset="outage_statistics">
+							<parameter name="outage_type">
+								<expression><![CDATA["resolved"]]></expression>
+							</parameter>
+						</datasetRun>
+						<series>
 							<keyExpression><![CDATA["node"]]></keyExpression>
 							<valueExpression><![CDATA[$V{node_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{node_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-						<pieSeries>
+						</series>
+						<series>
 							<keyExpression><![CDATA["interface"]]></keyExpression>
 							<valueExpression><![CDATA[$V{interface_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{interface_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-						<pieSeries>
+						</series>
+						<series>
 							<keyExpression><![CDATA["service"]]></keyExpression>
 							<valueExpression><![CDATA[$V{service_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{service_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-						<pieSeries>
+						</series>
+						<series>
 							<keyExpression><![CDATA["management"]]></keyExpression>
 							<valueExpression><![CDATA[$V{management_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{management_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-					</pieDataset>
-					<pie3DPlot isCircular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
-						<plot foregroundAlpha="0.7">
-							<seriesColor seriesOrder="0" color="#CD0200"/>
-							<seriesColor seriesOrder="1" color="#EE8900"/>
-							<seriesColor seriesOrder="2" color="#FCBE00"/>
-							<seriesColor seriesOrder="3" color="#B1A500"/>
-						</plot>
+						</series>
+					</dataset>
+					<plot foregroundAlpha="0.7" circular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
 						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="SansSerif" size="8"/>
+							<font fontName="SansSerif" fontSize="8.0"/>
 						</itemLabel>
-					</pie3DPlot>
-				</pie3DChart>
-				<pie3DChart>
-					<chart renderType="draw" theme="default">
-						<reportElement key="&quot;ABC&quot;" mode="Opaque" x="0" y="39" width="277" height="96" uuid="db0a1085-5fec-4d9b-ae23-4ede87da1c71"/>
-						<box>
-							<topPen lineWidth="0.0"/>
-							<bottomPen lineWidth="0.0"/>
-						</box>
-						<chartTitle position="Top">
-							<font fontName="SansSerif" isBold="true" isItalic="false"/>
-							<titleExpression><![CDATA["Current outages"]]></titleExpression>
-						</chartTitle>
-						<chartSubtitle>
-							<font fontName="SansSerif" size="8"/>
-						</chartSubtitle>
-						<chartLegend position="Left">
-							<font fontName="SansSerif" size="8"/>
-						</chartLegend>
-					</chart>
-					<pieDataset>
-						<dataset>
-							<datasetRun subDataset="outage_statistics" uuid="29169c42-d882-4212-90e4-15885e579bae">
-								<datasetParameter name="outage_type">
-									<datasetParameterExpression><![CDATA["current"]]></datasetParameterExpression>
-								</datasetParameter>
-							</datasetRun>
-						</dataset>
-						<pieSeries>
+						<seriesColor order="0" color="#CD0200"/>
+						<seriesColor order="1" color="#EE8900"/>
+						<seriesColor order="2" color="#FCBE00"/>
+						<seriesColor order="3" color="#B1A500"/>
+					</plot>
+				</element>
+				<element kind="chart" chartType="pie3D" uuid="db0a1085-5fec-4d9b-ae23-4ede87da1c71" key="&quot;ABC&quot;" mode="Opaque" x="0" y="39" width="277" height="96" renderType="draw" theme="default" legendPosition="Left" titlePosition="Top">
+					<titleFont fontName="SansSerif" bold="true" italic="false"/>
+					<subtitleFont fontName="SansSerif" fontSize="8.0"/>
+					<legendFont fontName="SansSerif" fontSize="8.0"/>
+					<titleExpression><![CDATA["Current outages"]]></titleExpression>
+					<dataset kind="pie">
+						<datasetRun uuid="29169c42-d882-4212-90e4-15885e579bae" subDataset="outage_statistics">
+							<parameter name="outage_type">
+								<expression><![CDATA["current"]]></expression>
+							</parameter>
+						</datasetRun>
+						<series>
 							<keyExpression><![CDATA["node"]]></keyExpression>
 							<valueExpression><![CDATA[$V{node_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{node_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-						<pieSeries>
+						</series>
+						<series>
 							<keyExpression><![CDATA["interface"]]></keyExpression>
 							<valueExpression><![CDATA[$V{interface_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{interface_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-						<pieSeries>
+						</series>
+						<series>
 							<keyExpression><![CDATA["service"]]></keyExpression>
 							<valueExpression><![CDATA[$V{service_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{service_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-						<pieSeries>
+						</series>
+						<series>
 							<keyExpression><![CDATA["management"]]></keyExpression>
 							<valueExpression><![CDATA[$V{management_outages_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{management_outages_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-					</pieDataset>
-					<pie3DPlot isCircular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
-						<plot foregroundAlpha="0.7">
-							<seriesColor seriesOrder="0" color="#CD0200"/>
-							<seriesColor seriesOrder="1" color="#EE8900"/>
-							<seriesColor seriesOrder="2" color="#FCBE00"/>
-							<seriesColor seriesOrder="3" color="#B1A500"/>
-						</plot>
+						</series>
+					</dataset>
+					<plot foregroundAlpha="0.7" circular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
 						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="SansSerif" size="8"/>
+							<font fontName="SansSerif" fontSize="8.0"/>
 						</itemLabel>
-					</pie3DPlot>
-				</pie3DChart>
-				<elementGroup>
-					<rectangle radius="5">
-						<reportElement mode="Opaque" x="0" y="5" width="555" height="20" backcolor="#EE8900" uuid="68f951ef-3f11-43bf-9d9a-c362a7537174"/>
-						<graphicElement>
-							<pen lineWidth="0.0"/>
-						</graphicElement>
-					</rectangle>
-					<staticText>
-						<reportElement x="0" y="5" width="552" height="20" forecolor="#FFFFFF" uuid="9582c31b-315f-4dc5-b025-3a902bce0ff8"/>
-						<textElement verticalAlignment="Middle">
-							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
-						</textElement>
+						<seriesColor order="0" color="#CD0200"/>
+						<seriesColor order="1" color="#EE8900"/>
+						<seriesColor order="2" color="#FCBE00"/>
+						<seriesColor order="3" color="#B1A500"/>
+					</plot>
+					<box>
+						<topPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+				</element>
+				<element kind="elementGroup">
+					<element kind="rectangle" uuid="68f951ef-3f11-43bf-9d9a-c362a7537174" mode="Opaque" x="0" y="5" width="555" height="20" backcolor="#EE8900" radius="5">
+						<pen lineWidth="0.0"/>
+					</element>
+					<element kind="staticText" uuid="9582c31b-315f-4dc5-b025-3a902bce0ff8" x="0" y="5" width="552" height="20" forecolor="#FFFFFF" fontName="SansSerif" fontSize="16.0" bold="true" italic="false" vTextAlign="Middle">
 						<text><![CDATA[Outage overview]]></text>
-					</staticText>
-				</elementGroup>
+					</element>
+				</element>
 			</band>
 		</groupHeader>
 	</group>
 	<group name="outage_detail">
-		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<expression><![CDATA[$F{current_time}]]></expression>
 		<groupHeader>
 			<band height="78">
-				<crosstab>
-					<reportElement x="0" y="34" width="273" height="30" uuid="e95e6155-4f2f-4ceb-ab33-49be6d8eae52"/>
-					<crosstabDataset>
-						<dataset>
-							<datasetRun subDataset="outage_statistics" uuid="cd2d7c04-999a-4cf9-990a-6837fdbc5ae5">
-								<datasetParameter name="outage_type">
-									<datasetParameterExpression><![CDATA["current"]]></datasetParameterExpression>
-								</datasetParameter>
-								<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-							</datasetRun>
-						</dataset>
-					</crosstabDataset>
-					<rowGroup name="outage_type" width="63" totalPosition="End">
+				<element kind="crosstab" uuid="e95e6155-4f2f-4ceb-ab33-49be6d8eae52" x="0" y="34" width="273" height="30">
+					<dataset>
+						<datasetRun uuid="cd2d7c04-999a-4cf9-990a-6837fdbc5ae5" subDataset="outage_statistics">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+							<parameter name="outage_type">
+								<expression><![CDATA["current"]]></expression>
+							</parameter>
+						</datasetRun>
+					</dataset>
+					<rowGroup name="outage_type" totalPosition="End" width="63">
 						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{outage_type}]]></bucketExpression>
+							<expression><![CDATA[$F{outage_type}]]></expression>
 						</bucket>
-						<crosstabRowHeader>
-							<cellContents backcolor="#EE8900" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="61" height="20" uuid="e5d02141-31ab-4f4d-b5a4-d2441b78d0b4"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{outage_type}]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabRowHeader>
-						<crosstabTotalRowHeader>
-							<cellContents backcolor="#B9B9B9" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.5" lineStyle="Solid"/>
-									<leftPen lineWidth="0.5"/>
-									<bottomPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<staticText>
-									<reportElement x="0" y="0" width="249" height="10" uuid="6b79aae3-3188-4cc9-9db3-c1a44007e235"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-									</textElement>
-									<text><![CDATA[Total current outages]]></text>
-								</staticText>
-							</cellContents>
-						</crosstabTotalRowHeader>
-					</rowGroup>
-					<rowGroup name="nodelabel" width="187" totalPosition="End">
-						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{nodelabel}]]></bucketExpression>
-						</bucket>
-						<crosstabRowHeader>
-							<cellContents backcolor="#E1E1E1" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="185" height="10" uuid="5f7da192-c707-4679-9365-95e104bd295f"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{nodelabel}]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabRowHeader>
-						<crosstabTotalRowHeader>
-							<cellContents backcolor="#CCCCCC" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.5"/>
-									<leftPen lineWidth="0.5"/>
-									<bottomPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="185" height="10" uuid="60e2d756-c6a1-4d45-bd8b-c2b2bd4c129f"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA["Current " + $V{outage_type} + " outage(s)"]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabTotalRowHeader>
-					</rowGroup>
-					<columnGroup name="resolved" height="0" totalPosition="End">
-						<bucket class="java.lang.Integer">
-							<bucketExpression><![CDATA[$F{resolved}]]></bucketExpression>
-						</bucket>
-						<crosstabColumnHeader>
-							<cellContents backcolor="#9ACD32" mode="Opaque">
-								<box>
-									<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.0"/>
-									<leftPen lineWidth="0.0"/>
-									<bottomPen lineWidth="0.0"/>
-									<rightPen lineWidth="0.0"/>
-								</box>
-							</cellContents>
-						</crosstabColumnHeader>
-						<crosstabTotalColumnHeader>
-							<cellContents backcolor="#FFFFFF" mode="Transparent">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.0"/>
-									<leftPen lineWidth="0.0"/>
-									<bottomPen lineWidth="0.0"/>
-									<rightPen lineWidth="0.0"/>
-								</box>
-							</cellContents>
-						</crosstabTotalColumnHeader>
-					</columnGroup>
-					<measure name="resolvedMeasure" class="java.lang.Integer" calculation="Sum">
-						<measureExpression><![CDATA[$F{resolved}]]></measureExpression>
-					</measure>
-					<measure name="currentMeasure" class="java.lang.Integer" calculation="Count">
-						<measureExpression><![CDATA[$F{current}]]></measureExpression>
-					</measure>
-					<crosstabCell width="0" height="10">
-						<cellContents>
-							<box>
-								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0"/>
-							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="0" height="10" rowTotalGroup="outage_type">
-						<cellContents backcolor="#FFFFFF" mode="Transparent">
-							<box>
-								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0"/>
-							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="22" height="10" columnTotalGroup="resolved">
-						<cellContents backcolor="#E1E1E1" mode="Opaque">
+						<header mode="Opaque" backcolor="#EE8900">
+							<element kind="textField" uuid="e5d02141-31ab-4f4d-b5a4-d2441b78d0b4" x="0" y="0" width="61" height="20" fontName="SansSerif" fontSize="7.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+								<expression><![CDATA[$V{outage_type}]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="e79a77f5-cd6c-418e-a821-49da71c6e141"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="false" isPdfEmbedded="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{currentMeasure}]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="22" height="10" rowTotalGroup="outage_type" columnTotalGroup="resolved">
-						<cellContents backcolor="#B9B9B9" mode="Opaque">
+						</header>
+						<totalHeader mode="Opaque" backcolor="#B9B9B9">
+							<element kind="staticText" uuid="6b79aae3-3188-4cc9-9db3-c1a44007e235" x="0" y="0" width="249" height="10" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" hTextAlign="Right" vTextAlign="Middle">
+								<text><![CDATA[Total current outages]]></text>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5" lineStyle="Solid"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+						</totalHeader>
+					</rowGroup>
+					<rowGroup name="nodelabel" totalPosition="End" width="187">
+						<bucket class="java.lang.String">
+							<expression><![CDATA[$F{nodelabel}]]></expression>
+						</bucket>
+						<header mode="Opaque" backcolor="#E1E1E1">
+							<element kind="textField" uuid="5f7da192-c707-4679-9365-95e104bd295f" x="0" y="0" width="185" height="10" fontName="SansSerif" fontSize="7.0" hTextAlign="Left" vTextAlign="Middle">
+								<expression><![CDATA[$V{nodelabel}]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="cd5b1ce5-6a11-472b-a25e-9aca197f4190"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{currentMeasure}]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="0" height="10" rowTotalGroup="nodelabel">
-						<cellContents backcolor="#FFFFFF" mode="Transparent">
-							<box>
-								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0"/>
-							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="22" height="10" rowTotalGroup="nodelabel" columnTotalGroup="resolved">
-						<cellContents backcolor="#CCCCCC" mode="Opaque">
+						</header>
+						<totalHeader mode="Opaque" backcolor="#CCCCCC">
+							<element kind="textField" uuid="60e2d756-c6a1-4d45-bd8b-c2b2bd4c129f" x="0" y="0" width="185" height="10" fontName="SansSerif" fontSize="7.0" bold="true" hTextAlign="Right" vTextAlign="Middle">
+								<expression><![CDATA["Current " + $V{outage_type} + " outage(s)"]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								<topPen lineWidth="0.5"/>
@@ -953,134 +767,39 @@ WHERE
 								<bottomPen lineWidth="0.5"/>
 								<rightPen lineWidth="0.5"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="301185c0-877f-44c2-b258-b681184de007"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{currentMeasure_nodelabel_resolved_ALL}.toString()]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-				</crosstab>
-				<crosstab>
-					<reportElement x="281" y="34" width="273" height="30" uuid="68e044a4-2711-46e2-8480-32a27cdd893c"/>
-					<crosstabDataset>
-						<dataset>
-							<datasetRun subDataset="outage_statistics" uuid="473501a5-6982-4041-88b2-821d1f93d0e1">
-								<datasetParameter name="outage_type">
-									<datasetParameterExpression><![CDATA["resolved"]]></datasetParameterExpression>
-								</datasetParameter>
-								<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-							</datasetRun>
-						</dataset>
-					</crosstabDataset>
-					<rowGroup name="outage_type" width="63" totalPosition="End">
-						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{outage_type}]]></bucketExpression>
-						</bucket>
-						<crosstabRowHeader>
-							<cellContents backcolor="#B1A500" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="61" height="10" uuid="c87d5c43-2364-486f-8cdb-e0bb84b80de6"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{outage_type}]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabRowHeader>
-						<crosstabTotalRowHeader>
-							<cellContents backcolor="#B9B9B9" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.5" lineStyle="Solid"/>
-									<leftPen lineWidth="0.5"/>
-									<bottomPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<staticText>
-									<reportElement x="0" y="0" width="249" height="10" uuid="5a9c863e-53a8-496b-b6af-eeecefe456b1"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-									</textElement>
-									<text><![CDATA[Total resolved outages]]></text>
-								</staticText>
-							</cellContents>
-						</crosstabTotalRowHeader>
+						</totalHeader>
 					</rowGroup>
-					<rowGroup name="nodelabel" width="188" totalPosition="End">
-						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{nodelabel}]]></bucketExpression>
-						</bucket>
-						<crosstabRowHeader>
-							<cellContents backcolor="#E1E1E1" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="186" height="10" uuid="ac9c4cf6-77c8-46ea-91b6-20348d102c5f"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{nodelabel}]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabRowHeader>
-						<crosstabTotalRowHeader>
-							<cellContents backcolor="#CCCCCC" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.5"/>
-									<leftPen lineWidth="0.5"/>
-									<bottomPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="186" height="10" uuid="6f42c468-dbbe-4eaa-b55c-c902e4e8f11b"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA["Resolved " + $V{outage_type} + " outage(s)"]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabTotalRowHeader>
-					</rowGroup>
-					<columnGroup name="resolved" height="0" totalPosition="End">
+					<columnGroup name="resolved" totalPosition="End" height="0">
 						<bucket class="java.lang.Integer">
-							<bucketExpression><![CDATA[$F{resolved}]]></bucketExpression>
+							<expression><![CDATA[$F{resolved}]]></expression>
 						</bucket>
-						<crosstabColumnHeader>
-							<cellContents backcolor="#9ACD32" mode="Opaque">
-								<box>
-									<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.0"/>
-									<leftPen lineWidth="0.0"/>
-									<bottomPen lineWidth="0.0"/>
-									<rightPen lineWidth="0.0"/>
-								</box>
-							</cellContents>
-						</crosstabColumnHeader>
-						<crosstabTotalColumnHeader>
-							<cellContents backcolor="#FFFFFF" mode="Transparent">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.0"/>
-									<leftPen lineWidth="0.0"/>
-									<bottomPen lineWidth="0.0"/>
-									<rightPen lineWidth="0.0"/>
-								</box>
-							</cellContents>
-						</crosstabTotalColumnHeader>
+						<header mode="Opaque" backcolor="#9ACD32">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</header>
+						<totalHeader mode="Transparent" backcolor="#FFFFFF">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</totalHeader>
 					</columnGroup>
-					<measure name="resolvedMeasure" class="java.lang.Integer" calculation="Sum">
-						<measureExpression><![CDATA[$F{resolved}]]></measureExpression>
+					<measure name="resolvedMeasure" calculation="Sum" class="java.lang.Integer">
+						<expression><![CDATA[$F{resolved}]]></expression>
 					</measure>
-					<crosstabCell width="0" height="10">
-						<cellContents>
+					<measure name="currentMeasure" calculation="Count" class="java.lang.Integer">
+						<expression><![CDATA[$F{current}]]></expression>
+					</measure>
+					<cell width="0" height="10">
+						<contents>
 							<box>
 								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 								<topPen lineWidth="0.0"/>
@@ -1088,10 +807,10 @@ WHERE
 								<bottomPen lineWidth="0.0"/>
 								<rightPen lineWidth="0.0"/>
 							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="0" height="10" rowTotalGroup="outage_type">
-						<cellContents backcolor="#FFFFFF" mode="Transparent">
+						</contents>
+					</cell>
+					<cell width="0" height="10" rowTotalGroup="outage_type">
+						<contents mode="Transparent" backcolor="#FFFFFF">
 							<box>
 								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 								<topPen lineWidth="0.0"/>
@@ -1099,38 +818,30 @@ WHERE
 								<bottomPen lineWidth="0.0"/>
 								<rightPen lineWidth="0.0"/>
 							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="21" height="10" columnTotalGroup="resolved">
-						<cellContents backcolor="#E1E1E1" mode="Opaque">
+						</contents>
+					</cell>
+					<cell width="22" height="10" columnTotalGroup="resolved">
+						<contents mode="Opaque" backcolor="#E1E1E1">
+							<element kind="textField" uuid="e79a77f5-cd6c-418e-a821-49da71c6e141" x="0" y="0" width="22" height="10" forecolor="#CD0200" fontName="SansSerif" fontSize="7.0" bold="false" pdfEmbedded="true" vTextAlign="Middle">
+								<expression><![CDATA[$V{currentMeasure}]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="3989d247-c0e1-48d3-ac62-35c03fa59139"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="false" isPdfEmbedded="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{resolvedMeasure}]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="21" height="10" rowTotalGroup="outage_type" columnTotalGroup="resolved">
-						<cellContents backcolor="#B9B9B9" mode="Opaque">
+						</contents>
+					</cell>
+					<cell width="22" height="10" rowTotalGroup="outage_type" columnTotalGroup="resolved">
+						<contents mode="Opaque" backcolor="#B9B9B9">
+							<element kind="textField" uuid="cd5b1ce5-6a11-472b-a25e-9aca197f4190" x="0" y="0" width="22" height="10" forecolor="#CD0200" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" vTextAlign="Middle">
+								<expression><![CDATA[$V{currentMeasure}]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="695fb30e-2763-4b6e-900d-2284bf5af415"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{resolvedMeasure}]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="0" height="10" rowTotalGroup="nodelabel">
-						<cellContents backcolor="#FFFFFF" mode="Transparent">
+						</contents>
+					</cell>
+					<cell width="0" height="10" rowTotalGroup="nodelabel">
+						<contents mode="Transparent" backcolor="#FFFFFF">
 							<box>
 								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 								<topPen lineWidth="0.0"/>
@@ -1138,10 +849,13 @@ WHERE
 								<bottomPen lineWidth="0.0"/>
 								<rightPen lineWidth="0.0"/>
 							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="21" height="10" rowTotalGroup="nodelabel" columnTotalGroup="resolved">
-						<cellContents backcolor="#CCCCCC" mode="Opaque">
+						</contents>
+					</cell>
+					<cell width="22" height="10" rowTotalGroup="nodelabel" columnTotalGroup="resolved">
+						<contents mode="Opaque" backcolor="#CCCCCC">
+							<element kind="textField" uuid="301185c0-877f-44c2-b258-b681184de007" x="0" y="0" width="22" height="10" forecolor="#CD0200" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" vTextAlign="Middle">
+								<expression><![CDATA[$V{currentMeasure_nodelabel_resolved_ALL}.toString()]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								<topPen lineWidth="0.5"/>
@@ -1149,360 +863,314 @@ WHERE
 								<bottomPen lineWidth="0.5"/>
 								<rightPen lineWidth="0.5"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="43554b9f-b3e3-4f71-9a4a-b8b991029a14"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{resolvedMeasure_nodelabel_resolved_ALL}.toString()]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-				</crosstab>
-				<elementGroup>
-					<rectangle radius="5">
-						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#EE8900" uuid="0b35d1db-fcb4-4f69-be85-99c5cc9bfe1c"/>
-						<graphicElement>
-							<pen lineWidth="0.0"/>
-						</graphicElement>
-					</rectangle>
-					<staticText>
-						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF" uuid="83b4015f-e087-4984-bc18-41c408a12fed"/>
-						<textElement verticalAlignment="Middle">
-							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
-						</textElement>
+						</contents>
+					</cell>
+				</element>
+				<element kind="crosstab" uuid="68e044a4-2711-46e2-8480-32a27cdd893c" x="281" y="34" width="273" height="30">
+					<dataset>
+						<datasetRun uuid="473501a5-6982-4041-88b2-821d1f93d0e1" subDataset="outage_statistics">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+							<parameter name="outage_type">
+								<expression><![CDATA["resolved"]]></expression>
+							</parameter>
+						</datasetRun>
+					</dataset>
+					<rowGroup name="outage_type" totalPosition="End" width="63">
+						<bucket class="java.lang.String">
+							<expression><![CDATA[$F{outage_type}]]></expression>
+						</bucket>
+						<header mode="Opaque" backcolor="#B1A500">
+							<element kind="textField" uuid="c87d5c43-2364-486f-8cdb-e0bb84b80de6" x="0" y="0" width="61" height="10" fontName="SansSerif" fontSize="7.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+								<expression><![CDATA[$V{outage_type}]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</header>
+						<totalHeader mode="Opaque" backcolor="#B9B9B9">
+							<element kind="staticText" uuid="5a9c863e-53a8-496b-b6af-eeecefe456b1" x="0" y="0" width="249" height="10" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" hTextAlign="Right" vTextAlign="Middle">
+								<text><![CDATA[Total resolved outages]]></text>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5" lineStyle="Solid"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+						</totalHeader>
+					</rowGroup>
+					<rowGroup name="nodelabel" totalPosition="End" width="188">
+						<bucket class="java.lang.String">
+							<expression><![CDATA[$F{nodelabel}]]></expression>
+						</bucket>
+						<header mode="Opaque" backcolor="#E1E1E1">
+							<element kind="textField" uuid="ac9c4cf6-77c8-46ea-91b6-20348d102c5f" x="0" y="0" width="186" height="10" fontName="SansSerif" fontSize="7.0" hTextAlign="Left" vTextAlign="Middle">
+								<expression><![CDATA[$V{nodelabel}]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</header>
+						<totalHeader mode="Opaque" backcolor="#CCCCCC">
+							<element kind="textField" uuid="6f42c468-dbbe-4eaa-b55c-c902e4e8f11b" x="0" y="0" width="186" height="10" fontName="SansSerif" fontSize="7.0" bold="true" hTextAlign="Right" vTextAlign="Middle">
+								<expression><![CDATA["Resolved " + $V{outage_type} + " outage(s)"]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+						</totalHeader>
+					</rowGroup>
+					<columnGroup name="resolved" totalPosition="End" height="0">
+						<bucket class="java.lang.Integer">
+							<expression><![CDATA[$F{resolved}]]></expression>
+						</bucket>
+						<header mode="Opaque" backcolor="#9ACD32">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</header>
+						<totalHeader mode="Transparent" backcolor="#FFFFFF">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</totalHeader>
+					</columnGroup>
+					<measure name="resolvedMeasure" calculation="Sum" class="java.lang.Integer">
+						<expression><![CDATA[$F{resolved}]]></expression>
+					</measure>
+					<cell width="0" height="10">
+						<contents>
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="0" height="10" rowTotalGroup="outage_type">
+						<contents mode="Transparent" backcolor="#FFFFFF">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="21" height="10" columnTotalGroup="resolved">
+						<contents mode="Opaque" backcolor="#E1E1E1">
+							<element kind="textField" uuid="3989d247-c0e1-48d3-ac62-35c03fa59139" x="0" y="0" width="21" height="10" forecolor="#000000" fontName="SansSerif" fontSize="7.0" bold="false" pdfEmbedded="true" vTextAlign="Middle">
+								<expression><![CDATA[$V{resolvedMeasure}]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="21" height="10" rowTotalGroup="outage_type" columnTotalGroup="resolved">
+						<contents mode="Opaque" backcolor="#B9B9B9">
+							<element kind="textField" uuid="695fb30e-2763-4b6e-900d-2284bf5af415" x="0" y="0" width="21" height="10" forecolor="#000000" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" vTextAlign="Middle">
+								<expression><![CDATA[$V{resolvedMeasure}]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="0" height="10" rowTotalGroup="nodelabel">
+						<contents mode="Transparent" backcolor="#FFFFFF">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="21" height="10" rowTotalGroup="nodelabel" columnTotalGroup="resolved">
+						<contents mode="Opaque" backcolor="#CCCCCC">
+							<element kind="textField" uuid="43554b9f-b3e3-4f71-9a4a-b8b991029a14" x="0" y="0" width="21" height="10" forecolor="#000000" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" vTextAlign="Middle">
+								<expression><![CDATA[$V{resolvedMeasure_nodelabel_resolved_ALL}.toString()]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+						</contents>
+					</cell>
+				</element>
+				<element kind="elementGroup">
+					<element kind="rectangle" uuid="0b35d1db-fcb4-4f69-be85-99c5cc9bfe1c" mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#EE8900" radius="5">
+						<pen lineWidth="0.0"/>
+					</element>
+					<element kind="staticText" uuid="83b4015f-e087-4984-bc18-41c408a12fed" x="0" y="0" width="552" height="20" forecolor="#FFFFFF" fontName="SansSerif" fontSize="16.0" bold="true" italic="false" vTextAlign="Middle">
 						<text><![CDATA[Outage details]]></text>
-					</staticText>
-				</elementGroup>
+					</element>
+				</element>
 			</band>
 		</groupHeader>
 	</group>
 	<group name="outage_timeline">
-		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<expression><![CDATA[$F{current_time}]]></expression>
 		<groupHeader>
 			<band height="163">
-				<stackedBar3DChart>
-					<chart theme="default">
-						<reportElement x="0" y="34" width="555" height="114" uuid="4f00f9c9-f861-485b-9d5b-5ef0c6f6d38f"/>
-						<chartTitle position="Top">
-							<font fontName="SansSerif" size="10" isBold="true"/>
-							<titleExpression><![CDATA["Resolved outages"]]></titleExpression>
-						</chartTitle>
-						<chartSubtitle>
-							<font fontName="SansSerif" size="8"/>
-							<subtitleExpression><![CDATA["timeline last 24 hours"]]></subtitleExpression>
-						</chartSubtitle>
-						<chartLegend>
-							<font fontName="SansSerif" size="6"/>
-						</chartLegend>
-					</chart>
-					<categoryDataset>
-						<dataset>
-							<datasetRun subDataset="outage_timeline_24h" uuid="987f49f8-4e6e-400d-b299-06175192420a"/>
-						</dataset>
-						<categorySeries>
+				<element kind="chart" chartType="stackedBar3D" uuid="4f00f9c9-f861-485b-9d5b-5ef0c6f6d38f" x="0" y="34" width="555" height="114" theme="default" titlePosition="Top">
+					<titleFont fontName="SansSerif" fontSize="10.0" bold="true"/>
+					<subtitleFont fontName="SansSerif" fontSize="8.0"/>
+					<legendFont fontName="SansSerif" fontSize="6.0"/>
+					<titleExpression><![CDATA["Resolved outages"]]></titleExpression>
+					<subtitleExpression><![CDATA["timeline last 24 hours"]]></subtitleExpression>
+					<dataset kind="category">
+						<datasetRun uuid="987f49f8-4e6e-400d-b299-06175192420a" subDataset="outage_timeline_24h"/>
+						<series>
 							<seriesExpression><![CDATA["resolved"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{resolved}]]></valueExpression>
 							<labelExpression><![CDATA["resolved"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["current"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{current}]]></valueExpression>
 							<labelExpression><![CDATA["current"]]></labelExpression>
-						</categorySeries>
-					</categoryDataset>
-					<bar3DPlot>
-						<plot foregroundAlpha="0.7">
-							<seriesColor seriesOrder="0" color="#B1A500"/>
-							<seriesColor seriesOrder="1" color="#CD0200"/>
-						</plot>
-						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="SansSerif" size="6"/>
-						</itemLabel>
-						<categoryAxisFormat>
-							<axisFormat>
-								<labelFont>
-									<font fontName="SansSerif" size="6"/>
-								</labelFont>
-								<tickLabelFont>
-									<font fontName="SansSerif" size="6"/>
-								</tickLabelFont>
-							</axisFormat>
-						</categoryAxisFormat>
-						<valueAxisFormat>
-							<axisFormat>
-								<labelFont>
-									<font fontName="SansSerif" size="8"/>
-								</labelFont>
-								<tickLabelFont>
-									<font fontName="SansSerif" size="6"/>
-								</tickLabelFont>
-							</axisFormat>
-						</valueAxisFormat>
+						</series>
+					</dataset>
+					<plot foregroundAlpha="0.7">
+						<categoryAxisLabelFont fontName="SansSerif" fontSize="6.0"/>
+						<categoryAxisTickLabelFont fontName="SansSerif" fontSize="6.0"/>
 						<rangeAxisMinValueExpression><![CDATA[new Integer("0")]]></rangeAxisMinValueExpression>
-					</bar3DPlot>
-				</stackedBar3DChart>
-				<elementGroup>
-					<rectangle radius="5">
-						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#EE8900" uuid="e32cf269-90e0-4af9-b18f-3b0cf79efdb7"/>
-						<graphicElement>
-							<pen lineWidth="0.0"/>
-						</graphicElement>
-					</rectangle>
-					<staticText>
-						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF" uuid="1ce2212e-7587-4044-8a49-df3480bba517"/>
-						<textElement verticalAlignment="Middle">
-							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
-						</textElement>
+						<valueAxisLabelFont fontName="SansSerif" fontSize="8.0"/>
+						<valueAxisTickLabelFont fontName="SansSerif" fontSize="6.0"/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="SansSerif" fontSize="6.0"/>
+						</itemLabel>
+						<seriesColor order="0" color="#B1A500"/>
+						<seriesColor order="1" color="#CD0200"/>
+					</plot>
+				</element>
+				<element kind="elementGroup">
+					<element kind="rectangle" uuid="e32cf269-90e0-4af9-b18f-3b0cf79efdb7" mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#EE8900" radius="5">
+						<pen lineWidth="0.0"/>
+					</element>
+					<element kind="staticText" uuid="1ce2212e-7587-4044-8a49-df3480bba517" x="0" y="0" width="552" height="20" forecolor="#FFFFFF" fontName="SansSerif" fontSize="16.0" bold="true" italic="false" vTextAlign="Middle">
 						<text><![CDATA[Outage timeline]]></text>
-					</staticText>
-				</elementGroup>
+					</element>
+				</element>
 			</band>
 		</groupHeader>
 	</group>
 	<group name="notifications">
-		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<expression><![CDATA[$F{current_time}]]></expression>
 		<groupHeader>
 			<band height="115">
-				<pie3DChart>
-					<chart theme="default">
-						<reportElement mode="Opaque" x="0" y="30" width="273" height="69" uuid="de956665-7988-4d82-9599-79ec034dcac4"/>
-						<chartTitle position="Top">
-							<font fontName="SansSerif" size="10" isBold="true"/>
-							<titleExpression><![CDATA["Notifications in last 24h"]]></titleExpression>
-						</chartTitle>
-						<chartSubtitle>
-							<font fontName="SansSerif" size="8"/>
-						</chartSubtitle>
-						<chartLegend position="Right">
-							<font fontName="SansSerif" size="8"/>
-						</chartLegend>
-					</chart>
-					<pieDataset>
-						<dataset incrementType="Group" incrementGroup="notification_state">
-							<datasetRun subDataset="notification_statistics" uuid="1643d6f6-fdcb-4871-bcdc-11d0343a2aa5">
-								<datasetParameter name="notification_state">
-									<datasetParameterExpression><![CDATA["%"]]></datasetParameterExpression>
-								</datasetParameter>
-							</datasetRun>
-						</dataset>
-						<pieSeries>
+				<element kind="chart" chartType="pie3D" uuid="de956665-7988-4d82-9599-79ec034dcac4" mode="Opaque" x="0" y="30" width="273" height="69" theme="default" legendPosition="Right" titlePosition="Top">
+					<titleFont fontName="SansSerif" fontSize="10.0" bold="true"/>
+					<subtitleFont fontName="SansSerif" fontSize="8.0"/>
+					<legendFont fontName="SansSerif" fontSize="8.0"/>
+					<titleExpression><![CDATA["Notifications in last 24h"]]></titleExpression>
+					<dataset kind="pie" incrementType="Group" incrementGroup="notification_state">
+						<datasetRun uuid="1643d6f6-fdcb-4871-bcdc-11d0343a2aa5" subDataset="notification_statistics">
+							<parameter name="notification_state">
+								<expression><![CDATA["%"]]></expression>
+							</parameter>
+						</datasetRun>
+						<series>
 							<keyExpression><![CDATA["acknowledged"]]></keyExpression>
 							<valueExpression><![CDATA[$V{notified_acked_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{notified_acked_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-						<pieSeries>
+						</series>
+						<series>
 							<keyExpression><![CDATA["outstanding"]]></keyExpression>
 							<valueExpression><![CDATA[$V{notified_outstanding_SUM}]]></valueExpression>
 							<labelExpression><![CDATA[$V{notified_outstanding_SUM}.toString()]]></labelExpression>
-						</pieSeries>
-					</pieDataset>
-					<pie3DPlot isCircular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
-						<plot foregroundAlpha="0.7">
-							<seriesColor seriesOrder="0" color="#009900"/>
-							<seriesColor seriesOrder="1" color="#CD0200"/>
-						</plot>
+						</series>
+					</dataset>
+					<plot foregroundAlpha="0.7" circular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
 						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="SansSerif" size="8"/>
+							<font fontName="SansSerif" fontSize="8.0"/>
 						</itemLabel>
-					</pie3DPlot>
-				</pie3DChart>
-				<elementGroup>
-					<rectangle radius="5">
-						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#AFA500" uuid="72c8cd72-bff8-492b-b4a1-6e62afb4c4f3"/>
-						<graphicElement>
-							<pen lineWidth="0.0"/>
-						</graphicElement>
-					</rectangle>
-					<staticText>
-						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF" uuid="17ff6d01-63c5-47d6-b30a-f4debbcae141"/>
-						<textElement verticalAlignment="Middle">
-							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
-						</textElement>
+						<seriesColor order="0" color="#009900"/>
+						<seriesColor order="1" color="#CD0200"/>
+					</plot>
+				</element>
+				<element kind="elementGroup">
+					<element kind="rectangle" uuid="72c8cd72-bff8-492b-b4a1-6e62afb4c4f3" mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#AFA500" radius="5">
+						<pen lineWidth="0.0"/>
+					</element>
+					<element kind="staticText" uuid="17ff6d01-63c5-47d6-b30a-f4debbcae141" x="0" y="0" width="552" height="20" forecolor="#FFFFFF" fontName="SansSerif" fontSize="16.0" bold="true" italic="false" vTextAlign="Middle">
 						<text><![CDATA[Notification overview]]></text>
-					</staticText>
-				</elementGroup>
-				<crosstab>
-					<reportElement x="277" y="30" width="273" height="30" uuid="367cb211-0cf6-4ee1-b518-ffa54cd1ce13"/>
-					<crosstabDataset>
-						<dataset>
-							<datasetRun subDataset="notification_statistics" uuid="4276e616-8750-4a73-a145-fc1f42e05f2a">
-								<datasetParameter name="notification_state">
-									<datasetParameterExpression><![CDATA["outstanding"]]></datasetParameterExpression>
-								</datasetParameter>
-								<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-							</datasetRun>
-						</dataset>
-					</crosstabDataset>
-					<rowGroup name="media_type" width="63" totalPosition="End">
+					</element>
+				</element>
+				<element kind="crosstab" uuid="367cb211-0cf6-4ee1-b518-ffa54cd1ce13" x="277" y="30" width="273" height="30">
+					<dataset>
+						<datasetRun uuid="4276e616-8750-4a73-a145-fc1f42e05f2a" subDataset="notification_statistics">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+							<parameter name="notification_state">
+								<expression><![CDATA["outstanding"]]></expression>
+							</parameter>
+						</datasetRun>
+					</dataset>
+					<rowGroup name="media_type" totalPosition="End" width="63">
 						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{media}]]></bucketExpression>
+							<expression><![CDATA[$F{media}]]></expression>
 						</bucket>
-						<crosstabRowHeader>
-							<cellContents backcolor="#B1A500" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="61" height="20" uuid="8b0bd1bb-3890-4281-ba84-22e6d68e2746"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{media_type}]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabRowHeader>
-						<crosstabTotalRowHeader>
-							<cellContents backcolor="#B9B9B9" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.5" lineStyle="Solid"/>
-									<leftPen lineWidth="0.5"/>
-									<bottomPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<staticText>
-									<reportElement x="0" y="0" width="249" height="10" uuid="e854ebd3-3272-444c-a731-883170bf7b2f"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-									</textElement>
-									<text><![CDATA[Total outstanding notifications]]></text>
-								</staticText>
-							</cellContents>
-						</crosstabTotalRowHeader>
-					</rowGroup>
-					<rowGroup name="user" width="188" totalPosition="End">
-						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{userid}]]></bucketExpression>
-						</bucket>
-						<crosstabRowHeader>
-							<cellContents backcolor="#E1E1E1" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="186" height="10" uuid="79a502a9-64d4-49f5-ac0a-b26a4c94f2b3"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{user}]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabRowHeader>
-						<crosstabTotalRowHeader>
-							<cellContents backcolor="#CCCCCC" mode="Opaque">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.5"/>
-									<leftPen lineWidth="0.5"/>
-									<bottomPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textField>
-									<reportElement x="0" y="0" width="186" height="10" uuid="9394ed76-1421-4df2-8abe-0bc210d24bdd"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="SansSerif" size="7" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA["Outstanding notification via " + $V{media_type}]]></textFieldExpression>
-								</textField>
-							</cellContents>
-						</crosstabTotalRowHeader>
-					</rowGroup>
-					<columnGroup name="outstanding" height="0" totalPosition="End">
-						<bucket class="java.lang.Integer">
-							<bucketExpression><![CDATA[$F{outstanding}]]></bucketExpression>
-						</bucket>
-						<crosstabColumnHeader>
-							<cellContents backcolor="#9ACD32" mode="Opaque">
-								<box>
-									<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.0"/>
-									<leftPen lineWidth="0.0"/>
-									<bottomPen lineWidth="0.0"/>
-									<rightPen lineWidth="0.0"/>
-								</box>
-							</cellContents>
-						</crosstabColumnHeader>
-						<crosstabTotalColumnHeader>
-							<cellContents backcolor="#FFFFFF" mode="Transparent">
-								<box>
-									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-									<topPen lineWidth="0.0"/>
-									<leftPen lineWidth="0.0"/>
-									<bottomPen lineWidth="0.0"/>
-									<rightPen lineWidth="0.0"/>
-								</box>
-							</cellContents>
-						</crosstabTotalColumnHeader>
-					</columnGroup>
-					<measure name="outstandingMeasure" class="java.lang.Integer" calculation="Sum">
-						<measureExpression><![CDATA[$F{outstanding}]]></measureExpression>
-					</measure>
-					<crosstabCell width="0" height="10">
-						<cellContents>
-							<box>
-								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0"/>
-							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="0" height="10" rowTotalGroup="media_type">
-						<cellContents backcolor="#FFFFFF" mode="Transparent">
-							<box>
-								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0"/>
-							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="21" height="10" columnTotalGroup="outstanding">
-						<cellContents backcolor="#E1E1E1" mode="Opaque">
+						<header mode="Opaque" backcolor="#B1A500">
+							<element kind="textField" uuid="8b0bd1bb-3890-4281-ba84-22e6d68e2746" x="0" y="0" width="61" height="20" fontName="SansSerif" fontSize="7.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+								<expression><![CDATA[$V{media_type}]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="d5b14198-a26f-4acd-a5a8-4cc6aa181ba1"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="false" isPdfEmbedded="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{outstandingMeasure}]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="21" height="10" rowTotalGroup="media_type" columnTotalGroup="outstanding">
-						<cellContents backcolor="#B9B9B9" mode="Opaque">
+						</header>
+						<totalHeader mode="Opaque" backcolor="#B9B9B9">
+							<element kind="staticText" uuid="e854ebd3-3272-444c-a731-883170bf7b2f" x="0" y="0" width="249" height="10" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" hTextAlign="Right" vTextAlign="Middle">
+								<text><![CDATA[Total outstanding notifications]]></text>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5" lineStyle="Solid"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+						</totalHeader>
+					</rowGroup>
+					<rowGroup name="user" totalPosition="End" width="188">
+						<bucket class="java.lang.String">
+							<expression><![CDATA[$F{userid}]]></expression>
+						</bucket>
+						<header mode="Opaque" backcolor="#E1E1E1">
+							<element kind="textField" uuid="79a502a9-64d4-49f5-ac0a-b26a4c94f2b3" x="0" y="0" width="186" height="10" fontName="SansSerif" fontSize="7.0" hTextAlign="Left" vTextAlign="Middle">
+								<expression><![CDATA[$V{user}]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="8e3c7fde-d0d3-46ca-8a4b-1ccdf6cecbd1"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{outstandingMeasure}]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="0" height="10" rowTotalGroup="user">
-						<cellContents backcolor="#FFFFFF" mode="Transparent">
-							<box>
-								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0"/>
-							</box>
-						</cellContents>
-					</crosstabCell>
-					<crosstabCell width="21" height="10" rowTotalGroup="user" columnTotalGroup="outstanding">
-						<cellContents backcolor="#CCCCCC" mode="Opaque">
+						</header>
+						<totalHeader mode="Opaque" backcolor="#CCCCCC">
+							<element kind="textField" uuid="9394ed76-1421-4df2-8abe-0bc210d24bdd" x="0" y="0" width="186" height="10" fontName="SansSerif" fontSize="7.0" bold="true" hTextAlign="Right" vTextAlign="Middle">
+								<expression><![CDATA["Outstanding notification via " + $V{media_type}]]></expression>
+							</element>
 							<box>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								<topPen lineWidth="0.5"/>
@@ -1510,322 +1178,308 @@ WHERE
 								<bottomPen lineWidth="0.5"/>
 								<rightPen lineWidth="0.5"/>
 							</box>
-							<textField>
-								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="52a3b8cb-77ef-4312-9bea-620de087b3df"/>
-								<textElement verticalAlignment="Middle">
-									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{outstandingMeasure_user_ALL}.toString()]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabCell>
-				</crosstab>
+						</totalHeader>
+					</rowGroup>
+					<columnGroup name="outstanding" totalPosition="End" height="0">
+						<bucket class="java.lang.Integer">
+							<expression><![CDATA[$F{outstanding}]]></expression>
+						</bucket>
+						<header mode="Opaque" backcolor="#9ACD32">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</header>
+						<totalHeader mode="Transparent" backcolor="#FFFFFF">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</totalHeader>
+					</columnGroup>
+					<measure name="outstandingMeasure" calculation="Sum" class="java.lang.Integer">
+						<expression><![CDATA[$F{outstanding}]]></expression>
+					</measure>
+					<cell width="0" height="10">
+						<contents>
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="0" height="10" rowTotalGroup="media_type">
+						<contents mode="Transparent" backcolor="#FFFFFF">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="21" height="10" columnTotalGroup="outstanding">
+						<contents mode="Opaque" backcolor="#E1E1E1">
+							<element kind="textField" uuid="d5b14198-a26f-4acd-a5a8-4cc6aa181ba1" x="0" y="0" width="21" height="10" forecolor="#000000" fontName="SansSerif" fontSize="7.0" bold="false" pdfEmbedded="true" vTextAlign="Middle">
+								<expression><![CDATA[$V{outstandingMeasure}]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="21" height="10" rowTotalGroup="media_type" columnTotalGroup="outstanding">
+						<contents mode="Opaque" backcolor="#B9B9B9">
+							<element kind="textField" uuid="8e3c7fde-d0d3-46ca-8a4b-1ccdf6cecbd1" x="0" y="0" width="21" height="10" forecolor="#000000" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" vTextAlign="Middle">
+								<expression><![CDATA[$V{outstandingMeasure}]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="0" height="10" rowTotalGroup="user">
+						<contents mode="Transparent" backcolor="#FFFFFF">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</contents>
+					</cell>
+					<cell width="21" height="10" rowTotalGroup="user" columnTotalGroup="outstanding">
+						<contents mode="Opaque" backcolor="#CCCCCC">
+							<element kind="textField" uuid="52a3b8cb-77ef-4312-9bea-620de087b3df" x="0" y="0" width="21" height="10" forecolor="#000000" fontName="SansSerif" fontSize="7.0" bold="true" italic="false" vTextAlign="Middle">
+								<expression><![CDATA[$V{outstandingMeasure_user_ALL}.toString()]]></expression>
+							</element>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+						</contents>
+					</cell>
+				</element>
 			</band>
 		</groupHeader>
 	</group>
 	<group name="event_overview">
-		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<expression><![CDATA[$F{current_time}]]></expression>
 		<groupHeader>
 			<band height="421">
-				<stackedBar3DChart>
-					<chart theme="default">
-						<reportElement x="0" y="35" width="555" height="185" uuid="92583e6c-2085-4739-a373-c1efb2ab9c65"/>
-						<chartTitle>
-							<font fontName="SansSerif" size="10" isBold="true"/>
-							<titleExpression><![CDATA["All Events in last 24h"]]></titleExpression>
-						</chartTitle>
-						<chartSubtitle>
-							<font fontName="SansSerif" size="8"/>
-							<subtitleExpression><![CDATA["Event in hour"]]></subtitleExpression>
-						</chartSubtitle>
-						<chartLegend>
-							<font fontName="SansSerif" size="8"/>
-						</chartLegend>
-					</chart>
-					<categoryDataset>
-						<dataset>
-							<datasetRun subDataset="events_histogramm_last24h" uuid="59854d54-2b6e-45b8-9efb-c0f9918af1e3"/>
-						</dataset>
-						<categorySeries>
+				<element kind="chart" chartType="stackedBar3D" uuid="92583e6c-2085-4739-a373-c1efb2ab9c65" x="0" y="35" width="555" height="185" theme="default">
+					<titleFont fontName="SansSerif" fontSize="10.0" bold="true"/>
+					<subtitleFont fontName="SansSerif" fontSize="8.0"/>
+					<legendFont fontName="SansSerif" fontSize="8.0"/>
+					<titleExpression><![CDATA["All Events in last 24h"]]></titleExpression>
+					<subtitleExpression><![CDATA["Event in hour"]]></subtitleExpression>
+					<dataset kind="category">
+						<datasetRun uuid="59854d54-2b6e-45b8-9efb-c0f9918af1e3" subDataset="events_histogramm_last24h"/>
+						<series>
 							<seriesExpression><![CDATA["indeterminate"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{indeterminate}]]></valueExpression>
 							<labelExpression><![CDATA["indeterminate"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["cleared"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{cleared}]]></valueExpression>
 							<labelExpression><![CDATA["cleared"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["normal"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{normal}]]></valueExpression>
 							<labelExpression><![CDATA["normal"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["warning"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{warning}]]></valueExpression>
 							<labelExpression><![CDATA["warning"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["minor"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{minor}]]></valueExpression>
 							<labelExpression><![CDATA["minor"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["major"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{major}]]></valueExpression>
 							<labelExpression><![CDATA["major"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["critical"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{critical}]]></valueExpression>
 							<labelExpression><![CDATA["critical"]]></labelExpression>
-						</categorySeries>
-					</categoryDataset>
-					<bar3DPlot>
-						<plot foregroundAlpha="0.7">
-							<seriesColor seriesOrder="0" color="#B1A500"/>
-							<seriesColor seriesOrder="1" color="#999999"/>
-							<seriesColor seriesOrder="2" color="#009900"/>
-							<seriesColor seriesOrder="3" color="#FCBE00"/>
-							<seriesColor seriesOrder="4" color="#EE8900"/>
-							<seriesColor seriesOrder="5" color="#E05000"/>
-							<seriesColor seriesOrder="6" color="#CD0200"/>
-						</plot>
-						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="SansSerif" size="8"/>
-						</itemLabel>
-						<categoryAxisFormat>
-							<axisFormat>
-								<labelFont>
-									<font fontName="SansSerif" size="8"/>
-								</labelFont>
-								<tickLabelFont>
-									<font fontName="SansSerif" size="8"/>
-								</tickLabelFont>
-							</axisFormat>
-						</categoryAxisFormat>
-						<valueAxisFormat>
-							<axisFormat>
-								<labelFont>
-									<font fontName="SansSerif" size="8"/>
-								</labelFont>
-								<tickLabelFont>
-									<font fontName="SansSerif" size="8"/>
-								</tickLabelFont>
-							</axisFormat>
-						</valueAxisFormat>
+						</series>
+					</dataset>
+					<plot foregroundAlpha="0.7">
+						<categoryAxisLabelFont fontName="SansSerif" fontSize="8.0"/>
+						<categoryAxisTickLabelFont fontName="SansSerif" fontSize="8.0"/>
 						<rangeAxisMinValueExpression><![CDATA[new Integer("0")]]></rangeAxisMinValueExpression>
-					</bar3DPlot>
-				</stackedBar3DChart>
-				<elementGroup>
-					<rectangle radius="5">
-						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#009900" uuid="b40289f9-9179-4c06-b07f-e2c2ceb37638"/>
-						<graphicElement>
-							<pen lineWidth="0.0"/>
-						</graphicElement>
-					</rectangle>
-					<staticText>
-						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF" uuid="ab341912-0b45-41af-ba6a-dc7e27e98dbe"/>
-						<textElement verticalAlignment="Middle">
-							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
-						</textElement>
+						<valueAxisLabelFont fontName="SansSerif" fontSize="8.0"/>
+						<valueAxisTickLabelFont fontName="SansSerif" fontSize="8.0"/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="SansSerif" fontSize="8.0"/>
+						</itemLabel>
+						<seriesColor order="0" color="#B1A500"/>
+						<seriesColor order="1" color="#999999"/>
+						<seriesColor order="2" color="#009900"/>
+						<seriesColor order="3" color="#FCBE00"/>
+						<seriesColor order="4" color="#EE8900"/>
+						<seriesColor order="5" color="#E05000"/>
+						<seriesColor order="6" color="#CD0200"/>
+					</plot>
+				</element>
+				<element kind="elementGroup">
+					<element kind="rectangle" uuid="b40289f9-9179-4c06-b07f-e2c2ceb37638" mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#009900" radius="5">
+						<pen lineWidth="0.0"/>
+					</element>
+					<element kind="staticText" uuid="ab341912-0b45-41af-ba6a-dc7e27e98dbe" x="0" y="0" width="552" height="20" forecolor="#FFFFFF" fontName="SansSerif" fontSize="16.0" bold="true" italic="false" vTextAlign="Middle">
 						<text><![CDATA[Event overview]]></text>
-					</staticText>
-				</elementGroup>
-				<stackedBar3DChart>
-					<chart theme="default">
-						<reportElement x="0" y="231" width="555" height="185" uuid="e976041c-f8fb-4c71-b3b3-e7024b843f08"/>
-						<chartTitle>
-							<font fontName="SansSerif" size="10" isBold="true"/>
-							<titleExpression><![CDATA["Top 20 Nodes with events"]]></titleExpression>
-						</chartTitle>
-						<chartSubtitle>
-							<font fontName="SansSerif" size="8"/>
-							<subtitleExpression><![CDATA["All events acknowledged and unacknowledged in last 24hours"]]></subtitleExpression>
-						</chartSubtitle>
-						<chartLegend>
-							<font fontName="SansSerif" size="8"/>
-						</chartLegend>
-					</chart>
-					<categoryDataset>
-						<dataset>
-							<datasetRun subDataset="top_20_event_nodes" uuid="c4c089d5-8b80-41ab-9ad3-46645edfeba9"/>
-						</dataset>
-						<categorySeries>
+					</element>
+				</element>
+				<element kind="chart" chartType="stackedBar3D" uuid="e976041c-f8fb-4c71-b3b3-e7024b843f08" x="0" y="231" width="555" height="185" theme="default">
+					<titleFont fontName="SansSerif" fontSize="10.0" bold="true"/>
+					<subtitleFont fontName="SansSerif" fontSize="8.0"/>
+					<legendFont fontName="SansSerif" fontSize="8.0"/>
+					<titleExpression><![CDATA["Top 20 Nodes with events"]]></titleExpression>
+					<subtitleExpression><![CDATA["All events acknowledged and unacknowledged in last 24hours"]]></subtitleExpression>
+					<dataset kind="category">
+						<datasetRun uuid="c4c089d5-8b80-41ab-9ad3-46645edfeba9" subDataset="top_20_event_nodes"/>
+						<series>
 							<seriesExpression><![CDATA["indeterminate"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{indeterminate}]]></valueExpression>
 							<labelExpression><![CDATA["indeterminate"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["cleared"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{cleared}]]></valueExpression>
 							<labelExpression><![CDATA["cleared"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["normal"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{normal}]]></valueExpression>
 							<labelExpression><![CDATA["normal"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["warning"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{warning}]]></valueExpression>
 							<labelExpression><![CDATA["warning"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["minor"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{minor}]]></valueExpression>
 							<labelExpression><![CDATA["minor"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["major"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{major}]]></valueExpression>
 							<labelExpression><![CDATA["major"]]></labelExpression>
-						</categorySeries>
-						<categorySeries>
+						</series>
+						<series>
 							<seriesExpression><![CDATA["critical"]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{critical}]]></valueExpression>
 							<labelExpression><![CDATA["critical"]]></labelExpression>
-						</categorySeries>
-					</categoryDataset>
-					<bar3DPlot>
-						<plot foregroundAlpha="0.7" labelRotation="45.0">
-							<seriesColor seriesOrder="0" color="#B1A500"/>
-							<seriesColor seriesOrder="1" color="#999999"/>
-							<seriesColor seriesOrder="2" color="#009900"/>
-							<seriesColor seriesOrder="3" color="#FCBE00"/>
-							<seriesColor seriesOrder="4" color="#EE8900"/>
-							<seriesColor seriesOrder="5" color="#E05000"/>
-							<seriesColor seriesOrder="6" color="#CD0200"/>
-						</plot>
+						</series>
+					</dataset>
+					<plot foregroundAlpha="0.7" labelRotation="45.0" categoryAxisTickLabelRotation="45.0">
+						<categoryAxisLabelFont fontName="SansSerif" fontSize="8.0"/>
+						<categoryAxisTickLabelFont fontName="SansSerif" fontSize="8.0"/>
+						<valueAxisLabelFont fontName="SansSerif" fontSize="8.0"/>
+						<valueAxisTickLabelFont fontName="SansSerif" fontSize="8.0"/>
 						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="SansSerif" size="8"/>
+							<font fontName="SansSerif" fontSize="8.0"/>
 						</itemLabel>
-						<categoryAxisFormat labelRotation="45.0">
-							<axisFormat>
-								<labelFont>
-									<font fontName="SansSerif" size="8"/>
-								</labelFont>
-								<tickLabelFont>
-									<font fontName="SansSerif" size="8"/>
-								</tickLabelFont>
-							</axisFormat>
-						</categoryAxisFormat>
-						<valueAxisFormat>
-							<axisFormat>
-								<labelFont>
-									<font fontName="SansSerif" size="8"/>
-								</labelFont>
-								<tickLabelFont>
-									<font fontName="SansSerif" size="8"/>
-								</tickLabelFont>
-							</axisFormat>
-						</valueAxisFormat>
-					</bar3DPlot>
-				</stackedBar3DChart>
+						<seriesColor order="0" color="#B1A500"/>
+						<seriesColor order="1" color="#999999"/>
+						<seriesColor order="2" color="#009900"/>
+						<seriesColor order="3" color="#FCBE00"/>
+						<seriesColor order="4" color="#EE8900"/>
+						<seriesColor order="5" color="#E05000"/>
+						<seriesColor order="6" color="#CD0200"/>
+					</plot>
+				</element>
 			</band>
 		</groupHeader>
 	</group>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band splitType="Stretch"/>
-	</title>
-	<pageHeader>
-		<band height="80" splitType="Stretch">
+	<background splitType="Stretch"/>
+	<title splitType="Stretch"/>
+	<pageHeader height="80" splitType="Stretch">
+		<element kind="line" uuid="54e62bc6-77bc-4619-b176-e5d8689b1507" x="0" y="79" width="555" height="1">
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="staticText" uuid="a08c7e81-066c-45d8-8595-956116bf0016" x="0" y="0" width="355" height="30" fontName="SansSerif" fontSize="24.0" bold="true" italic="false" style="Title">
+			<text><![CDATA[Early morning Report]]></text>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="4435e4b9-34cc-42f8-8695-3dfae85c722f" x="0" y="60" width="355" height="20" fontName="SansSerif" vTextAlign="Middle" style="Creation-Date">
+			<expression><![CDATA[$F{current_time}]]></expression>
 			<property name="local_mesure_unitheight" value="pixel"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<line>
-				<reportElement x="0" y="79" width="555" height="1" uuid="54e62bc6-77bc-4619-b176-e5d8689b1507">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-			</line>
-			<staticText>
-				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="a08c7e81-066c-45d8-8595-956116bf0016">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement>
-					<font fontName="SansSerif" size="24" isBold="true" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[Early morning Report]]></text>
-			</staticText>
-			<textField>
-				<reportElement style="Creation-Date" x="0" y="60" width="355" height="20" uuid="4435e4b9-34cc-42f8-8695-3dfae85c722f">
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{current_time}]]></textFieldExpression>
-			</textField>
-			<image isUsingCache="false">
-				<reportElement isPrintRepeatedValues="false" mode="Opaque" x="360" y="0" width="194" height="50" uuid="c14250d0-44db-43c4-8498-50dc8e64eb03">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></imageExpression>
-			</image>
-		</band>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="image" uuid="c14250d0-44db-43c4-8498-50dc8e64eb03" mode="Opaque" x="360" y="0" width="194" height="50" usingCache="false" printRepeatedValues="false">
+			<expression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></expression>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<property name="local_mesure_unitheight" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
 	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band height="4" splitType="Stretch"/>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band height="30" splitType="Stretch">
-			<property name="local_mesure_unitheight" value="pixel"/>
-			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<line>
-				<reportElement x="0" y="0" width="555" height="1" uuid="a21b9578-03c7-4261-a7b4-b0acbdb4cc36">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-			</line>
-			<textField>
-				<reportElement key="" style="Paging-Footer" x="435" y="5" width="80" height="20" uuid="193b95d7-efa4-4e81-be53-60177be3c4e2">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report">
-				<reportElement key="" style="Paging-Footer" x="515" y="5" width="40" height="20" uuid="b7befc68-8734-416f-85ba-b12168e53b87">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-		</band>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter height="30" splitType="Stretch">
+		<element kind="line" uuid="a21b9578-03c7-4261-a7b4-b0acbdb4cc36" x="0" y="0" width="555" height="1">
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="textField" uuid="193b95d7-efa4-4e81-be53-60177be3c4e2" key="" x="435" y="5" width="80" height="20" hTextAlign="Right" style="Paging-Footer">
+			<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="textField" uuid="b7befc68-8734-416f-85ba-b12168e53b87" key="" x="515" y="5" width="40" height="20" evaluationTime="Report" style="Paging-Footer">
+			<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<property name="local_mesure_unitheight" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
 	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
+	<summary splitType="Stretch"/>
 </jasperReport>

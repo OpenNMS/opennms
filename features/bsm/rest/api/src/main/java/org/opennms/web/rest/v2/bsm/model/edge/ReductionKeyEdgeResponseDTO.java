@@ -26,12 +26,15 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="reduction-key-edge")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "An edge listening on one raw alarm reduction key.")
 public class ReductionKeyEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
+    @Schema(description = "Label shown for this edge in the UI.", example = "core switch down")
     @XmlElement(name="friendly-name",required = false)
     private String friendlyName;
 

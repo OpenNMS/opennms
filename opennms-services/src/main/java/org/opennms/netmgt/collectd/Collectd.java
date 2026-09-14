@@ -53,6 +53,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
+import org.opennms.netmgt.collection.api.CollectorAdaptor;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -166,6 +167,9 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired
     private volatile LocationAwareCollectorClient m_locationAwareCollectorClient;
+
+    @Autowired(required = false)
+    private volatile List<CollectorAdaptor> m_collectorAdaptors = Collections.emptyList();
 
     static class SchedulingCompletedFlag {
         volatile boolean m_schedulingCompleted = false;
@@ -556,7 +560,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     entityScopeProvider.getScopeProviderForNode(iface.getNodeId()),
                     entityScopeProvider.getScopeProviderForInterface(iface.getNodeId(), InetAddressUtils.toIpAddrString(iface.getIpAddress()))
                 );
-                matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className, scopeProvider));
+                matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className, scopeProvider, m_collectorAdaptors));
             } else {
                 LOG.warn("The class for collector {} is not available yet.", svcName);
             }

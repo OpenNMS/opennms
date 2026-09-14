@@ -304,12 +304,22 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         protected void waitUntilReady() {
             LOG.info("Waiting for Minion health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-            await("waiting for good health check probe")
-                    .atMost(5, MINUTES)
-                    .pollInterval(10, SECONDS)
-                    .failFast("container is no longer running", () -> !container.isRunning())
-                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
-                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            try {
+                await("waiting for good health check probe")
+                        .atMost(5, MINUTES)
+                        .pollInterval(10, SECONDS)
+                        .failFast("container is no longer running", () -> !container.isRunning())
+                        .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            } catch (RuntimeException startupFailure) {
+                // The Minion never became healthy. testcontainers tears the container down the
+                // instant this exception propagates, so the later afterTest()/retainLogsfNeeded()
+                // finds no running container and copyFileFromContainer()/getLogs() fail with
+                // "container is not running" -- i.e. the startup failure is undiagnosable in CI.
+                // Grab karaf.log + console now, while the container is still alive.
+                container.captureStartupFailureLogs();
+                throw startupFailure;
+            }
             LOG.info("Health check passed.");
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
@@ -349,6 +359,39 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
         if (threadDump.get() != null) {
             LOG.info("Thread dump: {}", threadDump.get().toUri());
+        }
+    }
+
+    /**
+     * Copy the Minion's karaf.log and console output to target/logs while the container is still
+     * running. Called from the wait strategy when the startup health check fails: at that point
+     * the container is still up, whereas by the time afterTest()/retainLogsfNeeded() runs
+     * testcontainers has already removed the failed container, so it captures nothing. The
+     * resulting logs are collected as CI artifacts under target/logs/startup-failures.
+     */
+    private void captureStartupFailureLogs() {
+        final String id = getContainerId();
+        final String shortId = (id == null || id.isEmpty()) ? "unknown" : id.substring(0, Math.min(12, id.length()));
+        final Path targetLogFolder = Paths.get("target", "logs", "startup-failures", ALIAS + "-" + shortId);
+        LOG.warn("Minion health check never passed; capturing karaf.log + console before testcontainers removes the container. Logs: {}",
+                targetLogFolder.toUri());
+        try {
+            DevDebugUtils.copyLogs(this,
+                    targetLogFolder,
+                    Paths.get("/opt", "minion", "data", "log"),
+                    Arrays.asList("karaf.log"));
+        } catch (Exception e) {
+            LOG.warn("Failed to capture Minion startup-failure logs", e);
+        }
+        // karaf.log only records the "Oh no, something is wrong" summary, not which check failed.
+        // Grab the per-check detail from /rest/health while the container is still reachable.
+        try {
+            final String healthDetail = new RestHealthClient(getWebUrl(), Optional.of(ALIAS)).getHealthDetail();
+            Files.createDirectories(targetLogFolder);
+            Files.write(targetLogFolder.resolve("health-detail.json"),
+                    healthDetail.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            LOG.warn("Failed to capture Minion health detail", e);
         }
     }
 

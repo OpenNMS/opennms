@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -126,11 +127,15 @@ public class PathOutageStatusProviderIT {
 
 	@Before
 	public void setUp() {
-		// Generating test nodes and saving them to the temporary database
+		// Generating test nodes and saving them to the temporary database.
+		// Save parents before children: the node.nodeparentid FK (NMS-19971) rejects a
+		// child row whose parent has not been inserted yet, and HashMap key order is
+		// undefined. Every generated child has a larger id than its parent, so ascending
+		// id order guarantees parent-first insertion.
 		Map<OnmsNode, Integer> nodes = TestNodeGenerator.generateNodes(locationDao.getDefaultLocation());
-		for (OnmsNode node : nodes.keySet()) {
-			this.nodeDao.save(node);
-		}
+		nodes.keySet().stream()
+				.sorted(Comparator.comparingInt(OnmsNode::getId))
+				.forEach(this.nodeDao::save);
 		// Generating test interfaces and updating corresponding nodes
 		this.generateInterfaces(nodes);
 		for (OnmsNode node : nodes.keySet()) {

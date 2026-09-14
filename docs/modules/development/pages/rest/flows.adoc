@@ -48,7 +48,21 @@ NOTE: Unless otherwise specified, all units of time are expressed in millisecond
 
 | /flows/hosts/series
 | Retrieve time series metrics for the top `N` hosts or specific hosts.
+
+| /flows/dscp
+| Retrieve traffic summary statistics for the top `N` DSCP values or specific DSCP values.
+
+| /flows/dscp/enumerate
+| Retrieve a list of the DSCP values with flows.
+
+| /flows/dscp/series
+| Retrieve time series metrics for the top `N` DSCP values or specific DSCP values.
+
+| /flows/flowGraphUrl
+| Retrieve the configured URL template (and resolved URL) used to link to an external flow graphing tool for the matched flows.
 |===
+
+NOTE: The `dscp`, `dscp/enumerate`, and `dscp/series` endpoints accept the same query parameters as the `applications`/`hosts`/`conversations` family, plus a `dscp` filter parameter (a numeric DSCP code point such as `0`, or a symbolic name such as `P0`–`P7` or `CS0`–`CS7`, repeatable). The `applications/series`, `hosts/series`, and `dscp/series` endpoints also accept the `step` query parameter (default `300000`), the same as `conversations/series`.
 
 All of the endpoints support the following query string parameters to help filter the results:
 

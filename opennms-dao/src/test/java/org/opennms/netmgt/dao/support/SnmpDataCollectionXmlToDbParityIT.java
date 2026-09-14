@@ -383,7 +383,7 @@ public class SnmpDataCollectionXmlToDbParityIT implements TemporaryDatabaseAware
         final DefaultDataCollectionConfigDao dbDao = new DefaultDataCollectionConfigDao();
         dbDao.afterPropertiesSet();
 
-        final SnmpDataCollectionConfigLoader loader = new SnmpDataCollectionConfigLoader();
+        final SnmpDataCollectionConfigLoaderImpl loader = new SnmpDataCollectionConfigLoaderImpl();
         loader.setSnmpCollectionProfileDao(profileDao);
         loader.setSnmpCollectionSourceDao(sourceDao);
         loader.setSnmpCollectionResourceTypeDao(resourceTypeDao);
@@ -391,7 +391,7 @@ public class SnmpDataCollectionXmlToDbParityIT implements TemporaryDatabaseAware
         loader.setSnmpCollectionSystemDefDao(systemDefDao);
         loader.setDataCollectionConfigDao(dbDao);
 
-        final SnmpDataCollectionConfigLoader.MaterializedConfig m = loader.materializeFromDb();
+        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = loader.materializeFromDb();
         if (m == null) return null;
         dbDao.loadFromDatabase(m.config, m.allResourceTypes, m.allGroups);
         return dbDao;

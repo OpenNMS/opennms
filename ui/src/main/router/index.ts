@@ -36,6 +36,8 @@ import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { computed } from 'vue'
+import { whenever } from '@vueuse/core'
 
 const { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded } = useRole()
 const menuStore = computed(() => useMenuStore())
@@ -174,14 +176,42 @@ const router = createRouter({
       ]
     },
     {
+      // Topology type lives in the path (custom today; enlinkd-l2/bsm/... later);
+      // the specific view is a `?view=<name>` query so it's bookmarkable.
+      // Bare /topology redirects to the custom catalog.
+      path: '/topology',
+      redirect: '/topology/custom'
+    },
+    {
+      path: '/topology/:source',
+      name: 'Topology',
+      component: () => import('@/containers/Topology.vue')
+    },
+    {
       path: '/nodes',
       name: 'Nodes',
       component: () => import('@/containers/Nodes.vue')
     },
     {
-      path: '/node/:id',
+      // Constrain :id to a positive integer (1+, no leading zeros). Non-matching
+      // paths (e.g. /node/abc, /node/0) fall through to the catch-all redirect.
+      path: '/node/:id([1-9]\\d*)',
       name: 'Node Details',
+      props: true,
       component: () => import('@/containers/NodeDetails.vue')
+    },
+    {
+      path: '/adhoc-graphs',
+      name: 'AdhocGraphs',
+      component: () => import('@/containers/AdhocGraphs.vue')
+    },
+    {
+      // Graph-only view of an ad-hoc graph, rendered entirely from the query
+      // string. This is what the builder's pop-out button opens in a new tab.
+      path: '/adhoc-graphs/view',
+      name: 'AdhocGraphsView',
+      component: () => import('@/containers/AdhocGraphs.vue'),
+      props: { viewOnly: true }
     },
     {
       path: '/resource-graphs',
@@ -351,24 +381,20 @@ const router = createRouter({
       component: () => import('@/containers/SnmpDataCollection.vue')
     },
     {
-      path: '/snmp-data-collection/:id',
-      name: 'SNMP Data Collection Detail',
-      component: () => import('@/containers/SnmpDataCollectionDetail.vue')
+      // :id can be either a source id for an existing source, or 'create' for creating a new source
+      path: '/snmp-data-collection/source/:id',
+      name: 'SNMP Data Collection Source Detail',
+      component: () => import('@/containers/SnmpDataCollectionSourceDetail.vue')
     },
     {
-      path: '/snmp-data-collection/create',
-      name: 'SNMP Data Collection Create',
-      component: () => import('@/containers/SnmpDataCollectionCreate.vue')
+      path: '/snmp-data-collection/profile/:id',
+      name: 'SNMP Data Collection Profile Detail',
+      component: () => import('@/components/SnmpDataCollection/SnmpDataCollectionProfile/SnmpDataCollectionProfileDetails.vue')
     },
     {
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')
-    },
-    {
-      path: '/primevue-test',
-      name: 'PrimeVueTest',
-      component: () => import('@/components/PrimeVueTest.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

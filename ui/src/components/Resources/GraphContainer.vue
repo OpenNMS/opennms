@@ -1,6 +1,6 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="container" v-if="displayContainer">
         <div class="header">{{ resource.label }}</div>
         <div v-for="definition in resource.definitions" :key="definition">
@@ -18,10 +18,10 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { StartEndTime } from '@/types'
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import Graph from './Graph.vue'
 
 defineEmits(['addGraphDefinition'])
@@ -54,21 +54,19 @@ const displayContainer = computed(() => {
   return false
 })
 </script>
-  
+
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
 
 .container {
-  border: 2px solid var($shade-4);
+  border: 2px solid var(--p-content-border-color);
   margin-bottom: 15px;
 
   .header {
-    @include headline3();
+    @include onms-headline3();
     text-align: center;
     padding: 6px;
-    background: var($shade-4);
+    background: var(--p-datatable-header-cell-background);
   }
 }
 </style>
-  

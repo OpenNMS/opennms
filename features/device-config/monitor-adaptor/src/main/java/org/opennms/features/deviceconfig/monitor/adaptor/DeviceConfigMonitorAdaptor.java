@@ -188,11 +188,14 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             }
         }
         // UsageAnalytics
-        if (status.isUp()) {
-            usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
-        } else {
-            usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());
-        }
+        sessionUtils.withTransaction(() -> {
+            if (status.isUp()) {
+                usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
+            } else {
+                usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());
+            }
+            return null;
+        });
 
         return status;
     }
@@ -250,7 +253,10 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
         if (!staleConfigs.isEmpty()) {
             LOG.debug("DCB: Found {} stale device config records to delete", staleConfigs.size());
-            staleConfigs.stream().map(DeviceConfig::getId).forEach(deviceConfigDao::delete);
+            sessionUtils.withTransaction(() -> {
+                staleConfigs.stream().map(DeviceConfig::getId).forEach(deviceConfigDao::delete);
+                return null;
+            });
         }
     }
 

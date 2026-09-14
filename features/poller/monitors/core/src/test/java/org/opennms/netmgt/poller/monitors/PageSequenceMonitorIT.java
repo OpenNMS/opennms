@@ -139,7 +139,7 @@ public class PageSequenceMonitorIT {
             "    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Please sign in\" />\n" + 
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
@@ -153,7 +153,7 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;.*&lt;titl(.)&gt;.*&lt;/for(.)&gt;.*&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
@@ -164,7 +164,7 @@ public class PageSequenceMonitorIT {
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Please sign in\" />\n" + 
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
@@ -178,20 +178,20 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&gt;Login (.)(.)(.)(.) Username and Password&lt;\">\n" +
+            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&gt;Please (.)(.)(.)(.) in&lt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
             "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
             "  </page>\n" +
-            "  <!-- Pick out the letters w-i-t-h to try and log in, this will fail -->\n" +
+            "  <!-- Pick out the letters s-i-g-n to try and log in, this will fail -->\n" +
             "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" response-range=\"300-399\" locationMatch=\"/opennms/login\\?error\" port=\"10342\" method=\"POST\">\n" +
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/login\" query=\"error\" port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have failed but did not\" successMatch=\"Your login attempt was not successful\"/>\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/login\" query=\"error\" port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have failed but did not\" successMatch=\"Bad credentials\"/>\n" +
             "  <!-- Pick out the letters d-e-m-o to try and log in, this will succeed -->\n" +
-            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;.*&lt;titl(.)&gt;.*&lt;/for(.)&gt;.*&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
@@ -202,7 +202,7 @@ public class PageSequenceMonitorIT {
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Please sign in\" />\n" + 
             "</page-sequence>\n");
 
         try {
@@ -220,18 +220,18 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;.*&lt;titl(.)&gt;.*&lt;/for(.)&gt;.*&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
             "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
             "  </page>\n" +
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\">\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" failureMatch=\"(?s)Bad credentials\" failureMessage=\"Login in Failed: bad credentials\">\n" +
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Please sign in\" />\n" + 
             "</page-sequence>\n");
 
         Map<String,Object> params = new HashMap<String,Object>();
@@ -254,7 +254,7 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;.*&lt;titl(.)&gt;.*&lt;/for(.)&gt;.*&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
@@ -277,7 +277,7 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+            "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;.*&lt;titl(.)&gt;.*&lt;/for(.)&gt;.*&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +

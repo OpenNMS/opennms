@@ -53,10 +53,10 @@ Each suggestion has the following properties: +
 * `label`: A human-readable label (for example, `node label`).
 * `provider`: The source of the suggestion.
 
-| /graphs/search/results/\{namespace}?providerId=\{providerid}&criteria=\{criteria}&context=\{context}
+| /graphs/search/results/\{namespace}?providerId=\{providerid}&criteria=\{criteria}
 | GET
 | Resolves a suggestion to actual vertices.
-The values for `\{providerid}` and `\{context}` are defined in the suggestion.
+The value for `\{providerid}` is defined in the suggestion.
 The `\{criteria}` is the `\{id}` property of the suggestion.
 |===
 
@@ -537,7 +537,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/su
 .Request
 [source, console]
 ----
-curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/results/layer3-network?providerId=NodeSearchProvider&context=Node&criteria=90
+curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/results/layer3-network?providerId=NodeSearchProvider&criteria=90
 ----
 
 .Response

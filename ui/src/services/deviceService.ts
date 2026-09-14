@@ -37,7 +37,7 @@ const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams):
   try {
     const endpointWithQueryString = queryParametersHandler(queryParameters, `${endpoint}/latest`)
     return await rest.get(endpointWithQueryString)
-  } catch (err) {
+  } catch (_err) {
     return false
   } finally {
     stopSpinner()
@@ -50,7 +50,7 @@ const downloadDeviceConfigs = async (deviceIds: number[]) => {
   const queryString = `?id=${deviceIds.join(',')}`
   try {
     return await rest.get(`${endpoint}/download${queryString}`, { responseType: 'blob' })
-  } catch (err) {
+  } catch (_err) {
     return false
   } finally {
     stopSpinner()
@@ -64,7 +64,7 @@ const backupDeviceConfig = async (configs: DeviceConfigBackup[]) => {
     const config = configs.map(({ ipAddress, location, serviceName }) => ({ ipAddress, location, serviceName }))
     const resp = await rest.post(`${endpoint}/backup`, config)
     return resp
-  } catch (err) {
+  } catch (_err) {
     return false
   } finally {
     stopSpinner()
@@ -75,7 +75,7 @@ const getVendorOptions = async (): Promise<string[]> => {
   try {
     const resp = await rest.get(`${endpoint}/vendor-options`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }
@@ -84,7 +84,7 @@ const getOsImageOptions = async (): Promise<string[]> => {
   try {
     const resp = await rest.get(`${endpoint}/os-image-options`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }
@@ -94,11 +94,13 @@ const getHistoryByIpInterface = async (ipInterfaceId: number, configType: string
 
   try {
     const resp: { data: DeviceConfigBackup[], status: number } = await rest.get(`${endpoint}/interface/${ipInterfaceId}?configType=${configType}`)
-    if (resp.status === 204) return []
+    if (resp.status === 204) {
+      return []
+    }
 
-    const devicesWithBackupDate = resp.data.filter((device) => device.lastBackupDate)
+    const devicesWithBackupDate = resp.data.filter(device => device.lastBackupDate)
     return orderBy(devicesWithBackupDate, 'lastBackupDate', 'desc')
-  } catch (err) {
+  } catch (_err) {
     return []
   } finally {
     stopSpinner()

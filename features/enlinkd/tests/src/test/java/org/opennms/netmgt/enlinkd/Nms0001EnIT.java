@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.transaction.support.TransactionTemplate;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -107,17 +109,20 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
     })
     public void testIsIsLinks() {
-        
-        m_nodeDao.save(builder.getFroh());
-        m_nodeDao.save(builder.getOedipus());
-        m_nodeDao.save(builder.getSiegFrie());
-        m_nodeDao.flush();
+
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getFroh());
+            m_nodeDao.save(builder.getOedipus());
+            m_nodeDao.save(builder.getSiegFrie());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
-        
+
         assertTrue(m_linkdConfig.useIsisDiscovery());
         assertFalse(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useOspfDiscovery());
@@ -185,10 +190,13 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
     @Test
    public void testLinkdNetworkTopologyUpdater() {
 
-        m_nodeDao.save(builder.getFroh());
-        m_nodeDao.save(builder.getOedipus());
-        m_nodeDao.save(builder.getSiegFrie());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getFroh());
+            m_nodeDao.save(builder.getOedipus());
+            m_nodeDao.save(builder.getSiegFrie());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkd.reload();
 
@@ -213,8 +221,11 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
     })
     public void testIsIsLinksExec() throws InterruptedException {
 
-        m_nodeDao.save(builder.getFroh());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getFroh());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -240,7 +251,7 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.execSingleSnmpCollection(froh.getId()));
 
         Thread.sleep(200);
-        m_isisLinkDao.flush();
+        persist(m_isisLinkDao::flush);
         assertEquals(2, m_isisLinkDao.countAll());
     }
 }

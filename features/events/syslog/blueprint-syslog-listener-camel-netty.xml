@@ -41,6 +41,7 @@
 		<argument ref="syslogConfig" />
 		<property name="distPollerDao" ref="distPollerDao"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory" />
+		<property name="bundleContext" ref="blueprintBundleContext" />
 	</bean>
 
 	<bean class="java.lang.Thread" init-method="start">

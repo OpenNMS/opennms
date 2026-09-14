@@ -39,6 +39,8 @@ import org.opennms.netmgt.model.OnmsFilterFavorite.Page;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -58,9 +60,12 @@ public class FilterFavoriteServiceIT {
 
 	@Autowired
     private FilterFavoriteService service;
-	
+
 	@Autowired
 	private DatabasePopulator populator;
+
+	@Autowired
+	private PlatformTransactionManager m_transactionManager;
     
 	
     @Before
@@ -141,11 +146,11 @@ public class FilterFavoriteServiceIT {
         Assert.assertNull(service.getFavorite(favorite.getId(), "admin")); // does not have this favorite
 
         // DELETE NOK
-        Assert.assertEquals(false, service.deleteFavorite(favorite.getId(), "admin")); // does not belong to this user
+        Assert.assertEquals(false, new TransactionTemplate(m_transactionManager).execute(status -> service.deleteFavorite(favorite.getId(), "admin"))); // does not belong to this user
         Assert.assertNotNull(service.getFavorite(favorite.getId(), "mvr")); // check original user, should still be there
 
         // DELETE OK
-        Assert.assertEquals(true, service.deleteFavorite(favorite.getId(), "mvr")); // does belong to this user
+        Assert.assertEquals(true, new TransactionTemplate(m_transactionManager).execute(status -> service.deleteFavorite(favorite.getId(), "mvr"))); // does belong to this user
         Assert.assertNull(service.getFavorite(favorite.getId(), "mvr")); // check original user, should be deleted
     }
 
@@ -156,7 +161,7 @@ public class FilterFavoriteServiceIT {
 
         for (Page page : Page.values()) {
             // try to create malicious favorites
-            OnmsFilterFavorite favorite = service.createFavorite("ulf", maliciousName, maliciousFilter, page);
+            OnmsFilterFavorite favorite = createFavoriteInTransaction(service, "ulf", maliciousName, maliciousFilter, page);
 
             // verify that filter name and criteria are not vulnerable to xss
             Assert.assertEquals(WebSecurityUtils.sanitizeString(maliciousName), favorite.getName());
@@ -169,7 +174,7 @@ public class FilterFavoriteServiceIT {
     public void verifyXSSPreventionOnRead() throws FilterFavoriteService.FilterFavoriteException {
         for(Page page : Page.values()) {
             final OnmsFilterFavorite filterToCreate = createFavoriteObject("ulf", "XSS Read Test " + page.name(), "filter=severity%3D6<script>alert(123);</script>", page);
-            int filterId = service.getFilterFavoriteDao().save(filterToCreate);
+            final int filterId = new TransactionTemplate(m_transactionManager).execute(status -> service.getFilterFavoriteDao().save(filterToCreate));
 
             final OnmsFilterFavorite filterRead = service.getFavorite(filterId,"ulf");
             Assert.assertEquals("filter=severity=6&lt;script&gt;alert(123);&lt;/script&gt;", filterRead.getFilter());
@@ -180,7 +185,7 @@ public class FilterFavoriteServiceIT {
         void validate(OnmsFilterFavorite favoriteToCreate, OnmsFilterFavorite createdFavorite);
     }
 
-    private static OnmsFilterFavorite createFavorite(FilterFavoriteService service, String username, String filterName, String filterCriteria, OnmsFilterFavorite.Page page) throws FilterFavoriteService.FilterFavoriteException {
+    private OnmsFilterFavorite createFavorite(FilterFavoriteService service, String username, String filterName, String filterCriteria, OnmsFilterFavorite.Page page) throws FilterFavoriteService.FilterFavoriteException {
         final OnmsFilterFavorite filterToCreate = new OnmsFilterFavorite();
         filterToCreate.setUsername(username);
         filterToCreate.setName(filterName);
@@ -199,10 +204,32 @@ public class FilterFavoriteServiceIT {
         });
     }
 
-    private static OnmsFilterFavorite createFavorite(FilterFavoriteService service, OnmsFilterFavorite createFavorite, AssertionCallback callback) throws FilterFavoriteService.FilterFavoriteException {
-        final OnmsFilterFavorite favorite = service.createFavorite(createFavorite.getUsername(), createFavorite.getName(), createFavorite.getFilter(), createFavorite.getPage());
+    private OnmsFilterFavorite createFavorite(FilterFavoriteService service, OnmsFilterFavorite createFavorite, AssertionCallback callback) throws FilterFavoriteService.FilterFavoriteException {
+        final OnmsFilterFavorite favorite = createFavoriteInTransaction(service, createFavorite.getUsername(), createFavorite.getName(), createFavorite.getFilter(), createFavorite.getPage());
         callback.validate(createFavorite, favorite);
         return favorite;
+    }
+
+    /**
+     * Runs the (write) {@link FilterFavoriteService#createFavorite} in a committing transaction so that the
+     * save is not rejected under Hibernate 5 (FlushMode.MANUAL / read-only mode). The checked
+     * {@link FilterFavoriteService.FilterFavoriteException} is unwrapped and rethrown.
+     */
+    private OnmsFilterFavorite createFavoriteInTransaction(final FilterFavoriteService service, final String username, final String filterName, final String filterCriteria, final OnmsFilterFavorite.Page page) throws FilterFavoriteService.FilterFavoriteException {
+        try {
+            return new TransactionTemplate(m_transactionManager).execute(status -> {
+                try {
+                    return service.createFavorite(username, filterName, filterCriteria, page);
+                } catch (final FilterFavoriteService.FilterFavoriteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        } catch (final RuntimeException ex) {
+            if (ex.getCause() instanceof FilterFavoriteService.FilterFavoriteException) {
+                throw (FilterFavoriteService.FilterFavoriteException) ex.getCause();
+            }
+            throw ex;
+        }
     }
 
     private static OnmsFilterFavorite createFavoriteObject(String user, String filterName, String filterCriteria, Page page) {

@@ -36,7 +36,7 @@ public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
 
 	@Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml,blueprint-empty-camel-context.xml";
+        return "OSGI-INF/blueprint/blueprint-ipc-client.xml,blueprint-empty-camel-context.xml";
     }
 
     @SuppressWarnings("rawtypes")

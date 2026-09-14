@@ -164,7 +164,8 @@ public class ScvCli {
         } catch (final CmdLineException e) {
             System.err.println("Error: " + e.getMessage() + "\n");
 
-            System.err.println("Usage: scvcli [--keystore KEYSTORE] [--password PASSWORD] set ALIAS USERNAME PASSWORD [--attribute key=value]...");
+            System.err.println("Usage: scvcli [--keystore KEYSTORE] [--password PASSWORD] set ALIAS USERNAME [PASSWORD] [--from-stdin] [--attribute key=value]...");
+            System.err.println("       (if PASSWORD is omitted, it is read from stdin with --from-stdin, otherwise prompted for interactively)");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] get ALIAS");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] get-all");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] list");

@@ -78,3 +78,149 @@ NOTE: If your query string includes a FIQL reserved character like a comma (,) o
 
 Suppose you have a service with a comma in the name, like `COMMA,SERVICE` and you want to retrieve all the alarms for its failure.
 Your query would look like `/api/v2/alarms?_s=alarm.reductionKey==uei.opennms.org/nodes/nodeLostService::*:COMMA%252CSERVICE`.
+
+== Version 2 (/api/v2/alarms)
+
+The v2 alarms endpoint is rooted at `/api/v2/alarms` and shares the common v2 DAO REST behavior (FIQL querying, paging, and `properties` introspection) in addition to alarm-specific write operations.
+
+NOTE: As with other v2 endpoints, the default offset is 0 and the default limit is 10 results.
+Use `limit=0` to return all results.
+List queries return `204 No Content` when no alarms match.
+
+=== GETs (reading data)
+
+[caption=]
+.Alarms v2 API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/alarms
+| Get a list of alarms. Supports FIQL querying via `_s`, plus `limit`, `offset`, `orderBy`, and `order` parameters. Returns `204 No Content` when nothing matches.
+
+| /api/v2/alarms/count
+| Get the number of alarms matching the (optional) query (returns plaintext, rather than XML or JSON).
+
+| /api/v2/alarms/properties
+| Get the list of searchable/orderable properties supported by this endpoint. Accepts an optional `q` parameter to filter properties by name.
+
+| /api/v2/alarms/properties/\{propertyId}
+| Get the distinct values for the given property. Accepts optional `q` (substring filter) and `limit` parameters. Returns `404 Not Found` if the property does not exist.
+
+| /api/v2/alarms/\{id}
+| Get the alarm specified by the given ID. Returns `404 Not Found` if no such alarm exists.
+|===
+
+=== POSTs (creating data)
+
+[caption=]
+.Alarms v2 API POST functions
+[cols="1,3"]
+|===
+| Resource  | Description
+
+| /api/v2/alarms/\{id}/ticket/create
+| Create a trouble ticket for the given alarm. Returns `202 Accepted` when the request is queued, or `501 Not Implemented` if the alarm trouble-ticketer plugin is not enabled (`opennms.alarmTroubleTicketEnabled`).
+
+| /api/v2/alarms/\{id}/ticket/update
+| Update the trouble ticket associated with the given alarm. Returns `202 Accepted`, or `501 Not Implemented` if the ticketer plugin is not enabled.
+
+| /api/v2/alarms/\{id}/ticket/close
+| Close the trouble ticket associated with the given alarm. Returns `202 Accepted`, or `501 Not Implemented` if the ticketer plugin is not enabled.
+|===
+
+NOTE: Creating an alarm is not supported. `POST /api/v2/alarms` is inherited but not implemented and returns `501 Not Implemented`.
+
+=== PUTs (modifying data)
+
+[caption=]
+.Alarms v2 API PUT functions
+[cols="1,3"]
+|===
+| Resource  | Description
+
+| /api/v2/alarms
+| Bulk-update all alarms matching the supplied query (FIQL via `_s` and/or query parameters). Requires `application/x-www-form-urlencoded`; the form fields below are applied to each matching alarm. Returns `404 Not Found` if no alarms match.
+
+| /api/v2/alarms/\{id}
+| Update properties of the alarm using `application/x-www-form-urlencoded` form data (see supported fields below). Returns `404 Not Found` if no such alarm exists, otherwise `204 No Content`. (The JSON/XML-body update is inherited but not implemented and returns `501 Not Implemented`.)
+
+| /api/v2/alarms/\{id}/memo
+| Set the sticky memo on the alarm. Requires `application/x-www-form-urlencoded` with a `body` field (required) and an optional `user` field (defaults to the authenticated user). Returns `400 Bad Request` if `body` is missing and `404 Not Found` if the alarm does not exist.
+
+| /api/v2/alarms/\{id}/journal
+| Set the journal (reduction-key) memo on the alarm. Same form fields and response codes as `/memo`.
+|===
+
+The form fields supported by `PUT /api/v2/alarms/\{id}` (and by the bulk `PUT /api/v2/alarms`) are:
+
+[options="autowidth"]
+[cols="1,3"]
+|===
+| Field  | Description
+
+| ack
+| `ack=true` acknowledges the alarm; `ack=false` unacknowledges it.
+
+| ackUser
+| The user to record for the acknowledgment. Defaults to the authenticated user. You may only acknowledge as a different user if you are authenticated as a user in the admin role.
+
+| clear
+| `clear=true` clears the alarm.
+
+| escalate
+| `escalate=true` escalates the alarm (for example, NORMAL -> MINOR, MAJOR -> CRITICAL).
+
+| ticketId
+| Sets the trouble-ticket ID on the alarm.
+
+| ticketState
+| Sets the trouble-ticket state on the alarm (must be a valid `TroubleTicketState` value).
+|===
+
+NOTE: When several of `ack`, `escalate`, and `clear` are supplied together, only one acknowledgment action is processed, evaluated in the order `ack`, then `escalate`, then `clear`. The `ticketId`/`ticketState` fields are applied independently of the acknowledgment action.
+
+=== DELETEs (removing data)
+
+[caption=]
+.Alarms v2 API DELETE functions
+[cols="1,3"]
+|===
+| Resource  | Description
+
+| /api/v2/alarms/\{id}/memo
+| Remove the sticky memo from the alarm. Returns `404 Not Found` if the alarm does not exist, otherwise `204 No Content`.
+
+| /api/v2/alarms/\{id}/journal
+| Remove the journal (reduction-key) memo from the alarm. Returns `404 Not Found` if the alarm does not exist, otherwise `204 No Content`.
+|===
+
+NOTE: Deleting an alarm is not supported. `DELETE /api/v2/alarms` and `DELETE /api/v2/alarms/\{id}` are inherited but not implemented and return `501 Not Implemented`.
+
+=== Examples using cURL
+
+.Acknowledge alarm 42 (form-encoded)
+[source,bash]
+----
+curl -u admin:admin -X PUT \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "ack=true" \
+  http://127.0.0.1:8980/opennms/api/v2/alarms/42
+----
+
+.Set a sticky memo on alarm 42
+[source,bash]
+----
+curl -u admin:admin -X PUT \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "body=Investigating this alarm" \
+  --data-urlencode "user=admin" \
+  http://127.0.0.1:8980/opennms/api/v2/alarms/42/memo
+----
+
+.Create a trouble ticket for alarm 42 (requires the trouble-ticketer plugin)
+[source,bash]
+----
+curl -u admin:admin -X POST \
+  http://127.0.0.1:8980/opennms/api/v2/alarms/42/ticket/create
+----

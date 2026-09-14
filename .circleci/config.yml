@@ -58,7 +58,8 @@ commands:
             mkdir -p "$CIRCLE_BIN_DIR"
             export PATH="$CIRCLE_BIN_DIR:$PATH"
             export CIRCLECI_CLI_TELEMETRY_OPTOUT=1
-            curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
+            # Pin to version 0.1.38646 as new versions requires TOKEN
+            curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | VERSION=0.1.38646 DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
             "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
 

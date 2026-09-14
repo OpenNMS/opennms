@@ -32,7 +32,7 @@
   <!--
         Reduces the graceful shutdown time from 300 to 15 seconds.
    -->
-  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.engine.DefaultShutdownStrategy">
     <property name="timeout" value="15"/>
   </bean>
 
@@ -45,7 +45,7 @@
 
     <route id="eifToEvent">
       <!-- Receive EIF stream from TCP port and decode the incoming bytes -->
-      <from uri="netty4:tcp://{{interface}}:{{port}}?sync=false&amp;decoder=#eifMessageDecoder"/>
+      <from uri="netty:tcp://{{interface}}:{{port}}?sync=false&amp;decoders=#eifMessageDecoder"/>
       <convertBodyTo type="org.opennms.netmgt.xml.event.Log"/>
       <!-- Send to the OpenNMS event log to the IPC manager -->
       <bean ref="eventIpcManager" method="send"/>

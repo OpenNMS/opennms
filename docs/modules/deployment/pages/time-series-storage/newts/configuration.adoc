@@ -53,12 +53,12 @@ If including multiple node references, separate each with a single comma.
 
 | org.opennms.newts.config.read_consistency
 | Consistency level for read operations.
-See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring Data Consistency] in the Cassandra documentation for a list of available options.
+See https://cassandra.apache.org/doc/4.0/cassandra/architecture/dynamo.html#tunable-consistency[Tunable Consistency] in the Cassandra documentation for a list of available options.
 | ONE
 
 | org.opennms.newts.config.write_consistency
 | Consistency level for write operations.
-See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring Data Consistency] in the official Cassandra documentation for a list of available options.
+See https://cassandra.apache.org/doc/4.0/cassandra/architecture/dynamo.html#tunable-consistency[Tunable Consistency] in the official Cassandra documentation for a list of available options.
 | ANY
 
 | org.opennms.newts.config.driver_settings_file

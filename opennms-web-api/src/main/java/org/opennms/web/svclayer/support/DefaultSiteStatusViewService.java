@@ -207,39 +207,45 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
     
     private String createNodePageUrl(AggregateStatusView statusView, AggregateStatus status) {
-        
-        if (status.getDownEntityCount() == 0) {
-            final StringBuilder buf = new StringBuilder("element/nodeList.htm?");
-            buf.append("statusViewName=");
-            buf.append(Util.encode(statusView.getName()));
-            buf.append('&');
-            buf.append("statusSite=");
-            buf.append(Util.encode(statusView.getColumnValue()));
-            buf.append('&');
-            buf.append("statusRowLabel=");
-            buf.append(Util.encode(status.getLabel()));
-            return buf.toString();
-        } else if (status.getDownEntityCount() == 1) {
+
+        // A single down node links straight to the (unconverted) node detail page.
+        if (status.getDownEntityCount() == 1) {
             OnmsNode node = status.getDownNodes().iterator().next();
-            StringBuffer buf = new StringBuffer("element/node.jsp?");
-            buf.append("node=");
-            buf.append(node.getId());
-            return buf.toString();
-        } else {
-            StringBuffer buf = new StringBuffer("element/nodeList.htm?");
-            buf.append("statusViewName=");
-            buf.append(Util.encode(statusView.getName()));
-            buf.append('&');
-            buf.append("statusSite=");
-            buf.append(Util.encode(statusView.getColumnValue()));
-            buf.append('&');
-            buf.append("statusRowLabel=");
-            buf.append(Util.encode(status.getLabel()));
-            buf.append('&');
-            buf.append("nodesWithDownAggregateStatus=true");
-            return buf.toString();
+            return "element/node.jsp?node=" + node.getId();
         }
-        
+
+        // Otherwise link to the Vue Nodes page. The legacy statusViewName/statusSite/statusRowLabel
+        // params are resolved here (server-side) into the concrete filters the Vue page understands:
+        // the row's categories (category1, unioned) and the view's asset column/value (assetColumn/assetValue).
+        final List<String> params = new ArrayList<>();
+
+        for (OnmsCategory category : getCategoriesForStatusLabel(statusView, status.getLabel())) {
+            params.add("category1=" + Util.encode(category.getName()));
+        }
+
+        if (statusView.getColumnName() != null && statusView.getColumnValue() != null) {
+            params.add("assetColumn=" + Util.encode(statusView.getColumnName()));
+            params.add("assetValue=" + Util.encode(statusView.getColumnValue()));
+        }
+
+        // More than one down node: restrict to nodes with a down aggregate status.
+        if (status.getDownEntityCount() > 1) {
+            params.add("nodesWithDownAggregateStatus=true");
+        }
+
+        return "ui/#/nodes?" + String.join("&", params);
+    }
+
+    /**
+     * Resolves the categories configured for the status row whose label matches the given status label.
+     */
+    private Set<OnmsCategory> getCategoriesForStatusLabel(AggregateStatusView statusView, String statusLabel) {
+        for (AggregateStatusDefinition def : statusView.getStatusDefinitions()) {
+            if (def.getName().equals(statusLabel)) {
+                return def.getCategories();
+            }
+        }
+        return java.util.Collections.emptySet();
     }
     
     /**

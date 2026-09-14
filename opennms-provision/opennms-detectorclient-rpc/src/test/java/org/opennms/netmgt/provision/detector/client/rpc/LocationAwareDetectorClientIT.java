@@ -132,7 +132,7 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint.xml";
+        return "OSGI-INF/blueprint/blueprint.xml";
     }
 
     /**
@@ -203,7 +203,7 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
 
     @Test
     public void didOverrideBodyDebug() throws Exception {
-        assertEquals("-5", context.getProperty("CamelLogDebugBodyMaxChars"));
+        assertEquals("-5", context.getGlobalOptions().get("CamelLogDebugBodyMaxChars"));
     }
 
     @Test

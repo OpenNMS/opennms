@@ -20,8 +20,7 @@
 /// License.
 ///
 
-import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
-import { NodePreferences, OpenNmsPreferences } from '@/types'
+import { NodePreferences, NodeQueryFilter, OpenNmsPreferences } from '@/types'
 
 const OPENNMS_PREFERENCES_STORAGE_KEY = 'opennms-preferences'
 
@@ -34,19 +33,31 @@ const defaultPreferences = () => {
   } as OpenNmsPreferences
 }
 
+// localStorage access can throw (Safari with 'Block all cookies', Firefox with
+// cookies disabled throw a SecurityError on any access), and the stored value
+// may be corrupted JSON. These are called from component setup, so a propagated
+// throw would abort mounting the app — degrade to defaults instead.
 const savePreferences = (data: OpenNmsPreferences) => {
-  localStorage.setItem(OPENNMS_PREFERENCES_STORAGE_KEY, JSON.stringify(data, getCircularReplacer()))
+  try {
+    localStorage.setItem(OPENNMS_PREFERENCES_STORAGE_KEY, JSON.stringify(data, getCircularReplacer()))
+  } catch {
+    // preferences just aren't persisted this session
+  }
 }
 
 const loadPreferences = (): OpenNmsPreferences | null => {
-  const json = localStorage.getItem(OPENNMS_PREFERENCES_STORAGE_KEY)
+  try {
+    const json = localStorage.getItem(OPENNMS_PREFERENCES_STORAGE_KEY)
 
-  if (json) {
-    const data = JSON.parse(json)
-    
-    if (data) {
-      return data as OpenNmsPreferences
+    if (json) {
+      const data = JSON.parse(json)
+
+      if (data) {
+        return data as OpenNmsPreferences
+      }
     }
+  } catch {
+    // fall through to null; callers substitute default preferences
   }
 
   return null
@@ -58,9 +69,16 @@ const loadDefaultPreferences = () => {
 
 const saveNodePreferences = (data: NodePreferences) => {
   const prefs = loadPreferences() || defaultPreferences()
-  const query = useNodeQuery()
   prefs.nodePreferences = data
-  prefs.nodePreferences.nodeFilter = query.getDefaultNodeQueryFilter()
+  savePreferences(prefs)
+}
+
+const saveNodeQueryFilter = (filter: NodeQueryFilter) => {
+  const prefs = loadPreferences() || defaultPreferences()
+  if (!prefs.nodePreferences) {
+    prefs.nodePreferences = { nodeColumns: [] }
+  }
+  prefs.nodePreferences.nodeFilter = filter
   savePreferences(prefs)
 }
 
@@ -89,5 +107,6 @@ export {
   loadNodePreferences,
   loadPreferences,
   saveNodePreferences,
+  saveNodeQueryFilter,
   savePreferences
 }

@@ -25,6 +25,7 @@
 		 <ref bean="reportServiceLocator" />
 		</property>
         <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
+        <property name="sessionUtils" ref="sessionUtils" />
 	</bean>
 	<onmsgi:service interface="org.opennms.reporting.core.svclayer.ReportStoreService" ref="reportStoreService"/>
 

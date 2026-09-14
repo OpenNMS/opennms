@@ -25,7 +25,7 @@ describe('snmpValidator', () => {
 
       it('should pass validation with valid SNMP versions', () => {
         const versions = ['v1', 'v2c', 'v3']
-        versions.forEach(version => {
+        versions.forEach((version) => {
           const errors = validateDefinition(validConfig, version, '192.168.1.1', '', '', false)
           expect(errors.snmpVersion).toBeUndefined()
         })
@@ -128,7 +128,7 @@ describe('snmpValidator', () => {
       it('should return error for invalid IP match expressions', () => {
         const invalidIplikeExpressions = ['invalid-ip', 'iplike 192.168.*.*', '192.168.*']
 
-        invalidIplikeExpressions.forEach(expr => {
+        invalidIplikeExpressions.forEach((expr) => {
           const errors = validateDefinition(validConfig, 'v2c', '', '', expr, false)
           expect(errors.ipMatch).toBe(IP_MATCH_ERROR)
         })
@@ -251,7 +251,7 @@ describe('snmpValidator', () => {
 
       it('should pass validation with valid security levels', () => {
         const validLevels = [1, 2, 3]
-        validLevels.forEach(level => {
+        validLevels.forEach((level) => {
           const config: SnmpBaseConfiguration = { ...validConfig, securityLevel: level }
           const errors = validateDefinition(config, 'v3', '192.168.1.1', '', '', isSaving)
           expect(errors.securityLevel).toBeUndefined()
@@ -268,7 +268,7 @@ describe('snmpValidator', () => {
 
       it('should pass validation with valid auth protocols', () => {
         const validProtocols = ['MD5', 'SHA', 'SHA-224', 'SHA-256', 'SHA-512']
-        validProtocols.forEach(protocol => {
+        validProtocols.forEach((protocol) => {
           const config: SnmpBaseConfiguration = { ...validConfig, authProtocol: protocol }
           const errors = validateDefinition(config, 'v2c', '192.168.1.1', '', '', isSaving)
           expect(errors.authProtocol).toBeUndefined()
@@ -291,7 +291,7 @@ describe('snmpValidator', () => {
 
       it('should pass validation with valid privacy protocols', () => {
         const validProtocols = ['DES', 'AES', 'AES192', 'AES256']
-        validProtocols.forEach(protocol => {
+        validProtocols.forEach((protocol) => {
           const config: SnmpBaseConfiguration = { ...validConfig, privacyProtocol: protocol }
           const errors = validateDefinition(config, 'v2c', '192.168.1.1', '', '', isSaving)
           expect(errors.privacyProtocol).toBeUndefined()
@@ -528,7 +528,7 @@ describe('snmpValidator', () => {
       })
 
       it('should pass with valid security levels for v3', () => {
-        [1, 2, 3].forEach(level => {
+        [1, 2, 3].forEach((level) => {
           const errors = validateSnmpConfiguration({ ...validConfig, securityLevel: level }, 'v3')
           expect(errors.securityLevel).toBeUndefined()
         })
@@ -547,7 +547,7 @@ describe('snmpValidator', () => {
       })
 
       it('should pass with all valid auth protocols', () => {
-        ['MD5', 'SHA', 'SHA-224', 'SHA-256', 'SHA-512'].forEach(protocol => {
+        ['MD5', 'SHA', 'SHA-224', 'SHA-256', 'SHA-512'].forEach((protocol) => {
           const errors = validateSnmpConfiguration({ ...validConfig, authProtocol: protocol }, 'v2c')
           expect(errors.authProtocol).toBeUndefined()
         })
@@ -566,7 +566,7 @@ describe('snmpValidator', () => {
       })
 
       it('should pass with all valid privacy protocols', () => {
-        ['DES', 'AES', 'AES192', 'AES256'].forEach(protocol => {
+        ['DES', 'AES', 'AES192', 'AES256'].forEach((protocol) => {
           const errors = validateSnmpConfiguration({ ...validConfig, privacyProtocol: protocol }, 'v2c')
           expect(errors.privacyProtocol).toBeUndefined()
         })

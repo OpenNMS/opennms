@@ -92,10 +92,6 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
         button.setDescription("Display help and usage");
         */
 
-        /**
-         * button.addClickListener(new HelpClickListener(this, m_wallboardConfigView.getDashletSelector()));
-         */
-
         Button addButton = new Button("Add");
         addButton.setStyleName("small");
         addButton.setDescription("Add surveillance view configuration");

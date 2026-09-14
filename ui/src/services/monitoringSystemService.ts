@@ -33,7 +33,7 @@ export const getMainMonitoringSystem = async (): Promise<MonitoringSystemMainRes
     const data = resp.data as MonitoringSystemMainResponse
 
     return data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

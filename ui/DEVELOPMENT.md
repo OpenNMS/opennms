@@ -18,10 +18,13 @@ The `.env` file (or `.env.development`) contains some compile-time environment-s
   Default: `LogoHorizon` for Horizon. May be different for different products.
   The file should be a Vue file in the `src/assets` directory which contains `svg` code for the logo.
 
-## featherds and vue-tsc
+## vue-tsc
 
-Note there are some issues with `@featherds` and `vue-tsc`. `feather` may not compile with `vue-tsc` `1.x` versions.
+Historical note — FeatherDS (`@featherds/*`) has since been fully removed from the
+UI, so this issue no longer applies, but it explains why `vue-tsc` is pinned to 2.x
+(which remains the required version).
 
+Previously, `@featherds` components did not compile with `vue-tsc` `1.x` versions.
 This was resolved by updating `vue-tsc` to `^2.12.2`.
 
 `vue-tsc 2.x` is a full rewrite based on `@volar/typescript` (Volar 2 engine). The reason it resolves the issue:                                                                       

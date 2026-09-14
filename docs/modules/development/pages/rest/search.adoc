@@ -1,0 +1,57 @@
+
+= Search API
+
+The `/search` endpoint performs a global search across all (or one specified) search contexts plus installed UI plugin/extension menu entries, returning weighted, permission-filtered matches grouped by context. It is mounted under `/opennms/api/v2/search` and produces `application/json`. Results are filtered according to the requesting user's roles/permissions.
+
+== GETs (reading data)
+
+[caption=]
+.Search API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/search` a|
+Performs a global search.
+
+* `_s` (String): the search query string.
+* `_c` (String, optional): restrict the search to a single context; omit for all contexts.
+* `_l` (int, optional, default `10`): maximum number of results per context (a value `< 0` means unbounded).
+
+Returns `200 OK` with a JSON array of `SearchResult` objects (one per context), or `204 No Content` if there are no matches.
+
+|===
+
+== Examples using cURL
+
+.Search across all contexts
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/search?_s=router"
+----
+
+.Response
+[source,json]
+----
+[
+  {
+    "context": "Node",
+    "results": [
+      {
+        "identifier": "1",
+        "label": "router-01",
+        "url": "element/node.jsp?node=1",
+        "matches": [{"id":"label","label":"Label","value":"router-01"}],
+        "weight": 0
+      }
+    ],
+    "more": false
+  }
+]
+----
+
+.Search within a single context, limited to 5 results
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/search?_s=router&_c=Node&_l=5"
+----

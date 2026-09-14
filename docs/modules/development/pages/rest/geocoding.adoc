@@ -1,0 +1,83 @@
+
+= Geocoding API
+
+The `/geocoding` endpoint manages the geocoder configuration used to resolve node addresses to geographic coordinates. It is mounted under `/opennms/api/v2/geocoding`, uses `application/json`, and requires `ROLE_REST` or `ROLE_ADMIN`.
+
+== GETs (reading data)
+
+[caption=]
+.Geocoding API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/geocoding/config`    | Returns the active geocoder manager configuration: `{ "activeGeocoderId": <string\|null> }`.
+| `/api/v2/geocoding/geocoders` | Lists all registered geocoder services with their per-provider configuration. Returns `204 No Content` if there are none.
+
+|===
+
+== POSTs (modifying data)
+
+`POST` consumes `application/json`.
+
+[caption=]
+.Geocoding API POST functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/geocoding/config`                  a|
+Updates the manager configuration (selects the active geocoder). Returns `202 Accepted`.
+
+Body (`GeocoderServiceManagerConfiguration`):
+
+* `activeGeocoderId` (String, nullable): the ID of the geocoder to activate (for example `google`, `mapquest`, `nominatim`).
+
+| `/api/v2/geocoding/geocoders/\{geocoderId}` a|
+Updates the configuration of one specific geocoder provider. Returns `204 No Content`, or `400 Bad Request` on validation failure.
+
+Body: a JSON object with a provider-specific `config` map, e.g. `{ "config": { "<key>": "<value>" } }`.
+
+|===
+
+== DELETEs (Removing Data)
+
+[caption=]
+.Geocoding API DELETE function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/geocoding/config` | Resets the geocoder manager configuration to defaults. Returns `202 Accepted`.
+
+|===
+
+== Examples using cURL
+
+.Get the active geocoder configuration
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/geocoding/config"
+----
+
+.Response
+[source,json]
+----
+{"activeGeocoderId":"nominatim"}
+----
+
+.Select the active geocoder
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"activeGeocoderId":"google"}' \
+  "http://127.0.0.1:8980/opennms/api/v2/geocoding/config"
+----
+
+.Configure a specific geocoder
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"config":{"apiKey":"AIza...","useSystemProxy":"true"}}' \
+  "http://127.0.0.1:8980/opennms/api/v2/geocoding/geocoders/google"
+----

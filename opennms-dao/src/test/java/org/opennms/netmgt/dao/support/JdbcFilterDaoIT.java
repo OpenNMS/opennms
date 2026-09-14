@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
+import javax.transaction.Transactional;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -282,6 +283,26 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
+    public void testIsValidOrRuleResolvedByAddressDoesNotOverMatch() throws Exception {
+        // Regression test for the filter precedence bug. isValid()/getActiveIPAddress() append
+        // "AND ipInterface.ipaddr = ?" to the parsed rule. For a rule with a top-level OR, the
+        // unparenthesized form parsed as "<branchA> OR (<branchB> AND ipaddr = ?)", so an address
+        // that matched NEITHER branch was still reported valid whenever branchA matched some other
+        // interface in the system. With the rule parenthesized it becomes
+        // "(<branchA> OR <branchB>) AND ipaddr = ?", scoping the address to the whole rule.
+        final String orRule = "ipaddr == '192.168.1.1' | ipaddr == '192.168.1.2'";
+
+        // 192.168.1.1 is populated and satisfies the left branch -> valid (positive control).
+        assertTrue("address matching a branch of the OR should be valid",
+                m_dao.isValid("192.168.1.1", orRule));
+
+        // 1.1.1.1 matches neither branch; it must NOT be reported valid just because 192.168.1.1
+        // exists and satisfies the left branch. (Fails against the un-parenthesized rule.)
+        assertFalse("address matching no branch of the OR must not be valid",
+                m_dao.isValid("1.1.1.1", orRule));
+    }
+
+    @Test
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -325,12 +346,12 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
     @Test
     public void testGetInterfaceWithServiceStatement() throws Exception {
-        assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE IPLIKE(ipInterface.ipaddr, '*.*.*.*')", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
+        assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (IPLIKE(ipInterface.ipaddr, '*.*.*.*'))", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
     }
 
     @Test
     public void testGetIpv6InterfaceWithServiceStatement() throws Exception {
-        assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE IPLIKE(ipInterface.ipaddr, '*:*:*:*:*:*:*:*')", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
+        assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (IPLIKE(ipInterface.ipaddr, '*:*:*:*:*:*:*:*'))", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
     }
 
     @Test
@@ -367,22 +388,30 @@ public class JdbcFilterDaoIT implements InitializingBean {
     // See HZN-1161 for more details.
     @Test
     public void verifyPerformance() {
-        // Create a bunch of interfaces
-        final OnmsNode node1 = m_populator.getNode1();
-        final IPAddressRange ipAddresses = new IPAddressRange("10.10.0.0", "10.10.255.255");
-        final Iterator<IPAddress> iterator = ipAddresses.iterator();
-        while (iterator.hasNext()) {
-            IPAddress address = iterator.next();
-            OnmsIpInterface ipInterface = new OnmsIpInterface();
-            ipInterface.setNode(node1);
-            ipInterface.setIpAddress(address.toInetAddress());
-            m_interfaceDao.save(ipInterface);
-        }
-        final int numberOfInterfaces = m_interfaceDao.countAll();
-        assertThat(numberOfInterfaces, greaterThan(255 * 255));
-
-        // verify
-        assertThat(m_dao.getActiveIPAddressList("IPADDR != '0.0.0.0'"), Matchers.hasSize(numberOfInterfaces));
+        final int[] numberOfInterfaces = new int[1];
+        
+        // Create interfaces in a transaction and commit them
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
+                // Create a bunch of interfaces
+                final OnmsNode node1 = m_populator.getNode1();
+                final IPAddressRange ipAddresses = new IPAddressRange("10.10.0.0", "10.10.255.255");
+                final Iterator<IPAddress> iterator = ipAddresses.iterator();
+                while (iterator.hasNext()) {
+                    IPAddress address = iterator.next();
+                    OnmsIpInterface ipInterface = new OnmsIpInterface();
+                    ipInterface.setNode(node1);
+                    ipInterface.setIpAddress(address.toInetAddress());
+                    m_interfaceDao.saveOrUpdate(ipInterface);
+                }
+                // Flush to ensure all interfaces are persisted
+                numberOfInterfaces[0] = m_interfaceDao.countAll();
+                assertThat(numberOfInterfaces[0], greaterThan(255 * 255));
+            }
+        });
+        assertThat(m_dao.getActiveIPAddressList("IPADDR != '0.0.0.0'"), Matchers.hasSize(numberOfInterfaces[0]));
         assertThat(m_dao.isValid("10.10.0.1", "IPADDR != '0.0.0.0'"), is(true));
+
     }
 }

@@ -41,7 +41,7 @@ export const validateSnmpDataCollectionSourceFile = async (
     let parser: any
     try {
       parser = new (DOMParser as any)()
-    } catch (e) {
+    } catch (_e) {
       parser = (DOMParser as any)()
     }
     const xmlDoc = parser.parseFromString(text, 'application/xml')
@@ -217,14 +217,18 @@ export const validateResourceTypeElement = (
       param,
       `ResourceType "${name}" persistenceSelectorStrategy parameter ${idx + 1}`
     )
-    if (paramError) return paramError
+    if (paramError) {
+      return paramError
+    }
   }
 
   const storageParams = storageStrategy.querySelectorAll('parameter')
   const storageParamList = Array.from(storageParams as any[]) as Element[]
   for (const [idx, param] of storageParamList.entries()) {
     const paramError = validateParameterElement(param, `ResourceType "${name}" storageStrategy parameter ${idx + 1}`)
-    if (paramError) return paramError
+    if (paramError) {
+      return paramError
+    }
   }
 
   return ''
@@ -277,7 +281,9 @@ export const validateGroupElement = (group: Element, groupNumber: number): strin
   const mibObjList = Array.from(mibObjs) as Element[]
   for (const [idx, mibObj] of mibObjList.entries()) {
     const mibObjError = validateMibObjElement(mibObj as any, name, idx + 1)
-    if (mibObjError) return mibObjError
+    if (mibObjError) {
+      return mibObjError
+    }
   }
 
   return ''
@@ -336,18 +342,22 @@ export const validateSystemDefElement = (
     if (!el) {
       return ''
     }
-    let node: any = null
+    let node: any
     try {
-      node = el.querySelector(tag) 
+      node = el.querySelector(tag)
     } catch (e) {
-      if (e instanceof Error) throw e
+      if (e instanceof Error) {
+        throw e
+      }
       node = null
     }
     if (!node) {
       try {
         node = el.getElementsByTagName(tag)[0]
       } catch (e) {
-        if (e instanceof Error) throw e
+        if (e instanceof Error) {
+          throw e
+        }
         node = null
       }
     }
@@ -393,6 +403,5 @@ export const validateSystemDefElement = (
 }
 
 export const isDuplicateFile = (fileName: string, existingFiles: UploadSnmpDataCollectionFileType[]): boolean => {
-  return !!existingFiles?.some((element) => element.file.name.toLowerCase() === fileName.toLowerCase())
+  return !!existingFiles?.some(element => element.file.name.toLowerCase() === fileName.toLowerCase())
 }
-

@@ -149,9 +149,12 @@
 
   <!-- Snmp Data Collection Config Extension-->
   <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" availability="mandatory" />
+  <reference id="snmpDataCollectionSyncToDb" interface="org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb" availability="mandatory" />
+  <reference id="snmpDataCollectionConfigLoader" interface="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader" availability="mandatory" />
 
   <bean id="snmpCollectionExtensionManager" class="org.opennms.features.apilayer.config.SnmpCollectionExtensionManager">
-    <argument ref="dataCollectionConfigDao"/>
+    <argument ref="snmpDataCollectionSyncToDb"/>
+    <argument ref="snmpDataCollectionConfigLoader"/>
   </bean>
 
   <reference-list interface="org.opennms.integration.api.v1.config.datacollection.SnmpCollectionExtension" availability="optional">

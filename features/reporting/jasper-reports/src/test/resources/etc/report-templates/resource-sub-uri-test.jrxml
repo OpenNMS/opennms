@@ -1,65 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="resource-sub-uri-test" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport name="resource-sub-uri-test" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cdf11ad4-9887-4471-a636-78e1c6a0c50b">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+	<parameter name="SUBREPORT_DIR" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA["/opt/opennms/etc/report-templates/"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="Subreport_1" class="net.sf.jasperreports.engine.JasperReport" isForPrompting="false"/>
-	<parameter name="Subreport_2" class="net.sf.jasperreports.engine.JasperReport" isForPrompting="false"/>
-	<queryString>
-		<![CDATA[SELECT 'huhu']]>
-	</queryString>
+	<parameter name="Subreport_1" forPrompting="false" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="Subreport_2" forPrompting="false" class="net.sf.jasperreports.engine.JasperReport"/>
+	<query language="sql"><![CDATA[SELECT 'huhu']]></query>
 	<field name="?column?" class="java.lang.String"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="232" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="207" width="555" height="20"/>
-				<textElement/>
-				<text><![CDATA[Resource subreport als parameter URI, da oben sollte ein OpenNMS Logo stehen und nen subreport]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title height="232" splitType="Stretch">
+		<element kind="staticText" uuid="56add24c-9c0b-4171-8d26-286f78dfef99" x="0" y="207" width="555" height="20">
+			<text><![CDATA[Resource subreport als parameter URI, da oben sollte ein OpenNMS Logo stehen und nen subreport]]></text>
+		</element>
 	</title>
-	<pageHeader>
-		<band splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band height="180" splitType="Stretch">
-			<subreport isUsingCache="false" runToBottom="false">
-				<reportElement mode="Transparent" x="0" y="0" width="555" height="43"/>
-				<subreportExpression class="net.sf.jasperreports.engine.JasperReport"><![CDATA[$P{Subreport_1}]]></subreportExpression>
-			</subreport>
-			<staticText>
-				<reportElement x="0" y="110" width="555" height="20"/>
-				<textElement/>
+			<element kind="subreport" uuid="8ec6cb20-5de5-44a5-962d-4c915077f1f2" mode="Transparent" x="0" y="0" width="555" height="43" runToBottom="false" usingCache="false">
+				<expression><![CDATA[$P{Subreport_1}]]></expression>
+			</element>
+			<element kind="staticText" uuid="43b2211e-e1da-4733-b6af-fb9621e9e773" x="0" y="110" width="555" height="20">
 				<text><![CDATA[Static text]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="0" y="143" width="555" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement x="0" y="57" width="555" height="43"/>
+			</element>
+			<element kind="textField" uuid="cd220bd5-1bc7-4609-8f41-69fc01ad9b0f" x="0" y="143" width="555" height="20">
+				<expression><![CDATA[$P{SUBREPORT_DIR}]]></expression>
+			</element>
+			<element kind="subreport" uuid="6961acff-ed82-4445-9a03-4afb40eaea50" x="0" y="57" width="555" height="43">
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="net.sf.jasperreports.engine.JasperReport"><![CDATA[$P{Subreport_2}]]></subreportExpression>
-			</subreport>
+				<expression><![CDATA[$P{Subreport_2}]]></expression>
+			</element>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band height="54" splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
 </jasperReport>

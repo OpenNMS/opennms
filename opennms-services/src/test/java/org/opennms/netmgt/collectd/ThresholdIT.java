@@ -204,6 +204,10 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
         EventAnticipator eventAnticipator = mockEventIpcManager.getEventAnticipator();
 
+        // Each scheduling generation starts out UNKNOWN, so its first successful collection emits this
+        // once. Anticipate before the service is scheduled below, or the collection can beat us to it.
+        anticipateDataCollectionSucceeded(eventAnticipator);
+
         // Let's send a nodeGainedService event
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Test");
         bldr.setNodeid(1);
@@ -273,6 +277,9 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
         eventAnticipator.reset();
 
+        // The category change above rescheduled the service, so a fresh generation reports success again.
+        anticipateDataCollectionSucceeded(eventAnticipator);
+
         // Again, Assert 2 collections are performed and that Threshold is no longer triggered
         collector.resetLatch(2);
         if (!collector.getLatch().await(30, TimeUnit.SECONDS)) {
@@ -282,6 +289,14 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Stop collectd gracefully so we don't keep trying to collect during the tear down
         collectd.stop();
+    }
+
+    private static void anticipateDataCollectionSucceeded(EventAnticipator eventAnticipator) {
+        EventBuilder bldr = new EventBuilder(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI, "OpenNMS.Collectd");
+        bldr.setNodeid(1);
+        bldr.setInterface(addr("192.168.1.1"));
+        bldr.setService("Mock");
+        eventAnticipator.anticipateEvent(bldr.getEvent());
     }
 
     private void initThreshdFactories(String threshd, String thresholds) throws Exception {

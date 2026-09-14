@@ -124,8 +124,6 @@ public abstract class NotificationManager {
     public static final String PARAM_EMAIL = "-email";
     /** Constant <code>PARAM_PAGER_EMAIL="-pemail"</code> */
     public static final String PARAM_PAGER_EMAIL = "-pemail";
-    /** Constant <code>PARAM_XMPP_ADDRESS="-xmpp"</code> */
-    public static final String PARAM_XMPP_ADDRESS = "-xmpp";
     /** Constant <code>PARAM_TEXT_PAGER_PIN="-tp"</code> */
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     /** Constant <code>PARAM_NUM_PAGER_PIN="-np"</code> */
@@ -138,8 +136,6 @@ public abstract class NotificationManager {
     public static final String PARAM_MOBILE_PHONE = "-mphone";
     /** Constant <code>PARAM_TUI_PIN="-tuipin"</code> */
     public static final String PARAM_TUI_PIN = "-tuipin";
-    /** Constant <code>PARAM_MICROBLOG_USERNAME="-ublog"</code> */
-    public static final String PARAM_MICROBLOG_USERNAME = "-ublog";
 
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;

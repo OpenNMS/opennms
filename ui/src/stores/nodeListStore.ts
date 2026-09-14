@@ -1,0 +1,586 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements. See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version. You may not use this file except in
+/// compliance with the License. You may obtain a copy of the
+/// License at:
+///
+/// https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied. See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { defaultColumns } from '@/components/Nodes/utils'
+import { hasNonEmptyProperty } from '@/lib/utils'
+import API from '@/services'
+import {
+  AssetFilter,
+  Category,
+  DrawerState,
+  ExtendedSearchValue,
+  MonitoringLocation,
+  NodeColumnSelectionItem,
+  NodePreferences,
+  NodeQueryExtendedSearchParams,
+  NodeQueryFilter,
+  ServiceType,
+  SetOperator
+} from '@/types'
+import { IAutocompleteItemType } from '@/types'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
+
+const {
+  getDefaultNodeQueryFilter,
+  getDefaultNodeQueryForeignSourceParams,
+  getDefaultNodeQuerySnmpParams,
+  getDefaultNodeQuerySysParams
+} = useNodeQuery()
+
+const getDefaultDrawerState = (): DrawerState => {
+  return {
+    visible: false,
+    isAdvanceFilterModal: false
+  }
+}
+
+export const useNodeListStore = defineStore('nodeListStore', () => {
+  const categories = ref<Category[]>([])
+  const categoryCount = computed(() => categories.value.length)
+  const categoriesLoaded = ref(false)
+  const monitoringLocations = ref<MonitoringLocation[]>([])
+  const monitoringLocationsLoaded = ref(false)
+  const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
+  const queryFilter = ref<NodeQueryFilter>(getDefaultNodeQueryFilter())
+  const drawerState = ref<DrawerState>(getDefaultDrawerState())
+  const columnsDrawerState = ref<DrawerState>(getDefaultDrawerState())
+  const selectedCategories = ref<IAutocompleteItemType[]>([])
+  const selectedCategories2 = ref<IAutocompleteItemType[]>([])
+  const selectedFlows = ref<IAutocompleteItemType[]>([])
+  const selectedMonitoringLocations = ref<IAutocompleteItemType[]>([])
+  const allServiceTypes = ref<ServiceType[]>([])
+  const serviceTypesLoaded = ref(false)
+  const selectedServices = ref<IAutocompleteItemType[]>([])
+
+  // Display-mode flag replicating the legacy node list's `?listInterfaces=true` behavior.
+  // Deliberately NOT part of NodeQueryFilter and NOT persisted in NodePreferences: it's a
+  // display mode, not a filter, so keeping it out avoids spurious refetch via the deep
+  // queryFilter watcher in Nodes.vue.
+  const showInterfaces = ref(false)
+
+  const fetchCategories = async () => {
+    const resp = await API.getCategories()
+
+    if (resp) {
+      categories.value = resp.category
+    }
+    categoriesLoaded.value = true
+  }
+
+  const fetchMonitoringLocations = async () => {
+    const resp = await API.getMonitoringLocations()
+
+    if (resp) {
+      monitoringLocations.value = resp.location
+    }
+    monitoringLocationsLoaded.value = true
+  }
+
+  const fetchServiceTypes = async () => {
+    allServiceTypes.value = await API.getServiceTypes()
+    serviceTypesLoaded.value = true
+  }
+
+  const isAnyFilterSelected = () => {
+    return (
+      queryFilter.value.searchTerm?.length > 0 ||
+      queryFilter.value.selectedCategories.length > 0 ||
+      (queryFilter.value.selectedCategories2?.length ?? 0) > 0 ||
+      queryFilter.value.selectedFlows.length > 0 ||
+      queryFilter.value.selectedMonitoringLocations.length > 0 ||
+      (queryFilter.value.selectedServices?.length ?? 0) > 0 ||
+      !!queryFilter.value.ipAddress?.length ||
+      !!queryFilter.value.macAddress?.length ||
+      !!queryFilter.value.nodesWithDownAggregateStatus ||
+      !!queryFilter.value.nodesWithAssets ||
+      !!queryFilter.value.nodesWithOutages ||
+      (queryFilter.value.assetFilters?.length ?? 0) > 0 ||
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams) ||
+      !!queryFilter.value.topology?.length
+    )
+  }
+
+  const resetColumnSelectionToDefault = async () => {
+    columns.value = defaultColumns
+  }
+
+  const setSearchTerm = async (term: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      searchTerm: term
+    }
+  }
+
+  const setCategoryMode = async (mode: SetOperator) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      categoryMode: mode
+    }
+  }
+
+  const setNodeColumnSelection = async (cols: NodeColumnSelectionItem[]) => {
+    columns.value = [...cols]
+  }
+
+  const setFilterWithIpAddress = async (ipAddress: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      ipAddress
+    }
+  }
+
+  const setFilterWithMacAddress = async (macAddress: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      macAddress
+    }
+  }
+
+  const setFilterWithDownAggregateStatus = async (nodesWithDownAggregateStatus: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithDownAggregateStatus
+    }
+  }
+
+  const setFilterWithNodesWithAssets = async (nodesWithAssets: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithAssets
+    }
+  }
+
+  const setFilterWithNodesWithOutages = async (nodesWithOutages: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithOutages
+    }
+  }
+
+  const setFilterWithAssetFilters = async (assetFilters: AssetFilter[]) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      assetFilters: [...assetFilters]
+    }
+  }
+
+  const setFilterWithSnmpParams = async (key: string, value: string) => {
+    const snmpParams = {
+      ...(queryFilter.value.extendedSearch.snmpParams ?? getDefaultNodeQuerySnmpParams()),
+      [key]: value
+    }
+
+    queryFilter.value = {
+      ...queryFilter.value,
+      extendedSearch: {
+        ...queryFilter.value.extendedSearch,
+        snmpParams
+      }
+    }
+  }
+
+  const setFilterWithSysParams = async (key: string, value: string) => {
+    const sysParams = {
+      ...(queryFilter.value.extendedSearch.sysParams ?? getDefaultNodeQuerySysParams()),
+      [key]: value
+    }
+
+    queryFilter.value = {
+      ...queryFilter.value,
+      extendedSearch: {
+        ...queryFilter.value.extendedSearch,
+        sysParams
+      }
+    }
+  }
+
+  const setFilterWithTopology = async (topology: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      topology
+    }
+  }
+
+  const setFilterWithForeignSourceParams = async (key: string, value: string) => {
+    const foreignSourceParams = {
+      ...(queryFilter.value.extendedSearch.foreignSourceParams ?? getDefaultNodeQueryForeignSourceParams()),
+      [key]: value
+    }
+
+    queryFilter.value = {
+      ...queryFilter.value,
+      extendedSearch: {
+        ...queryFilter.value.extendedSearch,
+        foreignSourceParams
+      }
+    }
+  }
+
+  const updateNodeColumnSelection = async (column: NodeColumnSelectionItem) => {
+    const newColumns = [...columns.value].map((c) => {
+      if (c.id === column.id) {
+        return {
+          ...c,
+          selected: column.selected
+        }
+      }
+      return c
+    })
+
+    columns.value = [...newColumns]
+  }
+
+  const clearAllFiltersAndSelections = async () => {
+    // retain the search term but clear all other filters
+    const searchTerm = queryFilter.value.searchTerm
+    const filter = getDefaultNodeQueryFilter()
+
+    selectedCategories.value = []
+    selectedCategories2.value = []
+    selectedFlows.value = []
+    selectedMonitoringLocations.value = []
+    selectedServices.value = []
+
+    queryFilter.value = {
+      ...filter,
+      searchTerm,
+      selectedServices: []
+    }
+  }
+
+  const getNodePreferences = async () => {
+    const nodeColumns = columns.value
+
+    const nodePrefs = {
+      nodeColumns,
+      nodeFilter: { ...queryFilter.value }
+    } as NodePreferences
+
+    return nodePrefs
+  }
+
+  const setFromNodePreferences = async (prefs: NodePreferences) => {
+    if (prefs.nodeColumns?.length) {
+      columns.value = [...prefs.nodeColumns]
+    }
+
+    const filter = getDefaultNodeQueryFilter()
+
+    // Always reset chip arrays so stale selections from a previous filter don't survive
+    selectedCategories.value = []
+    selectedCategories2.value = []
+    selectedFlows.value = []
+    selectedMonitoringLocations.value = []
+    selectedServices.value = []
+
+    if (prefs.nodeFilter) {
+      filter.searchTerm = prefs.nodeFilter.searchTerm
+      filter.categoryMode = prefs.nodeFilter.categoryMode
+
+      if (prefs.nodeFilter.selectedCategories?.length) {
+        filter.selectedCategories = [...prefs.nodeFilter.selectedCategories]
+        selectedCategories.value = prefs.nodeFilter.selectedCategories
+          .map(cat => ({ _value: cat.id, _text: cat.name } as IAutocompleteItemType))
+      }
+
+      if (prefs.nodeFilter.selectedCategories2?.length) {
+        filter.selectedCategories2 = [...prefs.nodeFilter.selectedCategories2]
+        selectedCategories2.value = prefs.nodeFilter.selectedCategories2
+          .map(cat => ({ _value: cat.id, _text: cat.name } as IAutocompleteItemType))
+      }
+
+      if (prefs.nodeFilter.selectedFlows?.length) {
+        filter.selectedFlows = [...prefs.nodeFilter.selectedFlows]
+        selectedFlows.value = prefs.nodeFilter.selectedFlows
+          .map(name => ({ _text: name, _value: name } as IAutocompleteItemType))
+      }
+
+      if (prefs.nodeFilter.selectedMonitoringLocations?.length) {
+        filter.selectedMonitoringLocations = [...prefs.nodeFilter.selectedMonitoringLocations]
+        selectedMonitoringLocations.value = prefs.nodeFilter.selectedMonitoringLocations
+          .map(loc => ({ _text: loc.name, _value: loc.name, name: loc.name } as IAutocompleteItemType))
+      }
+
+      if (prefs.nodeFilter.ipAddress) {
+        filter.ipAddress = prefs.nodeFilter.ipAddress
+      }
+
+      if (prefs.nodeFilter.macAddress) {
+        filter.macAddress = prefs.nodeFilter.macAddress
+      }
+
+      if (prefs.nodeFilter.nodesWithDownAggregateStatus) {
+        filter.nodesWithDownAggregateStatus = true
+      }
+
+      if (prefs.nodeFilter.nodesWithAssets) {
+        filter.nodesWithAssets = true
+      }
+
+      if (prefs.nodeFilter.nodesWithOutages) {
+        filter.nodesWithOutages = true
+      }
+
+      if (prefs.nodeFilter.assetFilters?.length) {
+        filter.assetFilters = [...prefs.nodeFilter.assetFilters]
+      }
+
+      if (prefs.nodeFilter.topology) {
+        filter.topology = prefs.nodeFilter.topology
+      }
+
+      if (prefs.nodeFilter.extendedSearch) {
+        filter.extendedSearch = { ...prefs.nodeFilter.extendedSearch }
+      }
+
+      if (prefs.nodeFilter.selectedServices?.length) {
+        // Always restore string names so the FIQL filter works regardless of load order.
+        // Building IAutocompleteItemType chip items requires allServiceTypes to be populated
+        // first; App.vue must call getServiceTypes() before setFromNodePreferences().
+        // If allServiceTypes is empty the chips won't render, but filtering still works.
+        filter.selectedServices = [...prefs.nodeFilter.selectedServices]
+        const items = prefs.nodeFilter.selectedServices
+          .map((name) => {
+            const st = allServiceTypes.value.find(s => s.name === name)
+            return st ? { _value: st.id, _text: st.name } as IAutocompleteItemType : null
+          })
+          .filter((i): i is IAutocompleteItemType => i !== null)
+        selectedServices.value = items
+      }
+    }
+
+    queryFilter.value = filter
+  }
+
+  const openInstancesDrawerModal = () => {
+    drawerState.value.visible = true
+  }
+
+  const closeInstancesDrawerModal = () => {
+    drawerState.value.visible = false
+  }
+
+  const openColumnsDrawerModal = () => {
+    columnsDrawerState.value.visible = true
+  }
+
+  const closeColumnsDrawerModal = () => {
+    columnsDrawerState.value.visible = false
+  }
+
+  const removeCategory = (item: IAutocompleteItemType) => {
+    selectedCategories.value = selectedCategories.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter(c => c.id !== item._value)
+  }
+
+  const removeCategory2 = (item: IAutocompleteItemType) => {
+    selectedCategories2.value = selectedCategories2.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedCategories2 = (queryFilter.value.selectedCategories2 ?? []).filter(c => c.id !== item._value)
+  }
+
+  const removeFlow = (item: IAutocompleteItemType) => {
+    selectedFlows.value = selectedFlows.value.filter(i => i._text !== item._text)
+    queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter(f => f !== item._text)
+  }
+
+  const removeMonitoringLocation = (item: IAutocompleteItemType) => {
+    const locationName = item.name
+    queryFilter.value.selectedMonitoringLocations = queryFilter.value.selectedMonitoringLocations.filter(
+      loc => loc.name !== locationName
+    )
+    // Also update the autocomplete-backed ref (read by the drawer on reopen); otherwise a removed
+    // location chip would reappear in the drawer's selection. Mirrors removeCategory/removeService.
+    selectedMonitoringLocations.value = selectedMonitoringLocations.value.filter(
+      loc => loc.name !== locationName
+    )
+  }
+
+  const removeExtendedSearch = (item: ExtendedSearchValue) => {
+    const group = queryFilter.value.extendedSearch[item.group]
+    if (group) {
+      queryFilter.value = {
+        ...queryFilter.value,
+        extendedSearch: {
+          ...queryFilter.value.extendedSearch,
+          [item.group]: { ...(group as Record<string, unknown>), [item.key]: '' }
+        }
+      }
+    }
+  }
+
+  const removeIpAddress = () => {
+    queryFilter.value = { ...queryFilter.value, ipAddress: '' }
+  }
+
+  const removeMacAddress = () => {
+    queryFilter.value = { ...queryFilter.value, macAddress: '' }
+  }
+
+  const removeDownAggregateStatus = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithDownAggregateStatus: false }
+  }
+
+  const removeNodesWithAssets = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithAssets: false }
+  }
+
+  const removeNodesWithOutages = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithOutages: false }
+  }
+
+  const removeAssetFilter = (column: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      assetFilters: (queryFilter.value.assetFilters ?? []).filter(f => f.column !== column)
+    }
+  }
+
+  const removeTopology = () => {
+    queryFilter.value = { ...queryFilter.value, topology: '' }
+  }
+
+  const setExtendedSearchParams = (params: NodeQueryExtendedSearchParams) => {
+    queryFilter.value = { ...queryFilter.value, extendedSearch: { ...params }}
+  }
+
+  const updateSelectedCategories = (items: IAutocompleteItemType[]) => {
+    selectedCategories.value = items
+
+    // Also update the query filter
+    queryFilter.value.selectedCategories = items.map(item => ({
+      id: item._value as number,
+      name: item._text as string,
+      authorizedGroups: [] as string[]
+    }))
+  }
+
+  const updateSelectedCategories2 = (items: IAutocompleteItemType[]) => {
+    selectedCategories2.value = items
+
+    queryFilter.value.selectedCategories2 = items.map(item => ({
+      id: item._value as number,
+      name: item._text as string,
+      authorizedGroups: [] as string[]
+    }))
+  }
+
+  const updateSelectedFlows = (items: IAutocompleteItemType[]) => {
+    selectedFlows.value = items
+    queryFilter.value.selectedFlows = items.map(item => item._text as string)
+  }
+
+  const updateSelectedServices = (items: IAutocompleteItemType[]) => {
+    selectedServices.value = items
+    queryFilter.value.selectedServices = items.map(i => i._text as string)
+  }
+
+  const removeService = (item: IAutocompleteItemType) => {
+    selectedServices.value = selectedServices.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedServices = (queryFilter.value.selectedServices ?? []).filter(
+      n => n !== item._text
+    )
+  }
+
+  const setShowInterfaces = (value: boolean) => {
+    showInterfaces.value = value
+  }
+
+  const updateSelectedMonitoringLocations = async (locations: IAutocompleteItemType[]) => {
+    selectedMonitoringLocations.value = locations
+
+    const selItems = locations
+      .map(item => monitoringLocations.value.find(loc => loc.name === String(item._value)))
+      .filter(item => !!item)
+
+    queryFilter.value.selectedMonitoringLocations = (selItems as MonitoringLocation[]) || []
+  }
+
+  return {
+    categories,
+    categoriesLoaded,
+    categoryCount,
+    columns,
+    monitoringLocations,
+    monitoringLocationsLoaded,
+    queryFilter,
+    drawerState,
+    columnsDrawerState,
+    clearAllFiltersAndSelections,
+    getCategories: fetchCategories,
+    getMonitoringLocations: fetchMonitoringLocations,
+    getServiceTypes: fetchServiceTypes,
+    getNodePreferences,
+    isAnyFilterSelected,
+    resetColumnSelectionToDefault,
+    setCategoryMode,
+    setFilterWithIpAddress,
+    setFilterWithMacAddress,
+    setFilterWithDownAggregateStatus,
+    setFilterWithNodesWithAssets,
+    setFilterWithNodesWithOutages,
+    setFilterWithAssetFilters,
+    setFilterWithSnmpParams,
+    setFilterWithForeignSourceParams,
+    setFilterWithSysParams,
+    setFilterWithTopology,
+    setFromNodePreferences,
+    setNodeColumnSelection,
+    setSearchTerm,
+    updateSelectedMonitoringLocations,
+    updateNodeColumnSelection,
+    openInstancesDrawerModal,
+    closeInstancesDrawerModal,
+    selectedCategories,
+    selectedCategories2,
+    selectedFlows,
+    selectedMonitoringLocations,
+    allServiceTypes,
+    serviceTypesLoaded,
+    selectedServices,
+    showInterfaces,
+    setShowInterfaces,
+    removeCategory,
+    removeCategory2,
+    removeExtendedSearch,
+    removeIpAddress,
+    removeMacAddress,
+    removeDownAggregateStatus,
+    removeNodesWithAssets,
+    removeNodesWithOutages,
+    removeAssetFilter,
+    removeTopology,
+    setExtendedSearchParams,
+    removeFlow,
+    removeMonitoringLocation,
+    removeService,
+    updateSelectedCategories,
+    updateSelectedCategories2,
+    updateSelectedFlows,
+    updateSelectedServices,
+    openColumnsDrawerModal,
+    closeColumnsDrawerModal
+  }
+})

@@ -2,8 +2,8 @@
 pax-web-war
 # Install specific versions of the spring and spring-jms features to
 # reduce the computations needed by the bundle dependency resolver
-spring/${springVersion}
-spring-jms/${springVersion}
+spring/${springOsgiVersion}
+spring-jms/${springOsgiVersion}
 opennms-core-ipc-jms
 opennms-core-ipc-twin-shell
 opennms-syslogd-listener-camel-netty

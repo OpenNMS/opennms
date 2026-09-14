@@ -23,8 +23,13 @@ package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
+import org.opennms.netmgt.model.EventConfSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,41 +50,42 @@ public class EventConfEventDaoHibernate
 
     @Override
     public List<EventConfEvent> findBySourceId(Long sourceId) {
-        return find("from EventConfEvent e where e.source.id = ? order by e.createdTime desc", sourceId);
+        return find("from EventConfEvent e where e.source.id = ?1 order by e.eventOrder asc, e.id asc", sourceId);
     }
 
     @Override
     public EventConfEvent findByUei(String uei) {
-        List<EventConfEvent> list = find("from EventConfEvent e where e.uei = ?", uei);
+        List<EventConfEvent> list = find("from EventConfEvent e where e.uei = ?1", uei);
         return list.isEmpty() ? null : list.get(0);
     }
 
     @Override
     public List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId) {
-        return find("from EventConfEvent e where e.uei = ? and e.source.id = ?", uei, sourceId);
+        return find("from EventConfEvent e where e.uei = ?1 and e.source.id = ?2", uei, sourceId);
     }
 
     @Override
     public int countBySourceId(Long sourceId) {
-        return queryInt("select count(e.id) from EventConfEvent e where e.source.id = ?", sourceId);
+        return queryInt("select count(e.id) from EventConfEvent e where e.source.id = ?1", sourceId);
     }
 
     public List<EventConfEvent> filterEventConf(final String uei, final String vendor, final String sourceName, final int offset, final int limit) {
         List<Object> queryParamList = new ArrayList<>();
+        int paramIndex = 0;
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from EventConfEvent e where 1=1 ");
         if (uei != null && !uei.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.uei) like ? escape '\\' ");
+            queryBuilder.append(" and lower(e.uei) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + escapeLike(uei.trim().toLowerCase()) + "%"); // contains match
         }
 
         if (vendor != null && !vendor.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.source.vendor) like ? escape '\\' ");
+            queryBuilder.append(" and lower(e.source.vendor) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
         if (sourceName != null && !sourceName.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.source.name) like ? escape '\\' ");
+            queryBuilder.append(" and lower(e.source.name) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + escapeLike(sourceName.trim().toLowerCase()) + "%");
         }
 
@@ -89,25 +95,26 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
-    public Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String eventOrder, Integer totalRecords, Integer offset, Integer limit) {
+    public Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String sortDirection, Integer totalRecords, Integer offset, Integer limit) {
 
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
+        int paramIndex = 0;
 
-        String whereClause = "where e.source.id = ? ";
+        String whereClause = "where e.source.id = ?" + (++paramIndex) + " ";
         queryParams.add(sourceId);
 
         // Add filter conditions dynamically
         if (eventFilter != null && !eventFilter.trim().isEmpty()) {
             String escapedFilter = "%" + escapeLike(eventFilter.trim().toLowerCase()) + "%";
-            conditions.add("lower(e.uei) like ? escape '\\'");
+            conditions.add("lower(e.uei) like ?" + (++paramIndex) + " escape '\\'");
             queryParams.add(escapedFilter);
 
-            conditions.add("lower(e.eventLabel) like ? escape '\\'");
+            conditions.add("lower(e.eventLabel) like ?" + (++paramIndex) + " escape '\\'");
             queryParams.add(escapedFilter);
 
-            conditions.add("lower(e.description) like ? escape '\\'");
+            conditions.add("lower(e.description) like ?" + (++paramIndex) + " escape '\\'");
             queryParams.add(escapedFilter);
 
         }
@@ -125,15 +132,15 @@ public class EventConfEventDaoHibernate
         if (resultCount > 0) {
 
             String orderBy = "";
-            String sortField = eventSortBy;
 
-            String sortOrder = "ASC".equalsIgnoreCase(eventOrder) ? "ASC" : "DESC";
+            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "severity", "enabled", "createdTime", "eventOrder");
 
-            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "severity", "enabled");
-
-            if (eventSortBy == null || !allowedSortFields.contains(eventSortBy)) {
-                sortField = "createdTime";
-            }
+            // Default to the evaluation order within the source
+            final String sortField = eventSortBy != null && allowedSortFields.contains(eventSortBy) ? eventSortBy : "eventOrder";
+            // Without a direction the evaluation order reads top-down, everything else newest/highest first -
+            // the same whether the field was requested or defaulted
+            final String defaultDirection = "eventOrder".equals(sortField) ? "ASC" : "DESC";
+            final String sortOrder = sortDirection == null ? defaultDirection : ("ASC".equalsIgnoreCase(sortDirection) ? "ASC" : "DESC");
 
             if ("severity".equalsIgnoreCase(sortField)) {
                 orderBy = " order by case upper(e.severity) " +
@@ -144,9 +151,9 @@ public class EventConfEventDaoHibernate
                         " when 'MINOR' then 5 " +
                         " when 'MAJOR' then 6 " +
                         " when 'CRITICAL' then 7 " +
-                        " else 999 end " + sortOrder;
+                        " else 999 end " + sortOrder + ", e.id " + sortOrder;
             } else {
-                orderBy = " order by e." + sortField + " " + sortOrder;
+                orderBy = " order by e." + sortField + " " + sortOrder + ", e.id " + sortOrder;
             }
 
 
@@ -200,12 +207,12 @@ public class EventConfEventDaoHibernate
 
     @Override
     public List<EventConfEvent> findEnabledEvents() {
-        return find("from EventConfEvent e where e.enabled = true order by e.id asc");
+        return find("from EventConfEvent e where e.enabled = true order by e.source.id asc, e.eventOrder asc, e.id asc");
     }
 
     @Override
     public void deleteBySourceId(Long sourceId) {
-        getHibernateTemplate().bulkUpdate("delete from EventConfEvent e where e.source.id = ?", sourceId);
+        bulkDelete("delete from EventConfEvent e where e.source.id = ?1", sourceId);
     }
 
     @Override
@@ -221,6 +228,8 @@ public class EventConfEventDaoHibernate
         }
 
         var session = getSessionFactory().getCurrentSession();
+        // bound the wait: this UPDATE queues behind whoever holds the source's event rows (e.g. an upload)
+        EventConfLocks.applyLockTimeout(session);
         String hql = "update EventConfEvent e set e.enabled = :enabled " +
                 "where e.source.id = :sourceId and e.id in (:eventIds)";
 
@@ -246,11 +255,47 @@ public class EventConfEventDaoHibernate
 
     @Override
     public List<EventConfEvent> findEventsByVendor(String vendor) {
-        return find("from EventConfEvent e where e.enabled = true  and  e.source.vendor = ? order by e.id asc ", vendor);
+        return find("from EventConfEvent e where e.enabled = true  and  e.source.vendor = ?1 order by e.source.id asc, e.eventOrder asc, e.id asc ", vendor);
     }
 
     @Override
     public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
-        return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
+        return findUnique("from EventConfEvent e where e.source.id = ?1 AND  e.id = ?2 ", sourceId, eventId);
+    }
+
+    @Override
+    public Integer findMaxEventOrder(Long sourceId) {
+        Integer maxOrder = (Integer) getSessionFactory().getCurrentSession()
+                .createQuery("select max(e.eventOrder) from EventConfEvent e where e.source.id = :sourceId")
+                .setParameter("sourceId", sourceId)
+                .uniqueResult();
+        return maxOrder != null ? maxOrder : 0;
+    }
+
+    @Override
+    public Integer nextEventOrder(Long sourceId) {
+        // Serialize concurrent appenders: take a row lock on the parent source (SELECT ... FOR UPDATE)
+        // so the max() below cannot be read by two transactions before either has inserted.
+        // Flush first: the source may have been created in this very transaction and the lock
+        // query needs its row to exist.
+        final var session = getSessionFactory().getCurrentSession();
+        EventConfLocks.applyLockTimeout(session);
+        session.flush();
+        if (session.get(EventConfSource.class, sourceId, new LockOptions(LockMode.PESSIMISTIC_WRITE)) == null) {
+            throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
+        }
+        return findMaxEventOrder(sourceId) + 1;
+    }
+
+    @Override
+    public void compactEventOrder(Long sourceId) {
+        int updated = getSessionFactory().getCurrentSession()
+                .createNativeQuery("UPDATE eventconf_events e SET event_order = r.rn " +
+                        "FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY event_order, id) AS rn " +
+                        "      FROM eventconf_events WHERE source_id = :sourceId) r " +
+                        "WHERE e.id = r.id AND e.event_order <> r.rn")
+                .setParameter("sourceId", sourceId)
+                .executeUpdate();
+        LOG.debug("Compacted eventOrder for sourceId={} ({} rows renumbered)", sourceId, updated);
     }
 }

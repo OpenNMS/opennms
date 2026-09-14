@@ -1,10 +1,58 @@
-= Metadata Policies
+= Metadata Policy
 :description: Learn about the node and interface metadata policies in OpenNMS {page-component-title} to set metadata for provisioned nodes and discovered interfaces on them.
+
+These policies attach metadata to nodes and to interfaces discovered during a node scan.
+Metadata is stored in the `requisition` context by default and can be referenced elsewhere through metadata expansion as `${requisition:key}` -- for example, in monitor, collector, threshold, and notification expressions.
+See xref:operation:deep-dive/meta-data.adoc[Metadata] for details on metadata and expansion.
+
+Both policies assign a fixed value to every matching entity.
+To compute a value from the entity itself, use the xref:reference:provisioning/policies/script.adoc[Script Policy] instead.
+
+Both policies accept the common `matchBehavior` parameter and the `~` regular-expression prefix on criteria values.
+See xref:reference:provisioning/policies.adoc[Policies].
 
 == Node metadata policy
 
-The Metadata policy lets you set node-level metadata in the context `requisition` for provisioned nodes.
+`NodeMetadataSettingPolicy` sets node-level metadata on nodes that match its criteria.
+
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| metadataKey
+| Metadata key to set. Required.
+|
+
+| metadataValue
+| Value to assign to the key.
+| (empty)
+
+| metadataContext
+| Metadata context the key is stored under.
+| requisition
+|===
+
+This policy matches against the same node properties as the xref:reference:provisioning/policies/node-category.adoc#match-criteria[Node Categorization policy] (for example, `label`, `sysObjectId`, `sysName`, and `sysLocation`).
 
 == Interface metadata policy
 
-The Interface Metadata policy lets you set interface-level metadata in the context `requisition` for discovered interfaces on provisioned nodes.
+`InterfaceMetadataSettingPolicy` sets metadata on IP interfaces discovered through SNMP during the scan.
+It takes the same `metadataKey`, `metadataValue`, and `metadataContext` parameters as the node metadata policy.
+
+Match against the following interface properties:
+
+[options="header", cols="1,3"]
+|===
+| Property
+| Description
+
+| ipAddress
+| IP address of the discovered interface.
+
+| ipHostName
+| Resolved host name of the interface.
+|===
+
+For configuration examples, see xref:reference:provisioning/policies/examples.adoc#set-metadata[Set metadata].

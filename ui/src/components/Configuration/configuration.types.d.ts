@@ -24,7 +24,7 @@ export type ConfigurationPageVals = {
 }
 
 export type AdvancedOption = {
-  key: { _text: string; name: string }
+  key: { _text: string; name: string; id?: number }
   value: string
   hint: string | undefined
 }

@@ -19,6 +19,7 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
+import { ref } from 'vue'
 
 const isActive = ref(false)
 

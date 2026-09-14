@@ -35,7 +35,7 @@ public class PropertyEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "graphSequence")
-    @SequenceGenerator(name = "graphSequence", sequenceName = "graphnxtid")
+    @SequenceGenerator(name = "graphSequence", sequenceName = "graphnxtid", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

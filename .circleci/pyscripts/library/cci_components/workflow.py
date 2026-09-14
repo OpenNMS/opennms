@@ -210,6 +210,15 @@ class workflow:
                                 "doesn't exist in our workflow_jobs",
                             )
 
+                elif "parameters" in element:
+                    for param_name, param_value in tmp_output_elements[element].items():
+                        tmp_output.append(
+                            self._common_library.create_space(leading_space + 4)
+                            + param_name
+                            + ": "
+                            + str(param_value)
+                        )
+
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
             if not re.match("^.*merge.*$", job):

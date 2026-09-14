@@ -29,14 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.Authenticator;
-import javax.mail.Flags.Flag;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.search.OrTerm;
-import javax.mail.search.SearchTerm;
-import javax.mail.search.SubjectTerm;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Flags.Flag;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.search.OrTerm;
+import jakarta.mail.search.SearchTerm;
+import jakarta.mail.search.SubjectTerm;
 
 import org.junit.Assert;
 import org.junit.Before;

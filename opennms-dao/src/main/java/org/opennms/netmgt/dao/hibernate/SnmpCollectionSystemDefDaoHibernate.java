@@ -50,7 +50,7 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     @Override
     public SnmpCollectionSystemDef findByNameAndSource(String name, Integer snmpCollectionSourceId) {
         List<SnmpCollectionSystemDef> list = find(
-                "from SnmpCollectionSystemDef d where d.name = ? and d.collectionSource.id = ?", name, snmpCollectionSourceId);
+                "from SnmpCollectionSystemDef d where d.name = ?1 and d.collectionSource.id = ?2", name, snmpCollectionSourceId);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -62,12 +62,12 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
 
     @Override
     public List<SnmpCollectionSystemDef> findAllBySource(Integer snmpCollectionSourceId) {
-        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?", snmpCollectionSourceId);
+        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1", snmpCollectionSourceId);
     }
 
     @Override
     public List<SnmpCollectionSystemDef> findAllEnabledBySource(Integer snmpCollectionSourceId) {
-        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ? and d.enabled = true", snmpCollectionSourceId);
+        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1 and d.enabled = true", snmpCollectionSourceId);
     }
 
     @Override
@@ -98,26 +98,27 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
 
     @Override
     public void deleteBySourceId(Integer snmpCollectionSourceId) {
-        getHibernateTemplate().bulkUpdate("delete from SnmpCollectionSystemDef d where d.collectionSource.id = ?", snmpCollectionSourceId);
+        bulkDelete("delete from SnmpCollectionSystemDef d where d.collectionSource.id = ?1", snmpCollectionSourceId);
     }
 
     @Override
     public List<SnmpCollectionSystemDef> filterSystemDefsConf(String name, String vendor, String collectionSourceName, int offset, int limit) {
         List<Object> queryParamList = new ArrayList<>();
+        int paramIndex = 0;
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from SnmpCollectionSystemDef d where 1=1 ");
         if (name != null && !name.trim().isEmpty()) {
-            queryBuilder.append(" and lower(d.name) like ? escape '\\' ");
+            queryBuilder.append(" and lower(d.name) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + DaoUtil.escapeLike(name.trim().toLowerCase()) + "%"); // contains match
         }
 
         if (vendor != null && !vendor.trim().isEmpty()) {
-            queryBuilder.append(" and lower(d.collectionSource.vendor) like ? escape '\\' ");
+            queryBuilder.append(" and lower(d.collectionSource.vendor) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
         if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
-            queryBuilder.append(" and lower(d.collectionSource.name) like ? escape '\\' ");
+            queryBuilder.append(" and lower(d.collectionSource.name) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
         }
 
@@ -132,13 +133,14 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
 
-        String whereClause = "where d.collectionSource.id = ? ";
+        int paramIndex = 0;
+        String whereClause = "where d.collectionSource.id = ?" + (++paramIndex) + " ";
         queryParams.add(snmpCollectionSourceId);
 
         // Add filter conditions dynamically
         if (systemDefsFilter != null && !systemDefsFilter.trim().isEmpty()) {
             String escapedFilter = "%" + DaoUtil.escapeLike(systemDefsFilter.trim().toLowerCase()) + "%";
-            conditions.add("lower(d.name) like ? escape '\\'");
+            conditions.add("lower(d.name) like ?" + (++paramIndex) + " escape '\\'");
             queryParams.add(escapedFilter);
 
 
@@ -180,7 +182,7 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
 
     @Override
     public SnmpCollectionSystemDef findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
-        return findUnique("from SnmpCollectionSystemDef d where d.collectionSource.id = ? AND d.id = ? ", snmpCollectionSourceId, id);
+        return findUnique("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1 AND d.id = ?2 ", snmpCollectionSourceId, id);
     }
 
     @Override

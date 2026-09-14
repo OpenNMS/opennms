@@ -141,7 +141,11 @@ public abstract class Util extends Object {
                 out.append(c);
             }
         }
-        return out.toString();
+        // The scheme, host, and context path are derived from the request (e.g. the Host
+        // or X-Forwarded-Host header) and are emitted unescaped into HTML/JS by callers,
+        // so HTML-encode here to neutralize reflected XSS. Legitimate URL characters
+        // (':', '/', '.', '-') pass through unchanged; only HTML metacharacters are escaped.
+        return WebSecurityUtils.sanitizeString(out.toString());
     }
 
     protected static final String[] hostHeaders = {

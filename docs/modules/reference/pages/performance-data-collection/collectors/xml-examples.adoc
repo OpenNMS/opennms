@@ -191,7 +191,7 @@ report.github.openIssues.command=--title="GitHub Open Issues + PRs" \
 
 === Verification
 
-After reloading collectd (`send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Collectd'`), test an xref:deep-dive/performance-data-collection/shell/adhoc-collection.adoc[Ad-Hoc collection] from the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] without waiting for the next scheduled cycle:
+After reloading collectd (`send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Collectd'`), test an xref:operation:deep-dive/performance-data-collection/shell/adhoc-collection.adoc[Ad-Hoc collection] from the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] without waiting for the next scheduled cycle:
 
 [source, karaf]
 ----

@@ -1,44 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-08-24T11:57:51 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTimeSummary_Availability_Offenders_subreport" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a52df78a-9493-4742-bfc8-9b54550b93fd">
+<jasperReport name="ResponseTimeSummary_Availability_Offenders_subreport" language="java" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a52df78a-9493-4742-bfc8-9b54550b93fd">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Detail" hAlign="Center" vAlign="Middle"/>
-	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Detail" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle"/>
+	<style name="Interface_Header" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" bold="true" italic="false" underline="false" strikeThrough="false"/>
 	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
-		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<description><![CDATA[The directory where all reports can be found]]></description>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String">
-		<parameterDescription><![CDATA[Surveillance category to include in this report]]></parameterDescription>
+		<description><![CDATA[Surveillance category to include in this report]]></description>
 		<defaultValueExpression><![CDATA[new String("Routers")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
-		<parameterDescription><![CDATA[Report time range in days]]></parameterDescription>
+		<description><![CDATA[Report time range in days]]></description>
 		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.util.Date">
-		<parameterDescription><![CDATA[The beginning of the time period for the report]]></parameterDescription>
+		<description><![CDATA[The beginning of the time period for the report]]></description>
 		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400000L * $P{TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+	<parameter name="START_TIME_STRING" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="END_TIME" class="java.util.Date" isForPrompting="false">
+	<parameter name="END_TIME" forPrompting="false" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new Date($P{START_TIME}.getTime() + (86400000L * $P{TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="END_TIME_STRING" class="java.lang.String" isForPrompting="false">
+	<parameter name="END_TIME_STRING" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($P{END_TIME})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+	<parameter name="TIME_RANGE" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
 	</parameter>
-	<queryString language="SQL">
-		<![CDATA[SELECT
+	<query language="SQL"><![CDATA[SELECT
 	node_outages.categoryname,
 	node_outages.nodelabel,
 	AVG(node_outages.duration) AS average_duration,
@@ -139,8 +135,7 @@ GROUP BY
 ORDER BY
 	outages_percent DESC,
 	node_outages.categoryname ASC
-LIMIT 10]]>
-	</queryString>
+LIMIT 10]]></query>
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="average_duration" class="org.postgresql.util.PGInterval"/>
@@ -150,75 +145,44 @@ LIMIT 10]]>
 	<field name="outages_percent" class="java.lang.Double"/>
 	<field name="avail_percent" class="java.lang.Double"/>
 	<field name="avail_total" class="java.lang.Double"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band splitType="Stretch"/>
-	</title>
-	<pageHeader>
-		<band height="45" splitType="Stretch">
-			<staticText>
-				<reportElement style="Section" x="0" y="0" width="555" height="22" uuid="4d08b0a9-ea22-47c3-8f4d-4ec9efaf538e"/>
-				<text><![CDATA[Top Offenders (Availability)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="25" width="206" height="20" uuid="a1748126-2a83-44ff-a833-e04e9280504e"/>
-				<text><![CDATA[Node]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="206" y="25" width="100" height="20" uuid="056d3cd6-08c6-4a69-9d4b-4647dd268426"/>
-				<textElement textAlignment="Right"/>
-				<text><![CDATA[Outage %]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="306" y="25" width="100" height="20" uuid="c13950d5-3d98-4c07-91ff-f97e4e4281ac"/>
-				<textElement textAlignment="Right"/>
-				<text><![CDATA[Outage Count]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="406" y="25" width="149" height="20" uuid="3b65b7a8-98cc-4066-b59d-45d3d003d095"/>
-				<textElement textAlignment="Right"/>
-				<text><![CDATA[Outage Time (Seconds)]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title splitType="Stretch"/>
+	<pageHeader height="45" splitType="Stretch">
+		<element kind="staticText" uuid="4d08b0a9-ea22-47c3-8f4d-4ec9efaf538e" x="0" y="0" width="555" height="22" style="Section">
+			<text><![CDATA[Top Offenders (Availability)]]></text>
+		</element>
+		<element kind="staticText" uuid="a1748126-2a83-44ff-a833-e04e9280504e" x="0" y="25" width="206" height="20">
+			<text><![CDATA[Node]]></text>
+		</element>
+		<element kind="staticText" uuid="056d3cd6-08c6-4a69-9d4b-4647dd268426" x="206" y="25" width="100" height="20" hTextAlign="Right">
+			<text><![CDATA[Outage %]]></text>
+		</element>
+		<element kind="staticText" uuid="c13950d5-3d98-4c07-91ff-f97e4e4281ac" x="306" y="25" width="100" height="20" hTextAlign="Right">
+			<text><![CDATA[Outage Count]]></text>
+		</element>
+		<element kind="staticText" uuid="3b65b7a8-98cc-4066-b59d-45d3d003d095" x="406" y="25" width="149" height="20" hTextAlign="Right">
+			<text><![CDATA[Outage Time (Seconds)]]></text>
+		</element>
 	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band height="22" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="206" height="20" uuid="8a91dbc4-c353-4818-8223-8cd2df4d1f20"/>
-				<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.000">
-				<reportElement x="206" y="0" width="100" height="20" uuid="8d05a9a3-339a-4d4e-b00f-48b2677743ee"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{outages_percent}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="306" y="0" width="100" height="20" uuid="bcef8d93-86b1-473f-a421-401012a0c790"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{outages_count}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="406" y="0" width="149" height="20" uuid="76a40846-58da-45fa-b87f-1593c4369b39"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{outages_seconds}]]></textFieldExpression>
-			</textField>
+			<element kind="textField" uuid="8a91dbc4-c353-4818-8223-8cd2df4d1f20" x="0" y="0" width="206" height="20">
+				<expression><![CDATA[$F{nodelabel}]]></expression>
+			</element>
+			<element kind="textField" uuid="8d05a9a3-339a-4d4e-b00f-48b2677743ee" x="206" y="0" width="100" height="20" pattern="###0.000" hTextAlign="Right">
+				<expression><![CDATA[$F{outages_percent}]]></expression>
+			</element>
+			<element kind="textField" uuid="bcef8d93-86b1-473f-a421-401012a0c790" x="306" y="0" width="100" height="20" hTextAlign="Right">
+				<expression><![CDATA[$F{outages_count}]]></expression>
+			</element>
+			<element kind="textField" uuid="76a40846-58da-45fa-b87f-1593c4369b39" x="406" y="0" width="149" height="20" hTextAlign="Right">
+				<expression><![CDATA[$F{outages_seconds}]]></expression>
+			</element>
 		</band>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
-	<noData>
-		<band/>
-	</noData>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter splitType="Stretch"/>
+	<summary splitType="Stretch"/>
+	<noData/>
 </jasperReport>

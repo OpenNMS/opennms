@@ -56,6 +56,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsPeerRib;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -96,6 +97,7 @@ public class BmpDaoIT {
 
 
     @Test
+    @Transactional
     public void testPersistence() {
 
         BmpCollector bmpCollector = new BmpCollector();
@@ -128,6 +130,7 @@ public class BmpDaoIT {
     }
 
     @Test
+    @Transactional
     public void testGlobalIpRibsDeletion() {
 
         Instant thirtySecondsBefore = Instant.now().minusSeconds(30);
@@ -186,6 +189,7 @@ public class BmpDaoIT {
 
 
     @Test
+    @Transactional
     public void testPeerRibPrefixCount() {
 
         long oneMinBack = new Date().getTime() - 60000;
@@ -216,6 +220,7 @@ public class BmpDaoIT {
     }
 
     @Test
+    @Transactional
     public void testRpkiValidator() {
 
         BmpRpkiInfo bmpRpkiInfo = new BmpRpkiInfo();

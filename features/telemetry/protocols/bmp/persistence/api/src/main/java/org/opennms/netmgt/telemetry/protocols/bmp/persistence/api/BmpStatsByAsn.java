@@ -43,7 +43,7 @@ public class BmpStatsByAsn implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpStatsByAsnSequence")
-    @SequenceGenerator(name = "bmpStatsByAsnSequence", sequenceName = "bmpstatsbyasnnxtid")
+    @SequenceGenerator(name = "bmpStatsByAsnSequence", sequenceName = "bmpstatsbyasnnxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

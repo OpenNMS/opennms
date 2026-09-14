@@ -1,5 +1,5 @@
 <template>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="store.uploadedEventConfigFilesReportDialogState.visible"
     title="Upload Report"
     action-button-text="View Uploaded Files"
@@ -28,11 +28,11 @@
         </ul>
       </div>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script setup lang="ts">
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadResponse } from '@/types/eventConfig'
 
@@ -69,14 +69,12 @@ const gotoViewTab = async () => {
 </script>
 
 <style scoped lang="scss">
-@use "@featherds/styles/themes/variables";
-
 .text-danger {
-  color: var(variables.$error);
+  color: var(--p-red-500);
 }
 
 .text-success {
-  color: var(variables.$success);
+  color: var(--p-green-500);
 }
 
 .upload-report-scroll {
@@ -85,10 +83,10 @@ const gotoViewTab = async () => {
   padding: 10px;
   margin-top: 8px;
   border-radius: 8px;
-  border: 1px solid var(variables.$border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 }
 
-:deep(.feather-dialog-content) {
+:deep(.p-dialog-content) {
   max-height: 70vh;
   overflow-y: auto;
 }

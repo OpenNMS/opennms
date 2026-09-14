@@ -1,0 +1,281 @@
+= Policy Examples
+:description: Worked examples of provisioning policies in OpenNMS {page-component-title}, grouped by the task each one solves.
+
+This page collects example policy configurations grouped by the task each one solves.
+They are intended as starting points; adapt the match criteria to your environment before using them.
+
+For the parameters and actions each policy accepts, see the individual policy reference pages:
+xref:reference:provisioning/policies/node-category.adoc[], xref:reference:provisioning/policies/metadata.adoc[], xref:reference:provisioning/policies/ip-interface.adoc[], xref:reference:provisioning/policies/snmp-interface.adoc[], and xref:reference:provisioning/policies/script.adoc[].
+
+== Reading these examples
+
+Policies are stored as `<policy>` elements inside the `<policies>` block of a foreign-source definition (`$\{OPENNMS_HOME}/etc/foreign-sources/<name>.xml`), or edited through the requisition UI.
+Each policy has a `name`, a `class` (the fully qualified policy implementation), and one or more `<parameter>` key/value pairs.
+
+A few conventions appear throughout:
+
+* String parameter values match as a substring by default.
+Prefix a value with `~` to evaluate it as a Java regular expression instead.
+* The `matchBehavior` parameter controls how multiple criteria combine: `ANY_PARAMETER` (the default) matches when at least one criterion matches, `ALL_PARAMETERS` requires every criterion to match, and `NO_PARAMETERS` matches when none do.
+* Policies run in the order they appear in the file.
+Order matters when one policy's action depends on another having already run.
+
+NOTE: Interface policies act on interfaces discovered through SNMP during a scan.
+Interfaces defined directly in the requisition are persisted regardless of these policies.
+
+== Assign categories
+
+The `NodeCategorySettingPolicy` adds a surveillance category to nodes that match its criteria.
+Each policy adds one category, so assigning several categories means stacking several policies.
+
+=== Assign an environment category from the node name
+
+If your nodes follow a naming convention that embeds the environment (for example, `nyc-prod-web01`, `lon-dev-db02`, `ber-test-app01`), you can derive a `Production`, `Development`, or `Test` category from the node label.
+
+The criterion below matches against `label` (the node label, usually the hostname).
+Each regular expression matches the environment token as a hyphen-delimited segment anywhere in the label, so `prod`, `nyc-prod`, and `nyc-prod-web01` all match, while `production-srv` does not.
+
+[source, xml]
+----
+<policy name="EnvProduction" class="org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy">
+   <parameter key="category" value="Production"/>
+   <parameter key="label" value="~(?i)^(.*-)?prod(-.*)?$"/>
+</policy>
+
+<policy name="EnvDevelopment" class="org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy">
+   <parameter key="category" value="Development"/>
+   <parameter key="label" value="~(?i)^(.*-)?dev(-.*)?$"/>
+</policy>
+
+<policy name="EnvTest" class="org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy">
+   <parameter key="category" value="Test"/>
+   <parameter key="label" value="~(?i)^(.*-)?test(-.*)?$"/>
+</policy>
+----
+
+Adjust the expressions to fit your convention.
+To match against the SNMP `sysName` instead of the node label, use the `sysName` criterion in place of `label`.
+
+=== Assign a vendor category from the sysObjectId
+
+The SNMP `sysObjectId` begins with the vendor's enterprise OID, which makes it a reliable way to tag devices by vendor.
+This example matches the Cisco enterprise OID (`.1.3.6.1.4.1.9`):
+
+[source, xml]
+----
+<policy name="VendorCisco" class="org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy">
+   <parameter key="category" value="Cisco"/>
+   <parameter key="sysObjectId" value="~^\.1\.3\.6\.1\.4\.1\.9\..*"/>
+</policy>
+----
+
+== Set metadata
+
+Metadata differs from a category: the value is free-form and can be referenced elsewhere through xref:operation:deep-dive/meta-data.adoc[metadata expansion] as `${requisition:key}` (where `requisition` is the default metadata context).
+This makes it useful for feeding per-node or per-interface values into monitor, collector, threshold, and notification expressions.
+
+=== Set a monitoring parameter from node metadata
+
+This example tags application servers -- identified by a `web` role token in the node label, with an optional numeric index such as `web01` -- with the port their service listens on:
+
+[source, xml]
+----
+<policy name="AppServerPort" class="org.opennms.netmgt.provision.persist.policies.NodeMetadataSettingPolicy">
+   <parameter key="metadataContext" value="requisition"/>
+   <parameter key="metadataKey" value="app-port"/>
+   <parameter key="metadataValue" value="8443"/>
+   <parameter key="label" value="~(?i)^(.*-)?web[0-9]*(-.*)?$"/>
+</policy>
+----
+
+The `[0-9]*` allows the `web` token to carry an index (`web01`).
+Without it, the expression matches only a bare `web` segment.
+
+A service definition can then reference the value, falling back to a default when the metadata is not set:
+
+[source, xml]
+----
+<parameter key="port" value="${requisition:app-port|8080}"/>
+----
+
+NOTE: This policy assigns a fixed value to every matching node.
+To compute a value from the node itself (for example, parsed out of its name), use the xref:reference:provisioning/policies/script.adoc[Script Policy] instead.
+
+=== Tag interfaces in a subnet
+
+The `InterfaceMetadataSettingPolicy` works the same way for IP interfaces, matched by `ipAddress` or `ipHostName`.
+For example, tag every address in a subnet with a VLAN name that per-interface expressions can expand:
+
+[source, xml]
+----
+<policy name="TagVlanOnSubnet" class="org.opennms.netmgt.provision.persist.policies.InterfaceMetadataSettingPolicy">
+   <parameter key="metadataKey" value="vlan"/>
+   <parameter key="metadataValue" value="vlan200-office"/>
+   <parameter key="ipAddress" value="~^10\.20\..*"/>
+</policy>
+----
+
+== Filter interfaces before persistence
+
+=== Persist only requisition-defined IP interfaces
+
+During a scan, {page-component-title} discovers additional IP interfaces from the node's SNMP `ipAddressTable`/`ipAddrTable` and persists them alongside the interface you defined in the requisition.
+If you want to keep only the interface from the requisition (commonly the primary) and ignore the discovered ones, apply a `MatchingIpInterfacePolicy` with `DO_NOT_PERSIST` and no match criteria:
+
+[source, xml]
+----
+<policy name="DoNotPersistNonPrimaryInterfaces" class="org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy">
+   <parameter key="matchBehavior" value="NO_PARAMETERS"/>
+   <parameter key="action" value="DO_NOT_PERSIST"/>
+</policy>
+----
+
+With `NO_PARAMETERS` and no criteria, the policy matches every interface it evaluates, so every IP interface discovered during the scan is dropped.
+The interface defined in the requisition is persisted from the requisition itself, so the node keeps its primary interface.
+
+NOTE: Because this matches everything, any IP interface you want to keep must be defined in the requisition.
+If instead you only want to drop a specific set (for example, loopback and link-local addresses), give the policy `ipAddress` criteria rather than leaving it empty.
+
+== Control management, polling, and collection
+
+These policies set whether {page-component-title} manages an interface and whether it polls and collects data from it.
+
+=== Unmanage interfaces in a subnet
+
+The `UNMANAGE` action on a `MatchingIpInterfacePolicy` keeps an interface in the inventory but stops {page-component-title} from polling or collecting from it.
+This differs from `DO_NOT_PERSIST`, which drops the interface entirely.
+
+[source, xml]
+----
+<policy name="UnmanageRfc1918" class="org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy">
+   <parameter key="action" value="UNMANAGE"/>
+   <parameter key="matchBehavior" value="ANY_PARAMETER"/>
+   <parameter key="ipAddress" value="~^192\.168\..*"/>
+</policy>
+----
+
+=== Select SNMP interfaces for polling and collection
+
+The `MatchingSnmpInterfacePolicy` selects SNMP interfaces by their `ifTable`/`ifXTable` properties (`ifType`, `ifName`, `ifDescr`, `ifAlias`, `ifAdminStatus`, `ifOperStatus`, and so on) and enables or disables collection and polling for the ones that match.
+
+[NOTE]
+====
+These policies only *mark* SNMP interfaces. For metrics or polling to actually happen, a second stage must also match:
+
+* `ENABLE_COLLECTION`/`DISABLE_COLLECTION` set a collection flag that Collectd honors; a xref:operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc[Collectd package] still has to match the node.
+* `ENABLE_POLLING`/`DISABLE_POLLING` mark interfaces for the xref:operation:deep-dive/snmp-poller/concepts.adoc#snmp-interface-poller[SNMP Interface Poller], a separate daemon that is disabled by default and driven by its own packages.
+
+A policy that enables polling has no visible effect until a matching poller package exists.
+====
+
+The `ifType` value is the IANA interface type number (for example, `6` is ethernetCsmacd, `117` is gigabitEthernet, `131` is tunnel, `161` is ieee8023adLag).
+Confirm the values present in your environment before relying on them.
+
+==== Collect only selected interface types
+
+Enable collection on administratively and operationally up interfaces of selected types.
+This uses `ALL_PARAMETERS` so every criterion must match.
+
+[source, xml]
+----
+<policy name="CollectInterfaces" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">
+   <parameter key="matchBehavior" value="ALL_PARAMETERS"/>
+   <parameter key="ifAdminStatus" value="1"/>
+   <parameter key="ifOperStatus" value="1"/>
+   <parameter key="ifType" value="~^(6|7|22|62|117|160|161|169|131|135)$"/>
+   <parameter key="action" value="ENABLE_COLLECTION"/>
+</policy>
+----
+
+==== Disable collection on tunnel interfaces
+
+Match tunnel interfaces (`ifType` 131) whose names follow a known convention and turn collection off for them.
+
+[source, xml]
+----
+<policy name="DoNotCollectLTETunnels" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">
+   <parameter key="matchBehavior" value="ALL_PARAMETERS"/>
+   <parameter key="ifType" value="131"/>
+   <parameter key="ifName" value="~^gr-[0-9].*"/>
+   <parameter key="action" value="DISABLE_COLLECTION"/>
+</policy>
+----
+
+==== Poll selected interface types with the SNMP Interface Poller
+
+Mark common interface types for the SNMP Interface Poller.
+
+[source, xml]
+----
+<policy name="SnmpPollCommonIftypes" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">
+   <parameter key="matchBehavior" value="ALL_PARAMETERS"/>
+   <parameter key="ifType" value="~^(6|7|22|62|117|160|161|169|131|135)$"/>
+   <parameter key="action" value="ENABLE_POLLING"/>
+</policy>
+----
+
+==== Poll interfaces by name
+
+Mark interfaces whose names match a naming standard (here, CGNAT interfaces) for the SNMP Interface Poller.
+
+[source, xml]
+----
+<policy name="SnmpPollCGNATInterfaces" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">
+   <parameter key="matchBehavior" value="ALL_PARAMETERS"/>
+   <parameter key="ifType" value="1"/>
+   <parameter key="ifName" value="~^(esa-)*[0-9/]+nat-(in|out)-ip$"/>
+   <parameter key="action" value="ENABLE_POLLING"/>
+</policy>
+----
+
+As noted above, marking interfaces for polling is only the first stage.
+The SNMP Interface Poller also needs a package whose filter and interface criteria select the marked interfaces, for example:
+
+[source, xml]
+----
+<package name="core-and-test">
+    <filter>
+        catincProduction
+        &amp; (pollerCategory == 'CORE' | pollerCategory == 'TEST')
+        &amp; !(catincTERMINATED)
+    </filter>
+    <interface name="node_adminUp" criteria="(snmpifadminstatus = 1)" interval="120000" user-defined="false" status="on"/>
+    <interface name="node_adminDown" criteria="(snmpifadminstatus != 1)" interval="300000" user-defined="false" status="on"/>
+</package>
+----
+
+== Custom logic with the Script Policy
+
+When the built-in policies cannot express what you need, the `ScriptPolicy` runs a Groovy script against each matching node.
+Place the script in `$\{OPENNMS_HOME}/etc/script-policies` and reference it by file name in the `script` parameter.
+The script receives the node as the `node` binding (mutable) and a logger as `LOG`, and returns the node to apply changes. Returning `null` aborts the scan for that node (the node itself is not deleted).
+
+The example below derives a surveillance category from a site code at the start of the node label (for example, `nyc-prod-web01` becomes category `Site-NYC`).
+This is something the built-in `NodeCategorySettingPolicy` cannot do, because it assigns a fixed category rather than one computed from the node.
+
+`$\{OPENNMS_HOME}/etc/script-policies/site-category.groovy`:
+
+[source, groovy]
+----
+// Take the leading three-letter site code from the node label and add it as a category.
+def matcher = (node.label =~ /^([a-z]{3})-/)
+if (matcher.find()) {
+    node.addRequisitionedCategory("Site-" + matcher.group(1).toUpperCase())
+}
+
+return node
+----
+
+Reference the script from the foreign-source definition:
+
+[source, xml]
+----
+<policy name="DeriveSiteCategory" class="org.opennms.netmgt.provision.persist.policies.ScriptPolicy">
+   <parameter key="script" value="site-category.groovy"/>
+   <parameter key="label" value="~.+"/>
+</policy>
+----
+
+The `label` criterion `~.+` matches any non-empty label, so the policy runs on every node.
+From here the same pattern adapts to more involved logic: set asset fields or the node's location, add several categories at once, or abort the scan for a node by returning `null`.
+For the parameters this policy accepts, see the xref:reference:provisioning/policies/script.adoc[Script Policy] reference page.

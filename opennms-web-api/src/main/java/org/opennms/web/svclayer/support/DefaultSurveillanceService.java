@@ -407,7 +407,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
             params.add("category2=" + Util.encode(category.getName()));
         }
         params.add("nodesWithDownAggregateStatus=true");
-        return "element/nodeList.htm?" + StringUtils.collectionToDelimitedString(params, "&");
+        return "ui/#/nodes?" + StringUtils.collectionToDelimitedString(params, "&");
     }
 
     /**

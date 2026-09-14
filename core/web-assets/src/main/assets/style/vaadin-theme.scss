@@ -106,40 +106,24 @@ body.v-generated-body {
     :: Vue Menu UI
     -------------------------------------------------- */
 /**
-* Move topology UI over past the Vue top and side menus.
+* Move topology UI over past the Vue top and side menus, which are both
+* position:fixed. Clear the top menu bar height (top) and the collapsed side
+* menu rail (left). --onms-legacy-content-offset (defined in opennms-theme.scss,
+* imported above) is the bar/rail height plus a little breathing room.
 * Note this only moves it past the collapsed side menu.
-* This same style is used in both the case where the Topology Map is the top-level item
-* (i.e. `/opennms/topology` accessed directly), as well as when the Topology Map is embedded
-* within the Wallboard UI.
 */
 .v-app.topo_default.topologyui {
-  margin-top: 0.5em;
-  margin-left: 4em;
+  margin-top: var(--onms-legacy-content-offset);
+  margin-left: var(--onms-legacy-content-offset);
 }
 
-/* Safari 10+/20+ specific, needs extra top margin */
+/* Safari 10+/20+ specific: uses padding-top instead of margin-top (Vaadin's
+   top margin collapses oddly on Safari). Zero the margin so it does not stack
+   on top of the padding. */
 body[class*="v-sa1"] .v-app.topo_default.topologyui,
 body[class*="v-sa2"] .v-app.topo_default.topologyui {
-  padding-top: 4em !important;
-}
-
-/*
-* Wallboard dashboard caption needs some extra padding to display fully.
-*/
-.v-app.dashboard.wallboardui {
-  margin-left: 4em;
-  margin-top: 4.5em;
-
-  .v-panel-caption,
-  .v-panel-caption.v-panel-caption-novscroll {
-    padding-bottom: 2em;
-  }
-}
-
-/* Safari 10+/20+ specific, needs extra top margin */
-body[class*="v-sa1"] .v-app.dashboard.wallboardui,
-body[class*="v-sa2"] .v-app.dashboard.wallboardui {
-  padding-top: 4em !important;
+  margin-top: 0;
+  padding-top: var(--onms-legacy-content-offset) !important;
 }
 
 /*  --------------------------------------------------

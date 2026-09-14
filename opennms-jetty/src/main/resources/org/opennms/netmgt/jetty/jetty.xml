@@ -129,18 +129,30 @@
           </New>
         </Item>
         <!-- Jira NMS-14947 Cacheable HTTPS Responses - Cache Control Directive Missing or Misconfigured -->
-        <!-- no caching for everything in "/opennms/*" excluding static assets "/opennms/assets/*"  -->
+        <!-- no caching for everything in "/opennms/*" excluding the static assets of the legacy
+             webapp ("/opennms/assets/*"), the Vue UI ("/opennms/ui/assets/*"), and the Vue menu
+             used by the legacy pages ("/opennms/ui-components/assets/*") -->
         <Item>
           <New id="cacheControlHeader" class="org.eclipse.jetty.rewrite.handler.HeaderRegexRule">
-            <Set name="regex">/opennms/(?!assets/).*</Set>
+            <Set name="regex">/opennms/(?!assets/|ui/assets/|ui-components/assets/).*</Set>
             <Set name="name">Cache-control</Set>
             <Set name="value">no-store</Set>
           </New>
         </Item>
         <Item>
           <New id="assetsHeader" class="org.eclipse.jetty.rewrite.handler.HeaderRegexRule">
-            <Set name="regex">/opennms/(?!assets/).*</Set>
+            <Set name="regex">/opennms/(?!assets/|ui/assets/|ui-components/assets/).*</Set>
             <Set name="name">Pragma</Set>
+            <Set name="value">no-cache</Set>
+          </New>
+        </Item>
+        <!-- The Vue UI's static assets are identical for every user and carry no session data, so
+             browsers may cache them, but they must revalidate on each use ("no-cache") because the
+             file names are not content-hashed and change between releases. -->
+        <Item>
+          <New id="uiAssetsCacheControlHeader" class="org.eclipse.jetty.rewrite.handler.HeaderRegexRule">
+            <Set name="regex">/opennms/(ui/assets|ui-components/assets)/.*</Set>
+            <Set name="name">Cache-control</Set>
             <Set name="value">no-cache</Set>
           </New>
         </Item>
@@ -167,7 +179,23 @@
              <Ref refid="RewriteHandler"/>
            </Item>
            <Item>
-               <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+             <!-- Compress responses for the Vue UI and Vue menu static assets, which are served
+                  uncompressed otherwise. Scoped to these paths so it cannot interact with
+                  compression done by the REST webapps themselves. -->
+             <New id="GzipHandler" class="org.eclipse.jetty.server.handler.gzip.GzipHandler">
+               <Set name="minGzipSize">1024</Set>
+               <Call name="addIncludedPaths">
+                 <Arg>
+                   <Array type="String">
+                     <Item>/opennms/ui/*</Item>
+                     <Item>/opennms/ui-components/*</Item>
+                   </Array>
+                 </Arg>
+               </Call>
+               <Set name="handler">
+                 <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+               </Set>
+             </New>
            </Item>
            <Item>
                <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>

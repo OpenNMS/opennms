@@ -35,8 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
-import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.ProducerTemplate;
@@ -82,6 +82,10 @@ public class CamelRpcClientFactory implements RpcClientFactory {
      */
     private static final long rpcExecTimeoutMs = SystemProperties.getLong(CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
 
+    public static final String LOCAL_EXEC_TIMEOUT_PROPERTY = "org.opennms.core.ipc.rpc.local.timeout";
+
+    public static final long LOCAL_EXEC_TIMEOUT_MS_DEFAULT = TimeUnit.MINUTES.toMillis(30);
+
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("CamelRpcClientFactory-Pool-%d")
             .build();
@@ -92,11 +96,13 @@ public class CamelRpcClientFactory implements RpcClientFactory {
 
     private TimeLimiter timeLimiter;
 
-    @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
+    // bound to direct:executeRpc on the rpcClient context in start(); Camel 3
+    // dropped the @EndpointInject context attribute
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
     private Endpoint endpoint;
+
+    private CamelContext camelContext;
 
     @Autowired
     private TracerRegistry tracerRegistry;
@@ -114,8 +120,15 @@ public class CamelRpcClientFactory implements RpcClientFactory {
             public CompletableFuture<T> execute(S request) {
 
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
-                    // The request is for the current location, invoke it directly
-                    return module.execute(request);
+                    // The request is for the current location, invoke it directly.
+                    // Bound it to a fixed timeout — deliberately not the request TTL — so a module future that
+                    // never completes cannot wedge the caller (NMS-19951) while slow-but-completing operations
+                    // are unaffected by TTL configuration intended for the Minion path (NMS-20006).
+                    final long localExecTimeoutMs = SystemProperties.getLong(LOCAL_EXEC_TIMEOUT_PROPERTY, LOCAL_EXEC_TIMEOUT_MS_DEFAULT);
+                    if (localExecTimeoutMs <= 0) {
+                        return module.execute(request);
+                    }
+                    return module.execute(request).orTimeout(localExecTimeoutMs, TimeUnit.MILLISECONDS);
                 }
                 Span span = buildAndStartSpan(request);
                 TracingInfoCarrier tracingInfoCarrier = getTracingInfoCarrier(request, span);
@@ -263,6 +276,8 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     }
 
     public void start() {
+        endpoint = camelContext.getEndpoint("direct:executeRpc");
+        template = camelContext.createProducerTemplate();
         executor = Executors.newCachedThreadPool(threadFactory);
         timeLimiter = SimpleTimeLimiter.create(executor);
 
@@ -274,7 +289,14 @@ public class CamelRpcClientFactory implements RpcClientFactory {
         metricsReporter.start();
     }
 
+    public void setCamelContext(CamelContext camelContext) {
+        this.camelContext = camelContext;
+    }
+
     public void stop() {
+        if (template != null) {
+            template.stop();
+        }
         if (executor != null) {
             executor.shutdownNow();
         }

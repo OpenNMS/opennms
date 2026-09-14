@@ -82,5 +82,5 @@ On a successful request, the Syslog NBI will be notified about the configuration
 | Resource  | Description
 
 | /config/syslog-nbi/destinations/\{name}
-| Updates the content of the destination named `\{name}`.
+| Removes the destination named `\{name}`.
 |===

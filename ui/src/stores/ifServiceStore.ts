@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { IfService, QueryParameters } from '@/types'
+import { ref } from 'vue'
 
 export const useIfServiceStore = defineStore('ifServiceStore', () => {
   const ifServices = ref([] as IfService[])

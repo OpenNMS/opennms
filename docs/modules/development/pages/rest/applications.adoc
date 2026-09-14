@@ -1,0 +1,97 @@
+
+= Applications API
+
+The `/applications` endpoint manages applications (named groups of monitored services, optionally bound to perspective-poller locations). It produces and consumes `application/json` and `application/xml`.
+
+An application is represented by the `OnmsApplication` model: `id`, `name`, `monitoredServices` (set of monitored-service IDs), and `perspectiveLocations` (set of monitoring-location IDs).
+
+== GETs (reading data)
+
+[caption=]
+.Applications API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/applications`                         | Lists applications. Supports `limit`, `offset`, `orderBy`, `order`, and FIQL search (`_s`). Returns `204 No Content` when there are no matches.
+| `/api/v2/applications/count`                   | Returns the number of matching applications. Produces `text/plain`.
+| `/api/v2/applications/properties`              | Lists the searchable properties. Optional `q` filters the property list.
+| `/api/v2/applications/properties/\{propertyId}` | Lists the available values for a searchable property. Optional `q` and `limit`.
+| `/api/v2/applications/\{id}`                    | Fetches a single application by ID.
+
+|===
+
+== POSTs (Creating Data)
+
+`POST` consumes `application/json` or `application/xml`.
+
+[caption=]
+.Applications API POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/applications` | Creates a new application. Returns `201 Created` with a `Location` header and fires an `applicationCreated` event.
+
+|===
+
+== PUT (modifying data)
+
+[caption=]
+.Applications API PUT functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/applications`        | Bulk-updates the matching applications. Consumes `application/x-www-form-urlencoded`.
+| `/api/v2/applications/\{id}`  | Replaces a single application. Consumes `application/json` or `application/xml`.
+| `/api/v2/applications/\{id}`  | Updates individual properties of a single application. Consumes `application/x-www-form-urlencoded`.
+
+|===
+
+== DELETEs (Removing Data)
+
+[caption=]
+.Applications API DELETE functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/applications`       | Deletes all applications matching the current query.
+| `/api/v2/applications/\{id}` | Deletes a single application by ID and fires an `applicationDeleted` event.
+
+|===
+
+== Examples using cURL
+
+.List all applications
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/applications"
+----
+
+.Response
+[source,json]
+----
+{"count":1,"totalCount":1,"offset":0,"application":[{"id":1,"name":"Web Servers"}]}
+----
+
+.Create an application
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"name":"Web Servers"}' \
+  "http://127.0.0.1:8980/opennms/api/v2/applications"
+----
+
+.Fetch a single application
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/applications/1"
+----
+
+.Delete an application
+[source,bash]
+----
+curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/api/v2/applications/1"
+----

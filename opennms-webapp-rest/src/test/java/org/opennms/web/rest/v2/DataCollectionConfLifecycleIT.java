@@ -24,6 +24,7 @@ package org.opennms.web.rest.v2;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,6 +47,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,11 +56,14 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader;
+import org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb;
 import org.opennms.netmgt.model.SnmpCollectionProfile;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -116,6 +121,7 @@ public class DataCollectionConfLifecycleIT {
     @Autowired private SnmpCollectionProfileDao profileDao;
     @Autowired private DataCollectionConfigDao dataCollectionConfigDao;
     @Autowired private SnmpDataCollectionConfigLoader loader;
+    @Autowired private SnmpDataCollectionSyncToDb syncToDb;
 
     private SecurityContext securityContext;
 
@@ -125,6 +131,20 @@ public class DataCollectionConfLifecycleIT {
         when(principal.getName()).thenReturn("lifecycle-IT");
         securityContext = mock(SecurityContext.class);
         when(securityContext.getUserPrincipal()).thenReturn(principal);
+    }
+
+    /**
+     * The plugin sync tests insert rows marked {@code uploadedBy=opennms-plugins}.
+     * Wipe those after every test so non-plugin tests don't trip over leftover
+     * plugin sources (the temporary DB is per-class, not per-test).
+     */
+    @After
+    public void wipePluginSources() {
+        try {
+            syncToDb.syncPluginGroupsToDb(Map.of());
+        } catch (Exception ignored) {
+            // best-effort cleanup; subsequent tests should not depend on this succeeding
+        }
     }
 
     /**
@@ -474,6 +494,121 @@ public class DataCollectionConfLifecycleIT {
         } catch (Exception e) {
             throw new RuntimeException("Failed to build attachment for " + file, e);
         }
+    }
+
+    // ─── Plugin sync round-trip ────────────────────────────────────────
+
+    @Test
+    public void pluginSync_autoAttachesToTargetCollection_byCollectionName() throws Exception {
+        uploadBaseline();
+        final SnmpCollectionProfile defaultProfile = profileDao.findByName("default");
+        assertNotNull("'default' profile should exist after upload", defaultProfile);
+
+        final String pluginSourceName = "plugin-test-source";
+        final String pluginGroupName = "plugin-test-group";
+
+        syncToDb.syncPluginGroupsToDb(targeted(
+                defaultProfile.getName(), buildPluginGroup(pluginSourceName, pluginGroupName)));
+
+        final SnmpCollectionSource pluginSource = sourceDao.findByName(pluginSourceName);
+        assertNotNull(pluginSource);
+        assertEquals("opennms-plugins", pluginSource.getUploadedBy());
+
+        await().atMost(Duration.ofSeconds(2)).pollInterval(Duration.ofMillis(100))
+                .until(() -> {
+                    final SnmpCollectionProfile p = profileDao.findByName("default");
+                    return p != null && p.getSourceNames() != null
+                            && p.getSourceNames().contains(pluginSourceName);
+                });
+
+        loader.scheduleDataCollectionConfigReload();
+        await().atMost(RELOAD_TIMEOUT).pollInterval(Duration.ofMillis(200))
+                .until(() -> inMemoryGroupNames().contains(pluginGroupName));
+        assertTrue(inMemoryGroupNames().contains(pluginGroupName));
+
+        syncToDb.syncPluginGroupsToDb(Map.of());
+        loader.scheduleDataCollectionConfigReload();
+        await().atMost(RELOAD_TIMEOUT).pollInterval(Duration.ofMillis(200))
+                .until(() -> !inMemoryGroupNames().contains(pluginGroupName));
+        assertNull(sourceDao.findByName(pluginSourceName));
+    }
+
+    /**
+     * Admin disable should survive a plugin re-sync. This is the contract
+     * that prevents plugin reloads from re-enabling rows operators have
+     * intentionally disabled.
+     */
+    @Test
+    public void pluginSync_preservesEnabledFlag_setByAdmin() throws Exception {
+        final String pluginSourceName = "plugin-toggle-source";
+        syncToDb.syncPluginGroupsToDb(targeted(
+                "default", buildPluginGroup(pluginSourceName, "plugin-toggle-group")));
+
+        SnmpCollectionSource pluginSource = sourceDao.findByName(pluginSourceName);
+        assertNotNull(pluginSource);
+        assertTrue("Plugin sources default to enabled on first sync", pluginSource.getEnabled());
+
+        // Admin disables via the REST enable/disable endpoint (which is
+        // permitted on plugin-sourced rows by design).
+        final Response resp = rest.enableDisableSnmpDataCollectionSources(
+                false, List.of(pluginSource.getId()), securityContext);
+        assertEquals(200, resp.getStatus());
+
+        // Plugin re-syncs the same group. Disable intent must survive.
+        syncToDb.syncPluginGroupsToDb(targeted(
+                "default", buildPluginGroup(pluginSourceName, "plugin-toggle-group")));
+
+        pluginSource = sourceDao.findByName(pluginSourceName);
+        assertNotNull(pluginSource);
+        assertEquals("Admin disable should survive plugin re-sync",
+                Boolean.FALSE, pluginSource.getEnabled());
+    }
+
+    /**
+     * REST guard: content edits and source delete are blocked on
+     * plugin-sourced rows. Defense-in-depth against bypassing the UI
+     * affordances that hide these buttons.
+     */
+    @Test
+    public void pluginSync_restRejectsDeleteOnPluginSource() throws Exception {
+        final String pluginSourceName = "plugin-readonly-source";
+        syncToDb.syncPluginGroupsToDb(targeted(
+                "default", buildPluginGroup(pluginSourceName, "plugin-readonly-group")));
+
+        final SnmpCollectionSource pluginSource = sourceDao.findByName(pluginSourceName);
+        assertNotNull(pluginSource);
+
+        try {
+            rest.deleteSnmpDataCollectionSources(List.of(pluginSource.getId()), securityContext);
+            // Source should still exist — delete must have been rejected.
+            assertNotNull("Plugin source should not be deleted by REST",
+                    sourceDao.findByName(pluginSourceName));
+        } catch (final IllegalArgumentException expected) {
+            // Service layer throws IAE; mapped to 400 in production. Either
+            // shape (exception thrown OR error response) is acceptable —
+            // both prove the guard fired.
+        }
+    }
+
+    private static Map<String, List<DatacollectionGroup>> targeted(final String target,
+                                                                   final DatacollectionGroup group) {
+        return Map.of(target, List.of(group));
+    }
+
+    private static DatacollectionGroup buildPluginGroup(final String groupName, final String mibGroupName) {
+        final DatacollectionGroup g = new DatacollectionGroup();
+        g.setName(groupName);
+        final Group inner = new Group();
+        inner.setName(mibGroupName);
+        inner.setIfType("ignore");
+        final MibObj obj = new MibObj();
+        obj.setOid(".1.3.6.1.2.1.1.3");
+        obj.setAlias("sysUpTime");
+        obj.setType("timeticks");
+        obj.setInstance("0");
+        inner.setMibObjs(List.of(obj));
+        g.setGroups(List.of(inner));
+        return g;
     }
 
     // ─── XML reference loader ──────────────────────────────────────────

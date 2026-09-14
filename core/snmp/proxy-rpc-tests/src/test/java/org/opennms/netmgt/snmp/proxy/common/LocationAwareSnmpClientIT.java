@@ -122,7 +122,7 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:OSGI-INF/blueprint/blueprint-rpc-server.xml";
+        return "OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
     @Before

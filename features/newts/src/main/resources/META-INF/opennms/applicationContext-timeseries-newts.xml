@@ -62,7 +62,7 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.password:cassandra}" />
   </bean>
 
-  <!-- This bean provides the pool configuration beans which are used to wire up the Newts context -->
+  <!-- Creates the cassandraSession bean, applying the optional pool settings from system properties -->
   <bean id="cassandraPoolConfiguration" class="org.opennms.netmgt.newts.support.CassandraPoolConfiguration"/>
 
   <bean id="samples.cassandra.time-to-live" class="java.lang.Integer">
@@ -141,8 +141,6 @@
         destroy-method="stop" />
 
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
-
-  <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
 
   <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" />
 

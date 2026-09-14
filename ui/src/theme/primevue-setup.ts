@@ -21,8 +21,11 @@
 ///
 
 import PrimeVue from 'primevue/config'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import OpenNMSPreset from './opennms-preset'
 import 'primeicons/primeicons.css'
+import '@/styles/primevue-overrides.scss'
+import '@/styles/onms-grid.scss'
 
 import type { App } from 'vue'
 
@@ -38,6 +41,17 @@ export const setupPrimeVue = (app: App) => {
           order: 'primevue'
         }
       }
+    },
+    zIndex: {
+      overlay: 1060,
+      menu: 1060,
+      modal: 1100,
+      // Above the side menu rail (2000) and its flyout submenus (2001, see
+      // SideMenu.vue) — tooltips mount on <body>, so they'd otherwise paint
+      // behind the rail/flyouts. Tooltips are transient; topmost is safe.
+      tooltip: 2100
     }
   })
+
+  app.directive('onms-tooltip', OnmsTooltip)
 }

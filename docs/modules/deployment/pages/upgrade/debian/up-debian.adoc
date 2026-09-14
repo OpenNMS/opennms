@@ -54,7 +54,7 @@ sudo apt-mark hold libopennms-java \
               opennms-db
 ----
 
-. Upgrade Java 17 to the latest release:
+. Upgrade Java 21 to the latest release:
 +
 [source, console]
 ----

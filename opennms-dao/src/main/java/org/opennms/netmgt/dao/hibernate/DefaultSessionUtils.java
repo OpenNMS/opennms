@@ -68,12 +68,12 @@ public class DefaultSessionUtils implements SessionUtils {
 
     @Override
     public <V> V withManualFlush(Supplier<V> supplier) {
-        final FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
+        final FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
         try {
-            sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+            sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
             return supplier.get();
         } finally {
-            sessionFactory.getCurrentSession().setFlushMode(flushMode);
+            sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);
         }
     }
 

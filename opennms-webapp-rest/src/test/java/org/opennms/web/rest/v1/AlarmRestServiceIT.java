@@ -60,7 +60,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -197,16 +196,17 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
     public void testAlarmUpdates() throws Exception {
         createAlarm(OnmsSeverity.MAJOR);
 
-        OnmsAlarm alarm = getLastAlarm();
-        alarm.setAlarmAckTime(null);
-        alarm.setAlarmAckUser(null);
-        getAlarmDao().saveOrUpdate(alarm);
-        final Integer alarmId = alarm.getId();
+        final OnmsAlarm alarm = getLastAlarm();
+        final Integer alarmId = m_template.execute(status -> {
+            alarm.setAlarmAckTime(null);
+            alarm.setAlarmAckUser(null);
+            getAlarmDao().saveOrUpdate(alarm);
+            return alarm.getId();
+        });
 
         sendPut("/alarms", "ack=true&alarmId=" + alarmId, 204);
         String xml = sendRequest(GET, "/alarms/" + alarmId, 200);
@@ -228,11 +228,14 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, "/alarms/" + alarmId, 200);
         sendPut("/alarms/" + alarmId, "ticketState=UPDATE_PENDING", 204);
 
-        alarm = getLastAlarm();
-        alarm.setSeverity(OnmsSeverity.MAJOR);
-        alarm.setAlarmAckTime(null);
-        alarm.setAlarmAckUser(null);
-        getAlarmDao().saveOrUpdate(alarm);
+        final OnmsAlarm alarmToReset = getLastAlarm();
+        m_template.execute(status -> {
+            alarmToReset.setSeverity(OnmsSeverity.MAJOR);
+            alarmToReset.setAlarmAckTime(null);
+            alarmToReset.setAlarmAckUser(null);
+            getAlarmDao().saveOrUpdate(alarmToReset);
+            return null;
+        });
 
         // Log in as a normal REST user and attempt to resolve an alarm as a different user.
         // This should fail with a 403 forbidden.
@@ -241,37 +244,41 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     private OnmsAlarm getLastAlarm() {
-        final NavigableSet<OnmsAlarm> alarms = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
-            @Override
-            public int compare(final OnmsAlarm a, final OnmsAlarm b) {
-                return a.getId().compareTo(b.getId());
-            }
+        return m_template.execute(status -> {
+            final NavigableSet<OnmsAlarm> alarms = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
+                @Override
+                public int compare(final OnmsAlarm a, final OnmsAlarm b) {
+                    return a.getId().compareTo(b.getId());
+                }
+            });
+            alarms.addAll(getAlarmDao().findAll());
+            return alarms.last();
         });
-        alarms.addAll(getAlarmDao().findAll());
-        return alarms.last();
     }
 
     private OnmsAlarm createAlarm(final OnmsSeverity severity) {
-        final OnmsEvent event = getEventDao().findAll().get(0);
+        return m_template.execute(status -> {
+            final OnmsEvent event = getEventDao().findAll().get(0);
 
-        final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().whoami());
-        alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
-        alarm.setNode(m_databasePopulator.getNode1());
-        alarm.setDescription("This is a test alarm");
-        alarm.setLogMsg("this is a test alarm log message");
-        alarm.setCounter(1);
-        alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
-        alarm.setSeverity(severity);
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
-        alarm.setAlarmAckTime(new Date());
-        alarm.setAlarmAckUser("admin");
+            final OnmsAlarm alarm = new OnmsAlarm();
+            alarm.setDistPoller(getDistPollerDao().whoami());
+            alarm.setUei(event.getEventUei());
+            alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
+            alarm.setNode(m_databasePopulator.getNode1());
+            alarm.setDescription("This is a test alarm");
+            alarm.setLogMsg("this is a test alarm log message");
+            alarm.setCounter(1);
+            alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+            alarm.setSeverity(severity);
+            alarm.setFirstEventTime(event.getEventTime());
+            alarm.setLastEvent(event);
+            alarm.setAlarmAckTime(new Date());
+            alarm.setAlarmAckUser("admin");
 
-        getAlarmDao().save(alarm);
-        getAlarmDao().flush();
-        return alarm;
+            getAlarmDao().save(alarm);
+            getAlarmDao().flush();
+            return alarm;
+        });
     }
 
     @Test

@@ -68,7 +68,9 @@ import org.slf4j.LoggerFactory;
 
 public class AbstractMeasurementQueryExecutorTest {
 
-    protected static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+    // The parsed date strings use English day/month names, so parse with a fixed locale
+    // instead of the JVM default (which fails e.g. on a German-locale JVM).
+    protected static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", java.util.Locale.ENGLISH);
 
     protected interface ReportFiller {
         void fill(Map<String, Object> params) throws Exception;

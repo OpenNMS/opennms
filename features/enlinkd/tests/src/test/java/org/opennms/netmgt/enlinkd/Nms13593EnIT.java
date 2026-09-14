@@ -34,6 +34,7 @@ import org.opennms.netmgt.nb.Nms13593NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_NAME;
 import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_IP;
@@ -79,10 +80,12 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             @JUnitSnmpAgent(host=ZHBGO1Zsr002_IP, port=161, resource=ZHBGO1Zsr002_RESOURCE)
     })
     public void testLldpLinks() {
-        m_nodeDao.save(builder.getZHBGO1Zsr001());
-        m_nodeDao.save(builder.getZHBGO1Zsr002());
-
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getZHBGO1Zsr001());
+            m_nodeDao.save(builder.getZHBGO1Zsr002());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);

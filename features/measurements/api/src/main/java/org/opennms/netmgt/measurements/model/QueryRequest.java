@@ -23,6 +23,8 @@ package org.opennms.netmgt.measurements.model;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -85,6 +87,9 @@ public class QueryRequest {
 
     private List<FilterDef> filters = Lists.newArrayListWithCapacity(0);
 
+    @Schema(name = "start", required = true,
+            description = "Start of the query window, in milliseconds since the epoch.",
+            example = "1787728079000")
     @XmlAttribute(name = "start")
     public long getStart() {
         return start;
@@ -94,6 +99,9 @@ public class QueryRequest {
         this.start = start;
     }
 
+    @Schema(name = "end", required = true,
+            description = "End of the query window, in milliseconds since the epoch.",
+            example = "1787731679000")
     @XmlAttribute(name = "end")
     public long getEnd() {
         return end;
@@ -103,6 +111,10 @@ public class QueryRequest {
         this.end = end;
     }
 
+    @Schema(name = "step", required = true,
+            description = "Requested step size in milliseconds. The response reports the step actually used, which "
+                    + "may be coarser if the underlying archives cannot satisfy the request.",
+            example = "300000")
     @XmlAttribute(name = "step")
     public long getStep() {
         return step;
@@ -112,6 +124,11 @@ public class QueryRequest {
         this.step = step;
     }
 
+    // Wire name is "maxrows", not the bean name: a body using "maxRows" is rejected.
+    @Schema(name = "maxrows",
+            description = "Upper bound on the number of rows returned. The step is widened until the window fits "
+                    + "rather than the series being truncated. 0 leaves the row count to the step size.",
+            example = "0")
     @XmlAttribute(name = "maxrows")
     public int getMaxRows() {
         return maxrows;
@@ -121,6 +138,10 @@ public class QueryRequest {
         this.maxrows = maxrows;
     }
 
+    @Schema(name = "interval",
+            description = "Collection interval in milliseconds, used by the Newts-style fetch strategies to align "
+                    + "samples.",
+            example = "300000")
     @XmlAttribute(name = "interval")
     public Long getInterval() {
         return interval;
@@ -130,6 +151,9 @@ public class QueryRequest {
         this.interval = interval;
     }
 
+    @Schema(name = "heartbeat",
+            description = "Heartbeat in milliseconds, the age at which a sample is treated as stale.",
+            example = "600000")
     @XmlAttribute(name = "heartbeat")
     public Long getHeartbeat() {
         return heartbeat;
@@ -139,6 +163,10 @@ public class QueryRequest {
         this.heartbeat = heartbeat;
     }
 
+    // Wire name is "source", not the bean name: a body using "sources" is rejected.
+    @Schema(name = "source",
+            description = "Measurement series to fetch. At least one source or expression is required for the "
+                    + "response to carry any column.")
     @XmlElement(name = "source")
     @JsonProperty("source")
     public List<Source> getSources() {
@@ -149,6 +177,10 @@ public class QueryRequest {
         this.sources = sources;
     }
 
+    // Wire name is "expression", not the bean name: a body using "expressions" is rejected.
+    @Schema(name = "expression",
+            description = "JEXL expressions derived from the fetched sources, evaluated after the fetch and before "
+                    + "the filters.")
     @XmlElement(name = "expression")
     @JsonProperty("expression")
     public List<Expression> getExpressions() {
@@ -159,6 +191,10 @@ public class QueryRequest {
         this.expressions = expressions;
     }
 
+    // Wire name is "filter", not the bean name: a body using "filters" is rejected.
+    @Schema(name = "filter",
+            description = "Filters applied to the result table, in order. Names come from "
+                    + "GET /measurements/filters.")
     @XmlElement(name = "filter")
     public List<FilterDef> getFilters() {
         return filters;
@@ -173,6 +209,10 @@ public class QueryRequest {
         this.relaxed = relaxed;
     }
 
+    @Schema(name = "relaxed",
+            description = "When false a source whose attribute cannot be found makes the request fail with 404. "
+                    + "When true the missing series is filled with NaN instead.",
+            example = "false")
     public boolean isRelaxed() {
         return relaxed;
     }

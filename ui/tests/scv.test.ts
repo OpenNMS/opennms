@@ -22,11 +22,13 @@
 
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
+import { nextTick } from 'vue'
 
 vi.mock('@/services', () => ({
   default: {
@@ -52,7 +54,8 @@ describe('scv test', () => {
     wrapper = mount(SCV, {
       global: {
         plugins: [
-          createTestingPinia({ stubActions: false })
+          createTestingPinia({ stubActions: false }),
+          PrimeVue
         ],
         stubs: ['router-link']
       }
@@ -61,51 +64,51 @@ describe('scv test', () => {
 
   test('adding an alias should enable the add btn', async () => {
     const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
-    const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
+    const aliasInput = wrapper.get('[data-test="alias-input"] input')
 
     // expect add btn to start disabled
-    expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
+    expect((addCredsBtn.element as HTMLButtonElement).disabled).toBe(true)
 
     // adding a value to alias should enable the add btn
     await aliasInput.setValue('some alias')
     await nextTick()
-    expect(addCredsBtn.attributes('aria-disabled')).toBeUndefined()
+    expect((addCredsBtn.element as HTMLButtonElement).disabled).toBe(false)
   })
 
   test('the user may not add a duplicate alias', async () => {
     const scvStore = useScvStore()
 
     const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
-    const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
+    const aliasInput = wrapper.get('[data-test="alias-input"] input')
 
     // add alias1 to the list of current aliases
     scvStore.aliases = ['alias1']
     // start to create new with alias1
     await aliasInput.setValue('alias1')
     // expect add btn to remain disabled
-    expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
+    expect((addCredsBtn.element as HTMLButtonElement).disabled).toBe(true)
     // replace with alias2
     await aliasInput.setValue('alias2')
     // expect add btn to be enabled
-    expect(addCredsBtn.attributes('aria-disabled')).toBeUndefined()
+    expect((addCredsBtn.element as HTMLButtonElement).disabled).toBe(false)
   })
 
   test('the user may not add a reserved alias', async () => {
     const scvStore = useScvStore()
 
     const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
-    const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
+    const aliasInput = wrapper.get('[data-test="alias-input"] input')
 
     // add alias1 to the list of current aliases
     scvStore.aliases = ['alias1']
     // start to create new with SCV_GET_ALL_ALIAS
     await aliasInput.setValue(SCV_GET_ALL_ALIAS)
     // expect add btn to remain disabled
-    expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
+    expect((addCredsBtn.element as HTMLButtonElement).disabled).toBe(true)
     // replace with alias2
     await aliasInput.setValue('alias2')
     // expect add btn to be enabled
-    expect(addCredsBtn.attributes('aria-disabled')).toBeUndefined()
+    expect((addCredsBtn.element as HTMLButtonElement).disabled).toBe(false)
   })
 
   test('the update btn should appear and be enabled', async () => {
@@ -122,15 +125,15 @@ describe('scv test', () => {
 
     // the update btn should be there, and enabled
     const updateCredsBtn = wrapper.find('[data-test="update-creds-btn"]')
-    expect(updateCredsBtn.attributes('aria-disabled')).toBeUndefined()
+    expect((updateCredsBtn.element as HTMLButtonElement).disabled).toBe(false)
   })
 
   // NOTE: skipping this test, need to fix
   test.skip('if password is masked and username is being updated, prevent submission', async () => {
     const scvStore = useScvStore()
 
-    const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
-    const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
+    const usernameInput = wrapper.get('[data-test="username-input"] input')
+    const passwordInput = wrapper.get('[data-test="password-input"] input')
 
     // simulate clicking on an alias to update
     scvStore.credentials = mockCredentials
@@ -139,27 +142,28 @@ describe('scv test', () => {
 
     // the update btn should be there, and be enabled
     const updateCredsBtn = wrapper.get('[data-test="update-creds-btn"]')
-    expect(updateCredsBtn.attributes('aria-disabled')).toBeUndefined()
+    expect((updateCredsBtn.element as HTMLButtonElement).disabled).toBe(false)
 
     // modify the username
     await usernameInput.setValue('newusername')
 
     // the update btn should be disabled, because the password is masked
-    expect(updateCredsBtn.attributes('aria-disabled')).toBe('true')
+    expect((updateCredsBtn.element as HTMLButtonElement).disabled).toBe(true)
 
     // modify the password
     await passwordInput.setValue('newpassword')
 
     // the update btn should be enabled
-    expect(updateCredsBtn.attributes('aria-disabled')).toBeUndefined()
+    expect((updateCredsBtn.element as HTMLButtonElement).disabled).toBe(false)
   })
 
   test('the clear btn', async () => {
     const scvStore = useScvStore()
 
-    const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
-    const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
-    const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
+    // happy-dom reports an empty input's `.value` as undefined; normalize to ''.
+    const inputValue = (testId: string) =>
+      (wrapper.get(`[data-test="${testId}"] input`).element as HTMLInputElement).value ?? ''
+
     const clearBtn = wrapper.get('[data-test="clear-btn"]')
     await clearBtn.trigger('click')
 
@@ -169,15 +173,16 @@ describe('scv test', () => {
     await nextTick()
 
     // expect form to be populated
-    expect((usernameInput.element as any).value).toBe('name')
-    expect((passwordInput.element as any).value).toBe('******')
-    expect((aliasInput.element as any).value).toBe('alias')
+    expect(inputValue('username-input')).toBe('name')
+    expect(inputValue('password-input')).toBe('******')
+    expect(inputValue('alias-input')).toBe('alias')
 
     // clear
     await clearBtn.trigger('click')
-    expect((usernameInput.element as any).value).toBe('')
-    expect((passwordInput.element as any).value).toBe('')
-    expect((aliasInput.element as any).value).toBe('')
+    await nextTick()
+    expect(inputValue('username-input')).toBe('')
+    expect(inputValue('password-input')).toBe('')
+    expect(inputValue('alias-input')).toBe('')
   })
 
   test('the add and remove attribute btn', async () => {

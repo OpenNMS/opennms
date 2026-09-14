@@ -20,38 +20,42 @@
 /// License.
 ///
 
-import { SnackbarProps } from '@/types'
-import { isDefined } from '@vueuse/core'
+import { MessageSeverity, SnackbarProps } from '@/types'
+import { useOnmsToast, OnmsToastSeverity } from '@opennms/onms-ui'
 
-const isDisplayed = ref(false)
-const isCentered = ref<boolean | undefined>(true)
-const hasError = ref<boolean | undefined>(false)
-const message = ref('')
-const setTimeout = ref<number | undefined>(4000)
+// Legacy snackbar API, now a thin adapter over the @opennms/onms-ui toast seam
+// (NMS-20029). New code should call useOnmsToast() directly; this adapter exists
+// so the many existing showSnackBar call sites keep working.
+
+// Total map: adding a MessageSeverity member without a seam equivalent (or
+// renaming a seam severity) fails compilation here instead of at runtime.
+const SEVERITY_MAP: Record<MessageSeverity, OnmsToastSeverity> = {
+  [MessageSeverity.Error]: 'error',
+  [MessageSeverity.Info]: 'info',
+  [MessageSeverity.Success]: 'success',
+  [MessageSeverity.Warn]: 'warn'
+}
 
 const useSnackbar = () => {
-  const showSnackBar = (snackbarProps: SnackbarProps) => {
-    const { center, error, msg, timeout } = snackbarProps
-    isDisplayed.value = true
-    isCentered.value = isDefined(center) ? center : true
-    hasError.value = error
-    message.value = msg
-    setTimeout.value = timeout
-  }
+  const { showToast, hideAllToasts } = useOnmsToast()
 
-  const hideSnackbar = () => {
-    isDisplayed.value = false
-    message.value = ''
+  const showSnackBar = (snackbarProps: SnackbarProps) => {
+    const { center, error, msg, severity: severityProp, timeout } = snackbarProps
+
+    // Prefer an explicit severity; fall back to the legacy error boolean.
+    const severity = SEVERITY_MAP[severityProp ?? (error ? MessageSeverity.Error : MessageSeverity.Success)]
+
+    showToast({
+      message: msg,
+      severity,
+      center,
+      timeout
+    })
   }
 
   return {
     showSnackBar,
-    hideSnackbar,
-    isDisplayed: isDisplayed,
-    isCentered: readonly(isCentered),
-    hasError: readonly(hasError),
-    message: readonly(message),
-    setTimeout: readonly(setTimeout)
+    hideSnackbar: hideAllToasts
   }
 }
 

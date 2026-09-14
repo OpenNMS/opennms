@@ -95,15 +95,15 @@
   // optional bookmark
   final OnmsFilterFavorite favorite = (OnmsFilterFavorite) req.getAttribute("favorite");
 
-    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
-    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
-    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
-    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
-    pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
-    
-    // get sound constants from session, request or opennms.properties
-	  String soundEnabledStr = System.getProperty("opennms.alarmlist.sound.enable");
-	  boolean soundEnabled = (soundEnabledStr == null) ? false : "true".equals(soundEnabledStr.trim());
+  pageContext.setAttribute("addPositiveFilter", "<i class=\"far fa-square-plus\"></i>");
+  pageContext.setAttribute("addNegativeFilter", "<i class=\"far fa-square-minus\"></i>");
+  pageContext.setAttribute("addBeforeFilter", "<i class=\"fas fa-square-caret-right\"></i>");
+  pageContext.setAttribute("addAfterFilter", "<i class=\"fas fa-square-caret-left\"></i>");
+  pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
+
+  // get sound constants from session, request or opennms.properties
+  String soundEnabledStr = System.getProperty("opennms.alarmlist.sound.enable");
+  boolean soundEnabled = (soundEnabledStr == null) ? false : "true".equals(soundEnabledStr.trim());
 
   boolean soundOn = false;
   boolean soundOnEvent = false;
@@ -319,8 +319,8 @@
     <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
       </c:otherwise>
     </c:choose>
-    <a class="btn btn-secondary text-white" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
-    <a class="btn btn-secondary text-white" onclick="$('#helpModal').modal()">Help</a>
+    <a class="btn btn-secondary" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
+    <a class="btn btn-secondary" onclick="$('#helpModal').modal()">Help</a>
 
     <% if (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY)) { %>
       <% if ( alarmCount > 0 ) { %>

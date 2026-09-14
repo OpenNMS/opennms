@@ -30,6 +30,7 @@ import {
 } from './nodeService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
+import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
   getGraphNodesNodes,
@@ -58,13 +59,14 @@ import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
+import { getSnmpInterfaces, getNodeSnmpInterfaceQuery } from './snmpInterfaceService'
 import { search } from './searchService'
 import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApiV1, getOpenApi } from './helpService'
-import { getResources, getResourceForNode } from './resourceService'
+import { getResources, getResourceForNode, getResourceById } from './resourceService'
 import { getPlugins } from './pluginService'
 import {
   getUsageStatistics,
@@ -86,6 +88,8 @@ export default {
   getNodeIfServices,
   getIpInterfaces,
   getNodeIpInterfaceQuery,
+  getSnmpInterfaces,
+  getNodeSnmpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
@@ -114,8 +118,10 @@ export default {
   getPreFabGraphs,
   getDefinitionData,
   getResourceForNode,
+  getResourceById,
   getGraphDefinitionsByResourceId,
   getPlugins,
+  getServiceTypes,
   getDeviceConfigBackups,
   backupDeviceConfig,
   downloadDeviceConfigs,

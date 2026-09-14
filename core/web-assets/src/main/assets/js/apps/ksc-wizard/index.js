@@ -167,7 +167,7 @@ angular.module('onms-ksc-wizard', [
   $scope.reloadConfig = function() {
     bootbox.dialog({
       message: 'Are you sure you want to do this?<br/>',
-      title: 'Reload KSC Configuration',
+      title: 'Reload Graph Collections Configuration',
       buttons: {
         reload: {
           label: 'Yes',

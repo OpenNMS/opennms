@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException;
+import org.springframework.orm.hibernate5.HibernateObjectRetrievalFailureException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;

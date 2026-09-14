@@ -84,6 +84,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -171,6 +173,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     @Autowired
     private DistPollerDao m_distPollerDao;
 
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     private MockDatabase m_database;
 
     private MockNorthbounder m_northbounder;
@@ -195,7 +200,10 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        m_nodeDao.save(node);
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(node);
+            return null;
+        });
         
         m_northbounder = new MockNorthbounder();
         m_registry.register(m_northbounder, Northbounder.class);
@@ -644,14 +652,17 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         // Wait until we've create the node down alarm
         await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(1));
 
-        // Clear the existing alarm(s)
-        m_alarmDao.findAll().forEach(alarm -> {
-            alarm.setSeverity(OnmsSeverity.CLEARED);
-            m_alarmDao.update(alarm);
-            // Should not be archive
-            assertThat(alarm.isArchived(), equalTo(false));
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            // Clear the existing alarm(s)
+            m_alarmDao.findAll().forEach(alarm -> {
+                alarm.setSeverity(OnmsSeverity.CLEARED);
+                m_alarmDao.update(alarm);
+                // Should not be archive
+                assertThat(alarm.isArchived(), equalTo(false));
+            });
+            m_alarmDao.flush();
+            return null;
         });
-        m_alarmDao.flush();
 
         // Trigger the alarm again
         sendNodeDownEvent("%nodeid%", node);

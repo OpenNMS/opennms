@@ -20,6 +20,7 @@
     <bean id="jmsTwinPublisher" class="org.opennms.core.ipc.twin.jms.publisher.JmsTwinPublisher" primary="true"
           init-method="init" destroy-method="close" >
         <constructor-arg ref="twinRpcServer"/>
+        <constructor-arg ref="twinSinkClient"/>
         <constructor-arg ref="localTwinSubscriber"/>
         <constructor-arg ref="tracerRegistry"/>
         <constructor-arg ref="jmsTwinMetricRegistry"/>
@@ -37,23 +38,23 @@
     <onmsgi:service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
     <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
-    <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+    <bean id="shutdownStrategy" class="org.apache.camel.impl.engine.DefaultShutdownStrategy">
         <property name="timeout" value="15"/>
     </bean>
 
     <camelContext id="twinRpcServer" xmlns="http://camel.apache.org/schema/spring">
         <!-- Exchanges may contain credentials, so avoid logging them -->
-        <properties>
-            <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.twin.jms.publisher.body.debug:-1}}"/>
-        </properties>
+        <globalOptions>
+            <globalOption key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.twin.jms.publisher.body.debug:-1}}"/>
+        </globalOptions>
 
     </camelContext>
 
     <camelContext id="twinSinkClient" xmlns="http://camel.apache.org/schema/spring">
         <!-- Exchanges may contain credentials, so avoid logging them -->
-        <properties>
-            <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.twin.jms.publisher.body.debug:-1}}"/>
-        </properties>
+        <globalOptions>
+            <globalOption key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.twin.jms.publisher.body.debug:-1}}"/>
+        </globalOptions>
 
         <route id="twinSinkClient">
             <from uri="direct:sendTwinUpdate" />

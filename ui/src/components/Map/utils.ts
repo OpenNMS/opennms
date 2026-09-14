@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { PopupOptions } from 'leaflet'
+
 const numericSeverityLevel = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
@@ -52,4 +54,19 @@ const stringToFixedFloat = (floatAsString: string, decimalPoints: number): strin
   return floatAsString
 }
 
-export { numericSeverityLevel, stringToFixedFloat }
+// Shared options for marker + cluster popups. Popups open BELOW the marker
+// (the downward offset is applied per-popup in LeafletMap's popupopen handler,
+// and the .onms-popup-below CSS hides the now-pointless tip) instead of
+// Leaflet's default above-the-marker. Most markers sit in the upper half of the
+// map under the fixed top menu bar; an upward popup there forced autoPan to
+// shift the whole map down to fit it. Opening downward drops the popup into
+// open map, so autoPan is turned off and the map no longer jumps on open.
+// No maxHeight: the cluster popup's node list is already a fixed-height inner
+// scroll, so capping the whole popup only adds a redundant second scrollbar.
+const mapPopupOptions: PopupOptions = {
+  autoPan: false,
+  className: 'onms-popup-below',
+  keepInView: false
+}
+
+export { mapPopupOptions, numericSeverityLevel, stringToFixedFloat }
