@@ -29,6 +29,9 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Trends removed
+The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
+
 === Charts removed
 The Charts page, its JFreeChart rendering and the `features/charts` module have been removed from the Dashboards menu and from the product. `etc/chart-configuration.xml` and its configuration model are kept for the dashboard chart panels.
 

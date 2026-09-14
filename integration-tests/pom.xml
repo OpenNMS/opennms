@@ -11,6 +11,5 @@
   <name>OpenNMS :: Integration Tests</name>
   <modules>
     <module>config</module>
-    <module>trend-configuration</module>
   </modules>
 </project>
