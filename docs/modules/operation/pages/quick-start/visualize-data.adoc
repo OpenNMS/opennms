@@ -78,6 +78,7 @@ For this example, we use "Production".
 
 NOTE: The Surveillance View dashboard component includes a menu where you can select the view to be displayed.
 Its default visualization is defined separately from the Surveillance View itself.
+
 == Beyond Quick Start
 
 Refer to Visualizations in the Deep Dive section for more information on the available visualizations.

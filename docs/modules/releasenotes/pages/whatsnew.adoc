@@ -1,6 +1,6 @@
-[[releasenotes-36]]
+[[releasenotes-37]]
 
-= What's New in OpenNMS {page-component-title} 36
+= What's New in OpenNMS {page-component-title} 37
 
 == System requirements and Dependencies
 
@@ -8,16 +8,6 @@
 * PostgreSQL 14 or higher: This version of OpenNMS {page-component-title} requires a supported version of PostgreSQL.
 
 == New features and important changes
-
-=== Spring, Hibernate, and Camel platform upgrade
-The core application frameworks have been upgraded to currently supported versions:
-Spring Framework 5.3, Spring Security 5.8, Hibernate 5.6, Hibernate Validator 6.2, and Apache Camel 3.22.
-The OpenNMS-patched forks of Spring, Spring Security, and Hibernate have been removed in favor of stock releases,
-and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extender.
-
-Most installations require no action, but there are behavior and compatibility changes for installations with
-custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
-See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
 === Spring, Hibernate, and Camel platform upgrade
 The core application frameworks have been upgraded to currently supported versions:
