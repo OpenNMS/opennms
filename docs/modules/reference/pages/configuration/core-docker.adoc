@@ -14,7 +14,7 @@
 | `-t`     | One-time command to run the config-tester against the configuration.
 |===
 
-[[core-oci-confd]]
+[[core-oci-env]]
 == Environment variables
 
 .Java options
