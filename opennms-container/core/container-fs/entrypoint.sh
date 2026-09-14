@@ -166,36 +166,6 @@ processEnvConfig() {
               > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.timeseries.properties"
   )
 
-  # Process Slack notification properties from template with defaults for unset variables
-  (
-    export OPENNMS_NOTIFD_SLACK_WEBHOOKURL="${OPENNMS_NOTIFD_SLACK_WEBHOOKURL:-Webhook URL}"
-    export OPENNMS_NOTIFD_SLACK_CHANNEL="${OPENNMS_NOTIFD_SLACK_CHANNEL:-Webhook}"
-    export OPENNMS_NOTIFD_SLACK_USERNAME="${OPENNMS_NOTIFD_SLACK_USERNAME:-none}"
-    export OPENNMS_NOTIFD_SLACK_ICONEMOJI="${OPENNMS_NOTIFD_SLACK_ICONEMOJI:-}"
-    export OPENNMS_NOTIFD_SLACK_ICONURL="${OPENNMS_NOTIFD_SLACK_ICONURL:-}"
-    export OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY="${OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY:-true}"
-
-    validateBool OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY "$OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY"
-
-    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.slack.properties.tmpl" \
-              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.slack.properties"
-  )
-
-  # Process Mattermost notification properties from template with defaults for unset variables
-  (
-    export OPENNMS_NOTIFD_MATTERMOST_WEBHOOKURL="${OPENNMS_NOTIFD_MATTERMOST_WEBHOOKURL:-Webhook URL}"
-    export OPENNMS_NOTIFD_MATTERMOST_CHANNEL="${OPENNMS_NOTIFD_MATTERMOST_CHANNEL:-Webhook}"
-    export OPENNMS_NOTIFD_MATTERMOST_USERNAME="${OPENNMS_NOTIFD_MATTERMOST_USERNAME:-none}"
-    export OPENNMS_NOTIFD_MATTERMOST_ICONEMOJI="${OPENNMS_NOTIFD_MATTERMOST_ICONEMOJI:-}"
-    export OPENNMS_NOTIFD_MATTERMOST_ICONURL="${OPENNMS_NOTIFD_MATTERMOST_ICONURL:-}"
-    export OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY="${OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY:-true}"
-
-    validateBool OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY "$OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY"
-
-    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.mattermost.properties.tmpl" \
-              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.mattermost.properties"
-  )
-
   # Process service-configuration.xml from template with defaults for unset variables
   (
     export CORE_SERVICE_ALARMD_ENABLED="${CORE_SERVICE_ALARMD_ENABLED:-true}"

@@ -85,32 +85,6 @@ Each OpenNMS service can be enabled or disabled via an environment variable. Set
 
 Config written to `etc/service-configuration.xml`.
 
-## Slack notifications
-
-| Environment Variable | Config key | Default |
-|:---------------------|:-----------|:--------|
-| `OPENNMS_NOTIFD_SLACK_WEBHOOKURL` | `org.opennms.netmgt.notifd.slack.webhookURL` | `Webhook URL` |
-| `OPENNMS_NOTIFD_SLACK_CHANNEL` | `org.opennms.netmgt.notifd.slack.channel` | `Webhook` |
-| `OPENNMS_NOTIFD_SLACK_USERNAME` | `org.opennms.netmgt.notifd.slack.username` | `none` |
-| `OPENNMS_NOTIFD_SLACK_ICONEMOJI` | `org.opennms.netmgt.notifd.slack.iconEmoji` | _(empty)_ |
-| `OPENNMS_NOTIFD_SLACK_ICONURL` | `org.opennms.netmgt.notifd.slack.iconURL` | _(empty)_ |
-| `OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY` | `org.opennms.netmgt.notifd.slack.useSystemProxy` | `true` |
-
-Config written to `etc/opennms.properties.d/_container.slack.properties`.
-
-## Mattermost notifications
-
-| Environment Variable | Config key | Default |
-|:---------------------|:-----------|:--------|
-| `OPENNMS_NOTIFD_MATTERMOST_WEBHOOKURL` | `org.opennms.netmgt.notifd.mattermost.webhookURL` | `Webhook URL` |
-| `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` | `org.opennms.netmgt.notifd.mattermost.channel` | `Webhook` |
-| `OPENNMS_NOTIFD_MATTERMOST_USERNAME` | `org.opennms.netmgt.notifd.mattermost.username` | `none` |
-| `OPENNMS_NOTIFD_MATTERMOST_ICONEMOJI` | `org.opennms.netmgt.notifd.mattermost.iconEmoji` | _(empty)_ |
-| `OPENNMS_NOTIFD_MATTERMOST_ICONURL` | `org.opennms.netmgt.notifd.mattermost.iconURL` | _(empty)_ |
-| `OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY` | `org.opennms.netmgt.notifd.mattermost.useSystemProxy` | `true` |
-
-Config written to `etc/opennms.properties.d/_container.mattermost.properties`.
-
 ## Prometheus JMX Exporter
 
 The JMX exporter is disabled by default. Enable it with `PROM_JMX_EXPORTER_ENABLED=true`.
@@ -135,4 +109,4 @@ If you are upgrading from a version that used `horizon-config.yaml` / confd:
 
 - The `horizon-config.yaml` mount is no longer used. Switch to environment variables using the tables above.
 - Legacy `_confd.*.properties` files left in a mounted `etc/` volume are automatically removed at startup to prevent stale settings.
-- Numeric and boolean variables (`OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, `OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY`, `OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY`, and all `CORE_SERVICE_*_ENABLED`) are validated at startup. An invalid value (e.g. `"yes"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.
+- Numeric and boolean variables (`OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, and all `CORE_SERVICE_*_ENABLED`) are validated at startup. An invalid value (e.g. `"yes"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.
