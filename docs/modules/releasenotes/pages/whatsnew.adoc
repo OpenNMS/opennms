@@ -29,6 +29,9 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Trends removed
+The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
+
 === Statsd removed
 The Metrics Statistics (statsd) page and the Statsd daemon have been removed, together with `etc/statsd-configuration.xml` and the `CORE_SERVICE_STATSD_ENABLED` variable.
 On upgrade, the Statsd entry is removed from `etc/service-configuration.xml` and `statsd-configuration.xml` is moved to `etc_archive/`.
