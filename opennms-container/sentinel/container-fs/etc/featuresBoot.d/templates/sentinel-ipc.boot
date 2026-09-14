@@ -1,0 +1,2 @@
+!sentinel-jms
+sentinel-kafka

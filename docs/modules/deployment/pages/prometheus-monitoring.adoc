@@ -237,4 +237,4 @@ To customize the JMX exporter configuration, inject your own `config.yaml` file 
 
 IMPORTANT: If you need a more sophisticated configuration with JMX rules, you need to inject your own `config.yaml` file.
 
-For configuring container deployments, refer to xref:reference:configuration/core-docker.adoc#core-oci-confd[Core], xref:reference:configuration/minion-docker.adoc#minion-docker[Minion], and xref:reference:configuration/sentinel-features.adoc#sentinel-oci-confd[Sentinel].
+For configuring container deployments, refer to xref:reference:configuration/core-docker.adoc#core-oci-confd[Core], xref:reference:configuration/minion-docker.adoc#minion-docker[Minion], and xref:reference:configuration/sentinel-features.adoc#sentinel-configuration[Sentinel].
