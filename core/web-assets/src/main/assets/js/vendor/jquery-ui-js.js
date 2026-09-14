@@ -68,7 +68,6 @@ require('jquery-ui/ui/widgets/tooltip');
 
 // 3rd-party jquery-ui plugins
 require('jquery-ui-treemap');
-require('jquery-sparkline/dist/jquery.sparkline');
 
 console.log('init: jquery-ui-js'); // eslint-disable-line no-console
 

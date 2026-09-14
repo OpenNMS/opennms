@@ -42,13 +42,6 @@
           "roles": null
         },
         {
-          "id": "trend",
-          "name": "Trends",
-          "url": "trend/index.jsp",
-          "locationMatch": "trend",
-          "roles": null
-        },
-        {
           "id": "charts",
           "name": "Charts",
           "url": "charts/index.jsp",

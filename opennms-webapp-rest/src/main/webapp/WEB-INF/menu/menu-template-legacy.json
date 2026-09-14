@@ -166,13 +166,6 @@
           "roles": null
         },
         {
-          "id": "trend",
-          "name": "Trend",
-          "url": "trend/index.jsp",
-          "locationMatch": "trend",
-          "roles": null
-        },
-        {
           "id": "applications",
           "name": "Application",
           "url": "application/index.jsp",
