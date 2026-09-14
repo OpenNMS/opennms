@@ -35,6 +35,7 @@ import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useNodeStore } from '@/stores/nodeStore'
+import { SORT } from '@/types'
 
 const nodeStore = useNodeStore()
 const route = useRoute()
@@ -47,9 +48,15 @@ const pageSize = ref(DEFAULT_PAGE_SIZE)
 const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
 
+// Ordered by ifIndex ascending. The table is lazy -- each page is a separate request -- so the
+// order has to be asked of the API; sorting the rows client-side would only order the page in
+// hand and leave which rows land on which page up to the server's default (unordered) sequence.
+// ifIndex is an INTEGER search property on OnmsSnmpInterface, so this sorts numerically.
 const queryParameters = ref({
   limit: DEFAULT_PAGE_SIZE,
-  offset: 0
+  offset: 0,
+  orderBy: 'ifIndex',
+  order: SORT.ASCENDING
 })
 
 const fetchInterfaces = () => {

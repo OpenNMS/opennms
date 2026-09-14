@@ -22,6 +22,7 @@
 
 import SnmpInterfacesTable from '@/components/Nodes/SnmpInterfacesTable.vue'
 import { useNodeStore } from '@/stores/nodeStore'
+import { SORT } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -154,6 +155,35 @@ describe('SnmpInterfacesTable.vue', () => {
     })
   })
 
+  describe('Sorting', () => {
+    // The table is lazy, so ordering has to be asked of the API -- sorting client-side would
+    // only order the page in hand.
+    it('fetches ordered by ifIndex ascending on mount', () => {
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queryParameters: expect.objectContaining({
+            orderBy: 'ifIndex',
+            order: SORT.ASCENDING
+          })
+        })
+      )
+    })
+
+    it('keeps the ifIndex ordering when paging', async () => {
+      await wrapper.vm.onPage({ first: 5, rows: 5, page: 1, pageCount: 2 })
+      await flushPromises()
+
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          queryParameters: expect.objectContaining({
+            orderBy: 'ifIndex',
+            order: SORT.ASCENDING
+          })
+        })
+      )
+    })
+  })
+
   describe('Lazy pagination — onPage', () => {
     it('calls getNodeSnmpInterfaces with updated offset and limit, preserving node id', async () => {
       await wrapper.vm.onPage({ first: 5, rows: 5, page: 1, pageCount: 2 })
@@ -194,7 +224,7 @@ describe('SnmpInterfacesTable.vue', () => {
 
       expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledWith({
         id: '99',
-        queryParameters: { limit: 10, offset: 0 }
+        queryParameters: { limit: 10, offset: 0, orderBy: 'ifIndex', order: SORT.ASCENDING }
       })
       ;(useRoute() as any).params.id = '42'
     })
