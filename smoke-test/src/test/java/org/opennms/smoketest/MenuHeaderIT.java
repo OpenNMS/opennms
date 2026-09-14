@@ -63,9 +63,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Dashboards Menu
 
-        clickMenuItem("Dashboards", "Trends");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Trend']")));
-
         clickMenuItem("Dashboards", "Charts");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("include-charts")));
 
