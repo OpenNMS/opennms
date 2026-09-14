@@ -24,6 +24,8 @@ package org.opennms.netmgt.measurements.model;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -89,22 +91,38 @@ public class FilterMetaData {
         }
     }
 
+    @Schema(name = "canonicalName", required = true,
+            description = "Fully qualified class name of the filter implementation.",
+            example = "org.opennms.netmgt.measurements.filters.impl.Chomp")
     public String getCanonicalName() {
         return canonicalName;
     }
 
+    @Schema(name = "name", required = true,
+            description = "Filter name, the value to put in a query request's filter[].name.",
+            example = "Chomp")
     public String getName() {
         return name;
     }
 
+    @Schema(name = "description",
+            description = "Human readable summary of what the filter does.",
+            example = "Strips leading and trailing rows that contain nothing but NaNs/null values.")
     public String getDescription() {
         return description;
     }
 
+    @Schema(name = "backend",
+            description = "Engine the filter runs on. The shipped filters report Java or R, and the R ones need "
+                    + "Rserve reachable to run.",
+            example = "Java")
     public String getBackend() {
         return backend;
     }
 
+    // Wire name is "parameter", not the bean name.
+    @Schema(name = "parameter",
+            description = "Parameters the filter accepts.")
     public List<FilterParamMetaData> getParameters() {
         return parameters;
     }

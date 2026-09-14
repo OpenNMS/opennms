@@ -157,7 +157,7 @@
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
 import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 
 import FormField from '@/components/Common/FormField.vue'

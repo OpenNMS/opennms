@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { OnmsIcon } from '@opennms/onms-ui'
-import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import { hasIngressFlow, hasEgressFlow } from './utils'
 import { Node } from '@/types'
 

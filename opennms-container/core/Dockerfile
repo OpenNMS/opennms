@@ -23,7 +23,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.6.6.b375-jre-21"
+ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.6.7.b377-jre-21"
 
 FROM ${BASE_IMAGE} AS core-tarball
 
@@ -91,6 +91,8 @@ RUN rm -rf /opt/opennms/share/rrd \
             /opt/opennms-jetty-webinf-overlay \
             /opt/opennms-overlay \
             /opennms-data \
+            /opt/opennms/tmp \
+            /opt/opennms/var/activemq \
             /var/log && \
     install -d -m 775 -o 10001 -g 0 \
             /opennms-data/rrd \

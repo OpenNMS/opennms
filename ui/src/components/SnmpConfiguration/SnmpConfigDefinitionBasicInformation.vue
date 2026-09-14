@@ -104,8 +104,8 @@
 import { computed, onMounted, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsChip, OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
-import InfoIcon from '@/components/icons/action/Info.vue'
-import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'
 import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'

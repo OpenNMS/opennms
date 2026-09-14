@@ -323,10 +323,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-alarm-northbounder-jms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
     </dependency>
     <dependency>
@@ -482,10 +478,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jstl-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -1043,10 +1035,6 @@
       <groupId>io.pyroscope</groupId>
       <artifactId>agent</artifactId>
       <version>${pyroscopeVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.request-tracker</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

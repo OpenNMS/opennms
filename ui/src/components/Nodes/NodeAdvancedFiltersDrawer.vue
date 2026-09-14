@@ -292,9 +292,9 @@ import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
 import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMessageDialog, OnmsMultiSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
-import AddIcon from '@/components/icons/action/Add.vue'
-import DeleteIcon from '@/components/icons/action/Delete.vue'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import AddIcon from '@opennms/onms-ui/icons/action/Add.vue'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import FormField from '@/components/Common/FormField.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import AssetFilterPanel from './AssetFilterPanel.vue'
@@ -454,10 +454,11 @@ defineExpose({
 @use '@/styles/onms-tokens' as variables;
 @use '@/styles/onms-typography' as *;
 
+// No height/overflow here on purpose: PrimeVue's own `.p-drawer-content` is the
+// drawer's scroll container. A second scroller nested inside it drew its own
+// scrollbar next to the page's (NMS-20182).
 .node-filters-drawer-custom-padding {
   padding: 20px;
-  height: 100%;
-  overflow: auto;
 
   // The onms grid `gap` only spaces columns, so consecutive filter rows were
   // cramped vertically. Give each stacked row/group breathing room.

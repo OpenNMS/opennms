@@ -46,6 +46,18 @@
       data-test="event-config-source-table"
     >
       <OnmsColumn
+        field="evaluationOrder"
+        sortable
+        style="width: 6rem"
+      >
+        <template #header>
+          <span
+            title="Order in which sources are evaluated when matching events: 1 is evaluated first. The catch-all source is always evaluated last."
+            data-test="order-header"
+          >Order</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn
         field="name"
         header="Source"
         sortable
@@ -133,10 +145,10 @@ import {
   type OnmsTablePageEvent,
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
-import Download from '@/components/icons/action/DownloadFile.vue'
-import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import Refresh from '@/components/icons/navigation/Refresh.vue'
+import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
+import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
+import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -189,7 +201,7 @@ const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
-    store.onSourcesSortChange('createdTime', 'desc')
+    store.onSourcesSortChange('evaluationOrder', 'asc')
   }
 }
 
@@ -245,19 +257,6 @@ onMounted(async () => {
 
         .search-field {
           width: 100%;
-
-          // make the input (and its IconField wrapper) fill the field so the
-          // search icon sits at the input's right edge rather than floating far
-          // out in the container
-          :deep(.p-iconfield) {
-            display: block;
-            width: 100%;
-          }
-
-          :deep(.p-inputtext) {
-            width: 100%;
-            padding-right: 2.75rem;
-          }
         }
 
         .refresh {

@@ -73,8 +73,8 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
-import Add from '@/components/icons/action/Add.vue'
-import DeleteIcon from '@/components/icons/action/Delete.vue'
+import Add from '@opennms/onms-ui/icons/action/Add.vue'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { ALL_ASSET_COLUMN_OPTIONS, ASSET_COLUMN_OPTIONS, getAssetColumnLabel } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeListStore } from '@/stores/nodeListStore'

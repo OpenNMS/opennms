@@ -109,7 +109,7 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
-import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
 
 const store = useEventConfigDetailStore()
