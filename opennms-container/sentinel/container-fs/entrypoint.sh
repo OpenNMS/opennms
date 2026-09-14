@@ -111,7 +111,7 @@ function updateConfig() {
 }
 
 function parseEnvironment() {
-    IFS=$'\n'
+    local IFS=$'\n'
 
     for VAR in $(env)
     do

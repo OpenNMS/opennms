@@ -341,7 +341,7 @@ For settings not covered by environment variables, you can overlay individual co
 | Variable | Description | Default value
 | `SENTINEL_ID`        | Unique identifier for this Sentinel instance. | generated UUID
 | `SENTINEL_LOCATION`  | Location name associated with this Sentinel instance. | `SENTINEL`
-| `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | –
+| `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | `tcp://127.0.0.1:61616`
 |===
 
 NOTE: You cannot supply credentials via environment variables without exposing them in `docker inspect` output and container logs.
@@ -388,10 +388,10 @@ The prefix is stripped, the remainder is lowercased, and underscores are convert
 [options="header, autowidth"]
 |===
 | Variable | Description | Default value
-| `POSTGRES_HOST`     | PostgreSQL host. | –
-| `POSTGRES_PORT`     | PostgreSQL port. | –
-| `POSTGRES_DB`       | PostgreSQL database name. | –
-| `POSTGRES_USER`     | PostgreSQL username. | –
+| `POSTGRES_HOST`     | PostgreSQL host. | `localhost`
+| `POSTGRES_PORT`     | PostgreSQL port. | `5432`
+| `POSTGRES_DB`       | PostgreSQL database name. | `opennms`
+| `POSTGRES_USER`     | PostgreSQL username. | `postgres`
 | `POSTGRES_PASSWORD` | PostgreSQL password. | –
 |===
 
@@ -425,6 +425,7 @@ Environment variables prefixed with `ELASTICSEARCH_` are written to `$\{SENTINEL
 | `PROM_JMX_EXPORTER_ENABLED` | Set to `true` to enable the Prometheus JMX exporter. | `false`
 | `PROM_JMX_EXPORTER_PORT`    | Port on which the JMX exporter listens. | `9299`
 | `PROM_JMX_EXPORTER_CONFIG`  | Path to the exporter configuration file inside the container. | `/opt/prom-jmx-exporter/config.yaml`
+| `PROM_JMX_EXPORTER_JAR`     | Path to the JMX Prometheus agent jar inside the container. | `/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar`
 |===
 
 IMPORTANT: If you need a more sophisticated JMX configuration with custom rules, inject your own `config.yaml` file rather than relying on the default.
