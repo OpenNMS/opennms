@@ -101,6 +101,10 @@
 			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl",  "status/status-box.jsp,/includes/categories-box.jsp,/geomap/map-box.jsp");
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
+				// the heatmap and trend boxes are gone; a centerUrl still naming them must not break the page
+				if (centerUrlItem.contains("/heatmap/") || centerUrlItem.contains("/trend/")) {
+					continue;
+				}
 		%>
 		<jsp:include page="<%=centerUrlItem%>" flush="false" />
 		<%
