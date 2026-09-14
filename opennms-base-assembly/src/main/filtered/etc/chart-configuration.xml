@@ -1,5 +1,5 @@
 <chart-configuration xmlns="http://xmlns.opennms.org/xsd/config/charts">
-   <bar-chart name="sample-bar-chart" domain-axis-label="Severity" range-axis-label="Count" sub-label-class="org.opennms.web.charts.SeveritySubLabels" draw-bar-outline="true" show-legend="true" show-tool-tips="false" show-urls="false" variation="2d" plot-orientation="vertical">
+   <bar-chart name="sample-bar-chart" domain-axis-label="Severity" range-axis-label="Count" draw-bar-outline="true" show-legend="true" show-tool-tips="false" show-urls="false" variation="2d" plot-orientation="vertical">
       <title value="Alarms" font="SansSerif" pitch="12" style=""/>
       <image-size>
          <hz-size>
