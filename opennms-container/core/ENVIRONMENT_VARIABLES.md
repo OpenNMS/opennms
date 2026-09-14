@@ -135,4 +135,4 @@ If you are upgrading from a version that used `horizon-config.yaml` / confd:
 
 - The `horizon-config.yaml` mount is no longer used. Switch to environment variables using the tables above.
 - Legacy `_confd.*.properties` files left in a mounted `etc/` volume are automatically removed at startup to prevent stale settings.
-- `OPENNMS_TRAPD_*` and the Prometheus JMX exporter scalar (`PROM_JMX_*`) variables are validated at startup. An invalid value (e.g. `"yes"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.
+- Numeric and boolean variables (`OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, `OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY`, `OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY`, and all `CORE_SERVICE_*_ENABLED`) are validated at startup. An invalid value (e.g. `"yes"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.

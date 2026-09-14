@@ -130,14 +130,131 @@ processEnvConfig() {
 
   local CONTAINER_CONFIG_ETC="/opt/opennms/container-fs/etc"
 
-  # Copy static config files; OpenNMS resolves ${env:VAR|default} in .properties files
-  # and Karaf resolves ${env:VAR:-default} in .cfg files — both at load time
+  # Copy static config; Karaf resolves ${env:VAR:-default} in .cfg files at load time
   mkdir -p "${OPENNMS_HOME}/etc/opennms.properties.d"
-  rsync -r "${CONTAINER_CONFIG_ETC}/opennms.properties.d/" "${OPENNMS_HOME}/etc/opennms.properties.d/"
   cp "${CONTAINER_CONFIG_ETC}/org.apache.karaf.shell.cfg" "${OPENNMS_HOME}/etc/"
 
   # Remove legacy confd-generated property files to prevent stale/duplicate settings
   rm -f "${OPENNMS_HOME}/etc/opennms.properties.d/"_confd.*.properties
+
+  # Process Newts/Cassandra properties from template with defaults for unset variables
+  (
+    export OPENNMS_CASSANDRA_HOSTNAME="${OPENNMS_CASSANDRA_HOSTNAME:-hostname}"
+    export OPENNMS_CASSANDRA_KEYSPACE="${OPENNMS_CASSANDRA_KEYSPACE:-newts}"
+    export OPENNMS_CASSANDRA_PORT="${OPENNMS_CASSANDRA_PORT:-9042}"
+    export OPENNMS_CASSANDRA_USERNAME="${OPENNMS_CASSANDRA_USERNAME:-cassandra}"
+    export OPENNMS_CASSANDRA_PASSWORD="${OPENNMS_CASSANDRA_PASSWORD:-cassandra}"
+    export OPENNMS_CASSANDRA_DATACENTER="${OPENNMS_CASSANDRA_DATACENTER:-datacenter1}"
+
+    validateInt OPENNMS_CASSANDRA_PORT "$OPENNMS_CASSANDRA_PORT"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.newts.properties.tmpl" \
+              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.newts.properties"
+  )
+
+  # Process timeseries/RRD properties from template with defaults for unset variables
+  (
+    export OPENNMS_RRD_STOREBYFOREIGNSOURCE="${OPENNMS_RRD_STOREBYFOREIGNSOURCE:-true}"
+    export OPENNMS_TIMESERIES_STRATEGY="${OPENNMS_TIMESERIES_STRATEGY:-rrd}"
+    export OPENNMS_RRD_INTERFACEJAR="${OPENNMS_RRD_INTERFACEJAR:-/usr/share/java/jrrd2.jar}"
+    export OPENNMS_RRD_STRATEGYCLASS="${OPENNMS_RRD_STRATEGYCLASS:-org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy}"
+    export OPENNMS_LIBRARY_JRRD2="${OPENNMS_LIBRARY_JRRD2:-/usr/lib/jni/libjrrd2.so}"
+
+    validateBool OPENNMS_RRD_STOREBYFOREIGNSOURCE "$OPENNMS_RRD_STOREBYFOREIGNSOURCE"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.timeseries.properties.tmpl" \
+              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.timeseries.properties"
+  )
+
+  # Process Slack notification properties from template with defaults for unset variables
+  (
+    export OPENNMS_NOTIFD_SLACK_WEBHOOKURL="${OPENNMS_NOTIFD_SLACK_WEBHOOKURL:-Webhook URL}"
+    export OPENNMS_NOTIFD_SLACK_CHANNEL="${OPENNMS_NOTIFD_SLACK_CHANNEL:-Webhook}"
+    export OPENNMS_NOTIFD_SLACK_USERNAME="${OPENNMS_NOTIFD_SLACK_USERNAME:-none}"
+    export OPENNMS_NOTIFD_SLACK_ICONEMOJI="${OPENNMS_NOTIFD_SLACK_ICONEMOJI:-}"
+    export OPENNMS_NOTIFD_SLACK_ICONURL="${OPENNMS_NOTIFD_SLACK_ICONURL:-}"
+    export OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY="${OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY:-true}"
+
+    validateBool OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY "$OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.slack.properties.tmpl" \
+              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.slack.properties"
+  )
+
+  # Process Mattermost notification properties from template with defaults for unset variables
+  (
+    export OPENNMS_NOTIFD_MATTERMOST_WEBHOOKURL="${OPENNMS_NOTIFD_MATTERMOST_WEBHOOKURL:-Webhook URL}"
+    export OPENNMS_NOTIFD_MATTERMOST_CHANNEL="${OPENNMS_NOTIFD_MATTERMOST_CHANNEL:-Webhook}"
+    export OPENNMS_NOTIFD_MATTERMOST_USERNAME="${OPENNMS_NOTIFD_MATTERMOST_USERNAME:-none}"
+    export OPENNMS_NOTIFD_MATTERMOST_ICONEMOJI="${OPENNMS_NOTIFD_MATTERMOST_ICONEMOJI:-}"
+    export OPENNMS_NOTIFD_MATTERMOST_ICONURL="${OPENNMS_NOTIFD_MATTERMOST_ICONURL:-}"
+    export OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY="${OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY:-true}"
+
+    validateBool OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY "$OPENNMS_NOTIFD_MATTERMOST_USESYSTEMPROXY"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.mattermost.properties.tmpl" \
+              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.mattermost.properties"
+  )
+
+  # Process service-configuration.xml from template with defaults for unset variables
+  (
+    export CORE_SERVICE_ALARMD_ENABLED="${CORE_SERVICE_ALARMD_ENABLED:-true}"
+    export CORE_SERVICE_BSMD_ENABLED="${CORE_SERVICE_BSMD_ENABLED:-true}"
+    export CORE_SERVICE_TICKETER_ENABLED="${CORE_SERVICE_TICKETER_ENABLED:-true}"
+    export CORE_SERVICE_CORRELATOR_ENABLED="${CORE_SERVICE_CORRELATOR_ENABLED:-false}"
+    export CORE_SERVICE_QUEUED_ENABLED="${CORE_SERVICE_QUEUED_ENABLED:-true}"
+    export CORE_SERVICE_ACTIOND_ENABLED="${CORE_SERVICE_ACTIOND_ENABLED:-true}"
+    export CORE_SERVICE_NOTIFD_ENABLED="${CORE_SERVICE_NOTIFD_ENABLED:-true}"
+    export CORE_SERVICE_SCRIPTD_ENABLED="${CORE_SERVICE_SCRIPTD_ENABLED:-true}"
+    export CORE_SERVICE_RTCD_ENABLED="${CORE_SERVICE_RTCD_ENABLED:-true}"
+    export CORE_SERVICE_POLLERD_ENABLED="${CORE_SERVICE_POLLERD_ENABLED:-true}"
+    export CORE_SERVICE_SNMPPOLLER_ENABLED="${CORE_SERVICE_SNMPPOLLER_ENABLED:-false}"
+    export CORE_SERVICE_ENHANCEDLINKD_ENABLED="${CORE_SERVICE_ENHANCEDLINKD_ENABLED:-true}"
+    export CORE_SERVICE_COLLECTD_ENABLED="${CORE_SERVICE_COLLECTD_ENABLED:-true}"
+    export CORE_SERVICE_DISCOVERY_ENABLED="${CORE_SERVICE_DISCOVERY_ENABLED:-true}"
+    export CORE_SERVICE_VACUUMD_ENABLED="${CORE_SERVICE_VACUUMD_ENABLED:-true}"
+    export CORE_SERVICE_EVENTTRANSLATOR_ENABLED="${CORE_SERVICE_EVENTTRANSLATOR_ENABLED:-true}"
+    export CORE_SERVICE_PASSIVESTATUSD_ENABLED="${CORE_SERVICE_PASSIVESTATUSD_ENABLED:-true}"
+    export CORE_SERVICE_STATSD_ENABLED="${CORE_SERVICE_STATSD_ENABLED:-true}"
+    export CORE_SERVICE_PROVISIOND_ENABLED="${CORE_SERVICE_PROVISIOND_ENABLED:-true}"
+    export CORE_SERVICE_ACKD_ENABLED="${CORE_SERVICE_ACKD_ENABLED:-true}"
+    export CORE_SERVICE_JETTYSERVER_ENABLED="${CORE_SERVICE_JETTYSERVER_ENABLED:-true}"
+    export CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED="${CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED:-true}"
+    export CORE_SERVICE_SYSLOGD_ENABLED="${CORE_SERVICE_SYSLOGD_ENABLED:-false}"
+    export CORE_SERVICE_TELEMETRYD_ENABLED="${CORE_SERVICE_TELEMETRYD_ENABLED:-true}"
+    export CORE_SERVICE_TRAPD_ENABLED="${CORE_SERVICE_TRAPD_ENABLED:-true}"
+    export CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED="${CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED:-true}"
+
+    validateBool CORE_SERVICE_ALARMD_ENABLED              "$CORE_SERVICE_ALARMD_ENABLED"
+    validateBool CORE_SERVICE_BSMD_ENABLED                "$CORE_SERVICE_BSMD_ENABLED"
+    validateBool CORE_SERVICE_TICKETER_ENABLED            "$CORE_SERVICE_TICKETER_ENABLED"
+    validateBool CORE_SERVICE_CORRELATOR_ENABLED          "$CORE_SERVICE_CORRELATOR_ENABLED"
+    validateBool CORE_SERVICE_QUEUED_ENABLED              "$CORE_SERVICE_QUEUED_ENABLED"
+    validateBool CORE_SERVICE_ACTIOND_ENABLED             "$CORE_SERVICE_ACTIOND_ENABLED"
+    validateBool CORE_SERVICE_NOTIFD_ENABLED              "$CORE_SERVICE_NOTIFD_ENABLED"
+    validateBool CORE_SERVICE_SCRIPTD_ENABLED             "$CORE_SERVICE_SCRIPTD_ENABLED"
+    validateBool CORE_SERVICE_RTCD_ENABLED                "$CORE_SERVICE_RTCD_ENABLED"
+    validateBool CORE_SERVICE_POLLERD_ENABLED             "$CORE_SERVICE_POLLERD_ENABLED"
+    validateBool CORE_SERVICE_SNMPPOLLER_ENABLED          "$CORE_SERVICE_SNMPPOLLER_ENABLED"
+    validateBool CORE_SERVICE_ENHANCEDLINKD_ENABLED       "$CORE_SERVICE_ENHANCEDLINKD_ENABLED"
+    validateBool CORE_SERVICE_COLLECTD_ENABLED            "$CORE_SERVICE_COLLECTD_ENABLED"
+    validateBool CORE_SERVICE_DISCOVERY_ENABLED           "$CORE_SERVICE_DISCOVERY_ENABLED"
+    validateBool CORE_SERVICE_VACUUMD_ENABLED             "$CORE_SERVICE_VACUUMD_ENABLED"
+    validateBool CORE_SERVICE_EVENTTRANSLATOR_ENABLED     "$CORE_SERVICE_EVENTTRANSLATOR_ENABLED"
+    validateBool CORE_SERVICE_PASSIVESTATUSD_ENABLED      "$CORE_SERVICE_PASSIVESTATUSD_ENABLED"
+    validateBool CORE_SERVICE_STATSD_ENABLED              "$CORE_SERVICE_STATSD_ENABLED"
+    validateBool CORE_SERVICE_PROVISIOND_ENABLED          "$CORE_SERVICE_PROVISIOND_ENABLED"
+    validateBool CORE_SERVICE_ACKD_ENABLED                "$CORE_SERVICE_ACKD_ENABLED"
+    validateBool CORE_SERVICE_JETTYSERVER_ENABLED         "$CORE_SERVICE_JETTYSERVER_ENABLED"
+    validateBool CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED "$CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED"
+    validateBool CORE_SERVICE_SYSLOGD_ENABLED             "$CORE_SERVICE_SYSLOGD_ENABLED"
+    validateBool CORE_SERVICE_TELEMETRYD_ENABLED          "$CORE_SERVICE_TELEMETRYD_ENABLED"
+    validateBool CORE_SERVICE_TRAPD_ENABLED               "$CORE_SERVICE_TRAPD_ENABLED"
+    validateBool CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED   "$CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/service-configuration.xml.tmpl" \
+              > "${OPENNMS_HOME}/etc/service-configuration.xml"
+  )
 
   # Process prom-jmx-exporter config from template; only scalar knobs are exposed.
   # To customise includeObjectNames/excludeObjectNames/rules, mount a full YAML and
