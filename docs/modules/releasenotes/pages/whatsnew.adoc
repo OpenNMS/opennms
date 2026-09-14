@@ -198,3 +198,18 @@ The last release of the BeanShell interpreter was in 2016.
 As such, we are deprecating support for BeanShell and will remove it in Horizon 37.
 Groovy support remains available everywhere BeanShell was implemented.
 
+=== RT Ticketer plugin (plugin-ticketer-rt) removed
+The deprecated RT Ticketer plugin was removed in this release.
+
+=== CIFS plugin (plugin-protocol-cifs) removed
+The deprecated CIFS plugin was removed in this release.
+
+=== NSClient plugin (plugin-protocol-nsclient) removed
+The deprecated NSClient plugin was removed in this release.
+
+=== JMS-Northbounder plugin (plugin-northbounder-jms) removed
+The deprecated JMS-Northbounder plugin was removed in this release.
+
+=== Juniper TCA Collector plugin (plugin-collector-juniper-tca) removed
+The deprecated Juniper TCA Collector plugin was removed in this release.
+

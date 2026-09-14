@@ -19,6 +19,7 @@
 ** xref:configuration/selinux.adoc[]
 ** xref:configuration/receive-snmp-traps.adoc[]
 ** xref:configuration/system-properties.adoc[]
+** xref:configuration/wsman-kerberos.adoc[]
 
 
 
@@ -26,10 +27,8 @@
 ** xref:performance-data-collection/collectors/http.adoc[]
 ** xref:performance-data-collection/collectors/jdbc.adoc[]
 ** xref:performance-data-collection/collectors/jmx.adoc[]
-** xref:performance-data-collection/collectors/nsclient.adoc[]
 ** xref:performance-data-collection/collectors/prometheus.adoc[]
 ** xref:performance-data-collection/collectors/SnmpCollector.adoc[]
-** xref:performance-data-collection/collectors/tca.adoc[]
 ** xref:performance-data-collection/collectors/vmware.adoc[]
 ** xref:performance-data-collection/collectors/vmware-cim.adoc[]
 ** xref:performance-data-collection/collectors/vmware-datastore.adoc[]
@@ -58,7 +57,6 @@
 ** xref:service-assurance/monitors/IcmpMonitor.adoc[]
 ** xref:service-assurance/monitors/ImapMonitor.adoc[]
 ** xref:service-assurance/monitors/ImapsMonitor.adoc[]
-** xref:service-assurance/monitors/JCifsMonitor.adoc[]
 ** xref:service-assurance/monitors/JDBCMonitor.adoc[]
 ** xref:service-assurance/monitors/JDBCQueryMonitor.adoc[]
 ** xref:service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
@@ -95,6 +93,7 @@
 ** xref:service-assurance/monitors/WebMonitor.adoc[]
 ** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
 ** xref:service-assurance/monitors/WsManMonitor.adoc[]
+** xref:service-assurance/monitors/WsManShellMonitor.adoc[]
 
 * xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
@@ -164,6 +163,7 @@
 *** xref:provisioning/detectors/Win32ServiceDetector.adoc[Win32 Service]
 *** xref:provisioning/detectors/WsmanDetector.adoc[WS-MAN]
 *** xref:provisioning/detectors/WsmanWqlDetector.adoc[WS-MAN WQL]
+*** xref:provisioning/detectors/WsmanShellDetector.adoc[WS-MAN Shell]
 
 * xref:daemons/introduction.adoc[]
 ** xref:daemons/daemon-config-files/ackd.adoc[]

@@ -19,6 +19,7 @@
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
 import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
+import { createLinkItemsList } from './nodeActionLinks'
 import { Node } from '@/types'
 
 const props = defineProps({
@@ -30,9 +31,17 @@ const props = defineProps({
     required: true,
     type: Object as PropType<Node>
   },
+  // Supplied by the call site from its interface data; without it the Update SNMP action is
+  // omitted rather than pointed at an address that is not the node's.
+  snmpPrimaryIpAddress: {
+    required: false,
+    type: String,
+    default: undefined
+  },
   triggerNodeInfo: {
-    required: true,
-    type: Function as PropType<(node: Node) => void>
+    required: false,
+    type: Function as PropType<(node: Node) => void>,
+    default: undefined
   }
 })
 
@@ -40,70 +49,26 @@ const menuIcon = markRaw(MoreVert)
 const menu = ref()
 const menuId = computed(() => `node-actions-menu-${props.node.id}`)
 
-const linkItems = [
-  { name: 'events', label: 'Events' },
-  { name: 'alarms', label: 'Alarms' },
-  { name: 'view-outages', label: 'Outages' },
-  { name: 'assets', label: 'Assets' },
-  { name: 'metadata', label: 'Metadata' },
-  { name: 'hardware', label: 'Hardware Inventory' },
-  { name: 'availability', label: 'Availability' },
-  { name: 'graphs', label: 'Resource Graphs' },
-  { name: 'rescan', label: 'Node Rescan' },
-  { name: 'admin', label: 'Admin / Node Management' },
-  { name: 'updateSnmp', label: 'Update SNMP Information' },
-  { name: 'schedule-outage', label: 'Schedule an Outage' },
-  { name: 'topology', label: 'View Topology Map' }
-]
+// Info... opens a dialog describing the node, which is redundant on a page already showing it:
+// a call site that omits the handler gets the navigation links alone.
+const items = computed<OnmsMenuItem[]>(() => {
+  const infoItem = props.triggerNodeInfo
+    ? [{ label: 'Info...', command: () => props.triggerNodeInfo?.(props.node) }]
+    : []
 
-const items = computed<OnmsMenuItem[]>(() => [
-  { label: 'Info...', command: () => props.triggerNodeInfo(props.node) },
-  ...linkItems.map(li => ({
-    label: li.label,
-    command: () => onNodeLink(li.name, props.node)
-  }))
-])
+  // createLinkItemsList drops any link the node cannot supply the data for, such as Site
+  // Status for a node with no building.
+  return [
+    ...infoItem,
+    ...createLinkItemsList(props.node, { snmpPrimaryIpAddress: props.snmpPrimaryIpAddress }).map(li => ({
+      label: li.label,
+      command: () => window.location.assign(`${props.baseHref}${li.link}`)
+    }))
+  ]
+})
 
 const toggle = (event: Event) => {
   menu.value?.toggle(event)
-}
-
-const onNodeLink = (name: string, node: Node) => {
-  const link = mapLink(name, node)
-  window.location.assign(`${props.baseHref}${link}`)
-}
-
-const mapLink = (name: string, node: Node) => {
-  switch (name) {
-    case 'events':
-      return `event/list?filter=node%3D${node.id}`
-    case 'alarms':
-      return `alarm/list.htm?filter=node%3D${node.id}`
-    case 'view-outages':
-      return `outage/list.htm?filter=node%3D${node.id}`
-    case 'assets':
-      return `asset/modify.jsp?node=${node.id}`
-    case 'metadata':
-      return `element/node-metadata.jsp?node=${node.id}`
-    case 'hardware':
-      return `hardware/list.jsp?node=${node.id}`
-    case 'availability':
-      return `element/availability.jsp?node=${node.id}`
-    case 'graphs':
-      return `graph/chooseresource.jsp?node=${node.id}&reports=all`
-    case 'rescan':
-      return `element/rescan.jsp?node=${node.id}`
-    case 'admin':
-      return `admin/nodemanagement/index.jsp?node=${node.id}`
-    case 'updateSnmp':
-      // TODO: Get IP Address
-      return `admin/updateSnmp.jsp?node=${node.id}&ipaddr=0.0.0.0`
-    case 'schedule-outage':
-      return `admin/sched-outages/editoutage.jsp?newName=${node.label}&addNew=true&nodeID=${node.id}`
-    case 'topology':
-      return `topology?provider=Enhanced+Linkd&szl=1&focus-vertices=${node.id}`
-    default: return ''
-  }
 }
 
 defineExpose({ items })

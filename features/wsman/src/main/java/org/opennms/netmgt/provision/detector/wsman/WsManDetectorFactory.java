@@ -25,7 +25,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
+import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDetector> {
     private static final Logger LOG = LoggerFactory.getLogger(WsManDetectorFactory.class);
 
-    private final WSManClientFactory m_factory = new CXFWSManClientFactory();
+    private final WSManClientFactory m_factory = new CachingWSManClientFactory();
 
     @Autowired
     private WSManConfigDao m_wsmanConfigDao;
@@ -108,5 +108,19 @@ public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDet
             m_nodeDao.update(node);
             return null;
         });
+    }
+
+    /**
+     * Releases any clients the factory is holding on to. Called by the blueprint
+     * container when the bundle stops.
+     */
+    public void destroy() {
+        if (m_factory instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) m_factory).close();
+            } catch (Exception e) {
+                LOG.debug("Error closing WS-Man client factory", e);
+            }
+        }
     }
 }
