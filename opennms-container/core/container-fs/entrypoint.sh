@@ -31,8 +31,8 @@ OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
 # - All other settings are optional and have sensible defaults
 #
 # Default behavior:
-# - Configuration is managed via confd templates
-# - Template uses key/values from /java/agent/prom-jmx-exporter
+# - Configuration is managed via environment variables
+# - Default config is at /opt/prom-jmx-exporter/config.yaml; override with PROM_JMX_EXPORTER_CONFIG
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
@@ -88,7 +88,7 @@ initOrUpdate() {
 
     # If Newts is used initialize the keyspace with a given REPLICATION_FACTOR which defaults to 1 if unset
     if [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
-      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
+      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -Dorg.opennms.newts.config.datacenter="${OPENNMS_CASSANDRA_DATACENTER:-datacenter1}" -Dorg.opennms.newts.config.keyspace="${OPENNMS_CASSANDRA_KEYSPACE:-newts}" -Dorg.opennms.newts.config.hostname="${OPENNMS_CASSANDRA_HOSTNAME:-hostname}" -Dorg.opennms.newts.config.port="${OPENNMS_CASSANDRA_PORT:-9042}" -Dorg.opennms.newts.config.username="${OPENNMS_CASSANDRA_USERNAME:-cassandra}" -Dorg.opennms.newts.config.password="${OPENNMS_CASSANDRA_PASSWORD:-cassandra}" -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
     else
       echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, skip Newts keyspace initialisation. If unset defaults to rrd to use RRDTool."
     fi
@@ -100,9 +100,172 @@ configTester() {
   ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
 }
 
-processConfdTemplates() {
-  echo "Processing confd templates using /etc/confd/confd.toml"
-  confd -onetime
+validateBool() {
+  local name="$1" value="$2"
+  if [[ ! "$value" =~ ^(true|false)$ ]]; then
+    echo "ERROR: ${name}='${value}' is not a valid boolean. Expected 'true' or 'false'." >&2
+    exit ${E_INIT_CONFIG}
+  fi
+}
+
+validateInt() {
+  local name="$1" value="$2"
+  if [[ ! "$value" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: ${name}='${value}' is not a valid non-negative integer." >&2
+    exit ${E_INIT_CONFIG}
+  fi
+}
+
+validateAddress() {
+  local name="$1" value="$2"
+  # Accept wildcard, IPv4, or IPv6
+  if [[ "$value" != "*" && ! "$value" =~ ^[0-9a-fA-F:.]+$ ]]; then
+    echo "ERROR: ${name}='${value}' is not a valid address. Expected '*' or an IP address." >&2
+    exit ${E_INIT_CONFIG}
+  fi
+}
+
+processEnvConfig() {
+  echo "Processing environment variable configuration"
+
+  local CONTAINER_CONFIG_ETC="/opt/opennms/container-fs/etc"
+
+  # Copy static config; Karaf resolves ${env:VAR:-default} in .cfg files at load time
+  mkdir -p "${OPENNMS_HOME}/etc/opennms.properties.d"
+  cp "${CONTAINER_CONFIG_ETC}/org.apache.karaf.shell.cfg" "${OPENNMS_HOME}/etc/"
+
+  # Remove legacy confd-generated property files to prevent stale/duplicate settings
+  rm -f "${OPENNMS_HOME}/etc/opennms.properties.d/"_confd.*.properties
+
+  # Process Newts/Cassandra properties from template with defaults for unset variables
+  (
+    export OPENNMS_CASSANDRA_HOSTNAME="${OPENNMS_CASSANDRA_HOSTNAME:-hostname}"
+    export OPENNMS_CASSANDRA_KEYSPACE="${OPENNMS_CASSANDRA_KEYSPACE:-newts}"
+    export OPENNMS_CASSANDRA_PORT="${OPENNMS_CASSANDRA_PORT:-9042}"
+    export OPENNMS_CASSANDRA_USERNAME="${OPENNMS_CASSANDRA_USERNAME:-cassandra}"
+    export OPENNMS_CASSANDRA_PASSWORD="${OPENNMS_CASSANDRA_PASSWORD:-cassandra}"
+    export OPENNMS_CASSANDRA_DATACENTER="${OPENNMS_CASSANDRA_DATACENTER:-datacenter1}"
+
+    validateInt OPENNMS_CASSANDRA_PORT "$OPENNMS_CASSANDRA_PORT"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.newts.properties.tmpl" \
+              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.newts.properties"
+  )
+
+  # Process timeseries/RRD properties from template with defaults for unset variables
+  (
+    export OPENNMS_RRD_STOREBYFOREIGNSOURCE="${OPENNMS_RRD_STOREBYFOREIGNSOURCE:-true}"
+    export OPENNMS_TIMESERIES_STRATEGY="${OPENNMS_TIMESERIES_STRATEGY:-rrd}"
+    export OPENNMS_RRD_INTERFACEJAR="${OPENNMS_RRD_INTERFACEJAR:-/usr/share/java/jrrd2.jar}"
+    export OPENNMS_RRD_STRATEGYCLASS="${OPENNMS_RRD_STRATEGYCLASS:-org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy}"
+    export OPENNMS_LIBRARY_JRRD2="${OPENNMS_LIBRARY_JRRD2:-/usr/lib/jni/libjrrd2.so}"
+
+    validateBool OPENNMS_RRD_STOREBYFOREIGNSOURCE "$OPENNMS_RRD_STOREBYFOREIGNSOURCE"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.timeseries.properties.tmpl" \
+              > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.timeseries.properties"
+  )
+
+  # Process service-configuration.xml from template with defaults for unset variables
+  (
+    export CORE_SERVICE_ALARMD_ENABLED="${CORE_SERVICE_ALARMD_ENABLED:-true}"
+    export CORE_SERVICE_BSMD_ENABLED="${CORE_SERVICE_BSMD_ENABLED:-true}"
+    export CORE_SERVICE_TICKETER_ENABLED="${CORE_SERVICE_TICKETER_ENABLED:-true}"
+    export CORE_SERVICE_CORRELATOR_ENABLED="${CORE_SERVICE_CORRELATOR_ENABLED:-false}"
+    export CORE_SERVICE_QUEUED_ENABLED="${CORE_SERVICE_QUEUED_ENABLED:-true}"
+    export CORE_SERVICE_ACTIOND_ENABLED="${CORE_SERVICE_ACTIOND_ENABLED:-true}"
+    export CORE_SERVICE_NOTIFD_ENABLED="${CORE_SERVICE_NOTIFD_ENABLED:-true}"
+    export CORE_SERVICE_SCRIPTD_ENABLED="${CORE_SERVICE_SCRIPTD_ENABLED:-true}"
+    export CORE_SERVICE_RTCD_ENABLED="${CORE_SERVICE_RTCD_ENABLED:-true}"
+    export CORE_SERVICE_POLLERD_ENABLED="${CORE_SERVICE_POLLERD_ENABLED:-true}"
+    export CORE_SERVICE_SNMPPOLLER_ENABLED="${CORE_SERVICE_SNMPPOLLER_ENABLED:-false}"
+    export CORE_SERVICE_ENHANCEDLINKD_ENABLED="${CORE_SERVICE_ENHANCEDLINKD_ENABLED:-true}"
+    export CORE_SERVICE_COLLECTD_ENABLED="${CORE_SERVICE_COLLECTD_ENABLED:-true}"
+    export CORE_SERVICE_DISCOVERY_ENABLED="${CORE_SERVICE_DISCOVERY_ENABLED:-true}"
+    export CORE_SERVICE_VACUUMD_ENABLED="${CORE_SERVICE_VACUUMD_ENABLED:-true}"
+    export CORE_SERVICE_EVENTTRANSLATOR_ENABLED="${CORE_SERVICE_EVENTTRANSLATOR_ENABLED:-true}"
+    export CORE_SERVICE_PASSIVESTATUSD_ENABLED="${CORE_SERVICE_PASSIVESTATUSD_ENABLED:-true}"
+    export CORE_SERVICE_STATSD_ENABLED="${CORE_SERVICE_STATSD_ENABLED:-true}"
+    export CORE_SERVICE_PROVISIOND_ENABLED="${CORE_SERVICE_PROVISIOND_ENABLED:-true}"
+    export CORE_SERVICE_ACKD_ENABLED="${CORE_SERVICE_ACKD_ENABLED:-true}"
+    export CORE_SERVICE_JETTYSERVER_ENABLED="${CORE_SERVICE_JETTYSERVER_ENABLED:-true}"
+    export CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED="${CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED:-true}"
+    export CORE_SERVICE_SYSLOGD_ENABLED="${CORE_SERVICE_SYSLOGD_ENABLED:-false}"
+    export CORE_SERVICE_TELEMETRYD_ENABLED="${CORE_SERVICE_TELEMETRYD_ENABLED:-true}"
+    export CORE_SERVICE_TRAPD_ENABLED="${CORE_SERVICE_TRAPD_ENABLED:-true}"
+    export CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED="${CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED:-true}"
+
+    validateBool CORE_SERVICE_ALARMD_ENABLED              "$CORE_SERVICE_ALARMD_ENABLED"
+    validateBool CORE_SERVICE_BSMD_ENABLED                "$CORE_SERVICE_BSMD_ENABLED"
+    validateBool CORE_SERVICE_TICKETER_ENABLED            "$CORE_SERVICE_TICKETER_ENABLED"
+    validateBool CORE_SERVICE_CORRELATOR_ENABLED          "$CORE_SERVICE_CORRELATOR_ENABLED"
+    validateBool CORE_SERVICE_QUEUED_ENABLED              "$CORE_SERVICE_QUEUED_ENABLED"
+    validateBool CORE_SERVICE_ACTIOND_ENABLED             "$CORE_SERVICE_ACTIOND_ENABLED"
+    validateBool CORE_SERVICE_NOTIFD_ENABLED              "$CORE_SERVICE_NOTIFD_ENABLED"
+    validateBool CORE_SERVICE_SCRIPTD_ENABLED             "$CORE_SERVICE_SCRIPTD_ENABLED"
+    validateBool CORE_SERVICE_RTCD_ENABLED                "$CORE_SERVICE_RTCD_ENABLED"
+    validateBool CORE_SERVICE_POLLERD_ENABLED             "$CORE_SERVICE_POLLERD_ENABLED"
+    validateBool CORE_SERVICE_SNMPPOLLER_ENABLED          "$CORE_SERVICE_SNMPPOLLER_ENABLED"
+    validateBool CORE_SERVICE_ENHANCEDLINKD_ENABLED       "$CORE_SERVICE_ENHANCEDLINKD_ENABLED"
+    validateBool CORE_SERVICE_COLLECTD_ENABLED            "$CORE_SERVICE_COLLECTD_ENABLED"
+    validateBool CORE_SERVICE_DISCOVERY_ENABLED           "$CORE_SERVICE_DISCOVERY_ENABLED"
+    validateBool CORE_SERVICE_VACUUMD_ENABLED             "$CORE_SERVICE_VACUUMD_ENABLED"
+    validateBool CORE_SERVICE_EVENTTRANSLATOR_ENABLED     "$CORE_SERVICE_EVENTTRANSLATOR_ENABLED"
+    validateBool CORE_SERVICE_PASSIVESTATUSD_ENABLED      "$CORE_SERVICE_PASSIVESTATUSD_ENABLED"
+    validateBool CORE_SERVICE_STATSD_ENABLED              "$CORE_SERVICE_STATSD_ENABLED"
+    validateBool CORE_SERVICE_PROVISIOND_ENABLED          "$CORE_SERVICE_PROVISIOND_ENABLED"
+    validateBool CORE_SERVICE_ACKD_ENABLED                "$CORE_SERVICE_ACKD_ENABLED"
+    validateBool CORE_SERVICE_JETTYSERVER_ENABLED         "$CORE_SERVICE_JETTYSERVER_ENABLED"
+    validateBool CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED "$CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED"
+    validateBool CORE_SERVICE_SYSLOGD_ENABLED             "$CORE_SERVICE_SYSLOGD_ENABLED"
+    validateBool CORE_SERVICE_TELEMETRYD_ENABLED          "$CORE_SERVICE_TELEMETRYD_ENABLED"
+    validateBool CORE_SERVICE_TRAPD_ENABLED               "$CORE_SERVICE_TRAPD_ENABLED"
+    validateBool CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED   "$CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/service-configuration.xml.tmpl" \
+              > "${OPENNMS_HOME}/etc/service-configuration.xml"
+  )
+
+  # Process prom-jmx-exporter config from template; only scalar knobs are exposed.
+  # To customise includeObjectNames/excludeObjectNames/rules, mount a full YAML and
+  # set PROM_JMX_EXPORTER_CONFIG to its path.
+  (
+    export PROM_JMX_START_DELAY_SECONDS="${PROM_JMX_START_DELAY_SECONDS:-0}"
+    export PROM_JMX_LOWERCASE_OUTPUT_NAME="${PROM_JMX_LOWERCASE_OUTPUT_NAME:-true}"
+    export PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES="${PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES:-true}"
+    export PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES="${PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES:-true}"
+
+    validateInt  PROM_JMX_START_DELAY_SECONDS                  "$PROM_JMX_START_DELAY_SECONDS"
+    validateBool PROM_JMX_LOWERCASE_OUTPUT_NAME                "$PROM_JMX_LOWERCASE_OUTPUT_NAME"
+    validateBool PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES         "$PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES"
+    validateBool PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES  "$PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/prom-jmx-exporter-config.yaml.tmpl" \
+              > /opt/prom-jmx-exporter/config.yaml
+  )
+
+  (
+    export OPENNMS_TRAPD_ADDRESS="${OPENNMS_TRAPD_ADDRESS:-*}"
+    export OPENNMS_TRAPD_PORT="${OPENNMS_TRAPD_PORT:-1162}"
+    export OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP="${OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP:-false}"
+    export OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE="${OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE:-false}"
+    export OPENNMS_TRAPD_THREADS="${OPENNMS_TRAPD_THREADS:-0}"
+    export OPENNMS_TRAPD_QUEUE_SIZE="${OPENNMS_TRAPD_QUEUE_SIZE:-10000}"
+    export OPENNMS_TRAPD_BATCH_SIZE="${OPENNMS_TRAPD_BATCH_SIZE:-1000}"
+    export OPENNMS_TRAPD_BATCH_INTERVAL="${OPENNMS_TRAPD_BATCH_INTERVAL:-500}"
+
+    validateAddress  OPENNMS_TRAPD_ADDRESS             "$OPENNMS_TRAPD_ADDRESS"
+    validateInt      OPENNMS_TRAPD_PORT                "$OPENNMS_TRAPD_PORT"
+    validateBool     OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP "$OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP"
+    validateBool     OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE "$OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE"
+    validateInt      OPENNMS_TRAPD_THREADS             "$OPENNMS_TRAPD_THREADS"
+    validateInt      OPENNMS_TRAPD_QUEUE_SIZE          "$OPENNMS_TRAPD_QUEUE_SIZE"
+    validateInt      OPENNMS_TRAPD_BATCH_SIZE          "$OPENNMS_TRAPD_BATCH_SIZE"
+    validateInt      OPENNMS_TRAPD_BATCH_INTERVAL      "$OPENNMS_TRAPD_BATCH_INTERVAL"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/trapd-configuration.xml.tmpl" \
+              > "${OPENNMS_HOME}/etc/trapd-configuration.xml"
+  )
 }
 
 # Initialize database and configure Karaf
@@ -197,7 +360,7 @@ fi
 while getopts "fhist" flag; do
   case ${flag} in
     f)
-      processConfdTemplates
+      processEnvConfig
       applyOverlayConfig
       configTester -a
       start
@@ -209,7 +372,7 @@ while getopts "fhist" flag; do
       ;;
     i)
       initConfigWhenEmpty
-      processConfdTemplates
+      processEnvConfig
       applyOverlayConfig
       configTester -a
       initOrUpdate -dis
@@ -217,7 +380,7 @@ while getopts "fhist" flag; do
       ;;
     s)
       initConfigWhenEmpty
-      processConfdTemplates
+      processEnvConfig
       applyOverlayConfig
       configTester -a
       initOrUpdate -dis
