@@ -23,6 +23,8 @@ package org.opennms.netmgt.measurements.model;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -72,10 +74,17 @@ public class FilterDef {
         this.parameters = parameters;
     }
 
+    @Schema(name = "name", required = true,
+            description = "Filter name as reported by GET /measurements/filters, for example Chomp or HoltWinters.",
+            example = "Chomp")
     public String getName() {
         return name;
     }
 
+    // Wire name is "parameter", not the bean name: a body using "parameters" is rejected.
+    @Schema(name = "parameter",
+            description = "Values for the filter's parameters. Keys come from the filter's metadata; parameters left "
+                    + "out take their documented default.")
     public List<FilterParamDef> getParameters() {
         return parameters;
     }

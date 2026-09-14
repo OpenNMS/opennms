@@ -222,7 +222,7 @@ import { useAppStore } from '@/stores/appStore'
 import { useAdhocGraphStore } from '@/stores/adhocGraphStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb, StartEndTime } from '@/types'
-import { DEFAULT_RANGE, resolveRelativeRange } from '@/components/Resources/utils/timeRangeOptions'
+import { DEFAULT_RANGE, resolveRelativeRange } from '@/components/Common/utils/timeRangeOptions'
 import {
   AdhocDatasourceOption,
   AdhocExpression,

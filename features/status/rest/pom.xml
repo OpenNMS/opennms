@@ -17,6 +17,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
+        <!-- Annotations only; swagger-annotations already ships in the webapp's WEB-INF/lib. -->
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-annotations</artifactId>
+          <version>${swaggerVersion}</version>
+          <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>spring-dependencies</artifactId>
@@ -56,11 +63,18 @@
             <scope>test</scope>
         </dependency>
         <!-- The shared CXF v2 context instantiates every REST resource; these
-             provide the topology-views module (view + asset models) + the
-             jsonStore bean, which webapp-rest declares as provided (non-transitive). -->
+             provide the topology-views module (view + asset models), the
+             jsonStore bean, and the system-report bean, which webapp-rest
+             declares as provided (non-transitive). -->
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>org.opennms.features.topology-views</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.system-report</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

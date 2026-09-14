@@ -153,6 +153,13 @@
           "roles": null
         },
         {
+          "id": "notificationsPreview",
+          "name": "Notifications (Preview)",
+          "url": "ui/index.html#/admin/notifications",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
           "id": "surveillanceCategories",
           "name": "Surveillance Categories",
           "url": "admin/categories.htm",
@@ -202,13 +209,6 @@
           "name": "Heatmap",
           "url": "heatmap/index.jsp",
           "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
-          "id": "trend",
-          "name": "Trend",
-          "url": "trend/index.jsp",
-          "locationMatch": "trend",
           "roles": null
         },
         {
@@ -655,21 +655,21 @@
       {
         "id": "userNotificationConfiguration",
         "name": null,
-        "url": "admin/notification/index.jsp",
+        "url": "ui/index.html#/admin/notifications",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationUser",
         "name": null,
-        "url": "notification/browse?acktype=unack&filter=user==$USER",
+        "url": "ui/index.html#/admin/notifications?preset=yourOutstanding",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationTeam",
         "name": null,
-        "url": "notification/browse?acktype=unack",
+        "url": "ui/index.html#/admin/notifications?preset=teamOutstanding",
         "locationMatch": null,
         "roles": null
       },

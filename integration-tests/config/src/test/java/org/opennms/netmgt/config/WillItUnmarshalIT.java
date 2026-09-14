@@ -56,7 +56,6 @@ import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryCon
 import org.opennms.netmgt.alarmd.northbounder.bsf.BSFNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
-import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
@@ -109,7 +108,6 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
-import org.opennms.netmgt.config.trend.TrendConfiguration;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
@@ -226,7 +224,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "ifttt-config.xml", IfTttConfig.class, true, null);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, false, null);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, false, null);
-        addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, true, null);
@@ -261,7 +258,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, true, null);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, false, null);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, true, null);
-        addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, true, null);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, true, null);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, false, null);

@@ -54,6 +54,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -72,7 +81,23 @@ import com.google.common.collect.ImmutableSet;
 
 @Component
 @Path("filesystem")
-@Tag(name = "FileSystem", description = "File System API")
+@Tag(name = "FileSystem", description = """
+        Read and write the configuration files under the OpenNMS `etc` directory, addressed by their path
+        relative to that directory.
+
+        Every operation requires `ROLE_FILESYSTEM_EDITOR`. That is enforced twice, by the servlet security
+        configuration and again in each handler, so a caller without the role gets 403 from the container
+        before the handler runs. `ROLE_ADMIN` on its own is not enough. `users.xml` is further restricted and
+        needs `ROLE_ADMIN` as well.
+
+        Only files whose extension is one of the supported set are reachable, and only inside `etc`, up to
+        four levels deep. A name that resolves outside `etc`, or whose extension is not supported, is
+        rejected with 400.
+
+        Writing is a whole-file replace, not a patch, and an existing file is overwritten without a version
+        check. `.xml` files are checked for well-formedness before the replace; a well-formed file that the
+        daemon cannot load is still written. Writes do not reload anything; the affected daemon has to be
+        told separately.""")
 public class FilesystemRestService {
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemRestService.class);
 
@@ -104,7 +129,37 @@ public class FilesystemRestService {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getFiles(@QueryParam("changedFilesOnly") boolean changedFilesOnly, @Context SecurityContext securityContext) {
+    @Operation(
+            summary = "List editable configuration files",
+            description = """
+        List the configuration files under `etc` that this API can read or write, as paths relative to `etc`,
+        sorted. The walk goes four levels deep and follows symbolic links, and only files with a supported
+        extension are listed.
+
+        `users.xml` is listed only for callers that also hold `ROLE_ADMIN`.
+
+        With `changedFilesOnly=true` the list is narrowed to files that differ from the pristine copy shipped
+        in `share/etc-pristine`, ignoring line-ending differences. A file with no pristine counterpart counts
+        as changed, so locally added files are included.""",
+            operationId = "getEditableFiles"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The file paths, relative to `etc`.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(type = "string")),
+                            examples = @ExampleObject(value = """
+                    [
+                      "collectd-configuration.xml",
+                      "discovery-configuration.xml",
+                      "opennms.properties",
+                      "poller-configuration.xml"
+                    ]"""))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`.")
+    })
+    public List<String> getFiles(
+            @Parameter(description = "When true, list only files that differ from their `share/etc-pristine` counterpart, or that have none.",
+                    example = "false")
+            @QueryParam("changedFilesOnly") boolean changedFilesOnly, @Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for enumerating files.");
         }
@@ -139,7 +194,27 @@ public class FilesystemRestService {
     @GET
     @Path("/help")
     @Produces("text/markdown")
-    public InputStream getFileHelp(@QueryParam("f") String fileName, @Context SecurityContext securityContext) {
+    @Operation(
+            summary = "Get the help text for a configuration file",
+            description = """
+        Return the bundled Markdown help for one configuration file. Help is looked up by file name, and a
+        file with no help document produces an empty response body rather than a 404.
+
+        The file name still has to pass the same checks as the other operations, so an unsupported extension
+        or a path outside `etc` is rejected with 400 even though nothing is read from `etc`.""",
+            operationId = "getFileHelp"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The Markdown help document, or an empty body when none is bundled.",
+                    content = @Content(mediaType = "text/markdown",
+                            schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
+    })
+    public InputStream getFileHelp(
+            @Parameter(description = "File path relative to `etc`, as listed by `GET /filesystem`.",
+                    required = true, example = "discovery-configuration.xml")
+            @QueryParam("f") String fileName, @Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for retrieving help.");
         }
@@ -150,6 +225,30 @@ public class FilesystemRestService {
     @GET
     @Path("/extensions")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "List the file extensions this API will handle",
+            description = """
+        List the file extensions the other operations accept, sorted. The set is fixed in the code rather
+        than configurable, and a file whose extension is not in it cannot be read or written here.""",
+            operationId = "getSupportedFileExtensions"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The supported extensions.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(type = "string")),
+                            examples = @ExampleObject(value = """
+                    [
+                      "boot",
+                      "bsh",
+                      "cfg",
+                      "dcb",
+                      "drl",
+                      "groovy",
+                      "properties",
+                      "xml"
+                    ]"""))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`.")
+    })
     public List<String> getSupportedExtensions(@Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for retrieving supported extensions.");
@@ -161,7 +260,28 @@ public class FilesystemRestService {
 
     @GET
     @Path("/contents")
-    public Response getFileContents(@QueryParam("f") String fileName, @Context SecurityContext securityContext) {
+    @Operation(
+            summary = "Read a configuration file",
+            description = """
+        Return the contents of one configuration file as text, read as UTF-8. The response media type is
+        probed from the file rather than fixed, and `Content-Disposition` carries the bare file name while
+        `Last-Modified` carries the file's timestamp.
+
+        A name that passes the checks but does not exist yields 204 with no body, so 204 is how a missing file
+        is reported rather than 404.""",
+            operationId = "getFileContents"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The file contents. The media type is probed from the file.",
+                    content = @Content(schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "204", description = "The file does not exist. No body."),
+            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
+    })
+    public Response getFileContents(
+            @Parameter(description = "File path relative to `etc`, as listed by `GET /filesystem`.",
+                    required = true, example = "discovery-configuration.xml")
+            @QueryParam("f") String fileName, @Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for reading files.");
         }
@@ -172,7 +292,44 @@ public class FilesystemRestService {
     @Path("/contents")
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public String uploadFile(@QueryParam("f") String fileName,
+    @Operation(
+            summary = "Write a configuration file",
+            description = """
+        Replace the contents of one configuration file with the uploaded part. The part must be named
+        `upload`. The target file is named by the `f` query parameter, not by the part's own filename.
+
+        This is a whole-file replace with no version check: an existing file is overwritten, and a file that
+        does not exist yet is created.
+
+        A `.xml` upload is parsed for well-formedness before the replace, and a parse failure is reported as
+        400 with the target left untouched. The parse is non-validating and external entities are disabled, so
+        a well-formed file that violates its schema is still written.
+
+        Nothing is reloaded. Whatever daemon reads the file has to be told separately, for instance through
+        its own reload endpoint or a `reloadDaemonConfig` event.""",
+            operationId = "uploadFileContents"
+    )
+    @RequestBody(
+            required = true,
+            description = "Multipart form with a single part named `upload` carrying the new file contents.",
+            content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA,
+                    schema = @Schema(type = "string", format = "binary"))
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The file was written. The body is a plain confirmation, despite the `text/html` media type.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Successfully wrote to '/opt/opennms/etc/example.xml'."))),
+            @ApiResponse(responseCode = "400", description = "An `.xml` upload is not well formed (body as below). A name outside `etc` or an unsupported extension is also a 400, but with an empty body.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Validation failed: XML document structures must start and end within the same entity."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
+    })
+    public String uploadFile(
+            @Parameter(description = "File path relative to `etc` to write. Created if it does not exist, overwritten if it does.",
+                    required = true, example = "ApiDoc-probe.xml")
+            @QueryParam("f") String fileName,
                              @Multipart("upload") Attachment attachment,
                              @Context SecurityContext securityContext) throws IOException {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
@@ -205,7 +362,29 @@ public class FilesystemRestService {
     @DELETE
     @Path("/contents")
     @Produces(MediaType.TEXT_HTML)
-    public String deleteFile(@QueryParam("f") String fileName,
+    @Operation(
+            summary = "Delete a configuration file",
+            description = """
+        Delete one configuration file from `etc`. There is no confirmation step and no backup.
+
+        A name that passes the checks but does not exist fails with 500 from the underlying delete, not with
+        404.""",
+            operationId = "deleteFileContents"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The file was deleted. The body is a plain confirmation, despite the `text/html` media type.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Successfully deleted to '/opt/opennms/etc/example.xml'."))),
+            @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin."),
+            @ApiResponse(responseCode = "500", description = "The file does not exist, or could not be removed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
+    })
+    public String deleteFile(
+            @Parameter(description = "File path relative to `etc` to delete.", required = true, example = "ApiDoc-probe.xml")
+            @QueryParam("f") String fileName,
                              @Context SecurityContext securityContext) throws IOException {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for deleting file contents.");

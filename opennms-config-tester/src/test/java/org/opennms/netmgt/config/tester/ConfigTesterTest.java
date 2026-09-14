@@ -237,11 +237,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testJmsNorthbounderConfiguration() {
-        ignoreConfigFile("jms-northbounder-configuration.xml");
-    }
-
-    @Test
     public void testJmxDatacollectionConfig() {
         testConfigFile("jmx-datacollection-config.xml");
     }
@@ -350,11 +345,6 @@ public class ConfigTesterTest {
     @Test
     public void testRrdConfiguration() {
         testConfigFile("rrd-configuration.properties");
-    }
-
-    @Test
-    public void testRt() {
-        ignoreConfigFile("rt.properties");
     }
 
     @Test
@@ -481,10 +471,6 @@ public class ConfigTesterTest {
         ignoreConfigFile("trapd-configuration.xml");
     }
 
-    @Test
-    public void testTrendConfiguration() {
-        ignoreConfigFile("trend-configuration.xml");
-    }
 
     @Test
     public void testUsers() {

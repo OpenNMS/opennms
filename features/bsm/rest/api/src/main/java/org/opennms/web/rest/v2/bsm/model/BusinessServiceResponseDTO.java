@@ -47,46 +47,61 @@ import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "A business service with its edges grouped by kind and its current operational status.")
 public class BusinessServiceResponseDTO {
     
+    @Schema(description = "Business service id.", example = "23663")
     @XmlElement(name = "id")
     private Long m_id;
 
+    @Schema(description = "Display name of the business service.", example = "Storefront")
     @XmlElement(name = "name")
     private String m_name;
 
+    @Schema(description = "Free-form key/value metadata, serialized as `{\"attribute\":[{\"key\":\"...\",\"value\":\"...\"}]}`.")
     @XmlElement(name = "attributes", required = false)
     @XmlJavaTypeAdapter(JAXBMapAdapter.class)
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
+    @Schema(description = "Edges pointing at monitored IP services.")
     @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-service-edges")
     private List<IpServiceEdgeResponseDTO> m_ipServices = Lists.newArrayList();
 
+    @Schema(description = "Edges listening on raw alarm reduction keys.")
     @XmlElement(name="reduction-key-edge")
     @XmlElementWrapper(name="reduction-key-edges")
     private List<ReductionKeyEdgeResponseDTO> m_reductionKeys = Lists.newArrayList();
 
+    @Schema(description = "Edges pointing at other business services.")
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
     private List<ChildEdgeResponseDTO> m_children = Lists.newArrayList();;
 
+    @Schema(description = "Edges pointing at applications.")
     @XmlElement(name="application-edge")
     @XmlElementWrapper(name="application-edges")
     private List<ApplicationEdgeResponseDTO> m_applications = Lists.newArrayList();
 
+    @Schema(description = "Ids of the business services holding a child edge onto this one.")
     @XmlElement(name="parent-service")
     @XmlElementWrapper(name="parent-services")
     private Set<Long> m_parentServices = Sets.newLinkedHashSet();
 
+    @Schema(description = "Function turning the mapped edge severities into this service's operational status.")
     @XmlElement(name="reduce-function")
     private ReduceFunctionDTO m_reduceFunction;
 
+    @Schema(description = "Current status of the service. INDETERMINATE until the BSM daemon has "
+            + "evaluated it.",
+            example = "INDETERMINATE")
     @XmlElement(name="operational-status")
     private Status m_operationalStatus;
 

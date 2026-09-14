@@ -65,9 +65,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Dashboards", "Heatmap");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/a[starts-with(text(), 'Alarm Heatmap')]")));
 
-        clickMenuItem("Dashboards", "Trends");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Trend']")));
-
         clickMenuItem("Dashboards", "Charts");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("include-charts")));
 
@@ -169,7 +166,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // User Management Menu
         clickMenuItem("User Management", "Manage Users");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'User List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Users']")));
 
         clickMenuItem("User Management", "Manage Groups");
         // now the Vue page (ui/index.html)
@@ -214,6 +212,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("Administration", "Notifications");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Notification queries']")));
+
+        clickMenuItem("Administration", "Notifications (Preview)");
+        // the Vue Notifications page (ui/index.html#/admin/notifications)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Notifications']")));
 
         clickMenuItem("Administration", "Manage Event Configurations");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[@class='event-config']//div[@class='heading']//h1[text()='Manage Event Configurations']")));
@@ -278,8 +280,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         assertNotNull("supportMenu / Public Issue Tracker", foundElement);
 
         clickMenuItem("Support", "Generate System Report");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
+        // NMS-20154 repointed this entry to the new PrimeVue page (ui/index.html#/system-report),
+        // which renders the /ui breadcrumb (div.breadcrumbs) and an OnmsButton rather than the
+        // legacy ol.breadcrumb list and a Bootstrap submit input.
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'Generate System Report')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(normalize-space(.), 'Generate System Report')]")));
 
         // Omitting for now - need to fix!
         // Vaadin Topology page

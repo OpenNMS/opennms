@@ -22,7 +22,7 @@
 
 import { describe, expect, test } from 'vitest'
 import { mock } from 'vitest-mock-extended'
-import { getTableCssClasses, hasEgressFlow, hasIngressFlow } from '@/components/Nodes/utils'
+import { buildSnmpNarrowing, getTableCssClasses, hasEgressFlow, hasIngressFlow } from '@/components/Nodes/utils'
 import { Node, NodeColumnSelectionItem } from '@/types'
 
 describe('Nodes utils test', () => {
@@ -80,5 +80,27 @@ describe('Nodes utils test', () => {
 
     expect(hasEgressFlow(neither)).toBeFalsy()
     expect(hasIngressFlow(neither)).toBeFalsy()
+  })
+
+  describe('buildSnmpNarrowing', () => {
+    test('narrows a maclike fetch by the normalized MAC', () => {
+      expect(buildSnmpNarrowing({ mode: 'maclike', mac: 'aa:bb:cc' })).toBe('physAddr==*aabbcc*')
+    })
+
+    test('narrows an snmpParm fetch by the searched attribute', () => {
+      expect(buildSnmpNarrowing({ mode: 'snmpParm', attr: 'ifAlias', value: 'core', matchType: 'contains' }))
+        .toBe('ifAlias==*core*')
+    })
+
+    // The narrowing sent to the server has to stay a superset of the client-side match, so a
+    // value carrying LIKE wildcards or FIQL operators drops the attribute term entirely.
+    test.each(['up%', 'up_link', 'a,b', 'a;b', 'a(b', 'a)b'])('omits narrowing for %s', (value) => {
+      expect(buildSnmpNarrowing({ mode: 'snmpParm', attr: 'ifName', value, matchType: 'contains' }))
+        .toBeUndefined()
+    })
+
+    test('narrows nothing in the default mode', () => {
+      expect(buildSnmpNarrowing({ mode: 'default' })).toBeUndefined()
+    })
   })
 })
