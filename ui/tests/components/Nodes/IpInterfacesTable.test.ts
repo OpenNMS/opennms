@@ -21,6 +21,7 @@
 ///
 
 import IpInterfacesTable from '@/components/Nodes/IpInterfacesTable.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
@@ -50,6 +51,7 @@ describe('IpInterfacesTable.vue', () => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     nodeStore = useNodeStore(pinia)
     nodeStore.getNodeIpInterfaces = vi.fn().mockResolvedValue(undefined)
+    useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as any
 
     return mount(IpInterfacesTable, {
       global: {
@@ -135,6 +137,62 @@ describe('IpInterfacesTable.vue', () => {
 
       const rowText = wrapper.find('tbody tr').text()
       expect(rowText).toContain('N/A')
+    })
+  })
+
+  describe('IP Address links', () => {
+    const mountRows = async (ipInterfaces: Record<string, unknown>[]) => {
+      nodeStore.ipInterfaces = ipInterfaces as any
+      nodeStore.ipInterfacesTotalCount = ipInterfaces.length
+      await nextTick()
+    }
+
+    it('links the address to the legacy interface page for this node', async () => {
+      await mountRows([{ id: '1', ipAddress: '10.0.0.44' }])
+
+      const link = wrapper.find('[data-test="ip-address-link"]')
+      expect(link.text()).toBe('10.0.0.44')
+      expect(link.attributes('href'))
+        .toBe(`/opennms/element/interface.jsp?node=${mockNodeId}&intf=10.0.0.44`)
+    })
+
+    // The page takes the interface by address, and an IPv6 address is full of reserved
+    // characters -- a zone index especially, whose '%' would otherwise start an escape.
+    it('encodes the address', async () => {
+      await mountRows([{ id: '1', ipAddress: 'fe80::1%eth0' }])
+
+      const link = wrapper.find('[data-test="ip-address-link"]')
+      expect(link.text()).toBe('fe80::1%eth0')
+      expect(link.attributes('href'))
+        .toBe(`/opennms/element/interface.jsp?node=${mockNodeId}&intf=fe80%3A%3A1%25eth0`)
+    })
+
+    it('links each row to its own address', async () => {
+      await mountRows([{ id: '1', ipAddress: '10.0.0.44' }, { id: '2', ipAddress: '10.0.0.45' }])
+
+      expect(wrapper.findAll('[data-test="ip-address-link"]').map(l => l.attributes('href')))
+        .toEqual([
+          `/opennms/element/interface.jsp?node=${mockNodeId}&intf=10.0.0.44`,
+          `/opennms/element/interface.jsp?node=${mockNodeId}&intf=10.0.0.45`
+        ])
+    })
+
+    // Follows the node the user navigates to, the same way the fetch does.
+    it('points at the new node after a node change', async () => {
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+      await mountRows([{ id: '1', ipAddress: '10.0.0.44' }])
+
+      expect(wrapper.find('[data-test="ip-address-link"]').attributes('href'))
+        .toBe('/opennms/element/interface.jsp?node=99&intf=10.0.0.44')
+      ;(useRoute() as any).params.id = '42'
+    })
+
+    it('shows N/A rather than an empty link when there is no address', async () => {
+      await mountRows([{ id: '1', ipAddress: '' }])
+
+      expect(wrapper.find('[data-test="ip-address-link"]').exists()).toBe(false)
+      expect(wrapper.find('tbody tr').text()).toContain('N/A')
     })
   })
 
