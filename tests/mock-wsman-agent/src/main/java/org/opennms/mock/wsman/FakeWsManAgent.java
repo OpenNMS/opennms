@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,11 +82,14 @@ public class FakeWsManAgent implements AutoCloseable {
 
     private final HttpServer server;
     private final String username;
-    private final String password;
+    private volatile String password;
     private volatile String vendor = DEFAULT_VENDOR;
     private volatile String version = DEFAULT_VERSION;
-    // class name -> instances -> property values (insertion order kept for stable output)
-    private final Map<String, List<Map<String, String>>> classes = new ConcurrentHashMap<>();
+    // class name -> instances -> property values (insertion order kept for stable output).
+    // Handlers read whichever snapshot is current; writers build a new one under the lock,
+    // so a control-endpoint update never mutates a list an Enumerate is iterating.
+    private volatile Map<String, List<Map<String, String>>> classes = Map.of();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Map<String, Enumeration> enumerations = new ConcurrentHashMap<>();
     // a long-running agent (smoke tests poll for hours) must not grow without bound
     private static final int MAX_REQUEST_LOG = 1000;
@@ -102,7 +107,7 @@ public class FakeWsManAgent implements AutoCloseable {
         this.password = password;
         server = HttpServer.create(new InetSocketAddress(bindAddress, port), 0);
         server.createContext("/", this::handle);
-        server.setExecutor(Executors.newCachedThreadPool());
+        server.setExecutor(executor);
         loadWindowsDefaults();
     }
 
@@ -127,6 +132,13 @@ public class FakeWsManAgent implements AutoCloseable {
     @Override
     public void close() {
         server.stop(0);
+        executor.shutdownNow();
+    }
+
+    /** Changes the password the agent expects, as a credential rotation on a real server would. */
+    public FakeWsManAgent withPassword(final String password) {
+        this.password = password;
+        return this;
     }
 
     public FakeWsManAgent withIdentity(final String vendor, final String version) {
@@ -136,27 +148,55 @@ public class FakeWsManAgent implements AutoCloseable {
     }
 
     /** Replaces the instances of a class. */
-    public FakeWsManAgent withInstances(final String className, final List<Map<String, String>> instances) {
+    public synchronized FakeWsManAgent withInstances(final String className, final List<Map<String, String>> instances) {
+        final Map<String, List<Map<String, String>>> next = mutableCopy();
         final List<Map<String, String>> copy = new ArrayList<>();
         for (final Map<String, String> instance : instances) {
             copy.add(new LinkedHashMap<>(instance));
         }
-        classes.put(className, copy);
+        next.put(className, copy);
+        classes = freeze(next);
         return this;
     }
 
+    private Map<String, List<Map<String, String>>> mutableCopy() {
+        final Map<String, List<Map<String, String>>> next = new LinkedHashMap<>();
+        for (final Map.Entry<String, List<Map<String, String>>> e : classes.entrySet()) {
+            final List<Map<String, String>> instances = new ArrayList<>();
+            for (final Map<String, String> instance : e.getValue()) {
+                instances.add(new LinkedHashMap<>(instance));
+            }
+            next.put(e.getKey(), instances);
+        }
+        return next;
+    }
+
+    private static Map<String, List<Map<String, String>>> freeze(final Map<String, List<Map<String, String>>> next) {
+        final Map<String, List<Map<String, String>>> frozen = new LinkedHashMap<>();
+        for (final Map.Entry<String, List<Map<String, String>>> e : next.entrySet()) {
+            final List<Map<String, String>> instances = new ArrayList<>();
+            for (final Map<String, String> instance : e.getValue()) {
+                instances.add(Collections.unmodifiableMap(instance));
+            }
+            frozen.put(e.getKey(), Collections.unmodifiableList(instances));
+        }
+        return Collections.unmodifiableMap(frozen);
+    }
+
     /** Applies {@code Class.Property=value} or {@code Class[index].Property=value}; a missing instance is created. */
-    public FakeWsManAgent set(final String assignment) {
+    public synchronized FakeWsManAgent set(final String assignment) {
         final Matcher m = ASSIGNMENT.matcher(assignment.trim());
         if (!m.matches()) {
             throw new IllegalArgumentException("Expected Class.Property=value or Class[index].Property=value, got: " + assignment);
         }
-        final List<Map<String, String>> instances = classes.computeIfAbsent(m.group(1), k -> new ArrayList<>());
+        final Map<String, List<Map<String, String>>> next = mutableCopy();
+        final List<Map<String, String>> instances = next.computeIfAbsent(m.group(1), k -> new ArrayList<>());
         final int index = m.group(2) == null ? 0 : Integer.parseInt(m.group(2));
         while (instances.size() <= index) {
             instances.add(new LinkedHashMap<>());
         }
         instances.get(index).put(m.group(3), m.group(4));
+        classes = freeze(next);
         return this;
     }
 
@@ -313,10 +353,12 @@ public class FakeWsManAgent implements AutoCloseable {
         if ("PUT".equals(exchange.getRequestMethod()) || "POST".equals(exchange.getRequestMethod())) {
             final String text = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             int applied = 0;
-            for (final String line : text.split("\\r?\\n")) {
-                if (!line.isBlank() && !line.trim().startsWith("#")) {
-                    set(line);
-                    applied++;
+            synchronized (this) {
+                for (final String line : text.split("\\r?\\n")) {
+                    if (!line.isBlank() && !line.trim().startsWith("#")) {
+                        set(line);
+                        applied++;
+                    }
                 }
             }
             respond(exchange, 200, "text/plain", applied + " value(s) applied\n");

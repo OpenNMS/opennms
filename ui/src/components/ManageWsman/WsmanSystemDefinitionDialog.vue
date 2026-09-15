@@ -2,7 +2,7 @@
   <OnmsDialog
     :visible="visible"
     modal
-    :header="original ? `Edit System Definition ${original.name}` : 'New System Definition'"
+    :header="`Edit System Definition ${original?.name ?? ''}`"
     width="min(760px, 95vw)"
     data-test="wsman-sysdef-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
@@ -13,10 +13,8 @@
         <OnmsInputText id="sysdef-name" v-model="name" :invalid="!!nameProblem" fluid data-test="name-input" />
       </FormField>
       <FormField label="File" for="sysdef-source" hint="The file the object is saved in.">
-        <OnmsSelect v-if="original" inputId="sysdef-source" :modelValue="source" :options="sourceOptions" optionLabel="label" optionValue="value" disabled fluid data-test="source-select" />
-        <OnmsSelect v-else inputId="sysdef-source" v-model="source" :options="sourceOptions" optionLabel="label" optionValue="value" editable fluid data-test="source-select" />
+        <OnmsSelect inputId="sysdef-source" :modelValue="source" :options="sourceOptions" optionLabel="label" optionValue="value" disabled fluid data-test="source-select" />
       </FormField>
-      <p v-if="sourceProblem" class="field-error">{{ sourceProblem }}</p>
       <FormField label="Rules" required hint="SpEL over the agent: #productVendor, #productVersion, #ipAddress, #node…; a server matches when every rule is true.">
         <StringListEditor v-model="rules" placeholder="#productVendor matches '^Microsoft.*'" dataTest="rules" />
         <p v-if="!rules.length" class="field-error">At least one rule is required.</p>
@@ -57,16 +55,6 @@ const source = ref(ROOT_FILE)
 
 const sourceOptions = computed(() => props.dataCollection.sources.map(s => ({ label: s, value: s })))
 
-const sourceProblem = computed(() => {
-  const s = source.value.trim()
-  if (!s) {
-    return 'A file is required.'
-  }
-  if (!props.dataCollection.sources.includes(s) && !/^[A-Za-z0-9][A-Za-z0-9._-]*\.xml$/.test(s)) {
-    return 'A new file must be a plain name ending in .xml, e.g. custom.xml.'
-  }
-  return null
-})
 
 const name = ref('')
 const rules = ref<string[]>([])
@@ -80,7 +68,7 @@ const nameProblem = computed(() => {
   }
   return nameTaken(props.dataCollection, 'systemDefinition', name.value, props.original?.name ?? null) ? 'A system definition with this name already exists.' : null
 })
-const canSave = computed(() => !nameProblem.value && !sourceProblem.value && rules.value.length > 0 && includedGroups.value.length > 0)
+const canSave = computed(() => !nameProblem.value && rules.value.length > 0 && includedGroups.value.length > 0)
 
 watch(() => props.visible, (isVisible) => {
   if (isVisible) {

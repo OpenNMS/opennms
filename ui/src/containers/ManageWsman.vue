@@ -38,9 +38,6 @@
             @sync="syncDefinition"
           />
         </OnmsTabPanel>
-        <OnmsTabPanel :value="2">
-          <WsmanDefaultsCard :settings="store.config.defaults" :status="store.status" @edit="showDefaultsDialog = true" />
-        </OnmsTabPanel>
         <OnmsTabPanel :value="1">
           <p v-if="store.dataCollectionError" class="error" data-test="data-collection-error">
             Failed to load the WS-Man data collection configuration. Check <code>wsman-datacollection-config.xml</code>
@@ -49,12 +46,15 @@
           <WsmanDataCollectionPanel
             v-else-if="store.dataCollection"
             :dataCollection="store.dataCollection"
-            @add="openDataCollectionEditor"
             @edit="openDataCollectionEditor"
             @delete="askDeleteDataCollection"
             @reset="showResetConfirm = true"
           />
           <p v-else class="placeholder" data-test="data-collection-loading">Loading…</p>
+        </OnmsTabPanel>
+
+        <OnmsTabPanel :value="2">
+          <WsmanDefaultsCard :settings="store.config.defaults" :status="store.status" @edit="showDefaultsDialog = true" />
         </OnmsTabPanel>
       </OnmsTabPanels>
     </OnmsTabs>
@@ -146,6 +146,12 @@ const editingIndex = ref<number | null>(null)
 const deleteIndex = ref<number | null>(null)
 const actionError = ref('')
 const actionMessage = ref('')
+
+// an action's outcome replaces whatever the previous action left on screen
+const report = (error: string | null) => {
+  actionMessage.value = ''
+  actionError.value = error ?? ''
+}
 const showCollectionDialog = ref(false)
 const showSystemDefinitionDialog = ref(false)
 const showGroupDialog = ref(false)
@@ -161,7 +167,7 @@ const runReadinessAction = (action: 'enable-polling' | 'rescan') => store.runRea
 
 const confirmReset = async () => {
   showResetConfirm.value = false
-  actionError.value = (await store.resetDataCollection()) ?? ''
+  report(await store.resetDataCollection())
 }
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
@@ -194,18 +200,18 @@ const confirmDelete = async () => {
   }
   const input = configToInput(store.config)
   input.definitions.splice(index, 1)
-  actionError.value = (await store.saveConfig(input)) ?? ''
+  report(await store.saveConfig(input))
 }
 
-const openDataCollectionEditor = (kind: DataCollectionKind, item: EditableObject | null = null) => {
+const openDataCollectionEditor = (kind: DataCollectionKind, item: EditableObject) => {
   if (kind === 'collection') {
-    editingCollection.value = item as WsmanCollectionInfo | null
+    editingCollection.value = item as WsmanCollectionInfo
     showCollectionDialog.value = true
   } else if (kind === 'systemDefinition') {
-    editingSystemDefinition.value = item as WsmanSystemDefinitionInfo | null
+    editingSystemDefinition.value = item as WsmanSystemDefinitionInfo
     showSystemDefinitionDialog.value = true
   } else {
-    editingGroup.value = item as WsmanGroupInfo | null
+    editingGroup.value = item as WsmanGroupInfo
     showGroupDialog.value = true
   }
 }
@@ -230,7 +236,7 @@ const confirmDeleteDataCollection = async () => {
   } else {
     input.groups = remove(input.groups, target.item.name)
   }
-  actionError.value = (await store.saveDataCollectionFile(target.item.source, input)) ?? ''
+  report(await store.saveDataCollectionFile(target.item.source, input))
 }
 
 const syncDefinition = async (index: number) => {
@@ -267,7 +273,7 @@ const moveDefinition = async (index: number, delta: number) => {
   }
   const [moved] = input.definitions.splice(index, 1)
   input.definitions.splice(target, 0, moved)
-  actionError.value = (await store.saveConfig(input)) ?? ''
+  report(await store.saveConfig(input))
 }
 </script>
 

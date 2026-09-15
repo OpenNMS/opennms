@@ -111,6 +111,8 @@ public class WsManEndToEndTest {
                 + "</wsman-config>\n").getBytes(StandardCharsets.UTF_8));
         configDao = new WSManConfigDaoJaxb();
         configDao.setConfigResource(new FileSystemResource(new File(etc, "wsman-config.xml")));
+        // check the file on every access so an edit is seen at once
+        configDao.setReloadCheckInterval(0L);
         configDao.afterPropertiesSet();
 
         // the shipped data collection files, straight from the base assembly sources
@@ -216,15 +218,13 @@ public class WsManEndToEndTest {
         // rewrite the file the way a PUT does: same server, different credentials
         final Path file = new File(configDao.getConfigResource().getFile().getParentFile(), "wsman-config.xml").toPath();
         final String edited = new String(Files.readAllBytes(file), StandardCharsets.UTF_8).replace("lab-secret", "rotated");
-        Thread.sleep(1100); // FileReloadContainer compares mtime at second granularity on some filesystems
         Files.write(file, edited.getBytes(StandardCharsets.UTF_8));
         assertEquals("rotated", configDao.getEndpoint(address).getPassword());
 
         final WsManDetector detector = new WsManDetector();
         detector.setClientFactory(new CXFWSManClientFactory());
         assertFalse("the agent still expects the old password", detector.isServiceDetected(address, configDao.getEndpoint(address)).isServiceDetected());
-        agent.close();
-        agent = new FakeWsManAgent("127.0.0.1", configDao.getEndpoint(address).getUrl().getPort(), "LAB\\\\wsman-monitor", "rotated").start();
+        agent.withPassword("rotated");
         assertTrue(detector.isServiceDetected(address, configDao.getEndpoint(address)).isServiceDetected());
     }
 }

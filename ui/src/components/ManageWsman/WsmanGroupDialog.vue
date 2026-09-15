@@ -2,7 +2,7 @@
   <OnmsDialog
     :visible="visible"
     modal
-    :header="original ? `Edit Group ${original.name}` : 'New Group'"
+    :header="`Edit Group ${original?.name ?? ''}`"
     width="min(1000px, 95vw)"
     data-test="wsman-group-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
@@ -14,8 +14,7 @@
           <OnmsInputText id="group-name" v-model="name" :invalid="!!nameProblem" fluid data-test="name-input" />
         </FormField>
         <FormField label="File" for="group-source" hint="The file the object is saved in.">
-        <OnmsSelect v-if="original" inputId="group-source" :modelValue="source" :options="sourceOptions" optionLabel="label" optionValue="value" disabled fluid data-test="source-select" />
-        <OnmsSelect v-else inputId="group-source" v-model="source" :options="sourceOptions" optionLabel="label" optionValue="value" editable fluid data-test="source-select" />
+        <OnmsSelect inputId="group-source" :modelValue="source" :options="sourceOptions" optionLabel="label" optionValue="value" disabled fluid data-test="source-select" />
         </FormField>
         <FormField label="Resource type" for="group-resource-type" required hint="node, or a resource type from wsman-datacollection resource types (e.g. dracPowerSupplyIndex)">
           <OnmsInputText id="group-resource-type" v-model="resourceType" fluid data-test="resource-type-input" />
@@ -30,7 +29,6 @@
           <OnmsInputText id="group-filter" v-model="filter" fluid data-test="filter-input" />
         </FormField>
       </div>
-      <p v-if="sourceProblem" class="field-error">{{ sourceProblem }}</p>
 
       <div class="attributes-header">
         <span class="section-title">Attributes</span>
@@ -78,16 +76,6 @@ const source = ref(ROOT_FILE)
 
 const sourceOptions = computed(() => props.dataCollection.sources.map(s => ({ label: s, value: s })))
 
-const sourceProblem = computed(() => {
-  const s = source.value.trim()
-  if (!s) {
-    return 'A file is required.'
-  }
-  if (!props.dataCollection.sources.includes(s) && !/^[A-Za-z0-9][A-Za-z0-9._-]*\.xml$/.test(s)) {
-    return 'A new file must be a plain name ending in .xml, e.g. custom.xml.'
-  }
-  return null
-})
 
 const name = ref('')
 const resourceType = ref('node')
@@ -104,7 +92,7 @@ const nameProblem = computed(() => {
   }
   return nameTaken(props.dataCollection, 'group', name.value, props.original?.name ?? null) ? 'A group with this name already exists.' : null
 })
-const canSave = computed(() => !nameProblem.value && !sourceProblem.value && !!resourceType.value.trim() && !!resourceUri.value.trim()
+const canSave = computed(() => !nameProblem.value && !!resourceType.value.trim() && !!resourceUri.value.trim()
   && attributes.value.length > 0 && attributes.value.every(a => a.name.trim() && a.alias.trim() && a.type))
 
 watch(() => props.visible, (isVisible) => {

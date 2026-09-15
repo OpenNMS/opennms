@@ -2,7 +2,7 @@
   <OnmsDialog
     :visible="visible"
     modal
-    :header="original ? `Edit Collection ${original.name}` : 'New Collection'"
+    :header="`Edit Collection ${original?.name ?? ''}`"
     width="min(720px, 95vw)"
     data-test="wsman-collection-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
@@ -13,10 +13,8 @@
         <OnmsInputText id="collection-name" v-model="name" :invalid="!!nameProblem" fluid data-test="name-input" />
       </FormField>
       <FormField label="File" for="collection-source" hint="The file the object is saved in.">
-        <OnmsSelect v-if="original" inputId="collection-source" :modelValue="source" :options="sourceOptions" optionLabel="label" optionValue="value" disabled fluid data-test="source-select" />
-        <OnmsSelect v-else inputId="collection-source" v-model="source" :options="sourceOptions" optionLabel="label" optionValue="value" editable fluid data-test="source-select" />
+        <OnmsSelect inputId="collection-source" :modelValue="source" :options="sourceOptions" optionLabel="label" optionValue="value" disabled fluid data-test="source-select" />
       </FormField>
-      <p v-if="sourceProblem" class="field-error">{{ sourceProblem }}</p>
       <FormField label="Step (seconds)" for="collection-step" required hint="Also sizes the RRD files; other time-series storage ignores the RRAs." :error="stepProblem || undefined">
         <OnmsInputNumber inputId="collection-step" v-model="rrdStep" :min="1" :useGrouping="false" :invalid="!!stepProblem" fluid data-test="step-input" />
       </FormField>
@@ -65,16 +63,6 @@ const source = ref(ROOT_FILE)
 
 const sourceOptions = computed(() => props.dataCollection.sources.map(s => ({ label: s, value: s })))
 
-const sourceProblem = computed(() => {
-  const s = source.value.trim()
-  if (!s) {
-    return 'A file is required.'
-  }
-  if (!props.dataCollection.sources.includes(s) && !/^[A-Za-z0-9][A-Za-z0-9._-]*\.xml$/.test(s)) {
-    return 'A new file must be a plain name ending in .xml, e.g. custom.xml.'
-  }
-  return null
-})
 
 const name = ref('')
 const rrdStep = ref<number | null>(300)
@@ -91,7 +79,7 @@ const nameProblem = computed(() => {
   return nameTaken(props.dataCollection, 'collection', name.value, props.original?.name ?? null) ? 'A collection with this name already exists.' : null
 })
 const stepProblem = computed(() => (rrdStep.value === null || rrdStep.value < 1 ? 'The step must be at least 1 second.' : null))
-const canSave = computed(() => !nameProblem.value && !sourceProblem.value && !stepProblem.value && rras.value.length > 0 && (includeAll.value || includedSystemDefinitions.value.length > 0))
+const canSave = computed(() => !nameProblem.value && !stepProblem.value && rras.value.length > 0 && (includeAll.value || includedSystemDefinitions.value.length > 0))
 
 watch(() => props.visible, (isVisible) => {
   if (isVisible) {

@@ -15,13 +15,8 @@
       <template #title>
         <div class="card-header">
           <span class="card-title">Collections ({{ dataCollection.collections.length }})</span>
-          <!--
-            Creating objects from this page is held back until the data collection
-            files move into the database in a future effort: today every new object
-            would land in an XML file on disk with no way to manage the files
-            themselves. Editing and deleting what exists stays available.
-          -->
-          <!-- <OnmsButton label="Add Collection" data-test="add-collection" @click="emit('add', 'collection')" /> -->
+          <!-- no Add here: new objects would land in XML files on disk that this page cannot
+               manage; creation waits for the data collection files to move into the database -->
         </div>
       </template>
       <template #content>
@@ -57,8 +52,6 @@
       <template #title>
         <div class="card-header">
           <span class="card-title">System Definitions ({{ dataCollection.systemDefinitions.length }})</span>
-          <!-- held back with the other Add buttons; see the note on the Collections card -->
-          <!-- <OnmsButton label="Add System Definition" data-test="add-system-definition" @click="emit('add', 'systemDefinition')" /> -->
         </div>
       </template>
       <template #content>
@@ -92,8 +85,6 @@
           <span class="card-title">Groups ({{ filteredGroups.length }}<template v-if="groupFilter"> of {{ dataCollection.groups.length }}</template>)</span>
           <div class="card-tools">
             <OnmsInputText v-model="groupFilter" placeholder="Filter by name, source or resource type" data-test="group-filter" />
-            <!-- held back with the other Add buttons; see the note on the Collections card -->
-            <!-- <OnmsButton label="Add Group" data-test="add-group" @click="emit('add', 'group')" /> -->
           </div>
         </div>
       </template>
@@ -161,7 +152,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'add', kind: DataCollectionKind): void
   (e: 'edit', kind: DataCollectionKind, item: EditableObject): void
   (e: 'delete', kind: DataCollectionKind, item: EditableObject): void
   (e: 'reset'): void

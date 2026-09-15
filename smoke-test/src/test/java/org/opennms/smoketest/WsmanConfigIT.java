@@ -41,6 +41,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.model.QueryRequest;
@@ -79,6 +80,8 @@ public class WsmanConfigIT {
     private static final String FAKE_VERSION = FakeWsManAgent.DEFAULT_VERSION;
     private static final String REQUISITION = "wsman-smoke";
     private static final String SERVER = "127.0.0.1";
+    // one JAX-RS client for every request of the run, closed when the class is done
+    private static final Client CLIENT = ClientBuilder.newClient();
 
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
@@ -184,10 +187,14 @@ public class WsmanConfigIT {
         });
     }
 
+    @AfterClass
+    public static void closeClient() {
+        CLIENT.close();
+    }
+
     private Invocation.Builder request(final String path) {
-        final Client client = ClientBuilder.newClient();
         final String auth = Base64.getEncoder().encodeToString((OpenNMSContainer.ADMIN_USER + ":" + OpenNMSContainer.ADMIN_PASSWORD).getBytes());
-        return client.target(stack.opennms().getBaseUrlExternal() + "opennms/api/v2/wsman-config").path(path)
+        return CLIENT.target(stack.opennms().getBaseUrlExternal() + "opennms/api/v2/wsman-config").path(path)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Basic " + auth);
     }

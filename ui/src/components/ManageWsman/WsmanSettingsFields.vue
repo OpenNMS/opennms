@@ -45,13 +45,13 @@
       <OnmsInputText :id="`${idPrefix}-path`" :modelValue="modelValue.path" placeholder="/wsman" :invalid="!!errors.path" fluid data-test="path-input" @update:modelValue="set('path', $event ?? '')" />
     </FormField>
     <FormField label="Timeout (ms)" :for="`${idPrefix}-timeout`" :error="errors.timeout">
-      <OnmsInputNumber :inputId="`${idPrefix}-timeout`" :modelValue="modelValue.timeout" :min="1" :useGrouping="false" :invalid="!!errors.timeout" fluid data-test="timeout-input" @update:modelValue="set('timeout', $event ?? null)" />
+      <OnmsInputNumber :inputId="`${idPrefix}-timeout`" :modelValue="modelValue.timeout" :min="0" :useGrouping="false" :invalid="!!errors.timeout" fluid data-test="timeout-input" @update:modelValue="set('timeout', $event ?? null)" />
     </FormField>
     <FormField label="Retries" :for="`${idPrefix}-retry`" :error="errors.retry">
       <OnmsInputNumber :inputId="`${idPrefix}-retry`" :modelValue="modelValue.retry" :min="0" :useGrouping="false" :invalid="!!errors.retry" fluid data-test="retry-input" @update:modelValue="set('retry', $event ?? null)" />
     </FormField>
     <FormField label="Max elements" :for="`${idPrefix}-max-elements`" :error="errors.maxElements">
-      <OnmsInputNumber :inputId="`${idPrefix}-max-elements`" :modelValue="modelValue.maxElements" :min="1" :useGrouping="false" :invalid="!!errors.maxElements" fluid data-test="max-elements-input" @update:modelValue="set('maxElements', $event ?? null)" />
+      <OnmsInputNumber :inputId="`${idPrefix}-max-elements`" :modelValue="modelValue.maxElements" :min="0" :useGrouping="false" :invalid="!!errors.maxElements" fluid data-test="max-elements-input" @update:modelValue="set('maxElements', $event ?? null)" />
     </FormField>
     <FormField label="Product vendor" :for="`${idPrefix}-vendor`">
       <OnmsInputText :id="`${idPrefix}-vendor`" :modelValue="modelValue.productVendor" fluid data-test="vendor-input" @update:modelValue="set('productVendor', $event ?? '')" />

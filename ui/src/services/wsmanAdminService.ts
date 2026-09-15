@@ -93,6 +93,7 @@ const getWsmanDataCollection = async (): Promise<WsmanDataCollection | null> => 
     }
     return {
       rrdRepository: data.rrdRepository ?? null,
+      storage: data.storage ?? undefined,
       sources: data.sources,
       versions: data.versions ?? {},
       collections: asList(data.collections),
@@ -196,7 +197,7 @@ const resetWsmanDataCollection = async (): Promise<WsmanDataCollection | string>
     if (!data || !Array.isArray(data.sources)) {
       return 'The server returned an unexpected answer.'
     }
-    return { rrdRepository: data.rrdRepository ?? null, sources: data.sources, versions: data.versions ?? {}, collections: asList(data.collections), groups: asList(data.groups), systemDefinitions: asList(data.systemDefinitions) }
+    return { rrdRepository: data.rrdRepository ?? null, storage: data.storage ?? undefined, sources: data.sources, versions: data.versions ?? {}, collections: asList(data.collections), groups: asList(data.groups), systemDefinitions: asList(data.systemDefinitions) }
   } catch (err: any) {
     return errorMessage(err, 'Failed to reset the WS-Man data collection files.')
   } finally {
