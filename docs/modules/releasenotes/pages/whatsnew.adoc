@@ -33,7 +33,7 @@ See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upg
 The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
 
 === Charts removed
-The Charts page, its JFreeChart rendering and the `features/charts` module have been removed from the Dashboards menu and from the product. `etc/chart-configuration.xml` and its configuration model remain; the `sub-label-class` attribute, which named a class from the removed module, is dropped from the shipped file.
+The Charts page, its JFreeChart rendering and the `features/charts` module have been removed from the Dashboards menu and from the product. `etc/chart-configuration.xml` and its configuration model go with it; the file is no longer read.
 
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
