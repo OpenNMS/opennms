@@ -46,6 +46,15 @@ describe('OnmsTable', () => {
     expect(inner.props('tableStyle')).toBe('min-width: 50rem')
   })
 
+  it('forwards rowClass to DataTable', () => {
+    const rowClass = (data: any) => `status-${data.id}`
+    const inner = mount(OnmsTable, {
+      props: { value: rows, rowClass },
+      global: globalPlugins
+    }).findComponent({ name: 'DataTable' })
+    expect(inner.props('rowClass')).toBe(rowClass)
+  })
+
   it('maps virtualScrollItemSize to virtualScrollerOptions', () => {
     const inner = mount(OnmsTable, {
       props: { value: rows, virtualScrollItemSize: 44 },

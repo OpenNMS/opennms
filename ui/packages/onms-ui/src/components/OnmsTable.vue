@@ -19,6 +19,7 @@
     :editMode="editMode"
     :editingRows="editingRows"
     :expandedRows="expandedRows"
+    :rowClass="rowClass"
     :virtualScrollerOptions="virtualScrollerOptions"
     :pt="pt as never"
     @page="emit('page', $event)"
@@ -87,6 +88,9 @@ const props = withDefaults(defineProps<{
   // PrimeVue accepts either an array of row instances or an object keyed by
   // dataKey (its DataTableExpandedRows shape) when a table uses dataKey.
   expandedRows?: any[] | Record<string, boolean>
+  // Per-row CSS classes, as PrimeVue's own (data) => class signature. Returns a
+  // class string or a Vue class object; undefined leaves the row unclassed.
+  rowClass?: (data: any) => string | Record<string, boolean> | undefined
   // Narrowed from PrimeVue's virtualScrollerOptions object: row height in px
   virtualScrollItemSize?: number
   unsafePt?: unknown
@@ -110,6 +114,7 @@ const props = withDefaults(defineProps<{
   editMode: undefined,
   editingRows: undefined,
   expandedRows: undefined,
+  rowClass: undefined,
   virtualScrollItemSize: undefined,
   unsafePt: undefined
 })
