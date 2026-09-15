@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { nodeOutageListLink } from '@/lib/linkUtils'
 import { IpInterface, Node } from '@/types'
 
 // The node action links, shared by every place the actions menu is rendered: the Node Details
@@ -64,7 +65,9 @@ export const mapLink = (name: string, node: Node, context: NodeActionLinkContext
     case 'alarms':
       return `alarm/list.htm?filter=node%3D${node.id}`
     case 'view-outages':
-      return `outage/list.htm?filter=node%3D${node.id}`
+      // Relative, like every link here: mapLink's callers prepend baseHref themselves. No
+      // outtype, so the legacy list applies its own default.
+      return nodeOutageListLink('', node.id)
     case 'assets':
       return `asset/modify.jsp?node=${node.id}`
     case 'metadata':

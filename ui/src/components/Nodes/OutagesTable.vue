@@ -75,17 +75,14 @@ import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useRecordDownload } from './hooks/useRecordDownload'
+import {
+  OUTAGE_LIST_TYPE_BOTH,
+  interfaceLink as buildInterfaceLink,
+  nodeOutageListLink,
+  outageDetailLink as buildOutageDetailLink,
+  serviceLink as buildServiceLink
+} from '@/lib/linkUtils'
 import { Outage } from '@/types'
-
-// The legacy outage pages, which accept node/interface/service parameters.
-// Will need to replace with the Vue pages once they are implemented.
-const OUTAGE_LIST_PATH = 'outage/list.htm'
-
-// outtype=both makes the legacy list show current AND resolved outages, matching this panel.
-const OUTAGE_LIST_TYPE = 'both'
-const OUTAGE_DETAIL_PATH = 'outage/detail.htm'
-const INTERFACE_PATH = 'element/interface.jsp'
-const SERVICE_PATH = 'element/service.jsp'
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
@@ -108,23 +105,18 @@ const queryParameters = ref({
   offset: 0
 })
 
+// outtype=both so the legacy list shows current AND resolved outages, matching this panel.
 const onViewOutagesClick = () => {
-  window.location.assign(
-    `${baseHref.value}${OUTAGE_LIST_PATH}?filter=node%3D${nodeId.value}&outtype=${OUTAGE_LIST_TYPE}`)
+  window.location.assign(nodeOutageListLink(baseHref.value, nodeId.value, OUTAGE_LIST_TYPE_BOTH))
 }
 
-const outageDetailLink = (outage: Outage) => `${baseHref.value}${OUTAGE_DETAIL_PATH}?id=${outage.id}`
-
-// Both pages take the interface by address rather than by id, so the address is encoded (an
-// IPv6 address is full of reserved characters).
-const nodeAndInterfaceQuery = (outage: Outage) =>
-  `?node=${nodeId.value}&intf=${encodeURIComponent(outage.ipAddress)}`
+const outageDetailLink = (outage: Outage) => buildOutageDetailLink(baseHref.value, outage.id)
 
 const interfaceLink = (outage: Outage) =>
-  `${baseHref.value}${INTERFACE_PATH}${nodeAndInterfaceQuery(outage)}`
+  buildInterfaceLink(baseHref.value, nodeId.value, outage.ipAddress)
 
 const serviceLink = (outage: Outage) =>
-  `${baseHref.value}${SERVICE_PATH}${nodeAndInterfaceQuery(outage)}&service=${outage.serviceId}`
+  buildServiceLink(baseHref.value, nodeId.value, outage.ipAddress, outage.serviceId)
 
 // Every outage carries its service inline, so the name needs no lookup: OnmsMonitoredService
 // requires a serviceType, and the outage row nests it.

@@ -2,7 +2,7 @@
   <a
     v-if="ipInfo.label"
     v-onms-tooltip.top="tooltipTitle"
-    :href="computeNodeIpInterfaceLink(node.id, ipInfo.label)"
+    :href="interfaceLink(baseHref, node.id, ipInfo.label)"
     class="pointer"
   >{{ ipInfo.label }}</a>
 </template>
@@ -12,14 +12,15 @@ import { IpInterface, Node } from '@/types'
 import { PropType, computed } from 'vue'
 import { IpInterfaceInfo } from '@/types'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
+import { useMenuStore } from '@/stores/menuStore'
+import { interfaceLink } from '@/lib/linkUtils'
 
 const { getBestIpInterfaceForNode } = useIpInterfaceQuery()
+const menuStore = useMenuStore()
+
+const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const props = defineProps({
-  computeNodeIpInterfaceLink: {
-    required: true,
-    type: Function as PropType<(nodeId: number | string, ipAddress: string) => string>
-  },
   node: {
     required: true,
     type: Object as PropType<Node>

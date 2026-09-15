@@ -64,6 +64,7 @@
 <script setup lang="ts">
 import { computed, ref, PropType, watch } from 'vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
+import { serviceLink } from '@/lib/linkUtils'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeListStore } from '@/stores/nodeListStore'
 
@@ -98,7 +99,7 @@ const getServiceLink = (ipinterface: any, service: any) => {
   if (!serviceId) {
     return '#'
   }
-  return `${props.baseHref}element/service.jsp?node=${props.node.id}&intf=${encodeURIComponent(ipinterface.address)}&service=${serviceId}`
+  return serviceLink(props.baseHref, props.node.id, ipinterface.address, serviceId)
 }
 
 const getServiceAvailabilityImageLink = (ipinterface: any, service: any) => {

@@ -38,11 +38,8 @@ import { OnmsColumn, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
+import { interfaceLink as buildInterfaceLink } from '@/lib/linkUtils'
 import { IpInterface } from '@/types'
-
-// The legacy interface page, which takes the node and the interface address.
-// Will need to replace with the Vue page once it's implemented.
-const INTERFACE_PATH = 'element/interface.jsp'
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
@@ -51,11 +48,8 @@ const route = useRoute()
 const nodeId = computed(() => route.params.id as string)
 const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
-// Matches OutagesTable's interfaceLink on this same page. The page takes the interface by
-// address rather than by id, so the address is encoded (an IPv6 address is full of reserved
-// characters).
 const interfaceLink = (ipInterface: IpInterface) =>
-  `${baseHref.value}${INTERFACE_PATH}?node=${nodeId.value}&intf=${encodeURIComponent(ipInterface.ipAddress)}`
+  buildInterfaceLink(baseHref.value, nodeId.value, ipInterface.ipAddress)
 
 const DEFAULT_PAGE_SIZE = 5
 
