@@ -27,6 +27,7 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { SEARCH_DEBOUNCE_MS } from '@/components/Nodes/hooks/useDebouncedSearch'
 import { nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -207,38 +208,144 @@ describe('IpInterfacesTable.vue', () => {
     })
   })
 
-  describe('Lazy pagination — onPage', () => {
-    it('calls getNodeIpInterfaces with updated offset and limit, preserving _s filter and node id', async () => {
+  describe('Sorting', () => {
+    const addresses = () => wrapper.findAll('[data-test="ip-address-link"]').map(l => l.text())
+
+    const headerFor = (label: string) =>
+      wrapper.findAll('th').find(th => th.text() === label.toUpperCase() || th.text() === label)!
+
+    beforeEach(async () => {
+      nodeStore.ipInterfaces = [
+        { id: '1', ipAddress: '10.0.0.7', hostName: 'beta', ifIndex: 3, isManaged: 'M' },
+        { id: '2', ipAddress: '10.0.0.2', hostName: 'Alpha', ifIndex: 1, isManaged: 'U' },
+        { id: '3', ipAddress: '10.0.0.5', hostName: 'charlie', ifIndex: 2, isManaged: 'M' }
+      ] as any
+      nodeStore.ipInterfacesTotalCount = 3
+      await nextTick()
+    })
+
+    it('defaults to IP address ascending', () => {
+      expect(addresses()).toEqual(['10.0.0.2', '10.0.0.5', '10.0.0.7'])
+    })
+
+    it('reverses when the header is clicked', async () => {
+      await headerFor('IP Address').trigger('click')
+      await nextTick()
+
+      expect(addresses()).toEqual(['10.0.0.7', '10.0.0.5', '10.0.0.2'])
+    })
+
+    it('sorts on another column when its header is clicked', async () => {
+      await headerFor('SNMP ifIndex').trigger('click')
+      await nextTick()
+
+      expect(addresses()).toEqual(['10.0.0.2', '10.0.0.5', '10.0.0.7'])
+    })
+
+    // 'Alpha' before 'beta' is the case-insensitive part.
+    it('sorts case-insensitively', async () => {
+      await headerFor('IP Host Name').trigger('click')
+      await nextTick()
+
+      expect(wrapper.findAll('tbody tr').map(r => r.findAll('td')[1].text()))
+        .toEqual(['Alpha', 'beta', 'charlie'])
+    })
+  })
+
+  describe('Filtering', () => {
+    const search = () => wrapper.find('[data-test="ip-interfaces-search"]')
+    // By the link rather than by <tr>: PrimeVue renders the #empty slot as a row of its own.
+    const addresses = () => wrapper.findAll('[data-test="ip-address-link"]').map(l => l.text())
+
+    const type = async (value: string) => {
+      await search().setValue(value)
+      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS)
+      await nextTick()
+    }
+
+    beforeEach(async () => {
+      vi.useFakeTimers()
+      nodeStore.ipInterfaces = [
+        { id: '1', ipAddress: '10.0.0.7', hostName: 'router-a', ifIndex: 3, isManaged: 'M' },
+        { id: '2', ipAddress: '10.0.0.2', hostName: 'Switch-B', ifIndex: 1, isManaged: 'U' },
+        { id: '3', ipAddress: '192.168.1.1', hostName: 'gateway', ifIndex: 2, isManaged: 'M' }
+      ] as any
+      nodeStore.ipInterfacesTotalCount = 3
+      await nextTick()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('renders a search input', () => {
+      expect(search().exists()).toBe(true)
+    })
+
+    it('filters on a single character', async () => {
+      await type('9')
+
+      expect(addresses()).toEqual(['192.168.1.1'])
+    })
+
+    it('matches case-insensitively', async () => {
+      await type('switch-b')
+
+      expect(addresses()).toEqual(['10.0.0.2'])
+    })
+
+    it('matches on the address', async () => {
+      await type('10.0.0.')
+
+      expect(addresses()).toEqual(['10.0.0.2', '10.0.0.7'])
+    })
+
+    it('shows the empty state when nothing matches', async () => {
+      await type('nothing-matches-this')
+
+      expect(addresses()).toEqual([])
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
+    })
+
+    it('does not filter until the debounce elapses', async () => {
+      await search().setValue('9')
+      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS - 50)
+      await nextTick()
+
+      expect(addresses().length).toBe(3)
+    })
+
+    it('restores every row when the term is cleared', async () => {
+      await type('9')
+      await type('')
+
+      expect(addresses().length).toBe(3)
+    })
+
+    // Filtering does not go back to the server -- every row is already in hand.
+    it('does not refetch', async () => {
+      vi.mocked(nodeStore.getNodeIpInterfaces).mockClear()
+      await type('router')
+
+      expect(nodeStore.getNodeIpInterfaces).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Pagination', () => {
+    // Client-side now: the table holds every row, so turning a page is not a request.
+    it('does not refetch when the page changes', async () => {
+      vi.mocked(nodeStore.getNodeIpInterfaces).mockClear()
       await wrapper.vm.onPage({ first: 5, rows: 5, page: 1, pageCount: 2 })
       await flushPromises()
 
-      expect(nodeStore.getNodeIpInterfaces).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: mockNodeId,
-          queryParameters: expect.objectContaining({
-            offset: 5,
-            limit: 5,
-            _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
-          })
-        })
-      )
-    })
-
-    it('calls getNodeIpInterfaces with the node route id', async () => {
-      await wrapper.vm.onPage({ first: 0, rows: 10, page: 0, pageCount: 1 })
-      await flushPromises()
-
-      expect(nodeStore.getNodeIpInterfaces).toHaveBeenCalledWith(
-        expect.objectContaining({ id: mockNodeId })
-      )
+      expect(nodeStore.getNodeIpInterfaces).not.toHaveBeenCalled()
     })
   })
 
   describe('Node changes under the same component instance', () => {
     // /node/42 -> /node/99 reuses this instance, so a table that only reads the route id at
     // mount would keep showing the interfaces of the node the user navigated away from.
-    it('refetches for the new node and returns to the first page', async () => {
-      // rows-per-page is the user's choice and survives the node change; only the page resets.
+    it('refetches every interface for the new node, keeping the isManaged scope', async () => {
       await wrapper.vm.onPage({ first: 20, rows: 10, page: 2, pageCount: 3 } as any)
       await flushPromises()
       vi.clearAllMocks()
@@ -248,7 +355,10 @@ describe('IpInterfacesTable.vue', () => {
 
       expect(nodeStore.getNodeIpInterfaces).toHaveBeenCalledWith({
         id: '99',
-        queryParameters: { limit: 10, offset: 0, _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M' }
+        queryParameters: {
+          limit: 0,
+          _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
+        }
       })
       ;(useRoute() as any).params.id = '42'
     })

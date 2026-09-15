@@ -23,12 +23,12 @@
 import SnmpInterfacesTable from '@/components/Nodes/SnmpInterfacesTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { SORT } from '@/types'
 import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { SEARCH_DEBOUNCE_MS } from '@/components/Nodes/hooks/useDebouncedSearch'
 import { nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -281,65 +281,182 @@ describe('SnmpInterfacesTable.vue', () => {
   })
 
   describe('Sorting', () => {
-    // The table is lazy, so ordering has to be asked of the API -- sorting client-side would
-    // only order the page in hand.
-    it('fetches ordered by ifIndex ascending on mount', () => {
-      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledWith(
-        expect.objectContaining({
-          queryParameters: expect.objectContaining({
-            orderBy: 'ifIndex',
-            order: SORT.ASCENDING
-          })
-        })
-      )
+    const rows = () => wrapper.findAll('[data-test="if-index-link"]').map(l => l.text())
+
+    const headerFor = (label: string) =>
+      wrapper.findAll('th').find(th => th.text() === label.toUpperCase() || th.text() === label)!
+
+    beforeEach(async () => {
+      nodeStore.snmpInterfaces = [
+        { id: 1, ifIndex: 10, ifName: 'beta', ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 2, ifIndex: 2, ifName: 'Alpha', ifAdminStatus: 1, ifOperStatus: 2 },
+        { id: 3, ifIndex: 1, ifName: 'charlie', ifAdminStatus: 2, ifOperStatus: 2 }
+      ] as any
+      await nextTick()
     })
 
-    it('keeps the ifIndex ordering when paging', async () => {
-      await wrapper.vm.onPage({ first: 5, rows: 5, page: 1, pageCount: 2 })
-      await flushPromises()
+    // The ordering the panel opens on. It is a client-side sort now the table holds every row,
+    // rather than the orderBy it used to ask the server for while it was paging server-side.
+    it('defaults to ifIndex ascending', () => {
+      expect(rows()).toEqual(['1', '2', '10'])
+    })
 
-      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          queryParameters: expect.objectContaining({
-            orderBy: 'ifIndex',
-            order: SORT.ASCENDING
-          })
-        })
-      )
+    // Numeric, not lexical: a lexical sort would put 10 before 2.
+    it('sorts ifIndex numerically', async () => {
+      await headerFor('SNMP ifIndex').trigger('click')
+      await nextTick()
+
+      expect(rows()).toEqual(['10', '2', '1'])
+    })
+
+    it('sorts on another column when its header is clicked', async () => {
+      await headerFor('SNMP ifName').trigger('click')
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="if-name"]').map(c => c.text()))
+        .toEqual(['Alpha', 'beta', 'charlie'])
+    })
+
+    // 'Alpha' sorting before 'beta' is the case-insensitive part: a case-sensitive sort would
+    // put every capitalised name ahead of every lowercase one.
+    it('sorts case-insensitively', async () => {
+      nodeStore.snmpInterfaces = [
+        { id: 1, ifIndex: 1, ifName: 'beta', ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 2, ifIndex: 2, ifName: 'Alpha', ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 3, ifIndex: 3, ifName: 'Charlie', ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 4, ifIndex: 4, ifName: 'delta', ifAdminStatus: 1, ifOperStatus: 1 }
+      ] as any
+      await nextTick()
+      await headerFor('SNMP ifName').trigger('click')
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="if-name"]').map(c => c.text()))
+        .toEqual(['Alpha', 'beta', 'Charlie', 'delta'])
+    })
+
+    // status is derived, not a stored field, so it is decorated onto the rows to be sortable.
+    it('sorts on the derived status column', async () => {
+      await headerFor('Status').trigger('click')
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="status-tag"]').map(t => t.text()))
+        .toEqual(['DOWN', 'UNKNOWN', 'UP'])
     })
   })
 
-  describe('Lazy pagination — onPage', () => {
-    it('calls getNodeSnmpInterfaces with updated offset and limit, preserving node id', async () => {
+  describe('Filtering', () => {
+    const search = () => wrapper.find('[data-test="snmp-interfaces-search"]')
+    // By the link rather than by <tr>: PrimeVue renders the #empty slot as a row of its own,
+    // so a 'tbody tr' count is never zero.
+    const ifIndexes = () => wrapper.findAll('[data-test="if-index-link"]').map(l => l.text())
+
+    const type = async (value: string) => {
+      await search().setValue(value)
+      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS)
+      await nextTick()
+    }
+
+    beforeEach(async () => {
+      vi.useFakeTimers()
+      nodeStore.snmpInterfaces = [
+        { id: 1, ifIndex: 1, ifName: 'eth0', ifAlias: 'Uplink', ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 2, ifIndex: 7, ifName: 'eth1', ifAlias: 'Spare', ifAdminStatus: 1, ifOperStatus: 2 },
+        { id: 3, ifIndex: 17, ifName: 'lo0', ifAlias: 'Loopback', ifAdminStatus: 2, ifOperStatus: 2 }
+      ] as any
+      await nextTick()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('renders a search input', () => {
+      expect(search().exists()).toBe(true)
+    })
+
+    // Deliberately unlike the legacy page, which ignored a one-character term: on this table a
+    // single digit is the only way to reach a single-digit ifIndex.
+    it('filters on a single character', async () => {
+      await type('7')
+
+      expect(ifIndexes()).toEqual(['7', '17'])
+    })
+
+    it('matches case-insensitively', async () => {
+      await type('UPLINK')
+
+      expect(ifIndexes()).toEqual(['1'])
+    })
+
+    it('matches on ifName', async () => {
+      await type('lo0')
+
+      expect(ifIndexes()).toEqual(['17'])
+    })
+
+    // The Status column is displayed, so it filters like any other column.
+    it('matches on the derived status', async () => {
+      await type('unknown')
+
+      expect(ifIndexes()).toEqual(['17'])
+    })
+
+    it('shows the empty state when nothing matches', async () => {
+      await type('nothing-matches-this')
+
+      expect(ifIndexes()).toEqual([])
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
+      expect(wrapper.text()).toContain('No results found.')
+    })
+
+    // Until the debounce elapses the table still shows the unfiltered set.
+    it('does not filter until the debounce elapses', async () => {
+      await search().setValue('7')
+      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS - 50)
+      await nextTick()
+
+      expect(ifIndexes()).toEqual(['1', '7', '17'])
+    })
+
+    it('restores every row when the term is cleared', async () => {
+      await type('7')
+      await type('')
+
+      expect(ifIndexes()).toEqual(['1', '7', '17'])
+    })
+
+    // Page 2 of the unfiltered set is past the end of a one-row result.
+    it('returns to the first page when the filter narrows the set', async () => {
+      await wrapper.vm.onPage({ first: 5, rows: 5, page: 1, pageCount: 2 })
+      await type('uplink')
+
+      expect(ifIndexes()).toEqual(['1'])
+    })
+
+    // Filtering does not go back to the server -- every row is already in hand.
+    it('does not refetch', async () => {
+      vi.mocked(nodeStore.getNodeSnmpInterfaces).mockClear()
+      await type('eth')
+
+      expect(nodeStore.getNodeSnmpInterfaces).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Pagination', () => {
+    // Client-side now: the table holds every row, so turning a page is not a request.
+    it('does not refetch when the page changes', async () => {
+      vi.mocked(nodeStore.getNodeSnmpInterfaces).mockClear()
       await wrapper.vm.onPage({ first: 5, rows: 5, page: 1, pageCount: 2 })
       await flushPromises()
 
-      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: mockNodeId,
-          queryParameters: expect.objectContaining({
-            offset: 5,
-            limit: 5
-          })
-        })
-      )
-    })
-
-    it('calls getNodeSnmpInterfaces with the node route id', async () => {
-      await wrapper.vm.onPage({ first: 0, rows: 10, page: 0, pageCount: 1 })
-      await flushPromises()
-
-      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledWith(
-        expect.objectContaining({ id: mockNodeId })
-      )
+      expect(nodeStore.getNodeSnmpInterfaces).not.toHaveBeenCalled()
     })
   })
 
   describe('Node changes under the same component instance', () => {
     // /node/42 -> /node/99 reuses this instance, so a table that only reads the route id at
     // mount would keep showing the interfaces of the node the user navigated away from.
-    it('refetches for the new node and returns to the first page', async () => {
-      // rows-per-page is the user's choice and survives the node change; only the page resets.
+    it('refetches every interface for the new node', async () => {
       await wrapper.vm.onPage({ first: 20, rows: 10, page: 2, pageCount: 3 } as any)
       await flushPromises()
       vi.clearAllMocks()
@@ -349,8 +466,26 @@ describe('SnmpInterfacesTable.vue', () => {
 
       expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledWith({
         id: '99',
-        queryParameters: { limit: 10, offset: 0, orderBy: 'ifIndex', order: SORT.ASCENDING }
+        queryParameters: { limit: 0 }
       })
+      ;(useRoute() as any).params.id = '42'
+    })
+
+    // The old node's search term says nothing about the new node's interfaces.
+    it('clears the filter', async () => {
+      nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 1, ifName: 'eth0' }] as any
+      await nextTick()
+      await wrapper.find('[data-test="snmp-interfaces-search"]').setValue('nothing-matches')
+      await new Promise(r => setTimeout(r, SEARCH_DEBOUNCE_MS + 25))
+      await nextTick()
+      expect(wrapper.findAll('[data-test="if-index-link"]').length).toBe(0)
+
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+      nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 1, ifName: 'eth0' }] as any
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="if-index-link"]').length).toBe(1)
       ;(useRoute() as any).params.id = '42'
     })
   })

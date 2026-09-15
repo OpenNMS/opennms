@@ -27,6 +27,7 @@ import {
   getTableCssClasses,
   hasEgressFlow,
   hasIngressFlow,
+  matchesSearchTerm,
   snmpIfStatusText,
   snmpInterfaceNameTooltip,
   snmpInterfaceStatus,
@@ -192,6 +193,44 @@ describe('Nodes utils test', () => {
     ])('the name tooltip falls back to N/A for %s / %s', (ifName, ifDescr) => {
       expect(snmpInterfaceNameTooltip({ ifName, ifDescr } as SnmpInterface))
         .toBe('Name: N/A\nDescription: N/A')
+    })
+  })
+
+  // The term arrives already trimmed and lowercased from useDebouncedSearch, so these cases are
+  // about matching, not normalising.
+  describe('matchesSearchTerm', () => {
+    test('matches an empty term against everything', () => {
+      expect(matchesSearchTerm('', ['anything'])).toBe(true)
+      expect(matchesSearchTerm('', [null, undefined])).toBe(true)
+    })
+
+    test('matches a substring of any value', () => {
+      expect(matchesSearchTerm('eth', ['lo0', 'eth1', null])).toBe(true)
+    })
+
+    test('lowercases the values it compares', () => {
+      expect(matchesSearchTerm('uplink', ['UPLINK Port'])).toBe(true)
+    })
+
+    test('matches numbers by their text', () => {
+      expect(matchesSearchTerm('7', [17])).toBe(true)
+      expect(matchesSearchTerm('7', [1, 2])).toBe(false)
+    })
+
+    // A single character has to work: it is the only way to reach a single-digit ifIndex.
+    test('matches on a single character', () => {
+      expect(matchesSearchTerm('7', [7])).toBe(true)
+    })
+
+    // Otherwise 'a' would pick up every row with a missing field, since the tables render
+    // those cells as 'N/A'.
+    test('does not match absent values', () => {
+      expect(matchesSearchTerm('a', [null, undefined])).toBe(false)
+      expect(matchesSearchTerm('n/a', [null])).toBe(false)
+    })
+
+    test('does not match when no value contains the term', () => {
+      expect(matchesSearchTerm('zzz', ['eth0', 17, 'Uplink'])).toBe(false)
     })
   })
 })

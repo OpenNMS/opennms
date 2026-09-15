@@ -191,3 +191,19 @@ export const snmpInterfaceNameTooltip = (snmpInterface: SnmpInterface) =>
     `Name: ${snmpInterface.ifName || 'N/A'}`,
     `Description: ${snmpInterface.ifDescr || 'N/A'}`
   ].join('\n')
+
+/**
+ * Case-insensitive "does any of these values contain the term" match, for the client-side table
+ * filters. `term` is expected already trimmed and lowercased (useDebouncedSearch does it once).
+ *
+ * Absent values simply do not match -- the tables render those cells as 'N/A', but matching that
+ * placeholder would make 'a' pick up every row with a missing field.
+ */
+export const matchesSearchTerm = (term: string, values: Array<string | number | null | undefined>) => {
+  if (!term) {
+    return true
+  }
+
+  return values.some(value =>
+    value !== null && value !== undefined && String(value).toLowerCase().includes(term))
+}
