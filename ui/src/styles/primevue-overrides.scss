@@ -42,6 +42,15 @@
   text-transform: uppercase;
 }
 
+// Let a tooltip whose text carries newlines render as multiple lines. PrimeVue
+// puts the text in a plain div, so '\n' otherwise collapses to a space and a
+// label/value tooltip runs together on one line. `pre-line` rather than `pre`
+// so ordinary single-line tooltips still wrap normally at the max width.
+// Tooltips teleport to <body>, so this cannot live in a scoped block.
+.p-tooltip-text {
+  white-space: pre-line;
+}
+
 // Standard field height across the app. Height is not a PrimeVue theme token,
 // so it lives here. Applies to InputText and the inner input of InputNumber
 // (both render .p-inputtext). Formerly 3.75rem with FormField overriding to
