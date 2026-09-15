@@ -21,6 +21,7 @@
 ///
 
 import SnmpInterfacesTable from '@/components/Nodes/SnmpInterfacesTable.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { SORT } from '@/types'
 import { OnmsTooltip } from '@opennms/onms-ui'
@@ -52,6 +53,7 @@ describe('SnmpInterfacesTable.vue', () => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     nodeStore = useNodeStore(pinia)
     nodeStore.getNodeSnmpInterfaces = vi.fn().mockResolvedValue(undefined)
+    useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as any
 
     return mount(SnmpInterfacesTable, {
       global: {
@@ -162,6 +164,44 @@ describe('SnmpInterfacesTable.vue', () => {
 
       expect(wrapper.findComponent({ name: 'EmptyList' }).exists()).toBe(true)
       expect(wrapper.text()).toContain('No results found.')
+    })
+  })
+
+  describe('ifIndex links', () => {
+    const mountRows = async (snmpInterfaces: Record<string, unknown>[]) => {
+      nodeStore.snmpInterfaces = snmpInterfaces as any
+      nodeStore.snmpInterfacesTotalCount = snmpInterfaces.length
+      await nextTick()
+    }
+
+    it('links the ifIndex to the SNMP interface page for this node', async () => {
+      await mountRows([{ id: 1, ifIndex: 14 }])
+
+      const link = wrapper.find('[data-test="if-index-link"]')
+      expect(link.text()).toBe('14')
+      expect(link.attributes('href'))
+        .toBe(`/opennms/element/snmpinterface.jsp?node=${mockNodeId}&ifindex=14`)
+    })
+
+    it('links each row to its own ifIndex', async () => {
+      await mountRows([{ id: 1, ifIndex: 1 }, { id: 2, ifIndex: 14 }])
+
+      expect(wrapper.findAll('[data-test="if-index-link"]').map(l => l.attributes('href')))
+        .toEqual([
+          `/opennms/element/snmpinterface.jsp?node=${mockNodeId}&ifindex=1`,
+          `/opennms/element/snmpinterface.jsp?node=${mockNodeId}&ifindex=14`
+        ])
+    })
+
+    // Follows the node the user navigates to, the same way the fetch does.
+    it('points at the new node after a node change', async () => {
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+      await mountRows([{ id: 1, ifIndex: 14 }])
+
+      expect(wrapper.find('[data-test="if-index-link"]').attributes('href'))
+        .toBe('/opennms/element/snmpinterface.jsp?node=99&ifindex=14')
+      ;(useRoute() as any).params.id = '42'
     })
   })
 

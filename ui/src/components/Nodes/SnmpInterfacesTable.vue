@@ -10,7 +10,11 @@
     data-test="snmp-interfaces-table"
     @page="onPage"
   >
-    <OnmsColumn field="ifIndex" header="SNMP ifIndex" />
+    <OnmsColumn field="ifIndex" header="SNMP ifIndex">
+      <template #body="{ data }">
+        <a :href="snmpInterfaceLink(baseHref, nodeId, data.ifIndex)" data-test="if-index-link">{{ data.ifIndex }}</a>
+      </template>
+    </OnmsColumn>
     <OnmsColumn header="Status">
       <template #body="{ data }">
         <OnmsTag
@@ -48,7 +52,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
+import { snmpInterfaceLink } from '@/lib/linkUtils'
 import {
   snmpInterfaceNameTooltip,
   snmpInterfaceStatus,
@@ -57,10 +63,12 @@ import {
 } from '@/components/Nodes/utils'
 import { SORT } from '@/types'
 
+const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const route = useRoute()
 
 const nodeId = computed(() => route.params.id as string)
+const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const DEFAULT_PAGE_SIZE = 5
 
