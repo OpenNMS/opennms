@@ -409,6 +409,26 @@ Environment variables prefixed with `ELASTICSEARCH_` are written to `$\{SENTINEL
 | `ELASTICSEARCH_READ_TIMEOUT`   | Read timeout in milliseconds. | `60000`
 |===
 
+=== Telemetry flow adapters
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `SENTINEL_FLOWS_ENABLED` | Set to `true` to install the `sentinel-flows`, `sentinel-jsonstore-postgres`, and `sentinel-blobstore-noop` features at startup. | `false`
+|===
+
+Individual adapters are defined by overlaying one configuration file per adapter into `$\{SENTINEL_HOME}/etc/` (see <<sentinel-etc-overlay>>), named
+`org.opennms.features.telemetry.adapters-<name>.cfg`, where `<name>` uniquely identifies the adapter. This is the same factory-PID convention used to
+configure Minion listeners.
+
+.Example: `org.opennms.features.telemetry.adapters-NetFlow-5.cfg`
+[source, properties]
+----
+name = NetFlow-5
+class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
+parameters.some-key = some-value
+----
+
 === Instance ID
 
 [options="header, autowidth"]

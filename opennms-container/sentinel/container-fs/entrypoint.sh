@@ -24,6 +24,14 @@ SENTINEL_OVERLAY="/opt/sentinel-overlay"
 FEATURES_BOOT_DIR="${SENTINEL_HOME}/etc/featuresBoot.d"
 FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
 
+# Flow adapter configuration
+#
+# Set SENTINEL_FLOWS_ENABLED=true to install the sentinel-flows feature stack.
+# Define individual adapters by overlaying one org.opennms.features.telemetry.adapters-<name>.cfg
+# file per adapter into ${SENTINEL_HOME}/etc/ (see sentinel-etc-overlay), the same convention
+# already used for Minion listener config. See sentinel-features.adoc for the file format.
+SENTINEL_FLOWS_ENABLED="${SENTINEL_FLOWS_ENABLED:-false}"
+
 # Prometheus JMX Exporter Configuration
 #
 # The JMX exporter allows Prometheus to scrape JMX metrics from the OpenNMS Sentinel applications.
@@ -145,6 +153,7 @@ function parseEnvironment() {
 function applyFeatureBootTemplates() {
     local managed_boot_files=(
       "sentinel-ipc.boot"
+      "sentinel-flows.boot"
     )
     local boot_file
     for boot_file in "${managed_boot_files[@]}"; do
@@ -169,6 +178,11 @@ function applyFeatureBootTemplates() {
         echo "[Features] Unknown IPC strategy '${SENTINEL_IPC}', using defaults."
         ;;
     esac
+
+    if [[ "${SENTINEL_FLOWS_ENABLED,,}" == "true" ]]; then
+        echo "[Features] Flow processing enabled."
+        apply_template "sentinel-flows.boot"
+    fi
 }
 
 initConfig() {
