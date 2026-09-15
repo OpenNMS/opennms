@@ -723,6 +723,30 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740 / CVE-2026-56741);
+               force jlineVersion (see root pom.xml) instead of reverting this.
+               NOTE: this module resolves maven-antrun-plugin 1.3, which has no <target>
+               parameter - it must use <tasks> like the verify execution below, or the
+               whole execution silently does nothing. -->
+          <execution>
+            <id>remove-superseded-jline</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <!-- Scanned from target/ (which always exists) rather than from the two
+                     jline directories: the Ant bundled with antrun 1.3 fails a <delete>
+                     whose fileset dir is missing, and it ignores erroronmissingdir. -->
+                <delete includeemptydirs="true">
+                  <fileset dir="${project.build.directory}"
+                           includes="opennms-repo/org/jline/jline/**,experimental-repo/org/jline/jline/**"
+                           excludes="opennms-repo/org/jline/jline/${jlineVersion}/**,experimental-repo/org/jline/jline/${jlineVersion}/**"/>
+                </delete>
+              </tasks>
+            </configuration>
+          </execution>
           <execution>
             <phase>verify</phase>
             <goals>

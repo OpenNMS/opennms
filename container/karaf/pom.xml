@@ -142,6 +142,27 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
+                    <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740 / CVE-2026-56741);
+                         force jlineVersion (see root pom.xml) instead of reverting this. -->
+                    <execution>
+                        <id>remove-superseded-jline</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/jline/jline"
+                                             excludes="${jlineVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="jline[/\\]jline[/\\][^/\\]+([/\\])jline-[^/\\]+\.jar"
+                                               replace="jline\1jline\1${jlineVersion}\1jline-${jlineVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>remove-superseded-pax-logging</id>
                         <phase>prepare-package</phase>
@@ -171,6 +192,36 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <!-- Karaf 4.3.x builds the local console's jline Terminal with whatever
+                             thread context classloader happens to be current. jline 3.26 and newer
+                             look their terminal providers up as resources through that classloader,
+                             which inside Karaf cannot see the org.jline bundle, so jline silently
+                             falls back to a DumbTerminal: "bin/karaf" (as used by
+                             features/{minion,sentinel}/runInPlace.sh) then echoes nothing. Replace
+                             the bundle with the one from container/karaf-shell-core-patch, which
+                             carries Karaf 4.4.x's fix. Same phase rationale as the pax-url-aether
+                             replacement below. -->
+                        <id>replace-karaf-shell-core</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-shell-core-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/shell/org.apache.karaf.shell.core/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.shell.core-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
                     <execution>
                         <!-- The pax-url-aether uber-bundle that Karaf's framework feature puts
                              into system/ shades a plexus-utils affected by CVE-2025-67030.

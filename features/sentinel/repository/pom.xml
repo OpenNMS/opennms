@@ -119,6 +119,47 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!--
+                            OPENNMS: features-add-to-repository stages Karaf's own
+                            org.apache.karaf.shell.core, whose LocalConsoleManager builds the local
+                            console's jline Terminal with the wrong thread context classloader; with
+                            jline 3.26+ that yields a DumbTerminal and a console that does not echo.
+                            This staged copy would otherwise shadow the fixed bundle that
+                            container/shared put into the container's system/ directory - both
+                            runInPlace.sh and opennms-assemblies/sentinel unpack this repository
+                            straight over system/, and pax-url-mvn ranks repositories/ ahead of
+                            system/. Replace it with the patched bundle from
+                            container/karaf-shell-core-patch so only one copy of the bundle exists.
+                            The "compile" phase is after features-add-to-repository
+                            (process-resources) and before the assembly (package).
+                        -->
+                        <id>replace-karaf-shell-core</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-shell-core-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/maven-repo/org/apache/karaf/shell/org.apache.karaf.shell.core/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.shell.core-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
@@ -133,6 +174,17 @@
                                   <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-jetty" />
                                   <dirset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-jetty" />
                                   <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-features" includes="**/*-jettyconfig.xml" />
+                                </delete>
+                                <!--
+                                    OPENNMS: features-add-to-repository stages the jline version
+                                    pinned by Karaf's own feature repository (3.21.0, affected by
+                                    CVE-2026-56740 / CVE-2026-56741). Drop every jline except
+                                    the one the container boots (see jlineVersion); that one
+                                    is resolved from the container's system/ directory at runtime.
+                                -->
+                                <delete includeemptydirs="true">
+                                  <fileset dir="${project.build.directory}/maven-repo/org/jline/jline"
+                                           excludes="${jlineVersion}/**" erroronmissingdir="false" />
                                 </delete>
                             </target>
                         </configuration>
