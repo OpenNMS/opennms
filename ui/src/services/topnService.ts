@@ -47,6 +47,14 @@ export const TOPN_KPIS: TopnKpiDef[] = [
 
 export const DEFAULT_TOPN_KPI = 'response-time'
 export const DEFAULT_TOPN_N = 5
+export const MAX_TOPN_N = 50
+
+// a stored N may be missing, non-numeric or out of range; the same rule applies
+// when it is read back as when it is saved
+export const clampTopnN = (value: unknown): number => {
+  const n = Math.floor(Number(value))
+  return Number.isFinite(n) && n > 0 ? Math.min(MAX_TOPN_N, n) : DEFAULT_TOPN_N
+}
 
 export interface TopnRow {
   label: string
@@ -54,8 +62,13 @@ export interface TopnRow {
   unit: string
 }
 
-const MAX_SOURCES = 250 // cap candidate resources per query
-
+// sources per /measurements request; larger candidate sets are queried in batches
+export const SOURCES_PER_REQUEST = 250
+// points per source: enough for a fair average, small enough that a batch stays cheap
+const POINTS_PER_SOURCE = 24
+const MIN_STEP_MS = 300_000
+// the resource tree is large and changes slowly; both panels share one copy per KPI
+const SOURCES_TTL_MS = 5 * 60_000
 
 interface RawResource {
   id?: string
@@ -67,31 +80,102 @@ interface RawResource {
 export interface MeasurementSource {
   resourceId: string
   attribute: string
+  // unique per source: the node label, qualified by the interface address when
+  // the node carries the KPI on more than one interface
   label: string
 }
 
-const collectSources = (root: { resource?: RawResource[] }, kpi: TopnKpiDef): MeasurementSource[] => {
+// "node[1].responseTime[10.0.0.1]" -> "10.0.0.1"
+const trailingKey = (resourceId: string): string | null => {
+  const m = /\[([^\]]+)\]$/.exec(resourceId)
+  return m ? m[1] : null
+}
+
+export const collectSources = (root: { resource?: RawResource[] }, kpi: TopnKpiDef): MeasurementSource[] => {
   const out: MeasurementSource[] = []
   for (const node of root?.resource ?? []) {
     const nodeLabel = node.label ?? node.id ?? 'node'
+    const matches: { id: string; attribute: string }[] = []
     for (const child of node.children?.resource ?? []) {
-      const attrs = Object.keys(child.rrdGraphAttributes ?? {})
-      const attribute = kpi.match(child.id ?? '', attrs)
+      const attribute = kpi.match(child.id ?? '', Object.keys(child.rrdGraphAttributes ?? {}))
       if (attribute && child.id) {
-        out.push({ resourceId: child.id, attribute, label: nodeLabel })
+        matches.push({ id: child.id, attribute })
       }
     }
+    for (const m of matches) {
+      const key = matches.length > 1 ? trailingKey(m.id) : null
+      out.push({ resourceId: m.id, attribute: m.attribute, label: key ? `${nodeLabel} (${key})` : nodeLabel })
+    }
   }
-  return out.slice(0, MAX_SOURCES)
+  return out
 }
+
+const sourcesCache = new Map<string, { at: number; sources: Promise<MeasurementSource[]> }>()
+
+export const invalidateKpiSources = () => sourcesCache.clear()
 
 // All entities (resources) carrying the given KPI — shared by Top-N and the metric chart.
+// Depth 1 is nodes plus their child resources, which already carry the attributes.
 export const listKpiSources = async (kpiId: string): Promise<MeasurementSource[]> => {
   const kpi = TOPN_KPIS.find(k => k.id === kpiId) ?? TOPN_KPIS[0]
-  const tree = await rest.get('/resources?depth=2', { headers: { Accept: 'application/json' }})
-  return collectSources(tree.data ?? {}, kpi)
+  const cached = sourcesCache.get(kpi.id)
+  if (cached && Date.now() - cached.at < SOURCES_TTL_MS) {
+    return cached.sources
+  }
+  const sources = rest
+    .get('/resources?depth=1', { headers: { Accept: 'application/json' }})
+    .then(tree => collectSources(tree.data ?? {}, kpi))
+  sourcesCache.set(kpi.id, { at: Date.now(), sources })
+  try {
+    return await sources
+  } catch (err) {
+    sourcesCache.delete(kpi.id)
+    throw err
+  }
 }
 
+// The measurements API returns labels/columns in hash order, not request order, so
+// each column is matched to its source through the "s{index}" label it was sent with.
+const averageBatch = async (
+  sources: MeasurementSource[],
+  offset: number,
+  start: number,
+  end: number,
+  step: number
+): Promise<Map<number, number>> => {
+  const payload = {
+    start,
+    end,
+    step,
+    maxrows: POINTS_PER_SOURCE * 2,
+    relaxed: true,
+    source: sources.map((s, i) => ({
+      label: `s${offset + i}`,
+      resourceId: s.resourceId,
+      attribute: s.attribute,
+      aggregation: 'AVERAGE',
+      transient: false
+    }))
+  }
+  const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' }})
+  const labels: string[] = resp.data?.labels ?? []
+  const columns: { values?: number[] }[] = resp.data?.columns ?? []
+  const averages = new Map<number, number>()
+  labels.forEach((label, i) => {
+    const m = /^s(\d+)$/.exec(label)
+    if (!m) {
+      return
+    }
+    const values = (columns[i]?.values ?? []).filter(v => Number.isFinite(v))
+    if (values.length) {
+      averages.set(Number(m[1]), values.reduce((a, b) => a + b, 0) / values.length)
+    }
+  })
+  return averages
+}
+
+// Ranks every source carrying the KPI. Failures propagate so the panel can tell
+// an error from an empty result.
 export const queryTopn = async (
   kpiId: string,
   timeframe: Timeframe,
@@ -99,55 +183,25 @@ export const queryTopn = async (
   direction: 'asc' | 'desc'
 ): Promise<TopnRow[]> => {
   const kpi = TOPN_KPIS.find(k => k.id === kpiId) ?? TOPN_KPIS[0]
-  try {
-    const sources = await listKpiSources(kpi.id)
-    if (!sources.length) {
-      return []
-    }
-
-    const { start, end } = timeframeRange(timeframe)
-    // Use a normal resolution step (a single huge bucket returns NaN from RRD);
-    // the series is averaged below. Cap to ~1000 points per source.
-    const step = Math.max(300_000, Math.floor((end - start) / 1000))
-    const payload = {
-      start,
-      end,
-      step,
-      maxrows: 2000,
-      relaxed: true,
-      source: sources.map((s, i) => ({
-        label: `s${i}`,
-        resourceId: s.resourceId,
-        attribute: s.attribute,
-        aggregation: 'AVERAGE',
-        transient: false
-      }))
-    }
-    const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' }})
-    const labels: string[] = resp.data?.labels ?? []
-    const columns: { values?: number[] }[] = resp.data?.columns ?? []
-
-    const rows: TopnRow[] = []
-    labels.forEach((label, i) => {
-      // the backend returns labels/columns in HashMap (hash) order, NOT request
-      // order, so column i does not map to sources[i]. Each label is the "s{k}"
-      // we sent, which encodes the true source index — map through that.
-      const sourceIndex = /^s(\d+)$/.test(label) ? Number(label.slice(1)) : i
-      const source = sources[sourceIndex]
-      if (!source) {
-        return
-      }
-      const values = (columns[i]?.values ?? []).filter(v => Number.isFinite(v))
-      if (!values.length) {
-        return
-      }
-      const avg = values.reduce((a, b) => a + b, 0) / values.length
-      rows.push({ label: source.label, value: avg * kpi.scale, unit: kpi.unit })
-    })
-
-    rows.sort((a, b) => (direction === 'asc' ? a.value - b.value : b.value - a.value))
-    return rows.slice(0, Math.max(1, n))
-  } catch (_err) {
+  const sources = await listKpiSources(kpi.id)
+  if (!sources.length) {
     return []
   }
+  const { start, end } = timeframeRange(timeframe)
+  const step = Math.max(MIN_STEP_MS, Math.floor((end - start) / POINTS_PER_SOURCE))
+  const batches: Promise<Map<number, number>>[] = []
+  for (let offset = 0; offset < sources.length; offset += SOURCES_PER_REQUEST) {
+    batches.push(averageBatch(sources.slice(offset, offset + SOURCES_PER_REQUEST), offset, start, end, step))
+  }
+  const rows: TopnRow[] = []
+  for (const averages of await Promise.all(batches)) {
+    averages.forEach((avg, index) => {
+      const source = sources[index]
+      if (source) {
+        rows.push({ label: source.label, value: avg * kpi.scale, unit: kpi.unit })
+      }
+    })
+  }
+  rows.sort((a, b) => (direction === 'asc' ? a.value - b.value : b.value - a.value))
+  return rows.slice(0, clampTopnN(n))
 }

@@ -23,7 +23,7 @@ License.
 <!--
   Metric-chart panel: a line chart of one metric on one entity over the
   (resolved) timeframe. Entity and metric are picked via the panel options
-  (gear), one of each. Defaults: localhost / Node Response Time (ICMP).
+  (gear), one of each. Without a configured entity the first one carrying the metric is shown.
 -->
 <template>
   <div
@@ -40,10 +40,16 @@ License.
       Loading…
     </p>
     <p
+      v-else-if="failed"
+      class="metric-chart__muted"
+    >
+      Unable to load {{ metricLabel }}.
+    </p>
+    <p
       v-else-if="empty"
       class="metric-chart__muted"
     >
-      No data for {{ entity }} — {{ metricLabel }} in this timeframe.
+      No data for {{ entity || 'any entity' }} — {{ metricLabel }} in this timeframe.
     </p>
   </div>
 </template>
@@ -55,7 +61,6 @@ import { format } from 'date-fns'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { TOPN_KPIS } from '@/services/topnService'
 import {
-  DEFAULT_CHART_ENTITY,
   DEFAULT_CHART_METRIC,
   queryMetricSeries,
   type MetricSeries
@@ -70,6 +75,7 @@ const rootRef = ref<HTMLElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const loading = ref(true)
 const empty = ref(false)
+const failed = ref(false)
 
 let chart: Chart<'line', (number | null)[], string> | null = null
 let resizeObserver: ResizeObserver | null = null
@@ -77,7 +83,7 @@ let themeObserver: MutationObserver | null = null
 let series: MetricSeries | null = null
 
 const metricId = computed(() => String(props.options?.metric ?? DEFAULT_CHART_METRIC))
-const entity = computed(() => String(props.options?.entity ?? DEFAULT_CHART_ENTITY))
+const entity = computed(() => String(props.options?.entity ?? '').trim())
 const metricLabel = computed(() => TOPN_KPIS.find(k => k.id === metricId.value)?.label ?? metricId.value)
 
 // Axis/grid colors must follow the theme (same approach as Status Overview).
@@ -108,7 +114,7 @@ const render = () => {
   }
   const labels = timeLabels(series)
   const data = series.values
-  const datasetLabel = `${entity.value} — ${metricLabel.value} (${series.unit})`
+  const datasetLabel = `${series.entity} — ${metricLabel.value} (${series.unit})`
   const color = textColor()
 
   if (chart) {
@@ -147,7 +153,8 @@ const render = () => {
           pointHitRadius: 8,
           tension: 0.2,
           fill: true,
-          spanGaps: true
+          // a null point is a collection gap: break the line rather than bridge an outage
+          spanGaps: false
         }
       ]
     },
@@ -179,12 +186,22 @@ let loadSeq = 0
 const load = async () => {
   const seq = ++loadSeq
   loading.value = true
-  const result = await queryMetricSeries(metricId.value, entity.value, props.timeframe)
+  let result: MetricSeries | null = null
+  let error: unknown = null
+  try {
+    result = await queryMetricSeries(metricId.value, entity.value, props.timeframe)
+  } catch (err) {
+    error = err
+  }
   if (seq !== loadSeq) {
     return // a newer load started while this one was in flight
   }
-  series = result
-  empty.value = !series
+  if (error) {
+    console.warn(`Metric chart panel: ${metricLabel.value} could not be loaded`, error)
+  }
+  series = error ? null : result
+  failed.value = !!error
+  empty.value = !error && !series
   loading.value = false
   await nextTick()
   if (series) {
@@ -201,10 +218,10 @@ onMounted(() => {
     resizeObserver = new ResizeObserver(() => chart?.resize())
     resizeObserver.observe(rootRef.value)
   }
-  // recolor axes/legend when the .open-dark theme is toggled
+  // recolor axes/legend when the theme is toggled; the theme class lands on <html>
+  // as well as <body>, so the root element alone catches every toggle
   themeObserver = new MutationObserver(render)
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-  themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] })
 })
 
 watch(

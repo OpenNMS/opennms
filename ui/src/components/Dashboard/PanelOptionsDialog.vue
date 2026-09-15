@@ -157,7 +157,7 @@ License.
             v-model.number="topnN"
             type="number"
             min="1"
-            max="50"
+            :max="MAX_TOPN_N"
             class="opts__control opts__number"
           >
         </div>
@@ -184,8 +184,8 @@ import { OnmsDialog, OnmsTextarea, OnmsInputText, OnmsButton, OnmsSelect } from 
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
-import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, TOPN_KPIS } from '@/services/topnService'
-import { DEFAULT_CHART_ENTITY, DEFAULT_CHART_METRIC, listMetricEntities } from '@/services/metricChartService'
+import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, MAX_TOPN_N, TOPN_KPIS, clampTopnN } from '@/services/topnService'
+import { DEFAULT_CHART_METRIC, listMetricEntities } from '@/services/metricChartService'
 
 const props = defineProps<{ panel: DashboardPanel; visible: boolean }>()
 const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>()
@@ -217,14 +217,19 @@ const topnN = ref(DEFAULT_TOPN_N)
 const topnDirection = ref<'asc' | 'desc'>('desc')
 
 // metric-chart: one entity x one metric (single-select each)
-const chartEntity = ref(DEFAULT_CHART_ENTITY)
+const chartEntity = ref('')
 const chartMetric = ref(DEFAULT_CHART_METRIC)
 const entityOptions = ref<string[]>([])
 const entitiesLoading = ref(false)
 
 const loadEntities = async () => {
   entitiesLoading.value = true
-  const entities = await listMetricEntities(chartMetric.value)
+  let entities: string[] = []
+  try {
+    entities = await listMetricEntities(chartMetric.value)
+  } catch (err) {
+    console.warn('Metric chart options: entities could not be listed', err)
+  }
   // keep the current selection listed even if it has no data right now
   if (chartEntity.value && !entities.includes(chartEntity.value)) {
     entities.unshift(chartEntity.value)
@@ -264,9 +269,9 @@ const syncFromPanel = () => {
   notesText.value = String(props.panel.options?.text ?? '')
   htmlUrl.value = String(props.panel.options?.url ?? '')
   topnKpi.value = String(props.panel.options?.kpi ?? DEFAULT_TOPN_KPI)
-  topnN.value = Number(props.panel.options?.n ?? DEFAULT_TOPN_N)
+  topnN.value = clampTopnN(props.panel.options?.n)
   topnDirection.value = props.panel.options?.direction === 'asc' ? 'asc' : 'desc'
-  chartEntity.value = String(props.panel.options?.entity ?? DEFAULT_CHART_ENTITY)
+  chartEntity.value = String(props.panel.options?.entity ?? '')
   chartMetric.value = String(props.panel.options?.metric ?? DEFAULT_CHART_METRIC)
   if (props.panel.type === 'metric-chart') {
     loadEntities()
@@ -299,7 +304,7 @@ const apply = () => {
   }
   if (props.panel.type === 'topn') {
     opts.kpi = topnKpi.value
-    opts.n = Math.min(50, Math.max(1, Number(topnN.value) || DEFAULT_TOPN_N))
+    opts.n = clampTopnN(topnN.value)
     opts.direction = topnDirection.value
   }
   if (props.panel.type === 'metric-chart') {

@@ -34,6 +34,12 @@ License.
       Loading…
     </p>
     <p
+      v-else-if="failed"
+      class="topn__muted"
+    >
+      Unable to load {{ kpiLabel }}.
+    </p>
+    <p
       v-else-if="!rows.length"
       class="topn__muted"
     >
@@ -67,8 +73,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import {
   DEFAULT_TOPN_KPI,
-  DEFAULT_TOPN_N,
   TOPN_KPIS,
+  clampTopnN,
   queryTopn,
   type TopnRow
 } from '@/services/topnService'
@@ -76,10 +82,11 @@ import {
 const props = defineProps<PanelComponentProps>()
 
 const loading = ref(true)
+const failed = ref(false)
 const rows = ref<TopnRow[]>([])
 
 const kpiId = computed(() => String(props.options?.kpi ?? DEFAULT_TOPN_KPI))
-const n = computed(() => Number(props.options?.n ?? DEFAULT_TOPN_N))
+const n = computed(() => clampTopnN(props.options?.n))
 const direction = computed<'asc' | 'desc'>(() => (props.options?.direction === 'asc' ? 'asc' : 'desc'))
 const kpiLabel = computed(() => TOPN_KPIS.find(k => k.id === kpiId.value)?.label ?? kpiId.value)
 
@@ -90,11 +97,21 @@ let loadSeq = 0
 const load = async () => {
   loading.value = true
   const seq = ++loadSeq
-  const result = await queryTopn(kpiId.value, props.timeframe, n.value, direction.value)
+  let result: TopnRow[] = []
+  let error: unknown = null
+  try {
+    result = await queryTopn(kpiId.value, props.timeframe, n.value, direction.value)
+  } catch (err) {
+    error = err
+  }
   if (seq !== loadSeq) {
     return // a newer load superseded this one
   }
-  rows.value = result
+  if (error) {
+    console.warn(`Top-N panel: ${kpiLabel.value} could not be loaded`, error)
+  }
+  failed.value = !!error
+  rows.value = error ? [] : result
   loading.value = false
 }
 

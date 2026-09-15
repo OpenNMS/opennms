@@ -22,74 +22,77 @@
 
 import { rest } from './axiosInstances'
 import type { Timeframe } from '@/types/dashboard'
-import { TOPN_KPIS, listKpiSources } from './topnService'
+import { TOPN_KPIS, listKpiSources, type MeasurementSource } from './topnService'
 import { timeframeRange } from '@/components/Dashboard/timeframe'
 
 // Metric-chart panel: one entity x one metric over the resolved timeframe.
 // Metrics are the same registry the Top-N panel uses (TOPN_KPIS).
 export const DEFAULT_CHART_METRIC = 'response-time'
-export const DEFAULT_CHART_ENTITY = 'localhost'
 
 export interface MetricSeries {
+  entity: string // the label actually charted, which matters when none was configured
   timestamps: number[]
-  values: (number | null)[] // null = gap (NaN from RRD); chart renders a break
+  values: (number | null)[] // null = gap (NaN from RRD); the chart breaks the line there
   unit: string
 }
 
+const byLabel = (a: MeasurementSource, b: MeasurementSource) => a.label.localeCompare(b.label)
+
 // Entity labels that carry the given metric, for the options dropdown.
 export const listMetricEntities = async (metricId: string): Promise<string[]> => {
-  try {
-    const sources = await listKpiSources(metricId)
-    return [...new Set(sources.map(s => s.label))].sort((a, b) => a.localeCompare(b))
-  } catch {
-    return []
-  }
+  const sources = await listKpiSources(metricId)
+  return [...sources].sort(byLabel).map(s => s.label)
 }
 
+// The configured entity, or the first one carrying the metric when nothing is
+// configured yet. Null when the metric has no entity at all.
+const resolveSource = (sources: MeasurementSource[], entityLabel: string): MeasurementSource | null => {
+  if (!entityLabel) {
+    return [...sources].sort(byLabel)[0] ?? null
+  }
+  return (
+    sources.find(s => s.label === entityLabel) ??
+    sources.find(s => s.label.toLowerCase() === entityLabel.toLowerCase()) ??
+    null
+  )
+}
+
+// Failures propagate so the panel can tell an error from an empty result.
 export const queryMetricSeries = async (
   metricId: string,
   entityLabel: string,
   timeframe: Timeframe
 ): Promise<MetricSeries | null> => {
   const kpi = TOPN_KPIS.find(k => k.id === metricId) ?? TOPN_KPIS[0]
-  try {
-    const sources = await listKpiSources(kpi.id)
-    const source =
-      sources.find(s => s.label === entityLabel) ??
-      sources.find(s => s.label.toLowerCase() === entityLabel.toLowerCase())
-    if (!source) {
-      return null
-    }
-
-    const { start, end } = timeframeRange(timeframe)
-    // ~200 points; never below the 5-min collection interval (a single huge
-    // bucket returns NaN from RRD — same constraint as Top-N).
-    const step = Math.max(300_000, Math.floor((end - start) / 200))
-    const payload = {
-      start,
-      end,
-      step,
-      maxrows: 2000,
-      relaxed: true,
-      source: [
-        {
-          label: 'm',
-          resourceId: source.resourceId,
-          attribute: source.attribute,
-          aggregation: 'AVERAGE',
-          transient: false
-        }
-      ]
-    }
-    const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' }})
-    const timestamps: number[] = resp.data?.timestamps ?? []
-    const raw: number[] = resp.data?.columns?.[0]?.values ?? []
-    const values = raw.map(v => (Number.isFinite(v) ? v * kpi.scale : null))
-    if (!timestamps.length || values.every(v => v === null)) {
-      return null
-    }
-    return { timestamps, values, unit: kpi.unit }
-  } catch {
+  const source = resolveSource(await listKpiSources(kpi.id), entityLabel)
+  if (!source) {
     return null
   }
+  const { start, end } = timeframeRange(timeframe)
+  // ~200 points, never below the 5-minute collection interval
+  const step = Math.max(300_000, Math.floor((end - start) / 200))
+  const payload = {
+    start,
+    end,
+    step,
+    maxrows: 2000,
+    relaxed: true,
+    source: [
+      {
+        label: 'm',
+        resourceId: source.resourceId,
+        attribute: source.attribute,
+        aggregation: 'AVERAGE',
+        transient: false
+      }
+    ]
+  }
+  const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' }})
+  const timestamps: number[] = resp.data?.timestamps ?? []
+  const raw: number[] = resp.data?.columns?.[0]?.values ?? []
+  const values = raw.map(v => (Number.isFinite(v) ? v * kpi.scale : null))
+  if (!timestamps.length || values.every(v => v === null)) {
+    return null
+  }
+  return { entity: source.label, timestamps, values, unit: kpi.unit }
 }
