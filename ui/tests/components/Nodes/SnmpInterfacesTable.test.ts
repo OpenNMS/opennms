@@ -23,6 +23,7 @@
 import SnmpInterfacesTable from '@/components/Nodes/SnmpInterfacesTable.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import { SORT } from '@/types'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -54,7 +55,11 @@ describe('SnmpInterfacesTable.vue', () => {
 
     return mount(SnmpInterfacesTable, {
       global: {
-        plugins: [pinia, PrimeVue]
+        plugins: [pinia, PrimeVue],
+        // The real directive, registered app-wide in theme/primevue-setup.ts. It parks the
+        // resolved text on the host element as $_ptooltipValue, which is what the tooltip
+        // assertions below read.
+        directives: { 'onms-tooltip': OnmsTooltip }
       }
     })
   }
@@ -81,10 +86,15 @@ describe('SnmpInterfacesTable.vue', () => {
       const headers = wrapper.findAll('th')
       const headerTexts = headers.map(h => h.text())
       expect(headerTexts).toContain('SNMP ifIndex')
-      expect(headerTexts).toContain('SNMP ifDescr')
+      expect(headerTexts).toContain('Status')
       expect(headerTexts).toContain('SNMP ifName')
       expect(headerTexts).toContain('SNMP ifAlias')
       expect(headerTexts).toContain('SNMP ifSpeed')
+    })
+
+    // ifDescr lost its column and is surfaced in the ifName tooltip instead.
+    it('has no ifDescr column', () => {
+      expect(wrapper.findAll('th').map(h => h.text())).not.toContain('SNMP ifDescr')
     })
 
     it('renders rows for each SNMP interface', async () => {
@@ -107,7 +117,7 @@ describe('SnmpInterfacesTable.vue', () => {
       expect(rows[0].text()).toContain('Uplink')
     })
 
-    it('shows N/A fallback for null ifDescr, ifName, ifAlias', async () => {
+    it('shows N/A fallback for null ifName and ifAlias', async () => {
       nodeStore.snmpInterfaces = [
         {
           id: 2,
@@ -152,6 +162,81 @@ describe('SnmpInterfacesTable.vue', () => {
 
       expect(wrapper.findComponent({ name: 'EmptyList' }).exists()).toBe(true)
       expect(wrapper.text()).toContain('No results found.')
+    })
+  })
+
+  describe('Status column', () => {
+    // snmpInterfaceStatus owns which status a row has (see utils.test.ts). What matters here is
+    // the tag it renders and the severity that colors it.
+    it.each([
+      [1, 1, 'UP', 'success'],
+      [1, 2, 'DOWN', 'danger'],
+      [2, 1, 'UNKNOWN', 'info']
+    ])('renders %s/%s as a %s tag with %s severity', async (ifAdminStatus, ifOperStatus, label, severity) => {
+      nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 1, ifAdminStatus, ifOperStatus }] as any
+      nodeStore.snmpInterfacesTotalCount = 1
+      await nextTick()
+
+      const tag = wrapper.find('[data-test="status-tag"]')
+      expect(tag.text()).toBe(label)
+      expect(wrapper.findComponent({ name: 'OnmsTag' }).props('severity')).toBe(severity)
+    })
+
+    it('tags each row on its own status', async () => {
+      nodeStore.snmpInterfaces = [
+        { id: 1, ifIndex: 1, ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 2, ifIndex: 2, ifAdminStatus: 1, ifOperStatus: 2 },
+        { id: 3, ifIndex: 3, ifAdminStatus: 2, ifOperStatus: 2 }
+      ] as any
+      nodeStore.snmpInterfacesTotalCount = 3
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="status-tag"]').map(t => t.text()))
+        .toEqual(['UP', 'DOWN', 'UNKNOWN'])
+    })
+
+    // The rows no longer carry a status background — the tag is the only status signal.
+    it('leaves the rows unclassed', async () => {
+      nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 1, ifAdminStatus: 1, ifOperStatus: 2 }] as any
+      nodeStore.snmpInterfacesTotalCount = 1
+      await nextTick()
+
+      const classes = wrapper.find('tbody tr').classes().join(' ')
+      expect(classes).not.toContain('onms-interface-status')
+    })
+  })
+
+  describe('Tooltips', () => {
+    // Where the directive parks its resolved text; see OnmsTooltip.test.ts.
+    const tooltipOf = (el: Element) => (el as never as Record<string, unknown>).$_ptooltipValue
+
+    const mountRow = async (snmpInterface: Record<string, unknown>) => {
+      nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 1, ...snmpInterface }] as any
+      nodeStore.snmpInterfacesTotalCount = 1
+      await nextTick()
+    }
+
+    it('explains the status tag with both raw IF-MIB statuses', async () => {
+      await mountRow({ ifAdminStatus: 1, ifOperStatus: 5 })
+
+      expect(tooltipOf(wrapper.find('[data-test="status-tag"]').element))
+        .toBe('Admin Status: 1 (Up)\nOperational Status: 5 (Dormant)')
+    })
+
+    // ifDescr has no column any more, so this tooltip is the only place it shows.
+    it('carries the name and description on the ifName cell', async () => {
+      await mountRow({ ifName: 'eth0', ifDescr: 'Uplink port' })
+
+      expect(tooltipOf(wrapper.find('[data-test="if-name"]').element))
+        .toBe('Name: eth0\nDescription: Uplink port')
+    })
+
+    // Nothing here is clickable, so the cursor is the only cue that a tooltip exists.
+    it('marks both tooltip hosts as hoverable', async () => {
+      await mountRow({ ifAdminStatus: 1, ifOperStatus: 1, ifName: 'eth0' })
+
+      expect(wrapper.find('[data-test="status-tag"]').classes()).toContain('tooltip-target')
+      expect(wrapper.find('[data-test="if-name"]').classes()).toContain('tooltip-target')
     })
   })
 

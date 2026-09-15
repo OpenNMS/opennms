@@ -22,7 +22,9 @@
 
 import {
   Node,
-  NodeColumnSelectionItem
+  NodeColumnSelectionItem,
+  SnmpIfStatus,
+  SnmpInterface
 } from '@/types'
 import { isNumber } from '@/lib/utils'
 import { normalizeMacSearch, type InterfaceListMode } from './hooks/useInterfaceListing'
@@ -124,3 +126,68 @@ export const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined 
 
   return undefined
 }
+
+const SNMP_IF_STATUS_LABELS: Record<SnmpIfStatus, string> = {
+  [SnmpIfStatus.UP]: 'Up',
+  [SnmpIfStatus.DOWN]: 'Down',
+  [SnmpIfStatus.TESTING]: 'Testing',
+  [SnmpIfStatus.UNKNOWN]: 'Unknown',
+  [SnmpIfStatus.DORMANT]: 'Dormant',
+  [SnmpIfStatus.NOT_PRESENT]: 'Not Present',
+  [SnmpIfStatus.LOWER_LAYER_DOWN]: 'Lower Layer Down'
+}
+
+export type SnmpInterfaceStatus = 'UP' | 'DOWN' | 'UNKNOWN'
+
+/**
+ * Status shown in the SNMP interfaces table, mirroring setStylesForSnmpInterfaces()
+ * in the JSP interfaces page
+ * (core/web-assets/src/main/assets/js/apps/onms-interfaces/onms-interfaces-app/index.js).
+ *
+ * An interface that is not administratively up is UNKNOWN rather than DOWN:
+ * nobody is asking it to run, so its operational status says nothing about
+ * whether anything is wrong. Only when it is meant to be up does ifOperStatus
+ * decide between UP and DOWN.
+ *
+ * Note this is NOT the isManaged/isDown rule the same file applies to IP
+ * interfaces -- SNMP interfaces carry neither field.
+ */
+export const snmpInterfaceStatus = (snmpInterface: SnmpInterface): SnmpInterfaceStatus => {
+  if (snmpInterface.ifAdminStatus !== SnmpIfStatus.UP) {
+    return 'UNKNOWN'
+  }
+
+  return snmpInterface.ifOperStatus === SnmpIfStatus.UP ? 'UP' : 'DOWN'
+}
+
+/**
+ * One IF-MIB status as '<value> (<label>)', e.g. '5 (Dormant)'.
+ *
+ * A value outside the MIB's range is shown bare rather than guessed at -- an
+ * agent reporting 9 is telling us something, and labelling it 'Unknown' would
+ * conflate it with ifOperStatus 4, which means exactly that. An interface the
+ * poller has not reached yet carries no status at all.
+ */
+export const snmpIfStatusText = (status: number | undefined | null) => {
+  if (status === undefined || status === null) {
+    return 'N/A'
+  }
+
+  const label = SNMP_IF_STATUS_LABELS[status as SnmpIfStatus]
+
+  return label ? `${status} (${label})` : `${status}`
+}
+
+/** Tooltip behind the status tag: the two raw IF-MIB statuses the status is derived from. */
+export const snmpInterfaceStatusTooltip = (snmpInterface: SnmpInterface) =>
+  [
+    `Admin Status: ${snmpIfStatusText(snmpInterface.ifAdminStatus)}`,
+    `Operational Status: ${snmpIfStatusText(snmpInterface.ifOperStatus)}`
+  ].join('\n')
+
+/** Tooltip behind the ifName cell, which is where ifDescr is surfaced now it has no column. */
+export const snmpInterfaceNameTooltip = (snmpInterface: SnmpInterface) =>
+  [
+    `Name: ${snmpInterface.ifName || 'N/A'}`,
+    `Description: ${snmpInterface.ifDescr || 'N/A'}`
+  ].join('\n')

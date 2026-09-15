@@ -11,11 +11,25 @@
     @page="onPage"
   >
     <OnmsColumn field="ifIndex" header="SNMP ifIndex" />
-    <OnmsColumn field="ifDescr" header="SNMP ifDescr">
-      <template #body="{ data }">{{ data.ifDescr || 'N/A' }}</template>
+    <OnmsColumn header="Status">
+      <template #body="{ data }">
+        <OnmsTag
+          v-onms-tooltip.top="snmpInterfaceStatusTooltip(data)"
+          :value="snmpInterfaceStatus(data)"
+          :severity="statusSeverity[snmpInterfaceStatus(data) as SnmpInterfaceStatus]"
+          class="tooltip-target"
+          data-test="status-tag"
+        />
+      </template>
     </OnmsColumn>
     <OnmsColumn field="ifName" header="SNMP ifName">
-      <template #body="{ data }">{{ data.ifName || 'N/A' }}</template>
+      <template #body="{ data }">
+        <span
+          v-onms-tooltip.top="snmpInterfaceNameTooltip(data)"
+          class="tooltip-target"
+          data-test="if-name"
+        >{{ data.ifName || 'N/A' }}</span>
+      </template>
     </OnmsColumn>
     <OnmsColumn field="ifAlias" header="SNMP ifAlias">
       <template #body="{ data }">{{ data.ifAlias || 'N/A' }}</template>
@@ -32,9 +46,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { OnmsColumn, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
+import { OnmsColumn, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useNodeStore } from '@/stores/nodeStore'
+import {
+  snmpInterfaceNameTooltip,
+  snmpInterfaceStatus,
+  snmpInterfaceStatusTooltip,
+  type SnmpInterfaceStatus
+} from '@/components/Nodes/utils'
 import { SORT } from '@/types'
 
 const nodeStore = useNodeStore()
@@ -47,6 +67,12 @@ const DEFAULT_PAGE_SIZE = 5
 const pageSize = ref(DEFAULT_PAGE_SIZE)
 const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
+
+const statusSeverity: Record<SnmpInterfaceStatus, OnmsTagSeverity> = {
+  UP: 'success',
+  DOWN: 'danger',
+  UNKNOWN: 'info'
+}
 
 // Ordered by ifIndex ascending. The table is lazy -- each page is a separate request -- so the
 // order has to be asked of the API; sorting the rows client-side would only order the page in
@@ -84,3 +110,11 @@ watch(nodeId, () => {
 
 defineExpose({ onPage })
 </script>
+
+<style lang="scss" scoped>
+// Both tooltip hosts are hover-only affordances with nothing to click, so the
+// cursor is the only cue that there is more behind them.
+.tooltip-target {
+  cursor: pointer;
+}
+</style>

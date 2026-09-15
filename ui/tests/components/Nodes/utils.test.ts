@@ -22,8 +22,17 @@
 
 import { describe, expect, test } from 'vitest'
 import { mock } from 'vitest-mock-extended'
-import { buildSnmpNarrowing, getTableCssClasses, hasEgressFlow, hasIngressFlow } from '@/components/Nodes/utils'
-import { Node, NodeColumnSelectionItem } from '@/types'
+import {
+  buildSnmpNarrowing,
+  getTableCssClasses,
+  hasEgressFlow,
+  hasIngressFlow,
+  snmpIfStatusText,
+  snmpInterfaceNameTooltip,
+  snmpInterfaceStatus,
+  snmpInterfaceStatusTooltip
+} from '@/components/Nodes/utils'
+import { Node, NodeColumnSelectionItem, SnmpInterface } from '@/types'
 
 describe('Nodes utils test', () => {
   test('test getTableCssClasses', async () => {
@@ -101,6 +110,88 @@ describe('Nodes utils test', () => {
 
     test('narrows nothing in the default mode', () => {
       expect(buildSnmpNarrowing({ mode: 'default' })).toBeUndefined()
+    })
+  })
+
+  // Mirrors setStylesForSnmpInterfaces() in the JSP interfaces page. Note the rule keys off
+  // ifAdminStatus/ifOperStatus -- NOT the isManaged/isDown rule that page uses for IP interfaces.
+  describe('snmpInterfaceStatus', () => {
+    const snmpInterface = (ifAdminStatus: number, ifOperStatus: number) =>
+      ({ ifAdminStatus, ifOperStatus }) as SnmpInterface
+
+    test('is UP when administratively and operationally up', () => {
+      expect(snmpInterfaceStatus(snmpInterface(1, 1))).toBe('UP')
+    })
+
+    // Every non-up ifOperStatus counts as down once the interface is meant to be up.
+    test.each([2, 3, 4, 5, 6, 7])('is DOWN when administratively up but operationally %i', (oper) => {
+      expect(snmpInterfaceStatus(snmpInterface(1, oper))).toBe('DOWN')
+    })
+
+    // Nobody is asking these to run, so their operational status says nothing -- even an
+    // operationally-up one is UNKNOWN.
+    test.each([
+      [2, 1],
+      [2, 2],
+      [3, 1]
+    ])('is UNKNOWN when not administratively up (admin %i, oper %i)', (admin, oper) => {
+      expect(snmpInterfaceStatus(snmpInterface(admin, oper))).toBe('UNKNOWN')
+    })
+
+    // An interface the poller has not reached yet carries neither status.
+    test('is UNKNOWN when the statuses are missing', () => {
+      expect(snmpInterfaceStatus({} as SnmpInterface)).toBe('UNKNOWN')
+    })
+  })
+
+  describe('snmpIfStatusText', () => {
+    test.each([
+      [1, '1 (Up)'],
+      [2, '2 (Down)'],
+      [3, '3 (Testing)'],
+      [4, '4 (Unknown)'],
+      [5, '5 (Dormant)'],
+      [6, '6 (Not Present)'],
+      [7, '7 (Lower Layer Down)']
+    ])('labels %i as %s', (status, expected) => {
+      expect(snmpIfStatusText(status)).toBe(expected)
+    })
+
+    // Not guessed at: labelling it would conflate it with ifOperStatus 4, which means
+    // exactly 'unknown'.
+    test('shows a value outside the MIB range bare', () => {
+      expect(snmpIfStatusText(9)).toBe('9')
+    })
+
+    test.each([undefined, null])('shows N/A for %s', (status) => {
+      expect(snmpIfStatusText(status)).toBe('N/A')
+    })
+  })
+
+  describe('tooltips', () => {
+    test('the status tooltip shows both raw IF-MIB statuses', () => {
+      expect(snmpInterfaceStatusTooltip({ ifAdminStatus: 1, ifOperStatus: 5 } as SnmpInterface))
+        .toBe('Admin Status: 1 (Up)\nOperational Status: 5 (Dormant)')
+    })
+
+    test('the status tooltip falls back to N/A on an unpolled interface', () => {
+      expect(snmpInterfaceStatusTooltip({} as SnmpInterface))
+        .toBe('Admin Status: N/A\nOperational Status: N/A')
+    })
+
+    // ifDescr has no column of its own any more, so this tooltip is the only place it shows.
+    test('the name tooltip carries the name and the description', () => {
+      expect(snmpInterfaceNameTooltip({ ifName: 'eth0', ifDescr: 'Uplink port' } as SnmpInterface))
+        .toBe('Name: eth0\nDescription: Uplink port')
+    })
+
+    test.each([
+      [null, null],
+      [undefined, undefined],
+      ['', '']
+    ])('the name tooltip falls back to N/A for %s / %s', (ifName, ifDescr) => {
+      expect(snmpInterfaceNameTooltip({ ifName, ifDescr } as SnmpInterface))
+        .toBe('Name: N/A\nDescription: N/A')
     })
   })
 })
