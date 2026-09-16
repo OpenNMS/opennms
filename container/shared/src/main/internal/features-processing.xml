@@ -4,6 +4,13 @@
   xmlns:f="http://karaf.apache.org/xmlns/features/v1.6.0"
 >
 
+  <bundleReplacements>
+    <!-- the ActiveMQ feature repository pins an older XStream than the one we ship (see installedBundles in pom.xml) -->
+    <bundle originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/[1.4,1.5)"
+            replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstreamVersion}_1"
+            mode="maven"/>
+  </bundleReplacements>
+
   <featureReplacements>
     <replacement mode="replace">
       <feature name="activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}">
