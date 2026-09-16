@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.IpAddressCriteriaBehavior;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,6 +130,9 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
 
         // Root alias
         map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
+        // iplike patterns on ipAddress (10.0.*.*) next to literal equality;
+        // the restriction names the ipaddr column directly, not the attribute
+        map.put("ipAddress", new IpAddressCriteriaBehavior("ipAddr"));
 
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));
