@@ -49,11 +49,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -815,6 +817,50 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
 
         assertConfigValid(config);
+    }
+
+    @Test
+    public void testJsonRoundTripPreservesInheritedValues() {
+        // the definitions in snmp-config.xml set no timeout/retry of their own
+        SnmpAgentConfig before = (SnmpAgentConfig) snmpConfigRestApi.getConfigForIp("127.0.0.1", "Default").getEntity();
+        assertEquals(800, before.getTimeout());
+        assertEquals(3, before.getRetries());
+
+        final Response download = snmpConfigRestApi.downloadConfig(null);
+        assertEquals(200, download.getStatus());
+        final byte[] json = (byte[]) download.getEntity();
+        assertNotNull(json);
+
+        SnmpConfig downloaded = null;
+
+        try {
+            downloaded = mapper.readValue(new String(json, StandardCharsets.UTF_8), SnmpConfig.class);
+        } catch (Exception e) {
+            Assert.fail("Error parsing downloaded Json file.");
+        }
+
+        for (final Definition definition : downloaded.getDefinitions()) {
+            assertFalse(definition.hasTimeout());
+            assertFalse(definition.hasRetry());
+            assertFalse(definition.hasPort());
+        }
+
+        final Attachment attachment = mock(Attachment.class);
+        final ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn("snmp-config.json");
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(new ByteArrayInputStream(json));
+
+        assertEquals(200, snmpConfigRestApi.uploadConfig(attachment).getStatus());
+
+        SnmpAgentConfig after = (SnmpAgentConfig) snmpConfigRestApi.getConfigForIp("127.0.0.1", "Default").getEntity();
+        assertEquals(800, after.getTimeout());
+        assertEquals(3, after.getRetries());
+
+        // a download of the re-uploaded config should be identical to the first one
+        final Response second = snmpConfigRestApi.downloadConfig(null);
+        assertEquals(200, second.getStatus());
+        assertArrayEquals(json, (byte[]) second.getEntity());
     }
 
     @Test

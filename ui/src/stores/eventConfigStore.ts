@@ -18,8 +18,8 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     sourcesPagination: { ...defaultPagination },
     sourcesSearchTerm: '',
     sourcesSorting: {
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
+      sortOrder: 'asc',
+      sortKey: 'evaluationOrder'
     },
     isLoading: false,
     activeTab: 0,
@@ -106,8 +106,8 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     async refreshSourcesFilters() {
       this.resetSourcesPagination()
       this.sourcesSearchTerm = ''
-      this.sourcesSorting.sortKey = 'createdTime'
-      this.sourcesSorting.sortOrder = 'desc'
+      this.sourcesSorting.sortKey = 'evaluationOrder'
+      this.sourcesSorting.sortOrder = 'asc'
       await this.fetchEventConfigs()
     },
     showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {

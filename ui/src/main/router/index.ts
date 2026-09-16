@@ -176,6 +176,18 @@ const router = createRouter({
       ]
     },
     {
+      // Topology type lives in the path (custom today; enlinkd-l2/bsm/... later);
+      // the specific view is a `?view=<name>` query so it's bookmarkable.
+      // Bare /topology redirects to the custom catalog.
+      path: '/topology',
+      redirect: '/topology/custom'
+    },
+    {
+      path: '/topology/:source',
+      name: 'Topology',
+      component: () => import('@/containers/Topology.vue')
+    },
+    {
       path: '/nodes',
       name: 'Nodes',
       component: () => import('@/containers/Nodes.vue')

@@ -405,7 +405,4 @@ const onLastBackupDateClick = (config: DeviceConfigBackup) => {
     }
   }
 }
-a:visited {
-  color: var(--p-primary-color) !important;
-}
 </style>

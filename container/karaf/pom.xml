@@ -168,6 +168,8 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
+                    <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740);
+                         force jlineVersion (see root pom.xml) instead of reverting this. -->
                     <execution>
                         <id>remove-superseded-jline</id>
                         <phase>prepare-package</phase>

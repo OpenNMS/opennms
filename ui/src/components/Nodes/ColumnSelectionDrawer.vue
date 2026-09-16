@@ -145,10 +145,11 @@ watch(() => nodeListStore.columns, (newColumns) => {
 </script>
 
 <style lang="scss" scoped>
+// No height/overflow here on purpose: PrimeVue's own `.p-drawer-content` is the
+// drawer's scroll container. A second scroller nested inside it drew its own
+// scrollbar next to the page's (NMS-20182).
 .drawer-content {
   padding: 20px;
-  height: 100%;
-  overflow: auto;
 }
 
 .spacer-large {

@@ -2,19 +2,16 @@
   <div class="chart-toolbar">
     <div class="toolbar-row">
       <!--
-        A visible label: the range button shows only the current selection ("Last
-        day"), so without this there is nothing saying what it selects. Not wired up
-        with aria-labelledby, because TimeControls' fallthrough target is a plain
-        div and the attribute would be inert there — associating it properly means
-        changing the shared component, which Resource Graphs needs too.
+        The label is TimeControls' own `label` prop, not a span here: the range
+        button shows only the current selection ("Last day"), so something has to
+        say what it selects, and only the component itself can put aria-labelledby
+        on the button rather than on its plain root div.
       -->
-      <div class="time-range">
-        <span class="time-range-label">Time Range:</span>
-        <TimeControls
-          data-test="toolbar-time-range"
-          @updateTime="(value: StartEndTime) => emit('updateTime', value)"
-        />
-      </div>
+      <TimeControls
+        label="Time Range:"
+        data-test="toolbar-time-range"
+        @updateTime="(value: StartEndTime) => emit('updateTime', value)"
+      />
 
       <div class="toolbar-actions">
         <OnmsIconButton
@@ -165,7 +162,7 @@ import FullscreenExitIcon from '@opennms/onms-ui/icons/navigation/FullscreenExit
 import LinkIcon from '@opennms/onms-ui/icons/action/Link.vue'
 import PdfIcon from '@opennms/onms-ui/icons/file/Pdf.vue'
 import FormField from '@/components/Common/FormField.vue'
-import TimeControls from '@/components/Resources/TimeControls.vue'
+import TimeControls from '@/components/Common/TimeControls.vue'
 import { StartEndTime } from '@/types'
 import { AdhocGraphConfig } from '@/types/adhocGraph'
 import { DEFAULT_RESOLUTION, MAX_RESOLUTION } from './utils/adhocQuery'
@@ -216,19 +213,6 @@ const emit = defineEmits<{
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-}
-
-// Every control on this row is now the same height, so the label sits beside the
-// range button rather than above it.
-.time-range {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  .time-range-label {
-    font-weight: 700;
-    white-space: nowrap;
-  }
 }
 
 .toolbar-fields {

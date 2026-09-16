@@ -454,10 +454,11 @@ defineExpose({
 @use '@/styles/onms-tokens' as variables;
 @use '@/styles/onms-typography' as *;
 
+// No height/overflow here on purpose: PrimeVue's own `.p-drawer-content` is the
+// drawer's scroll container. A second scroller nested inside it drew its own
+// scrollbar next to the page's (NMS-20182).
 .node-filters-drawer-custom-padding {
   padding: 20px;
-  height: 100%;
-  overflow: auto;
 
   // The onms grid `gap` only spaces columns, so consecutive filter rows were
   // cramped vertically. Give each stacked row/group breathing room.

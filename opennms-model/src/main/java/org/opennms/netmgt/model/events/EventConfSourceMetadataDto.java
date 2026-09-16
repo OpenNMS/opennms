@@ -27,7 +27,6 @@ import java.util.Date;
 public class EventConfSourceMetadataDto {
     private String filename;
     private int eventCount;
-    private int fileOrder;
     private String username;
     private Date now;
     private String vendor;
@@ -37,7 +36,6 @@ public class EventConfSourceMetadataDto {
     private EventConfSourceMetadataDto(Builder builder) {
         this.filename = builder.filename;
         this.eventCount = builder.eventCount;
-        this.fileOrder = builder.fileOrder;
         this.username = builder.username;
         this.now = builder.now;
         this.vendor = builder.vendor;
@@ -50,9 +48,6 @@ public class EventConfSourceMetadataDto {
     }
     public int getEventCount() {
         return eventCount;
-    }
-    public int getFileOrder() {
-        return fileOrder;
     }
     public String getUsername() {
         return username;
@@ -72,8 +67,7 @@ public class EventConfSourceMetadataDto {
     public static class Builder {
         private String filename;
         private int eventCount;
-        private int fileOrder;
-        private String username;
+            private String username;
         private Date now;
         private String vendor;
         private String description;
@@ -85,11 +79,6 @@ public class EventConfSourceMetadataDto {
 
         public Builder eventCount(int eventCount) {
             this.eventCount = eventCount;
-            return this;
-        }
-
-        public Builder fileOrder(int fileOrder) {
-            this.fileOrder = fileOrder;
             return this;
         }
 
