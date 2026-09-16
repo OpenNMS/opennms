@@ -25,8 +25,8 @@ A list of preconfigured threshold groups appears.
 +
 For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[] in the Deep Dive section.
 
-. Click *Edit* beside the `netsnmp` group.
-. Click *Create New Threshold* at the bottom of the Basic Thresholds area.
+. Click the `netsnmp` group.
+. In the Basic thresholds area, click *Create new threshold*.
 . Set the following parameters and click *Save*:
 +
 [caption=]
@@ -100,10 +100,10 @@ NOTE: Expression-based thresholds work only if the datasources in question are i
 
 To view the CPU usage threshold, follow these steps:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Performance Measurement, click *Configure Thresholds*.
-. Click *Edit* beside the `netsnmp` group.
-. In the Expression-Based Thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
+. Click the `netsnmp` group.
+. In the Expression-based thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
 
 The following table describes the parameters and their suggested configurations:
 

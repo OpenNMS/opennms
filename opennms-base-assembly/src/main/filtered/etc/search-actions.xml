@@ -204,7 +204,7 @@
     </action>
     <action>
         <label>Configure Thresholds</label>
-        <url>admin/thresholds/index.htm</url>
+        <url>ui/index.html#/threshold-config</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

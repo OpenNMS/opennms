@@ -63,6 +63,14 @@ public class EventConfPersistenceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfPersistenceService.class);
 
+    /**
+     * Source name for event definitions created on the fly rather than uploaded. Kept byte-identical to the
+     * name the JSP threshold editor used, so an upgraded system reuses its existing row.
+     */
+    private static final String PROGRAMMATIC_SOURCE_NAME = "opennms.programmatic.events";
+
+    private static final String PROGRAMMATIC_SOURCE_VENDOR = "opennms";
+
     @Autowired
     private EventConfSourceDao eventConfSourceDao;
 
@@ -104,6 +112,51 @@ public class EventConfPersistenceService {
         eventConfSource.setEventCount(eventConfEventDao.countBySourceId(sourceId));
         eventConfSourceDao.saveOrUpdate(eventConfSource);
         return eventConfId;
+    }
+
+    /**
+     * Saves an event into the source reserved for programmatically generated event definitions, creating
+     * that source on first use.
+     *
+     * <p>Used when a threshold names a triggered or rearmed UEI that eventconf does not know yet: without a
+     * definition the daemon would emit an event that raises no alarm and fires no notification, silently.
+     * Moved here from the JSP threshold editor's own service, which had no other consumer.</p>
+     *
+     * @param event the event definition to store
+     * @param username the user the event is attributed to
+     */
+    @Transactional
+    public void saveProgrammaticEvent(final Event event, final String username) {
+        // Lock (and re-read) the source before appending, so the count below is not a lost update
+        final EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreateProgrammaticSource().getId());
+        EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, new Date());
+
+        // Update event count from the table, under the lock
+        source.setEventCount(eventConfEventDao.countBySourceId(source.getId()));
+        eventConfSourceDao.save(source);
+    }
+
+    private EventConfSource getOrCreateProgrammaticSource() {
+        EventConfSource source = eventConfSourceDao.findByName(PROGRAMMATIC_SOURCE_NAME);
+        if (source == null) {
+            LOG.info("Creating new programmatic event source: {}", PROGRAMMATIC_SOURCE_NAME);
+            source = new EventConfSource();
+            source.setName(PROGRAMMATIC_SOURCE_NAME);
+            source.setVendor(PROGRAMMATIC_SOURCE_VENDOR);
+            source.setDescription("Programmatically generated events (e.g., from thresholds)");
+            source.setEnabled(true);
+            source.setEventCount(0);
+            source.setUploadedBy("system");
+            final Date now = new Date();
+            source.setCreatedTime(now);
+            source.setLastModified(now);
+
+            // Higher fileOrder is evaluated first, so max + 1 puts programmatic events ahead of all other sources
+            source.setFileOrder(eventConfSourceDao.nextFileOrder());
+
+            eventConfSourceDao.saveOrUpdate(source);
+        }
+        return source;
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {

@@ -20,6 +20,10 @@
 
 	<bean id="snmpConfigRestApi" class="org.opennms.web.rest.v2.SnmpConfigRestService"/>
 
+	<bean id="thresholdUeiService" class="org.opennms.web.rest.v2.ThresholdUeiService"/>
+	<bean id="thresholdingConfigRestService" class="org.opennms.web.rest.v2.ThresholdingConfigRestService"/>
+	<bean id="threshdConfigRestService" class="org.opennms.web.rest.v2.ThreshdConfigRestService"/>
+
 	<bean id="snmpPeerFactory" class="org.opennms.netmgt.config.mock.MockSnmpPeerFactory"/>
 
 	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">

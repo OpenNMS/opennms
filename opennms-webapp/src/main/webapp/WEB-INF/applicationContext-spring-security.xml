@@ -211,6 +211,20 @@
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PUT" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="ROLE_ADMIN" />
 
+    <!-- Threshold configuration drives alarm generation and can create event definitions; mutation is
+         admin-only. Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/thresholding/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="PATCH" access="ROLE_ADMIN" />
+
+    <!-- Threshd daemon configuration selects what gets thresholded; mutation is admin-only.
+         Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/threshd/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd/**" method="PATCH" access="ROLE_ADMIN" />
+
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
