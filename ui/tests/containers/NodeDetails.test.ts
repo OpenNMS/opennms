@@ -45,11 +45,11 @@ describe('NodeDetails.vue', () => {
           NodeActionsDropdown: {
             name: 'NodeActionsDropdown',
             template: '<div></div>',
-            props: ['baseHref', 'node', 'snmpPrimaryIpAddress']
+            props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'triggerNodeInfo']
           },
           NodeDetailsHeader: true,
           NodeNotificationsPanel: true,
-          NodeSnmpAttributes: true,
+          NodeDetailsDialog: true,
           EventsTable: true,
           OutagesTable: true,
           InterfacesTabs: true
@@ -73,7 +73,6 @@ describe('NodeDetails.vue', () => {
 
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(false)
-    expect(wrapper.findComponent({ name: 'NodeSnmpAttributes' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeCategoriesPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
@@ -137,7 +136,7 @@ describe('NodeDetails.vue', () => {
     expect(eventStore.clearEvents).not.toHaveBeenCalled()
   })
 
-  it('renders the four child components', async () => {
+  it('renders the node panels once the node has loaded', async () => {
     const { wrapper } = mountComponent('42', true)
     await flushPromises()
 
@@ -146,10 +145,58 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeCategoriesPanel' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'NodeSnmpAttributes' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(true)
+  })
+
+  // The SNMP Attributes panel is gone; those attributes are now behind the actions menu's
+  // Info..., which opens the same dialog the node list uses.
+  describe('Node info dialog', () => {
+    it('does not show the dialog until Info... is chosen', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'NodeDetailsDialog' }).props('visible')).toBe(false)
+    })
+
+    // The dialog picks the node's best IP from nodeToIpInterfaceMap, which only the node list
+    // used to fill -- so without this fetch its IP Address row is blank on this page.
+    it('fetches the IP interfaces the dialog needs to show an address', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      void wrapper
+
+      expect(nodeStore.getIpInterfacesForNodes).toHaveBeenCalledWith(['42'], false)
+    })
+
+    it('hands the actions menu a handler that opens the dialog on this node', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      const dropdown = wrapper.findComponent({ name: 'NodeActionsDropdown' })
+      const trigger = dropdown.props('triggerNodeInfo') as () => void
+      expect(trigger).toBeTypeOf('function')
+
+      trigger()
+      await flushPromises()
+
+      const dialog = wrapper.findComponent({ name: 'NodeDetailsDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect((dialog.props('node') as any).id).toBe('42')
+    })
+
+    it('closes the dialog when it asks to be closed', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+      ;(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('triggerNodeInfo') as () => void)()
+      await flushPromises()
+
+      wrapper.findComponent({ name: 'NodeDetailsDialog' }).vm.$emit('close')
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'NodeDetailsDialog' }).props('visible')).toBe(false)
+    })
   })
 
   it('puts the node actions menu on the title row', async () => {

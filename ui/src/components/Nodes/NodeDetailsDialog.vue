@@ -102,6 +102,13 @@ const flowsText = (node?: Node) => {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+
+  // Each attribute is its own .onms-row, i.e. its own grid container, so the grid's gap only
+  // separates the label from the value -- nothing separated one row from the next and the list
+  // read as a solid block. A flex column puts the spacing back between them.
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .label {

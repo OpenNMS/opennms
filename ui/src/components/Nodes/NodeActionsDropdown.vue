@@ -49,8 +49,9 @@ const menuIcon = markRaw(MoreVert)
 const menu = ref()
 const menuId = computed(() => `node-actions-menu-${props.node.id}`)
 
-// Info... opens a dialog describing the node, which is redundant on a page already showing it:
-// a call site that omits the handler gets the navigation links alone.
+// Info... opens a dialog describing the node. Optional: a call site that omits the handler gets
+// the navigation links alone. Both current call sites supply it -- the node list, and the node
+// details page, which used to show the same attributes in a panel of its own.
 const items = computed<OnmsMenuItem[]>(() => {
   const infoItem = props.triggerNodeInfo
     ? [{ label: 'Info...', command: () => props.triggerNodeInfo?.(props.node) }]
