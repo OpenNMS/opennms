@@ -32,6 +32,9 @@ See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upg
 === Trends removed
 The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
 
+=== Charts removed
+The Charts page, its JFreeChart rendering and the `features/charts` module have been removed from the Dashboards menu and from the product. `etc/chart-configuration.xml` and its configuration model go with it; the file is no longer read.
+
 === Statsd removed
 The Metrics Statistics (statsd) page and the Statsd daemon have been removed, together with `etc/statsd-configuration.xml` and the `CORE_SERVICE_STATSD_ENABLED` variable.
 A Statsd entry left in an existing `etc/service-configuration.xml` is ignored with a warning at startup and can be deleted, as can `etc/statsd-configuration.xml`.
