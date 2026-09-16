@@ -52,7 +52,7 @@ const categoriesLabel = computed(() => {
   const names = categories.value.map(category => category.name)
   const shown = names.slice(0, CATEGORIES_SHOWN).join(', ')
 
-  return `Categories: ${shown}${names.length > CATEGORIES_SHOWN ? ', ...' : ''}`
+  return `Categories: ${shown}${names.length > CATEGORIES_SHOWN ? ' ...' : ''}`
 })
 
 // Only the names the badge had to drop are worth a tooltip -- with two or fewer it would repeat

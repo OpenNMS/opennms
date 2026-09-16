@@ -103,7 +103,7 @@ describe('NodeDetailsHeader.vue', () => {
     // Past two the badge would crowd the header row, so it shows the first two and defers.
     it('shows the first two and an ellipsis when there are more', () => {
       expect(badge([category(1, 'Routers'), category(2, 'Switches'), category(3, 'Production')]).text())
-        .toBe('Categories: Routers, Switches, ...')
+        .toBe('Categories: Routers, Switches ...')
     })
 
     it('says None when the node is in no categories', () => {
