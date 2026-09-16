@@ -21,7 +21,13 @@
  */
 package org.opennms.openapi;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -31,6 +37,7 @@ import org.codehaus.jackson.annotate.JsonValue;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
@@ -41,8 +48,12 @@ import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
+import io.swagger.v3.core.converter.AnnotatedType;
+import io.swagger.v3.core.converter.ModelConverter;
+import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.media.Schema;
 
 /**
  * Resolves schemas the way the webapp serialises JSON.
@@ -55,6 +66,8 @@ import io.swagger.v3.core.util.Json;
  * carry, and documents bean names.
  */
 final class WireFormatModelResolver extends ModelResolver {
+
+    private static final String REF_PREFIX = "#/components/schemas/";
 
     WireFormatModelResolver() {
         super(jaxbAwareMapper());
@@ -69,6 +82,92 @@ final class WireFormatModelResolver extends ModelResolver {
                         new Jackson1AnnotationIntrospector()),
                 new WrapperNamingJaxbIntrospector(mapper.getTypeFactory())));
         return mapper;
+    }
+
+    @Override
+    public Schema resolve(final AnnotatedType type, final ModelConverterContext context,
+                          final Iterator<ModelConverter> chain) {
+        retypeThroughAdapter(type);
+        final Schema<?> schema = super.resolve(type, context, chain);
+        alignEnumDefaults(schema);
+        // a named model is registered in the context and comes back as a $ref, so the properties
+        // carrying the defaults are not on the schema returned here
+        alignEnumDefaults(referencedModel(context, schema));
+        return schema;
+    }
+
+    private static Schema<?> referencedModel(final ModelConverterContext context, final Schema<?> schema) {
+        final String ref = schema == null ? null : schema.get$ref();
+        if (ref == null || !ref.startsWith(REF_PREFIX)) {
+            return null;
+        }
+        return context.getDefinedModels().get(ref.substring(REF_PREFIX.length()));
+    }
+
+    /**
+     * An XmlJavaTypeAdapter decides what a property serialises to, so document the adapter's
+     * value type rather than the declared one: OnmsSnmpInterface.node is an OnmsNode in Java but
+     * an integer on the wire. Retypes in place, since swagger keys its caches off this instance.
+     * Container properties are left alone, since JAXB adapts their elements and this does not
+     * model that.
+     */
+    private void retypeThroughAdapter(final AnnotatedType type) {
+        final XmlJavaTypeAdapter adapter = annotation(type.getCtxAnnotations(), XmlJavaTypeAdapter.class);
+        if (adapter == null || type.getType() == null) {
+            return;
+        }
+        final JavaType declared = _mapper.getTypeFactory().constructType(type.getType());
+        if (declared.isContainerType()) {
+            return;
+        }
+        final JavaType adapted = _mapper.getTypeFactory().constructType(adapter.value()).findSuperType(XmlAdapter.class);
+        if (adapted == null) {
+            return;
+        }
+        final JavaType value = adapted.containedTypeOrUnknown(0);
+        if (!value.hasRawClass(Object.class) && !value.equals(declared)) {
+            type.setType(value);
+        }
+    }
+
+    /**
+     * XmlElement.defaultValue holds the XML spelling, which for an enum is not what the JSON API
+     * accepts: SyslogDestination.ip-protocol defaults to "udp" against values UDP and TCP. Match
+     * the default to a documented value, and drop it when none corresponds.
+     */
+    private static void alignEnumDefaults(final Schema<?> schema) {
+        if (schema == null || schema.getProperties() == null) {
+            return;
+        }
+        for (final Object property : schema.getProperties().values()) {
+            alignEnumDefault((Schema<?>) property);
+        }
+    }
+
+    private static void alignEnumDefault(final Schema<?> property) {
+        final List<?> values = property.getEnum();
+        final Object configured = property.getDefault();
+        if (values == null || values.isEmpty() || configured == null || values.contains(configured)) {
+            return;
+        }
+        for (final Object candidate : values) {
+            if (candidate != null && candidate.toString().equalsIgnoreCase(configured.toString())) {
+                property.setDefault(candidate);
+                return;
+            }
+        }
+        property.setDefault(null);
+    }
+
+    private static <A extends Annotation> A annotation(final Annotation[] annotations, final Class<A> type) {
+        if (annotations != null) {
+            for (final Annotation candidate : annotations) {
+                if (type.isInstance(candidate)) {
+                    return type.cast(candidate);
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -147,6 +246,21 @@ final class WireFormatModelResolver extends ModelResolver {
         @Override
         public PropertyName findWrapperName(final Annotated a) {
             return null;
+        }
+
+        /**
+         * The runtime pair asks Jackson 1 first, and its introspector answers every enum with
+         * Enum.name(), so XmlEnumValue never reaches the wire. Leave the Java names in place.
+         */
+        @Override
+        public String[] findEnumValues(final Class<?> enumType, final Enum<?>[] enumValues, final String[] names) {
+            return names;
+        }
+
+        @Override
+        public String[] findEnumValues(final MapperConfig<?> config, final AnnotatedClass annotatedClass,
+                                       final Enum<?>[] enumValues, final String[] names) {
+            return names;
         }
 
         /**
