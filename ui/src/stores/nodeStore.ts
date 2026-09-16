@@ -159,6 +159,14 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const getNodeSnmpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
     const requestId = ++nodeSnmpInterfacesRequestId
 
+    // Clear first, the same way getNodeById does: until this resolves there are no rows for THIS
+    // node, and the rows still up belong to a different one. The details page keeps the table
+    // mounted across node ids, so leaving them there renders the previous node's rows while the
+    // page (and every link built from the route) has already moved on -- and an ifIndex collides
+    // across nodes, so such a link goes somewhere real and wrong rather than 404ing.
+    snmpInterfaces.value = []
+    snmpInterfacesTotalCount.value = 0
+
     const resp = await API.getNodeSnmpInterfaces(payload.id, payload.queryParameters)
 
     if (requestId !== nodeSnmpInterfacesRequestId) {
@@ -173,6 +181,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
   const getNodeIpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
     const requestId = ++nodeIpInterfacesRequestId
+
+    // Cleared first for the same reason as getNodeSnmpInterfaces above.
+    ipInterfaces.value = []
+    ipInterfacesTotalCount.value = 0
 
     const resp = await API.getNodeIpInterfaces(payload.id, payload.queryParameters)
 
