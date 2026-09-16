@@ -36,7 +36,8 @@
           data-test="span-end"
         />
       </div>
-      <OnmsButton label="Add Timespan" icon="pi pi-plus" class="add-button" data-test="add-time" @click="addSpan" />
+      <small v-if="problem" class="field-error" data-test="span-error">{{ problem }}</small>
+      <OnmsButton label="Add Timespan" icon="pi pi-plus" class="add-button" data-test="add-time" :disabled="!!problem" @click="addSpan" />
     </div>
 
     <ul v-if="times.length" class="span-list">
@@ -56,17 +57,19 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { OnmsButton, OnmsDatePicker, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import { OutageTime, OutageType } from '@/types/scheduledOutage'
 import {
+  CompleteTimeSpanFields,
   DAYS_OF_MONTH,
   DAYS_OF_WEEK,
   TimeSpanFields,
   buildOutageTime,
   defaultTimeSpanFields,
-  describeOutageTime
+  describeOutageTime,
+  timeSpanProblem
 } from '@/components/ScheduledOutages/outageTime'
 
 const props = defineProps<{
@@ -91,8 +94,13 @@ watch(() => props.type, (type) => {
   }
 }, { immediate: true })
 
+const problem = computed(() => timeSpanProblem(props.type, fields))
+
 const addSpan = () => {
-  emit('add', buildOutageTime(props.type, fields))
+  if (problem.value) {
+    return
+  }
+  emit('add', buildOutageTime(props.type, fields as CompleteTimeSpanFields))
 }
 </script>
 
@@ -126,6 +134,10 @@ const addSpan = () => {
 
   .add-button {
     align-self: flex-start;
+  }
+
+  .field-error {
+    color: var(--p-red-500, #e24c4c);
   }
 
   .span-list {

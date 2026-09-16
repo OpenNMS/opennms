@@ -57,14 +57,32 @@ export const DAYS_OF_MONTH: Option[] = Array.from({ length: 31 }, (_, i) => ({
 // One time-span row in the editor, independent of the wire format.
 export interface TimeSpanFields {
   // 'specific' uses the full date and time of both; the others use only the
-  // time of day (+ day for weekly/monthly)
-  start: Date
-  end: Date
+  // time of day (+ day for weekly/monthly). The picker yields null when its
+  // text is cleared, which the editor must refuse before formatting.
+  start: Date | null
+  end: Date | null
   // weekday name (weekly) or day-of-month (monthly)
   day: string
 }
 
-export const defaultTimeSpanFields = (currentYear: number): TimeSpanFields => ({
+export interface CompleteTimeSpanFields extends TimeSpanFields {
+  start: Date
+  end: Date
+}
+
+const secondsOfDay = (d: Date): number => d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds()
+
+// Why a row cannot be added yet, or null when it can. Recurring spans compare
+// the time of day only, since both fields share the picker's placeholder date.
+export const timeSpanProblem = (type: OutageType, f: TimeSpanFields): string | null => {
+  if (!f.start || !f.end) {
+    return 'Enter both a start and an end time.'
+  }
+  const ordered = type === 'specific' ? f.end.getTime() > f.start.getTime() : secondsOfDay(f.end) > secondsOfDay(f.start)
+  return ordered ? null : 'The end must come after the start.'
+}
+
+export const defaultTimeSpanFields = (currentYear: number): CompleteTimeSpanFields => ({
   start: new Date(currentYear, 0, 1, 0, 0, 0),
   end: new Date(currentYear, 0, 1, 23, 59, 59),
   day: 'sunday'
@@ -77,10 +95,10 @@ export const formatTimeOfDay = (d: Date): string =>
 // dd-MMM-yyyy HH:mm:ss with English month abbreviations, the specific-outage
 // wire format (20 characters); BasicScheduleUtils keys its parser on the length
 export const formatSpecific = (d: Date): string =>
-  `${pad(d.getDate())}-${MONTHS[d.getMonth()].value}-${d.getFullYear()} ${formatTimeOfDay(d)}`
+  `${pad(d.getDate())}-${MONTHS[d.getMonth()].value}-${pad(d.getFullYear(), 4)} ${formatTimeOfDay(d)}`
 
 // Build the wire <time> from the editor row for the given outage type.
-export const buildOutageTime = (type: OutageType, f: TimeSpanFields): OutageTime => {
+export const buildOutageTime = (type: OutageType, f: CompleteTimeSpanFields): OutageTime => {
   if (type === 'specific') {
     return { begins: formatSpecific(f.start), ends: formatSpecific(f.end) }
   }

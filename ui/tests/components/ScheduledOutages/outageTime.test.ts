@@ -26,7 +26,8 @@ import {
   buildOutageTime,
   defaultTimeSpanFields,
   formatSpecific,
-  formatTimeOfDay
+  formatTimeOfDay,
+  timeSpanProblem
 } from '@/components/ScheduledOutages/outageTime'
 
 // BasicScheduleUtils selects the parser by the exact string length: 20 for the
@@ -80,5 +81,36 @@ describe('buildOutageTime', () => {
   it('keeps unpadded 1..31 day-of-month values for the monthly attribute', () => {
     expect(DAYS_OF_MONTH[0].value).toBe('1')
     expect(DAYS_OF_MONTH[8].value).toBe('9')
+  })
+})
+
+describe('formatSpecific', () => {
+  it('pads the year too, so the length stays 20 whatever the year', () => {
+    const early = new Date(2026, 0, 1, 0, 0, 0)
+    early.setFullYear(999)
+    expect(formatSpecific(early)).toBe('01-Jan-0999 00:00:00')
+    expect(formatSpecific(early).length).toBe(20)
+  })
+})
+
+describe('timeSpanProblem', () => {
+  const at = (h: number, m = 0) => new Date(2026, 0, 1, h, m, 0)
+
+  it('rejects a cleared field', () => {
+    expect(timeSpanProblem('daily', { start: at(1), end: null, day: '' })).toMatch(/both a start and an end/)
+    expect(timeSpanProblem('specific', { start: null, end: at(2), day: '' })).toMatch(/both a start and an end/)
+  })
+
+  it('requires the end after the start, by time of day for recurring spans', () => {
+    expect(timeSpanProblem('daily', { start: at(9), end: at(8), day: '' })).toMatch(/end must come after/)
+    expect(timeSpanProblem('daily', { start: at(9), end: at(9), day: '' })).toMatch(/end must come after/)
+    expect(timeSpanProblem('weekly', { start: at(9), end: at(9, 30), day: 'monday' })).toBeNull()
+    // a later calendar date does not rescue a recurring span whose time of day is earlier
+    expect(timeSpanProblem('daily', { start: at(9), end: new Date(2026, 0, 2, 8, 0, 0), day: '' })).toMatch(/end must come after/)
+  })
+
+  it('compares the full date and time for a specific span', () => {
+    expect(timeSpanProblem('specific', { start: at(9), end: new Date(2026, 0, 2, 8, 0, 0), day: '' })).toBeNull()
+    expect(timeSpanProblem('specific', { start: new Date(2026, 0, 2, 8, 0, 0), end: at(9), day: '' })).toMatch(/end must come after/)
   })
 })
