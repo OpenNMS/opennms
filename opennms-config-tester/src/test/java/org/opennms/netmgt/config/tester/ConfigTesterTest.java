@@ -422,10 +422,6 @@ public class ConfigTesterTest {
         testConfigFile("snmptrap-northbounder-configuration.xml");
     }
 
-    @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
 
     @Test
     public void testSurveillanceViews() {

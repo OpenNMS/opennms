@@ -181,10 +181,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="outageDao" ref="outageDao"/>
   </bean>
-  <bean id="statisticsReportService" class="org.opennms.web.svclayer.support.DefaultStatisticsReportService">
-    <property name="statisticsReportDao" ref="statisticsReportDao"/>
-    <property name="resourceDao" ref="resourceDao"/>
-  </bean>
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <onmsgi:service interface="org.opennms.web.svclayer.api.RequisitionAccessService" ref="foreignSourceAndRequisitionAccessService" />
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />

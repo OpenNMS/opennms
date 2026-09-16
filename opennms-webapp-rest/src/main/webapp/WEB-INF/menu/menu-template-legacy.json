@@ -202,13 +202,6 @@
           "url": "report/database/index.jsp",
           "locationMatch": "database-reports",
           "roles": null
-        },
-        {
-          "id": "statistics",
-          "name": "Statistics",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
-          "roles": null
         }
       ]
     },

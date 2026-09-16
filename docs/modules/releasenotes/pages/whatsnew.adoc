@@ -40,6 +40,12 @@ The Heatmap page has been removed from the Dashboards menu and from the product,
 The `getHeatMapItemsForEntity` methods are gone from the internal `AlarmDao` and `OutageDao` interfaces; they were not part of the Integration API.
 A `org.opennms.web.console.centerUrl` that still names the heatmap or trend box is skipped when the legacy home page renders.
 
+=== Statsd removed
+The Metrics Statistics (statsd) page and the Statsd daemon have been removed, together with `etc/statsd-configuration.xml` and the `CORE_SERVICE_STATSD_ENABLED` variable.
+A Statsd entry left in an existing `etc/service-configuration.xml` is ignored with a warning at startup and can be deleted, as can `etc/statsd-configuration.xml`.
+The "TOP 20 nodes by I/O Wait" database report and the response-time offenders section of the Response Time Summary report, which only Statsd could feed, are removed as well.
+Existing rows in the `statisticsreport` tables are left in place and continue to be purged by Vacuumd.
+
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
