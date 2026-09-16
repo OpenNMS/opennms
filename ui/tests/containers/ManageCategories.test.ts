@@ -10,10 +10,11 @@ describe('ManageCategories.vue (container)', () => {
     const wrapper = mount(ManageCategories, {
       global: {
         plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-        stubs: { CategoriesTable: true, CategoriesHelpPanel: true, BreadCrumbs: true }
+        stubs: { CategoriesTable: true, BreadCrumbs: true }
       }
     })
     const store = useCategoryAdminStore()
+    vi.mocked(store.getCategories).mockResolvedValue(true)
     await flushPromises()
     expect(store.getCategories).toHaveBeenCalled()
     expect(wrapper.find('.page-title').text()).toBe('Surveillance Categories')

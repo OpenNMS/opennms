@@ -88,7 +88,8 @@ import {
   OnmsDialog,
   OnmsSearchInput,
   OnmsTable,
-  OnmsToggleSwitch
+  OnmsToggleSwitch,
+  useOnmsToast
 } from '@opennms/onms-ui'
 
 import API from '@/services'
@@ -109,6 +110,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:visible'])
+
+const { showToast } = useOnmsToast()
 
 const nodes = ref<NodeRow[]>([])
 const totalRecords = ref(0)
@@ -203,7 +206,8 @@ const toggle = async (row: NodeRow, target: boolean) => {
     ? await API.addNodeToCategory(props.categoryName, row.id)
     : await API.removeNodeFromCategory(props.categoryName, row.id)
   if (!ok) {
-    row.isMember = !target // revert; the service already surfaced the error
+    row.isMember = !target
+    showToast({ message: `Failed to ${target ? 'add node to' : 'remove node from'} '${props.categoryName}'.`, severity: 'error' })
   }
   const next = new Set(busyIds.value)
   next.delete(row.id)

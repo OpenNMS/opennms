@@ -19,9 +19,9 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-
 import API from '@/services'
-import { AdminCategory } from '@/services/categoryAdminService'
+import { AdminCategory } from '@/types/categoryAdmin'
+import { ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -29,7 +29,8 @@ export const useCategoryAdminStore = defineStore('categoryAdminStore', () => {
   const categories = ref([] as AdminCategory[])
   const loadError = ref(false)
 
-  const getCategories = async () => {
+  // false when the load failed; the previous list is kept
+  const getCategories = async (): Promise<boolean> => {
     const result = await API.listCategories()
     if (result !== null) {
       categories.value = result
@@ -37,31 +38,39 @@ export const useCategoryAdminStore = defineStore('categoryAdminStore', () => {
     } else {
       loadError.value = true
     }
+    return result !== null
   }
 
-  const createCategory = async (category: AdminCategory) => {
-    const error = await API.createCategory(category)
-    if (error === null) {
+  const createCategory = async (category: AdminCategory): Promise<ValidationResult> => {
+    const result = await API.createCategory(category)
+    if (result.success) {
       await getCategories()
     }
-    return error
+    return result
   }
 
-  const updateCategoryDescription = async (name: string, description: string) => {
-    const error = await API.updateCategoryDescription(name, description)
-    if (error === null) {
+  const updateCategoryDescription = async (name: string, description: string): Promise<ValidationResult> => {
+    const result = await API.updateCategoryDescription(name, description)
+    if (result.success) {
       await getCategories()
     }
-    return error
+    return result
   }
 
-  const deleteCategory = async (name: string) => {
-    const error = await API.deleteCategory(name)
-    if (error === null) {
+  const deleteCategory = async (name: string): Promise<ValidationResult> => {
+    const result = await API.deleteCategory(name)
+    if (result.success) {
       await getCategories()
     }
-    return error
+    return result
   }
 
-  return { categories, loadError, getCategories, createCategory, updateCategoryDescription, deleteCategory }
+  return {
+    categories,
+    loadError,
+    getCategories,
+    createCategory,
+    updateCategoryDescription,
+    deleteCategory
+  }
 })

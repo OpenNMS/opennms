@@ -19,27 +19,15 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-
-import useSnackbar from '@/composables/useSnackbar'
-import useSpinner from '@/composables/useSpinner'
+import { AdminCategory } from '@/types/categoryAdmin'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { rest } from './axiosInstances'
 
-// PrimeVue Manage Surveillance Categories (NMS-20131). Reuses existing REST —
-// no backend change: category CRUD via the v1 /rest/categories service, and
-// node membership via its granular /rest/categories/{name}/nodes/{nodeId}
-// sub-resource. Member nodes are read from the v2 node search (the only place
-// that resolves category membership: `_s=category.name==NAME`; the bare
-// ?category= param does NOT filter).
+// Uses the existing v1 /rest/categories service for category CRUD and its
+// /rest/categories/{name}/nodes/{nodeId} sub-resource for membership. Member
+// nodes are read from the v2 node search (`_s=category.name==NAME`), the only
+// place that resolves category membership; the bare ?category= param does not.
 
-export interface AdminCategory {
-  id?: number
-  name: string
-  description?: string | null
-  authorizedGroups?: string[]
-}
-
-const { showSnackBar } = useSnackbar()
-const { startSpinner, stopSpinner } = useSpinner()
 const endpoint = '/categories'
 
 // Only surface a server detail if it looks like a short, plain message — a 500
@@ -48,81 +36,65 @@ const errorMessage = (err: any, fallback: string): string => {
   const detail = err?.response?.data
   if (typeof detail === 'string') {
     const trimmed = detail.trim()
-    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) return trimmed
+    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
+      return trimmed
+    }
   }
   return fallback
 }
 
+// null on failure (not []) so callers can keep showing the previous list
 const listCategories = async (): Promise<AdminCategory[] | null> => {
   try {
-    startSpinner()
     const resp = await rest.get(endpoint)
     if (resp.status === 204) {
       return []
     }
     const raw = resp.data?.category ?? []
     return Array.isArray(raw) ? raw : [raw]
-  } catch (_err) {
-    showSnackBar({ msg: 'Failed to load surveillance categories.' })
+  } catch (err) {
+    console.error('Error loading surveillance categories:', err)
     return null
-  } finally {
-    stopSpinner()
   }
 }
 
-const createCategory = async (category: AdminCategory): Promise<string | null> => {
+const createCategory = async (category: AdminCategory): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await rest.post(endpoint, category)
-    showSnackBar({ msg: `Category '${category.name}' created.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to create category '${category.name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error creating category:', err)
+    return createFailureResult(errorMessage(err, `Failed to create category '${category.name}'.`))
   }
 }
 
-// v1 category update is form-urlencoded bean-property update (used for the
+// v1 category update is a form-urlencoded bean-property update (used for the
 // description; name is the immutable id).
-const updateCategoryDescription = async (name: string, description: string): Promise<string | null> => {
+const updateCategoryDescription = async (name: string, description: string): Promise<ValidationResult> => {
   try {
-    startSpinner()
     const body = new URLSearchParams()
     body.set('description', description)
     await rest.put(`${endpoint}/${encodeURIComponent(name)}`, body, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     })
-    showSnackBar({ msg: `Category '${name}' updated.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to update category '${name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error updating category:', err)
+    return createFailureResult(errorMessage(err, `Failed to update category '${name}'.`))
   }
 }
 
-const deleteCategory = async (name: string): Promise<string | null> => {
+const deleteCategory = async (name: string): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await rest.delete(`${endpoint}/${encodeURIComponent(name)}`)
-    showSnackBar({ msg: `Category '${name}' deleted.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
     // already gone — the desired end-state holds, so treat it as success
     if (err?.response?.status === 404) {
-      showSnackBar({ msg: `Category '${name}' deleted.` })
-      return null
+      return createSuccessResponse()
     }
-    const msg = errorMessage(err, `Failed to delete category '${name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error deleting category:', err)
+    return createFailureResult(errorMessage(err, `Failed to delete category '${name}'.`))
   }
 }
 
@@ -130,8 +102,8 @@ const addNodeToCategory = async (name: string, nodeId: number): Promise<boolean>
   try {
     await rest.put(`${endpoint}/${encodeURIComponent(name)}/nodes/${nodeId}`)
     return true
-  } catch (_err) {
-    showSnackBar({ msg: `Failed to add node to '${name}'.`, error: true })
+  } catch (err) {
+    console.error('Error adding node to category:', err)
     return false
   }
 }
@@ -140,8 +112,8 @@ const removeNodeFromCategory = async (name: string, nodeId: number): Promise<boo
   try {
     await rest.delete(`${endpoint}/${encodeURIComponent(name)}/nodes/${nodeId}`)
     return true
-  } catch (_err) {
-    showSnackBar({ msg: `Failed to remove node from '${name}'.`, error: true })
+  } catch (err) {
+    console.error('Error removing node from category:', err)
     return false
   }
 }

@@ -10,7 +10,7 @@ const mountTable = () => {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
       stubs: {
-        CategoryEditorDialog: true, CategoryNodesDialog: true, OnmsConfirmationDialog: true,
+        CategoryEditorDialog: true, CategoryNodesDialog: true, OnmsConfirmationDialog: true, AboutDialogButton: true,
         TableCard: { template: '<div><slot /></div>' }
       }
     }
@@ -28,7 +28,7 @@ describe('CategoriesTable.vue', () => {
   it('renders column headers even when there are no categories', async () => {
     ctx.store.categories = []
     await ctx.wrapper.vm.$nextTick()
-    const headers = ctx.wrapper.findAll('th').map((th) => th.text().trim()).filter(Boolean)
+    const headers = ctx.wrapper.findAll('th').map(th => th.text().trim()).filter(Boolean)
     expect(headers).toContain('Name')
     expect(headers).toContain('Description')
     expect(ctx.wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
@@ -40,5 +40,11 @@ describe('CategoriesTable.vue', () => {
     expect(ctx.wrapper.find('[data-test="manage-nodes-button"]').exists()).toBe(true)
     expect(ctx.wrapper.find('[data-test="edit-category-button"]').exists()).toBe(true)
     expect(ctx.wrapper.find('[data-test="delete-category-button"]').exists()).toBe(true)
+    expect(ctx.wrapper.find('[data-test="edit-category-button"]').attributes('aria-label')).toBe('Edit Routers')
+    expect(ctx.wrapper.find('[data-test="edit-category-button"] svg').exists()).toBe(true)
+  })
+
+  it('offers the About dialog from the card header', () => {
+    expect(ctx.wrapper.findComponent({ name: 'AboutDialogButton' }).exists()).toBe(true)
   })
 })

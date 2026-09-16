@@ -20,8 +20,8 @@ const mountDialog = async (category: any = null) => {
     }
   })
   const store = useCategoryAdminStore()
-  vi.mocked(store.createCategory).mockResolvedValue(null)
-  vi.mocked(store.updateCategoryDescription).mockResolvedValue(null)
+  vi.mocked(store.createCategory).mockResolvedValue({ success: true, message: '' })
+  vi.mocked(store.updateCategoryDescription).mockResolvedValue({ success: true, message: '' })
   await wrapper.setProps({ visible: true })
   await flushPromises()
   return { wrapper, store }
@@ -31,7 +31,9 @@ describe('CategoryEditorDialog.vue', () => {
   let ctx: { wrapper: VueWrapper<any>, store: ReturnType<typeof useCategoryAdminStore> }
 
   describe('create mode', () => {
-    beforeEach(async () => { ctx = await mountDialog(null) })
+    beforeEach(async () => {
+      ctx = await mountDialog(null)
+    })
 
     it('shows the name field and disables Save until a name is entered', async () => {
       expect(ctx.wrapper.find('[data-test="category-name-input"]').exists()).toBe(true)
@@ -56,7 +58,7 @@ describe('CategoryEditorDialog.vue', () => {
     })
 
     it('keeps the dialog open and shows a server error', async () => {
-      vi.mocked(ctx.store.createCategory).mockResolvedValue('Category already exists.')
+      vi.mocked(ctx.store.createCategory).mockResolvedValue({ success: false, message: 'Category already exists.' })
       await ctx.wrapper.find('[data-test="category-name-input"]').setValue('Routers')
       await ctx.wrapper.find('[data-test="save-button"]').trigger('click')
       await flushPromises()
@@ -65,8 +67,17 @@ describe('CategoryEditorDialog.vue', () => {
     })
   })
 
+  it('has a ghost Cancel button that closes without saving', async () => {
+    ctx = await mountDialog(null)
+    await ctx.wrapper.find('[data-test="cancel-button"]').trigger('click')
+    expect(ctx.store.createCategory).not.toHaveBeenCalled()
+    expect(ctx.wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+  })
+
   describe('edit mode', () => {
-    beforeEach(async () => { ctx = await mountDialog({ name: 'Routers', description: 'old' }) })
+    beforeEach(async () => {
+      ctx = await mountDialog({ name: 'Routers', description: 'old' })
+    })
 
     it('hides the immutable name field and updates only the description', async () => {
       expect(ctx.wrapper.find('[data-test="category-name-input"]').exists()).toBe(false)

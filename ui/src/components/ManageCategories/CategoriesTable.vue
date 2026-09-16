@@ -2,13 +2,18 @@
   <TableCard class="categories-table">
     <div class="header">
       <div class="card-title">Surveillance Categories</div>
-      <OnmsButton
-        variant="outlined"
-        data-test="add-category-button"
-        @click="openEditor(null)"
-      >
-        <OnmsIcon :icon="Add" /> Add New Category
-      </OnmsButton>
+      <div class="header-actions">
+        <OnmsButton
+          variant="outlined"
+          label="Add New Category"
+          icon="pi pi-plus"
+          data-test="add-category-button"
+          @click="openEditor(null)"
+        />
+        <AboutDialogButton title="Surveillance Categories">
+          <CategoriesAbout />
+        </AboutDialogButton>
+      </div>
     </div>
 
     <OnmsTable
@@ -35,24 +40,24 @@
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <OnmsButton
-              variant="text"
-              label="Manage Nodes"
+            <OnmsIconButton
+              :icon="Nodes"
+              :title="`Manage nodes in ${data.name}`"
               :aria-label="`Manage nodes in ${data.name}`"
               data-test="manage-nodes-button"
               @click="openNodes(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Edit"
+            <OnmsIconButton
+              :icon="Edit"
+              :title="`Edit ${data.name}`"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-category-button"
               @click="openEditor(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Delete"
+            <OnmsIconButton
+              :icon="Delete"
               severity="danger"
+              :title="`Delete ${data.name}`"
               :aria-label="`Delete ${data.name}`"
               data-test="delete-category-button"
               @click="askDelete(data)"
@@ -86,17 +91,22 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsTable, useOnmsToast } from '@opennms/onms-ui'
 
-import Add from '@/components/icons/action/Add.vue'
+import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
+import Nodes from '@opennms/onms-ui/icons/network/Nodes.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import CategoriesAbout from '@/components/ManageCategories/CategoriesAbout.vue'
 import CategoryEditorDialog from '@/components/ManageCategories/CategoryEditorDialog.vue'
 import CategoryNodesDialog from '@/components/ManageCategories/CategoryNodesDialog.vue'
 import { useCategoryAdminStore } from '@/stores/categoryAdminStore'
-import { AdminCategory } from '@/services/categoryAdminService'
+import { AdminCategory } from '@/types/categoryAdmin'
 
 const store = useCategoryAdminStore()
+const { showToast } = useOnmsToast()
 
 const showEditor = ref(false)
 const categoryToEdit = ref<AdminCategory | null>(null)
@@ -126,11 +136,18 @@ const askDelete = (category: AdminCategory) => {
 }
 
 const confirmDelete = async () => {
-  if (categoryToDelete.value) {
-    await store.deleteCategory(categoryToDelete.value.name)
-  }
+  const category = categoryToDelete.value
   showDeleteConfirmation.value = false
   categoryToDelete.value = null
+  if (!category) {
+    return
+  }
+  const result = await store.deleteCategory(category.name)
+  if (result.success) {
+    showToast({ message: `Category '${category.name}' deleted.`, severity: 'success' })
+  } else {
+    showToast({ message: result.message, severity: 'error' })
+  }
 }
 
 const cancelDelete = () => {
@@ -154,6 +171,12 @@ const cancelDelete = () => {
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .action-container {

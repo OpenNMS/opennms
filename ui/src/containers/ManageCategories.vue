@@ -6,7 +6,6 @@
   </div>
   <div class="manage-categories-container">
     <h1 class="page-title">Surveillance Categories</h1>
-    <CategoriesHelpPanel />
     <CategoriesTable />
   </div>
 </template>
@@ -14,8 +13,9 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
+import { useOnmsToast } from '@opennms/onms-ui'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import CategoriesHelpPanel from '@/components/ManageCategories/CategoriesHelpPanel.vue'
 import CategoriesTable from '@/components/ManageCategories/CategoriesTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useCategoryAdminStore } from '@/stores/categoryAdminStore'
@@ -33,8 +33,12 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
+const { showToast } = useOnmsToast()
+
 onMounted(async () => {
-  await store.getCategories()
+  if (!(await store.getCategories())) {
+    showToast({ message: 'Failed to load surveillance categories.', severity: 'error' })
+  }
 })
 </script>
 

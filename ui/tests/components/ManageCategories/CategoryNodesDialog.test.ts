@@ -45,7 +45,7 @@ describe('CategoryNodesDialog.vue (server-paged node picker)', () => {
   const mountDialog = async () => {
     wrapper = mount(CategoryNodesDialog, {
       props: { visible: false, categoryId: CAT_ID, categoryName: 'Routers' },
-      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub, ToggleSwitch: ToggleStub, Checkbox: CheckboxStub } }
+      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub, ToggleSwitch: ToggleStub, Checkbox: CheckboxStub }}
     })
     await wrapper.setProps({ visible: true })
     await flushPromises()
@@ -108,7 +108,7 @@ describe('CategoryNodesDialog.vue (server-paged node picker)', () => {
     await wrapper?.unmount?.()
     wrapper = mount(CategoryNodesDialog, {
       props: { visible: true, categoryId: CAT_ID, categoryName: 'Routers' },
-      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub, ToggleSwitch: ToggleStub, Checkbox: CheckboxStub } }
+      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub, ToggleSwitch: ToggleStub, Checkbox: CheckboxStub }}
     })
     await Promise.resolve()
     vi.mocked(API.getNodes).mockClear()
