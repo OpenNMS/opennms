@@ -1,6 +1,6 @@
-[[releasenotes-36]]
+[[releasenotes-37]]
 
-= What's New in OpenNMS {page-component-title} 36
+= What's New in OpenNMS {page-component-title} 37
 
 == System requirements and Dependencies
 
@@ -18,6 +18,33 @@ and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extende
 Most installations require no action, but there are behavior and compatibility changes for installations with
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
+
+=== Spring, Hibernate, and Camel platform upgrade
+The core application frameworks have been upgraded to currently supported versions:
+Spring Framework 5.3, Spring Security 5.8, Hibernate 5.6, Hibernate Validator 6.2, and Apache Camel 3.22.
+The OpenNMS-patched forks of Spring, Spring Security, and Hibernate have been removed in favor of stock releases,
+and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extender.
+
+Most installations require no action, but there are behavior and compatibility changes for installations with
+custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
+See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
+
+=== Trends removed
+The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
+
+=== Charts removed
+The Charts page, its JFreeChart rendering and the `features/charts` module have been removed from the Dashboards menu and from the product. `etc/chart-configuration.xml` and its configuration model go with it; the file is no longer read.
+
+=== Heatmap removed
+The Heatmap page has been removed from the Dashboards menu and from the product, together with the `/rest/heatmap` endpoint and the `org.opennms.heatmap.*` system properties, which are no longer read.
+The `getHeatMapItemsForEntity` methods are gone from the internal `AlarmDao` and `OutageDao` interfaces; they were not part of the Integration API.
+A `org.opennms.web.console.centerUrl` that still names the heatmap or trend box is skipped when the legacy home page renders.
+
+=== Statsd removed
+The Metrics Statistics (statsd) page and the Statsd daemon have been removed, together with `etc/statsd-configuration.xml` and the `CORE_SERVICE_STATSD_ENABLED` variable.
+A Statsd entry left in an existing `etc/service-configuration.xml` is ignored with a warning at startup and can be deleted, as can `etc/statsd-configuration.xml`.
+The "TOP 20 nodes by I/O Wait" database report and the response-time offenders section of the Response Time Summary report, which only Statsd could feed, are removed as well.
+Existing rows in the `statisticsreport` tables are left in place and continue to be purged by Vacuumd.
 
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
@@ -65,9 +92,14 @@ The `OSGiBasedTicketerPlugin` is now the default ticketer plugin.
 Ticketing is automatically enabled when an OSGi-based ticketer plugin is installed and disabled when it is removed.
 The `NullTicketerPlugin` and the `opennms.ticketer.plugin` property have been removed.
 
-If you have `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.NullTicketerPlugin` in a custom properties file under `etc/opennms.properties.d/`, remove that entry before upgrading.
-If you previously set `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin`, that entry is now redundant and can be removed.
+IMPORTANT: Remove any `opennms.ticketer.plugin` line from `etc/opennms.properties` and `etc/opennms.properties.d/` before upgrading.
+Older releases, including the Docker stock config, shipped `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.NullTicketerPlugin` by default, so it's likely present even if you never touched your config -- leaving it in causes a `ClassNotFoundException` on startup.
+An `opennms.ticketer.plugin=...OSGiBasedTicketerPlugin` entry is also now redundant and can be removed.
 The `opennms.alarmTroubleTicketEnabled` property is no longer required but can still be used to explicitly enable or disable ticketing.
+
+=== MCP server for AI agents
+{page-component-title} can now be accessed by AI agents through the https://modelcontextprotocol.io[Model Context Protocol] (MCP): installing the optional `opennms-mcp-server` feature exposes tools to query nodes and alarms, acknowledge or clear alarms, and send events, governed by the user's existing roles.
+See xref:development:oia/mcp-server.adoc[MCP Server] for installation and details.
 
 === Light and dark mode for the Vue UI
 The Vue-based web UI now supports a light/dark theme toggle, in addition to the system-default option.
@@ -81,12 +113,27 @@ After upgrade, manage event configurations through the *Administration -> Manage
 
 See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
+=== ActiveMQ store and JVM temp directory moved out of the Karaf cache
+`java.io.tmpdir` moved from `$\{OPENNMS_HOME}/data/tmp` to `$\{OPENNMS_HOME}/tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved from `$\{OPENNMS_HOME}/data/tmp/activemq` to `$\{OPENNMS_HOME}/var/activemq`.
+
+To keep the previous behavior, see xref:operation:deep-dive/admin/configuration/startup.adoc[Startup Configuration], or xref:reference:configuration/core-docker.adoc[Core Docker] for container deployments.
+
 == Breaking changes
 
-=== SAML and OpenID SSO support removed
-Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.
-If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
-See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
+=== Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support
+All mail sending and reading now uses Jakarta Mail 2.1 (Eclipse Angus) instead of JavaMail 1.4; existing `javamail-configuration.xml` and `javamail-configuration.properties` files load unchanged.
+The JMTA local-MTA transport is gone (`use-jmta` is still accepted, but mail is sent over SMTP to the configured mail host), `<javamail-property>` entries now reach the mail session instead of being ignored, and SSL/TLS connections now verify that the server certificate covers the mail host.
+See xref:operation:deep-dive/notifications/configuration.adoc#mail-tls[Mail server TLS] for the TLS properties, and xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] for the OAuth2 (XOAUTH2) SMTP authentication that Microsoft 365 and Gmail now require.
+
+=== Scripted (BSF) notifications now run on JSR-223
+`BSFNotificationStrategy` executes scripts through the Java scripting API instead of the retired Apache Bean Scripting Framework; existing scripts generally keep working, but see xref:operation:deep-dive/notifications/strategies/scripting.adoc[Scripted Notifications] for the deprecated parameters and behavior changes.
+
+=== Slack and Mattermost notification strategies replaced by a webhook strategy
+`SlackNotificationStrategy` and `MattermostNotificationStrategy` have been removed in favor of `WebhookNotificationStrategy`, which takes the URL, method, headers, and body from the notification command and so can also target Microsoft Teams, Discord, and non-chat endpoints.
+The `org.opennms.netmgt.notifd.slack.*` and `org.opennms.netmgt.notifd.mattermost.*` properties no longer have any effect.
+
+Neither strategy shipped as a stock notification command, so this affects only hand-added commands, which fail when a notice is sent until their `<execute>` element and arguments are updated.
+See xref:operation:deep-dive/notifications/strategies/webhook.adoc#migrating-from-slack-and-mattermost[Webhook Notifications] for the mapping.
 
 === XMPP (Jabber) notification strategies removed
 The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
@@ -95,6 +142,15 @@ Existing `users.xml` files with `xmppAddress` contacts still load, but no notifi
 === IRCcat notification strategy removed
 The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
 An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
+
+=== Asterisk notification strategy removed
+The Asterisk notification strategy, the AsteriskGateway daemon, the stock `callHomePhone`, `callMobilePhone`, and `callWorkPhone` notification commands, and the `asterisk-configuration.properties` and `ami-config.xml` files have been removed.
+Those commands left in an existing `notificationCommands.xml` still load, but notices routed to them fail when sent.
+
+=== SAML and OpenID SSO support removed
+Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.
+If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
+See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
@@ -152,4 +208,25 @@ This is a user-facing label change only.
 The underlying configuration file (`etc/ksc-performance-reports.xml`), the REST endpoints under `/rest/ksc`, the `KSC/*.jsp` page URLs, and the internal identifiers are unchanged, so existing reports, saved bookmarks, and API integrations continue to work without modification.
 
 NOTE: Update any of your own documentation, runbooks, training material, or UI automation that refers to *KSC Reports* by name — including tests that match on the old menu label or the *KSC Report* search category — to use *Graph Collections*.
+
+=== BeanShell integration deprecated
+
+The last release of the BeanShell interpreter was in 2016.
+As such, we are deprecating support for BeanShell and will remove it in Horizon 37.
+Groovy support remains available everywhere BeanShell was implemented.
+
+=== RT Ticketer plugin (plugin-ticketer-rt) removed
+The deprecated RT Ticketer plugin was removed in this release.
+
+=== CIFS plugin (plugin-protocol-cifs) removed
+The deprecated CIFS plugin was removed in this release.
+
+=== NSClient plugin (plugin-protocol-nsclient) removed
+The deprecated NSClient plugin was removed in this release.
+
+=== JMS-Northbounder plugin (plugin-northbounder-jms) removed
+The deprecated JMS-Northbounder plugin was removed in this release.
+
+=== Juniper TCA Collector plugin (plugin-collector-juniper-tca) removed
+The deprecated Juniper TCA Collector plugin was removed in this release.
 

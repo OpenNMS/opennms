@@ -35,38 +35,10 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
-          "id": "trend",
-          "name": "Trends",
-          "url": "trend/index.jsp",
-          "locationMatch": "trend",
-          "roles": null
-        },
-        {
-          "id": "charts",
-          "name": "Charts",
-          "url": "charts/index.jsp",
-          "locationMatch": "chart",
-          "roles": null
-        },
-        {
           "id": "databaseReports",
           "name": "Database Reports",
           "url": "report/database/index.jsp",
           "locationMatch": "database-reports",
-          "roles": null
-        },
-        {
-          "id": "statistics",
-          "name": "Metrics Statistics (statsd)",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
           "roles": null
         },
         {
@@ -91,13 +63,6 @@
           "name": "Nodes",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
-          "roles": null
-        },
-        {
-          "id": "legacyNodes",
-          "name": "Nodes (Legacy)",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
           "roles": null
         },
         {
@@ -206,14 +171,21 @@
         {
           "id": "resourceGraphs",
           "name": "Resource Graphs",
+          "url": "graph/index.jsp",
+          "locationMatch": "performance",
+          "roles": null
+        },
+        {
+          "id": "resourceGraphsPreview",
+          "name": "Resource Graphs (Preview)",
           "url": "ui/index.html#/resource-graphs",
           "locationMatch": "performance",
           "roles": null
         },
         {
-          "id": "resourceGraphsOld",
-          "name": "Resource Graphs (Legacy)",
-          "url": "graph/index.jsp",
+          "id": "adhocGraphs",
+          "name": "Custom Performance Graphs (Preview)",
+          "url": "ui/index.html#/adhoc-graphs",
           "locationMatch": "performance",
           "roles": null
         }
@@ -267,6 +239,13 @@
           "roles": null
         },
         {
+          "id": "notificationsPreview",
+          "name": "Notifications (Preview)",
+          "url": "ui/index.html#/admin/notifications",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
           "id": "manageEventConfigurations",
           "name": "Manage Event Configurations",
           "url": "ui/index.html#/event-config",
@@ -290,9 +269,9 @@
         {
           "id": "scheduledOutages",
           "name": "Scheduled Outages",
-          "url": "admin/sched-outages/index.jsp",
-          "locationMatch": null,
-          "roles": null
+          "url": "ui/index.html#/scheduled-outages",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "productUpdateEnrollment",
@@ -404,14 +383,14 @@
         {
           "id": "manageUsers",
           "name": "Manage Users",
-          "url": "admin/userGroupView/users/list.jsp",
+          "url": "ui/index.html#/admin/users",
           "locationMatch": "",
           "roles": null
         },
         {
           "id": "manageGroups",
           "name": "Manage Groups",
-          "url": "admin/userGroupView/groups/list.htm",
+          "url": "ui/index.html#/admin/groups",
           "locationMatch": "",
           "roles": null
         },
@@ -575,7 +554,7 @@
       "items": [
         {
           "id": "restOpenApiDocumentation",
-          "name": "REST Open API Documentation",
+          "name": "OpenAPI Documentation",
           "url": "ui/index.html#/open-api",
           "locationMatch": "",
           "roles": null
@@ -583,7 +562,7 @@
         {
           "id": "restApiReferenceDocumentation",
           "name": "REST API Reference Documentation",
-          "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
+          "url": "https://docs.opennms.com/horizon/latest/development/rest/rest-api.html",
           "isExternalLink": true,
           "linkTarget": "_blank",
           "locationMatch": "",
@@ -603,7 +582,7 @@
     {
       "id": "helpDocumentationMenu",
       "name": "Help",
-      "url": "https://docs.opennms.com/meridian/2024",
+      "url": "https://docs.opennms.com/horizon/latest",
       "isExternalLink": true,
       "locationMatch": null,
       "icon": "action/Help",
@@ -686,7 +665,7 @@
         {
           "id": "generateSystemReport",
           "name": "Generate System Report",
-          "url": "admin/support/systemReportList.htm",
+          "url": "ui/index.html#/system-report",
           "locationMatch": null,
           "roles": null
         }
@@ -736,21 +715,21 @@
       {
         "id": "userNotificationConfiguration",
         "name": null,
-        "url": "admin/notification/index.jsp",
+        "url": "ui/index.html#/admin/notifications",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationUser",
         "name": null,
-        "url": "notification/browse?acktype=unack&filter=user==$USER",
+        "url": "ui/index.html#/admin/notifications?preset=yourOutstanding",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationTeam",
         "name": null,
-        "url": "notification/browse?acktype=unack",
+        "url": "ui/index.html#/admin/notifications?preset=teamOutstanding",
         "locationMatch": null,
         "roles": null
       },

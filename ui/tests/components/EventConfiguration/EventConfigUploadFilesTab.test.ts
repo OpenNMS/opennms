@@ -126,6 +126,36 @@ describe('EventConfigUploadFilesTab.vue', () => {
     })
   })
 
+  describe('Per-file status controls', () => {
+    it('opens the rename dialog from the duplicate-file button', async () => {
+      wrapper.vm.eventFiles = [makeFile('dup.xml', { isDuplicate: true })]
+      await wrapper.vm.$nextTick()
+
+      const duplicate = wrapper.find('button.warning-icon')
+      expect(duplicate.exists()).toBe(true)
+      await duplicate.trigger('click')
+
+      expect(wrapper.vm.displayRenameDialog).toBe(true)
+      expect(wrapper.vm.selectedIndex).toBe(0)
+    })
+
+    // Status only, so these stay plain icons rather than buttons that do nothing
+    it('flags valid and invalid files with a tooltipped status icon', async () => {
+      wrapper.vm.eventFiles = [makeFile('good.xml'), makeFile('bad.xml', { isValid: false, errors: ['Schema mismatch'] })]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('svg.success-icon').exists()).toBe(true)
+      const invalid = wrapper.find('svg.error-icon')
+      expect(invalid.exists()).toBe(true)
+      expect(wrapper.find('button.success-icon').exists()).toBe(false)
+      expect(wrapper.find('button.error-icon').exists()).toBe(false)
+
+      // the tooltip carries the validation errors
+      const tooltipValue = (invalid.element as never as Record<string, string>).$_ptooltipValue
+      expect(tooltipValue).toContain('Schema mismatch')
+    })
+  })
+
   describe('Rename / overwrite', () => {
     it('clears duplicate state on overwrite', async () => {
       wrapper.vm.eventFiles = [makeFile('dup.xml', { isDuplicate: true })]

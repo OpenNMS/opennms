@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -109,11 +108,6 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     @Override
     public List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds) {
         throw new UnsupportedOperationException("Not yet implemented!");
-    }
-
-    @Override
-    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns) {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override

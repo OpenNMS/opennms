@@ -34,8 +34,6 @@ import org.opennms.netmgt.notifd.browser.BrowserNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.json.JSONSerializer;
-
 public class NotificationStreamServlet extends WebSocketServlet {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationStreamServlet.class);
 
@@ -80,10 +78,14 @@ public class NotificationStreamServlet extends WebSocketServlet {
         }
 
         private void sendNotification(final BrowserNotificationMessage message) {
+            // put(), not append(): append() wraps each value in an array.
             final JSONObject json = new JSONObject();
-            json.append("id", message.getId());
-            json.append("head", message.getHead());
-            json.append("body", message.getBody());
+            json.put("id", message.getId());
+            json.put("head", message.getHead());
+            json.put("body", message.getBody());
+            if (message.getNoticeId() != null) {
+                json.put("noticeId", message.getNoticeId());
+            }
 
             try {
                 this.getRemote().sendString(json.toString());

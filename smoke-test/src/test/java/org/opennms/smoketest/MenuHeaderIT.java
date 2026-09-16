@@ -62,36 +62,22 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         WebElement foundElement = null;
 
         // Dashboards Menu
-        clickMenuItem("Dashboards", "Heatmap");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/a[starts-with(text(), 'Alarm Heatmap')]")));
-
-        clickMenuItem("Dashboards", "Trends");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Trend']")));
-
-        clickMenuItem("Dashboards", "Charts");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("include-charts")));
 
         clickMenuItem("Dashboards", "Database Reports");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[@data-name='report-templates']")));
-
-        clickMenuItem("Dashboards", "Metrics Statistics (statsd)");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span")));
 
         clickMenuItem("Dashboards", "Graph Collections");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
 
         clickMenuItem("Dashboards", "Surveillance Dashboard");
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
 
         driver.switchTo().parentFrame();
         frontPage();
 
         // Inventory Menu
-        // Note, some items are below under Vue UI checks
-        clickMenuItem("Inventory", "Nodes (Legacy)");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']//li[contains(text()[normalize-space()], 'Node List')]")));
-
+        // Note, the Vue "Nodes" item is checked below under Vue UI checks
         clickMenuItem("Inventory", "Assets");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='card-header']/span[text()='Search Asset Information']")));
 
@@ -118,15 +104,24 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("Monitoring", "Surveillance View");
         // switchTo() by xpath is much faster than by ID
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         driver.switchTo().parentFrame();
         frontPage();
 
         // Metrics Menu
+        // JSP Resource Graphs page
         clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@class='router-link-active router-link-exact-active'][contains(text()[normalize-space()], 'Resource Graphs')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//li[contains(text()[normalize-space()], 'Resources')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Resource Graphs')]")));
+
+        // Vue Resource Graphs page
+        clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs (Preview)");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'search-field')]//label[contains(text()[normalize-space()], 'Search/Filter Resources')]")));
+
+        // Vue Custom Performance Graphs page
+        clickMenuItem("Metrics (Resource Graphs)", "Custom Performance Graphs (Preview)");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Custom Performance Graphs']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h2[text()='Custom Performance Graphs']")));
 
         // Distributed Monitoring
         clickMenuItem("Distributed Monitoring", "Manage Minions");
@@ -162,10 +157,12 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // User Management Menu
         clickMenuItem("User Management", "Manage Users");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'User List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Users']")));
 
         clickMenuItem("User Management", "Manage Groups");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Group List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
 
         clickMenuItem("User Management", "Manage On-call Roles");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
@@ -208,6 +205,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Administration", "Notifications");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Notification queries']")));
 
+        clickMenuItem("Administration", "Notifications (Preview)");
+        // the Vue Notifications page (ui/index.html#/admin/notifications)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Notifications']")));
+
         clickMenuItem("Administration", "Manage Event Configurations");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[@class='event-config']//div[@class='heading']//h1[text()='Manage Event Configurations']")));
 
@@ -215,8 +216,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Manage SNMP Data Collection per Interface']")));
 
         clickMenuItem("Administration", "Scheduled Outages");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Scheduled Outages')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/h4[text()='Scheduled Outages']")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[@class='card-title' and text()='Scheduled Outages']")));
 
         clickMenuItem("Administration", "Product Update Enrollment");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Product Update Enrollment')]")));
@@ -235,8 +236,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
-        foundElement = findMenuItemLink("API Documentation", "REST Open API Documentation");
-        assertNotNull("apiDocumentationMenu / REST Open API Documentation", foundElement);
+        foundElement = findMenuItemLink("API Documentation", "OpenAPI Documentation");
+        assertNotNull("apiDocumentationMenu / OpenAPI Documentation", foundElement);
 
         foundElement = findMenuItemLink("API Documentation", "REST API Reference Documentation");
         assertNotNull("apiDocumentationMenu / REST API Reference Documentation", foundElement);
@@ -271,8 +272,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         assertNotNull("supportMenu / Public Issue Tracker", foundElement);
 
         clickMenuItem("Support", "Generate System Report");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
+        // NMS-20154 repointed this entry to the new PrimeVue page (ui/index.html#/system-report),
+        // which renders the /ui breadcrumb (div.breadcrumbs) and an OnmsButton rather than the
+        // legacy ol.breadcrumb list and a Bootstrap submit input.
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'Generate System Report')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(normalize-space(.), 'Generate System Report')]")));
 
         // Omitting for now - need to fix!
         // Vaadin Topology page
@@ -325,7 +329,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//button[text()[contains(., 'Nodes')]]")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display
-        // clickMenuItem("apiDocumentationMenu", "REST Open API Documentation");
+        // clickMenuItem("apiDocumentationMenu", "OpenAPI Documentation");
         // final WebDriverWait longerWait = new WebDriverWait(getDriver(), Duration.ofSeconds(2));
         // longerWait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Endpoints']")));
@@ -384,9 +388,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         pageContainsText("Report Schedules");
         pageContainsText("Persisted Reports");
 
-        reportsPage();
-        findElementByLink("Statistics Reports").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
     }
 
     @Test
@@ -407,7 +408,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // get the central search text input control and search for "Configure"
-        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']/input[@class='search-input']");
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']");
         searchInput.sendKeys("Configure");
 
         // Get the search result context header

@@ -162,9 +162,9 @@ import {
   type OnmsTablePageEvent,
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
-import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
-import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import ViewDetails from '@/components/icons/action/ViewDetails.vue'
+import DownloadIcon from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
+import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {

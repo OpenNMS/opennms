@@ -18,7 +18,7 @@
 import { computed } from 'vue'
 
 import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
-import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 
 const fileEditorStore = useFileEditorStore()

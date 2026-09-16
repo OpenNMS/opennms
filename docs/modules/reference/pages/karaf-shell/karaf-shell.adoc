@@ -387,6 +387,17 @@ This list is not exhaustive and only covers the most commonly used commands.
 |opennms:graph-search
 |Searches vertices in a given namespace graph
 |Enabled By Default
+ifeval::["{page-component-title}" == "Meridian"]
+|opennms:ha-config
+|Display or modify the high-availability configuration for this instance
+|xref:operation:deep-dive/admin/high-availability.adoc[opennms-ha-shell]
+|opennms:ha-failover
+|Step this ACTIVE instance down so the partner can promote
+|opennms-ha-shell
+|opennms:ha-status
+|Show the state, heartbeat age, and roles of both HA instances
+|opennms-ha-shell
+endif::[]
 |opennms:health-check
 |Verifies that the container is healthy
 |Enabled By Default
@@ -434,6 +445,9 @@ This list is not exhaustive and only covers the most commonly used commands.
 |opennms-core-ipc-kafka
 |opennms:kafka-list-alarms
 |Enumerates the alarms that are currently in the Kafka data store
+|opennms-kafka-producer
+|opennms:kafka-metric-routing-test
+|Show the Kafka topic that metrics for the given node, interface or service are routed to
 |opennms-kafka-producer
 |opennms:kafka-sync-alarms
 |Triggers a syncrhonization of the alarms topic against the database

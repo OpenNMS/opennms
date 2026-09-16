@@ -193,4 +193,63 @@ public class SnmpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertEquals(1, response.getInt("count"));
 
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGroupedNodeIdAndPhysAddrFiqlParses() throws Exception {
+        // Locks in the composed "(ids);(narrowing)" FIQL wire shape the Vue node-list page's
+        // "Show interfaces" mode sends to narrow the SNMP interfaces fetched for a page of nodes
+        // (see buildSnmpNarrowing in NodesTable.vue and getSnmpInterfacesForNodes). A server-side
+        // FIQL parser regression here would otherwise only surface client-side as "No interfaces".
+        sendPost("/monitoringLocations", "<location location-name=\"location1\" monitoring-area=\"location1\" priority=\"1\"/>", 201);
+        String node1 = "<node type=\"A\" label=\"TestMachine1\" foreignSource=\"JUnit\" foreignId=\"TestMachine1\">" +
+                "<location>location1</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", node1, 201);
+        String node2 = "<node type=\"A\" label=\"TestMachine2\" foreignSource=\"JUnit\" foreignId=\"TestMachine2\">" +
+                "<location>location1</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", node2, 201);
+
+        // node1 gets a non-matching physAddr and node2 gets the matching one, so a grouped query
+        // is the ONLY shape that can return count 1: the broken ungrouped precedence shape
+        // "node.id==1,(node.id==2;physAddr==...)" (OR binds looser than the intersection) would
+        // match node 1 via the bare node.id==1 term regardless of physAddr, returning count 2.
+        String snmpInterface1 = "<snmpInterface ifIndex=\"6\">" +
+                "<ifAdminStatus>1</ifAdminStatus>" +
+                "<ifDescr>en1</ifDescr>" +
+                "<ifName>en1</ifName>" +
+                "<ifOperStatus>1</ifOperStatus>" +
+                "<ifSpeed>10000000</ifSpeed>" +
+                "<ifType>6</ifType>" +
+                "<netMask>255.255.255.0</netMask>" +
+                "<physAddr>aabbcc000001</physAddr>" +
+                "</snmpInterface>";
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface1, 201, "/nodes/1/snmpinterfaces/6");
+
+        String snmpInterface2 = "<snmpInterface ifIndex=\"6\">" +
+                "<ifAdminStatus>1</ifAdminStatus>" +
+                "<ifDescr>en1</ifDescr>" +
+                "<ifName>en1</ifName>" +
+                "<ifOperStatus>1</ifOperStatus>" +
+                "<ifSpeed>10000000</ifSpeed>" +
+                "<ifType>6</ifType>" +
+                "<netMask>255.255.255.0</netMask>" +
+                "<physAddr>001e5271136d</physAddr>" +
+                "</snmpInterface>";
+        sendPost("/nodes/2/snmpinterfaces", snmpInterface2, 201, "/nodes/2/snmpinterfaces/6");
+
+        // Parse-only sanity check: the grouped node.id OR alone (no physAddr narrowing) parses
+        // and matches both nodes' interfaces.
+        String parseOnlyResponse = sendRequest(GET, "/snmpinterfaces", parseParamData("_s=(node.id==1,node.id==2)"), 200);
+        assertEquals(2, new JSONObject(parseOnlyResponse).getInt("count"));
+
+        // Grouped node.id OR intersected with a grouped physAddr narrowing -- only node 2's
+        // interface has the matching physAddr, so the correctly-grouped query returns exactly 1.
+        String jsonResponse = sendRequest(GET, "/snmpinterfaces", parseParamData("_s=(node.id==1,node.id==2);(physAddr==*001e5271136d*)"), 200);
+        JSONObject response = new JSONObject(jsonResponse);
+        assertEquals(1, response.getInt("count"));
+    }
 }

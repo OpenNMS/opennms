@@ -87,7 +87,7 @@
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="api/v2/api-docs/?url=/opennms/api/v2/openapi.json#/" target="_blank"
+                            href="api/v2/api-docs/#/" target="_blank"
                             class="btn btn-secondary" role="button" style="width: 100%">Swagger UI</a></td>
                     <td style="border-top: none;">A graphical user interface for the OpenNMS OpenAPI docs.</td>
                 </tr>

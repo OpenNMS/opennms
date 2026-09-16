@@ -36,26 +36,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.Address;
-import javax.mail.Authenticator;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Part;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.Address;
+import jakarta.mail.Authenticator;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.NoSuchProviderException;
+import jakarta.mail.Part;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.event.TransportEvent;
+import jakarta.mail.event.TransportListener;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.opennms.core.utils.PropertiesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public class JavaMailer {
     private static final String DEFAULT_MAILER = "smtpsend";
     private static final String DEFAULT_TRANSPORT = "smtp";
     private static final boolean DEFAULT_MAILER_DEBUG = false;
-    private static final boolean DEFAULT_USE_JMTA = true;
+    private static final boolean DEFAULT_USE_JMTA = false;
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_CHARSET = "us-ascii";
     private static final String DEFAULT_ENCODING = "Q"; // I think this means quoted-printable encoding, see bug 2825
@@ -132,6 +132,8 @@ public class JavaMailer {
     private String m_inputStreamContentType;
     
     private Map<String,String> m_extraHeaders = new HashMap<String,String>();
+
+    private boolean m_jmtaWarned;
 
     
     /**
@@ -251,7 +253,7 @@ public class JavaMailer {
     /**
      * Helper method to create an Authenticator based on Password Authentication
      *
-     * @return a {@link javax.mail.Authenticator} object.
+     * @return a {@link jakarta.mail.Authenticator} object.
      */
     public Authenticator createAuthenticator() {
         Authenticator auth;
@@ -292,6 +294,11 @@ public class JavaMailer {
                 streamBodyPart.setHeader("Content-Transfer-Encoding", "base64");
                 streamBodyPart.setDisposition(Part.ATTACHMENT);
                 MimeMultipart mp = new MimeMultipart();
+                // The text body precedes the attachment, matching the file-attachment
+                // branch below; without it a streamed attachment arrives with no message.
+                BodyPart textBodyPart = new MimeBodyPart();
+                textBodyPart.setContent(encodedText, m_contentType+"; charset="+m_charSet);
+                mp.addBodyPart(textBodyPart);
                 mp.addBodyPart(streamBodyPart);
                 message.setContent(mp);
             } else {
@@ -372,7 +379,7 @@ public class JavaMailer {
      *
      * @param file file to attach
      * @return attachment body part
-     * @throws javax.mail.MessagingException if we can't set the data handler or
+     * @throws jakarta.mail.MessagingException if we can't set the data handler or
      *      the file name on the MimeBodyPart
      * @throws org.opennms.javamail.JavaMailerException if the file does not exist or is not
      *      readable
@@ -431,7 +438,7 @@ public class JavaMailer {
     /**
      * Send message.
      *
-     * @param message a {@link javax.mail.Message} object.
+     * @param message a {@link jakarta.mail.Message} object.
      * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public void sendMessage(Message message) throws JavaMailerException {
@@ -443,10 +450,7 @@ public class JavaMailer {
             LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
 
-            if (t.getURLName().getProtocol().equals("mta")) {
-                // JMTA throws an AuthenticationFailedException if we call connect()
-                LOG.debug("transport is 'mta', not trying to connect()");
-            } else if (isAuthenticate()) {
+            if (isAuthenticate()) {
                 LOG.debug("authenticating to {}", getMailHost());
                 t.connect(getMailHost(), getSmtpPort(), getUser(), getPassword());
             } else {
@@ -801,11 +805,13 @@ public class JavaMailer {
      * @return a {@link java.lang.String} object.
      */
     public String getTransport() {
-        if (isUseJMTA()) {
-            return "mta";
-        } else {
-            return m_transport;
+        final boolean mtaTransport = "mta".equals(m_transport);
+        if ((isUseJMTA() || mtaTransport) && !m_jmtaWarned) {
+            m_jmtaWarned = true;
+            LOG.warn("the JMTA/'mta' transport is no longer supported; sending via '{}' instead",
+                    mtaTransport ? DEFAULT_TRANSPORT : m_transport);
         }
+        return mtaTransport ? DEFAULT_TRANSPORT : m_transport;
     }
 
     /**

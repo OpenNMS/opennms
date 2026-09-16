@@ -70,9 +70,11 @@ describe('Menu utils', () => {
       expect(inventory.key).toBe('opennms-menu-id-inventoryMenu')
       expect(inventory.label).toBe('Inventory')
       expect(inventory.iconComponent).toBeDefined()
+      // topLevel marks root items for collapsed-rail tooltips; child items don't get it
+      expect(inventory.topLevel).toBe(true)
 
       const inventoryItems = childItems(inventory)
-      expect(inventoryItems).toHaveLength(3)
+      expect(inventoryItems).toHaveLength(2)
       expect(inventoryItems[0]).toMatchObject({
         key: 'nodes',
         label: 'Nodes',
@@ -80,13 +82,8 @@ describe('Menu utils', () => {
         target: '_self'
       })
       expect(inventoryItems[0].iconComponent).toBeUndefined()
+      expect(inventoryItems[0].topLevel).toBeUndefined()
       expect(inventoryItems[1]).toMatchObject({
-        key: 'legacyNodes',
-        label: 'Nodes (Legacy)',
-        url: `${baseHref}element/nodeList.htm`,
-        target: '_self'
-      })
-      expect(inventoryItems[2]).toMatchObject({
         key: 'deviceConfigs',
         label: 'Device Configs',
         url: `${baseHref}ui/index.html#/device-config-backup`,

@@ -157,15 +157,15 @@ describe('GeneralConfiguration.vue', () => {
   it('submits the updated payload successfully and refreshes the store', async () => {
     const wrapper = mountComponent()
 
-    await setBindingValue(wrapper, 'port', '10162')
+    await setBindingValue(wrapper, 'port', 10162)
     await setBindingValue(wrapper, 'bindAddress', '*')
     await setBindingValue(wrapper, 'newSuspectOnTrap', false)
     await setBindingValue(wrapper, 'trapMessageStatus', true)
     await setBindingValue(wrapper, 'trapSourceAddressStatus', false)
-    await setBindingValue(wrapper, 'threads', '2')
-    await setBindingValue(wrapper, 'queueSize', '6000')
-    await setBindingValue(wrapper, 'batchSize', '300')
-    await setBindingValue(wrapper, 'batchInterval', '900')
+    await setBindingValue(wrapper, 'threads', 2)
+    await setBindingValue(wrapper, 'queueSize', 6000)
+    await setBindingValue(wrapper, 'batchSize', 300)
+    await setBindingValue(wrapper, 'batchInterval', 900)
 
     await (wrapper.vm as any).updateConfig()
     await flushPromises()
