@@ -1,6 +1,6 @@
-[[releasenotes-36]]
+[[releasenotes-37]]
 
-= What's New in OpenNMS {page-component-title} 36
+= What's New in OpenNMS {page-component-title} 37
 
 == System requirements and Dependencies
 
@@ -18,6 +18,14 @@ and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extende
 Most installations require no action, but there are behavior and compatibility changes for installations with
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
+
+=== Trends removed
+The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
+
+=== Heatmap removed
+The Heatmap page has been removed from the Dashboards menu and from the product, together with the `/rest/heatmap` endpoint and the `org.opennms.heatmap.*` system properties, which are no longer read.
+The `getHeatMapItemsForEntity` methods are gone from the internal `AlarmDao` and `OutageDao` interfaces; they were not part of the Integration API.
+A `org.opennms.web.console.centerUrl` that still names the heatmap or trend box is skipped when the legacy home page renders.
 
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.

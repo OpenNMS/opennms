@@ -102,7 +102,7 @@
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
 				// the heatmap and trend boxes are gone; a centerUrl still naming them must not break the page
-				if (centerUrlItem.contains("/heatmap/") || centerUrlItem.contains("/trend/")) {
+				if (centerUrlItem.contains("heatmap/") || centerUrlItem.contains("trend/")) {
 					continue;
 				}
 		%>
