@@ -15,24 +15,25 @@
       :rows="pageSize"
       :first="first"
       :rowsPerPageOptions="[5, 10, 20, 50]"
+      tableStyle="table-layout: fixed; width: 100%"
       sortField="ipAddress"
       :sortOrder="1"
       data-test="ip-interfaces-table"
       @page="onPage"
     >
-      <OnmsColumn field="ipAddress" header="IP Address" sortable>
+      <OnmsColumn style="width: 28%" field="ipAddress" header="IP Address" sortable>
         <template #body="{ data }">
           <a v-if="data.ipAddress" :href="interfaceLink(baseHref, nodeId, data.ipAddress)" data-test="ip-address-link">{{ data.ipAddress }}</a>
           <span v-else>N/A</span>
         </template>
       </OnmsColumn>
-      <OnmsColumn field="hostName" header="IP Host Name" sortable>
+      <OnmsColumn style="width: 24%" field="hostName" header="IP Host Name" sortable>
         <template #body="{ data }">{{ data.hostName || 'N/A' }}</template>
       </OnmsColumn>
-      <OnmsColumn field="ifIndex" header="SNMP ifIndex" sortable>
+      <OnmsColumn style="width: 22%" field="ifIndex" header="SNMP ifIndex" sortable>
         <template #body="{ data }">{{ data.ifIndex || 'N/A' }}</template>
       </OnmsColumn>
-      <OnmsColumn field="isManaged" header="Managed" sortable>
+      <OnmsColumn style="width: 26%" field="isManaged" header="Managed" sortable>
         <template #body="{ data }">{{ data.isManaged || 'N/A' }}</template>
       </OnmsColumn>
       <template #empty>
@@ -115,6 +116,16 @@ defineExpose({ onPage })
 </script>
 
 <style lang="scss" scoped>
+// See the note in SnmpInterfacesTable: fixed layout, explicit widths, and tightened horizontal
+// padding keep the table inside the half-width panel instead of overflowing into a horizontal
+// scrollbar. This table has four columns rather than five so it has more room, but it shares the
+// treatment so the two tabs line up. The widths are driven by the headers, not the values:
+// 'Managed' is the widest atom in this table even though its cell holds a single letter.
+:deep(.p-datatable-tbody > tr > td),
+:deep(.p-datatable-thead > tr > th) {
+  padding-inline: 8px;
+}
+
 .interfaces-search {
   margin-bottom: 15px;
 }

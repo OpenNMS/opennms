@@ -15,17 +15,18 @@
       :rows="pageSize"
       :first="first"
       :rowsPerPageOptions="[5, 10, 20, 50]"
+      tableStyle="table-layout: fixed; width: 100%"
       sortField="ifIndex"
       :sortOrder="1"
       data-test="snmp-interfaces-table"
       @page="onPage"
     >
-      <OnmsColumn field="ifIndex" header="SNMP ifIndex" sortable>
+      <OnmsColumn style="width: 19%" field="ifIndex" header="SNMP ifIndex" sortable>
         <template #body="{ data }">
           <a :href="snmpInterfaceLink(baseHref, nodeId, data.ifIndex)" data-test="if-index-link">{{ data.ifIndex }}</a>
         </template>
       </OnmsColumn>
-      <OnmsColumn field="status" header="Status" sortable>
+      <OnmsColumn style="width: 22%" field="status" header="Status" sortable>
         <template #body="{ data }">
           <OnmsTag
             v-onms-tooltip.top="snmpInterfaceStatusTooltip(data)"
@@ -36,7 +37,7 @@
           />
         </template>
       </OnmsColumn>
-      <OnmsColumn field="ifName" header="SNMP ifName" sortable>
+      <OnmsColumn style="width: 20%" field="ifName" header="SNMP ifName" sortable>
         <template #body="{ data }">
           <span
             v-onms-tooltip.top="snmpInterfaceNameTooltip(data)"
@@ -45,10 +46,10 @@
           >{{ data.ifName || 'N/A' }}</span>
         </template>
       </OnmsColumn>
-      <OnmsColumn field="ifAlias" header="SNMP ifAlias" sortable>
+      <OnmsColumn style="width: 19%" field="ifAlias" header="SNMP ifAlias" sortable>
         <template #body="{ data }">{{ data.ifAlias || 'N/A' }}</template>
       </OnmsColumn>
-      <OnmsColumn field="ifSpeed" header="SNMP ifSpeed" sortable>
+      <OnmsColumn style="width: 20%" field="ifSpeed" header="SNMP ifSpeed" sortable>
         <template #body="{ data }"><span v-html="data.ifSpeed" /></template>
       </OnmsColumn>
       <template #empty>
@@ -151,6 +152,25 @@ defineExpose({ onPage })
 </script>
 
 <style lang="scss" scoped>
+// The panel is half the page wide (~463px of table), and five sortable columns did not fit: each
+// header needs its widest word plus the sort indicator plus the cell's horizontal padding, which
+// measured ~100-108px apiece -- ~513px against 463px available. So the table overflowed into a
+// horizontal scrollbar that hid ifSpeed.
+//
+// Percentages alone cannot solve that, since the shortfall is in the minimums. The stock 16px of
+// padding per side is what gives: at 8px the five minimums come to ~433px and fit with room to
+// spare. Shortening the headers would NOT have helped -- the binding word is already 'ifIndex',
+// not the 'SNMP' prefix, so dropping it changes the header's height, not its width.
+//
+// Wrapping stays at word boundaries (no overflow-wrap: anywhere): forcing mid-word breaks at
+// these widths shredded the headers a character at a time and split the UNKNOWN tag across two
+// lines. The widths above are set so each column's widest atom -- that tag, an ifSpeed value --
+// fits on one line.
+:deep(.p-datatable-tbody > tr > td),
+:deep(.p-datatable-thead > tr > th) {
+  padding-inline: 8px;
+}
+
 .interfaces-search {
   margin-bottom: 15px;
 }
