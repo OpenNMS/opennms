@@ -303,6 +303,13 @@ const confirmDelete = async () => {
 
 <style scoped lang="scss">
 .scheduled-outages {
+  padding: 0 2px 2rem 2px;
+
+  // the card only pads vertically; give the header and table room at the sides
+  :deep(.table-card) {
+    padding: 1.5rem;
+  }
+
   .header {
     display: flex;
     align-items: flex-start;
