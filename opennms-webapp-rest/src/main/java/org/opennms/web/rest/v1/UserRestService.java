@@ -41,8 +41,17 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.web.rest.v1.model.UserUpdateForm;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
 import org.opennms.web.api.Authentication;
@@ -78,6 +87,52 @@ public class UserRestService extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List users",
+            description = """
+                    Return every user defined in `users.xml`, sorted by user name. The list is not paged and
+                    ignores query parameters.
+                    A caller without `ROLE_ADMIN` sees the literal `xxxxxxxx` in place of every password hash
+                    except their own.""",
+            operationId = "getUsersV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The configured users.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsUserList.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "user": [
+                        {
+                              "user-id": "admin",
+                              "full-name": "Administrator",
+                              "user-comments": "Default administrator, do not delete",
+                              "email": "",
+                              "password": "gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL",
+                              "passwordSalt": true,
+                              "duty-schedule": [],
+                              "role": [ "ROLE_ADMIN" ]
+                            },
+                        {
+                          "user-id": "rtc",
+                          "full-name": "RTC",
+                          "user-comments": "RTC user, do not delete",
+                          "email": "",
+                          "password": "sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX",
+                          "passwordSalt": true,
+                          "duty-schedule": [],
+                          "role": [ "ROLE_RTC" ]
+                        }
+                      ]
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = "The user configuration could not be read.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "java.io.FileNotFoundException: users.xml")))
+    })
     public OnmsUserList getUsers(@Context final SecurityContext securityContext) {
         try {
             return filterUserPasswords(securityContext, m_userManager.getOnmsUserList());
@@ -89,6 +144,33 @@ public class UserRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("whoami")
+    @Operation(
+            summary = "Get the authenticated user",
+            description = """
+                    Return the `users.xml` entry for the authenticated principal. `password` and `passwordSalt`
+                    are stripped from the response, so they are absent rather than masked.
+                    An authenticated principal that has no `users.xml` entry is answered with 404
+                    `User <name> does not exist.` before the handler's own null check runs.""",
+            operationId = "getAuthenticatedUserV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The authenticated user, without password fields.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsUser.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "user-id": "admin",
+                      "full-name": "Administrator",
+                      "user-comments": "Default administrator, do not delete",
+                      "email": "",
+                      "duty-schedule": [],
+                      "role": [ "ROLE_ADMIN" ]
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "The authenticated principal has no `users.xml` entry.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User admin does not exist.")))
+    })
     public OnmsUser whoami(@Context final SecurityContext securityContext) {
         final String userName = securityContext.getUserPrincipal().getName();
         final OnmsUser user = getOnmsUser(userName);
@@ -103,14 +185,80 @@ public class UserRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{username}")
-    public OnmsUser getUser(@Context final SecurityContext securityContext, @PathParam("username") final String username) {
+    @Operation(
+            summary = "Get a user",
+            description = """
+                    Return one user by name. A caller without `ROLE_ADMIN` asking for somebody else sees the
+                    literal `xxxxxxxx` in place of the password hash.""",
+            operationId = "getUserByNameV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The user.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsUser.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "user-id": "admin",
+                      "full-name": "Administrator",
+                      "user-comments": "Default administrator, do not delete",
+                      "email": "",
+                      "password": "gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL",
+                      "passwordSalt": true,
+                      "duty-schedule": [],
+                      "role": [ "ROLE_ADMIN" ]
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "No such user.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not exist.")))
+    })
+    public OnmsUser getUser(@Context final SecurityContext securityContext,
+            @Parameter(description = "User name as it appears in `users.xml`.", example = "admin", required = true)
+            @PathParam("username") final String username) {
         final OnmsUser user = getOnmsUser(username);
         return filterUserPassword(securityContext, user);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsUser user, @QueryParam("hashPassword") final boolean hashPassword) {
+    @Operation(
+            summary = "Add or replace a user",
+            description = """
+                    Create a user from an XML `<user>` document. Only `application/xml` is consumed; a JSON body is
+                    rejected with 415.
+                    Posting a `user-id` that already exists overwrites that entry rather than failing. `password`
+                    has to be present: a body without one fails with 500.
+                    The response carries no entity; the new user's URI is in the `Location` header.""",
+            operationId = "addUserV1"
+    )
+    @RequestBody(required = true, description = "The user to store.",
+            content = @Content(mediaType = MediaType.APPLICATION_XML,
+                    schema = @Schema(implementation = OnmsUser.class),
+                    examples = @ExampleObject(value = """
+                    <user>
+                      <user-id>jroe</user-id>
+                      <full-name>Jane Roe</full-name>
+                      <user-comments>On call for the NOC</user-comments>
+                      <email>jane.roe@example.org</email>
+                      <password>s3cret</password>
+                      <duty-schedule>MoTuWeThFr800-1700</duty-schedule>
+                      <role>ROLE_USER</role>
+                    </user>""")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User stored. `Location` points at the new user."),
+            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
+            @ApiResponse(responseCode = "415", description = "The body was not `application/xml`."),
+            @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled, or the user could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "'password' cannot be null!")))
+    })
+    public Response addUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsUser user,
+            @Parameter(description = "Hash and salt the supplied password before storing it.", example = "true")
+            @QueryParam("hashPassword") final boolean hashPassword) {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
@@ -132,7 +280,39 @@ public class UserRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{userCriteria}")
-    public Response updateUser(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update a user",
+            description = """
+                    Apply form-encoded fields to an existing user. Keys are matched against the writable
+                    `OnmsUser` bean properties, so they are `fullName` and `comments` rather than the `full-name`
+                    and `user-comments` spellings the read endpoints emit. A key that matches no writable property
+                    is skipped, and a request that wrote nothing comes back as 304.
+                    `password` is stored verbatim unless `hashPassword=true` is sent in the same request.""",
+            operationId = "updateUserV1"
+    )
+    @RequestBody(required = true, description = "Fields to apply.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = UserUpdateForm.class),
+                    examples = @ExampleObject(value = "fullName=Jane+Roe&comments=On+call+for+the+NOC&email=jane.roe@example.org")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The user was updated."),
+            @ApiResponse(responseCode = "304", description = "No supplied key matched a writable property, so nothing was written."),
+            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
+            @ApiResponse(responseCode = "404", description = "No such user.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "500", description = "The user could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+    })
+    public Response updateUser(@Context final SecurityContext securityContext,
+            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
@@ -175,7 +355,36 @@ public class UserRestService extends OnmsRestService {
 
     @PUT
     @Path("{userCriteria}/roles/{roleName}")
-    public Response addRole(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria, @PathParam("roleName") final String roleName) {
+    @Operation(
+            summary = "Grant a role to a user",
+            description = """
+                    Add one security role to a user. The role has to be a known role name, either one of the
+                    built-in `ROLE_*` constants or one declared in `etc/security-roles.properties`.
+                    The request takes no body.""",
+            operationId = "addUserRoleV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The role was added."),
+            @ApiResponse(responseCode = "304", description = "The user already held the role."),
+            @ApiResponse(responseCode = "400", description = "Unknown role name, or the caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Invalid role ROLE_BOGUS!"))),
+            @ApiResponse(responseCode = "404", description = "No such user.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "500", description = "The user could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+    })
+    public Response addRole(@Context final SecurityContext securityContext,
+            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @PathParam("userCriteria") final String userCriteria,
+            @Parameter(description = "Security role to grant.", example = "ROLE_PROVISION", required = true,
+                    schema = @Schema(type = "string"))
+            @PathParam("roleName") final String roleName) {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
@@ -208,7 +417,30 @@ public class UserRestService extends OnmsRestService {
 
     @DELETE
     @Path("{userCriteria}")
-    public Response deleteUser(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria) {
+    @Operation(
+            summary = "Delete a user",
+            description = "Remove a user from `users.xml`. Group memberships and acknowledgements that name the "
+                    + "user are left alone.",
+            operationId = "deleteUserV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The user was deleted."),
+            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
+            @ApiResponse(responseCode = "404", description = "No such user.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "500", description = "The user could not be removed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+    })
+    public Response deleteUser(@Context final SecurityContext securityContext,
+            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @PathParam("userCriteria") final String userCriteria) {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
@@ -229,7 +461,34 @@ public class UserRestService extends OnmsRestService {
 
     @DELETE
     @Path("{userCriteria}/roles/{roleName}")
-    public Response deleteRole(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria, @PathParam("roleName") final String roleName) {
+    @Operation(
+            summary = "Revoke a role from a user",
+            description = "Remove one security role from a user. The role has to be a known role name even when "
+                    + "the user does not hold it.",
+            operationId = "deleteUserRoleV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The role was removed."),
+            @ApiResponse(responseCode = "304", description = "The user did not hold the role."),
+            @ApiResponse(responseCode = "400", description = "Unknown role name, or the caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Invalid role ROLE_BOGUS!"))),
+            @ApiResponse(responseCode = "404", description = "No such user.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "500", description = "The user could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+    })
+    public Response deleteRole(@Context final SecurityContext securityContext,
+            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @PathParam("userCriteria") final String userCriteria,
+            @Parameter(description = "Security role to revoke.", example = "ROLE_PROVISION", required = true,
+                    schema = @Schema(type = "string"))
+            @PathParam("roleName") final String roleName) {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {

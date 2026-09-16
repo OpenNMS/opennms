@@ -21,21 +21,56 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Schema(description = """
+        Complete trapd configuration. Writes replace the stored document rather than patching it, so a
+        field left out falls back to its XSD default instead of keeping its current value.""")
 public class TrapdConfigDto {
+    @Schema(description = "Address trapd binds its listener to. `*` binds every interface.",
+            example = "*")
     private String snmpTrapAddress;
+
+    @Schema(description = "UDP port trapd listens on. Required, 1 to 65535.",
+            example = "10162", required = true, minimum = "1", maximum = "65535")
     private Integer snmpTrapPort;
+
+    @Schema(description = "Whether a trap from an unknown address raises a newSuspect event. Required.",
+            example = "false", required = true)
     private Boolean newSuspectOnTrap;
+
+    @Schema(description = "Whether the raw trap PDU is attached to the generated event.",
+            example = "false")
     private Boolean includeRawMessage;
+
+    @Schema(description = "Worker threads for trap processing. 0 sizes the pool from the available "
+            + "processors. Must be non-negative.",
+            example = "0", minimum = "0")
     private Integer threads;
+
+    @Schema(description = "Depth of the queue between the listener and the workers. Must be greater "
+            + "than 0.",
+            example = "10000", minimum = "1")
     private Integer queueSize;
+
+    @Schema(description = "Maximum traps sent onward in one batch. Must be greater than 0.",
+            example = "1000", minimum = "1")
     private Integer batchSize;
+
+    @Schema(description = "Milliseconds to wait before flushing a partial batch. Must be non-negative.",
+            example = "500", minimum = "0")
     private Integer batchInterval;
+
+    @Schema(description = "Whether the agent address is taken from the trap's snmpTrapAddress varbind "
+            + "rather than the packet source.",
+            example = "false")
     private Boolean useAddressFromVarbind;
+
+    @Schema(description = "SNMPv3 users trapd accepts traps from. Each `id` must be unique.")
     private List<Snmpv3UserDto> snmpv3User;
 
     public String getSnmpTrapAddress() {

@@ -98,6 +98,8 @@ export interface DashboardLayout {
 
 // Props every panel component receives from the PanelFrame.
 export interface PanelComponentProps {
+  // the layout panel id; stable per placed panel, for per-panel persistence keys
+  panelId: string
   options: Record<string, unknown>
   filter: DashboardFilter
   timeframe: Timeframe

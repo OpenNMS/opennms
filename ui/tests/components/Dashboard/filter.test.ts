@@ -31,6 +31,12 @@ describe('dashboard filter helper', () => {
     expect(filterFiqlClauses(filter(), [])).toEqual(['node.id==-1'])
   })
 
+  it('uses the root id property when the nodes endpoint itself is queried', () => {
+    // /api/v2/nodes has no `node` alias: `node.id` is unmapped there and 500s
+    expect(filterFiqlClauses(filter(), [1, 2], 'id')).toEqual(['(id==1,id==2)'])
+    expect(filterFiqlClauses(filter(), [], 'id')).toEqual(['id==-1'])
+  })
+
   it('resolveFilterNodeIds unions members across categories and caches', async () => {
     vi.mocked(v2.get)
       .mockResolvedValueOnce({ data: { node: [{ id: 1 }, { id: 2 }] }})
