@@ -284,7 +284,6 @@
                 <feature>spring-tx/${springVersion}</feature>
                 <feature>spring-web/${springVersion}</feature>
                 <feature>spring-web-portlet/${springVersion}</feature>
-                <feature>spring-websocket/${springVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
                 <feature>activemq-broker-noweb</feature>
@@ -347,7 +346,6 @@
                 <feature>dnsjava</feature>
                 <feature>dropwizard-metrics</feature>
                 <feature>fop</feature>
-                <feature>guava17</feature>
                 <feature>guava</feature>
                 <feature>hibernate36</feature>
                 <feature>hibernate-validator4</feature>
