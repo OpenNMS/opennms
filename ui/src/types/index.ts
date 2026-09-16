@@ -599,7 +599,7 @@ export interface GraphDefinition {
 }
 
 export interface GraphMetricsResponse {
-  columns: [{ values: number[] }]
+  columns: { values: number[] }[]
   constants: Record<string, any>[]
   end: number
   labels: string[]

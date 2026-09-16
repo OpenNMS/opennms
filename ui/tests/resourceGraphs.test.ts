@@ -22,7 +22,7 @@
 
 import { PrintStatement } from '@/types'
 import { assert, test } from 'vitest'
-import { tokenizeStatement, TOKENS, formatStatement, getFormattedLegendStatements } from '@/components/Resources/utils/LegendFormatter'
+import { tokenizeStatement, TOKENS, formatStatement, getFormattedLegendStatements } from '@/components/Resources/utils/legendFormatter'
 
 test('Tokenizing a statement', () => {
   let tokens = tokenizeStatement('Max  : %8.2lf %s\\n')

@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
-import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
+import { formatTimestamps, getFormattedLegendStatements } from './utils/legendFormatter'
 import { downloadGraphCsv } from './utils/graphExport'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
