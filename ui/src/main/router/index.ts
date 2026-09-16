@@ -69,6 +69,13 @@ const isLegacyPlugin = (plugin: Plugin) => {
 
 const zenithConnectEnabled = computed<boolean>(() => menuStore.value?.mainMenu?.zenithConnectEnabled ?? false)
 
+const checkThresholdRole = (from: RouteLocationNormalized) => {
+  if (!adminRole.value) {
+    showSnackBar({ msg: 'Must have the admin role to access Threshold Configuration.' })
+    router.push(from.path)
+  }
+}
+
 const checkSnmpRole = (from: RouteLocationNormalized, isLookup?: boolean) => {
   if (!snmpRole.value) {
     showSnackBar({ msg: 'Must have the proper SNMP role(s) to access SNMP Config.' })
@@ -395,6 +402,43 @@ const router = createRouter({
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')
+    },
+    {
+      path: '/threshold-config',
+      name: 'Threshold Configuration',
+      component: () => import('@/containers/ThresholdConfiguration.vue'),
+      beforeEnter: (to, from) => {
+        if (rolesAreLoaded.value) {
+          checkThresholdRole(from)
+        } else {
+          whenever(rolesAreLoaded, () => checkThresholdRole(from))
+        }
+      }
+    },
+    {
+      // Successor of the legacy '?groupName=X&editGroup' deep link, so runbooks can keep linking a group.
+      path: '/threshold-config/group/:name',
+      name: 'Threshold Group Detail',
+      component: () => import('@/containers/ThresholdGroupDetail.vue'),
+      beforeEnter: (to, from) => {
+        if (rolesAreLoaded.value) {
+          checkThresholdRole(from)
+        } else {
+          whenever(rolesAreLoaded, () => checkThresholdRole(from))
+        }
+      }
+    },
+    {
+      path: '/threshold-config/package/:name',
+      name: 'Threshold Package Detail',
+      component: () => import('@/containers/ThresholdPackageDetail.vue'),
+      beforeEnter: (to, from) => {
+        if (rolesAreLoaded.value) {
+          checkThresholdRole(from)
+        } else {
+          whenever(rolesAreLoaded, () => checkThresholdRole(from))
+        }
+      }
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
