@@ -16,6 +16,23 @@
         <h2 class="headline3" data-test="editor-title">{{ isNew ? 'New Scheduled Outage' : 'Edit Scheduled Outage' }}: {{ name }}</h2>
       </div>
 
+      <OnmsPanel
+        header="How to fill in this form"
+        toggleable
+        :collapsed="!showHelp"
+        class="help-panel"
+        data-test="editor-help"
+        @update:collapsed="(collapsed: boolean) => showHelp = !collapsed"
+      >
+        <ol class="help-steps">
+          <li>Pick the nodes and interfaces the outage covers, or use <strong>Select all nodes and interfaces</strong> to cover everything.</li>
+          <li>Choose the outage type: <strong>Specific</strong> is a one-off window between two dates; <strong>Daily</strong>, <strong>Weekly</strong> and <strong>Monthly</strong> repeat a time-of-day window every day, on a weekday, or on a day of the month.</li>
+          <li>Add one or more time spans with <strong>Add Timespan</strong>. The end must come after the start; times are in the server's time zone.</li>
+          <li>Under <strong>Applies To</strong>, tick which subsystems honor the outage: notifications, and the polling, threshold-checking and data-collection packages.</li>
+          <li>Press <strong>Create</strong> (or <strong>Save</strong>). The outage takes effect at the next poll or collection cycle.</li>
+        </ol>
+      </OnmsPanel>
+
       <div v-if="loading" data-test="editor-loading">Loading…</div>
 
       <template v-else>
@@ -69,6 +86,11 @@
               You must have at least one time span defined.
             </p>
             <p v-if="timeSpanNote" class="field-note" data-test="time-note">{{ timeSpanNote }}</p>
+
+            <div class="actions">
+              <OnmsButton :label="isNew ? 'Create' : 'Save'" data-test="save" :disabled="saving" @click="save" />
+              <OnmsButton variant="ghost" label="Cancel" data-test="cancel-bottom" @click="goBack" />
+            </div>
           </section>
 
           <section class="applies">
@@ -88,10 +110,6 @@
           </section>
         </div>
 
-        <div v-if="!loadFailed" class="actions">
-          <OnmsButton :label="isNew ? 'Create' : 'Save'" data-test="save" :disabled="saving" @click="save" />
-          <OnmsButton variant="ghost" label="Cancel" data-test="cancel-bottom" @click="goBack" />
-        </div>
       </template>
       </template>
     </OnmsCard>
@@ -126,7 +144,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsCard, OnmsConfirmationDialog, OnmsIcon, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard, OnmsConfirmationDialog, OnmsIcon, OnmsPanel, OnmsSelect } from '@opennms/onms-ui'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -176,6 +194,7 @@ const breadcrumbs: BreadCrumb[] = [
 ]
 
 const loading = ref(true)
+const showHelp = ref(false)
 // the outage exists but could not be read; saving would overwrite it blind
 const loadFailed = ref(false)
 const saving = ref(false)
@@ -485,6 +504,18 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
 
   .section-title {
     margin: 0 0 0.75rem 0;
+  }
+
+  .help-panel {
+    margin-bottom: 1rem;
+  }
+
+  .help-steps {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
   }
 
   .pickers {
