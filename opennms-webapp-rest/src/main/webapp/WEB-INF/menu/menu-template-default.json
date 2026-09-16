@@ -35,24 +35,10 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
           "id": "databaseReports",
           "name": "Database Reports",
           "url": "report/database/index.jsp",
           "locationMatch": "database-reports",
-          "roles": null
-        },
-        {
-          "id": "statistics",
-          "name": "Metrics Statistics (statsd)",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
           "roles": null
         },
         {

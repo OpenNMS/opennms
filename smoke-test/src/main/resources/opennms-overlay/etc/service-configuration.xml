@@ -18,7 +18,6 @@
   <service><name>OpenNMS:Name=Vacuumd</name></service>
   <service><name>OpenNMS:Name=EventTranslator</name></service>
   <service><name>OpenNMS:Name=PassiveStatusd</name></service>
-  <service><name>OpenNMS:Name=Statsd</name></service>
   <service><name>OpenNMS:Name=Provisiond</name></service>
   <service><name>OpenNMS:Name=Ackd</name></service>
   <service enabled="${env:CORE_SERVICE_KARAF_ENABLED|true}"><name>OpenNMS:Name=Karaf</name></service>
