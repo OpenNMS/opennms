@@ -51,6 +51,7 @@ import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
+import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -807,29 +808,38 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     private void updateThreshd(ConfigAction action, String outageName, String packageName) {
         getOutage(outageName); // Validate if outageName exists.
-        if (action.equals(ConfigAction.ADD)) {
-            org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
-            if (!pkg.getOutageCalendars().contains(outageName))
-                pkg.addOutageCalendar(outageName);
-        }
-        if (action.equals(ConfigAction.REMOVE)) {
-            org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
-            pkg.removeOutageCalendar(outageName);
-        }
-        if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getWriteableConfig().getPackages()) {
+
+        // The whole read-modify-write cycle has to run under the DAO write lock: the threshold configuration
+        // REST service rewrites the same document, and saving outside the lock lets either side silently
+        // discard the other's changes (saveConfig() serializes whatever the DAO currently holds).
+        m_threshdDao.withWriteLock(config -> {
+            if (config == null) {
+                throw getException(Status.NOT_FOUND, "No threshd configuration has been loaded.");
+            }
+            if (action.equals(ConfigAction.ADD)) {
+                org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(config, packageName);
+                if (!pkg.getOutageCalendars().contains(outageName))
+                    pkg.addOutageCalendar(outageName);
+            }
+            if (action.equals(ConfigAction.REMOVE)) {
+                org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(config, packageName);
                 pkg.removeOutageCalendar(outageName);
             }
-        }
-        try {
-            m_threshdDao.saveConfig();
-        } catch (Exception e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save thresholds configuration: {}", e.getMessage());
-        }
+            if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
+                for (org.opennms.netmgt.config.threshd.Package pkg : config.getPackages()) {
+                    pkg.removeOutageCalendar(outageName);
+                }
+            }
+            try {
+                m_threshdDao.saveConfig();
+            } catch (Exception e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save thresholds configuration: {}", e.getMessage());
+            }
+        });
     }
 
-    private org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
-        return m_threshdDao.getWriteableConfig().getPackage(packageName)
+    private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(ThreshdConfiguration config, String packageName) {
+        return config.getPackage(packageName)
                 .orElseThrow(() -> getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName));
     }
 

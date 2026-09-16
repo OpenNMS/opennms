@@ -265,11 +265,6 @@
         <property name="webOutageRepository" ref="webOutageRepository"/>
     </bean>
 
-    <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
-        <property name="resourceDao" ref="resourceDao"/>
-        <property name="eventConfDao" ref="eventConfDao"/>
-    </bean>
-
     <bean name="mapMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
         <property name="name" value="Maps" />
         <property name="url" value="maps.htm" />

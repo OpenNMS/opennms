@@ -1,0 +1,287 @@
+[[ga-thresholds-rest-api]]
+= Thresholds REST API (v2)
+:description: Manage threshold groups and the threshd daemon configuration through the OpenNMS REST v2 API.
+
+Threshold configuration lives in the database and is managed over REST.
+Two separate APIs cover the two configuration documents:
+
+* `/api/v2/thresholding` -- threshold groups, thresholds and expression thresholds (formerly `thresholds.xml`).
+* `/api/v2/threshd` -- the threshd daemon's packages, services and thresholders (formerly `threshd-configuration.xml`).
+
+Reading requires any authenticated role.
+Every write requires `ROLE_ADMIN`.
+
+== How the two APIs fit together
+
+A threshd package selects interfaces with a filter, and each service in the package names the threshold group to apply through a `thresholding-group` parameter.
+So a working configuration needs a group on the thresholding side and a package referencing it on the threshd side.
+
+== Aggregates, not individual thresholds
+
+A threshold group is the unit of transfer: `GET`, `POST` and `PUT` all carry the whole group, including its thresholds, expressions and resource filters.
+There is no endpoint for an individual threshold, because a threshold has no identity in the schema -- it can only be addressed by its position in the group, and that position is not stable when someone else edits the group at the same time.
+
+The practical consequence: a `PUT` body is not a patch.
+A definition missing from it is deleted.
+Read the group, change what you need, and send the whole thing back.
+
+The same applies to a threshd package and its services.
+
+== Concurrent edits
+
+`GET` on a group or a package returns an `ETag`.
+Send it back as `If-Match` on a later write and the write fails with `412 Precondition Failed` if the stored configuration changed in the meantime, instead of silently overwriting the other change.
+Omitting `If-Match` keeps the last writer.
+
+This matters for threshd packages in particular: the scheduled outages API (`/rest/sched-outages`) also writes package outage calendars.
+
+== Generated event definitions
+
+A threshold may declare its own `triggeredUEI` or `rearmedUEI` instead of using the built-in threshold events.
+If eventconf does not know that UEI yet, saving the threshold also creates an event definition for it, cloned from the built-in threshold event matching the threshold's type.
+Without this the event would still be sent, but it would raise no alarm and fire no notification.
+
+Generated definitions are stored under the `opennms.programmatic.events` event configuration source.
+
+== Thresholding endpoint overview
+
+[options="header"]
+|===
+| Method | Path | Content type | Description
+
+| `GET`
+| `/api/v2/thresholding/groups`
+| `application/json`
+| List threshold groups without their definitions. Groups contributed by an OSGi extension are flagged `readOnly`.
+
+| `GET`
+| `/api/v2/thresholding/groups/{groupName}`
+| `application/json`
+| Get one group with all of its thresholds and expressions. Returns an `ETag`.
+
+| `POST`
+| `/api/v2/thresholding/groups`
+| `application/json`
+| Create a group. Fails with `409` if the name is taken.
+
+| `PUT`
+| `/api/v2/thresholding/groups/{groupName}`
+| `application/json`
+| Replace a group in full. A different `name` in the body renames it.
+
+| `DELETE`
+| `/api/v2/thresholding/groups/{groupName}`
+| --
+| Delete a group.
+
+| `GET`
+| `/api/v2/thresholding/metadata`
+| `application/json`
+| The datasource types, threshold types and filter operators an editor can choose from.
+
+| `POST`
+| `/api/v2/thresholding/reload`
+| --
+| Ask threshd to re-read `thresholds.xml`.
+
+| `GET`
+| `/api/v2/thresholding/download`
+| `application/json` or `application/xml`
+| Download the whole configuration as a file.
+
+| `POST`
+| `/api/v2/thresholding/upload`
+| `multipart/form-data`
+| Replace the whole configuration from a JSON file.
+
+| `POST`
+| `/api/v2/thresholding/upload/xml`
+| `multipart/form-data`
+| Replace the whole configuration from a `<thresholding-config>` XML file.
+|===
+
+=== Datasource types are system specific
+
+`dsType` accepts `node`, `if`, or the name of any generic resource type configured in `datacollection-config.xml` on that system.
+A client cannot hardcode the list; read it from `GET /api/v2/thresholding/metadata`.
+
+Note that a `node` datasource type ignores resource filters entirely.
+
+=== Value, rearm and trigger are strings
+
+`value` and `rearm` accept a number or a metadata reference such as `${scv:key:value}`.
+`trigger` accepts a positive integer or a metadata reference.
+All three are required by the schema even for `relativeChange` and `absoluteChange` thresholds, where the daemon ignores `rearm` and `trigger`.
+
+`rearmedUEI` is dropped for `relativeChange` and `absoluteChange`, which never re-arm. `rearmingAbsoluteChange` keeps it.
+
+`dsName` is limited to 19 characters, which is the longest datasource name RRDtool can store.
+
+=== Examples
+
+Get a group:
+
+[source, console]
+----
+curl -u admin:admin http://localhost:8980/opennms/api/v2/thresholding/groups/mib2
+----
+
+[source, json]
+----
+{
+  "name": "mib2",
+  "rrdRepository": "/opt/opennms/share/rrd/snmp/",
+  "thresholds": [
+    {
+      "type": "high",
+      "dsName": "ifInOctets",
+      "dsType": "if",
+      "value": "90",
+      "rearm": "75",
+      "trigger": "2",
+      "description": "Inbound utilization",
+      "filterOperator": "or",
+      "resourceFilters": [
+        { "field": "ifDescr", "content": "^eth.*" }
+      ]
+    }
+  ],
+  "expressions": [],
+  "readOnly": false,
+  "version": "8f1c..."
+}
+----
+
+Replace it, refusing to clobber a concurrent change:
+
+[source, console]
+----
+curl -u admin:admin -X PUT \
+  -H 'Content-Type: application/json' \
+  -H 'If-Match: "8f1c..."' \
+  -d @group.json \
+  http://localhost:8980/opennms/api/v2/thresholding/groups/mib2
+----
+
+Download and re-upload the whole configuration:
+
+[source, console]
+----
+curl -u admin:admin -o thresholds.xml \
+  'http://localhost:8980/opennms/api/v2/thresholding/download?format=xml'
+
+curl -u admin:admin -X POST -F upload=@thresholds.xml \
+  http://localhost:8980/opennms/api/v2/thresholding/upload/xml
+----
+
+== Threshd endpoint overview
+
+[options="header"]
+|===
+| Method | Path | Content type | Description
+
+| `GET`
+| `/api/v2/threshd/config`
+| `application/json`
+| Get the whole threshd configuration: thread count, packages and thresholders. Returns an `ETag`.
+
+| `PUT`
+| `/api/v2/threshd/config`
+| `application/json`
+| Replace the whole threshd configuration.
+
+| `GET`
+| `/api/v2/threshd/packages`
+| `application/json`
+| List packages without their address and service detail.
+
+| `GET`
+| `/api/v2/threshd/packages/{packageName}`
+| `application/json`
+| Get one package. Returns an `ETag`.
+
+| `POST`
+| `/api/v2/threshd/packages`
+| `application/json`
+| Create a package. Fails with `409` if the name is taken.
+
+| `PUT`
+| `/api/v2/threshd/packages/{packageName}`
+| `application/json`
+| Replace a package in full. A different `name` in the body renames it.
+
+| `DELETE`
+| `/api/v2/threshd/packages/{packageName}`
+| --
+| Delete a package. The last one cannot be deleted.
+
+| `POST`
+| `/api/v2/threshd/reload`
+| --
+| Ask threshd to re-read `threshd-configuration.xml`.
+
+| `GET`
+| `/api/v2/threshd/download`
+| `application/json` or `application/xml`
+| Download the whole configuration as a file.
+
+| `POST`
+| `/api/v2/threshd/upload`
+| `multipart/form-data`
+| Replace the whole configuration from a JSON file.
+
+| `POST`
+| `/api/v2/threshd/upload/xml`
+| `multipart/form-data`
+| Replace the whole configuration from a `<threshd-configuration>` XML file.
+|===
+
+The `thresholder` collection keeps its singular name, matching the XML element and the key used in the stored configuration document.
+
+At least one package is required by the schema, so `DELETE` on the last remaining package fails with `400`.
+
+=== Example
+
+[source, console]
+----
+curl -u admin:admin http://localhost:8980/opennms/api/v2/threshd/packages/example1
+----
+
+[source, json]
+----
+{
+  "name": "example1",
+  "filter": "IPADDR != '0.0.0.0'",
+  "specifics": [],
+  "includeRanges": [ { "begin": "1.1.1.1", "end": "254.254.254.254" } ],
+  "excludeRanges": [],
+  "includeUrls": [],
+  "services": [
+    {
+      "name": "SNMP",
+      "interval": 300000,
+      "userDefined": false,
+      "status": "on",
+      "parameters": [ { "key": "thresholding-group", "value": "mib2" } ]
+    }
+  ],
+  "outageCalendars": []
+}
+----
+
+== Response codes
+
+[options="header"]
+|===
+| Code | Meaning
+
+| `200` | Read succeeded, or an upload was applied.
+| `201` | Created. The `Location` header points at the new resource.
+| `202` | Reload event sent. The daemon reloads asynchronously.
+| `204` | Write succeeded. No response body.
+| `400` | A failed validation rule, an unparseable upload, or a missing body. The response body carries the reason.
+| `403` | Admin role required, or the group is provided by an extension and cannot be modified.
+| `404` | No such group or package, or no configuration is stored.
+| `409` | The name is already taken by another group or package.
+| `412` | `If-Match` no longer matches; the resource changed since it was read.
+|===
