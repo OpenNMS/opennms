@@ -19,10 +19,10 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-
 import API from '@/services'
-import { Minion } from '@/types/minionAdmin'
-import { MinionEdit, minionNodeKey } from '@/services/minionAdminService'
+import { Minion, MinionEdit } from '@/types/minionAdmin'
+import { minionNodeKey } from '@/services/minionAdminService'
+import { ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -35,7 +35,8 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
   // minion id+location -> its requisition node id, for the ID -> node link
   const nodeIdByMinion = ref<Record<string, number>>({})
 
-  const getMinions = async () => {
+  // false when the load failed; the previous list is kept
+  const getMinions = async (): Promise<boolean> => {
     isLoading.value = true
     try {
       const result = await API.listMinions()
@@ -47,6 +48,7 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
       } else {
         loadError.value = true
       }
+      return result !== null
     } finally {
       isLoading.value = false
     }
@@ -55,21 +57,31 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
   const nodeIdFor = (minion: Minion): number | undefined =>
     nodeIdByMinion.value[minionNodeKey(minion.id, minion.location)]
 
-  const updateMinion = async (edit: MinionEdit) => {
-    const error = await API.updateMinion(edit)
-    if (error === null) {
+  const updateMinion = async (edit: MinionEdit): Promise<ValidationResult> => {
+    const result = await API.updateMinion(edit)
+    if (result.success) {
       await getMinions()
     }
-    return error
+    return result
   }
 
-  const deleteMinion = async (id: string) => {
-    const error = await API.deleteMinion(id)
-    if (error === null) {
+  const deleteMinion = async (id: string): Promise<ValidationResult> => {
+    const result = await API.deleteMinion(id)
+    if (result.success) {
       await getMinions()
     }
-    return error
+    return result
   }
 
-  return { minions, loadError, isLoading, totalCount, truncated, nodeIdFor, getMinions, updateMinion, deleteMinion }
+  return {
+    minions,
+    loadError,
+    isLoading,
+    totalCount,
+    truncated,
+    nodeIdFor,
+    getMinions,
+    updateMinion,
+    deleteMinion
+  }
 })

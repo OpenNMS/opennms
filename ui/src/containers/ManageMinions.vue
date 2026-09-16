@@ -6,7 +6,6 @@
   </div>
   <div class="manage-minions-container">
     <h1 class="page-title">Manage Minions</h1>
-    <MinionsHelpPanel />
     <MinionsTable />
   </div>
 </template>
@@ -14,8 +13,9 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
+import { useOnmsToast } from '@opennms/onms-ui'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import MinionsHelpPanel from '@/components/ManageMinions/MinionsHelpPanel.vue'
 import MinionsTable from '@/components/ManageMinions/MinionsTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
@@ -33,8 +33,12 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
+const { showToast } = useOnmsToast()
+
 onMounted(async () => {
-  await store.getMinions()
+  if (!(await store.getMinions())) {
+    showToast({ message: 'Failed to load minions.', severity: 'error' })
+  }
 })
 </script>
 

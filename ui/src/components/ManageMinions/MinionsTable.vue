@@ -15,8 +15,11 @@
           title="Refresh"
           aria-label="Refresh minions"
           data-test="refresh-button"
-          @click="store.getMinions()"
+          @click="refresh"
         />
+        <AboutDialogButton title="Minions">
+          <MinionsAbout />
+        </AboutDialogButton>
       </div>
     </div>
 
@@ -76,17 +79,17 @@
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <OnmsButton
-              variant="text"
-              label="Edit"
+            <OnmsIconButton
+              :icon="Edit"
+              :title="`Edit ${data.label ?? data.id}`"
               :aria-label="`Edit ${data.label ?? data.id}`"
               data-test="edit-minion-button"
               @click="openEditor(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Delete"
+            <OnmsIconButton
+              :icon="Delete"
               severity="danger"
+              :title="`Delete ${data.label ?? data.id}`"
               :aria-label="`Delete ${data.label ?? data.id}`"
               data-test="delete-minion-button"
               @click="askDelete(data)"
@@ -120,16 +123,21 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
+import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import MinionsAbout from '@/components/ManageMinions/MinionsAbout.vue'
 import MinionEditorDialog from '@/components/ManageMinions/MinionEditorDialog.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { Minion } from '@/types/minionAdmin'
 
 const store = useMinionAdminStore()
+const { showToast } = useOnmsToast()
 
 // the minion's node lives on the legacy node page, one level up from /ui
 const NODE_BASE = import.meta.env.BASE_URL.replace(/ui\/?$/, '')
@@ -149,9 +157,16 @@ watch(search, (value) => {
   filters.value.global.value = value || null
 })
 
+// MinionStatusTracker reports up / down / unknown
 const statusSeverity = (status?: string | null) => {
   const s = (status ?? '').toLowerCase()
-  return s === 'up' ? 'success' : s === 'down' ? 'danger' : 'secondary'
+  return s === 'up' ? 'success' : s === 'down' ? 'danger' : s === 'unknown' ? 'warn' : 'secondary'
+}
+
+const refresh = async () => {
+  if (!(await store.getMinions())) {
+    showToast({ message: 'Failed to load minions.', severity: 'error' })
+  }
 }
 
 const formatDate = (value?: string | number | null) => {
@@ -173,11 +188,18 @@ const askDelete = (minion: Minion) => {
 }
 
 const confirmDelete = async () => {
-  if (minionToDelete.value) {
-    await store.deleteMinion(minionToDelete.value.id)
-  }
+  const minion = minionToDelete.value
   showDeleteConfirmation.value = false
   minionToDelete.value = null
+  if (!minion) {
+    return
+  }
+  const result = await store.deleteMinion(minion.id)
+  if (result.success) {
+    showToast({ message: `Minion '${minion.label ?? minion.id}' deleted.`, severity: 'success' })
+  } else {
+    showToast({ message: result.message, severity: 'error' })
+  }
 }
 
 const cancelDelete = () => {

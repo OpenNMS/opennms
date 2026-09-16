@@ -19,18 +19,12 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-
-import useSnackbar from '@/composables/useSnackbar'
-import useSpinner from '@/composables/useSpinner'
-import { Minion } from '@/types/minionAdmin'
+import { Minion, MinionEdit } from '@/types/minionAdmin'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { v2 } from './axiosInstances'
 
-// PrimeVue Manage Minions (NMS-20128). Reuses the existing v2
-// AbstractDaoRestService CRUD at /api/v2/minions — no backend change; the v1
-// REST and the JSON contract are untouched.
+// Uses the existing v2 AbstractDaoRestService CRUD at /api/v2/minions.
 
-const { showSnackBar } = useSnackbar()
-const { startSpinner, stopSpinner } = useSpinner()
 const endpoint = '/minions'
 
 // Only surface a server detail if it looks like a short, plain message — a 500
@@ -52,7 +46,6 @@ const LIST_CAP = 2000
 
 const listMinions = async (): Promise<{ minions: Minion[]; totalCount: number } | null> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}?limit=${LIST_CAP}&orderBy=label`)
     if (resp.status === 204) {
       return { minions: [], totalCount: 0 }
@@ -60,11 +53,9 @@ const listMinions = async (): Promise<{ minions: Minion[]; totalCount: number } 
     const raw = resp.data?.minion ?? []
     const minions = Array.isArray(raw) ? raw : [raw]
     return { minions, totalCount: resp.data?.totalCount ?? minions.length }
-  } catch (_err) {
-    showSnackBar({ msg: 'Failed to load minions.' })
+  } catch (err) {
+    console.error('Error loading minions:', err)
     return null
-  } finally {
-    stopSpinner()
   }
 }
 
@@ -98,19 +89,11 @@ const getMinionNodeIds = async (minions: Minion[]): Promise<Record<string, numbe
   }
 }
 
-export interface MinionEdit {
-  id: string
-  label: string | null
-  location: string
-  properties: Record<string, string>
-}
-
 // Read-before-write: the v2 PUT is a whole-object saveOrUpdate, so we must send
 // the CURRENT server row with only label/location/properties changed — spreading
 // a stale list snapshot would revert the server-maintained status/version/date.
-const updateMinion = async (edit: MinionEdit): Promise<string | null> => {
+const updateMinion = async (edit: MinionEdit): Promise<ValidationResult> => {
   try {
-    startSpinner()
     const current = await v2.get(`${endpoint}/${encodeURIComponent(edit.id)}`)
     const fresh = (current.data ?? {}) as Minion
     const payload: Minion = {
@@ -120,33 +103,24 @@ const updateMinion = async (edit: MinionEdit): Promise<string | null> => {
       properties: edit.properties
     }
     await v2.put(`${endpoint}/${encodeURIComponent(edit.id)}`, payload)
-    showSnackBar({ msg: `Minion '${edit.label ?? edit.id}' updated.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to update minion '${edit.label ?? edit.id}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error updating minion:', err)
+    return createFailureResult(errorMessage(err, `Failed to update minion '${edit.label ?? edit.id}'.`))
   }
 }
 
-const deleteMinion = async (id: string): Promise<string | null> => {
+const deleteMinion = async (id: string): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.delete(`${endpoint}/${encodeURIComponent(id)}`)
-    showSnackBar({ msg: `Minion '${id}' deleted.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
     // already gone (another admin deleted it): treat as success so the row clears
     if (err?.response?.status === 404) {
-      return null
+      return createSuccessResponse()
     }
-    const msg = errorMessage(err, `Failed to delete minion '${id}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error deleting minion:', err)
+    return createFailureResult(errorMessage(err, `Failed to delete minion '${id}'.`))
   }
 }
 

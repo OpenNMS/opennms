@@ -10,6 +10,8 @@ vi.mock('@/services', () => ({
 
 const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {}})
 const listResult = (minions: Minion[], totalCount = minions.length) => ({ minions, totalCount })
+const ok = { success: true, message: '' }
+const failed = (message: string) => ({ success: false, message })
 
 describe('useMinionAdminStore', () => {
   let store: ReturnType<typeof useMinionAdminStore>
@@ -26,10 +28,10 @@ describe('useMinionAdminStore', () => {
 
   it('getMinions loads on success and preserves on failure', async () => {
     vi.mocked(API.listMinions).mockResolvedValue(listResult([minion('m1')]))
-    await store.getMinions()
+    expect(await store.getMinions()).toBe(true)
     expect(store.minions).toEqual([minion('m1')])
     vi.mocked(API.listMinions).mockResolvedValue(null)
-    await store.getMinions()
+    expect(await store.getMinions()).toBe(false)
     expect(store.minions).toEqual([minion('m1')])
     expect(store.loadError).toBe(true)
   })
@@ -50,20 +52,26 @@ describe('useMinionAdminStore', () => {
 
   it('updateMinion refreshes on success, not on failure', async () => {
     const edit = { id: 'm1', label: 'm1', location: 'Default', properties: {}}
-    vi.mocked(API.updateMinion).mockResolvedValue(null)
+    vi.mocked(API.updateMinion).mockResolvedValue(ok)
     vi.mocked(API.listMinions).mockResolvedValue(listResult([minion('m1')]))
-    expect(await store.updateMinion(edit)).toBeNull()
+    expect((await store.updateMinion(edit)).success).toBe(true)
     expect(API.listMinions).toHaveBeenCalledTimes(1)
     vi.clearAllMocks()
-    vi.mocked(API.updateMinion).mockResolvedValue('boom')
-    expect(await store.updateMinion(edit)).toBe('boom')
+    vi.mocked(API.updateMinion).mockResolvedValue(failed('boom'))
+    expect(await store.updateMinion(edit)).toEqual({ success: false, message: 'boom' })
     expect(API.listMinions).not.toHaveBeenCalled()
   })
 
   it('deleteMinion refreshes on success', async () => {
-    vi.mocked(API.deleteMinion).mockResolvedValue(null)
+    vi.mocked(API.deleteMinion).mockResolvedValue(ok)
     vi.mocked(API.listMinions).mockResolvedValue(listResult([]))
-    await store.deleteMinion('m1')
+    expect((await store.deleteMinion('m1')).success).toBe(true)
     expect(store.minions).toEqual([])
+  })
+
+  it('deleteMinion bubbles the failure result without refreshing', async () => {
+    vi.mocked(API.deleteMinion).mockResolvedValue(failed('nope'))
+    expect(await store.deleteMinion('m1')).toEqual({ success: false, message: 'nope' })
+    expect(API.listMinions).not.toHaveBeenCalled()
   })
 })

@@ -53,7 +53,7 @@
     </div>
 
     <template #footer>
-      <OnmsButton variant="text" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+      <OnmsButton variant="ghost" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
       <OnmsButton label="Save Minion" :disabled="!!dupKeyProblem || !!locationProblem || saving" data-test="save-button" @click="save" />
     </template>
   </OnmsDialog>
@@ -62,13 +62,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, useOnmsToast } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
-import { Minion } from '@/types/minionAdmin'
-import { MinionEdit } from '@/services/minionAdminService'
+import { Minion, MinionEdit } from '@/types/minionAdmin'
 
 const props = defineProps<{
   visible: boolean
@@ -78,6 +77,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useMinionAdminStore()
+const { showToast } = useOnmsToast()
 
 const label = ref('')
 const location = ref('')
@@ -139,11 +139,12 @@ const save = async () => {
       location: location.value.trim(),
       properties: propertyMap
     }
-    const error = await store.updateMinion(edit)
-    if (error === null) {
+    const result = await store.updateMinion(edit)
+    if (result.success) {
+      showToast({ message: `Minion '${edit.label ?? edit.id}' updated.`, severity: 'success' })
       emit('update:visible', false)
     } else {
-      errorText.value = error
+      errorText.value = result.message
     }
   } finally {
     saving.value = false

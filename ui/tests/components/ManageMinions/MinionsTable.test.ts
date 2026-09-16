@@ -13,7 +13,7 @@ const mountTable = () => {
   const wrapper = mount(MinionsTable, {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-      stubs: { MinionEditorDialog: true, OnmsConfirmationDialog: true, TableCard: { template: '<div><slot /></div>' }}
+      stubs: { MinionEditorDialog: true, OnmsConfirmationDialog: true, AboutDialogButton: true, TableCard: { template: '<div><slot /></div>' }}
     }
   })
   return { wrapper, store: useMinionAdminStore() }
@@ -57,6 +57,21 @@ describe('MinionsTable.vue', () => {
     await ctx.wrapper.vm.$nextTick()
     await ctx.wrapper.find('[data-test="refresh-button"]').trigger('click')
     expect(ctx.store.getMinions).toHaveBeenCalled()
+  })
+
+  it('renders icon Edit and Delete actions per row', async () => {
+    ctx.store.minions = [minion('m1')] as any
+    await ctx.wrapper.vm.$nextTick()
+    const edit = ctx.wrapper.find('[data-test="edit-minion-button"]')
+    const del = ctx.wrapper.find('[data-test="delete-minion-button"]')
+    expect(edit.exists()).toBe(true)
+    expect(del.exists()).toBe(true)
+    expect(edit.attributes('aria-label')).toBe('Edit m1')
+    expect(edit.find('svg').exists()).toBe(true)
+  })
+
+  it('offers the About dialog from the card header', () => {
+    expect(ctx.wrapper.findComponent({ name: 'AboutDialogButton' }).exists()).toBe(true)
   })
 
   it('links the ID to its node when a node id is known', async () => {

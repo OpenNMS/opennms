@@ -29,7 +29,7 @@ describe('MinionEditorDialog.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    store = { updateMinion: vi.fn().mockResolvedValue(null) }
+    store = { updateMinion: vi.fn().mockResolvedValue({ success: true, message: '' }) }
     vi.mocked(useMinionAdminStore).mockReturnValue(store)
   })
 
@@ -58,6 +58,15 @@ describe('MinionEditorDialog.vue', () => {
     expect(store.updateMinion.mock.calls[0][0].properties).toEqual({ ' region': 'us' })
   })
 
+  it('has a ghost Cancel button that closes without saving', async () => {
+    await mountDialog()
+    const cancel = wrapper.find('[data-test="cancel-button"]')
+    expect(cancel.exists()).toBe(true)
+    await cancel.trigger('click')
+    expect(store.updateMinion).not.toHaveBeenCalled()
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+  })
+
   it('requires a location', async () => {
     await mountDialog()
     await wrapper.find('[data-test="location-input"]').setValue('')
@@ -74,7 +83,7 @@ describe('MinionEditorDialog.vue', () => {
   })
 
   it('shows a server rejection inside the dialog and stays open', async () => {
-    store.updateMinion.mockResolvedValue('Update failed on the server.')
+    store.updateMinion.mockResolvedValue({ success: false, message: 'Update failed on the server.' })
     await mountDialog()
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()

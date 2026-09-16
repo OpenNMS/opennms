@@ -4,8 +4,6 @@ import { deleteMinion, getMinionNodeIds, listMinions, updateMinion } from '@/ser
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }}))
-vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar: vi.fn() }) }))
-vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
 
 const http = (status: number) => {
   const e = new AxiosError('x')
@@ -55,7 +53,8 @@ describe('minionAdminService', () => {
     vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1', label: 'old', location: 'Default', type: 'Minion', status: 'DOWN', version: '2.0', date: 999, properties: {}}})
     vi.mocked(v2.put).mockResolvedValue({})
 
-    await updateMinion({ id: 'm1', label: 'new label', location: 'RemoteA', properties: { k: 'v' }})
+    const result = await updateMinion({ id: 'm1', label: 'new label', location: 'RemoteA', properties: { k: 'v' }})
+    expect(result.success).toBe(true)
 
     const [, body] = vi.mocked(v2.put).mock.calls[0]
     expect(body).toMatchObject({
@@ -64,13 +63,33 @@ describe('minionAdminService', () => {
     })
   })
 
-  it('deleteMinion treats a 404 (already deleted) as success', async () => {
-    vi.mocked(v2.delete).mockRejectedValue(http(404))
-    expect(await deleteMinion('gone')).toBeNull()
+  it('updateMinion returns a failure result with the server detail when it is a short plain message', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1' }})
+    const err = http(400)
+    err.response!.data = 'Location does not exist'
+    vi.mocked(v2.put).mockRejectedValue(err)
+    expect(await updateMinion({ id: 'm1', label: null, location: 'Nope', properties: {}})).toEqual({ success: false, message: 'Location does not exist' })
   })
 
-  it('deleteMinion returns the error message on a real failure', async () => {
+  it('updateMinion falls back to a generic message for an HTML error page', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1' }})
+    const err = http(500)
+    err.response!.data = '<html><body>Server Error</body></html>'
+    vi.mocked(v2.put).mockRejectedValue(err)
+    const result = await updateMinion({ id: 'm1', label: 'One', location: 'Default', properties: {}})
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Failed to update minion \'One\'.')
+  })
+
+  it('deleteMinion treats a 404 (already deleted) as success', async () => {
+    vi.mocked(v2.delete).mockRejectedValue(http(404))
+    expect(await deleteMinion('gone').then(r => r.success)).toBe(true)
+  })
+
+  it('deleteMinion returns a failure result on a real failure', async () => {
     vi.mocked(v2.delete).mockRejectedValue(http(500))
-    expect(await deleteMinion('m1')).toBeTruthy()
+    const result = await deleteMinion('m1')
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Failed to delete minion \'m1\'.')
   })
 })

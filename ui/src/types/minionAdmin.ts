@@ -40,3 +40,11 @@ export interface MinionApiResponse {
   count: number
   offset: number
 }
+
+// What the editor may change; the service merges it onto the current server row.
+export interface MinionEdit {
+  id: string
+  label: string | null
+  location: string
+  properties: Record<string, string>
+}

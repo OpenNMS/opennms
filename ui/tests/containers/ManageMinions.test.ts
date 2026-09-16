@@ -10,10 +10,11 @@ describe('ManageMinions.vue (container)', () => {
     const wrapper = mount(ManageMinions, {
       global: {
         plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-        stubs: { MinionsTable: true, MinionsHelpPanel: true, BreadCrumbs: true }
+        stubs: { MinionsTable: true, BreadCrumbs: true }
       }
     })
     const store = useMinionAdminStore()
+    vi.mocked(store.getMinions).mockResolvedValue(true)
     await flushPromises()
     expect(store.getMinions).toHaveBeenCalled()
     expect(wrapper.find('.page-title').text()).toBe('Manage Minions')
