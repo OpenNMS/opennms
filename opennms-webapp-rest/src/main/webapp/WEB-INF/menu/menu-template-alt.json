@@ -205,13 +205,6 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
           "id": "databaseReports",
           "name": "Database Reports",
           "url": "report/database/index.jsp",

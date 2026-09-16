@@ -1,6 +1,6 @@
-[[releasenotes-36]]
+[[releasenotes-37]]
 
-= What's New in OpenNMS {page-component-title} 36
+= What's New in OpenNMS {page-component-title} 37
 
 == System requirements and Dependencies
 
@@ -34,6 +34,11 @@ The Trends page has been removed from the Dashboards menu and from the product. 
 
 === Charts removed
 The Charts page, its JFreeChart rendering and the `features/charts` module have been removed from the Dashboards menu and from the product. `etc/chart-configuration.xml` and its configuration model go with it; the file is no longer read.
+
+=== Heatmap removed
+The Heatmap page has been removed from the Dashboards menu and from the product, together with the `/rest/heatmap` endpoint and the `org.opennms.heatmap.*` system properties, which are no longer read.
+The `getHeatMapItemsForEntity` methods are gone from the internal `AlarmDao` and `OutageDao` interfaces; they were not part of the Integration API.
+A `org.opennms.web.console.centerUrl` that still names the heatmap or trend box is skipped when the legacy home page renders.
 
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
