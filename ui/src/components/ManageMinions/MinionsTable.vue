@@ -63,7 +63,7 @@
         <template #body="{ data }">
           <OnmsTag
             :value="data.status ?? 'unknown'"
-            :severity="statusSeverity(data.status)"
+            :severity="statusTagSeverity(data.status)"
           />
         </template>
       </OnmsColumn>
@@ -157,8 +157,9 @@ watch(search, (value) => {
   filters.value.global.value = value || null
 })
 
-// MinionStatusTracker reports up / down / unknown
-const statusSeverity = (status?: string | null) => {
+// Minion status is a state string (what MinionStatusTracker last observed), not a
+// severity; this maps it onto the tag's colour vocabulary.
+const statusTagSeverity = (status?: string | null) => {
   const s = (status ?? '').toLowerCase()
   return s === 'up' ? 'success' : s === 'down' ? 'danger' : s === 'unknown' ? 'warn' : 'secondary'
 }

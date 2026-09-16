@@ -60,33 +60,49 @@ const listMinions = async (): Promise<{ minions: Minion[]; totalCount: number } 
 }
 
 // Each minion auto-registers a requisition node whose foreignId is the minion id.
-// Resolve them in one query and key by id+location (ids repeat across locations),
-// mirroring the legacy page so a minion's ID can link to its node. Best-effort:
-// the link is a convenience, so a failure just yields no links.
+// Resolve them and key by id+location (ids repeat across locations), mirroring
+// the legacy page so a minion's ID can link to its node. Best-effort: the link
+// is a convenience, so a failure just yields no links for that chunk.
 const minionNodeKey = (id: string, location: string | null) => `${id}\u0000${location ?? ''}`
 
+// One "foreignId==<id>" clause per minion, ~54 bytes each once encoded, so the
+// URL stays well inside an 8 KB request line however many minions exist.
+export const NODE_LOOKUP_CHUNK = 50
+
+// Ids are free text on the write path (in practice UUIDs). Anything that is
+// meaningful to the FIQL grammar (, ; ( ) = ! ~ < > and whitespace) would change
+// the query, so such ids are left out of the lookup and simply get no link.
+const FIQL_SAFE_ID = /^[A-Za-z0-9._:@+/-]+$/
+export const isFiqlSafeId = (id: string): boolean => FIQL_SAFE_ID.test(id)
+
+const lookupNodeIds = async (ids: string[]): Promise<Record<string, number>> => {
+  const fiql = '(' + ids.map(id => `foreignId==${id}`).join(',') + ')'
+  const resp = await v2.get(`/nodes?limit=${LIST_CAP}&_s=${encodeURIComponent(fiql)}`)
+  if (resp.status === 204) {
+    return {}
+  }
+  const raw = resp.data?.node ?? []
+  const nodes = Array.isArray(raw) ? raw : [raw]
+  const map: Record<string, number> = {}
+  for (const n of nodes) {
+    if (n.foreignId != null) {
+      map[minionNodeKey(String(n.foreignId), n.location ?? null)] = Number(n.id)
+    }
+  }
+  return map
+}
+
 const getMinionNodeIds = async (minions: Minion[]): Promise<Record<string, number>> => {
-  if (!minions.length) {
-    return {}
-  }
-  try {
-    const fiql = '(' + minions.map(m => `foreignId==${m.id}`).join(',') + ')'
-    const resp = await v2.get(`/nodes?limit=${LIST_CAP}&_s=${encodeURIComponent(fiql)}`)
-    if (resp.status === 204) {
-      return {}
+  const ids = [...new Set(minions.map(m => m.id).filter(isFiqlSafeId))]
+  const map: Record<string, number> = {}
+  for (let i = 0; i < ids.length; i += NODE_LOOKUP_CHUNK) {
+    try {
+      Object.assign(map, await lookupNodeIds(ids.slice(i, i + NODE_LOOKUP_CHUNK)))
+    } catch (err) {
+      console.error('Error resolving minion nodes:', err)
     }
-    const raw = resp.data?.node ?? []
-    const nodes = Array.isArray(raw) ? raw : [raw]
-    const map: Record<string, number> = {}
-    for (const n of nodes) {
-      if (n.foreignId != null) {
-        map[minionNodeKey(String(n.foreignId), n.location ?? null)] = Number(n.id)
-      }
-    }
-    return map
-  } catch (_err) {
-    return {}
   }
+  return map
 }
 
 // Read-before-write: the v2 PUT is a whole-object saveOrUpdate, so we must send

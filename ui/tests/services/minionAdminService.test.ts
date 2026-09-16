@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
-import { deleteMinion, getMinionNodeIds, listMinions, updateMinion } from '@/services/minionAdminService'
+import { NODE_LOOKUP_CHUNK, deleteMinion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }}))
@@ -40,6 +40,34 @@ describe('minionAdminService', () => {
     const url = vi.mocked(v2.get).mock.calls[0][0] as string
     expect(decodeURIComponent(url)).toContain('(foreignId==m1,foreignId==m2)')
     expect(map).toEqual({ 'm1\u0000Default': 100, 'm2\u0000RemoteA': 101 })
+  })
+
+  it('getMinionNodeIds leaves out ids that would alter the FIQL query', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 204 } as any)
+    await getMinionNodeIds([minion('ok-1'), minion('a,b'), minion('x;y'), minion('p(q)'), minion('has space'), minion('a=b')])
+    expect(v2.get).toHaveBeenCalledTimes(1)
+    expect(decodeURIComponent(vi.mocked(v2.get).mock.calls[0][0] as string)).toContain('(foreignId==ok-1)')
+    expect(isFiqlSafeId('6b1f0d9a-2c4e-4f7b-9a1d-0e5c8b7a6f21')).toBe(true)
+    expect(isFiqlSafeId('a,b')).toBe(false)
+  })
+
+  it('getMinionNodeIds chunks the lookup so the URL stays short, and keeps the chunks that succeed', async () => {
+    const many = Array.from({ length: NODE_LOOKUP_CHUNK * 2 + 1 }, (_, i) => minion(`m${i}`))
+    vi.mocked(v2.get).mockImplementation(async (url: string) => {
+      const ids = [...decodeURIComponent(url).matchAll(/foreignId==([^,)]+)/g)].map(m => m[1])
+      if (ids.includes('m0')) {
+        throw http(500)
+      }
+      return { status: 200, data: { node: ids.map((id, i) => ({ id: String(1000 + i), foreignId: id, location: 'Default' })) }} as any
+    })
+    const map = await getMinionNodeIds(many)
+    expect(v2.get).toHaveBeenCalledTimes(3)
+    for (const call of vi.mocked(v2.get).mock.calls) {
+      expect((call[0] as string).length).toBeLessThan(4000)
+    }
+    expect(map['m0\u0000Default']).toBeUndefined()
+    expect(map[`m${NODE_LOOKUP_CHUNK}\u0000Default`]).toBe(1000)
+    expect(map[`m${NODE_LOOKUP_CHUNK * 2}\u0000Default`]).toBe(1000)
   })
 
   it('getMinionNodeIds is best-effort — no minions or a failure yields an empty map', async () => {
