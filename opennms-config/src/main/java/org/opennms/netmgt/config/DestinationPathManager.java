@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
@@ -50,7 +51,9 @@ public abstract class DestinationPathManager {
 
     private DestinationPaths allPaths;
 
-    private Map<String, Path> m_destinationPaths = new TreeMap<String, Path>();
+    // replaced wholesale on reload and read without synchronization from
+    // getPath/getPaths, so the swap must be safely published
+    private volatile Map<String, Path> m_destinationPaths = new TreeMap<String, Path>();
 
     private Header oldHeader;
 
@@ -60,7 +63,7 @@ public abstract class DestinationPathManager {
      * @param stream a {@link java.io.InputStream} object.
      * @throws IOException 
      */
-    protected void parseXML(final InputStream stream) throws IOException {
+    protected synchronized void parseXML(final InputStream stream) throws IOException {
         try (final InputStreamReader isr = new InputStreamReader(stream)) {
             allPaths = JaxbUtils.unmarshal(DestinationPaths.class, isr);
             oldHeader = allPaths.getHeader();
@@ -69,9 +72,15 @@ public abstract class DestinationPathManager {
     }
 
     private void initializeDestinationPaths() {
+        // Build the replacement map and swap the volatile reference, as every
+        // mutator does: a reload replaces memory with the file (instead of
+        // merging over it), and a published map is never mutated afterwards,
+        // so unlocked readers always see a consistent snapshot.
+        final Map<String, Path> paths = new TreeMap<>();
         for (Path curPath : allPaths.getPaths()) {
-            m_destinationPaths.put(curPath.getName(), curPath);
+            paths.put(curPath.getName(), curPath);
         }
+        m_destinationPaths = paths;
     }
 
     /**
@@ -173,9 +182,20 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void addPath(Path newPath) throws IOException {
-        m_destinationPaths.put(newPath.getName(), newPath);
-    
-        saveCurrent();
+        commit(paths -> paths.put(newPath.getName(), newPath));
+    }
+
+    /**
+     * Applies a change to a copy of the current paths, persists that copy, and
+     * only then publishes it. Readers never see a map that is being mutated, and
+     * a change the file rejects (e.g. removing the last path, which violates
+     * destinationPaths.xsd) leaves memory and disk unchanged.
+     */
+    private synchronized void commit(final Consumer<Map<String, Path>> change) throws IOException {
+        final Map<String, Path> updated = new TreeMap<>(m_destinationPaths);
+        change.accept(updated);
+        saveCurrent(updated);
+        m_destinationPaths = updated;
     }
 
     /**
@@ -186,11 +206,10 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void replacePath(String oldName, Path newPath) throws IOException {
-        if (m_destinationPaths.containsKey(oldName)) {
-            m_destinationPaths.remove(oldName);
-        }
-    
-        addPath(newPath);
+        commit(paths -> {
+            paths.remove(oldName);
+            paths.put(newPath.getName(), newPath);
+        });
     }
 
     /**
@@ -202,8 +221,7 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(Path path) throws IOException {
-        m_destinationPaths.remove(path.getName());
-        saveCurrent();
+        commit(paths -> paths.remove(path.getName()));
     }
 
     /**
@@ -215,8 +233,7 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(String name) throws IOException {
-        m_destinationPaths.remove(name);
-        saveCurrent();
+        commit(paths -> paths.remove(name));
     }
 
     /**
@@ -225,8 +242,12 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void saveCurrent() throws IOException {
+        saveCurrent(m_destinationPaths);
+    }
+
+    private synchronized void saveCurrent(final Map<String, Path> paths) throws IOException {
         allPaths.clearPaths();
-        for (Path path : m_destinationPaths.values()) {
+        for (Path path : paths.values()) {
             allPaths.addPath(path);
         }
     

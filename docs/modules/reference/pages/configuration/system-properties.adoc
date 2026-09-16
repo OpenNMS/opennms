@@ -215,14 +215,6 @@ Many of the properties here are documented with much greater detail in their rel
 | `null`
 | Only display dashboards in the Grafana Box that match this tag
 
-| `org.opennms.heatmap.defaultHeatmap`
-| "categories"
-| The default heatmap can be set wiht a value of `categories`, `foreignSources` or `monitoredServices`.
-
-| `org.opennms.heatmap.defaultMode`
-| "alarms"
-| There are two modes for operating the heatmap. Valid options are `alarms` and `outages`
-
 | `org.opennms.interfaceAvailabilityBox.maxInterfaceCount`
 | 10
 | The maximum number of interfaces before the availability box is hidden in the node page

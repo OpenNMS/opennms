@@ -1,1 +1,2 @@
 org.opennms.netmgt.poller.monitors.WsManMonitor
+org.opennms.netmgt.poller.monitors.WsManShellMonitor

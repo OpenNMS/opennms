@@ -200,7 +200,7 @@
       </div>
       <div class="card-body">
         <ul class="list-unstyled mb-0">
-            <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
+            <li><a href="ui/index.html#/scheduled-outages">Configure Scheduled Outages</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
             <%=getAdminPageNavEntries("service-monitoring")%>
         </ul>

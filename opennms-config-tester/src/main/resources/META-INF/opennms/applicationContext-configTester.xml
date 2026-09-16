@@ -30,7 +30,6 @@
         <entry key="availability-reports.xml" value="onmsReportConfigDao"/>
         <entry key="bsf-northbounder-configuration.xml" value="bsfNorthbounderConfigDao"/>
         <entry key="categories.xml" value="categoryFactory"/>
-        <entry key="chart-configuration.xml" value="chartConfigFactory"/>
         <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>
         <entry key="token-auth-configuration.xml" value="tokenAuthConfigFactory"/>
         <entry key="database-reports.xml" value="databaseReportConfigDao"/>
@@ -57,8 +56,6 @@
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
         <entry key="notifications.xml" value="notificationFactory"/>
-        <!-- <entry key="nsclient-config.xml" value="nsClientPeerFactory"/> -->
-        <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms.properties" value="unknown"/>
         <entry key="poll-outages.xml" value="pollOutagesDao"/>
@@ -69,7 +66,6 @@
         <entry key="response-adhoc-graph.properties" value="responseAdhocGraph"/>
         <entry key="response-graph.properties" value="responsePrefabGraph"/>
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
-        <!-- <entry key="rt.properties" value="rtConfigDaoCheck"/> --><!-- Not part of standard build -->
         <entry key="rtc-configuration.xml" value="rtcConfigFactory"/>
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>
         <entry key="service-configuration.xml" value="serviceConfigFactory"/>
@@ -81,7 +77,6 @@
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
         <entry key="snmp-metadata-adapter-configuration.xml" value="snmpMetadataConfigDao"/>
         <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
-        <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
@@ -127,11 +122,6 @@
 
   <bean id="categoryFactory" class="org.opennms.netmgt.config.CategoryFactory" depends-on="categoryFactory-init" factory-method="getInstance"/>
   
-  <bean id="chartConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ChartConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="chartConfigFactory" class="org.opennms.netmgt.config.ChartConfigFactory" depends-on="chartConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
 
@@ -283,20 +273,6 @@
 
   <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
   
-  <!--
-  <bean id="nsClientPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.nsclient.config.NSClientPeerFactory.init</value></property>
-  </bean>
-
-  <bean id="nsClientPeerFactory" class="org.opennms.netmgt.protocols.nsclient.config.NSClientPeerFactory" depends-on="nsClientPeerFactory-init" factory-method="getInstance"/>
-
-  <bean id="nsClientDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.nsclient.config.NSClientDataCollectionConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="nsClientDataCollectionConfigFactory" class="org.opennms.netmgt.protocols.nsclient.config.NSClientDataCollectionConfigFactory" depends-on="nsClientDataCollectionConfigFactory-init" factory-method="getInstance"/>
-  -->
-    
   <bean id="dataSourceTester" class="org.opennms.core.db.DataSourceConfigurationFactory">
     <constructor-arg value="${opennms.home}/etc/opennms-datasources.xml"/>
   </bean>
@@ -361,13 +337,6 @@
     <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdConfig.getProperties</value></property>
   </bean>
 
-  <bean id="rtConfigDao" class="org.opennms.netmgt.rt.ReadOnlyRtConfigDao"/>
-
-  <bean id="rtConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="rtConfigDao" />
-    <property name="targetMethod"><value>getBaseURL</value></property>
-  </bean>
-
   <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
 
   <bean id="scriptdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -424,9 +393,6 @@
     <property name="configResource" value="file:${opennms.home}/etc/snmptrap-northbounder-configuration.xml" />
   </bean>
 
-  <bean id="statisticsDaemonConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
-  </bean>
 
   <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml"/>

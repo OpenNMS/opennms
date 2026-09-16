@@ -23,6 +23,8 @@ package org.opennms.netmgt.measurements.model;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -50,15 +52,26 @@ public class QueryNode implements Comparable<QueryNode> {
         this.label = label;
     }
 
+    @Schema(name = "id", description = "Database ID of the node.", example = "2")
     public Integer getId() {
         return id;
     }
+    // Wire name is "foreign-source", not the bean name.
+    @Schema(name = "foreign-source",
+            description = "Requisition the node was provisioned from. Null for a node discovered outside a "
+                    + "requisition.",
+            example = "loopback-lab")
     public String getForeignSource() {
         return foreignSource;
     }
+    // Wire name is "foreign-id", not the bean name.
+    @Schema(name = "foreign-id",
+            description = "Identifier of the node within its requisition.",
+            example = "lb-001")
     public String getForeignId() {
         return foreignId;
     }
+    @Schema(name = "label", description = "Node label.", example = "loopback-001")
     public String getLabel() {
         return label;
     }
