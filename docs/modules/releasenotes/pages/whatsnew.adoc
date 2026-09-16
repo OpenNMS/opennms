@@ -19,8 +19,21 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Spring, Hibernate, and Camel platform upgrade
+The core application frameworks have been upgraded to currently supported versions:
+Spring Framework 5.3, Spring Security 5.8, Hibernate 5.6, Hibernate Validator 6.2, and Apache Camel 3.22.
+The OpenNMS-patched forks of Spring, Spring Security, and Hibernate have been removed in favor of stock releases,
+and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extender.
+
+Most installations require no action, but there are behavior and compatibility changes for installations with
+custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
+See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
+
 === Trends removed
 The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
+
+=== Charts removed
+The Charts page, its JFreeChart rendering and the `features/charts` module have been removed from the Dashboards menu and from the product. `etc/chart-configuration.xml` and its configuration model go with it; the file is no longer read.
 
 === Heatmap removed
 The Heatmap page has been removed from the Dashboards menu and from the product, together with the `/rest/heatmap` endpoint and the `org.opennms.heatmap.*` system properties, which are no longer read.
