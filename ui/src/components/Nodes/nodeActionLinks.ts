@@ -57,9 +57,32 @@ export const getSnmpPrimaryIpAddress = (ipInterfaces: IpInterface[]): string | u
 // SNMP-primary address from the interface data it has.
 export interface NodeActionLinkContext {
   snmpPrimaryIpAddress?: string
+  // Gates the admin-only destinations below. A boolean rather than a role list so the role
+  // vocabulary stays in useRole, which already owns it.
+  isAdmin?: boolean
 }
 
+// Destinations the server refuses to anyone but ROLE_ADMIN, so offering them to everyone else is
+// offering an access denial. Four sit under /admin/**, which
+// applicationContext-spring-security.xml pins to ROLE_ADMIN wholesale; rescan is under /element/
+// but has an intercept-url rule of its own. The legacy node page gates the same set
+// (element/node.jsp wraps them in <c:if test="${model.admin}">).
+//
+// Note updateSnmp is plain ROLE_ADMIN here, NOT useRole's snmpRole (ROLE_ADMIN or
+// ROLE_PROVISION) -- admin/updateSnmp.jsp is covered by the /admin/** rule like the rest.
+const ADMIN_ONLY_LINKS = new Set([
+  'surveillance-categories',
+  'rescan',
+  'admin',
+  'updateSnmp',
+  'schedule-outage'
+])
+
 export const mapLink = (name: string, node: Node, context: NodeActionLinkContext = {}) => {
+  if (ADMIN_ONLY_LINKS.has(name) && !context.isAdmin) {
+    return ''
+  }
+
   switch (name) {
     case 'events':
       return `event/list?filter=node%3D${node.id}`
@@ -76,8 +99,7 @@ export const mapLink = (name: string, node: Node, context: NodeActionLinkContext
     case 'hardware':
       return `hardware/list.jsp?node=${node.id}`
     // The category edit page, which is where the Surveillance Category Memberships panel's Edit
-    // button used to go. Offered to everyone, like the other admin pages in this list (Admin /
-    // Node Management, Update SNMP Information): the page does its own authorization.
+    // button used to go -- and which that button was gated on admin for, as is this.
     case 'surveillance-categories':
       return `admin/categories.htm?edit&node=${node.id}`
     case 'availability':

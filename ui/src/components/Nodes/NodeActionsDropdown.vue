@@ -20,6 +20,7 @@ import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
 import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { createLinkItemsList } from './nodeActionLinks'
+import useRole from '@/composables/useRole'
 import { Node } from '@/types'
 
 const props = defineProps({
@@ -45,6 +46,8 @@ const props = defineProps({
   }
 })
 
+const { adminRole } = useRole()
+
 const menuIcon = markRaw(MoreVert)
 const menu = ref()
 const menuId = computed(() => `node-actions-menu-${props.node.id}`)
@@ -61,7 +64,10 @@ const items = computed<OnmsMenuItem[]>(() => {
   // Status for a node with no building.
   return [
     ...infoItem,
-    ...createLinkItemsList(props.node, { snmpPrimaryIpAddress: props.snmpPrimaryIpAddress }).map(li => ({
+    ...createLinkItemsList(props.node, {
+      snmpPrimaryIpAddress: props.snmpPrimaryIpAddress,
+      isAdmin: adminRole.value
+    }).map(li => ({
       label: li.label,
       command: () => window.location.assign(`${props.baseHref}${li.link}`)
     }))

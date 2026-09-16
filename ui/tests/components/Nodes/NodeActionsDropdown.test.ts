@@ -1,18 +1,37 @@
 // ui/tests/components/Nodes/NodeActionsDropdown.test.ts
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { createTestingPinia } from '@pinia/testing'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PrimeVue from 'primevue/config'
 import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
+import { useAuthStore } from '@/stores/authStore'
 
 const node = { id: 42, label: 'srv-42', assetRecord: {}} as any
+
+// useRole resolves the auth store through a module-level computed, so the FIRST pinia this file
+// creates is the one every mount sees -- handing a fresh one to each mount is silently ignored.
+// Hence one shared pinia, with the roles set on it before each mount instead.
+const pinia = createTestingPinia({ createSpy: vi.fn })
+const authStore = useAuthStore(pinia)
+
+const setRoles = (...roles: string[]) => {
+  authStore.whoAmI = { ...authStore.whoAmI, roles } as never
+}
 
 const mountIt = (overrides: any = {}) =>
   mount(NodeActionsDropdown, {
     props: { baseHref: '/opennms/', node, triggerNodeInfo: vi.fn(), ...overrides },
-    global: { plugins: [PrimeVue] }
+    global: { plugins: [pinia, PrimeVue] }
   })
 
+const labelsOf = (wrapper: ReturnType<typeof mountIt>) =>
+  ((wrapper.vm as any).items as Array<{ label: string }>).map(i => i.label)
+
 describe('NodeActionsDropdown.vue', () => {
+  // Most of these assert the full menu, so default to the role that sees all of it.
+  beforeEach(() => {
+    setRoles('ROLE_ADMIN')
+  })
   it('puts Info... first and includes all link actions', () => {
     const wrapper = mountIt()
     const items = (wrapper.vm as any).items as Array<{ label: string }>
@@ -20,7 +39,7 @@ describe('NodeActionsDropdown.vue', () => {
     expect(items.map(i => i.label)).toContain('Events')
     expect(items.map(i => i.label)).toContain('View Topology Map')
     expect(items.map(i => i.label)).toContain('Surveillance Categories')
-    expect(items).toHaveLength(15) // Info + 14 links; Update SNMP needs an address
+    expect(items).toHaveLength(15) // Info + 14 links as admin; Update SNMP needs an address
   })
 
   // Driven by the shared nodeActionLinks list, which filters a Site Status link the node
@@ -29,7 +48,7 @@ describe('NodeActionsDropdown.vue', () => {
     const wrapper = mountIt({ node: { ...node, assetRecord: { building: 'HQ 1' }}})
     const items = (wrapper.vm as any).items as Array<{ label: string }>
     expect(items.map(i => i.label)).toContain('Site Status')
-    expect(items).toHaveLength(16) // Info + 15 links; Update SNMP needs an address
+    expect(items).toHaveLength(16) // Info + 15 links as admin; Update SNMP needs an address
   })
 
   it('omits Site Status for a node with no building', () => {
@@ -108,5 +127,74 @@ describe('NodeActionsDropdown.vue', () => {
     items.find(i => i.label === 'Events')!.command()
     expect(assign).toHaveBeenCalledWith('/opennms/event/list?filter=node%3D42')
     vi.unstubAllGlobals()
+  })
+
+  // The server refuses these to anyone but ROLE_ADMIN (/admin/** plus an explicit rule for
+  // element/rescan.jsp), so showing them to a plain user only offers an access denial.
+  describe('admin-only actions', () => {
+    const ADMIN_ONLY = [
+      'Surveillance Categories',
+      'Node Rescan',
+      'Admin / Node Management',
+      'Update SNMP Information',
+      'Schedule an Outage'
+    ]
+
+    const EVERYONE = [
+      'Events',
+      'Alarms',
+      'Outages',
+      'Assets',
+      'Metadata',
+      'Hardware Inventory',
+      'Availability',
+      'Resource Graphs',
+      'View Topology Map',
+      'Node Link Details'
+    ]
+
+    it.each(ADMIN_ONLY)('offers %s to an admin', (label) => {
+      setRoles('ROLE_ADMIN')
+
+      expect(labelsOf(mountIt({ snmpPrimaryIpAddress: '10.0.0.1' }))).toContain(label)
+    })
+
+    it.each(ADMIN_ONLY)('hides %s from a plain user', (label) => {
+      setRoles('ROLE_USER')
+
+      expect(labelsOf(mountIt({ snmpPrimaryIpAddress: '10.0.0.1' }))).not.toContain(label)
+    })
+
+    it.each(EVERYONE)('still offers %s to a plain user', (label) => {
+      setRoles('ROLE_USER')
+
+      expect(labelsOf(mountIt())).toContain(label)
+    })
+
+    // Update SNMP is admin-gated on ROLE_ADMIN alone -- admin/updateSnmp.jsp falls under the
+    // /admin/** rule, unlike useRole's snmpRole, which also admits ROLE_PROVISION.
+    it('hides Update SNMP Information from a provisioner', () => {
+      setRoles('ROLE_PROVISION')
+
+      expect(labelsOf(mountIt({ snmpPrimaryIpAddress: '10.0.0.1' })))
+        .not.toContain('Update SNMP Information')
+    })
+
+    it('leaves a plain user the non-admin actions and Info...', () => {
+      setRoles('ROLE_USER')
+
+      const labels = labelsOf(mountIt({ snmpPrimaryIpAddress: '10.0.0.1' }))
+
+      expect(labels[0]).toBe('Info...')
+      expect(labels).toHaveLength(11) // Info + 10 links; the 5 admin ones are gone
+    })
+
+    it('offers nothing admin-only to a user with no roles at all', () => {
+      setRoles()
+
+      const labels = labelsOf(mountIt({ snmpPrimaryIpAddress: '10.0.0.1' }))
+
+      ADMIN_ONLY.forEach(label => expect(labels).not.toContain(label))
+    })
   })
 })
