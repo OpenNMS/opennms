@@ -21,6 +21,7 @@
 ///
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { effectScope } from 'vue'
 import { SEARCH_DEBOUNCE_MS, useDebouncedSearch } from '@/components/Nodes/hooks/useDebouncedSearch'
 
 describe('useDebouncedSearch', () => {
@@ -86,6 +87,20 @@ describe('useDebouncedSearch', () => {
     clearSearch()
     expect(searchTerm.value).toBe('')
     expect(appliedTerm.value).toBe('')
+  })
+
+  // A keystroke close to unmount would otherwise fire its apply after the owning scope is gone.
+  // Harmless on screen -- nothing is left to re-render -- but the timer keeps the refs alive, and
+  // under the fake timers the table tests use it fires into whatever runs next.
+  it('cancels a pending apply when its scope is disposed', () => {
+    const scope = effectScope()
+    const search = scope.run(() => useDebouncedSearch())!
+
+    search.onSearch('eth')
+    scope.stop()
+    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS * 2)
+
+    expect(search.appliedTerm.value).toBe('')
   })
 
   // Without cancelling, the apply queued by those keystrokes would land after the clear and

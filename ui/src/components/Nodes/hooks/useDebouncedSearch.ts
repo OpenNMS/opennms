@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { ref } from 'vue'
+import { onScopeDispose, ref } from 'vue'
 import { debounce } from 'lodash'
 
 // Long enough to coalesce a burst of typing, short enough that the table still feels live.
@@ -56,6 +56,11 @@ export const useDebouncedSearch = () => {
     searchTerm.value = ''
     appliedTerm.value = ''
   }
+
+  // A keystroke close to unmount would otherwise fire its apply after the owning scope is gone,
+  // writing to refs nothing can read any more -- and, under the fake timers the table tests use,
+  // into whatever runs next.
+  onScopeDispose(() => apply.cancel())
 
   return { searchTerm, appliedTerm, onSearch, clearSearch }
 }
