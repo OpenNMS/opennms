@@ -134,7 +134,8 @@
         <feature>jackson-core</feature>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle dependency="true">mvn:org.objenesis/objenesis/${objenesisVersion}</bundle>
-        <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
+        <!-- FST pins org.objenesis to [2.5,3); widen it so the current Objenesis resolves -->
+        <bundle dependency="true">wrap:mvn:de.ruedigermoeller/fst/${fstVersion}$overwrite=merge&amp;Import-Package=com.fasterxml.jackson.core;version="[2.8,3)",com.fasterxml.jackson.core.io;version="[2.8,3)",com.fasterxml.jackson.core.json;version="[2.8,3)",com.fasterxml.jackson.core.util;version="[2.8,3)",javassist;version="[3.21,4)",javassist.expr;version="[3.21,4)",org.objenesis;version="[2.5,4)",org.objenesis.instantiator;version="[2.5,4)",sun.misc,sun.nio.ch,sun.reflect</bundle>
     </feature>
 
     <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
