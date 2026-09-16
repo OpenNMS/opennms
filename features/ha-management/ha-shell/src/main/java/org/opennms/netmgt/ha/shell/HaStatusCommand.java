@@ -30,6 +30,8 @@ import org.opennms.netmgt.ha.DbConnectionFactory;
 import org.opennms.netmgt.ha.HaConfiguration;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.ResultSet;
@@ -70,7 +72,9 @@ public class HaStatusCommand implements Action {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
                      "SELECT instance_id, configured_role, current_state, active_since, " +
-                     "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname " +
+                     "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname, " +
+                     "EXTRACT(EPOCH FROM (NOW() - last_sync_success)) AS sync_age_seconds, " +
+                     "last_sync_error, boot_config_changed_at " +
                      "FROM ha_instance_status ORDER BY configured_role")) {
             
             ShellTable haTable = new ShellTable();
@@ -82,6 +86,7 @@ public class HaStatusCommand implements Action {
             haTable.column("HOSTNAME");
             haTable.column("STALE");
 
+            List<String> syncLines = new ArrayList<>();
             boolean anyRows = false;
             while (rs.next()) {
                 anyRows = true;
@@ -90,6 +95,12 @@ public class HaStatusCommand implements Action {
                 String currentState   = rs.getString("current_state");
                 String activeSince    = rs.getString("active_since");
                 String hostname       = rs.getString("hostname");
+
+                long syncAge          = rs.getLong("sync_age_seconds");
+                boolean syncEverRan   = !rs.wasNull();
+                String syncError      = rs.getString("last_sync_error");
+                boolean restartNeeded = rs.getTimestamp("boot_config_changed_at") != null;
+                syncLines.add(formatSyncLine(instanceId, syncEverRan, syncAge, syncError, restartNeeded));
 
                 long ageSeconds       = rs.getLong("age_seconds");
                 boolean heartbeatKnown = !rs.wasNull();
@@ -105,6 +116,10 @@ public class HaStatusCommand implements Action {
                 System.out.println("=================");
                 haTable.print(System.out);
                 System.out.println();
+                System.out.println("Config sync");
+                System.out.println("===========");
+                syncLines.forEach(System.out::println);
+                System.out.println();
             } else {
                 System.out.println("(HA table is empty or HA is not configured)");
             }
@@ -119,6 +134,24 @@ public class HaStatusCommand implements Action {
         }
 
         return null;
+    }
+
+    /** One line per instance: sync that has never succeeded is the dangerous
+     * state, so it is named rather than left blank. */
+    private static String formatSyncLine(String instanceId, boolean everRan, long ageSeconds,
+                                         String error, boolean restartNeeded) {
+        StringBuilder sb = new StringBuilder("  ").append(nvl(instanceId)).append("  ");
+        if (!everRan) {
+            sb.append(error == null ? "never run" : "NEVER SUCCEEDED — " + error);
+        } else if (error != null) {
+            sb.append("FAILING — ").append(error).append(" (last success ").append(formatAge(ageSeconds)).append(")");
+        } else {
+            sb.append("last success ").append(formatAge(ageSeconds));
+        }
+        if (restartNeeded) {
+            sb.append("  [RESTART REQUIRED: startup-only configuration changed]");
+        }
+        return sb.toString();
     }
 
     private static String formatAge(long ageSeconds) {

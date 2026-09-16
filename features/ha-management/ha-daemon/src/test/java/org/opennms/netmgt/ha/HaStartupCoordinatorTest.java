@@ -183,6 +183,21 @@ public class HaStartupCoordinatorTest {
     }
 
     @Test
+    public void configReloadAppliesAddedSyncRoot() throws Exception {
+        HaConfiguration original = primaryConfig();
+        original.setSyncRoots(List.of("etc"));
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setSyncRoots(List.of("etc", "deploy"));
+
+        coord.applyConfigReload(updated);
+
+        assertEquals("an added sync root must take effect without a restart",
+                List.of("etc", "deploy"), coord.getConfig().getSyncRoots());
+    }
+
+    @Test
     public void configReloadAppliesHeartbeatIntervalChange() throws Exception {
         HaConfiguration original = primaryConfig();
         original.setHeartbeatIntervalSeconds(10);
@@ -1372,6 +1387,8 @@ public class HaStartupCoordinatorTest {
         c.setPartnerRestUrl(src.getPartnerRestUrl());
         c.setSyncUsername(src.getSyncUsername());
         c.setSyncPassword(src.getSyncPassword());
+        c.setSyncRoots(src.getSyncRoots());
+        c.setSyncExcludes(src.getSyncExcludes());
         return c;
     }
 
