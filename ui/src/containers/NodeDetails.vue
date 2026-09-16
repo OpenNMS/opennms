@@ -28,7 +28,6 @@
           <NodeAvailabilityGraph :node="nodeStore.node" :base-href="baseHref" />
         </div>
         <div class="onms-col-6">
-          <NodeCategoriesPanel :node="nodeStore.node" :base-href="baseHref" />
           <NodeNotificationsPanel :node="nodeStore.node" :base-href="baseHref" />
         </div>
       </div>
@@ -58,7 +57,6 @@ import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
 import EventsTable from '@/components/Nodes/EventsTable.vue'
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
-import NodeCategoriesPanel from '@/components/Nodes/NodeCategoriesPanel.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
 import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'

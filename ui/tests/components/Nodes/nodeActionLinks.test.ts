@@ -37,6 +37,21 @@ describe('nodeActionLinks', () => {
     expect(linkItems.map(li => li.name)).toContain('siteStatus')
   })
 
+  // Replaces the Surveillance Category Memberships panel's Edit button, which is why it points
+  // at the same category edit page.
+  it('offers Surveillance Categories between Hardware Inventory and Availability', () => {
+    const names = linkItems.map(li => li.name)
+
+    expect(linkItems.find(li => li.name === 'surveillance-categories')?.label)
+      .toBe('Surveillance Categories')
+    expect(names.indexOf('surveillance-categories')).toBe(names.indexOf('hardware') + 1)
+    expect(names.indexOf('surveillance-categories')).toBe(names.indexOf('availability') - 1)
+  })
+
+  it('links Surveillance Categories to the category edit page for the node', () => {
+    expect(mapLink('surveillance-categories', node)).toBe('admin/categories.htm?edit&node=42')
+  })
+
   // Two entries pointed at the linked-node page before these lists were merged, under
   // different labels. Only one should reach the menu.
   it('offers the linked-node page exactly once', () => {

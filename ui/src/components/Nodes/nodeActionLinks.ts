@@ -32,6 +32,7 @@ export const linkItems = [
   { name: 'assets', label: 'Assets' },
   { name: 'metadata', label: 'Metadata' },
   { name: 'hardware', label: 'Hardware Inventory' },
+  { name: 'surveillance-categories', label: 'Surveillance Categories' },
   { name: 'availability', label: 'Availability' },
   { name: 'siteStatus', label: 'Site Status' },
   { name: 'graphs', label: 'Resource Graphs' },
@@ -74,6 +75,11 @@ export const mapLink = (name: string, node: Node, context: NodeActionLinkContext
       return `element/node-metadata.jsp?node=${node.id}`
     case 'hardware':
       return `hardware/list.jsp?node=${node.id}`
+    // The category edit page, which is where the Surveillance Category Memberships panel's Edit
+    // button used to go. Offered to everyone, like the other admin pages in this list (Admin /
+    // Node Management, Update SNMP Information): the page does its own authorization.
+    case 'surveillance-categories':
+      return `admin/categories.htm?edit&node=${node.id}`
     case 'availability':
       return `element/availability.jsp?node=${node.id}`
     case 'siteStatus': {

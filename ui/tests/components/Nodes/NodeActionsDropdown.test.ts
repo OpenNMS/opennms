@@ -19,7 +19,8 @@ describe('NodeActionsDropdown.vue', () => {
     expect(items[0].label).toBe('Info...')
     expect(items.map(i => i.label)).toContain('Events')
     expect(items.map(i => i.label)).toContain('View Topology Map')
-    expect(items).toHaveLength(14) // Info + 13 links; Update SNMP needs an address
+    expect(items.map(i => i.label)).toContain('Surveillance Categories')
+    expect(items).toHaveLength(15) // Info + 14 links; Update SNMP needs an address
   })
 
   // Driven by the shared nodeActionLinks list, which filters a Site Status link the node
@@ -28,7 +29,7 @@ describe('NodeActionsDropdown.vue', () => {
     const wrapper = mountIt({ node: { ...node, assetRecord: { building: 'HQ 1' }}})
     const items = (wrapper.vm as any).items as Array<{ label: string }>
     expect(items.map(i => i.label)).toContain('Site Status')
-    expect(items).toHaveLength(15) // Info + 14 links; Update SNMP needs an address
+    expect(items).toHaveLength(16) // Info + 15 links; Update SNMP needs an address
   })
 
   it('omits Site Status for a node with no building', () => {
@@ -88,7 +89,7 @@ describe('NodeActionsDropdown.vue', () => {
     const items = (wrapper.vm as any).items as Array<{ label: string }>
     expect(items.map(i => i.label)).not.toContain('Info...')
     expect(items[0].label).toBe('Events')
-    expect(items).toHaveLength(13)
+    expect(items).toHaveLength(14)
   })
 
   it('Info... command calls triggerNodeInfo with the node', () => {

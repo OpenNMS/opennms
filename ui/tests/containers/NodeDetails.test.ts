@@ -41,7 +41,6 @@ describe('NodeDetails.vue', () => {
         stubs: {
           BreadCrumbs: true,
           NodeAvailabilityGraph: true,
-          NodeCategoriesPanel: true,
           NodeActionsDropdown: {
             name: 'NodeActionsDropdown',
             template: '<div></div>',
@@ -73,7 +72,6 @@ describe('NodeDetails.vue', () => {
 
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(false)
-    expect(wrapper.findComponent({ name: 'NodeCategoriesPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
   })
@@ -142,7 +140,6 @@ describe('NodeDetails.vue', () => {
 
     expect(wrapper.findComponent({ name: 'BreadCrumbs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'NodeCategoriesPanel' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
