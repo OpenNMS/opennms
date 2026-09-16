@@ -205,13 +205,6 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
           "id": "databaseReports",
           "name": "Database Reports",
           "url": "report/database/index.jsp",
@@ -451,9 +444,9 @@
         {
           "id": "scheduledOutages",
           "name": "Scheduled Outages",
-          "url": "admin/sched-outages/index.jsp",
-          "locationMatch": null,
-          "roles": null
+          "url": "ui/index.html#/scheduled-outages",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "productUpdateEnrollment",
