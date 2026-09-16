@@ -47,7 +47,6 @@
 *** xref:rest/graphml.adoc[]
 *** xref:rest/groups.adoc[]
 *** xref:rest/hardware_inventory.adoc[]
-*** xref:rest/heatmap.adoc[]
 *** xref:rest/health_rest.adoc[]
 *** xref:rest/info.adoc[]
 *** xref:rest/ifservices.adoc[]

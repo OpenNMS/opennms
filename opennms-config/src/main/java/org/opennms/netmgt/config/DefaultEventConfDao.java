@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -195,6 +196,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void loadEventsFromDB(List<EventConfEvent> dbEvents, List<EventConfGlobalSecurity> eventConfGlobalSecurities) {
+		final long startedAt = System.currentTimeMillis();
 
 		// Group events by source and sort by source fileOrder
 		Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()
@@ -226,17 +228,24 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			rootEvents.setGlobal(global);
 		}
 
+		final long groupedAt = System.currentTimeMillis();
+
 		// Build Events per source
 		for (Map.Entry<String, List<EventConfEvent>> sourceEntry : sortedSources) {
 			Events eventsForSource = buildEventsForSource(sourceEntry.getValue());
 			rootEvents.addLoadedEventFile(sourceEntry.getKey(), eventsForSource);
 		}
+		final long parsedAt = System.currentTimeMillis();
 
 		synchronized (this) {
 			m_partition = new EnterpriseIdPartition();
 			rootEvents.initialize(m_partition, new EventOrdering());
 			m_events = rootEvents;
 		}
+		final long finishedAt = System.currentTimeMillis();
+		LOG.info("Built the in-memory event configuration: {} events in {} sources ({} ms: group/sort {} ms, parse {} ms, index {} ms)",
+				dbEvents.size(), sortedSources.size(), finishedAt - startedAt,
+				groupedAt - startedAt, parsedAt - groupedAt, finishedAt - parsedAt);
 	}
 
 	private List<Map.Entry<String, List<EventConfEvent>>> sortSourcesByFileOrder(Map<String, List<EventConfEvent>> eventsBySource) {
@@ -257,7 +266,13 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	 */
 	private Events buildEventsForSource(List<EventConfEvent> sourceEvents) {
 		Events eventsForSource = new Events();
-		List<Event> parsed = sourceEvents.parallelStream()
+		// Within a source, lower eventOrder is evaluated first (id breaks ties / covers null);
+		// parsing runs in parallel, collect() keeps the sorted encounter order
+		List<Event> parsed = sourceEvents.stream()
+				.sorted(Comparator.comparing((EventConfEvent e) -> e.getEventOrder() != null ? e.getEventOrder() : Integer.MAX_VALUE)
+						.thenComparing(e -> e.getId() != null ? e.getId() : Long.MAX_VALUE))
+				.collect(Collectors.toList())
+				.parallelStream()
 				.map(this::parseEvent)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());

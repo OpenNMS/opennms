@@ -735,6 +735,53 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         return Boolean.FALSE.toString();
     }
 
+    @GET
+    @Path("applies-to")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public OutageApplicability getApplicability() {
+        return buildApplicability(null);
+    }
+
+    @GET
+    @Path("{outageName}/applies-to")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public OutageApplicability getApplicability(@PathParam("outageName") String outageName) {
+        getOutage(outageName); // Validate if outageName exists (404 if not).
+        return buildApplicability(outageName);
+    }
+
+    // Enumerate every poller/collectd/threshd package with its outage calendars,
+    // marking those that reference outageName. A null outageName lists the
+    // packages with nothing applied, for the "new outage" case; the calendars
+    // let the list page derive every outage's memberships from one call.
+    private OutageApplicability buildApplicability(String outageName) {
+        OutageApplicability applicability = new OutageApplicability();
+
+        java.util.List<String> notifdCalendars;
+        try {
+            notifdCalendars = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendars();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't read notifications configuration: {}", e.getMessage());
+        }
+        applicability.setNotifications(applies(notifdCalendars, outageName));
+        applicability.setNotificationCalendars(new java.util.ArrayList<>(notifdCalendars));
+
+        for (org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
+            applicability.getPollers().add(new OutageApplicability.PackageRef(pkg.getName(), applies(pkg.getOutageCalendars(), outageName), pkg.getOutageCalendars()));
+        }
+        for (Package pkg : m_collectdConfigFactory.getPackages()) {
+            applicability.getCollectors().add(new OutageApplicability.PackageRef(pkg.getName(), applies(pkg.getOutageCalendars(), outageName), pkg.getOutageCalendars()));
+        }
+        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getReadOnlyConfig().getPackages()) {
+            applicability.getThresholders().add(new OutageApplicability.PackageRef(pkg.getName(), applies(pkg.getOutageCalendars(), outageName), pkg.getOutageCalendars()));
+        }
+        return applicability;
+    }
+
+    private static boolean applies(java.util.List<String> outageCalendars, String outageName) {
+        return outageName != null && outageCalendars != null && outageCalendars.contains(outageName);
+    }
+
     private static void validateAddress(String ipAddress) {
         boolean valid = false;
         try {
