@@ -44,8 +44,31 @@ describe('metricChartService', () => {
   })
   afterEach(() => vi.restoreAllMocks())
 
-  it('lists entities sorted by label', async () => {
-    expect(await listMetricEntities('response-time')).toEqual(['alpha', 'zeta'])
+  it('lists entities by resource id, sorted by label', async () => {
+    expect(await listMetricEntities('response-time')).toEqual([
+      { id: 'node[1].responseTime[10.0.0.1]', label: 'alpha' },
+      { id: 'node[2].responseTime[10.0.0.2]', label: 'zeta' }
+    ])
+  })
+
+  it('resolves a stored resource id even after the display label changed', async () => {
+    // node[2] now polls a second interface, so its label gains the address qualifier
+    vi.mocked(rest.get).mockResolvedValue({ data: { resource: [
+      { id: 'node[2]', label: 'zeta', children: { resource: [
+        { id: 'node[2].responseTime[10.0.0.2]', rrdGraphAttributes: { icmp: {}}},
+        { id: 'node[2].responseTime[10.0.0.3]', rrdGraphAttributes: { icmp: {}}}
+      ] }}
+    ] }})
+    vi.mocked(rest.post).mockResolvedValue({ data: { timestamps: [1], columns: [{ values: [1000] }] }})
+    const series = await queryMetricSeries('response-time', 'node[2].responseTime[10.0.0.2]', tf)
+    expect(series?.entity).toBe('zeta (10.0.0.2)')
+  })
+
+  it('still accepts a label stored by an earlier version', async () => {
+    vi.mocked(rest.post).mockResolvedValue({ data: { timestamps: [1], columns: [{ values: [1000] }] }})
+    const series = await queryMetricSeries('response-time', 'Zeta', tf)
+    expect((vi.mocked(rest.post).mock.calls[0][1] as { source: { resourceId: string }[] }).source[0].resourceId).toBe('node[2].responseTime[10.0.0.2]')
+    expect(series?.entity).toBe('zeta')
   })
 
   it('charts the first entity when none is configured, and says which one', async () => {

@@ -103,6 +103,8 @@ License.
           <OnmsSelect
             v-model="chartEntity"
             :options="entityOptions"
+            option-label="label"
+            option-value="value"
             :loading="entitiesLoading"
             filter
             class="opts__control"
@@ -184,7 +186,7 @@ import { OnmsDialog, OnmsTextarea, OnmsInputText, OnmsButton, OnmsSelect } from 
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
-import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, MAX_TOPN_N, TOPN_KPIS, clampTopnN } from '@/services/topnService'
+import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, MAX_TOPN_N, TOPN_KPIS, clampTopnN, listAvailableKpis, type TopnKpiDef } from '@/services/topnService'
 import { DEFAULT_CHART_METRIC, listMetricEntities } from '@/services/metricChartService'
 
 const props = defineProps<{ panel: DashboardPanel; visible: boolean }>()
@@ -192,7 +194,29 @@ const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>()
 
 const store = useDashboardStore()
 
-const kpiOptions = TOPN_KPIS.map(k => ({ label: k.label, value: k.id }))
+type SelectOption = { label: string; value: string }
+
+const toKpiOptions = (kpis: TopnKpiDef[]): SelectOption[] => kpis.map(k => ({ label: k.label, value: k.id }))
+
+// only the metrics this system actually has data for, plus whatever is configured
+const kpiOptions = ref<SelectOption[]>(toKpiOptions(TOPN_KPIS))
+
+const loadKpis = async () => {
+  let kpis = TOPN_KPIS
+  try {
+    kpis = await listAvailableKpis()
+  } catch (err) {
+    console.warn('Panel options: available metrics could not be listed', err)
+  }
+  const options = toKpiOptions(kpis)
+  for (const configured of [topnKpi.value, chartMetric.value]) {
+    if (configured && !options.some(o => o.value === configured)) {
+      const known = TOPN_KPIS.find(k => k.id === configured)
+      options.push({ label: known?.label ?? configured, value: configured })
+    }
+  }
+  kpiOptions.value = options
+}
 
 const visibleModel = computed({
   get: () => props.visible,
@@ -217,26 +241,34 @@ const topnN = ref(DEFAULT_TOPN_N)
 const topnDirection = ref<'asc' | 'desc'>('desc')
 
 // metric-chart: one entity x one metric (single-select each)
-const chartEntity = ref('')
+const chartEntity = ref('') // resource id
+const chartEntityLabel = ref('')
 const chartMetric = ref(DEFAULT_CHART_METRIC)
-const entityOptions = ref<string[]>([])
+const entityOptions = ref<SelectOption[]>([])
 const entitiesLoading = ref(false)
 
 const loadEntities = async () => {
   entitiesLoading.value = true
-  let entities: string[] = []
+  let entities: SelectOption[] = []
   try {
-    entities = await listMetricEntities(chartMetric.value)
+    entities = (await listMetricEntities(chartMetric.value)).map(e => ({ label: e.label, value: e.id }))
   } catch (err) {
     console.warn('Metric chart options: entities could not be listed', err)
   }
   // keep the current selection listed even if it has no data right now
-  if (chartEntity.value && !entities.includes(chartEntity.value)) {
-    entities.unshift(chartEntity.value)
+  if (chartEntity.value && !entities.some(e => e.value === chartEntity.value)) {
+    entities.unshift({ label: chartEntityLabel.value || chartEntity.value, value: chartEntity.value })
   }
   entityOptions.value = entities
   entitiesLoading.value = false
 }
+
+watch(chartEntity, (id) => {
+  const picked = entityOptions.value.find(e => e.value === id)
+  if (picked) {
+    chartEntityLabel.value = picked.label
+  }
+})
 
 watch(chartMetric, () => {
   if (props.panel.type === 'metric-chart' && props.visible) {
@@ -272,7 +304,11 @@ const syncFromPanel = () => {
   topnN.value = clampTopnN(props.panel.options?.n)
   topnDirection.value = props.panel.options?.direction === 'asc' ? 'asc' : 'desc'
   chartEntity.value = String(props.panel.options?.entity ?? '')
+  chartEntityLabel.value = String(props.panel.options?.entityLabel ?? '')
   chartMetric.value = String(props.panel.options?.metric ?? DEFAULT_CHART_METRIC)
+  if (props.panel.type === 'metric-chart' || props.panel.type === 'topn') {
+    loadKpis()
+  }
   if (props.panel.type === 'metric-chart') {
     loadEntities()
   }
@@ -309,6 +345,7 @@ const apply = () => {
   }
   if (props.panel.type === 'metric-chart') {
     opts.entity = chartEntity.value
+    opts.entityLabel = chartEntityLabel.value
     opts.metric = chartMetric.value
   }
   store.setPanelOptions(props.panel.id, opts)

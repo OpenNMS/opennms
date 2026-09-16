@@ -49,7 +49,7 @@ License.
       v-else-if="empty"
       class="metric-chart__muted"
     >
-      No data for {{ entity || 'any entity' }} — {{ metricLabel }} in this timeframe.
+      No data for {{ entityLabel || 'any entity' }} — {{ metricLabel }} in this timeframe.
     </p>
   </div>
 </template>
@@ -59,7 +59,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Chart from 'chart.js/auto'
 import { format } from 'date-fns'
 import type { PanelComponentProps } from '@/types/dashboard'
-import { TOPN_KPIS } from '@/services/topnService'
+import { findKpi } from '@/services/topnService'
 import {
   DEFAULT_CHART_METRIC,
   queryMetricSeries,
@@ -83,8 +83,9 @@ let themeObserver: MutationObserver | null = null
 let series: MetricSeries | null = null
 
 const metricId = computed(() => String(props.options?.metric ?? DEFAULT_CHART_METRIC))
-const entity = computed(() => String(props.options?.entity ?? '').trim())
-const metricLabel = computed(() => TOPN_KPIS.find(k => k.id === metricId.value)?.label ?? metricId.value)
+const entity = computed(() => String(props.options?.entity ?? '').trim()) // resource id
+const entityLabel = computed(() => String(props.options?.entityLabel ?? '').trim() || entity.value)
+const metricLabel = computed(() => findKpi(metricId.value).label)
 
 // Axis/grid colors must follow the theme (same approach as Status Overview).
 const textColor = (): string => {

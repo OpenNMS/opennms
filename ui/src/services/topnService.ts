@@ -19,7 +19,6 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-
 import { rest } from './axiosInstances'
 import { type Timeframe } from '@/types/dashboard'
 import { timeframeRange } from '@/components/Dashboard/timeframe'
@@ -35,14 +34,23 @@ export interface TopnKpiDef {
   match: (childResourceId: string, attributeKeys: string[]) => string | null
 }
 
+// Poller response-time resources are "node[..].responseTime[<address>]" with one
+// attribute per monitored service, named after the service in lower case.
+const responseTimeKpi = (id: string, service: string, label: string): TopnKpiDef => ({
+  id,
+  label,
+  unit: 'ms',
+  scale: 0.001,
+  match: (resourceId, attrs) => (resourceId.includes('responseTime') && attrs.includes(service) ? service : null)
+})
+
 export const TOPN_KPIS: TopnKpiDef[] = [
-  {
-    id: 'response-time',
-    label: 'Node Response Time (ICMP)',
-    unit: 'ms',
-    scale: 0.001,
-    match: (id, attrs) => (id.includes('responseTime') && attrs.includes('icmp') ? 'icmp' : null)
-  }
+  responseTimeKpi('response-time', 'icmp', 'Node Response Time (ICMP)'),
+  responseTimeKpi('snmp-response-time', 'snmp', 'SNMP Response Time'),
+  responseTimeKpi('http-response-time', 'http', 'HTTP Response Time'),
+  responseTimeKpi('https-response-time', 'https', 'HTTPS Response Time'),
+  responseTimeKpi('dns-response-time', 'dns', 'DNS Response Time'),
+  responseTimeKpi('ssh-response-time', 'ssh', 'SSH Response Time')
 ]
 
 export const DEFAULT_TOPN_KPI = 'response-time'
@@ -67,7 +75,8 @@ export const SOURCES_PER_REQUEST = 250
 // points per source: enough for a fair average, small enough that a batch stays cheap
 const POINTS_PER_SOURCE = 24
 const MIN_STEP_MS = 300_000
-// the resource tree is large and changes slowly; both panels share one copy per KPI
+// the resource tree is large and changes slowly; every panel shares one copy until
+// the next dashboard refresh (see invalidateKpiSources) or until this lapses
 const SOURCES_TTL_MS = 5 * 60_000
 
 interface RawResource {
@@ -77,11 +86,16 @@ interface RawResource {
   children?: { resource?: RawResource[] }
 }
 
+interface RawResourceTree {
+  resource?: RawResource[]
+}
+
 export interface MeasurementSource {
+  // stable identity: the resource id is what a panel stores
   resourceId: string
   attribute: string
-  // unique per source: the node label, qualified by the interface address when
-  // the node carries the KPI on more than one interface
+  // display only: the node label, qualified by the interface address when the
+  // node carries the KPI on more than one interface; may change over time
   label: string
 }
 
@@ -91,7 +105,7 @@ const trailingKey = (resourceId: string): string | null => {
   return m ? m[1] : null
 }
 
-export const collectSources = (root: { resource?: RawResource[] }, kpi: TopnKpiDef): MeasurementSource[] => {
+export const collectSources = (root: RawResourceTree, kpi: TopnKpiDef): MeasurementSource[] => {
   const out: MeasurementSource[] = []
   for (const node of root?.resource ?? []) {
     const nodeLabel = node.label ?? node.id ?? 'node'
@@ -110,28 +124,46 @@ export const collectSources = (root: { resource?: RawResource[] }, kpi: TopnKpiD
   return out
 }
 
-const sourcesCache = new Map<string, { at: number; sources: Promise<MeasurementSource[]> }>()
+let treeCache: { at: number; tree: Promise<RawResourceTree> } | null = null
 
-export const invalidateKpiSources = () => sourcesCache.clear()
+// Called on every dashboard refresh so newly provisioned nodes show up at once.
+export const invalidateKpiSources = () => {
+  treeCache = null
+}
 
-// All entities (resources) carrying the given KPI — shared by Top-N and the metric chart.
 // Depth 1 is nodes plus their child resources, which already carry the attributes.
-export const listKpiSources = async (kpiId: string): Promise<MeasurementSource[]> => {
-  const kpi = TOPN_KPIS.find(k => k.id === kpiId) ?? TOPN_KPIS[0]
-  const cached = sourcesCache.get(kpi.id)
-  if (cached && Date.now() - cached.at < SOURCES_TTL_MS) {
-    return cached.sources
+const loadResourceTree = async (): Promise<RawResourceTree> => {
+  if (treeCache && Date.now() - treeCache.at < SOURCES_TTL_MS) {
+    return treeCache.tree
   }
-  const sources = rest
+  const tree = rest
     .get('/resources?depth=1', { headers: { Accept: 'application/json' }})
-    .then(tree => collectSources(tree.data ?? {}, kpi))
-  sourcesCache.set(kpi.id, { at: Date.now(), sources })
+    .then(resp => (resp.data ?? {}) as RawResourceTree)
+  const entry = { at: Date.now(), tree }
+  treeCache = entry
   try {
-    return await sources
+    return await tree
   } catch (err) {
-    sourcesCache.delete(kpi.id)
+    if (treeCache === entry) {
+      treeCache = null
+    }
     throw err
   }
+}
+
+export const findKpi = (kpiId: string): TopnKpiDef => TOPN_KPIS.find(k => k.id === kpiId) ?? TOPN_KPIS[0]
+
+// All entities (resources) carrying the given KPI — shared by Top-N and the metric chart.
+export const listKpiSources = async (kpiId: string): Promise<MeasurementSource[]> =>
+  collectSources(await loadResourceTree(), findKpi(kpiId))
+
+// The KPIs that at least one resource on this system carries, for the option
+// selectors. Falls back to the full registry when nothing carries any KPI, so the
+// selectors are never empty.
+export const listAvailableKpis = async (): Promise<TopnKpiDef[]> => {
+  const tree = await loadResourceTree()
+  const available = TOPN_KPIS.filter(kpi => collectSources(tree, kpi).length > 0)
+  return available.length ? available : TOPN_KPIS
 }
 
 // The measurements API returns labels/columns in hash order, not request order, so
@@ -174,27 +206,25 @@ const averageBatch = async (
   return averages
 }
 
-// Ranks every source carrying the KPI. Failures propagate so the panel can tell
-// an error from an empty result.
+// Ranks every source carrying the KPI. Batches run one after another so a large
+// system is not hit by every batch at once on each refresh tick. Failures
+// propagate so the panel can tell an error from an empty result.
 export const queryTopn = async (
   kpiId: string,
   timeframe: Timeframe,
   n: number,
   direction: 'asc' | 'desc'
 ): Promise<TopnRow[]> => {
-  const kpi = TOPN_KPIS.find(k => k.id === kpiId) ?? TOPN_KPIS[0]
+  const kpi = findKpi(kpiId)
   const sources = await listKpiSources(kpi.id)
   if (!sources.length) {
     return []
   }
   const { start, end } = timeframeRange(timeframe)
   const step = Math.max(MIN_STEP_MS, Math.floor((end - start) / POINTS_PER_SOURCE))
-  const batches: Promise<Map<number, number>>[] = []
-  for (let offset = 0; offset < sources.length; offset += SOURCES_PER_REQUEST) {
-    batches.push(averageBatch(sources.slice(offset, offset + SOURCES_PER_REQUEST), offset, start, end, step))
-  }
   const rows: TopnRow[] = []
-  for (const averages of await Promise.all(batches)) {
+  for (let offset = 0; offset < sources.length; offset += SOURCES_PER_REQUEST) {
+    const averages = await averageBatch(sources.slice(offset, offset + SOURCES_PER_REQUEST), offset, start, end, step)
     averages.forEach((avg, index) => {
       const source = sources[index]
       if (source) {

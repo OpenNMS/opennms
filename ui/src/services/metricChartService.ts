@@ -19,15 +19,19 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-
 import { rest } from './axiosInstances'
 import type { Timeframe } from '@/types/dashboard'
-import { TOPN_KPIS, listKpiSources, type MeasurementSource } from './topnService'
+import { findKpi, listKpiSources, type MeasurementSource } from './topnService'
 import { timeframeRange } from '@/components/Dashboard/timeframe'
 
 // Metric-chart panel: one entity x one metric over the resolved timeframe.
 // Metrics are the same registry the Top-N panel uses (TOPN_KPIS).
 export const DEFAULT_CHART_METRIC = 'response-time'
+
+export interface MetricEntity {
+  id: string // resource id, what the panel stores
+  label: string // display only
+}
 
 export interface MetricSeries {
   entity: string // the label actually charted, which matters when none was configured
@@ -38,21 +42,23 @@ export interface MetricSeries {
 
 const byLabel = (a: MeasurementSource, b: MeasurementSource) => a.label.localeCompare(b.label)
 
-// Entity labels that carry the given metric, for the options dropdown.
-export const listMetricEntities = async (metricId: string): Promise<string[]> => {
+// Entities that carry the given metric, for the options dropdown.
+export const listMetricEntities = async (metricId: string): Promise<MetricEntity[]> => {
   const sources = await listKpiSources(metricId)
-  return [...sources].sort(byLabel).map(s => s.label)
+  return [...sources].sort(byLabel).map(s => ({ id: s.resourceId, label: s.label }))
 }
 
 // The configured entity, or the first one carrying the metric when nothing is
-// configured yet. Null when the metric has no entity at all.
-const resolveSource = (sources: MeasurementSource[], entityLabel: string): MeasurementSource | null => {
-  if (!entityLabel) {
+// configured yet. Null when the metric has no entity at all. The stored value is
+// the resource id; a label is still accepted for panels saved before ids were stored.
+const resolveSource = (sources: MeasurementSource[], entity: string): MeasurementSource | null => {
+  if (!entity) {
     return [...sources].sort(byLabel)[0] ?? null
   }
   return (
-    sources.find(s => s.label === entityLabel) ??
-    sources.find(s => s.label.toLowerCase() === entityLabel.toLowerCase()) ??
+    sources.find(s => s.resourceId === entity) ??
+    sources.find(s => s.label === entity) ??
+    sources.find(s => s.label.toLowerCase() === entity.toLowerCase()) ??
     null
   )
 }
@@ -60,11 +66,11 @@ const resolveSource = (sources: MeasurementSource[], entityLabel: string): Measu
 // Failures propagate so the panel can tell an error from an empty result.
 export const queryMetricSeries = async (
   metricId: string,
-  entityLabel: string,
+  entity: string,
   timeframe: Timeframe
 ): Promise<MetricSeries | null> => {
-  const kpi = TOPN_KPIS.find(k => k.id === metricId) ?? TOPN_KPIS[0]
-  const source = resolveSource(await listKpiSources(kpi.id), entityLabel)
+  const kpi = findKpi(metricId)
+  const source = resolveSource(await listKpiSources(kpi.id), entity)
   if (!source) {
     return null
   }

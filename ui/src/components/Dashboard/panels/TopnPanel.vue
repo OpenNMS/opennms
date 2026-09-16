@@ -73,8 +73,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import {
   DEFAULT_TOPN_KPI,
-  TOPN_KPIS,
   clampTopnN,
+  findKpi,
   queryTopn,
   type TopnRow
 } from '@/services/topnService'
@@ -88,7 +88,7 @@ const rows = ref<TopnRow[]>([])
 const kpiId = computed(() => String(props.options?.kpi ?? DEFAULT_TOPN_KPI))
 const n = computed(() => clampTopnN(props.options?.n))
 const direction = computed<'asc' | 'desc'>(() => (props.options?.direction === 'asc' ? 'asc' : 'desc'))
-const kpiLabel = computed(() => TOPN_KPIS.find(k => k.id === kpiId.value)?.label ?? kpiId.value)
+const kpiLabel = computed(() => findKpi(kpiId.value).label)
 
 const format = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2))
 

@@ -21,7 +21,7 @@
 ///
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { SOURCES_PER_REQUEST, clampTopnN, collectSources, invalidateKpiSources, queryTopn, TOPN_KPIS } from '@/services/topnService'
+import { SOURCES_PER_REQUEST, clampTopnN, collectSources, invalidateKpiSources, listAvailableKpis, queryTopn, TOPN_KPIS } from '@/services/topnService'
 import { rest } from '@/services/axiosInstances'
 import { TimeframePreset } from '@/types/dashboard'
 
@@ -75,16 +75,23 @@ describe('queryTopn', () => {
     expect(payload.maxrows).toBeLessThanOrEqual(50)
   })
 
-  it('ranks every candidate, querying large sets in batches', async () => {
+  it('ranks every candidate, querying large sets in batches that run one at a time', async () => {
     const many = { data: { resource: Array.from({ length: SOURCES_PER_REQUEST + 3 }, (_, i) => node(`node[${i}]`, `node-${i}`, [`10.0.${Math.floor(i / 256)}.${i % 256}`])) }}
     vi.mocked(rest.get).mockResolvedValue(many)
     // each batch answers for the sources it was sent, by their global index label
+    let inFlight = 0
+    let maxInFlight = 0
     vi.mocked(rest.post).mockImplementation(async (_url: string, body: unknown) => {
+      inFlight++
+      maxInFlight = Math.max(maxInFlight, inFlight)
+      await new Promise(resolve => setTimeout(resolve, 1))
+      inFlight--
       const sources = (body as { source: { label: string }[] }).source
       return { data: { labels: sources.map(s => s.label), columns: sources.map(s => ({ values: [Number(s.label.slice(1)) * 1000] })) }}
     })
     const rows = await queryTopn('response-time', tf, 2, 'desc')
     expect(vi.mocked(rest.post)).toHaveBeenCalledTimes(2)
+    expect(maxInFlight).toBe(1)
     // the highest values sit past the first batch boundary and are still ranked
     expect(rows.map(r => r.label)).toEqual([`node-${SOURCES_PER_REQUEST + 2}`, `node-${SOURCES_PER_REQUEST + 1}`])
   })
@@ -100,11 +107,43 @@ describe('queryTopn', () => {
     await expect(queryTopn('response-time', tf, 5, 'desc')).rejects.toThrow('503')
   })
 
-  it('reuses the resource tree across calls', async () => {
+  it('reuses the resource tree across calls and KPIs until it is invalidated', async () => {
     vi.mocked(rest.post).mockResolvedValue({ data: { labels: [], columns: [] }})
     await queryTopn('response-time', tf, 5, 'desc')
-    await queryTopn('response-time', tf, 5, 'asc')
+    await queryTopn('ssh-response-time', tf, 5, 'asc')
     expect(rest.get).toHaveBeenCalledTimes(1)
+    invalidateKpiSources()
+    await queryTopn('response-time', tf, 5, 'desc')
+    expect(rest.get).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not keep a failed tree fetch', async () => {
+    vi.mocked(rest.get).mockRejectedValueOnce(new Error('502'))
+    await expect(queryTopn('response-time', tf, 5, 'desc')).rejects.toThrow('502')
+    vi.mocked(rest.post).mockResolvedValue({ data: { labels: [], columns: [] }})
+    await queryTopn('response-time', tf, 5, 'desc')
+    expect(rest.get).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('listAvailableKpis', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    invalidateKpiSources()
+  })
+
+  it('offers only the KPIs some resource carries', async () => {
+    const mixed = { data: { resource: [
+      node('node[1]', 'node-A', ['10.0.0.1']),
+      { id: 'node[2]', label: 'node-B', children: { resource: [{ id: 'node[2].responseTime[10.0.0.2]', rrdGraphAttributes: { ssh: {}, icmp: {}}}] }}
+    ] }}
+    vi.mocked(rest.get).mockResolvedValue(mixed)
+    expect((await listAvailableKpis()).map(k => k.id)).toEqual(['response-time', 'ssh-response-time'])
+  })
+
+  it('falls back to the whole registry when nothing carries a KPI', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ data: { resource: [] }})
+    expect(await listAvailableKpis()).toEqual(TOPN_KPIS)
   })
 })
 
