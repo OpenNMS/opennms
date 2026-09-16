@@ -329,6 +329,11 @@ let resizeObserver: ResizeObserver | null = null
 // land under the cursor because the frame doesn't move between viewportToGraph
 // and render; fitCamera/setContentBBox narrow it to the content once present.
 const DEFAULT_BBOX = 500
+// sigma's render() returns before it rebuilds the cached projection matrix while the graph
+// is empty, so graphToViewport would project through the identity matrix until the first
+// node renders. Passing graphDimensions makes sigma rebuild the matrix for this call.
+const toViewport = (point: { x: number; y: number }): { x: number; y: number } =>
+  sigma!.graphToViewport(point, { graphDimensions: sigma!.getGraphDimensions() })
 // Link thickness, in sigma's edge-size units. Sigma derives an edge's
 // clickable zone from its *rendered* thickness, so these widths double as
 // hit-target sizes. A roomy base makes links easy to hover; hover then
@@ -391,7 +396,7 @@ const linkPreview = computed<{ x1: number; y1: number; x2: number; y2: number } 
   void cameraVersion.value
   const sx = graph.getNodeAttribute(linkDrawSource.value, 'x') as number
   const sy = graph.getNodeAttribute(linkDrawSource.value, 'y') as number
-  const src = sigma.graphToViewport({ x: sx, y: sy })
+  const src = toViewport({ x: sx, y: sy })
   return { x1: src.x, y1: src.y, x2: cursorViewport.value.x, y2: cursorViewport.value.y }
 })
 
@@ -1019,7 +1024,7 @@ const attachInteractionHandlers = (s: Sigma, g: Graph) => {
         graph.forEachNode((nodeId) => {
           const gx = graph!.getNodeAttribute(nodeId, 'x') as number
           const gy = graph!.getNodeAttribute(nodeId, 'y') as number
-          const v = sigma!.graphToViewport({ x: gx, y: gy })
+          const v = toViewport({ x: gx, y: gy })
           if (v.x >= x0 && v.x <= x1 && v.y >= y0 && v.y <= y1) {
             inside.push(nodeId)
           }
@@ -1028,7 +1033,7 @@ const attachInteractionHandlers = (s: Sigma, g: Graph) => {
         // graph coordinate system; project each and test against the
         // rubber band rectangle the same way.
         for (const label of store.labels) {
-          const v = sigma!.graphToViewport({ x: label.x, y: label.y })
+          const v = toViewport({ x: label.x, y: label.y })
           if (v.x >= x0 && v.x <= x1 && v.y >= y0 && v.y <= y1) {
             inside.push(label.id)
           }
@@ -1284,7 +1289,7 @@ const labelStyle = (label: CanvasLabel, _cameraVersion: number) => {
     return { display: 'none' }
   }
   void _cameraVersion
-  const v = sigma.graphToViewport({ x: label.x, y: label.y })
+  const v = toViewport({ x: label.x, y: label.y })
   return {
     left: v.x + 'px',
     top: v.y + 'px',
@@ -2069,8 +2074,8 @@ const backgroundStyle = (_cameraVersion: number) => {
     return { display: 'none' }
   }
   // Graph y points up: the rect spans [y - height, y].
-  const topLeft = sigma.graphToViewport({ x: bg.x, y: bg.y })
-  const bottomRight = sigma.graphToViewport({ x: bg.x + bg.width, y: bg.y - bg.height })
+  const topLeft = toViewport({ x: bg.x, y: bg.y })
+  const bottomRight = toViewport({ x: bg.x + bg.width, y: bg.y - bg.height })
   return {
     left: topLeft.x + 'px',
     top: topLeft.y + 'px',
@@ -2086,7 +2091,7 @@ const backgroundHandleStyle = (_cameraVersion: number) => {
   if (!sigma || !bg || bg.x === undefined || bg.y === undefined || !bg.width || !bg.height) {
     return { display: 'none' }
   }
-  const bottomRight = sigma.graphToViewport({ x: bg.x + bg.width, y: bg.y - bg.height })
+  const bottomRight = toViewport({ x: bg.x + bg.width, y: bg.y - bg.height })
   return { left: bottomRight.x + 'px', top: bottomRight.y + 'px' }
 }
 
@@ -2172,8 +2177,8 @@ const shapeViewportRect = (shape: CanvasShape) => {
   if (!sigma) {
     return null
   }
-  const topLeft = sigma.graphToViewport({ x: shape.x, y: shape.y })
-  const bottomRight = sigma.graphToViewport({ x: shape.x + shape.width, y: shape.y - shape.height })
+  const topLeft = toViewport({ x: shape.x, y: shape.y })
+  const bottomRight = toViewport({ x: shape.x + shape.width, y: shape.y - shape.height })
   return {
     left: topLeft.x,
     top: topLeft.y,
@@ -2386,16 +2391,11 @@ const onShapeDrawEnd = () => {
   shapeDraft.value = null
   shapeDrawOverlayRect = null
   const canvasRect = canvasEl.value.getBoundingClientRect()
-  // Inverted from graphToViewport rather than using sigma's viewportToGraph.
-  // The two are not inverses of each other with a custom bounding box and no
-  // nodes: viewportToGraph scales both axes by the box-to-viewport ratio, while
-  // graphToViewport stretches each axis independently, so a box drawn on a
-  // blank canvas was stored at a size and position the renderer then drew
-  // somewhere else. Deriving the mapping from the projection the renderer
-  // actually uses makes the round trip exact by construction.
-  const origin = sigma.graphToViewport({ x: 0, y: 0 })
-  const unitX = sigma.graphToViewport({ x: 1000, y: 0 })
-  const unitY = sigma.graphToViewport({ x: 0, y: 1000 })
+  // Inverted from the same projection the shape overlay renders with, so a
+  // drawn box round-trips exactly by construction.
+  const origin = toViewport({ x: 0, y: 0 })
+  const unitX = toViewport({ x: 1000, y: 0 })
+  const unitY = toViewport({ x: 0, y: 1000 })
   const pxPerUnitX = (unitX.x - origin.x) / 1000
   const pxPerUnitY = (unitY.y - origin.y) / 1000
   if (!pxPerUnitX || !pxPerUnitY) {
@@ -2580,11 +2580,11 @@ const ghostLineAttrs = (hint: LinkHint, _cameraVersion: number) => {
   if (!sigma || !graph || !graph.hasNode(hint.sourceId) || !graph.hasNode(hint.targetId)) {
     return { display: 'none' }
   }
-  const s = sigma.graphToViewport({
+  const s = toViewport({
     x: graph.getNodeAttribute(hint.sourceId, 'x') as number,
     y: graph.getNodeAttribute(hint.sourceId, 'y') as number
   })
-  const t = sigma.graphToViewport({
+  const t = toViewport({
     x: graph.getNodeAttribute(hint.targetId, 'x') as number,
     y: graph.getNodeAttribute(hint.targetId, 'y') as number
   })
