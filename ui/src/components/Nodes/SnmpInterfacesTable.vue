@@ -50,7 +50,7 @@
         <template #body="{ data }">{{ data.ifAlias || 'N/A' }}</template>
       </OnmsColumn>
       <OnmsColumn style="width: 20%" field="ifSpeed" header="SNMP ifSpeed" sortable>
-        <template #body="{ data }"><span v-html="data.ifSpeed" /></template>
+        <template #body="{ data }"><span data-test="if-speed">{{ data.speedLabel }}</span></template>
       </OnmsColumn>
       <template #empty>
         <EmptyList :content="emptyListContent" data-test="empty-list" />
@@ -69,6 +69,7 @@ import { useNodeStore } from '@/stores/nodeStore'
 import { snmpInterfaceLink } from '@/lib/linkUtils'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
 import {
+  formatIfSpeed,
   matchesSearchTerm,
   snmpInterfaceNameTooltip,
   snmpInterfaceStatus,
@@ -103,12 +104,15 @@ const statusSeverity: Record<SnmpInterfaceStatus, OnmsTagSeverity> = {
 // screen, so a term matching something on page 3 would read as "no results".
 const queryParameters = { limit: 0 }
 
-// status is derived rather than stored, so it is decorated on here -- that is what lets the
-// Status column sort (PrimeVue sorts by field) and what lets the filter match 'up'/'down'.
+// status and speedLabel are derived rather than stored, so they are decorated on here. For
+// status that is what lets the column sort (PrimeVue sorts by field) and the filter match
+// 'up'/'down'. speedLabel is display and filtering only -- the ifSpeed column deliberately still
+// sorts on the raw number, since sorting the labels would put '1 Gbps' before '100 Mbps'.
 const decorated = computed(() =>
   nodeStore.snmpInterfaces.map(snmpInterface => ({
     ...snmpInterface,
-    status: snmpInterfaceStatus(snmpInterface)
+    status: snmpInterfaceStatus(snmpInterface),
+    speedLabel: formatIfSpeed(snmpInterface.ifSpeed)
   })))
 
 // Filters on what the columns actually show. ifDescr is deliberately absent: it lost its column
@@ -118,7 +122,7 @@ const rows = computed(() => decorated.value.filter(row => matchesSearchTerm(appl
   row.status,
   row.ifName,
   row.ifAlias,
-  row.ifSpeed
+  row.speedLabel
 ])))
 
 const fetchInterfaces = () => {

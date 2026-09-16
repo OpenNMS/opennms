@@ -137,22 +137,24 @@ describe('SnmpInterfacesTable.vue', () => {
       expect(rowText).toContain('N/A')
     })
 
-    it('renders ifSpeed with v-html (as a span)', async () => {
-      nodeStore.snmpInterfaces = [
-        {
-          id: 3,
-          ifIndex: 3,
-          ifDescr: 'lo',
-          ifName: 'lo',
-          ifAlias: '',
-          ifSpeed: '<b>100 Mbps</b>'
-        }
-      ] as any
+    it('renders ifSpeed formatted rather than as raw bits per second', async () => {
+      nodeStore.snmpInterfaces = [{ id: 3, ifIndex: 3, ifName: 'lo', ifSpeed: 100000000 }] as any
       nodeStore.snmpInterfacesTotalCount = 1
       await nextTick()
 
-      const speedCell = wrapper.find('tbody tr td:last-child')
-      expect(speedCell.find('span').exists()).toBe(true)
+      expect(wrapper.find('[data-test="if-speed"]').text()).toBe('100 Mbps')
+    })
+
+    // The cell used to render with v-html, which had nothing to render -- ifSpeed is a number
+    // from the API -- and would have executed markup had one ever arrived.
+    it('renders a speed containing markup as text', async () => {
+      nodeStore.snmpInterfaces = [{ id: 3, ifIndex: 3, ifName: 'lo', ifSpeed: '<b>evil</b>' }] as any
+      nodeStore.snmpInterfacesTotalCount = 1
+      await nextTick()
+
+      const cell = wrapper.find('[data-test="if-speed"]')
+      expect(cell.find('b').exists()).toBe(false)
+      expect(cell.text()).toContain('<b>evil</b>')
     })
   })
 
@@ -334,6 +336,22 @@ describe('SnmpInterfacesTable.vue', () => {
         .toEqual(['Alpha', 'beta', 'Charlie', 'delta'])
     })
 
+    // Sorting the formatted labels would be lexical: '1 Gbps' before '100 Mbps'. The column
+    // keeps the raw number as its sort field for exactly this reason.
+    it('sorts ifSpeed by the raw value, not the formatted label', async () => {
+      nodeStore.snmpInterfaces = [
+        { id: 1, ifIndex: 1, ifSpeed: 100000000, ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 2, ifIndex: 2, ifSpeed: 1000000000, ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 3, ifIndex: 3, ifSpeed: 10000000, ifAdminStatus: 1, ifOperStatus: 1 }
+      ] as any
+      await nextTick()
+      await headerFor('SNMP ifSpeed').trigger('click')
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="if-speed"]').map(c => c.text()))
+        .toEqual(['10 Mbps', '100 Mbps', '1 Gbps'])
+    })
+
     // status is derived, not a stored field, so it is decorated onto the rows to be sortable.
     it('sorts on the derived status column', async () => {
       await headerFor('Status').trigger('click')
@@ -392,6 +410,19 @@ describe('SnmpInterfacesTable.vue', () => {
       await type('lo0')
 
       expect(ifIndexes()).toEqual(['17'])
+    })
+
+    // The filter matches what the column shows, which is the formatted label -- so 'Mbps'
+    // finds rows whose raw ifSpeed contains no such text.
+    it('matches on the formatted speed', async () => {
+      nodeStore.snmpInterfaces = [
+        { id: 1, ifIndex: 1, ifSpeed: 100000000, ifAdminStatus: 1, ifOperStatus: 1 },
+        { id: 2, ifIndex: 2, ifSpeed: 1000000000, ifAdminStatus: 1, ifOperStatus: 1 }
+      ] as any
+      await nextTick()
+      await type('mbps')
+
+      expect(ifIndexes()).toEqual(['1'])
     })
 
     // The Status column is displayed, so it filters like any other column.

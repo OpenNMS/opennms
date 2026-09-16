@@ -24,6 +24,7 @@ import { describe, expect, test } from 'vitest'
 import { mock } from 'vitest-mock-extended'
 import {
   buildSnmpNarrowing,
+  formatIfSpeed,
   getTableCssClasses,
   hasEgressFlow,
   hasIngressFlow,
@@ -231,6 +232,59 @@ describe('Nodes utils test', () => {
 
     test('does not match when no value contains the term', () => {
       expect(matchesSearchTerm('zzz', ['eth0', 17, 'Uplink'])).toBe(false)
+    })
+  })
+
+  // Parity with SIUtils.getHumanReadableIfSpeed, the platform's canonical rendering.
+  describe('formatIfSpeed', () => {
+    test.each([
+      [0, '0 bps'],
+      [1, '1 bps'],
+      [999, '999 bps'],
+      [1000, '1 kbps'],
+      [100000, '100 kbps'],
+      [1000000, '1 Mbps'],
+      [10000000, '10 Mbps'],
+      [100000000, '100 Mbps'],
+      [1000000000, '1 Gbps'],
+      [10000000000, '10 Gbps']
+    ])('formats %i as %s', (speed, expected) => {
+      expect(formatIfSpeed(speed)).toBe(expected)
+    })
+
+    // An exact multiple of the unit prints with no decimal point at all (DecimalFormat "0");
+    // anything else gets one to three digits (DecimalFormat "0.0##").
+    test.each([
+      [2500000000, '2.5 Gbps'],
+      [1500000, '1.5 Mbps'],
+      [1536000, '1.536 Mbps'],
+      [1544000, '1.544 Mbps'],
+      [1200, '1.2 kbps']
+    ])('formats %i as %s', (speed, expected) => {
+      expect(formatIfSpeed(speed)).toBe(expected)
+    })
+
+    // Grouping is off in both Java formatters, so a very large value has no thousands separator.
+    test('does not group thousands', () => {
+      expect(formatIfSpeed(5000000000000)).toBe('5000 Gbps')
+    })
+
+    // Each threshold picks the largest unit the value actually reaches, never the next one up.
+    test('keeps a value just under a threshold in the smaller unit', () => {
+      expect(formatIfSpeed(999999)).toBe('999.999 kbps')
+    })
+
+    // A quirk inherited from SIUtils rather than a bug here: the unit is chosen from the raw
+    // value, but the rounding happens after the division, so a value just under the next
+    // threshold can round up past it in the display -- 999999999 is 999.999999 Mbps, which at
+    // three decimals reads '1000.0 Mbps' rather than '1 Gbps'. Java's DecimalFormat("0.0##")
+    // does the same, and parity is worth more here than a cosmetic divergence.
+    test('rounds up within the unit rather than promoting to the next one', () => {
+      expect(formatIfSpeed(999999999)).toBe('1000.0 Mbps')
+    })
+
+    test.each([undefined, null])('shows N/A for %s', (speed) => {
+      expect(formatIfSpeed(speed)).toBe('N/A')
     })
   })
 })

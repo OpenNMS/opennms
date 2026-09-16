@@ -207,3 +207,46 @@ export const matchesSearchTerm = (term: string, values: Array<string | number | 
   return values.some(value =>
     value !== null && value !== undefined && String(value).toLowerCase().includes(term))
 }
+
+// Thresholds and unit names from SIUtils.getHumanReadableIfSpeed
+// (opennms-util/src/main/java/org/opennms/core/utils/SIUtils.java), which is the platform's
+// canonical rendering of an ifSpeed. Decimal, not binary: a megabit is 1000000 bits.
+const IF_SPEED_UNITS = [
+  { divisor: 1000000000, units: 'Gbps' },
+  { divisor: 1000000, units: 'Mbps' },
+  { divisor: 1000, units: 'kbps' }
+]
+
+/**
+ * An ifSpeed in bits per second as a readable string -- '100 Mbps', '2.5 Gbps', '0 bps'.
+ *
+ * Follows SIUtils.getHumanReadableIfSpeed: an exact multiple of the unit prints with no decimals
+ * at all (DecimalFormat "0"), anything else with one to three (DecimalFormat "0.0##"), and
+ * grouping is off in both, so a very large value reads '5000 Gbps' rather than '5,000 Gbps'.
+ *
+ * This is display only. The column still sorts on the raw number, since sorting these strings
+ * would put '1 Gbps' before '100 Mbps'.
+ */
+export const formatIfSpeed = (ifSpeed: number | null | undefined) => {
+  if (ifSpeed === null || ifSpeed === undefined) {
+    return 'N/A'
+  }
+
+  for (const { divisor, units } of IF_SPEED_UNITS) {
+    if (ifSpeed >= divisor) {
+      const scaled = ifSpeed / divisor
+
+      const text = ifSpeed % divisor === 0
+        ? String(scaled)
+        : scaled.toLocaleString('en-US', {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 3,
+          useGrouping: false
+        })
+
+      return `${text} ${units}`
+    }
+  }
+
+  return `${ifSpeed} bps`
+}
