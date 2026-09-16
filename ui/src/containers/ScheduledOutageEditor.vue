@@ -90,7 +90,7 @@
 
         <div v-if="!loadFailed" class="actions">
           <OnmsButton :label="isNew ? 'Create' : 'Save'" data-test="save" :disabled="saving" @click="save" />
-          <OnmsButton variant="text" label="Cancel" data-test="cancel-bottom" @click="goBack" />
+          <OnmsButton variant="ghost" label="Cancel" data-test="cancel-bottom" @click="goBack" />
         </div>
       </template>
       </template>

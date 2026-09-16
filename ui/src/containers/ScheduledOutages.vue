@@ -98,18 +98,20 @@
       data-test="create-dialog"
       @update:visible="(value: boolean) => { if (!value) closeCreateDialog() }"
     >
-      <FormField label="Name" for="new-outage-name" :error="createError">
-        <OnmsInputText
-          id="new-outage-name"
-          v-model="newName"
-          placeholder="Outage name"
-          fluid
-          data-test="new-name"
-          @keyup.enter="createOutage"
-        />
-      </FormField>
+      <div class="dialog-body">
+        <FormField label="Name" for="new-outage-name" :error="createError">
+          <OnmsInputText
+            id="new-outage-name"
+            v-model="newName"
+            placeholder="Outage name"
+            fluid
+            data-test="new-name"
+            @keyup.enter="createOutage"
+          />
+        </FormField>
+      </div>
       <div class="dialog-actions">
-        <OnmsButton variant="text" label="Cancel" data-test="create-cancel" @click="closeCreateDialog" />
+        <OnmsButton variant="ghost" label="Cancel" data-test="create-cancel" @click="closeCreateDialog" />
         <OnmsButton label="Create" :disabled="!newName.trim()" data-test="create-confirm" @click="createOutage" />
       </div>
     </OnmsDialog>
@@ -322,6 +324,13 @@ const confirmDelete = async () => {
 
   .subtitle {
     color: var(--p-text-muted-color);
+  }
+
+  .dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-top: 0.5rem;
   }
 
   .dialog-actions {

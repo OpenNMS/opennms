@@ -4,50 +4,38 @@
 
     <div class="new-span">
       <!-- specific: full start/end dates; others: time-of-day (+ optional day) -->
-      <template v-if="type === 'specific'">
-        <div class="span-row">
-          <span class="span-label">Start</span>
-          <OnmsSelect v-model="fields.startDay" :options="DAYS_OF_MONTH_PADDED" optionLabel="label" optionValue="value" data-test="specific-start-day" />
-          <OnmsSelect v-model="fields.startMonth" :options="MONTHS" optionLabel="label" optionValue="value" data-test="specific-start-month" />
-          <OnmsSelect v-model="fields.startYear" :options="years" optionLabel="label" optionValue="value" data-test="specific-start-year" />
-          <OnmsSelect v-model="fields.startHour" :options="HOURS" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.startMinute" :options="MINUTES" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.startSecond" :options="SECONDS" optionLabel="label" optionValue="value" />
-        </div>
-        <div class="span-row">
-          <span class="span-label">End</span>
-          <OnmsSelect v-model="fields.endDay" :options="DAYS_OF_MONTH_PADDED" optionLabel="label" optionValue="value" data-test="specific-end-day" />
-          <OnmsSelect v-model="fields.endMonth" :options="MONTHS" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.endYear" :options="years" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.endHour" :options="HOURS" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.endMinute" :options="MINUTES" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.endSecond" :options="SECONDS" optionLabel="label" optionValue="value" />
-        </div>
-      </template>
-
-      <template v-else>
-        <div v-if="type === 'weekly'" class="span-row">
-          <span class="span-label">Day of Week</span>
-          <OnmsSelect v-model="fields.day" :options="DAYS_OF_WEEK" optionLabel="label" optionValue="value" data-test="weekly-day" />
-        </div>
-        <div v-if="type === 'monthly'" class="span-row">
-          <span class="span-label">Day of Month</span>
-          <OnmsSelect v-model="fields.day" :options="DAYS_OF_MONTH" optionLabel="label" optionValue="value" data-test="monthly-day" />
-        </div>
-        <div class="span-row">
-          <span class="span-label">Start</span>
-          <OnmsSelect v-model="fields.startHour" :options="HOURS" optionLabel="label" optionValue="value" data-test="time-start-hour" />
-          <OnmsSelect v-model="fields.startMinute" :options="MINUTES" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.startSecond" :options="SECONDS" optionLabel="label" optionValue="value" />
-        </div>
-        <div class="span-row">
-          <span class="span-label">End</span>
-          <OnmsSelect v-model="fields.endHour" :options="HOURS" optionLabel="label" optionValue="value" data-test="time-end-hour" />
-          <OnmsSelect v-model="fields.endMinute" :options="MINUTES" optionLabel="label" optionValue="value" />
-          <OnmsSelect v-model="fields.endSecond" :options="SECONDS" optionLabel="label" optionValue="value" />
-        </div>
-      </template>
-
+      <div v-if="type === 'weekly'" class="span-row">
+        <span class="span-label">Day of Week</span>
+        <OnmsSelect v-model="fields.day" :options="DAYS_OF_WEEK" optionLabel="label" optionValue="value" data-test="weekly-day" />
+      </div>
+      <div v-if="type === 'monthly'" class="span-row">
+        <span class="span-label">Day of Month</span>
+        <OnmsSelect v-model="fields.day" :options="DAYS_OF_MONTH" optionLabel="label" optionValue="value" data-test="monthly-day" />
+      </div>
+      <div class="span-row">
+        <label class="span-label" for="span-start">Start</label>
+        <OnmsDatePicker
+          v-model="fields.start"
+          inputId="span-start"
+          :showTime="type === 'specific'"
+          :timeOnly="type !== 'specific'"
+          hourFormat="24"
+          showSeconds
+          data-test="span-start"
+        />
+      </div>
+      <div class="span-row">
+        <label class="span-label" for="span-end">End</label>
+        <OnmsDatePicker
+          v-model="fields.end"
+          inputId="span-end"
+          :showTime="type === 'specific'"
+          :timeOnly="type !== 'specific'"
+          hourFormat="24"
+          showSeconds
+          data-test="span-end"
+        />
+      </div>
       <OnmsButton label="Add Timespan" icon="pi pi-plus" class="add-button" data-test="add-time" @click="addSpan" />
     </div>
 
@@ -69,22 +57,16 @@
 
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import { OnmsButton, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDatePicker, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import { OutageTime, OutageType } from '@/types/scheduledOutage'
 import {
   DAYS_OF_MONTH,
-  DAYS_OF_MONTH_PADDED,
   DAYS_OF_WEEK,
-  HOURS,
-  MINUTES,
-  MONTHS,
-  SECONDS,
   TimeSpanFields,
   buildOutageTime,
   defaultTimeSpanFields,
-  describeOutageTime,
-  yearOptions
+  describeOutageTime
 } from '@/components/ScheduledOutages/outageTime'
 
 const props = defineProps<{
@@ -97,9 +79,7 @@ const emit = defineEmits<{
   remove: [index: number]
 }>()
 
-const currentYear = new Date().getFullYear()
-const years = yearOptions(currentYear)
-const fields = reactive<TimeSpanFields>(defaultTimeSpanFields(currentYear))
+const fields = reactive<TimeSpanFields>(defaultTimeSpanFields(new Date().getFullYear()))
 
 // the day field is shared between weekly (names) and monthly (numbers), so a
 // type switch must reset it to a value that exists in the new option list
@@ -118,6 +98,8 @@ const addSpan = () => {
 
 <style scoped lang="scss">
 .time-spans {
+  margin-top: 1rem;
+
   .section-title {
     font-weight: 600;
     margin-bottom: 0.5rem;

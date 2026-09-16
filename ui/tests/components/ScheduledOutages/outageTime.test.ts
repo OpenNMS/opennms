@@ -23,9 +23,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   DAYS_OF_MONTH,
-  DAYS_OF_MONTH_PADDED,
   buildOutageTime,
-  defaultTimeSpanFields
+  defaultTimeSpanFields,
+  formatSpecific,
+  formatTimeOfDay
 } from '@/components/ScheduledOutages/outageTime'
 
 // BasicScheduleUtils selects the parser by the exact string length: 20 for the
@@ -33,18 +34,8 @@ import {
 describe('buildOutageTime', () => {
   const base = () => ({
     ...defaultTimeSpanFields(2026),
-    startDay: '05',
-    startMonth: 'Aug',
-    startYear: '2026',
-    startHour: '01',
-    startMinute: '02',
-    startSecond: '03',
-    endDay: '06',
-    endMonth: 'Sep',
-    endYear: '2026',
-    endHour: '23',
-    endMinute: '59',
-    endSecond: '59',
+    start: new Date(2026, 7, 5, 1, 2, 3),
+    end: new Date(2026, 8, 6, 23, 59, 59),
     day: 'wednesday'
   })
 
@@ -76,18 +67,14 @@ describe('buildOutageTime', () => {
     expect(t.day).toBe('15')
   })
 
-  // Regression: the specific-date day dropdown must feed PADDED day values, or a
-  // single-digit day yields a 19-char string the length-keyed Java parser misreads.
-  it('keeps a specific span at 20 chars for the default (day 01) selection', () => {
+  // Regression: a single-digit day or hour must still be zero-padded, or the
+  // length-keyed Java parser misreads the string.
+  it('pads every field, so the default (1 January, midnight) span is 20 chars', () => {
     const t = buildOutageTime('specific', defaultTimeSpanFields(2026))
-    expect(t.begins.length).toBe(20)
-    expect(t.ends.length).toBe(20)
-  })
-
-  it('exposes padded 01..31 day-of-month values for the specific-date field', () => {
-    expect(DAYS_OF_MONTH_PADDED[0].value).toBe('01')
-    expect(DAYS_OF_MONTH_PADDED[8].value).toBe('09')
-    expect(DAYS_OF_MONTH_PADDED.every(o => o.value.length === 2)).toBe(true)
+    expect(t.begins).toBe('01-Jan-2026 00:00:00')
+    expect(t.ends).toBe('01-Jan-2026 23:59:59')
+    expect(formatSpecific(new Date(2026, 0, 9, 7, 8, 9))).toBe('09-Jan-2026 07:08:09')
+    expect(formatTimeOfDay(new Date(2026, 0, 9, 7, 8, 9))).toBe('07:08:09')
   })
 
   it('keeps unpadded 1..31 day-of-month values for the monthly attribute', () => {
