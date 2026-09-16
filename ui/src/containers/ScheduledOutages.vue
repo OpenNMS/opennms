@@ -333,20 +333,6 @@ const confirmDelete = async () => {
     color: var(--p-text-muted-color);
   }
 
-  .dialog-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding-top: 0.5rem;
-  }
-
-  .dialog-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
   .action-container {
     display: flex;
     gap: 0.25rem;
@@ -365,5 +351,20 @@ const confirmDelete = async () => {
   :deep(.mark.unknown) {
     color: var(--p-text-muted-color);
   }
+}
+
+// the create dialog is teleported to <body>, so these cannot sit under .scheduled-outages
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 </style>
