@@ -1,0 +1,4 @@
+# TYPE executor_pool_size_threads
+# HELP executor_pool_size_threads Missing the type, assumes unknown/gauge
+executor_pool_size_threads{name="taskExecutor"} 0.0
+# EOF
