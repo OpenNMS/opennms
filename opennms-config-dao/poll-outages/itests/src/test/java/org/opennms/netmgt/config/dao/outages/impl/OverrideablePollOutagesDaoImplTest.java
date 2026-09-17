@@ -30,6 +30,7 @@ import java.io.FileWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -55,6 +56,10 @@ public class OverrideablePollOutagesDaoImplTest {
     @Autowired
     private OverrideablePollOutagesDao m_pollOutagesDao;
     File m_configFile = new File("target/test-poller-configuration.xml");
+
+    {{
+        Locale.setDefault(Locale.US);
+    }}
 
     @Before
     public void setUp() throws Exception {
