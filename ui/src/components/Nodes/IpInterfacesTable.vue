@@ -15,6 +15,7 @@
       :rows="pageSize"
       :first="first"
       :rowsPerPageOptions="[5, 10, 20, 50]"
+      :loading="showSpinner"
       tableStyle="table-layout: fixed; width: 100%"
       sortField="ipAddress"
       :sortOrder="1"
@@ -37,7 +38,7 @@
         <template #body="{ data }">{{ data.isManaged || 'N/A' }}</template>
       </OnmsColumn>
       <template #empty>
-        <EmptyList :content="emptyListContent" data-test="empty-list" />
+        <EmptyList v-if="!isFetching" :content="emptyListContent" data-test="empty-list" />
       </template>
     </OnmsTable>
   </div>
@@ -52,6 +53,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { interfaceLink } from '@/lib/linkUtils'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
+import { useDelayedLoading } from './hooks/useDelayedLoading'
 import { matchesSearchTerm } from './utils'
 
 const props = withDefaults(defineProps<{
@@ -74,6 +76,7 @@ const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
 
 const { searchTerm, appliedTerm, onSearch, clearSearch } = useDebouncedSearch()
+const { isFetching, showSpinner, start: startLoading, stop: stopLoading } = useDelayedLoading()
 
 // Every interface for the node in one request (limit 0 is "no limit"), the way the legacy
 // interfaces page fetched them -- see the same note in SnmpInterfacesTable. The _s term is a
@@ -91,8 +94,17 @@ const rows = computed(() => nodeStore.ipInterfaces.filter(row => matchesSearchTe
   row.isManaged
 ])))
 
-const fetchInterfaces = () => {
-  nodeStore.getNodeIpInterfaces({ id: nodeId.value, queryParameters })
+// The store action resolves once it has assigned the rows, so awaiting it is all the loading
+// state needs -- no callback handed into the store, and no watch that could not tell a fetch
+// that is still running from one that finished with nothing.
+const fetchInterfaces = async () => {
+  startLoading()
+
+  try {
+    await nodeStore.getNodeIpInterfaces({ id: nodeId.value, queryParameters })
+  } finally {
+    stopLoading()
+  }
 }
 
 const onPage = (event: OnmsTablePageEvent) => {

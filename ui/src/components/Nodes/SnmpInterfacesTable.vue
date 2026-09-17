@@ -15,6 +15,7 @@
       :rows="pageSize"
       :first="first"
       :rowsPerPageOptions="[5, 10, 20, 50]"
+      :loading="showSpinner"
       tableStyle="table-layout: fixed; width: 100%"
       sortField="ifIndex"
       :sortOrder="1"
@@ -53,7 +54,7 @@
         <template #body="{ data }"><span data-test="if-speed">{{ data.speedLabel }}</span></template>
       </OnmsColumn>
       <template #empty>
-        <EmptyList :content="emptyListContent" data-test="empty-list" />
+        <EmptyList v-if="!isFetching" :content="emptyListContent" data-test="empty-list" />
       </template>
     </OnmsTable>
   </div>
@@ -68,6 +69,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { snmpInterfaceLink } from '@/lib/linkUtils'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
+import { useDelayedLoading } from './hooks/useDelayedLoading'
 import {
   formatIfSpeed,
   matchesSearchTerm,
@@ -97,6 +99,7 @@ const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
 
 const { searchTerm, appliedTerm, onSearch, clearSearch } = useDebouncedSearch()
+const { isFetching, showSpinner, start: startLoading, stop: stopLoading } = useDelayedLoading()
 
 const statusSeverity: Record<SnmpInterfaceStatus, OnmsTagSeverity> = {
   UP: 'success',
@@ -131,8 +134,17 @@ const rows = computed(() => decorated.value.filter(row => matchesSearchTerm(appl
   row.speedLabel
 ])))
 
-const fetchInterfaces = () => {
-  nodeStore.getNodeSnmpInterfaces({ id: nodeId.value, queryParameters })
+// The store action resolves once it has assigned the rows, so awaiting it is all the loading
+// state needs -- no callback handed into the store, and no watch that could not tell a fetch
+// that is still running from one that finished with nothing.
+const fetchInterfaces = async () => {
+  startLoading()
+
+  try {
+    await nodeStore.getNodeSnmpInterfaces({ id: nodeId.value, queryParameters })
+  } finally {
+    stopLoading()
+  }
 }
 
 const onPage = (event: OnmsTablePageEvent) => {

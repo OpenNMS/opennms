@@ -21,6 +21,7 @@
 ///
 
 import IpInterfacesTable from '@/components/Nodes/IpInterfacesTable.vue'
+import { LOADING_DELAY_MS } from '@/components/Nodes/hooks/useDelayedLoading'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { createTestingPinia } from '@pinia/testing'
@@ -439,6 +440,81 @@ describe('IpInterfacesTable.vue', () => {
 
       expect(nodeStore.getNodeIpInterfaces).toHaveBeenCalledTimes(2)
       ;(useRoute() as any).params.id = '42'
+    })
+  })
+
+  // The spinner is scoped to the table, not the app-wide useSpinner overlay, and it waits out
+  // LOADING_DELAY_MS so a fast fetch never flashes one.
+  describe('Loading state', () => {
+    const mountPending = () => {
+      let release: () => void = () => undefined
+      const pending = new Promise<void>((r) => {
+        release = r
+      })
+      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+      nodeStore = useNodeStore(pinia)
+      nodeStore.getNodeIpInterfaces = vi.fn().mockReturnValue(pending)
+      useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as any
+
+      const w = mount(IpInterfacesTable, {
+        global: { plugins: [pinia, PrimeVue] }
+      })
+
+      return { wrapper: w, release }
+    }
+
+    const tableLoading = (w: any) => w.findComponent({ name: 'OnmsTable' }).props('loading')
+
+    it('shows no spinner before the delay elapses', async () => {
+      vi.useFakeTimers()
+      const { wrapper: w } = mountPending()
+      await nextTick()
+      vi.advanceTimersByTime(LOADING_DELAY_MS - 25)
+      await nextTick()
+
+      expect(tableLoading(w)).toBe(false)
+      vi.useRealTimers()
+    })
+
+    it('shows the spinner once the fetch outlives the delay', async () => {
+      vi.useFakeTimers()
+      const { wrapper: w } = mountPending()
+      await nextTick()
+      vi.advanceTimersByTime(LOADING_DELAY_MS)
+      await nextTick()
+
+      expect(tableLoading(w)).toBe(true)
+      vi.useRealTimers()
+    })
+
+    it('clears the spinner when the fetch resolves', async () => {
+      vi.useFakeTimers()
+      const { wrapper: w, release } = mountPending()
+      await nextTick()
+      vi.advanceTimersByTime(LOADING_DELAY_MS)
+      await nextTick()
+      expect(tableLoading(w)).toBe(true)
+
+      vi.useRealTimers()
+      release()
+      await flushPromises()
+
+      expect(tableLoading(w)).toBe(false)
+    })
+
+    // The tables clear their rows when a fetch starts, so without this the empty state would say
+    // 'No results found.' while the fetch is still running -- a claim about the data rather than
+    // about still waiting for it.
+    it('does not claim there are no results while fetching', async () => {
+      const { wrapper: w, release } = mountPending()
+      await nextTick()
+
+      expect(w.find('[data-test="empty-list"]').exists()).toBe(false)
+
+      release()
+      await flushPromises()
+
+      expect(w.find('[data-test="empty-list"]').exists()).toBe(true)
     })
   })
 })
