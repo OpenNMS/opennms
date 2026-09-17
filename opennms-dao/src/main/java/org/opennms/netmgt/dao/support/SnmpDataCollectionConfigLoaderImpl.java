@@ -54,10 +54,9 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -190,9 +189,10 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
             coll.setSystems(systems);
 
             // Dedupe by name as we merge content from multiple sources into this collection.
-            // Mirrors DataCollectionConfigParser.addSystemDef's contains-check behavior.
-            final Set<String> addedGroupNames = new HashSet<>();
-            final Set<String> addedSystemDefNames = new HashSet<>();
+            // Last-wins, to mirror how DataCollectionGroup name collisions are resolved on
+            // the XML load path (LinkedHashMap#put) so the two paths stay symmetric.
+            final Map<String, Group> groupsByName = new LinkedHashMap<>();
+            final Map<String, SystemDef> systemDefsByName = new LinkedHashMap<>();
 
             final List<String> sourceNames = DatacollectionJsonHelper.fromJson(
                     profile.getSourceNames(), new TypeReference<>() {});
@@ -215,13 +215,13 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
 
                     final DatacollectionGroup dcGroup = buildDataCollectionGroupFromDb(source);
                     for (final Group g : dcGroup.getGroups()) {
-                        if (g.getName() != null && addedGroupNames.add(g.getName())) {
-                            groups.addGroup(g);
+                        if (g.getName() != null) {
+                            groupsByName.put(g.getName(), g);
                         }
                     }
                     for (final SystemDef sd : dcGroup.getSystemDefs()) {
-                        if (sd.getName() != null && addedSystemDefNames.add(sd.getName())) {
-                            systems.addSystemDef(sd);
+                        if (sd.getName() != null) {
+                            systemDefsByName.put(sd.getName(), sd);
                         }
                     }
                     for (final ResourceType rt : dcGroup.getResourceTypes()) {
@@ -231,6 +231,8 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                     }
                 }
             }
+            groupsByName.values().forEach(groups::addGroup);
+            systemDefsByName.values().forEach(systems::addSystemDef);
 
             config.addSnmpCollection(coll);
         }
