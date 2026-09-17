@@ -178,25 +178,26 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                             kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
                                     continue;
                                 }
-                                // Avoid duplicate chunks. discard if chunk is repeated.
-                                Integer chunkNum = currentChunkCache.getIfPresent(messageId);
-                                if (chunkNum == null) {
-                                    currentChunkCache.put(messageId, 0);
-                                    chunkNum = 0;
+                                // Chunks are numbered from 0 and must arrive in order. Only the chunk we are
+                                // expecting is appended; a repeated or out-of-order chunk is dropped.
+                                Integer expectedChunk = currentChunkCache.getIfPresent(messageId);
+                                if (expectedChunk == null) {
+                                    expectedChunk = 0;
                                 }
-
-                                if(chunkNum == sinkMessage.getCurrentChunkNumber()) {
+                                boolean isExpectedChunk = sinkMessage.getCurrentChunkNumber() == expectedChunk;
+                                if (!isExpectedChunk) {
+                                    LOG.debug("Expected chunk {} but got chunk {} for message {}, ignoring.",
+                                            expectedChunk, sinkMessage.getCurrentChunkNumber(), messageId);
                                     continue;
                                 }
                                 ByteString byteString = largeMessageCache.getIfPresent(messageId);
-                                if(byteString != null) {
-                                    largeMessageCache.put(messageId, byteString.concat(sinkMessage.getContent()));
-                                } else {
-                                    largeMessageCache.put(messageId, sinkMessage.getContent());
-                                }
-                                currentChunkCache.put(messageId, ++chunkNum);
+                                largeMessageCache.put(messageId, byteString == null
+                                        ? sinkMessage.getContent()
+                                        : byteString.concat(sinkMessage.getContent()));
+                                int receivedChunks = expectedChunk + 1;
+                                currentChunkCache.put(messageId, receivedChunks);
                                 // continue till all chunks arrive.
-                                if (sinkMessage.getTotalChunks() != chunkNum) {
+                                if (sinkMessage.getTotalChunks() != receivedChunks) {
                                     continue;
                                 }
                                 byteString = largeMessageCache.getIfPresent(messageId);
