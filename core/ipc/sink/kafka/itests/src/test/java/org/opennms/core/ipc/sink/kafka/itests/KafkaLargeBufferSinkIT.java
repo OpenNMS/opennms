@@ -113,6 +113,8 @@ public class KafkaLargeBufferSinkIT {
             }
         });
         remoteMessageDispatcherFactory.init();
+        // Guard against the config being ignored, which would let these tests pass without chunking.
+        assertThat(remoteMessageDispatcherFactory.getMaxBufferSize(), is(1000));
 
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
