@@ -520,4 +520,82 @@ describe('SnmpInterfacesTable.vue', () => {
       ;(useRoute() as any).params.id = '42'
     })
   })
+
+  // The details page mounts both tabs' tables at once, so fetching on mount meant every node
+  // details load paid for every SNMP interface on the node -- the expensive one on a switch
+  // with thousands of them -- even for a user who never opened this tab.
+  describe('Deferred fetch', () => {
+    const mountInactive = () => {
+      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+      nodeStore = useNodeStore(pinia)
+      nodeStore.getNodeSnmpInterfaces = vi.fn().mockResolvedValue(undefined)
+      useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as any
+
+      return mount(SnmpInterfacesTable, {
+        props: { active: false },
+        global: { plugins: [pinia, PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+      })
+    }
+
+    it('does not fetch while its tab is hidden', async () => {
+      mountInactive()
+      await flushPromises()
+
+      expect(nodeStore.getNodeSnmpInterfaces).not.toHaveBeenCalled()
+    })
+
+    it('fetches when its tab is first shown', async () => {
+      const hidden = mountInactive()
+      await flushPromises()
+
+      await hidden.setProps({ active: true })
+      await flushPromises()
+
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledTimes(1)
+    })
+
+    // Switching away and back must not pay for the rows a second time.
+    it('does not refetch when the tab is hidden and shown again', async () => {
+      const hidden = mountInactive()
+      await hidden.setProps({ active: true })
+      await flushPromises()
+      await hidden.setProps({ active: false })
+      await hidden.setProps({ active: true })
+      await flushPromises()
+
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledTimes(1)
+    })
+
+    // A node changed behind a hidden tab is picked up when the user returns to it, so they never
+    // see the previous node's rows.
+    it('fetches the new node when shown again after a node change', async () => {
+      const hidden = mountInactive()
+      await hidden.setProps({ active: true })
+      await flushPromises()
+      await hidden.setProps({ active: false })
+
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledTimes(1)
+
+      await hidden.setProps({ active: true })
+      await flushPromises()
+
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledTimes(2)
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenLastCalledWith(expect.objectContaining({ id: '99' }))
+      ;(useRoute() as any).params.id = '42'
+    })
+
+    it('refetches for a new node while the tab is showing', async () => {
+      const shown = mountInactive()
+      await shown.setProps({ active: true })
+      await flushPromises()
+
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+
+      expect(nodeStore.getNodeSnmpInterfaces).toHaveBeenCalledTimes(2)
+      ;(useRoute() as any).params.id = '42'
+    })
+  })
 })

@@ -7,10 +7,10 @@
       </OnmsTabList>
       <OnmsTabPanels>
         <OnmsTabPanel :value="0">
-          <IpInterfacesTable />
+          <IpInterfacesTable :active="activeTab === 0" />
         </OnmsTabPanel>
         <OnmsTabPanel :value="1">
-          <SnmpInterfacesTable />
+          <SnmpInterfacesTable :active="activeTab === 1" />
         </OnmsTabPanel>
       </OnmsTabPanels>
     </OnmsTabs>

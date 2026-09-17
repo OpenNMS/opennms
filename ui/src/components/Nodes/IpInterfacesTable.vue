@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsSearchInput, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -53,6 +53,12 @@ import { useNodeStore } from '@/stores/nodeStore'
 import { interfaceLink } from '@/lib/linkUtils'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
 import { matchesSearchTerm } from './utils'
+
+const props = withDefaults(defineProps<{
+  // Whether this table's tab is the one showing. Default true so the table still works mounted
+  // on its own; InterfacesTabs passes the real value.
+  active?: boolean
+}>(), { active: true })
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
@@ -94,23 +100,31 @@ const onPage = (event: OnmsTablePageEvent) => {
   pageSize.value = event.rows
 }
 
-onMounted(fetchInterfaces)
+// The details page mounts BOTH tabs' tables at once -- PrimeVue 4 has no lazy TabPanel -- so
+// fetching on mount pulled every IP interface for the node even when the user never opened
+// this tab. On a switch with thousands of them that is the expensive request, paid for nothing.
+// Fetch when the tab is first shown instead, and again if the node changes while it is showing.
+// A node changed behind a hidden tab is picked up when the user comes back to it, and the store
+// clears the rows as that fetch starts, so what they see is never the previous node's.
+const fetchedNodeId = ref<string | undefined>(undefined)
 
-// A narrowed result set is shorter than the one the page number was chosen against, so staying
-// on page 3 of the old set would show an empty page of the new one.
-watch(appliedTerm, () => {
-  first.value = 0
-})
+const fetchInterfacesIfShown = () => {
+  if (!props.active || fetchedNodeId.value === nodeId.value) {
+    return
+  }
 
-// The details page keeps one instance of this table across node ids, so the id has to be
-// followed rather than read once, or the tab keeps showing the IP interfaces of the node the user
-// navigated away from. Back to the first page, since the page the user was on says nothing
-// about the new node.
+  fetchedNodeId.value = nodeId.value
+  fetchInterfaces()
+}
+
+// Paging and the filter belong to the node that was on screen, so they reset whether or not this
+// tab is the one showing.
 watch(nodeId, () => {
   first.value = 0
   clearSearch()
-  fetchInterfaces()
 })
+
+watch([() => props.active, nodeId], fetchInterfacesIfShown, { immediate: true })
 
 defineExpose({ onPage })
 </script>
