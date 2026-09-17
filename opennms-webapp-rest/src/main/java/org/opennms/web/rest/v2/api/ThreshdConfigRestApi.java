@@ -59,8 +59,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         Threshd daemon configuration API V2 (the contents of the former `threshd-configuration.xml`).
 
         A package is the unit of transfer: `GET`, `POST` and `PUT` carry the whole package, including its
-        address ranges and its services. Services and thresholders have no endpoints of their own — a service
-        is a field of its package, a thresholder a field of the configuration.
+        address ranges and its services. A service has no endpoint of its own; it is a field of its package.
 
         A package binds interfaces to a threshold group through a service parameter named
         `thresholding-group`, whose value is a group name from the thresholding API.
@@ -98,8 +97,8 @@ public interface ThreshdConfigRestApi {
     @Operation(
             summary = "Get the threshd configuration",
             description = """
-        Retrieve the whole threshd configuration: the thread count, every package and every thresholder.
-        The response carries an `ETag` to be used as `If-Match` on a later write.""",
+        Retrieve the whole threshd configuration. The response carries an `ETag` to be used as `If-Match`
+        on a later write.""",
             operationId = "getThreshdConfiguration"
     )
     @ApiResponses(value = {
@@ -120,8 +119,8 @@ public interface ThreshdConfigRestApi {
     @Operation(
             summary = "Replace the threshd configuration",
             description = """
-        Replace the whole threshd configuration. Requires ROLE_ADMIN. The body is not a patch: packages and
-        thresholders missing from it are removed. At least one package is required.""",
+        Replace the whole threshd configuration. Requires ROLE_ADMIN. The body is not a patch: packages
+        missing from it are removed. At least one package is required.""",
             operationId = "updateThreshdConfiguration"
     )
     @RequestBody(required = true, description = "The complete threshd configuration.",

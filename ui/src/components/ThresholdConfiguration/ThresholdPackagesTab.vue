@@ -21,7 +21,6 @@
       </div>
     </div>
 
-    <ThreshdGeneralPanel />
     <ThresholdPackagesTable />
 
     <OnmsConfirmationDialog
@@ -49,7 +48,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import ThreshdGeneralPanel from '@/components/ThresholdConfiguration/ThreshdGeneralPanel.vue'
 import ThresholdPackagesTable from '@/components/ThresholdConfiguration/ThresholdPackagesTable.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'

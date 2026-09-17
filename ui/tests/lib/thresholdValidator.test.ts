@@ -14,8 +14,7 @@ import {
   validateThreshdPackage,
   validateThreshdService,
   validateThresholdDefinition,
-  validateThresholdGroup,
-  validateThresholder
+  validateThresholdGroup
 } from '@/lib/thresholdValidator'
 import type { Expression, Threshold, ThreshdPackage, ThreshdService, ThresholdGroup } from '@/types/thresholdConfig'
 
@@ -195,12 +194,6 @@ describe('threshd validation', () => {
     // An empty value means "not bound yet", which is a legitimate intermediate state.
     const unbound = service({ parameters: [{ key: THRESHOLDING_GROUP_PARAMETER, value: '' }] })
     expect(validateThreshdService(unbound, ['mib2']).thresholdingGroup).toBeUndefined()
-  })
-
-  test('requires a thresholder service and class name', () => {
-    expect(validateThresholder({ service: '', className: '', parameters: [] }).service).toBeDefined()
-    expect(validateThresholder({ service: 'SNMP', className: '', parameters: [] }).className).toBeDefined()
-    expect(hasErrors(validateThresholder({ service: 'SNMP', className: 'x.Y', parameters: [] }))).toBe(false)
   })
 
   test('requires both halves of an address range', () => {

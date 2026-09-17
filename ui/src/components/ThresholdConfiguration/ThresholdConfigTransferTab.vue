@@ -85,7 +85,7 @@ const sections: TransferSection[] = [
   {
     key: 'threshd',
     title: 'Threshd configuration',
-    description: 'The threshd daemon packages, services and thresholders.',
+    description: 'The threshd daemon packages and their services.',
     download: API.downloadThreshdConfiguration,
     upload: API.uploadThreshdConfiguration,
     refresh: () => threshdStore.fetchConfiguration()
