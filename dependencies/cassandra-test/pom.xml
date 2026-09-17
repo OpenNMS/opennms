@@ -17,6 +17,12 @@
       <artifactId>newts-cassandra-common</artifactId>
       <version>${newtsVersion}</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.newts</groupId>
@@ -24,6 +30,10 @@
       <version>${newtsVersion}</version>
       <scope>compile</scope>
       <exclusions>
+        <exclusion>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>*</artifactId>

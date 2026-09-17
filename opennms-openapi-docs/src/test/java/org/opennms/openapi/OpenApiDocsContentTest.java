@@ -26,6 +26,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -59,6 +62,22 @@ public class OpenApiDocsContentTest {
         // org.opennms.features.measurements.rest
         assertHasPath(document, "/measurements");
 
+        // WireFormatModelResolver: JAXB names on the wire, not bean names
+        assertSchemaProperty(document, "RequisitionNode", "meta-data", true);
+        assertSchemaProperty(document, "RequisitionNode", "metaData", false);
+
+        // an XmlJavaTypeAdapter decides the wire type: OnmsSnmpInterface.node is an OnmsNode
+        // in Java, an integer in JSON
+        assertSchemaPropertyType(document, "OnmsSnmpInterface", "nodeId", "integer");
+        assertSchemaPropertyType(document, "Event", "interface", "string");
+
+        // the runtime resolves enum names through Jackson 1, which uses Enum.name(),
+        // so XmlEnumValue spellings such as "v2-inform" never appear on the wire
+        assertSchemaPropertyEnum(document, "SnmpTrapSink", "version", "V1", "V2c", "V3", "V2_INFORM", "V3_INFORM");
+
+        // an XML default has to be one of the values the JSON API accepts
+        assertSchemaPropertyDefault(document, "SyslogDestination", "ip-protocol", "UDP");
+
         assertPathCountAtLeast(document, "v1", 180);
     }
 
@@ -81,6 +100,8 @@ public class OpenApiDocsContentTest {
         // org.opennms.features.geolocation.rest
         assertHasPath(document, "/geolocation");
 
+        assertSchemaProperty(document, "OnmsMonitoringLocation", "location-name", true);
+
         assertPathCountAtLeast(document, "v2", 200);
     }
 
@@ -99,6 +120,50 @@ public class OpenApiDocsContentTest {
     private static void assertBasicAuth(final JsonNode document) {
         assertEquals("http", document.at("/components/securitySchemes/basicAuth/type").asText());
         assertEquals("basic", document.at("/components/securitySchemes/basicAuth/scheme").asText());
+    }
+
+    private static void assertSchemaProperty(final JsonNode document, final String schema, final String property,
+                                             final boolean expected) {
+        final JsonNode node = document.at("/components/schemas/" + schema + "/properties/" + property);
+        assertEquals(schema + (expected ? " should document " : " should not document ") + property,
+                expected, node.isObject());
+    }
+
+    private static void assertSchemaPropertyType(final JsonNode document, final String schema, final String property,
+                                                final String expected) {
+        final JsonNode node = property(document, schema, property);
+        assertEquals(schema + "." + property + " type", expected, node.path("type").asText());
+    }
+
+    private static void assertSchemaPropertyEnum(final JsonNode document, final String schema, final String property,
+                                                 final String... expected) {
+        final JsonNode values = property(document, schema, property).path("enum");
+        final List<String> actual = new ArrayList<>();
+        values.forEach(value -> actual.add(value.asText()));
+        assertEquals(schema + "." + property + " values", Arrays.asList(expected), actual);
+    }
+
+    private static void assertSchemaPropertyDefault(final JsonNode document, final String schema, final String property,
+                                                    final String expected) {
+        final JsonNode node = property(document, schema, property);
+        assertEquals(schema + "." + property + " default", expected, node.path("default").asText());
+        assertTrue(schema + "." + property + " default must be one of its values",
+                contains(node.path("enum"), expected));
+    }
+
+    private static boolean contains(final JsonNode values, final String expected) {
+        for (final JsonNode value : values) {
+            if (expected.equals(value.asText())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static JsonNode property(final JsonNode document, final String schema, final String name) {
+        final JsonNode node = document.at("/components/schemas/" + schema + "/properties/" + name);
+        assertTrue(schema + " should document " + name, node.isObject());
+        return node;
     }
 
     private static void assertHasPath(final JsonNode document, final String path) {
