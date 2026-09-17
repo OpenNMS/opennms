@@ -101,9 +101,13 @@ const emptyListContent = { msg: 'No results found.' }
 const { searchTerm, appliedTerm, onSearch, clearSearch } = useDebouncedSearch()
 const { isFetching, showSpinner, start: startLoading, stop: stopLoading } = useDelayedLoading()
 
+// DISABLED is a warning rather than a danger: the interface is down because somebody turned it
+// off, which is not a fault. TESTING is informational for the same reason -- mid-change.
 const statusSeverity: Record<SnmpInterfaceStatus, OnmsTagSeverity> = {
   UP: 'success',
   DOWN: 'danger',
+  DISABLED: 'warn',
+  TESTING: 'info',
   UNKNOWN: 'info'
 }
 

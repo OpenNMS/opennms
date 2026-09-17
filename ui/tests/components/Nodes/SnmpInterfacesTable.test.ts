@@ -214,7 +214,10 @@ describe('SnmpInterfacesTable.vue', () => {
     it.each([
       [1, 1, 'UP', 'success'],
       [1, 2, 'DOWN', 'danger'],
-      [2, 1, 'UNKNOWN', 'info']
+      [1, 3, 'TESTING', 'info'],
+      [2, 1, 'DISABLED', 'warn'],
+      [3, 1, 'TESTING', 'info'],
+      [undefined, undefined, 'UNKNOWN', 'info']
     ])('renders %s/%s as a %s tag with %s severity', async (ifAdminStatus, ifOperStatus, label, severity) => {
       nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 1, ifAdminStatus, ifOperStatus }] as any
       nodeStore.snmpInterfacesTotalCount = 1
@@ -229,13 +232,15 @@ describe('SnmpInterfacesTable.vue', () => {
       nodeStore.snmpInterfaces = [
         { id: 1, ifIndex: 1, ifAdminStatus: 1, ifOperStatus: 1 },
         { id: 2, ifIndex: 2, ifAdminStatus: 1, ifOperStatus: 2 },
-        { id: 3, ifIndex: 3, ifAdminStatus: 2, ifOperStatus: 2 }
+        { id: 3, ifIndex: 3, ifAdminStatus: 2, ifOperStatus: 2 },
+        { id: 4, ifIndex: 4, ifAdminStatus: 3, ifOperStatus: 1 },
+        { id: 5, ifIndex: 5 }
       ] as any
-      nodeStore.snmpInterfacesTotalCount = 3
+      nodeStore.snmpInterfacesTotalCount = 5
       await nextTick()
 
       expect(wrapper.findAll('[data-test="status-tag"]').map(t => t.text()))
-        .toEqual(['UP', 'DOWN', 'UNKNOWN'])
+        .toEqual(['UP', 'DOWN', 'DISABLED', 'TESTING', 'UNKNOWN'])
     })
 
     // The rows no longer carry a status background — the tag is the only status signal.
@@ -359,7 +364,7 @@ describe('SnmpInterfacesTable.vue', () => {
       await nextTick()
 
       expect(wrapper.findAll('[data-test="status-tag"]').map(t => t.text()))
-        .toEqual(['DOWN', 'UNKNOWN', 'UP'])
+        .toEqual(['DISABLED', 'DOWN', 'UP'])
     })
   })
 
@@ -428,9 +433,17 @@ describe('SnmpInterfacesTable.vue', () => {
 
     // The Status column is displayed, so it filters like any other column.
     it('matches on the derived status', async () => {
-      await type('unknown')
+      await type('disabled')
 
       expect(ifIndexes()).toEqual(['17'])
+    })
+
+    // A useful side effect of labelling it DISABLED rather than ADMIN-DOWN: 'down' now finds only
+    // the interfaces that are actually down, not the ones somebody turned off.
+    it('does not match a disabled interface on down', async () => {
+      await type('down')
+
+      expect(ifIndexes()).toEqual(['7'])
     })
 
     it('shows the empty state when nothing matches', async () => {

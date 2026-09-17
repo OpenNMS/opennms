@@ -137,27 +137,51 @@ const SNMP_IF_STATUS_LABELS: Record<SnmpIfStatus, string> = {
   [SnmpIfStatus.LOWER_LAYER_DOWN]: 'Lower Layer Down'
 }
 
-export type SnmpInterfaceStatus = 'UP' | 'DOWN' | 'UNKNOWN'
+export type SnmpInterfaceStatus = 'UP' | 'DOWN' | 'DISABLED' | 'TESTING' | 'UNKNOWN'
 
 /**
- * Status shown in the SNMP interfaces table, mirroring setStylesForSnmpInterfaces()
- * in the JSP interfaces page
- * (core/web-assets/src/main/assets/js/apps/onms-interfaces/onms-interfaces-app/index.js).
+ * Status shown in the SNMP interfaces table.
  *
- * An interface that is not administratively up is UNKNOWN rather than DOWN:
- * nobody is asking it to run, so its operational status says nothing about
- * whether anything is wrong. Only when it is meant to be up does ifOperStatus
- * decide between UP and DOWN.
+ * This is deliberately finer-grained than setStylesForSnmpInterfaces() in the JSP interfaces
+ * page (core/web-assets/src/main/assets/js/apps/onms-interfaces/onms-interfaces-app/index.js),
+ * which had only up / down / unknown and folded every non-up ifAdminStatus into 'unknown'. An
+ * interface that is administratively down was deliberately turned off, and one under test is
+ * mid-change; neither is unknown, and neither is a fault. Separating them leaves UNKNOWN meaning
+ * what it says: the agent gave us no ifAdminStatus, or one outside the MIB's range.
  *
- * Note this is NOT the isManaged/isDown rule the same file applies to IP
- * interfaces -- SNMP interfaces carry neither field.
+ * ifAdminStatus decides first, since it says what the interface is being ASKED to do. Note the
+ * label for that case is DISABLED rather than the MIB's own 'down', so it cannot be misread as
+ * the operational down that DOWN means here:
+ *   down     -> DISABLED, whatever it is operationally
+ *   testing  -> TESTING
+ *   up       -> ifOperStatus decides: up -> UP, testing -> TESTING, anything else -> DOWN
+ *   missing  -> UNKNOWN
+ *
+ * Note this is NOT the isManaged/isDown rule the JSP applies to IP interfaces -- SNMP
+ * interfaces carry neither field.
  */
 export const snmpInterfaceStatus = (snmpInterface: SnmpInterface): SnmpInterfaceStatus => {
-  if (snmpInterface.ifAdminStatus !== SnmpIfStatus.UP) {
+  const { ifAdminStatus, ifOperStatus } = snmpInterface
+
+  if (ifAdminStatus === SnmpIfStatus.DOWN) {
+    return 'DISABLED'
+  }
+
+  if (ifAdminStatus === SnmpIfStatus.TESTING) {
+    return 'TESTING'
+  }
+
+  if (ifAdminStatus !== SnmpIfStatus.UP) {
     return 'UNKNOWN'
   }
 
-  return snmpInterface.ifOperStatus === SnmpIfStatus.UP ? 'UP' : 'DOWN'
+  // Meant to be up, so what it is actually doing decides. Testing is called out rather than
+  // lumped in with down: the interface is mid-change, not broken.
+  if (ifOperStatus === SnmpIfStatus.TESTING) {
+    return 'TESTING'
+  }
+
+  return ifOperStatus === SnmpIfStatus.UP ? 'UP' : 'DOWN'
 }
 
 /**

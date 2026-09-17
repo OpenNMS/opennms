@@ -115,34 +115,53 @@ describe('Nodes utils test', () => {
     })
   })
 
-  // Mirrors setStylesForSnmpInterfaces() in the JSP interfaces page. Note the rule keys off
-  // ifAdminStatus/ifOperStatus -- NOT the isManaged/isDown rule that page uses for IP interfaces.
+  // Deliberately finer-grained than the JSP interfaces page, which folded every non-up
+  // ifAdminStatus into 'unknown'. ifAdminStatus decides first: it says what the interface is
+  // being ASKED to do, and only an interface asked to be up is judged on what it is doing.
   describe('snmpInterfaceStatus', () => {
-    const snmpInterface = (ifAdminStatus: number, ifOperStatus: number) =>
+    const snmpInterface = (ifAdminStatus?: number, ifOperStatus?: number) =>
       ({ ifAdminStatus, ifOperStatus }) as SnmpInterface
 
-    test('is UP when administratively and operationally up', () => {
-      expect(snmpInterfaceStatus(snmpInterface(1, 1))).toBe('UP')
-    })
-
-    // Every non-up ifOperStatus counts as down once the interface is meant to be up.
-    test.each([2, 3, 4, 5, 6, 7])('is DOWN when administratively up but operationally %i', (oper) => {
-      expect(snmpInterfaceStatus(snmpInterface(1, oper))).toBe('DOWN')
-    })
-
-    // Nobody is asking these to run, so their operational status says nothing -- even an
-    // operationally-up one is UNKNOWN.
+    // admin, oper, expected -- the whole IF-MIB range, since devices report all of it
     test.each([
-      [2, 1],
-      [2, 2],
-      [3, 1]
-    ])('is UNKNOWN when not administratively up (admin %i, oper %i)', (admin, oper) => {
+      // administratively up: the operational status decides
+      [1, 1, 'UP'],
+      [1, 2, 'DOWN'],
+      [1, 3, 'TESTING'],
+      [1, 4, 'DOWN'],
+      [1, 5, 'DOWN'],
+      [1, 6, 'DOWN'],
+      [1, 7, 'DOWN'],
+      // administratively down: turned off on purpose, whatever it is doing
+      [2, 1, 'DISABLED'],
+      [2, 2, 'DISABLED'],
+      [2, 3, 'DISABLED'],
+      // under test: mid-change, whatever it is doing
+      [3, 1, 'TESTING'],
+      [3, 2, 'TESTING'],
+      [3, 3, 'TESTING']
+    ])('admin %i, oper %i -> %s', (admin, oper, expected) => {
+      expect(snmpInterfaceStatus(snmpInterface(admin, oper))).toBe(expected)
+    })
+
+    // UNKNOWN now means what it says -- no usable ifAdminStatus -- rather than standing in for
+    // admin-down and testing as well.
+    test.each([
+      [undefined, undefined],
+      [undefined, 1],
+      [0, 1],
+      [9, 1]
+    ])('is UNKNOWN when ifAdminStatus is %s', (admin, oper) => {
       expect(snmpInterfaceStatus(snmpInterface(admin, oper))).toBe('UNKNOWN')
     })
 
-    // An interface the poller has not reached yet carries neither status.
-    test('is UNKNOWN when the statuses are missing', () => {
+    test('is UNKNOWN for an interface the poller has not reached', () => {
       expect(snmpInterfaceStatus({} as SnmpInterface)).toBe('UNKNOWN')
+    })
+
+    // An interface meant to be up with no operational status is not up.
+    test('is DOWN when administratively up with no operational status', () => {
+      expect(snmpInterfaceStatus(snmpInterface(1, undefined))).toBe('DOWN')
     })
   })
 
