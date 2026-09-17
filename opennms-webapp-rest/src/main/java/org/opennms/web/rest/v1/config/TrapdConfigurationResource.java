@@ -30,12 +30,14 @@ import javax.ws.rs.core.Response;
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -64,6 +66,7 @@ public class TrapdConfigurationResource {
             @ApiResponse(responseCode = "200", description = "The current trapd configuration.",
                     content = {
                             @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = TrapdConfiguration.class),
                                     examples = @ExampleObject(value = """
                                             {
                                               "threads": 0,
@@ -78,6 +81,7 @@ public class TrapdConfigurationResource {
                                               "use-address-from-varbind": null
                                             }""")),
                             @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = TrapdConfiguration.class),
                                     examples = @ExampleObject(value = """
                                             <?xml version="1.0" encoding="UTF-8"?>
                                             <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd"
