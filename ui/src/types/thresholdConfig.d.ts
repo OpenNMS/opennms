@@ -100,12 +100,6 @@ export interface ThreshdService {
   parameters: ThreshdParameter[]
 }
 
-export interface Thresholder {
-  service: string
-  className: string
-  parameters: ThreshdParameter[]
-}
-
 export interface ThreshdPackage {
   name: string
   filter: string
@@ -126,9 +120,7 @@ export interface ThreshdPackageSummary {
 }
 
 export interface ThreshdConfiguration {
-  threads: number
   packages: ThreshdPackage[]
-  thresholder: Thresholder[]
   version?: string
 }
 
@@ -164,9 +156,4 @@ export interface ThreshdServiceErrors {
   name?: string
   interval?: string
   thresholdingGroup?: string
-}
-
-export interface ThresholderErrors {
-  service?: string
-  className?: string
 }

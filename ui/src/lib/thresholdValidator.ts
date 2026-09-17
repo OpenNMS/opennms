@@ -34,9 +34,7 @@ import type {
   ThresholdDefinition,
   ThresholdDefinitionErrors,
   ThresholdGroup,
-  ThresholdGroupErrors,
-  Thresholder,
-  ThresholderErrors
+  ThresholdGroupErrors
 } from '@/types/thresholdConfig'
 
 /**
@@ -250,20 +248,6 @@ export const validateThreshdService = (service: ThreshdService, groupNames: stri
 
   if (thresholdingGroup && !isBlank(thresholdingGroup.value) && !groupNames.includes(thresholdingGroup.value)) {
     errors.thresholdingGroup = `No threshold group named '${thresholdingGroup.value}' exists.`
-  }
-
-  return errors
-}
-
-export const validateThresholder = (thresholder: Thresholder): ThresholderErrors => {
-  const errors: ThresholderErrors = {}
-
-  if (isBlank(thresholder.service)) {
-    errors.service = 'Service is required.'
-  }
-
-  if (isBlank(thresholder.className)) {
-    errors.className = 'Class name is required.'
   }
 
   return errors

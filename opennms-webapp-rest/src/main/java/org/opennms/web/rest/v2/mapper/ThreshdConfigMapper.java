@@ -34,20 +34,15 @@ import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ServiceStatus;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.web.rest.v2.model.IpRangeDto;
 import org.opennms.web.rest.v2.model.ParameterDto;
 import org.opennms.web.rest.v2.model.ThreshdConfigDto;
 import org.opennms.web.rest.v2.model.ThreshdPackageDto;
 import org.opennms.web.rest.v2.model.ThreshdPackageSummaryDto;
 import org.opennms.web.rest.v2.model.ThreshdServiceDto;
-import org.opennms.web.rest.v2.model.ThresholderDto;
 
 /**
  * Converts between the JAXB threshd configuration model and the REST DTOs.
- *
- * <p>The {@code thresholder} collection keeps its singular name throughout: it matches the XML element and
- * the key the configuration manager stores, and renaming it here would desynchronize the two.</p>
  */
 public abstract class ThreshdConfigMapper {
 
@@ -58,11 +53,7 @@ public abstract class ThreshdConfigMapper {
 
     public static ThreshdConfigDto toDto(final ThreshdConfiguration config) {
         final ThreshdConfigDto dto = new ThreshdConfigDto();
-        dto.setThreads(config.getThreads());
         dto.setPackages(config.getPackages().stream()
-                .map(ThreshdConfigMapper::toDto)
-                .collect(Collectors.toList()));
-        dto.setThresholder(config.getThresholder().stream()
                 .map(ThreshdConfigMapper::toDto)
                 .collect(Collectors.toList()));
         return dto;
@@ -108,16 +99,6 @@ public abstract class ThreshdConfigMapper {
         return dto;
     }
 
-    public static ThresholderDto toDto(final Thresholder thresholder) {
-        final ThresholderDto dto = new ThresholderDto();
-        dto.setService(thresholder.getService());
-        dto.setClassName(thresholder.getClassName());
-        dto.setParameters(thresholder.getParameters().stream()
-                .map(ThreshdConfigMapper::toDto)
-                .collect(Collectors.toList()));
-        return dto;
-    }
-
     public static ParameterDto toDto(final Parameter parameter) {
         final ParameterDto dto = new ParameterDto();
         dto.setKey(parameter.getKey());
@@ -140,7 +121,6 @@ public abstract class ThreshdConfigMapper {
 
     public static ThreshdConfiguration toEntity(final ThreshdConfigDto dto) {
         final ThreshdConfiguration config = new ThreshdConfiguration();
-        config.setThreads(dto.getThreads());
 
         final List<Package> packages = new ArrayList<>();
         if (dto.getPackages() != null) {
@@ -149,14 +129,6 @@ public abstract class ThreshdConfigMapper {
             }
         }
         config.setPackages(packages);
-
-        final List<Thresholder> thresholders = new ArrayList<>();
-        if (dto.getThresholder() != null) {
-            for (final ThresholderDto thresholderDto : dto.getThresholder()) {
-                thresholders.add(toEntity(thresholderDto));
-            }
-        }
-        config.setThresholder(thresholders);
 
         return config;
     }
@@ -219,14 +191,6 @@ public abstract class ThreshdConfigMapper {
         service.setStatus(toServiceStatus(dto.getStatus()));
         service.setParameters(toParameterEntities(dto.getParameters()));
         return service;
-    }
-
-    public static Thresholder toEntity(final ThresholderDto dto) {
-        final Thresholder thresholder = new Thresholder();
-        thresholder.setService(trimToNull(dto.getService()));
-        thresholder.setClassName(trimToNull(dto.getClassName()));
-        thresholder.setParameters(toParameterEntities(dto.getParameters()));
-        return thresholder;
     }
 
     public static ServiceStatus toServiceStatus(final String value) {

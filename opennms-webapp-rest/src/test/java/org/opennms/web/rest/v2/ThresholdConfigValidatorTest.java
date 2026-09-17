@@ -38,7 +38,6 @@ import org.opennms.web.rest.v2.model.ThreshdPackageDto;
 import org.opennms.web.rest.v2.model.ThreshdServiceDto;
 import org.opennms.web.rest.v2.model.ThresholdDto;
 import org.opennms.web.rest.v2.model.ThresholdGroupDto;
-import org.opennms.web.rest.v2.model.ThresholderDto;
 
 public class ThresholdConfigValidatorTest {
 
@@ -180,12 +179,8 @@ public class ThresholdConfigValidatorTest {
     }
 
     @Test
-    public void requiresAtLeastOnePackageAndAPositiveThreadCount() {
+    public void requiresAtLeastOnePackage() {
         final ThreshdConfigDto config = threshdConfig();
-        config.setThreads(0);
-        assertNotNull(ThresholdConfigValidator.validateThreshdConfig(config));
-
-        config.setThreads(5);
         config.setPackages(List.of());
         assertNotNull(ThresholdConfigValidator.validateThreshdConfig(config));
 
@@ -231,18 +226,6 @@ public class ThresholdConfigValidatorTest {
         assertNotNull(ThresholdConfigValidator.validateService(service));
     }
 
-    @Test
-    public void requiresAThresholderServiceAndClassName() {
-        final ThresholderDto thresholder = new ThresholderDto();
-        assertNotNull(ThresholdConfigValidator.validateThresholder(thresholder));
-
-        thresholder.setService("SNMP");
-        assertNotNull(ThresholdConfigValidator.validateThresholder(thresholder));
-
-        thresholder.setClassName("org.opennms.netmgt.threshd.SnmpThresholder");
-        assertNull(ThresholdConfigValidator.validateThresholder(thresholder));
-    }
-
     // ------------------------------------------------------------------ fixtures
 
     private static ThresholdDto threshold() {
@@ -276,7 +259,6 @@ public class ThresholdConfigValidatorTest {
 
     private static ThreshdConfigDto threshdConfig() {
         final ThreshdConfigDto dto = new ThreshdConfigDto();
-        dto.setThreads(5);
         dto.setPackages(List.of(threshdPackage()));
         return dto;
     }

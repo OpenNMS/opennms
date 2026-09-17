@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2.mapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,7 +38,6 @@ import org.opennms.web.rest.v2.model.ParameterDto;
 import org.opennms.web.rest.v2.model.ThreshdConfigDto;
 import org.opennms.web.rest.v2.model.ThreshdPackageDto;
 import org.opennms.web.rest.v2.model.ThreshdServiceDto;
-import org.opennms.web.rest.v2.model.ThresholderDto;
 
 public class ThreshdConfigMapperTest {
 
@@ -47,9 +47,7 @@ public class ThreshdConfigMapperTest {
 
         final ThreshdConfigDto roundTripped = ThreshdConfigMapper.toDto(ThreshdConfigMapper.toEntity(dto));
 
-        assertEquals(Integer.valueOf(5), roundTripped.getThreads());
         assertEquals(1, roundTripped.getPackages().size());
-        assertEquals(1, roundTripped.getThresholder().size());
 
         final ThreshdPackageDto pkg = roundTripped.getPackages().get(0);
         assertEquals("example1", pkg.getName());
@@ -69,15 +67,13 @@ public class ThreshdConfigMapperTest {
     }
 
     @Test
-    public void serializesTheThresholderCollectionUnderItsSingularName() {
-        // The XML element and the stored configuration document both call this "thresholder". Renaming the
-        // DTO field to the grammatical plural would silently desynchronize the two.
-        final ThreshdConfigDto dto = configDto();
+    public void carriesNoThreadCountOrThresholderBindings() {
+        // Both were dropped from the schema in v1.2: nothing ever read them, and leaving them in the DTO
+        // would keep writing dead keys into the stored configuration.
+        final String json = writeJson(ThreshdConfigMapper.toDto(ThreshdConfigMapper.toEntity(configDto())));
 
-        final String json = writeJson(dto);
-
-        assertTrue(json, json.contains("\"thresholder\""));
-        assertTrue(json, !json.contains("\"thresholders\""));
+        assertFalse(json, json.contains("threads"));
+        assertFalse(json, json.contains("thresholder"));
     }
 
     @Test
@@ -132,14 +128,7 @@ public class ThreshdConfigMapperTest {
 
     private static ThreshdConfigDto configDto() {
         final ThreshdConfigDto dto = new ThreshdConfigDto();
-        dto.setThreads(5);
         dto.setPackages(List.of(packageDto()));
-
-        final ThresholderDto thresholder = new ThresholderDto();
-        thresholder.setService("SNMP");
-        thresholder.setClassName("org.opennms.netmgt.threshd.SnmpThresholder");
-        dto.setThresholder(List.of(thresholder));
-
         return dto;
     }
 

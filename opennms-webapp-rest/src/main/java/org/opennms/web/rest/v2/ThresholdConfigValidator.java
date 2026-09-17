@@ -36,7 +36,6 @@ import org.opennms.web.rest.v2.model.ThreshdPackageDto;
 import org.opennms.web.rest.v2.model.ThreshdServiceDto;
 import org.opennms.web.rest.v2.model.ThresholdDto;
 import org.opennms.web.rest.v2.model.ThresholdGroupDto;
-import org.opennms.web.rest.v2.model.ThresholderDto;
 
 /**
  * Field-level validation for the threshold configuration REST services.
@@ -178,9 +177,6 @@ public abstract class ThresholdConfigValidator {
         if (config == null) {
             return "Missing threshd configuration in request body.";
         }
-        if (config.getThreads() == null || config.getThreads() < 1) {
-            return "threads is required and must be greater than 0.";
-        }
         if (config.getPackages() == null || config.getPackages().isEmpty()) {
             return "At least one threshd package is required.";
         }
@@ -188,14 +184,6 @@ public abstract class ThresholdConfigValidator {
             final String message = validatePackage(config.getPackages().get(i));
             if (message != null) {
                 return "Invalid package at index " + i + ": " + message;
-            }
-        }
-        if (config.getThresholder() != null) {
-            for (int i = 0; i < config.getThresholder().size(); i++) {
-                final String message = validateThresholder(config.getThresholder().get(i));
-                if (message != null) {
-                    return "Invalid thresholder at index " + i + ": " + message;
-                }
             }
         }
         return null;
@@ -236,19 +224,6 @@ public abstract class ThresholdConfigValidator {
             return "service status '" + service.getStatus() + "' is not one of on, off.";
         }
         return validateParameters(service.getParameters());
-    }
-
-    public static String validateThresholder(final ThresholderDto thresholder) {
-        if (thresholder == null) {
-            return "thresholder must not be null.";
-        }
-        if (isBlank(thresholder.getService())) {
-            return "thresholder service is required.";
-        }
-        if (isBlank(thresholder.getClassName())) {
-            return "thresholder class-name is required.";
-        }
-        return validateParameters(thresholder.getParameters());
     }
 
     private static String validateParameters(final List<ParameterDto> parameters) {

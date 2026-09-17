@@ -22,7 +22,6 @@
 
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { cloneDeep } from 'lodash'
 import { THRESHOLDING_GROUP_PARAMETER, ThreshdServiceStatus } from '@/lib/thresholdValidator'
 import API from '@/services'
 import { CreateEditMode } from '@/types'
@@ -34,14 +33,11 @@ import type {
   ThreshdPackage,
   ThreshdPackageSummary,
   ThreshdParameter,
-  ThreshdService,
-  Thresholder
+  ThreshdService
 } from '@/types/thresholdConfig'
 
 export const getDefaultThreshdConfiguration = (): ThreshdConfiguration => ({
-  threads: 5,
-  packages: [],
-  thresholder: []
+  packages: []
 })
 
 export const getDefaultThreshdPackage = (): ThreshdPackage => ({
@@ -63,8 +59,6 @@ export const getDefaultThreshdService = (): ThreshdService => ({
   // Seeded, because a service without this parameter thresholds nothing.
   parameters: [{ key: THRESHOLDING_GROUP_PARAMETER, value: '' }]
 })
-
-export const getDefaultThresholder = (): Thresholder => ({ service: '', className: '', parameters: [] })
 
 export const getDefaultAddressRange = (): ThreshdAddressRange => ({ begin: '', end: '' })
 
@@ -91,7 +85,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
   const currentPackage = ref<ThreshdPackage | null>(null)
   const isLoading = ref(false)
   const serviceDrawer = ref<EntityDrawerState>(closedDrawer())
-  const thresholderDrawer = ref<EntityDrawerState>(closedDrawer())
 
   const packageNames = computed(() => packages.value.map(pkg => pkg.name))
 
@@ -134,18 +127,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     isLoading.value = false
 
     currentPackage.value = result.success ? (result.payload ?? null) : null
-    return result
-  }
-
-  const saveThreads = async (threads: number): Promise<ValidationResult> => {
-    const updated = cloneDeep(config.value)
-    updated.threads = threads
-
-    const result = await API.updateThreshdConfiguration(updated)
-
-    if (result.success) {
-      await fetchConfiguration()
-    }
     return result
   }
 
@@ -221,40 +202,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     }
   }
 
-  const upsertThresholder = async (index: number | null, thresholder: Thresholder): Promise<ValidationResult> => {
-    const updated = cloneDeep(config.value)
-
-    if (index === null || index < 0 || index >= updated.thresholder.length) {
-      updated.thresholder.push(thresholder)
-    } else {
-      updated.thresholder.splice(index, 1, thresholder)
-    }
-
-    const result = await API.updateThreshdConfiguration(updated)
-
-    if (result.success) {
-      await fetchConfiguration()
-    }
-    return result
-  }
-
-  const removeThresholder = async (index: number): Promise<ValidationResult> => {
-    const updated = cloneDeep(config.value)
-
-    if (index < 0 || index >= updated.thresholder.length) {
-      return createFailureResult('No such thresholder.')
-    }
-
-    updated.thresholder.splice(index, 1)
-
-    const result = await API.updateThreshdConfiguration(updated)
-
-    if (result.success) {
-      await fetchConfiguration()
-    }
-    return result
-  }
-
   const reloadThreshdConfiguration = async (): Promise<ValidationResult> => API.reloadThreshdConfiguration()
 
   const openServiceDrawer = (mode: CreateEditMode, index = -1): void => {
@@ -265,21 +212,12 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     serviceDrawer.value = closedDrawer()
   }
 
-  const openThresholderDrawer = (mode: CreateEditMode, index = -1): void => {
-    thresholderDrawer.value = { visible: true, mode, index }
-  }
-
-  const closeThresholderDrawer = (): void => {
-    thresholderDrawer.value = closedDrawer()
-  }
-
   const resetState = (): void => {
     config.value = getDefaultThreshdConfiguration()
     packages.value = []
     currentPackage.value = null
     isLoading.value = false
     serviceDrawer.value = closedDrawer()
-    thresholderDrawer.value = closedDrawer()
   }
 
   return {
@@ -288,26 +226,20 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     currentPackage,
     isLoading,
     serviceDrawer,
-    thresholderDrawer,
     packageNames,
     packagesUsingGroup,
     fetchConfiguration,
     fetchPackages,
     fetchPackage,
-    saveThreads,
     createPackage,
     saveCurrentPackage,
     renamePackage,
     deletePackage,
     upsertService,
     removeService,
-    upsertThresholder,
-    removeThresholder,
     reloadThreshdConfiguration,
     openServiceDrawer,
     closeServiceDrawer,
-    openThresholderDrawer,
-    closeThresholderDrawer,
     resetState
   }
 })
