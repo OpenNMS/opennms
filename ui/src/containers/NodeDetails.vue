@@ -120,12 +120,6 @@ const fetchNode = async () => {
 
   nodeStore.getNodeSnmpPrimaryInterface(props.id)
 
-  // Fills nodeToIpInterfaceMap, which the Info... dialog reads to pick the node's best IP
-  // address. Only the node list used to populate it, so without this the dialog's IP Address
-  // row came up blank on this page. Scoped to this one node, and the store replaces the map
-  // wholesale, so it cannot accumulate other nodes' interfaces.
-  nodeStore.getIpInterfacesForNodes([props.id], false)
-
   await nodeStore.getNodeById({ id: props.id } as Node)
 
   // The events table fetches by node id itself and only replaces its rows on success, so a

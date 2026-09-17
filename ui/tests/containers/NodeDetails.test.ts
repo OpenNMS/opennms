@@ -157,14 +157,15 @@ describe('NodeDetails.vue', () => {
       expect(wrapper.findComponent({ name: 'NodeDetailsDialog' }).props('visible')).toBe(false)
     })
 
-    // The dialog picks the node's best IP from nodeToIpInterfaceMap, which only the node list
-    // used to fill -- so without this fetch its IP Address row is blank on this page.
-    it('fetches the IP interfaces the dialog needs to show an address', async () => {
+    // The dialog picks the node's best IP out of nodeToIpInterfaceMap. This page used to issue a
+    // second limit=0 request purely to fill that; the IP interfaces table's own fetch now does it
+    // (see nodeStore), so there is nothing for the page to do.
+    it('does not fetch interfaces of its own for the dialog', async () => {
       const { wrapper, nodeStore } = mountComponent('42', true)
       await flushPromises()
       void wrapper
 
-      expect(nodeStore.getIpInterfacesForNodes).toHaveBeenCalledWith(['42'], false)
+      expect(nodeStore.getIpInterfacesForNodes).not.toHaveBeenCalled()
     })
 
     it('hands the actions menu a handler that opens the dialog on this node', async () => {

@@ -195,6 +195,13 @@ export const useNodeStore = defineStore('nodeStore', () => {
     if (resp) {
       ipInterfaces.value = resp.ipInterface
       ipInterfacesTotalCount.value = resp.totalCount
+
+      // Also record them against the node, which is what the node info dialog reads to pick the
+      // node's best IP. The details page used to issue a second, near-identical limit=0 request
+      // just to fill this; the rows are right here. Replaced wholesale, like
+      // getIpInterfacesForNodes: this action only ever serves one node at a time, and the node
+      // list uses that one instead, so the two never populate the map on the same page.
+      nodeToIpInterfaceMap.value = new Map([[payload.id, resp.ipInterface]])
     }
   }
 

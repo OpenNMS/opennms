@@ -575,6 +575,32 @@ describe('nodeStore stale panel responses', () => {
     })
   })
 
+  // What the node info dialog reads to pick a node's best IP. Filled from this fetch rather than
+  // a second request of its own.
+  it('records the fetched IP interfaces against the node', async () => {
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValueOnce(
+      { ipInterface: [{ id: '1', ipAddress: '10.0.0.7', snmpPrimary: 'P' }], totalCount: 1 } as never)
+    const store = useNodeStore()
+
+    await store.getNodeIpInterfaces({ id: '42' })
+
+    expect(store.nodeToIpInterfaceMap.get('42')).toEqual([
+      { id: '1', ipAddress: '10.0.0.7', snmpPrimary: 'P' }
+    ])
+  })
+
+  // Only ever one node at a time here, so the map holds that node alone -- the node list fills it
+  // via getIpInterfacesForNodes instead, and the two never run on the same page.
+  it('replaces the map rather than accumulating nodes', async () => {
+    const store = useNodeStore()
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValueOnce({ ipInterface: [{ id: '1' }], totalCount: 1 } as never)
+    await store.getNodeIpInterfaces({ id: '42' })
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValueOnce({ ipInterface: [{ id: '2' }], totalCount: 1 } as never)
+    await store.getNodeIpInterfaces({ id: '99' })
+
+    expect([...store.nodeToIpInterfaceMap.keys()]).toEqual(['99'])
+  })
+
   it('discards superseded SNMP interfaces', async () => {
     const { first, second } = racePair(vi.mocked(API.getNodeSnmpInterfaces) as never)
     const store = useNodeStore()
