@@ -37,8 +37,7 @@ public class ThreshdConfigurationTest extends XmlTestNoCastor<ThreshdConfigurati
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         ThreshdConfiguration threshdConfiguration = new ThreshdConfiguration();
-        threshdConfiguration.setThreads(5);
-        
+
         Package pkg = new Package();
         pkg.setName("mib2");
         threshdConfiguration.addPackage(pkg);
@@ -50,7 +49,7 @@ public class ThreshdConfigurationTest extends XmlTestNoCastor<ThreshdConfigurati
         return Arrays.asList(new Object[][] {
             {
                 threshdConfiguration,
-                "<threshd-configuration threads=\"5\">\n" + 
+                "<threshd-configuration>\n" + 
                 "   <package name=\"mib2\">\n" + 
                 "      <filter>IPADDR != '0.0.0.0'</filter>\n" + 
                 "   </package>\n" + 

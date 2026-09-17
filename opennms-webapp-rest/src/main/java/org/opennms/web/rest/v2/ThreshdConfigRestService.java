@@ -160,9 +160,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
 
                 final ThreshdConfiguration replacement = ThreshdConfigMapper.toEntity(configDto);
                 // Mutate the instance the DAO holds: saveConfig() serializes its own field, not an argument.
-                config.setThreads(replacement.getThreads());
                 config.setPackages(replacement.getPackages());
-                config.setThresholder(replacement.getThresholder());
 
                 threshdDao.saveConfig();
             });
@@ -442,9 +440,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
                     failure.set(Response.status(Status.NOT_FOUND).entity(NO_CONFIG_MESSAGE).build());
                     return;
                 }
-                config.setThreads(replacement.getThreads());
                 config.setPackages(replacement.getPackages());
-                config.setThresholder(replacement.getThresholder());
                 threshdDao.saveConfig();
             });
         } catch (final ValidationException e) {

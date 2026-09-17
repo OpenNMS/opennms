@@ -3,8 +3,7 @@
     <OnmsTabList>
       <OnmsTab :value="0">Groups</OnmsTab>
       <OnmsTab :value="1">Packages</OnmsTab>
-      <OnmsTab :value="2">Thresholders</OnmsTab>
-      <OnmsTab :value="3">Upload / download</OnmsTab>
+      <OnmsTab :value="2">Upload / download</OnmsTab>
     </OnmsTabList>
     <OnmsTabPanels>
       <OnmsTabPanel :value="0">
@@ -14,9 +13,6 @@
         <ThresholdPackagesTab />
       </OnmsTabPanel>
       <OnmsTabPanel :value="2">
-        <ThresholdersTab />
-      </OnmsTabPanel>
-      <OnmsTabPanel :value="3">
         <ThresholdConfigTransferTab />
       </OnmsTabPanel>
     </OnmsTabPanels>
@@ -29,11 +25,10 @@ import { useRoute, useRouter } from 'vue-router'
 import ThresholdConfigTransferTab from '@/components/ThresholdConfiguration/ThresholdConfigTransferTab.vue'
 import ThresholdGroupsTab from '@/components/ThresholdConfiguration/ThresholdGroupsTab.vue'
 import ThresholdPackagesTab from '@/components/ThresholdConfiguration/ThresholdPackagesTab.vue'
-import ThresholdersTab from '@/components/ThresholdConfiguration/ThresholdersTab.vue'
 import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 
 // Tab names live in the URL so a tab is linkable, matching how the topology view keeps ?view=.
-const TAB_NAMES = ['groups', 'packages', 'thresholders', 'transfer']
+const TAB_NAMES = ['groups', 'packages', 'transfer']
 
 const route = useRoute()
 const router = useRouter()

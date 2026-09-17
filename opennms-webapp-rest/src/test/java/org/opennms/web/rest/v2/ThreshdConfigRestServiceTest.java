@@ -43,7 +43,6 @@ import org.mockito.ArgumentCaptor;
 import org.opennms.netmgt.config.threshd.Filter;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
@@ -55,7 +54,6 @@ import org.opennms.web.rest.v2.model.ThreshdConfigDto;
 import org.opennms.web.rest.v2.model.ThreshdPackageDto;
 import org.opennms.web.rest.v2.model.ThreshdPackageSummaryDto;
 import org.opennms.web.rest.v2.model.ThreshdServiceDto;
-import org.opennms.web.rest.v2.model.ThresholderDto;
 
 public class ThreshdConfigRestServiceTest {
 
@@ -80,9 +78,7 @@ public class ThreshdConfigRestServiceTest {
         try (Response response = restService.getThreshdConfiguration(adminContext())) {
             assertEquals(200, response.getStatus());
             final ThreshdConfigDto dto = (ThreshdConfigDto) response.getEntity();
-            assertEquals(Integer.valueOf(5), dto.getThreads());
             assertEquals(2, dto.getPackages().size());
-            assertEquals(1, dto.getThresholder().size());
             assertNotNull(response.getEntityTag());
         }
     }
@@ -235,24 +231,19 @@ public class ThreshdConfigRestServiceTest {
     @Test
     public void replacesTheWholeConfiguration() {
         final ThreshdConfigDto dto = new ThreshdConfigDto();
-        dto.setThreads(9);
         dto.setPackages(List.of(packageDto("only")));
-        dto.setThresholder(List.of());
 
         try (Response response = restService.updateThreshdConfiguration(dto, null, adminContext())) {
             assertEquals(204, response.getStatus());
         }
 
         final ThreshdConfiguration config = threshdDao.getWriteableConfig();
-        assertEquals(Integer.valueOf(9), config.getThreads());
         assertEquals(1, config.getPackages().size());
-        assertTrue(config.getThresholder().isEmpty());
     }
 
     @Test
     public void rejectsAConfigurationWithoutPackages() {
         final ThreshdConfigDto dto = new ThreshdConfigDto();
-        dto.setThreads(5);
         dto.setPackages(List.of());
 
         try (Response response = restService.updateThreshdConfiguration(dto, null, adminContext())) {
@@ -306,12 +297,13 @@ public class ThreshdConfigRestServiceTest {
     }
 
     @Test
-    public void downloadsJsonUnderTheSingularThresholderKey() {
+    public void downloadsJsonWithoutTheFieldsDroppedFromTheSchema() {
         try (Response response = restService.downloadThreshdConfiguration(null, adminContext())) {
             assertEquals(200, response.getStatus());
             final String json = new String((byte[]) response.getEntity(), StandardCharsets.UTF_8);
-            assertTrue(json, json.contains("\"thresholder\""));
-            assertFalse(json, json.contains("\"thresholders\""));
+            assertTrue(json, json.contains("\"packages\""));
+            assertFalse(json, json.contains("threads"));
+            assertFalse(json, json.contains("thresholder"));
         }
     }
 
@@ -342,14 +334,7 @@ public class ThreshdConfigRestServiceTest {
 
     private static ThreshdConfiguration configWith(final Package... packages) {
         final ThreshdConfiguration config = new ThreshdConfiguration();
-        config.setThreads(5);
         config.setPackages(List.of(packages));
-
-        final Thresholder thresholder = new Thresholder();
-        thresholder.setService("SNMP");
-        thresholder.setClassName("org.opennms.netmgt.threshd.SnmpThresholder");
-        config.setThresholder(List.of(thresholder));
-
         return config;
     }
 

@@ -5,7 +5,6 @@ import {
   getDefaultThreshdConfiguration,
   getDefaultThreshdPackage,
   getDefaultThreshdService,
-  getDefaultThresholder,
   useThreshdConfigurationStore
 } from '@/stores/threshdConfigurationStore'
 import { THRESHOLDING_GROUP_PARAMETER, ThreshdServiceStatus } from '@/lib/thresholdValidator'
@@ -66,7 +65,6 @@ describe('threshdConfigurationStore', () => {
       getDefaultThreshdPackage().services.push(getDefaultThreshdService())
 
       expect(getDefaultThreshdPackage().services).toEqual([])
-      expect(getDefaultThresholder().parameters).toEqual([])
       expect(getDefaultAddressRange()).toEqual({ begin: '', end: '' })
     })
   })
@@ -129,32 +127,6 @@ describe('threshdConfigurationStore', () => {
 
       expect(() => store.upsertService(null, getDefaultThreshdService())).not.toThrow()
       expect(() => store.removeService(0)).not.toThrow()
-    })
-  })
-
-  describe('thresholders', () => {
-    test('appends a thresholder and writes the whole configuration', async () => {
-      const store = useThreshdConfigurationStore()
-      store.config = config([packageWithGroup('one', 'mib2')])
-
-      vi.mocked(API.updateThreshdConfiguration).mockResolvedValue(ok() as never)
-      vi.mocked(API.getThreshdConfiguration).mockResolvedValue(ok(store.config) as never)
-
-      await store.upsertThresholder(null, { service: 'SNMP', className: 'x.Y', parameters: [] })
-
-      const sent = vi.mocked(API.updateThreshdConfiguration).mock.calls[0][0]
-      expect(sent.thresholder).toHaveLength(1)
-      // The store must not mutate its own config before the server confirms the write.
-      expect(store.config.thresholder).toHaveLength(0)
-    })
-
-    test('refuses to remove a thresholder that is not there', async () => {
-      const store = useThreshdConfigurationStore()
-
-      const result = await store.removeThresholder(0)
-
-      expect(result.success).toBe(false)
-      expect(API.updateThreshdConfiguration).not.toHaveBeenCalled()
     })
   })
 

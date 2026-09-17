@@ -6,7 +6,7 @@ Threshold configuration lives in the database and is managed over REST.
 Two separate APIs cover the two configuration documents:
 
 * `/api/v2/thresholding` -- threshold groups, thresholds and expression thresholds (formerly `thresholds.xml`).
-* `/api/v2/threshd` -- the threshd daemon's packages, services and thresholders (formerly `threshd-configuration.xml`).
+* `/api/v2/threshd` -- the threshd daemon's packages and services (formerly `threshd-configuration.xml`).
 
 Reading requires any authenticated role.
 Every write requires `ROLE_ADMIN`.
@@ -183,7 +183,7 @@ curl -u admin:admin -X POST -F upload=@thresholds.xml \
 | `GET`
 | `/api/v2/threshd/config`
 | `application/json`
-| Get the whole threshd configuration: thread count, packages and thresholders. Returns an `ETag`.
+| Get the whole threshd configuration. Returns an `ETag`.
 
 | `PUT`
 | `/api/v2/threshd/config`
@@ -235,8 +235,6 @@ curl -u admin:admin -X POST -F upload=@thresholds.xml \
 | `multipart/form-data`
 | Replace the whole configuration from a `<threshd-configuration>` XML file.
 |===
-
-The `thresholder` collection keeps its singular name, matching the XML element and the key used in the stored configuration document.
 
 At least one package is required by the schema, so `DELETE` on the last remaining package fails with `400`.
 
