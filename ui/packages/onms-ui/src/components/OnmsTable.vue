@@ -20,6 +20,7 @@
     :editingRows="editingRows"
     :expandedRows="expandedRows"
     :rowClass="rowClass"
+    :loading="loading"
     :virtualScrollerOptions="virtualScrollerOptions"
     :pt="pt as never"
     @page="emit('page', $event)"
@@ -91,6 +92,9 @@ const props = withDefaults(defineProps<{
   // Per-row CSS classes, as PrimeVue's own (data) => class signature. Returns a
   // class string or a Vue class object; undefined leaves the row unclassed.
   rowClass?: (data: any) => string | Record<string, boolean> | undefined
+  // Masks the table body with a spinner. Scoped to the table rather than the
+  // page, unlike the app-wide useSpinner/Spinner overlay.
+  loading?: boolean
   // Narrowed from PrimeVue's virtualScrollerOptions object: row height in px
   virtualScrollItemSize?: number
   unsafePt?: unknown
@@ -115,6 +119,7 @@ const props = withDefaults(defineProps<{
   editingRows: undefined,
   expandedRows: undefined,
   rowClass: undefined,
+  loading: false,
   virtualScrollItemSize: undefined,
   unsafePt: undefined
 })
