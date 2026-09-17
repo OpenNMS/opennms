@@ -89,7 +89,7 @@ export const downloadGraphCsv = (
 
 // Chart.js canvases are transparent; flatten onto white so the PDF image is not
 // rendered over a black background.
-const canvasToPngOnWhite = (canvas: HTMLCanvasElement): string => {
+export const canvasToPngOnWhite = (canvas: HTMLCanvasElement): string => {
   const flattened = document.createElement('canvas')
   flattened.width = canvas.width
   flattened.height = canvas.height
