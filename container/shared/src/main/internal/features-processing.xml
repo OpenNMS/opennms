@@ -30,6 +30,10 @@
     <bundle originalUri="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/[2.21,2.22)"
             replacement="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${cxfJackson2Version}"
             mode="maven"/>
+    <!-- the ActiveMQ feature repository pins an older XStream than the one we ship (see installedBundles in pom.xml) -->
+    <bundle originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/[1.4,1.5)"
+            replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstreamVersion}_1"
+            mode="maven"/>
   </bundleReplacements>
 
   <featureReplacements>
