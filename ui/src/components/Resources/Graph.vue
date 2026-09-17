@@ -12,6 +12,13 @@
         />
         <router-link
           v-if="!isSingleGraph"
+          :to="`/resource-graphs/forecast/${label}/${definition}/${resourceId}`"
+          target="_blank"
+        >
+          <OnmsButton variant="outlined" data-test="forecasting-btn">Forecasting</OnmsButton>
+        </router-link>
+        <router-link
+          v-if="!isSingleGraph"
           :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
           target="_blank"
         >
@@ -47,7 +54,7 @@
 
 <script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
-import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
+import { formatTimestamps, getFormattedLegendStatements } from './utils/legendFormatter'
 import { downloadGraphCsv } from './utils/graphExport'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
