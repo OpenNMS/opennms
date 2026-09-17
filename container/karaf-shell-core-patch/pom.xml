@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>33.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.karaf-shell-core-patch</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Container :: Karaf Shell Core Patch</name>
+    <description>
+        jline 3.26 and newer look their terminal providers up by reading the resource
+        META-INF/jline/providers/&lt;name&gt; through the *thread context* classloader
+        (org.jline.terminal.spi.TerminalProvider.load). Inside Karaf that classloader is the
+        launcher's AppClassLoader, which cannot see resources inside the org.jline bundle, so
+        every lookup fails and jline falls back to a DumbTerminal. The local console --
+        "bin/karaf" without "server"/"daemon", which is what features/{minion,sentinel}/runInPlace.sh
+        starts -- then echoes nothing and spins redrawing its prompt. SSH and telnet consoles are
+        unaffected: they build their Terminal from streams and never go through provider discovery.
+
+        Karaf fixed this in 4.4.x by pinning the context classloader to jline's own around the
+        TerminalBuilder call in LocalConsoleManager.start(). Karaf 4.3.x, which this branch is on,
+        never received the fix, so this module rebuilds org.apache.karaf.shell.core with that one
+        method patched and publishes it as its own artifact. The assembly modules (container/karaf
+        for Horizon, container/shared for Minion and Sentinel) copy it over the bundle that Karaf's
+        own feature repository put into their assembled system/ directory -- the same approach
+        container/pax-url-aether-patch uses.
+
+        The patched source lives in src/main/patched-java and carries Karaf's own Apache License
+        header; only LocalConsoleManager.start() differs from upstream 4.3.10.
+
+        Delete this module once the container moves to Karaf 4.4.x or newer.
+    </description>
+
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+        <karafShellCoreJar>org.apache.karaf.shell.core-${karafVersion}.jar</karafShellCoreJar>
+        <patchedSourceDir>${project.basedir}/src/main/patched-java</patchedSourceDir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-karaf-shell-core</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.shell</groupId>
+                                    <artifactId>org.apache.karaf.shell.core</artifactId>
+                                    <version>${karafVersion}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/original</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven.antrun.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>patch-karaf-shell-core-local-console-manager</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- compile the single patched class against the very bundle we
+                                     are patching, so it links against the same API it will run
+                                     next to -->
+                                <mkdir dir="${project.build.directory}/patched-classes"/>
+                                <javac srcdir="${patchedSourceDir}"
+                                       destdir="${project.build.directory}/patched-classes"
+                                       classpathref="maven.compile.classpath"
+                                       includeantruntime="false"
+                                       debug="true"
+                                       source="8"
+                                       target="8"
+                                       nowarn="true"
+                                       encoding="UTF-8"/>
+
+                                <unzip src="${project.build.directory}/original/${karafShellCoreJar}"
+                                       dest="${project.build.directory}/bundle"/>
+
+                                <!-- overwrite LocalConsoleManager.class and its anonymous inner
+                                     class; every other entry stays byte-identical to upstream -->
+                                <copy todir="${project.build.directory}/bundle" overwrite="true">
+                                    <fileset dir="${project.build.directory}/patched-classes"/>
+                                </copy>
+
+                                <!-- repack; passing the original manifest keeps the OSGi headers
+                                     untouched and writes META-INF/MANIFEST.MF as the first entry,
+                                     which Karaf's JarInputStream based manifest readers depend
+                                     on -->
+                                <jar destfile="${project.build.directory}/${karafShellCoreJar}"
+                                     basedir="${project.build.directory}/bundle"
+                                     manifest="${project.build.directory}/bundle/META-INF/MANIFEST.MF"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-patched-karaf-shell-core</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${karafShellCoreJar}</file>
+                                    <type>jar</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- compile-time only: these supply the types LocalConsoleManager references. The
+             patched class is repacked into the upstream bundle, so nothing here is shipped. -->
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.core</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.boot</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.util</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>${jlineVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

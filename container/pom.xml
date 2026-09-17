@@ -14,6 +14,7 @@
          pax-url-aether bundle both assemblies pull into their system/ directory -->
     <module>plexus-utils-relocated</module>
     <module>pax-url-aether-patch</module>
+    <module>karaf-shell-core-patch</module>
     <module>branding</module>
     <module>features</module>
     <module>karaf</module>

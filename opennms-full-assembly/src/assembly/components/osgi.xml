@@ -54,6 +54,14 @@
         <exclude>org/ops4j/pax/logging/pax-logging-log4j2/1.10.2/*</exclude>
         <exclude>io/netty/netty-codec-http/4.1.22.Final</exclude>
         <exclude>io/netty/netty-codec-http/4.1.22.Final/*</exclude>
+        <!-- NMS-20061: Karaf's own feature repository pins a jline (3.21.0 for Karaf 4.3.10)
+             affected by CVE-2026-56740 / CVE-2026-56741. Only ${jlineVersion} from the root
+             pom may ship. Keyed off the property on purpose so it stays correct across jline
+             *and* Karaf bumps - do NOT hardcode a version here. Belt-and-braces: the
+             "remove-superseded-jline" antrun execution in opennms-full-assembly/pom.xml
+             already prunes target/opennms-repo at process-classes, before this descriptor is
+             read at package. -->
+        <exclude>%regex[.*org/jline/jline/(?!\Q${jlineVersion}\E(/|\z)).*]</exclude>
       </excludes>
     </fileSet>
 
