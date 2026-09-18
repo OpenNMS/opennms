@@ -41,4 +41,7 @@
 		</service-properties>
 	</service>
 
+
+	<bean id="wsmanEventLogRpcModule" class="org.opennms.netmgt.wsman.eventlog.rpc.WsManEventLogRpcModule" destroy-method="destroy" />
+	<service ref="wsmanEventLogRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
 </blueprint>

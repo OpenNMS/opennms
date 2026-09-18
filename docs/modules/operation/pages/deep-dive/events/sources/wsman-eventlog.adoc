@@ -1,0 +1,78 @@
+
+[[ga-events-sources-wsman-eventlog]]
+= Windows Event Logs
+:description: How {page-component-title} reads Windows event logs over WS-Man and turns the records into events.
+
+{page-component-title} can read the event logs of Windows hosts over WS-Man (WinRM) and create one event per record.
+No agent is needed on the host: the xref:reference:daemons/daemon-config-files/wsman-eventlogd.adoc[WsManEventLogd] daemon polls each host on a schedule, asks only for records newer than the last one it saw, and runs the poll through the Minion at the node's location.
+
+== Requirements
+
+* WinRM enabled on the host and reachable from {page-component-title} or its Minion, with the credentials defined in `wsman-config.xml`.
+* The account must be able to read the logs, for example as a member of the `Event Log Readers` group.
+* The `WS-Man` service detected on the node's interface (the WS-Man detector), so only Windows hosts that answer WinRM are read.
+
+== Configuration
+
+`wsman-eventlog-configuration.xml` holds one or more packages.
+A package selects nodes with a filter, lists the logs to read, and can give specific Event IDs their own UEI and severity.
+
+[source, xml]
+----
+<wsman-eventlog-configuration xmlns="http://xmlns.opennms.org/xsd/config/wsman-eventlog" threads="4" retries="1" target-refresh-interval="5m">
+  <package name="windows-servers">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <log name="System" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
+    <log name="Application" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
+    <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" levels="AuditFailure"/>
+    <event-mapping logfile="System" event-id="6008" uei="uei.opennms.org/wsman/eventlog/unexpectedShutdown" severity="Major"/>
+  </package>
+</wsman-eventlog-configuration>
+----
+
+.Log attributes
+[options="header"]
+[cols="1,3,1"]
+|===
+| Attribute | Description | Default
+
+| name
+| The log to read: `System`, `Application`, `Security`, or another classic log name.
+|
+
+| enabled
+| Set to `false` to keep the entry without reading it.
+| `true`
+
+| interval
+| Poll interval in milliseconds.
+| `60000`
+
+| max-records
+| Records read per poll. When more are waiting, the rest are read on the next poll and a `pollTruncated` warning event is sent.
+| `500`
+
+| lookback
+| How far back the first poll of a node reads (`30s`, `15m`, `1h`, `2d`). Later polls continue from the last record seen, which survives restarts.
+| `1h`
+
+| levels
+| Comma-separated `Error`, `Warning`, `Information`, `AuditSuccess`, `AuditFailure`. Empty keeps every level.
+| all
+
+| include-event-ids +
+exclude-event-ids
+| Comma-separated Event IDs to keep or drop.
+| none
+|===
+
+The `Security` log is disabled in the shipped configuration because of its volume.
+
+== Events
+
+Each record becomes an event with the node and interface set and these parameters: `logfile`, `eventId`, `eventType`, `level`, `sourceName`, `recordNumber`, `computerName`, `timeGenerated`, `message`, and `insertionString1..n`.
+The severity follows the level: errors are Major, warnings are Warning, audit failures are Minor, and everything else is Normal.
+
+The UEI is `uei.opennms.org/wsman/eventlog/System`, `.../Application` or `.../Security`, and `.../other` for any other log.
+An `event-mapping` gives one Event ID its own UEI and severity, optionally limited to one log (`logfile`) and one `source`; the shipped configuration maps System 6008 to `uei.opennms.org/wsman/eventlog/unexpectedShutdown` and Security 4625 to `.../logonFailure`, both with alarms.
+Add your own event definitions for mapped UEIs the same way as for any other event.

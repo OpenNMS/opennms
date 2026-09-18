@@ -325,6 +325,7 @@
         <KeyValuePair key="trapd"                value="DEBUG" />
         <KeyValuePair key="trouble-ticketer"     value="DEBUG" />
         <KeyValuePair key="vacuumd"              value="DEBUG" />
+        <KeyValuePair key="wsmaneventlogd"    value="DEBUG" />
         <KeyValuePair key="web"                  value="DEBUG" />
       </DynamicThresholdFilter>
 

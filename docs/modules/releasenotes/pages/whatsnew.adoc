@@ -46,6 +46,11 @@ A Statsd entry left in an existing `etc/service-configuration.xml` is ignored wi
 The "TOP 20 nodes by I/O Wait" database report and the response-time offenders section of the Response Time Summary report, which only Statsd could feed, are removed as well.
 Existing rows in the `statisticsreport` tables are left in place and continue to be purged by Vacuumd.
 
+=== Windows event logs over WS-Man
+The new WsManEventLogd daemon reads the Windows event logs of monitored hosts over WS-Man and creates one event per record, using the endpoints and credentials in `wsman-config.xml` and running the poll through the Minion at the node's location.
+It is configured in `etc/wsman-eventlog-configuration.xml` and enabled by default; set `CORE_SERVICE_WSMANEVENTLOGD_ENABLED=false` to turn it off.
+See xref:operation:deep-dive/events/sources/wsman-eventlog.adoc[Windows event logs].
+
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).

@@ -31,4 +31,5 @@
   <service enabled="\${env:CORE_SERVICE_TELEMETRYD_ENABLED|true}"><name>OpenNMS:Name=Telemetryd</name></service>
   <service enabled="\${env:CORE_SERVICE_TRAPD_ENABLED|true}"><name>OpenNMS:Name=Trapd</name></service>
   <service enabled="\${env:CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED|true}"><name>OpenNMS:Name=PerspectivePoller</name></service>
+  <service enabled="\${env:CORE_SERVICE_WSMANEVENTLOGD_ENABLED|true}"><name>OpenNMS:Name=WsManEventLogd</name></service>
 </service-configuration>

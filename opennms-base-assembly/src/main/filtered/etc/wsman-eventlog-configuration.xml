@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WS-Man Event Log daemon (WsManEventLogd): reads Windows event logs over WinRM and
+  publishes one OpenNMS event per record. Credentials and endpoints come from
+  wsman-config.xml; a node is read when an interface matching the package filter
+  carries the WS-Man service.
+
+  threads:                  concurrent node polls across all packages
+  retries:                  WS-Man retries per read, on top of the first attempt
+  target-refresh-interval:  how long the node list behind a filter is reused (e.g. 5m)
+
+  log attributes:
+    interval          poll interval in milliseconds
+    max-records       records read per poll; the rest wait for the next poll
+    lookback          how far back the first poll of a node reads (30s, 15m, 1h, 2d)
+    levels            Error,Warning,Information,AuditSuccess,AuditFailure (empty = all)
+    include-event-ids / exclude-event-ids   comma-separated Event IDs
+
+  event-mapping gives one Event ID (optionally in one log and from one source) its
+  own UEI and severity; every other record uses uei.opennms.org/wsman/eventlog/<log>.
+-->
+<wsman-eventlog-configuration xmlns="http://xmlns.opennms.org/xsd/config/wsman-eventlog" threads="4" retries="1" target-refresh-interval="5m">
+  <package name="windows-servers">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <log name="System" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
+    <log name="Application" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
+    <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" levels="AuditFailure"/>
+    <event-mapping logfile="System" event-id="6008" uei="uei.opennms.org/wsman/eventlog/unexpectedShutdown" severity="Major"/>
+    <event-mapping logfile="Security" event-id="4625" uei="uei.opennms.org/wsman/eventlog/logonFailure" severity="Minor"/>
+  </package>
+</wsman-eventlog-configuration>

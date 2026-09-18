@@ -191,5 +191,6 @@
 ** xref:daemons/daemon-config-files/tl1d.adoc[]
 ** xref:daemons/daemon-config-files/trapd.adoc[]
 ** xref:daemons/daemon-config-files/vacuumd.adoc[]
+** xref:daemons/daemon-config-files/wsman-eventlogd.adoc[]
 
 * xref:glossary.adoc[]

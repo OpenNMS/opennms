@@ -64,8 +64,9 @@ import com.sun.net.httpserver.HttpServer;
  * end-to-end test can drive what the next collection sees.
  *
  * It is a test tool, not a WS-Man implementation: WQL filters are honoured
- * only for their FROM class and SELECT projection, selectors match on
- * equality, and enumerations are never paged unless a Pull is requested.
+ * for their FROM class, SELECT projection and a WHERE clause of comparisons
+ * joined by AND (OR inside parentheses), selectors match on equality, and
+ * enumerations are never paged unless a Pull is requested.
  */
 public class FakeWsManAgent implements AutoCloseable {
 
@@ -513,9 +514,18 @@ public class FakeWsManAgent implements AutoCloseable {
         if (instances == null) {
             return List.of();
         }
+        String where = "";
+        if (filter != null && !filter.isBlank()) {
+            final Matcher wm = WQL.matcher(filter.trim());
+            if (wm.matches() && wm.group(3) != null) {
+                where = wm.group(3).trim().replaceFirst("(?i)^where\\s+", "");
+            }
+        }
         final List<Element> items = new ArrayList<>();
         for (final Map<String, String> instance : instances) {
-            items.add(element(namespaceUri, className, instance, projection));
+            if (WqlWhere.matches(where, instance)) {
+                items.add(element(namespaceUri, className, instance, projection));
+            }
         }
         return items;
     }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+  <context:annotation-config />
+
+  <bean id="wsManEventLogConfigDao" class="org.opennms.netmgt.wsman.eventlog.WsManEventLogConfigDaoJaxb">
+    <property name="configResource" value="file:${opennms.home}/etc/wsman-eventlog-configuration.xml" />
+  </bean>
+
+  <bean id="wsManEventLogTargetResolver" class="org.opennms.netmgt.wsman.eventlog.EventLogTargetResolver">
+    <constructor-arg ref="filterDao" />
+    <constructor-arg ref="nodeDao" />
+    <constructor-arg ref="sessionUtils" />
+  </bean>
+
+  <bean id="wsManEventLogCursorStore" class="org.opennms.netmgt.wsman.eventlog.EventLogCursorStore">
+    <constructor-arg ref="jsonStore" />
+  </bean>
+
+  <bean id="daemon" class="org.opennms.netmgt.wsman.eventlog.WsManEventLogd" />
+
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="daemon" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+</beans>

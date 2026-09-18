@@ -1,0 +1,46 @@
+
+[[ref-daemon-config-files-wsman-eventlogd]]
+= WsManEventLogd
+:description: Learn about WsManEventLogd in OpenNMS {page-component-title}, which reads Windows event logs over WS-Man and turns the records into events.
+
+Reads the Windows event logs of monitored hosts over WS-Man (WinRM) and publishes one event per record, as described in xref:operation:deep-dive/events/sources/wsman-eventlog.adoc[Windows event logs].
+Credentials and endpoints come from `wsman-config.xml`; a node is read when an interface matching a package filter carries the `WS-Man` service.
+
+.WsManEventLogd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| wsman-eventlog-configuration.xml
+| Packages of logs to read, their poll intervals, caps, level and Event ID filters, and the UEI mappings.
+| yes
+| no
+
+| wsman-config.xml
+| WS-Man endpoints and credentials, shared with the WS-Man detector, monitor and collector.
+| no
+| yes
+|===
+
+.WsManEventLogd log file overview
+[options="header"]
+[cols="2,3"]
+|===
+| File
+| Description
+
+| wsmaneventlogd.log
+| Polls, records read, and read failures per node and log.
+|===
+
+== Reload
+
+Run `opennms:reload-daemon WsManEventLogd` in the Karaf shell, or send `uei.opennms.org/internal/reloadDaemonConfig` with `daemonName` set to `WsManEventLogd`, to apply changes to `wsman-eventlog-configuration.xml` without a restart.
+
+== Metrics
+
+The `OpenNMS:Name=WsManEventLogd,Type=Metrics` MBean exposes the records read, events published, polls completed, failed and truncated, and the number of targets.
