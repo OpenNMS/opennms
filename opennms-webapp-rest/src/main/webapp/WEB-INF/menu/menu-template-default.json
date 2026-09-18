@@ -502,6 +502,13 @@
           "roles": null
         },
         {
+          "id": "snmpMibCompilerUi",
+          "name": "SNMP MIB Compiler (New UI)",
+          "url": "ui/index.html#/mib-compiler",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "jmxMetricConfigurationGenerator",
           "name": "JMX Metric Configuration Generator",
           "url": "admin/jmxConfigGenerator.jsp",
