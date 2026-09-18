@@ -210,7 +210,11 @@ const resetWsmanDataCollection = async (): Promise<WsmanDataCollection | string>
 const getWsmanEventLogConfig = async (): Promise<WsmanEventLogConfig | null> => {
   try {
     const resp = await v2.get(`${endpoint}/event-log`, { headers: { Accept: 'application/json' }})
-    return resp.data as WsmanEventLogConfig
+    const data = resp.data
+    if (typeof data?.version !== 'string' || !Array.isArray(data?.packages)) {
+      return null
+    }
+    return data as WsmanEventLogConfig
   } catch (err) {
     console.error('Error loading the WS-Man event log configuration:', err)
     return null

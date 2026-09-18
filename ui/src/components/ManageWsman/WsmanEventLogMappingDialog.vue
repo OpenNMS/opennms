@@ -31,38 +31,40 @@
       <div class="definition-header">
         <span class="section-title">Event definition</span>
         <span v-if="definitionLoading" class="hint" data-test="definition-loading">Looking up the UEI…</span>
+        <span v-else-if="definitionUnavailable" class="hint definition-missing" data-test="definition-unavailable">The UEI could not be looked up.</span>
+        <span v-else-if="definitionLocked" class="hint" data-test="definition-locked">Defined in {{ definition?.sourceName }}; edit it on the Event Configuration page.</span>
         <span v-else-if="definition?.exists" class="hint" data-test="definition-exists">Defined in {{ definition.sourceName }}</span>
         <span v-else-if="definition" class="hint definition-missing" data-test="definition-missing">No definition yet: the event has no label and cannot raise an alarm</span>
       </div>
-      <div class="definition-toggle">
-        <OnmsCheckbox v-model="saveDefinition" inputId="mapping-save-definition" binary data-test="save-definition" />
+      <div v-if="!definitionLocked" class="definition-toggle">
+        <OnmsCheckbox :modelValue="saveDefinition" inputId="mapping-save-definition" binary data-test="save-definition" @update:modelValue="toggleSaveDefinition" />
         <label for="mapping-save-definition">{{ definition?.exists ? 'Update the event definition' : 'Create the event definition' }}</label>
       </div>
-      <template v-if="saveDefinition">
+      <template v-if="saveDefinition && !definitionLocked">
         <div class="two-columns">
           <FormField label="Label" for="definition-label" required :error="labelProblem || undefined">
-            <OnmsInputText id="definition-label" :modelValue="draft.label ?? ''" :invalid="!!labelProblem" fluid data-test="definition-label" @update:modelValue="draft.label = $event ?? ''" />
+            <OnmsInputText id="definition-label" :modelValue="draft.label ?? ''" :invalid="!!labelProblem" fluid data-test="definition-label" @update:modelValue="editDraft('label', $event ?? '')" />
           </FormField>
           <FormField label="Definition severity" for="definition-severity" required>
-            <OnmsSelect inputId="definition-severity" :modelValue="draft.severity ?? undefined" :options="SEVERITY_OPTIONS" fluid data-test="definition-severity" @update:modelValue="draft.severity = ($event as string | undefined) ?? null" />
+            <OnmsSelect inputId="definition-severity" :modelValue="draft.severity ?? undefined" :options="SEVERITY_OPTIONS" fluid data-test="definition-severity" @update:modelValue="editDraft('severity', ($event as string | undefined) ?? null)" />
           </FormField>
         </div>
         <FormField label="Log message" for="definition-logmsg" hint="Shown in the event list. %parm[computerName]% and %parm[message]% are filled from the record. Empty uses the label.">
-          <OnmsInputText id="definition-logmsg" :modelValue="draft.logMessage ?? ''" fluid data-test="definition-logmsg" @update:modelValue="draft.logMessage = $event ?? ''" />
+          <OnmsInputText id="definition-logmsg" :modelValue="draft.logMessage ?? ''" fluid data-test="definition-logmsg" @update:modelValue="editDraft('logMessage', $event ?? '')" />
         </FormField>
         <FormField label="Description" for="definition-descr" hint="Empty uses the label.">
-          <OnmsTextarea id="definition-descr" :modelValue="draft.description ?? ''" rows="2" fluid data-test="definition-descr" @update:modelValue="draft.description = $event ?? ''" />
+          <OnmsTextarea id="definition-descr" :modelValue="draft.description ?? ''" rows="2" fluid data-test="definition-descr" @update:modelValue="editDraft('description', $event ?? '')" />
         </FormField>
         <div class="definition-toggle">
-          <OnmsToggleSwitch v-model="draft.alarm" inputId="definition-alarm" data-test="definition-alarm" />
+          <OnmsToggleSwitch :modelValue="draft.alarm" inputId="definition-alarm" data-test="definition-alarm" @update:modelValue="editDraft('alarm', $event)" />
           <label for="definition-alarm">Raise an alarm</label>
         </div>
         <div v-if="draft.alarm" class="two-columns">
           <FormField label="Alarm type" for="definition-alarm-type">
-            <OnmsSelect inputId="definition-alarm-type" v-model="draft.alarmType" :options="ALARM_TYPE_OPTIONS" optionLabel="label" optionValue="value" fluid data-test="definition-alarm-type" />
+            <OnmsSelect inputId="definition-alarm-type" :modelValue="draft.alarmType" :options="ALARM_TYPE_OPTIONS" optionLabel="label" optionValue="value" fluid data-test="definition-alarm-type" @update:modelValue="editDraft('alarmType', ($event as number | undefined) ?? null)" />
           </FormField>
           <FormField label="Reduction key" for="definition-reduction-key" hint="One alarm per key; the default is one per node.">
-            <OnmsInputText id="definition-reduction-key" :modelValue="draft.reductionKey ?? ''" fluid data-test="definition-reduction-key" @update:modelValue="draft.reductionKey = $event ?? ''" />
+            <OnmsInputText id="definition-reduction-key" :modelValue="draft.reductionKey ?? ''" fluid data-test="definition-reduction-key" @update:modelValue="editDraft('reductionKey', $event ?? '')" />
           </FormField>
         </div>
       </template>
@@ -75,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { OnmsButton, OnmsCheckbox, OnmsDialog, OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsTextarea, OnmsToggleSwitch } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { ALARM_TYPE_OPTIONS, SEVERITY_OPTIONS, defaultDefinition, defaultMapping, upsertMapping } from './wsmanEventLogForm'
@@ -97,60 +99,136 @@ const store = useWsmanAdminStore()
 const mapping = ref<WsmanEventLogMapping>(defaultMapping())
 const saving = ref(false)
 const errorText = ref('')
+// where a new mapping landed once its save went through, so a retry after a
+// failed definition save replaces it instead of appending a second one
+const savedIndex = ref<number | null>(null)
 
 // the definition behind the UEI as stored (null until looked up), and the draft the form edits
 const definition = ref<WsmanEventLogDefinition | null>(null)
 const definitionLoading = ref(false)
+const definitionUnavailable = ref(false)
 const saveDefinition = ref(false)
+const saveDefinitionTouched = ref(false)
 const draft = ref<WsmanEventLogDefinition>(defaultDefinition(defaultMapping()))
+const draftTouched = ref(false)
 let lookupTimer: ReturnType<typeof setTimeout> | null = null
+// bumped per lookup so a slow response for an earlier UEI is dropped
+let lookupSequence = 0
+let requestedUei: string | null = null
 
-const idProblem = computed(() => (Number.isInteger(mapping.value.eventId) && mapping.value.eventId >= 0 ? null : 'An Event ID is required.'))
-const ueiProblem = computed(() => (/^uei\.\S+$/.test((mapping.value.uei ?? '').trim()) ? null : 'A UEI starting with uei. is required.'))
-const labelProblem = computed(() => (saveDefinition.value && !(draft.value.label ?? '').trim() ? 'A label is required.' : null))
+const idProblem = computed(() => {
+  const id = mapping.value.eventId
+  return id !== null && Number.isInteger(id) && id >= 1 ? null : 'An Event ID of 1 or more is required.'
+})
+const ueiProblem = computed(() => {
+  const uei = (mapping.value.uei ?? '').trim()
+  if (!/^uei\.\S+$/.test(uei)) {
+    return 'A UEI starting with uei. is required.'
+  }
+  return uei.endsWith('/') ? 'Add a name after the last /.' : null
+})
+const definitionLocked = computed(() => !!definition.value?.exists && !definition.value.editable)
+const labelProblem = computed(() => (saveDefinition.value && !definitionLocked.value && !(draft.value.label ?? '').trim() ? 'A label is required.' : null))
 const canSave = computed(() => !idProblem.value && !ueiProblem.value && !labelProblem.value)
 
+const clearLookupTimer = () => {
+  if (lookupTimer) {
+    clearTimeout(lookupTimer)
+    lookupTimer = null
+  }
+}
+
+const editDraft = <K extends keyof WsmanEventLogDefinition>(key: K, value: WsmanEventLogDefinition[K]) => {
+  draft.value[key] = value
+  draftTouched.value = true
+}
+
+const toggleSaveDefinition = (value: boolean) => {
+  saveDefinition.value = value
+  saveDefinitionTouched.value = true
+}
+
+const applyLookup = (found: WsmanEventLogDefinition | null, uei: string) => {
+  definition.value = found
+  definitionUnavailable.value = found === null
+  if (found?.exists) {
+    if (!draftTouched.value || draft.value.uei !== uei) {
+      draft.value = { ...found }
+    }
+  } else if (!draftTouched.value) {
+    draft.value = defaultDefinition({ ...mapping.value, uei })
+  } else {
+    draft.value.uei = uei
+  }
+  if (found === null || (found.exists && !found.editable)) {
+    saveDefinition.value = false
+  } else if (!saveDefinitionTouched.value) {
+    // a new UEI defaults to creating its definition; an existing one is only touched on request
+    saveDefinition.value = !found.exists
+  }
+}
+
 const lookupDefinition = async () => {
-  const uei = mapping.value.uei.trim()
-  if (ueiProblem.value) {
-    definition.value = null
+  if (!props.visible) {
     return
   }
+  const uei = mapping.value.uei.trim()
+  requestedUei = uei
+  if (ueiProblem.value) {
+    lookupSequence++
+    definition.value = null
+    definitionUnavailable.value = false
+    definitionLoading.value = false
+    return
+  }
+  const sequence = ++lookupSequence
   definitionLoading.value = true
   try {
     const found = await store.getEventLogDefinition(uei)
-    if (uei !== mapping.value.uei.trim()) {
-      return
+    if (sequence === lookupSequence) {
+      applyLookup(found, uei)
     }
-    definition.value = found
-    // a new UEI defaults to creating its definition; an existing one is only touched on request
-    saveDefinition.value = found !== null && !found.exists
-    draft.value = found?.exists ? { ...found } : defaultDefinition({ ...mapping.value, uei })
   } finally {
-    definitionLoading.value = false
+    if (sequence === lookupSequence) {
+      definitionLoading.value = false
+    }
   }
 }
 
 watch(() => props.visible, (isVisible) => {
+  clearLookupTimer()
+  lookupSequence++
+  definitionLoading.value = false
   if (!isVisible) {
     return
   }
   errorText.value = ''
+  savedIndex.value = null
   mapping.value = props.original ? { ...props.original } : defaultMapping()
   definition.value = null
+  definitionUnavailable.value = false
   saveDefinition.value = false
+  saveDefinitionTouched.value = false
+  draft.value = defaultDefinition(mapping.value)
+  draftTouched.value = false
   lookupDefinition()
 })
 
-watch(() => mapping.value.uei, () => {
+watch(() => mapping.value.uei, (uei) => {
   if (!props.visible) {
     return
   }
-  if (lookupTimer) {
-    clearTimeout(lookupTimer)
+  clearLookupTimer()
+  if (uei.trim() === requestedUei) {
+    return
   }
-  lookupTimer = setTimeout(lookupDefinition, 400)
+  lookupTimer = setTimeout(() => {
+    lookupTimer = null
+    lookupDefinition()
+  }, 400)
 })
+
+onBeforeUnmount(clearLookupTimer)
 
 const save = async () => {
   if (!canSave.value) {
@@ -158,13 +236,25 @@ const save = async () => {
   }
   saving.value = true
   try {
+    if (lookupTimer || definitionLoading.value) {
+      clearLookupTimer()
+      await lookupDefinition()
+      if (!canSave.value) {
+        return
+      }
+    }
     const next: WsmanEventLogMapping = { ...mapping.value, uei: mapping.value.uei.trim() }
-    const result = await store.saveEventLog(upsertMapping(props.config, props.packageName, props.originalIndex, next))
+    const index = savedIndex.value ?? props.originalIndex
+    const appendIndex = props.config.packages.find(p => p.name === props.packageName)?.eventMappings.length ?? null
+    const result = await store.saveEventLog(upsertMapping(props.config, props.packageName, index, next))
     if (!result.success) {
       errorText.value = result.message
       return
     }
-    if (saveDefinition.value) {
+    if (index === null) {
+      savedIndex.value = appendIndex
+    }
+    if (saveDefinition.value && !definitionLocked.value) {
       const saved = await store.saveEventLogDefinition({ ...draft.value, uei: next.uei })
       if (!saved.success) {
         errorText.value = `The mapping is saved, but its event definition is not: ${saved.message}`

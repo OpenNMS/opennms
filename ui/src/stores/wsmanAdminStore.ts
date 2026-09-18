@@ -22,7 +22,7 @@
 
 import API from '@/services'
 import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanEventLogDefinition, WsmanEventLogFilterPreview, WsmanEventLogStatusRow, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
-import { ValidationResult } from '@/types/validation'
+import { ValidationResult, createFailureResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -122,14 +122,6 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     return result !== null
   }
 
-  // re-read on success and failure alike so the next attempt carries the current version
-  const saveEventLog = async (input: WsmanEventLogConfig): Promise<ValidationResult> => {
-    const result = await API.updateWsmanEventLogConfig(input)
-    await getEventLog()
-    await getEventLogDefinitions()
-    return result
-  }
-
   const eventLogStatus = ref<WsmanEventLogStatusRow[] | null>(null)
 
   const getEventLogStatus = async (): Promise<boolean> => {
@@ -137,6 +129,37 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     eventLogStatus.value = rows
     return rows !== null
   }
+
+  // Saves run one after another, each after the previous re-read; the file
+  // is re-read on success and failure alike so the next attempt carries the
+  // current version. The status is keyed by package name, so it follows a save.
+  let eventLogSaveChain: Promise<unknown> = Promise.resolve()
+
+  const queueEventLogSave = (produce: () => WsmanEventLogConfig | null): Promise<ValidationResult> => {
+    const run = async () => {
+      const document = produce()
+      if (!document) {
+        return createFailureResult('The event log configuration is not loaded.')
+      }
+      const result = await API.updateWsmanEventLogConfig(document)
+      await getEventLog()
+      await getEventLogDefinitions()
+      if (result.success) {
+        await getEventLogStatus()
+      }
+      return result
+    }
+    const save = eventLogSaveChain.then(run, run)
+    eventLogSaveChain = save.catch(() => undefined)
+    return save
+  }
+
+  const saveEventLog = (input: WsmanEventLogConfig): Promise<ValidationResult> => queueEventLogSave(() => input)
+
+  // The change is applied to the document as re-read after the previous save,
+  // so quick successive changes (two switches) build on each other's version.
+  const changeEventLog = (change: (current: WsmanEventLogConfig) => WsmanEventLogConfig): Promise<ValidationResult> =>
+    queueEventLogSave(() => (eventLog.value ? change(eventLog.value) : null))
 
   // keyed by UEI; null when the request failed
   const eventLogDefinitions = ref<Record<string, WsmanEventLogDefinition> | null>(null)
@@ -159,5 +182,5 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
 
   const previewEventLogFilter = (filter: string): Promise<WsmanEventLogFilterPreview | null> => API.previewWsmanEventLogFilter(filter)
 
-  return { eventLog, eventLogError, getEventLog, saveEventLog, eventLogStatus, getEventLogStatus, eventLogDefinitions, getEventLogDefinitions, getEventLogDefinition, saveEventLogDefinition, previewEventLogFilter, config, loadError, isLoading, status, readiness, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition, runReadinessAction, resetDataCollection }
+  return { eventLog, eventLogError, getEventLog, saveEventLog, changeEventLog, eventLogStatus, getEventLogStatus, eventLogDefinitions, getEventLogDefinitions, getEventLogDefinition, saveEventLogDefinition, previewEventLogFilter, config, loadError, isLoading, status, readiness, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition, runReadinessAction, resetDataCollection }
 })

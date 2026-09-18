@@ -88,6 +88,12 @@ watch(() => props.visible, (isVisible) => {
   filter.value = props.original?.filter ?? defaultPackage().filter
 })
 
+watch(filter, () => {
+  previewText.value = ''
+  previewIsError.value = false
+  previewMatches.value = []
+})
+
 // the filter is also checked on save; the preview is for seeing what it catches first
 const preview = async () => {
   previewing.value = true

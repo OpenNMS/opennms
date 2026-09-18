@@ -51,11 +51,11 @@ const status = [
 ]
 
 const definitions = {
-  'uei.opennms.org/wsman/eventlog/unexpectedShutdown': { uei: 'uei.opennms.org/wsman/eventlog/unexpectedShutdown', exists: true, label: 'Windows unexpected shutdown', description: null, logMessage: null, severity: 'Major', alarm: true, alarmType: 3, reductionKey: null }
+  'uei.opennms.org/wsman/eventlog/unexpectedShutdown': { uei: 'uei.opennms.org/wsman/eventlog/unexpectedShutdown', exists: true, editable: true, label: 'Windows unexpected shutdown', description: null, logMessage: null, severity: 'Major', alarm: true, alarmType: 3, reductionKey: null }
 }
 
-const mountPanel = (rows: typeof status | null = status, defs: typeof definitions | Record<string, never> | null = definitions) => mount(WsmanEventLogPanel, {
-  props: { config, status: rows, definitions: defs },
+const mountPanel = (rows: typeof status | null = status, defs: typeof definitions | Record<string, never> | null = definitions, document: WsmanEventLogConfig = config) => mount(WsmanEventLogPanel, {
+  props: { config: document, status: rows, definitions: defs },
   global: { plugins: [PrimeVue], stubs: { OnmsCard: OnmsCardStub }}
 })
 
@@ -130,5 +130,7 @@ describe('WsmanEventLogPanel.vue', () => {
     expect(mountPanel().find('[data-test="definition-label"]').text()).toBe('Windows unexpected shutdown')
     expect(mountPanel(status, {}).find('[data-test="definition-missing"]').exists()).toBe(true)
     expect(mountPanel(status, null).find('[data-test="definition-unknown"]').exists()).toBe(true)
+    const padded: WsmanEventLogConfig = { ...config, packages: [{ ...config.packages[0], eventMappings: [{ ...config.packages[0].eventMappings[0], uei: ' uei.opennms.org/wsman/eventlog/unexpectedShutdown ' }] }] }
+    expect(mountPanel(status, definitions, padded).find('[data-test="definition-label"]').text()).toBe('Windows unexpected shutdown')
   })
 })

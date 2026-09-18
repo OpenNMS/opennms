@@ -136,6 +136,11 @@ describe('event log configuration', () => {
     expect(vi.mocked(v2.get).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log')
     vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
     expect(await getWsmanEventLogConfig()).toBeNull()
+    // a login page or a partial body is not a document
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: '<html>' } as any)
+    expect(await getWsmanEventLogConfig()).toBeNull()
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: { version: 'v1' }} as any)
+    expect(await getWsmanEventLogConfig()).toBeNull()
   })
 
   it('saves the document and surfaces a short server reason', async () => {
@@ -163,7 +168,7 @@ describe('event log definitions', () => {
   })
 
   it('saves a definition and surfaces the server reason', async () => {
-    const definition = { uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: false, label: 'Disk full', description: '', logMessage: '', severity: 'Major', alarm: true, alarmType: 3, reductionKey: '%uei%:%dpname%:%nodeid%' }
+    const definition = { uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: false, editable: true, label: 'Disk full', description: '', logMessage: '', severity: 'Major', alarm: true, alarmType: 3, reductionKey: '%uei%:%dpname%:%nodeid%' }
     vi.mocked(v2.put).mockResolvedValueOnce({} as any)
     expect((await saveWsmanEventLogDefinition(definition)).success).toBe(true)
     expect(vi.mocked(v2.put).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log/definition')

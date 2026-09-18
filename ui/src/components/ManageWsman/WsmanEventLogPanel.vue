@@ -88,7 +88,7 @@
           <OnmsColumn header="Definition">
             <template #body="{ data }">
               <span v-if="definitions === null" data-test="definition-unknown">—</span>
-              <span v-else-if="definitions[data.uei]?.exists" data-test="definition-label">{{ definitions[data.uei].label }}</span>
+              <span v-else-if="definitionFor(data.uei)?.exists" data-test="definition-label">{{ definitionFor(data.uei)?.label }}</span>
               <OnmsTag v-else value="Missing" severity="warn" data-test="definition-missing" />
             </template>
           </OnmsColumn>
@@ -148,6 +148,8 @@ const props = defineProps<{
 }>()
 
 const statusFor = (packageName: string) => (props.status ?? []).filter(r => r.packageName === packageName)
+
+const definitionFor = (uei: string): WsmanEventLogDefinition | undefined => props.definitions?.[uei.trim()]
 
 const stateOf = (row: WsmanEventLogStatusRow): { label: string; severity: OnmsTagSeverity } => {
   if (row.backingOff) {

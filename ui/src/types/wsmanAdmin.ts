@@ -251,15 +251,18 @@ export interface WsmanEventLogLog {
 export interface WsmanEventLogMapping {
   logfile: string | null
   source: string | null
-  eventId: number
+  eventId: number | null
   uei: string
   severity: string | null
 }
 
-// The editable part of the event definition behind a mapping's UEI.
+// The editable part of the event definition behind a mapping's UEI. editable
+// is false when the UEI is defined in a source other than the daemon's own,
+// which only the Event Configuration page may change.
 export interface WsmanEventLogDefinition {
   uei: string
   exists: boolean
+  editable: boolean
   sourceName?: string | null
   sourceId?: number | null
   eventId?: number | null

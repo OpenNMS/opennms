@@ -280,7 +280,7 @@ const askDeletePackage = (pkg: WsmanEventLogPackage) => {
 const confirmDeletePackage = async () => {
   showDeletePackageConfirm.value = false
   if (store.eventLog && deletingPackage.value) {
-    reportResult(await store.saveEventLog(removePackage(store.eventLog, deletingPackage.value.name)))
+    reportResult(await store.changeEventLog(current => removePackage(current, deletingPackage.value!.name)))
   }
   deletingPackage.value = null
 }
@@ -300,14 +300,14 @@ const askDeleteLog = (packageName: string, log: WsmanEventLogLog) => {
 const confirmDeleteLog = async () => {
   showDeleteLogConfirm.value = false
   if (store.eventLog && deletingLog.value) {
-    reportResult(await store.saveEventLog(removeLog(store.eventLog, eventLogPackage.value, deletingLog.value.name)))
+    reportResult(await store.changeEventLog(current => removeLog(current, eventLogPackage.value, deletingLog.value!.name)))
   }
   deletingLog.value = null
 }
 
 const toggleLogEnabled = async (packageName: string, name: string, enabled: boolean) => {
   if (store.eventLog) {
-    reportResult(await store.saveEventLog(toggleLog(store.eventLog, packageName, name, enabled)))
+    reportResult(await store.changeEventLog(current => toggleLog(current, packageName, name, enabled)))
   }
 }
 
@@ -328,7 +328,7 @@ const askDeleteMapping = (packageName: string, index: number, mapping: WsmanEven
 const confirmDeleteMapping = async () => {
   showDeleteMappingConfirm.value = false
   if (store.eventLog && deletingMappingIndex.value !== null) {
-    reportResult(await store.saveEventLog(removeMapping(store.eventLog, eventLogPackage.value, deletingMappingIndex.value)))
+    reportResult(await store.changeEventLog(current => removeMapping(current, eventLogPackage.value, deletingMappingIndex.value!)))
   }
   deletingMappingIndex.value = null
   deletingMapping.value = null

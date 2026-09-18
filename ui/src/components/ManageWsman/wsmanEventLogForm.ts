@@ -56,7 +56,7 @@ export const defaultLog = (): WsmanEventLogLog => ({
 export const defaultMapping = (): WsmanEventLogMapping => ({
   logfile: null,
   source: null,
-  eventId: 0,
+  eventId: null,
   uei: 'uei.opennms.org/wsman/eventlog/',
   severity: null
 })
@@ -72,6 +72,7 @@ export const DEFAULT_REDUCTION_KEY = '%uei%:%dpname%:%nodeid%'
 export const defaultDefinition = (mapping: WsmanEventLogMapping): WsmanEventLogDefinition => ({
   uei: mapping.uei,
   exists: false,
+  editable: true,
   label: '',
   description: '',
   logMessage: '',
