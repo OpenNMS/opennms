@@ -7,9 +7,14 @@
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
 		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
 		  xmlns:ejaxb="http://xmlns.opennms.org/xsd/config/extended-schema-for-jaxb"
-		  elementFormDefault="qualified" version="1.1">
+		  elementFormDefault="qualified" version="1.2">
   <annotation>
-    <documentation>XML Schema for the thresholding related configuration</documentation>
+    <documentation>XML Schema for the thresholding related configuration.
+
+    Version 1.2 removed the threshd-configuration "threads" attribute and the "thresholder"
+    element. Neither was ever read: the threshd daemon only consumes the packages, and no
+    shipped or example configuration ever declared a thresholder. A configuration that still
+    carries them is imported unchanged; the two are dropped during conversion.</documentation>
   </annotation>
 
   <element name="threshd-configuration">
@@ -26,50 +31,7 @@
             thresholding.</documentation>
           </annotation>
         </element>
-
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:thresholder">
-          <annotation>
-            <documentation>Service thresholders</documentation>
-          </annotation>
-        </element>
       </sequence>
-
-      <attribute name="threads" type="int" use="required">
-        <annotation>
-          <documentation>Maximum number of threads used for
-          thresholding.</documentation>
-        </annotation>
-      </attribute>
-    </complexType>
-  </element>
-
-  <element name="thresholder">
-    <annotation>
-      <documentation>Thresholder for a service</documentation>
-    </annotation>
-
-    <complexType>
-      <sequence>
-        <annotation>
-          <documentation>Parameters for performing thresholding via this
-          service</documentation>
-        </annotation>
-
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
-      </sequence>
-
-      <attribute name="service" type="string" use="required">
-        <annotation>
-          <documentation>Service name</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="class-name" type="string" use="required">
-        <annotation>
-          <documentation>Java class name used to perform thresholding via the
-          service</documentation>
-        </annotation>
-      </attribute>
     </complexType>
   </element>
 

@@ -215,7 +215,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="ui/index.html#/snmp-data-collection">Manage SNMP Data Collection Config</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
-            <li><a href="admin/thresholds/index.htm">Configure Thresholds</a></li>
+            <li><a href="ui/index.html#/threshold-config">Configure Thresholds</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -343,7 +343,8 @@
             to configure which IP and non-IP interfaces are used in SNMP Data Collection.
         </p>
 
-        <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
+        <p><b>Configure thresholds</b>: Allows you to add, remove, or modify threshold groups,
+        thresholds, and the threshd packages that apply them.</p>
 
         <p><b>Manage Applications</b>: Configure and administer 
         the operation of perspective pollers that report back to this OpenNMS server to provide distributed

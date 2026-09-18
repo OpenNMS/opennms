@@ -350,15 +350,7 @@ public class NotificationWizardServlet extends HttpServlet {
             throw new ServletException("Couldn't save/reload notification configuration file.", t);
         }
 
-        final String suppliedReturnPage=(String)user.getAttribute("noticeWizardReturnPage");
-        if (suppliedReturnPage != null && !"".equals(suppliedReturnPage)) {
-            // Remove this attribute once we have consumed it, else the user may later
-            // get returned to a potentially unexpected page here
-            user.removeAttribute("noticeWizardReturnPage");
-            return suppliedReturnPage;
-        } else {
-            return SOURCE_PAGE_NOTICES;
-        }
+        return SOURCE_PAGE_NOTICES;
     }
 
     private String processPathOutage(final HttpServletRequest request) {
@@ -441,7 +433,6 @@ public class NotificationWizardServlet extends HttpServlet {
          * If there are existing notices for this UEI, then go to a page listing them allowing editing.  
          * If there are none, then create a notice, populate the UEI, and go to the buildRule page.
          */
-        user.setAttribute("noticeWizardReturnPage", request.getParameter("returnPage"));
         final String uei = request.getParameter("uei");
 
         try {
