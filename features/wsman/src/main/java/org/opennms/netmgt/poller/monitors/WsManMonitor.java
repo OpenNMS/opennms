@@ -36,6 +36,7 @@ import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.exceptions.WSManException;
 import org.opennms.core.wsman.utils.CachingWSManClientFactory;
+import org.opennms.core.wsman.utils.WsManMetrics;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
@@ -91,6 +92,12 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        final PollStatus status = pollOnce(svc, parameters);
+        WsManMetrics.INSTANCE.monitorPoll(status.isAvailable());
+        return status;
+    }
+
+    private PollStatus pollOnce(MonitoredService svc, Map<String, Object> parameters) {
         // Fetch the monitor specific parameters
         final String resourceUri = getKeyedString(parameters, RESOURCE_URI_PARAM, null);
         if (resourceUri == null) {

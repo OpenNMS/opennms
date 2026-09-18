@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- NMS-20343: event definitions for the WS-Man Event Log daemon. One source with the
+         per-log defaults, the poll-truncated warning and the two mappings shipped in
+         wsman-eventlog-configuration.xml. -->
+    <changeSet author="janes" id="37.0.0-wsman-eventlog-events-source">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_sources"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_sources (id, name, description, vendor, file_order, enabled, event_count, created_time, last_modified, uploaded_by)
+            VALUES (nextval('eventconf_sources_id_seq'),
+                    'opennms.wsman.eventlog.events',
+                    'Windows event log records read by WsManEventLogd',
+                    'opennms',
+                    nextval('eventconf_sources_file_order_seq'),
+                    TRUE,
+                    7,
+                    NOW(), NOW(), 'system-migration');
+        </sql>
+    </changeSet>
+
+    <changeSet author="janes" id="37.0.0-wsman-eventlog-events">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/wsman/eventlog/System'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/System',
+                    'Windows System event log record',
+                    '%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the System log on %parm[computerName]%.',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/System&lt;/uei>
+&lt;event-label>Windows System event log record&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the System log on %parm[computerName]%.&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows %parm[logfile]% log: %parm[sourceName]% event %parm[eventId]% (%parm[level]%): %parm[message]%&lt;/logmsg>
+&lt;severity>Indeterminate&lt;/severity>
+&lt;/event>',
+                    NOW(), NOW(), 'system-migration', 'Indeterminate',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/Application',
+                    'Windows Application event log record',
+                    '%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the Application log on %parm[computerName]%.',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/Application&lt;/uei>
+&lt;event-label>Windows Application event log record&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the Application log on %parm[computerName]%.&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows %parm[logfile]% log: %parm[sourceName]% event %parm[eventId]% (%parm[level]%): %parm[message]%&lt;/logmsg>
+&lt;severity>Indeterminate&lt;/severity>
+&lt;/event>',
+                    NOW(), NOW(), 'system-migration', 'Indeterminate',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/Security',
+                    'Windows Security event log record',
+                    '%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the Security log on %parm[computerName]%.',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/Security&lt;/uei>
+&lt;event-label>Windows Security event log record&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the Security log on %parm[computerName]%.&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows %parm[logfile]% log: %parm[sourceName]% event %parm[eventId]% (%parm[level]%): %parm[message]%&lt;/logmsg>
+&lt;severity>Indeterminate&lt;/severity>
+&lt;/event>',
+                    NOW(), NOW(), 'system-migration', 'Indeterminate',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/other',
+                    'Windows event log record',
+                    '%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the %parm[logfile]% log on %parm[computerName]%.',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/other&lt;/uei>
+&lt;event-label>Windows event log record&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;%parm[level]% event %parm[eventId]% from %parm[sourceName]% in the %parm[logfile]% log on %parm[computerName]%.&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows %parm[logfile]% log: %parm[sourceName]% event %parm[eventId]% (%parm[level]%): %parm[message]%&lt;/logmsg>
+&lt;severity>Indeterminate&lt;/severity>
+&lt;/event>',
+                    NOW(), NOW(), 'system-migration', 'Indeterminate',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/pollTruncated',
+                    'Windows event log poll truncated',
+                    'The %parm[logfile]% log had more than %parm[maxRecords]% new records; the remainder is read on the next poll. Raise max-records or shorten the interval in wsman-eventlog-configuration.xml if this repeats.',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/pollTruncated&lt;/uei>
+&lt;event-label>Windows event log poll truncated&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;The %parm[logfile]% log had more than %parm[maxRecords]% new records; the remainder is read on the next poll. Raise max-records or shorten the interval in wsman-eventlog-configuration.xml if this repeats.&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">More than %parm[maxRecords]% new records in the Windows %parm[logfile]% log; reading the rest on the next poll.&lt;/logmsg>
+&lt;severity>Warning&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[logfile]%" alarm-type="3" auto-clean="false"/>
+&lt;/event>',
+                    NOW(), NOW(), 'system-migration', 'Warning',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/unexpectedShutdown',
+                    'Windows unexpected shutdown',
+                    'The previous system shutdown on %parm[computerName]% was unexpected (System log event 6008). %parm[message]%',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/unexpectedShutdown&lt;/uei>
+&lt;event-label>Windows unexpected shutdown&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;The previous system shutdown on %parm[computerName]% was unexpected (System log event 6008). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows System log: unexpected shutdown on %parm[computerName]% (event 6008).&lt;/logmsg>
+&lt;severity>Major&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>',
+                    NOW(), NOW(), 'system-migration', 'Major',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/logonFailure',
+                    'Windows logon failure',
+                    'An account failed to log on to %parm[computerName]% (Security log event 4625). %parm[message]%',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/logonFailure&lt;/uei>
+&lt;event-label>Windows logon failure&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;An account failed to log on to %parm[computerName]% (Security log event 4625). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: logon failure on %parm[computerName]% (event 4625).&lt;/logmsg>
+&lt;severity>Minor&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>',
+                    NOW(), NOW(), 'system-migration', 'Minor',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+        </sql>
+    </changeSet>
+
+    <!-- Security log defaults: the IDs the shipped wsman-eventlog-configuration.xml maps. -->
+    <changeSet author="janes" id="37.0.0-wsman-eventlog-security-events">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/wsman/eventlog/accountLockedOut'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/accountLockedOut', 'Windows account locked out', 'A user account was locked out on %parm[computerName]% (Security log event 4740). %parm[message]%', TRUE, '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/accountLockedOut&lt;/uei>
+&lt;event-label>Windows account locked out&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;A user account was locked out on %parm[computerName]% (Security log event 4740). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: account locked out on %parm[computerName]% (event 4740).&lt;/logmsg>
+&lt;severity>Major&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>', NOW(), NOW(), 'system-migration', 'Major',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/auditLogCleared', 'Windows audit log cleared', 'The Security audit log was cleared on %parm[computerName]% (Security log event 1102). %parm[message]%', TRUE, '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/auditLogCleared&lt;/uei>
+&lt;event-label>Windows audit log cleared&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;The Security audit log was cleared on %parm[computerName]% (Security log event 1102). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: audit log cleared on %parm[computerName]% (event 1102).&lt;/logmsg>
+&lt;severity>Major&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>', NOW(), NOW(), 'system-migration', 'Major',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/auditPolicyChanged', 'Windows audit policy changed', 'The system audit policy was changed on %parm[computerName]% (Security log event 4719). %parm[message]%', TRUE, '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/auditPolicyChanged&lt;/uei>
+&lt;event-label>Windows audit policy changed&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;The system audit policy was changed on %parm[computerName]% (Security log event 4719). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: audit policy changed on %parm[computerName]% (event 4719).&lt;/logmsg>
+&lt;severity>Major&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>', NOW(), NOW(), 'system-migration', 'Major',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/userAccountCreated', 'Windows user account created', 'A user account was created on %parm[computerName]% (Security log event 4720). %parm[message]%', TRUE, '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/userAccountCreated&lt;/uei>
+&lt;event-label>Windows user account created&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;A user account was created on %parm[computerName]% (Security log event 4720). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: user account created on %parm[computerName]% (event 4720).&lt;/logmsg>
+&lt;severity>Warning&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>', NOW(), NOW(), 'system-migration', 'Warning',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/userAccountDeleted', 'Windows user account deleted', 'A user account was deleted on %parm[computerName]% (Security log event 4726). %parm[message]%', TRUE, '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/userAccountDeleted&lt;/uei>
+&lt;event-label>Windows user account deleted&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;A user account was deleted on %parm[computerName]% (Security log event 4726). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: user account deleted on %parm[computerName]% (event 4726).&lt;/logmsg>
+&lt;severity>Warning&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>', NOW(), NOW(), 'system-migration', 'Warning',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/passwordResetAttempt', 'Windows password reset attempt', 'An attempt was made to reset an account''s password on %parm[computerName]% (Security log event 4724). %parm[message]%', TRUE, '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/passwordResetAttempt&lt;/uei>
+&lt;event-label>Windows password reset attempt&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;An attempt was made to reset an account''s password on %parm[computerName]% (Security log event 4724). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: password reset attempt on %parm[computerName]% (event 4724).&lt;/logmsg>
+&lt;severity>Warning&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>', NOW(), NOW(), 'system-migration', 'Warning',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            INSERT INTO eventconf_events (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events'),
+                    'uei.opennms.org/wsman/eventlog/groupMemberAdded', 'Windows security group member added', 'A member was added to a security-enabled group on %parm[computerName]% (Security log event %parm[eventId]%). %parm[message]%', TRUE, '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/wsman/eventlog/groupMemberAdded&lt;/uei>
+&lt;event-label>Windows security group member added&lt;/event-label>
+&lt;descr>&amp;lt;p&amp;gt;A member was added to a security-enabled group on %parm[computerName]% (Security log event %parm[eventId]%). %parm[message]%&amp;lt;/p&amp;gt;&lt;/descr>
+&lt;logmsg dest="logndisplay">Windows Security log: member added to a security group on %parm[computerName]% (event %parm[eventId]%).&lt;/logmsg>
+&lt;severity>Warning&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+&lt;/event>', NOW(), NOW(), 'system-migration', 'Warning',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.wsman.eventlog.events')));
+            UPDATE eventconf_sources SET event_count = (SELECT COUNT(*) FROM eventconf_events e WHERE e.source_id = eventconf_sources.id), last_modified = NOW()
+            WHERE name = 'opennms.wsman.eventlog.events';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

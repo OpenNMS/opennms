@@ -34,6 +34,24 @@
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
             <attrib name="NumPollsInFlight" alias="ONMSPollsInFlight" type="gauge"/>
          </mbean>
+         <mbean name="OpenNMS WS-Man" objectname="OpenNMS:Name=WsMan">
+            <attrib name="Requests" alias="ONMSWsManReq" type="counter"/>
+            <attrib name="RequestFailures" alias="ONMSWsManReqFail" type="counter"/>
+            <attrib name="Commands" alias="ONMSWsManCmd" type="counter"/>
+            <attrib name="MonitorPollsUp" alias="ONMSWsManPollUp" type="counter"/>
+            <attrib name="MonitorPollsDown" alias="ONMSWsManPollDown" type="counter"/>
+            <attrib name="CollectionsCompleted" alias="ONMSWsManCollOk" type="counter"/>
+            <attrib name="CollectionsFailed" alias="ONMSWsManCollFail" type="counter"/>
+            <attrib name="AttributesCollected" alias="ONMSWsManAttrs" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS WsManEventLogd" objectname="OpenNMS:Name=WsManEventLogd,Type=Metrics">
+            <attrib name="RecordsRead" alias="ONMSWsEvlRecords" type="counter"/>
+            <attrib name="EventsPublished" alias="ONMSWsEvlEvents" type="counter"/>
+            <attrib name="PollsCompleted" alias="ONMSWsEvlPollOk" type="counter"/>
+            <attrib name="PollsFailed" alias="ONMSWsEvlPollFail" type="counter"/>
+            <attrib name="PollsTruncated" alias="ONMSWsEvlPollTrunc" type="counter"/>
+            <attrib name="Targets" alias="ONMSWsEvlTargets" type="gauge"/>
+         </mbean>
 
          <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=*.Lag,type=gauges">
             <attrib name="Value" alias="Lag" type="gauge"/>

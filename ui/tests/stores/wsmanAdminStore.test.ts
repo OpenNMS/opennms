@@ -27,6 +27,13 @@ import API from '@/services'
 
 vi.mock('@/services', () => ({
   default: {
+    getWsmanEventLogConfig: vi.fn(),
+    updateWsmanEventLogConfig: vi.fn(),
+    previewWsmanEventLogFilter: vi.fn(),
+    getWsmanEventLogStatus: vi.fn(),
+    getWsmanEventLogDefinitions: vi.fn(),
+    getWsmanEventLogDefinition: vi.fn(),
+    saveWsmanEventLogDefinition: vi.fn(),
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
     getWsmanStatus: vi.fn(),
@@ -146,5 +153,97 @@ describe('wsmanAdminStore', () => {
     await store.getConfig()
     expect(store.loadError).toBe(true)
     expect(store.config).toEqual(CONFIG)
+  })
+})
+
+describe('event log configuration', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('loads the document and flags a failure', async () => {
+    setActivePinia(createPinia())
+    const store = useWsmanAdminStore()
+    vi.mocked(API.getWsmanEventLogConfig).mockResolvedValue({ version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] })
+    expect(await store.getEventLog()).toBe(true)
+    expect(store.eventLog?.version).toBe('v1')
+    vi.mocked(API.getWsmanEventLogConfig).mockResolvedValue(null)
+    expect(await store.getEventLog()).toBe(false)
+    expect(store.eventLogError).toBe(true)
+  })
+
+  it('re-reads after a save whether or not it succeeded', async () => {
+    setActivePinia(createPinia())
+    const store = useWsmanAdminStore()
+    const doc = { version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] }
+    vi.mocked(API.getWsmanEventLogConfig).mockResolvedValue({ ...doc, version: 'v2' })
+    vi.mocked(API.updateWsmanEventLogConfig).mockResolvedValue({ success: false, message: 'stale' })
+    expect(await store.saveEventLog(doc)).toEqual({ success: false, message: 'stale' })
+    expect(store.eventLog?.version).toBe('v2')
+    expect(API.getWsmanEventLogStatus).not.toHaveBeenCalled()
+  })
+
+  it('runs saves one after another and refreshes the status after a success', async () => {
+    setActivePinia(createPinia())
+    const store = useWsmanAdminStore()
+    const doc = { version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] }
+    let finishFirstRead: () => void = () => undefined
+    vi.mocked(API.updateWsmanEventLogConfig).mockResolvedValue({ success: true, message: '' })
+    vi.mocked(API.getWsmanEventLogConfig)
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        finishFirstRead = () => resolve({ ...doc, version: 'v2' })
+      }))
+      .mockResolvedValue({ ...doc, version: 'v3' })
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue([])
+    vi.mocked(API.getWsmanEventLogStatus).mockResolvedValue([])
+
+    const first = store.saveEventLog(doc)
+    const second = store.saveEventLog({ ...doc, threads: 8 })
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(API.updateWsmanEventLogConfig).toHaveBeenCalledTimes(1)
+    expect(API.getWsmanEventLogConfig).toHaveBeenCalledTimes(1)
+
+    finishFirstRead()
+    expect((await first).success).toBe(true)
+    expect((await second).success).toBe(true)
+    expect(API.updateWsmanEventLogConfig).toHaveBeenCalledTimes(2)
+    expect(vi.mocked(API.updateWsmanEventLogConfig).mock.calls[1][0].threads).toBe(8)
+    expect(API.getWsmanEventLogStatus).toHaveBeenCalledTimes(2)
+    expect(store.eventLog?.version).toBe('v3')
+  })
+})
+
+describe('event log definitions', () => {
+  it('keys the definitions by UEI and refreshes them after a save', async () => {
+    const store = useWsmanAdminStore()
+    const missing = { uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: false, editable: true, label: null, description: null, logMessage: null, severity: null, alarm: false, alarmType: null, reductionKey: null }
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue([missing])
+    expect(await store.getEventLogDefinitions()).toBe(true)
+    expect(store.eventLogDefinitions?.['uei.opennms.org/wsman/eventlog/diskFull']?.exists).toBe(false)
+
+    vi.mocked(API.saveWsmanEventLogDefinition).mockResolvedValue({ success: true, message: '' })
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue([{ ...missing, exists: true, label: 'Disk full' }])
+    expect((await store.saveEventLogDefinition({ ...missing, label: 'Disk full', severity: 'Major' })).success).toBe(true)
+    expect(store.eventLogDefinitions?.['uei.opennms.org/wsman/eventlog/diskFull']?.label).toBe('Disk full')
+
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue(null)
+    expect(await store.getEventLogDefinitions()).toBe(false)
+    expect(store.eventLogDefinitions).toBeNull()
+  })
+
+  it('applies a change function to the document re-read after the previous save', async () => {
+    const store = useWsmanAdminStore()
+    const base = { version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] }
+    vi.mocked(API.getWsmanEventLogConfig).mockResolvedValueOnce(base).mockResolvedValueOnce({ ...base, version: 'v2' }).mockResolvedValue({ ...base, version: 'v3' })
+    vi.mocked(API.updateWsmanEventLogConfig).mockClear().mockResolvedValue({ success: true, message: '' })
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue([])
+    vi.mocked(API.getWsmanEventLogStatus).mockResolvedValue([])
+    await store.getEventLog()
+    const first = store.changeEventLog(current => ({ ...current, threads: 8 }))
+    const second = store.changeEventLog(current => ({ ...current, retries: 3 }))
+    await Promise.all([first, second])
+    const bodies = vi.mocked(API.updateWsmanEventLogConfig).mock.calls.map(c => c[0])
+    expect(bodies[0]).toMatchObject({ version: 'v1', threads: 8 })
+    expect(bodies[1]).toMatchObject({ version: 'v2', retries: 3, threads: 4 })
   })
 })

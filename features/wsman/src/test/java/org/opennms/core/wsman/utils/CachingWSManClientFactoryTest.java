@@ -68,8 +68,8 @@ public class CachingWSManClientFactoryTest {
                 .build();
 
         // A fresh client every time, handed back unwrapped
-        assertSame(first, factory.getClient(endpoint));
-        assertSame(second, factory.getClient(endpoint));
+        assertSame(first, client(factory, endpoint));
+        assertSame(second, client(factory, endpoint));
         assertEquals(0, factory.size());
     }
 
@@ -88,8 +88,8 @@ public class CachingWSManClientFactoryTest {
                 .withKerberosEncryption()
                 .build();
 
-        WSManClient a = factory.getClient(endpoint);
-        WSManClient b = factory.getClient(sameEndpoint);
+        WSManClient a = client(factory, endpoint);
+        WSManClient b = client(factory, sameEndpoint);
         assertTrue(a instanceof SharedClient);
         assertNotSame(a, b);
         assertSame(shared, ((SharedClient) a).getDelegate());
@@ -168,13 +168,13 @@ public class CachingWSManClientFactoryTest {
                 start.await();
                 for (int i = 0; i < iterations; i++) {
                     if ((seed + i) % 5 == 0) {
-                        try (WSManClient c = factory.getClient(plain)) {
+                        try (WSManClient c = client(factory, plain)) {
                             assertFalse(c instanceof SharedClient);
                             plainClients.incrementAndGet();
                         }
                     } else {
                         final int idx = (seed + i) % endpoints;
-                        try (WSManClient c = factory.getClient(kerberos.get(idx))) {
+                        try (WSManClient c = client(factory, kerberos.get(idx))) {
                             assertTrue(c instanceof SharedClient);
                             delegatesSeen.computeIfAbsent(idx, k -> ConcurrentHashMap.newKeySet()).add(((SharedClient) c).getDelegate());
                             c.identify();
@@ -215,11 +215,16 @@ public class CachingWSManClientFactoryTest {
         WSManEndpoint endpoint = new WSManEndpoint.Builder("http://win.example.org:5985/wsman")
                 .withKerberosEncryption()
                 .build();
-        factory.getClient(endpoint);
+        client(factory, endpoint);
         assertEquals(1, factory.size());
 
         Thread.sleep(200);
         assertEquals(0, factory.size());
         verify(shared, times(1)).close();
+    }
+
+    // the factory meters every client it hands out; these tests are about what sits underneath
+    private static WSManClient client(final CachingWSManClientFactory factory, final WSManEndpoint endpoint) {
+        return ((MeteredWSManClient) factory.getClient(endpoint)).getDelegate();
     }
 }

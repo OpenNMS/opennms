@@ -498,6 +498,7 @@ public class ConfigTesterTest {
     public void testWSManConfigFiles() {
         testConfigFile("wsman-config.xml");
         testConfigFile("wsman-datacollection-config.xml");
+        testConfigFile("wsman-eventlog-configuration.xml");
     }
 
     @Test

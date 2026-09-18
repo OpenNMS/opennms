@@ -97,6 +97,7 @@
         <!-- WS-Man configuration files -->
         <entry key="wsman-config.xml" value="wsManConfigDao"/>
         <entry key="wsman-datacollection-config.xml" value="wsManDataCollectionConfigDao"/>
+        <entry key="wsman-eventlog-configuration.xml" value="wsManEventLogConfigDao"/>
         <entry key="opennms.properties.d" value="directory" />
         <entry key="imports" value="directory:org.opennms.netmgt.provision.persist.requisition.Requisition" />
         <entry key="foreign-sources" value="directory:org.opennms.netmgt.provision.persist.foreignsource.ForeignSource" />
@@ -462,6 +463,10 @@
 
   <bean id="wsManConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/wsman-config.xml" />
+  </bean>
+
+  <bean id="wsManEventLogConfigDao" class="org.opennms.netmgt.wsman.eventlog.WsManEventLogConfigDaoJaxb">
+    <property name="configResource" value="file:${opennms.home}/etc/wsman-eventlog-configuration.xml" />
   </bean>
 
   <bean id="snmpMetadataConfigDao" class="org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao">

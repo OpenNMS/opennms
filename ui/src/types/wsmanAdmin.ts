@@ -234,3 +234,84 @@ export interface WsmanReadiness {
   unpolledServers: number
   requisitionsWithUnpolled: string[]
 }
+
+// wsman-eventlog-configuration.xml as the Event Logs tab shows and saves it
+export interface WsmanEventLogLog {
+  name: string
+  enabled: boolean
+  interval: number
+  maxRecords: number
+  lookback: string
+  levels: string | null
+  includeEventIds: string | null
+  excludeEventIds: string | null
+  mode: 'wql' | 'shell'
+}
+
+export interface WsmanEventLogMapping {
+  logfile: string | null
+  source: string | null
+  eventId: number | null
+  uei: string
+  severity: string | null
+}
+
+// The editable part of the event definition behind a mapping's UEI. editable
+// is false when the UEI is defined in a source other than the daemon's own,
+// which only the Event Configuration page may change.
+export interface WsmanEventLogDefinition {
+  uei: string
+  exists: boolean
+  editable: boolean
+  sourceName?: string | null
+  sourceId?: number | null
+  eventId?: number | null
+  label: string | null
+  description: string | null
+  logMessage: string | null
+  severity: string | null
+  alarm: boolean
+  alarmType: number | null
+  reductionKey: string | null
+}
+
+export interface WsmanEventLogPackage {
+  name: string
+  filter: string
+  logs: WsmanEventLogLog[]
+  eventMappings: WsmanEventLogMapping[]
+}
+
+export interface WsmanEventLogConfig {
+  version: string
+  threads: number
+  retries: number
+  targetRefreshInterval: string
+  packages: WsmanEventLogPackage[]
+}
+
+export interface WsmanEventLogFilterPreview {
+  valid: boolean
+  error?: string
+  readableNodes: number
+  matchedNodes: number
+  matches: { nodeId: number; label: string; ipAddress: string; location: string | null }[]
+}
+
+// one row per node, package and log, as the daemon last recorded it
+export interface WsmanEventLogStatusRow {
+  nodeId: number
+  nodeLabel: string
+  ipAddress: string
+  location: string | null
+  packageName: string
+  log: string
+  lastSuccess: number | null
+  lastFailure: number | null
+  lastError: string | null
+  consecutiveFailures: number
+  backingOff: boolean
+  recordsRead: number
+  eventsPublished: number
+  cursor: number | null
+}

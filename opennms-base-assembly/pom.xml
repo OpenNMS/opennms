@@ -1255,6 +1255,12 @@
       <artifactId>org.opennms.features.perspectivepoller</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- WS-Man Event Log daemon -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.wsman-eventlog</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Device Config -->
     <dependency>

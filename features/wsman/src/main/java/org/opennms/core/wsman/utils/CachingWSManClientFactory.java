@@ -105,7 +105,7 @@ public class CachingWSManClientFactory implements WSManClientFactory, AutoClosea
     public WSManClient getClient(WSManEndpoint endpoint) {
         Objects.requireNonNull(endpoint, "endpoint");
         if (!endpoint.isKerberosEncryption()) {
-            return m_delegate.getClient(endpoint);
+            return new MeteredWSManClient(m_delegate.getClient(endpoint));
         }
         final EndpointKey key = new EndpointKey(endpoint);
         try {
@@ -113,7 +113,7 @@ public class CachingWSManClientFactory implements WSManClientFactory, AutoClosea
                 LOG.debug("Creating shared Kerberos-encrypted WS-Man client for {}", endpoint);
                 return m_delegate.getClient(endpoint);
             });
-            return new SharedClient(shared);
+            return new MeteredWSManClient(new SharedClient(shared));
         } catch (ExecutionException | UncheckedExecutionException e) {
             final Throwable cause = e.getCause();
             if (cause instanceof WSManException) {

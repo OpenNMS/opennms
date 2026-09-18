@@ -62,6 +62,7 @@
     <module>prometheus-collector</module>
     <module>telemetry</module>
     <module>wsman</module>
+    <module>wsman-eventlog</module>
 
     <!-- Discovery -->
     <module>discovery</module>

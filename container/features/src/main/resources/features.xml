@@ -805,6 +805,7 @@
     </feature>
     <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
         <feature>guava</feature>
+        <feature>opennms-core-ipc-rpc-api</feature>
         <feature>javax.servlet</feature>
         <feature version="${cxfVersion}">cxf-jaxws</feature>
         <feature version="${cxfVersion}">cxf-ws-addr</feature>

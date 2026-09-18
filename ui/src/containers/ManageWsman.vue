@@ -25,6 +25,7 @@
         <OnmsTab :value="0" data-test="tab-definitions">Server Definitions ({{ store.config.definitions.length }})</OnmsTab>
         <OnmsTab :value="1" data-test="tab-data-collection">Data Collection</OnmsTab>
         <OnmsTab :value="2" data-test="tab-defaults">Default Settings</OnmsTab>
+        <OnmsTab :value="3" data-test="tab-event-logs">Event Logs</OnmsTab>
       </OnmsTabList>
       <OnmsTabPanels>
         <OnmsTabPanel :value="0">
@@ -56,8 +57,71 @@
         <OnmsTabPanel :value="2">
           <WsmanDefaultsCard :settings="store.config.defaults" :status="store.status" @edit="showDefaultsDialog = true" />
         </OnmsTabPanel>
+
+        <OnmsTabPanel :value="3">
+          <p v-if="store.eventLogError" class="error" data-test="event-log-error">
+            Failed to load the WS-Man event log configuration. Check <code>wsman-eventlog-configuration.xml</code>, then reload the page.
+          </p>
+          <WsmanEventLogPanel
+            v-else-if="store.eventLog"
+            :config="store.eventLog"
+            :status="store.eventLogStatus"
+            :definitions="store.eventLogDefinitions"
+            @addPackage="openPackage(null)"
+            @editPackage="openPackage"
+            @deletePackage="askDeletePackage"
+            @refreshStatus="store.getEventLogStatus()"
+            @addLog="openLog($event, null)"
+            @editLog="openLog"
+            @deleteLog="askDeleteLog"
+            @toggleLog="toggleLogEnabled"
+            @addMapping="openMapping($event, null, null)"
+            @editMapping="openMapping"
+            @deleteMapping="askDeleteMapping"
+          />
+          <p v-else class="placeholder" data-test="event-log-loading">Loading…</p>
+        </OnmsTabPanel>
       </OnmsTabPanels>
     </OnmsTabs>
+
+    <template v-if="store.eventLog">
+      <WsmanEventLogPackageDialog v-model:visible="showPackageDialog" :config="store.eventLog" :original="editingPackage" />
+      <OnmsConfirmationDialog
+        :visible="showDeletePackageConfirm"
+        title="Delete Package"
+        actionButtonText="Delete"
+        @ok="confirmDeletePackage"
+        @cancel="showDeletePackageConfirm = false"
+      >
+        <template #content>
+          <p data-test="delete-package-text">Delete package <strong>{{ deletingPackage?.name }}</strong> with its {{ deletingPackage?.logs.length }} log(s) and {{ deletingPackage?.eventMappings.length }} mapping(s)? Its nodes are no longer read unless another package matches them.</p>
+        </template>
+      </OnmsConfirmationDialog>
+      <WsmanEventLogLogDialog v-model:visible="showLogDialog" :config="store.eventLog" :packageName="eventLogPackage" :original="editingLog" />
+      <WsmanEventLogMappingDialog v-model:visible="showMappingDialog" :config="store.eventLog" :packageName="eventLogPackage" :originalIndex="editingMappingIndex" :original="editingMapping" />
+      <OnmsConfirmationDialog
+        :visible="showDeleteLogConfirm"
+        title="Stop Reading Log"
+        actionButtonText="Delete"
+        @ok="confirmDeleteLog"
+        @cancel="showDeleteLogConfirm = false"
+      >
+        <template #content>
+          <p data-test="delete-log-text">Remove the <strong>{{ deletingLog?.name }}</strong> log from package {{ eventLogPackage }}? Its records are no longer read; to pause it instead, switch it off.</p>
+        </template>
+      </OnmsConfirmationDialog>
+      <OnmsConfirmationDialog
+        :visible="showDeleteMappingConfirm"
+        title="Delete Event Mapping"
+        actionButtonText="Delete"
+        @ok="confirmDeleteMapping"
+        @cancel="showDeleteMappingConfirm = false"
+      >
+        <template #content>
+          <p data-test="delete-mapping-text">Delete the mapping for Event ID <strong>{{ deletingMapping?.eventId }}</strong>? Those records use the default UEI for their log again.</p>
+        </template>
+      </OnmsConfirmationDialog>
+    </template>
 
     <template v-if="store.dataCollection">
       <WsmanCollectionDialog v-model:visible="showCollectionDialog" :dataCollection="store.dataCollection" :original="editingCollection" />
@@ -125,6 +189,11 @@ import WsmanDefaultsDialog from '@/components/ManageWsman/WsmanDefaultsDialog.vu
 import WsmanDefinitionDialog from '@/components/ManageWsman/WsmanDefinitionDialog.vue'
 import WsmanCollectionDialog from '@/components/ManageWsman/WsmanCollectionDialog.vue'
 import WsmanDataCollectionPanel from '@/components/ManageWsman/WsmanDataCollectionPanel.vue'
+import WsmanEventLogLogDialog from '@/components/ManageWsman/WsmanEventLogLogDialog.vue'
+import WsmanEventLogMappingDialog from '@/components/ManageWsman/WsmanEventLogMappingDialog.vue'
+import WsmanEventLogPackageDialog from '@/components/ManageWsman/WsmanEventLogPackageDialog.vue'
+import WsmanEventLogPanel from '@/components/ManageWsman/WsmanEventLogPanel.vue'
+import { removeLog, removeMapping, removePackage, toggleLog } from '@/components/ManageWsman/wsmanEventLogForm'
 import WsmanGroupDialog from '@/components/ManageWsman/WsmanGroupDialog.vue'
 import WsmanSystemDefinitionDialog from '@/components/ManageWsman/WsmanSystemDefinitionDialog.vue'
 import { DataCollectionKind, EditableObject, fileInput, remove } from '@/components/ManageWsman/wsmanDataCollectionForm'
@@ -135,7 +204,7 @@ import WsmanReadinessBanner from '@/components/ManageWsman/WsmanReadinessBanner.
 import { useMenuStore } from '@/stores/menuStore'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { BreadCrumb } from '@/types'
-import { WsmanCollectionInfo, WsmanGroupInfo, WsmanSystemDefinitionInfo } from '@/types/wsmanAdmin'
+import { WsmanCollectionInfo, WsmanEventLogLog, WsmanEventLogMapping, WsmanEventLogPackage, WsmanGroupInfo, WsmanSystemDefinitionInfo } from '@/types/wsmanAdmin'
 
 const menuStore = useMenuStore()
 const store = useWsmanAdminStore()
@@ -177,8 +246,96 @@ const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Manage WS-Man', to: '#', position: 'last' }
 ])
 
+// Event Logs tab
+const showPackageDialog = ref(false)
+const showDeletePackageConfirm = ref(false)
+const editingPackage = ref<WsmanEventLogPackage | null>(null)
+const deletingPackage = ref<WsmanEventLogPackage | null>(null)
+const showLogDialog = ref(false)
+const showMappingDialog = ref(false)
+const showDeleteLogConfirm = ref(false)
+const showDeleteMappingConfirm = ref(false)
+const eventLogPackage = ref('')
+const editingLog = ref<WsmanEventLogLog | null>(null)
+const deletingLog = ref<WsmanEventLogLog | null>(null)
+const editingMappingIndex = ref<number | null>(null)
+const editingMapping = ref<WsmanEventLogMapping | null>(null)
+const deletingMappingIndex = ref<number | null>(null)
+const deletingMapping = ref<WsmanEventLogMapping | null>(null)
+
+const reportResult = (result: { success: boolean; message: string }) => {
+  report(result.success ? null : result.message)
+}
+
+const openPackage = (pkg: WsmanEventLogPackage | null) => {
+  editingPackage.value = pkg
+  showPackageDialog.value = true
+}
+
+const askDeletePackage = (pkg: WsmanEventLogPackage) => {
+  deletingPackage.value = pkg
+  showDeletePackageConfirm.value = true
+}
+
+const confirmDeletePackage = async () => {
+  showDeletePackageConfirm.value = false
+  if (store.eventLog && deletingPackage.value) {
+    reportResult(await store.changeEventLog(current => removePackage(current, deletingPackage.value!.name)))
+  }
+  deletingPackage.value = null
+}
+
+const openLog = (packageName: string, log: WsmanEventLogLog | null) => {
+  eventLogPackage.value = packageName
+  editingLog.value = log
+  showLogDialog.value = true
+}
+
+const askDeleteLog = (packageName: string, log: WsmanEventLogLog) => {
+  eventLogPackage.value = packageName
+  deletingLog.value = log
+  showDeleteLogConfirm.value = true
+}
+
+const confirmDeleteLog = async () => {
+  showDeleteLogConfirm.value = false
+  if (store.eventLog && deletingLog.value) {
+    reportResult(await store.changeEventLog(current => removeLog(current, eventLogPackage.value, deletingLog.value!.name)))
+  }
+  deletingLog.value = null
+}
+
+const toggleLogEnabled = async (packageName: string, name: string, enabled: boolean) => {
+  if (store.eventLog) {
+    reportResult(await store.changeEventLog(current => toggleLog(current, packageName, name, enabled)))
+  }
+}
+
+const openMapping = (packageName: string, index: number | null, mapping: WsmanEventLogMapping | null) => {
+  eventLogPackage.value = packageName
+  editingMappingIndex.value = index
+  editingMapping.value = mapping
+  showMappingDialog.value = true
+}
+
+const askDeleteMapping = (packageName: string, index: number, mapping: WsmanEventLogMapping) => {
+  eventLogPackage.value = packageName
+  deletingMappingIndex.value = index
+  deletingMapping.value = mapping
+  showDeleteMappingConfirm.value = true
+}
+
+const confirmDeleteMapping = async () => {
+  showDeleteMappingConfirm.value = false
+  if (store.eventLog && deletingMappingIndex.value !== null) {
+    reportResult(await store.changeEventLog(current => removeMapping(current, eventLogPackage.value, deletingMappingIndex.value!)))
+  }
+  deletingMappingIndex.value = null
+  deletingMapping.value = null
+}
+
 onMounted(async () => {
-  await Promise.all([store.getConfig(), store.getDataCollection()])
+  await Promise.all([store.getConfig(), store.getDataCollection(), store.getEventLog(), store.getEventLogStatus(), store.getEventLogDefinitions()])
 })
 
 const openDefinition = (index: number | null) => {

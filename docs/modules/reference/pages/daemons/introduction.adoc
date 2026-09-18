@@ -140,4 +140,9 @@ It is separate from pollerd's SnmpMonitor.
 | Vacuumd
 | Runs daily cleanup tasks for the PostgreSQL database.
 | `CORE_SERVICE_VACUUMD_ENABLED=true`
+
+| WsManEventLogd
+| Reads Windows event logs over WS-Man and turns the records into events.
+| `CORE_SERVICE_WSMANEVENTLOGD_ENABLED=true`
+
 |===

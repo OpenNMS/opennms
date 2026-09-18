@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
+import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanEventLogConfig, getWsmanEventLogDefinition, getWsmanEventLogDefinitions, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, saveWsmanEventLogDefinition, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile, updateWsmanEventLogConfig } from '@/services/wsmanAdminService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -126,5 +126,55 @@ describe('wsmanAdminService', () => {
     // a payload without the version token cannot be saved back safely
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { defaults: {}}})
     expect(await getWsmanConfig()).toBeNull()
+  })
+})
+
+describe('event log configuration', () => {
+  it('reads the document and returns null on failure', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: { version: 'v1', packages: [] }} as any)
+    expect(await getWsmanEventLogConfig()).toEqual({ version: 'v1', packages: [] })
+    expect(vi.mocked(v2.get).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log')
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getWsmanEventLogConfig()).toBeNull()
+    // a login page or a partial body is not a document
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: '<html>' } as any)
+    expect(await getWsmanEventLogConfig()).toBeNull()
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: { version: 'v1' }} as any)
+    expect(await getWsmanEventLogConfig()).toBeNull()
+  })
+
+  it('saves the document and surfaces a short server reason', async () => {
+    vi.mocked(v2.put).mockResolvedValueOnce({} as any)
+    const ok = await updateWsmanEventLogConfig({ version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] })
+    expect(ok.success).toBe(true)
+    expect(vi.mocked(v2.put).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log')
+    vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 409, data: 'wsman-eventlog-configuration.xml changed since it was loaded' }})
+    const stale = await updateWsmanEventLogConfig({ version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] })
+    expect(stale.success).toBe(false)
+    expect(stale.message).toContain('changed since it was loaded')
+  })
+})
+
+describe('event log definitions', () => {
+  it('lists the definitions behind the mappings and looks one up by UEI', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: { rows: [{ uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: false }] }} as any)
+    expect(await getWsmanEventLogDefinitions()).toEqual([{ uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: false }])
+    expect(vi.mocked(v2.get).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log/definitions')
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: { uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: true, label: 'Disk full' }} as any)
+    expect((await getWsmanEventLogDefinition('uei.opennms.org/wsman/eventlog/diskFull'))?.label).toBe('Disk full')
+    expect(vi.mocked(v2.get).mock.calls.at(-1)?.[1]).toMatchObject({ params: { uei: 'uei.opennms.org/wsman/eventlog/diskFull' }})
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getWsmanEventLogDefinitions()).toBeNull()
+  })
+
+  it('saves a definition and surfaces the server reason', async () => {
+    const definition = { uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: false, editable: true, label: 'Disk full', description: '', logMessage: '', severity: 'Major', alarm: true, alarmType: 3, reductionKey: '%uei%:%dpname%:%nodeid%' }
+    vi.mocked(v2.put).mockResolvedValueOnce({} as any)
+    expect((await saveWsmanEventLogDefinition(definition)).success).toBe(true)
+    expect(vi.mocked(v2.put).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log/definition')
+    vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 400, data: 'The definition needs a label.' }})
+    const failed = await saveWsmanEventLogDefinition(definition)
+    expect(failed.success).toBe(false)
+    expect(failed.message).toContain('needs a label')
   })
 })
