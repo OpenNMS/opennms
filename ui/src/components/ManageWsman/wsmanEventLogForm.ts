@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { WsmanEventLogConfig, WsmanEventLogLog, WsmanEventLogMapping, WsmanEventLogPackage } from '@/types/wsmanAdmin'
+import { WsmanEventLogConfig, WsmanEventLogDefinition, WsmanEventLogLog, WsmanEventLogMapping, WsmanEventLogPackage } from '@/types/wsmanAdmin'
 
 export const LEVEL_OPTIONS = ['Error', 'Warning', 'Information', 'AuditSuccess', 'AuditFailure']
 
@@ -59,6 +59,26 @@ export const defaultMapping = (): WsmanEventLogMapping => ({
   eventId: 0,
   uei: 'uei.opennms.org/wsman/eventlog/',
   severity: null
+})
+
+export const ALARM_TYPE_OPTIONS = [
+  { label: 'Problem without a clearing event', value: 3 },
+  { label: 'Problem cleared by another event', value: 1 }
+]
+
+export const DEFAULT_REDUCTION_KEY = '%uei%:%dpname%:%nodeid%'
+
+// A fresh definition for a mapping's UEI, seeded from what the mapping already says.
+export const defaultDefinition = (mapping: WsmanEventLogMapping): WsmanEventLogDefinition => ({
+  uei: mapping.uei,
+  exists: false,
+  label: '',
+  description: '',
+  logMessage: '',
+  severity: mapping.severity ?? 'Warning',
+  alarm: true,
+  alarmType: 3,
+  reductionKey: DEFAULT_REDUCTION_KEY
 })
 
 export const splitCsv = (value: string | null | undefined): string[] =>

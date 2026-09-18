@@ -85,6 +85,13 @@
           <OnmsColumn header="Severity">
             <template #body="{ data }">{{ data.severity || 'From the level' }}</template>
           </OnmsColumn>
+          <OnmsColumn header="Definition">
+            <template #body="{ data }">
+              <span v-if="definitions === null" data-test="definition-unknown">—</span>
+              <span v-else-if="definitions[data.uei]?.exists" data-test="definition-label">{{ definitions[data.uei].label }}</span>
+              <OnmsTag v-else value="Missing" severity="warn" data-test="definition-missing" />
+            </template>
+          </OnmsColumn>
           <OnmsColumn header="Actions" style="text-align: right">
             <template #body="{ data, index }">
               <div class="action-container">
@@ -130,12 +137,14 @@ import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import { type OnmsTagSeverity } from '@opennms/onms-ui'
 import { formatInterval, formatWhen } from './wsmanEventLogForm'
-import { WsmanEventLogConfig, WsmanEventLogLog, WsmanEventLogMapping, WsmanEventLogPackage, WsmanEventLogStatusRow } from '@/types/wsmanAdmin'
+import { WsmanEventLogConfig, WsmanEventLogDefinition, WsmanEventLogLog, WsmanEventLogMapping, WsmanEventLogPackage, WsmanEventLogStatusRow } from '@/types/wsmanAdmin'
 
 const props = defineProps<{
   config: WsmanEventLogConfig
   // null when the status request failed, which must read differently from "nothing yet"
   status: WsmanEventLogStatusRow[] | null
+  // the definition behind each mapping UEI; null when the request failed
+  definitions: Record<string, WsmanEventLogDefinition> | null
 }>()
 
 const statusFor = (packageName: string) => (props.status ?? []).filter(r => r.packageName === packageName)

@@ -66,6 +66,7 @@
             v-else-if="store.eventLog"
             :config="store.eventLog"
             :status="store.eventLogStatus"
+            :definitions="store.eventLogDefinitions"
             @addPackage="openPackage(null)"
             @editPackage="openPackage"
             @deletePackage="askDeletePackage"
@@ -334,7 +335,7 @@ const confirmDeleteMapping = async () => {
 }
 
 onMounted(async () => {
-  await Promise.all([store.getConfig(), store.getDataCollection(), store.getEventLog(), store.getEventLogStatus()])
+  await Promise.all([store.getConfig(), store.getDataCollection(), store.getEventLog(), store.getEventLogStatus(), store.getEventLogDefinitions()])
 })
 
 const openDefinition = (index: number | null) => {

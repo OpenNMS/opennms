@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanEventLogFilterPreview, WsmanEventLogStatusRow, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanEventLogDefinition, WsmanEventLogFilterPreview, WsmanEventLogStatusRow, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
 import { ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -126,6 +126,7 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
   const saveEventLog = async (input: WsmanEventLogConfig): Promise<ValidationResult> => {
     const result = await API.updateWsmanEventLogConfig(input)
     await getEventLog()
+    await getEventLogDefinitions()
     return result
   }
 
@@ -137,7 +138,26 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     return rows !== null
   }
 
+  // keyed by UEI; null when the request failed
+  const eventLogDefinitions = ref<Record<string, WsmanEventLogDefinition> | null>(null)
+
+  const getEventLogDefinitions = async (): Promise<boolean> => {
+    const rows = await API.getWsmanEventLogDefinitions()
+    eventLogDefinitions.value = rows ? Object.fromEntries(rows.map(r => [r.uei, r])) : null
+    return !!rows
+  }
+
+  const getEventLogDefinition = (uei: string): Promise<WsmanEventLogDefinition | null> => API.getWsmanEventLogDefinition(uei)
+
+  const saveEventLogDefinition = async (definition: WsmanEventLogDefinition): Promise<ValidationResult> => {
+    const result = await API.saveWsmanEventLogDefinition(definition)
+    if (result.success) {
+      await getEventLogDefinitions()
+    }
+    return result
+  }
+
   const previewEventLogFilter = (filter: string): Promise<WsmanEventLogFilterPreview | null> => API.previewWsmanEventLogFilter(filter)
 
-  return { eventLog, eventLogError, getEventLog, saveEventLog, eventLogStatus, getEventLogStatus, previewEventLogFilter, config, loadError, isLoading, status, readiness, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition, runReadinessAction, resetDataCollection }
+  return { eventLog, eventLogError, getEventLog, saveEventLog, eventLogStatus, getEventLogStatus, eventLogDefinitions, getEventLogDefinitions, getEventLogDefinition, saveEventLogDefinition, previewEventLogFilter, config, loadError, isLoading, status, readiness, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition, runReadinessAction, resetDataCollection }
 })

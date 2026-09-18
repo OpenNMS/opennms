@@ -21,7 +21,7 @@
 ///
 
 import { describe, expect, it } from 'vitest'
-import { defaultPackage, formatInterval, removeLog, removeMapping, removePackage, toggleLog, upsertLog, upsertMapping, upsertPackage } from '@/components/ManageWsman/wsmanEventLogForm'
+import { defaultDefinition, defaultPackage, formatInterval, removeLog, removeMapping, removePackage, toggleLog, upsertLog, upsertMapping, upsertPackage } from '@/components/ManageWsman/wsmanEventLogForm'
 import { WsmanEventLogConfig } from '@/types/wsmanAdmin'
 
 const config = (): WsmanEventLogConfig => ({
@@ -86,5 +86,11 @@ describe('wsmanEventLogForm', () => {
     expect(formatInterval(300000)).toBe('5 minutes')
     expect(formatInterval(120000)).toBe('2 min')
     expect(formatInterval(45000)).toBe('45 s')
+  })
+
+  it('seeds a new definition from the mapping', () => {
+    const definition = defaultDefinition({ logfile: null, source: null, eventId: 7, uei: 'uei.opennms.org/wsman/eventlog/x', severity: 'Major' })
+    expect(definition).toMatchObject({ uei: 'uei.opennms.org/wsman/eventlog/x', exists: false, severity: 'Major', alarm: true, alarmType: 3, reductionKey: '%uei%:%dpname%:%nodeid%' })
+    expect(defaultDefinition({ logfile: null, source: null, eventId: 7, uei: 'uei.x', severity: null }).severity).toBe('Warning')
   })
 })

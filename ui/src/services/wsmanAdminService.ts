@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanEventLogFilterPreview, WsmanEventLogStatusRow, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanEventLogDefinition, WsmanEventLogFilterPreview, WsmanEventLogStatusRow, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
 import { rest, v2 } from './axiosInstances'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 
@@ -248,7 +248,41 @@ const getWsmanEventLogStatus = async (): Promise<WsmanEventLogStatusRow[] | null
   }
 }
 
+// The definitions behind the UEIs the mappings use; null when the request failed.
+const getWsmanEventLogDefinitions = async (): Promise<WsmanEventLogDefinition[] | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/event-log/definitions`, { headers: { Accept: 'application/json' }})
+    return (resp.data?.rows ?? []) as WsmanEventLogDefinition[]
+  } catch (err) {
+    console.error('Error loading the WS-Man event log definitions:', err)
+    return null
+  }
+}
+
+const getWsmanEventLogDefinition = async (uei: string): Promise<WsmanEventLogDefinition | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/event-log/definition`, { params: { uei }, headers: { Accept: 'application/json' }})
+    return resp.data as WsmanEventLogDefinition
+  } catch (err) {
+    console.error('Error loading the WS-Man event log definition:', err)
+    return null
+  }
+}
+
+const saveWsmanEventLogDefinition = async (definition: WsmanEventLogDefinition): Promise<ValidationResult> => {
+  try {
+    await v2.put(`${endpoint}/event-log/definition`, definition, { headers: { Accept: 'application/json' }})
+    return createSuccessResponse()
+  } catch (err: any) {
+    console.error('Error saving the event definition:', err)
+    return createFailureResult(errorMessage(err, 'Failed to save the event definition.'))
+  }
+}
+
 export {
+  getWsmanEventLogDefinitions,
+  getWsmanEventLogDefinition,
+  saveWsmanEventLogDefinition,
   getWsmanEventLogConfig,
   updateWsmanEventLogConfig,
   previewWsmanEventLogFilter,

@@ -104,4 +104,7 @@ The severity follows the level: errors are Major, warnings are Warning, audit fa
 
 The UEI is `uei.opennms.org/wsman/eventlog/System`, `.../Application` or `.../Security`, and `.../other` for any other log.
 An `event-mapping` gives one Event ID its own UEI and severity, optionally limited to one log (`logfile`) and one `source`; the shipped configuration maps System 6008 to `uei.opennms.org/wsman/eventlog/unexpectedShutdown` and Security 4625 to `.../logonFailure`, both with alarms.
-Add your own event definitions for mapped UEIs the same way as for any other event.
+A mapped UEI needs an event definition to have a label and to raise an alarm.
+The mapping dialog looks the UEI up and, when nothing is defined, creates the definition with the mapping: label, log message, description, severity and alarm behavior (one alarm per node by default).
+New definitions join the `opennms.wsman.eventlog.events` source; an existing definition, from any source, is updated in place only when *Update the event definition* is ticked, and only the fields the dialog shows change.
+The *Definition* column of the mappings table shows the label, or *Missing* when the UEI has none.

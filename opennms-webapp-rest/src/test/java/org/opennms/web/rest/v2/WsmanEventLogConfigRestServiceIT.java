@@ -23,6 +23,7 @@ package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -235,12 +236,62 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
     }
 
     @Test
+    public void listsTheDefinitionsBehindTheMappings() throws Exception {
+        final JSONArray rows = new JSONObject(getJson(URL + "/definitions", 200)).getJSONArray("rows");
+        JSONObject shutdown = null;
+        for (int i = 0; i < rows.length(); i++) {
+            if ("uei.opennms.org/wsman/eventlog/unexpectedShutdown".equals(rows.getJSONObject(i).getString("uei"))) {
+                shutdown = rows.getJSONObject(i);
+            }
+        }
+        assertNotNull(rows.toString(), shutdown);
+        assertTrue(shutdown.getBoolean("exists"));
+        assertEquals("Windows unexpected shutdown", shutdown.getString("label"));
+        assertEquals("Major", shutdown.getString("severity"));
+        assertTrue(shutdown.getBoolean("alarm"));
+        assertEquals(3, shutdown.getInt("alarmType"));
+        assertEquals("opennms.wsman.eventlog.events", shutdown.getString("sourceName"));
+
+        final JSONObject unknown = new JSONObject(getJson(URL + "/definition?uei=uei.opennms.org/wsman/eventlog/nothing", 200));
+        assertFalse(unknown.getBoolean("exists"));
+    }
+
+    @Test
+    public void createsThenUpdatesADefinitionForAMappedUei() throws Exception {
+        final String uei = "uei.opennms.org/wsman/eventlog/diskFull";
+        final JSONObject create = new JSONObject()
+                .put("uei", uei).put("label", "Windows disk full").put("severity", "Major")
+                .put("logMessage", "Disk full on %parm[computerName]%").put("alarm", true).put("alarmType", 3);
+        final JSONObject created = new JSONObject(sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", create.toString(), 200).getContentAsString());
+        assertTrue(created.getBoolean("exists"));
+        assertEquals("opennms.wsman.eventlog.events", created.getString("sourceName"));
+        assertEquals("Windows disk full", created.getString("label"));
+        assertEquals("Windows disk full", created.getString("description"));
+        assertEquals("%uei%:%dpname%:%nodeid%", created.getString("reductionKey"));
+        final long eventId = created.getLong("eventId");
+
+        final JSONObject update = new JSONObject()
+                .put("uei", uei).put("label", "Windows volume full").put("severity", "Minor").put("alarm", false);
+        final JSONObject updated = new JSONObject(sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", update.toString(), 200).getContentAsString());
+        assertEquals(eventId, updated.getLong("eventId"));
+        assertEquals("Windows volume full", updated.getString("label"));
+        assertEquals("Minor", updated.getString("severity"));
+        assertFalse(updated.getBoolean("alarm"));
+
+        sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", new JSONObject().put("uei", uei).put("severity", "Major").toString(), 400);
+        sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", new JSONObject().put("uei", "nope").put("label", "x").put("severity", "Major").toString(), 400);
+        sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", create.put("severity", "Loud").toString(), 400);
+    }
+
+    @Test
     public void forbiddenForNonAdmin() throws Exception {
         setUser("user", new String[] { "ROLE_USER" });
         getJson(URL, 403);
         sendData(PUT, MediaType.APPLICATION_JSON, URL, "{}", 403);
         sendData(POST, MediaType.APPLICATION_JSON, URL + "/preview-filter", "{}", 403);
         getJson(URL + "/status", 403);
+        getJson(URL + "/definitions", 403);
+        sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", "{}", 403);
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {

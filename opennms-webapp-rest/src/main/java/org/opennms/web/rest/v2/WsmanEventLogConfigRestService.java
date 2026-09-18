@@ -28,7 +28,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -38,6 +40,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -50,11 +53,15 @@ import org.opennms.netmgt.config.wsman.eventlog.WsmanEventlogConfiguration;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.wsman.eventlog.Durations;
@@ -63,8 +70,11 @@ import org.opennms.netmgt.wsman.eventlog.EventLogStatusStore;
 import org.opennms.netmgt.wsman.eventlog.EventLogTarget;
 import org.opennms.netmgt.wsman.eventlog.EventLogTargetResolver;
 import org.opennms.netmgt.wsman.eventlog.WsManEventLogd;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.web.rest.v2.model.WsmanEventLogConfigDto;
+import org.opennms.web.rest.v2.model.WsmanEventLogDefinitionDto;
 import org.opennms.web.rest.v2.model.WsmanEventLogFilterPreviewDto;
 import org.opennms.web.rest.v2.model.WsmanEventLogStatusDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +112,18 @@ public class WsmanEventLogConfigRestService {
 
     @Autowired
     private JsonStore jsonStore;
+
+    @Autowired
+    private EventConfEventDao eventConfEventDao;
+
+    @Autowired
+    private EventConfSourceDao eventConfSourceDao;
+
+    @Autowired
+    private EventConfPersistenceService eventConfPersistenceService;
+
+    /** The source the liquibase seed created for the daemon's own definitions; new ones from the tab join it. */
+    static final String DEFINITION_SOURCE = "opennms.wsman.eventlog.events";
 
     private static final int PREVIEW_LIMIT = 50;
 
@@ -187,6 +209,125 @@ public class WsmanEventLogConfigRestService {
     public WsmanEventLogStatusDto getStatus(@Context final SecurityContext securityContext) {
         requireAdmin(securityContext);
         return WsmanEventLogStatusDto.from(new EventLogStatusStore(jsonStore).getAll());
+    }
+
+    /** The event definition behind every UEI the mappings and the default per-log UEIs use. */
+    @GET
+    @javax.ws.rs.Path("definitions")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WsmanEventLogDefinitionDto.Rows getDefinitions(@Context final SecurityContext securityContext) {
+        requireAdmin(securityContext);
+        final Set<String> ueis = new LinkedHashSet<>();
+        for (final WsmanEventLogConfigDto.PackageDto pkg : WsmanEventLogConfigDto.from(unmarshal(readBytes()), "").packages) {
+            for (final WsmanEventLogConfigDto.EventMappingDto mapping : pkg.eventMappings) {
+                if (mapping.uei != null) {
+                    ueis.add(mapping.uei.trim());
+                }
+            }
+        }
+        final WsmanEventLogDefinitionDto.Rows rows = new WsmanEventLogDefinitionDto.Rows();
+        sessionUtils.withReadOnlyTransaction(() -> {
+            for (final String uei : ueis) {
+                rows.rows.add(readDefinition(uei));
+            }
+            return null;
+        });
+        return rows;
+    }
+
+    @GET
+    @javax.ws.rs.Path("definition")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WsmanEventLogDefinitionDto getDefinition(@Context final SecurityContext securityContext, @QueryParam("uei") final String uei) {
+        requireAdmin(securityContext);
+        if (uei == null || uei.trim().isEmpty()) {
+            throw badRequest("A uei is required.");
+        }
+        return sessionUtils.withReadOnlyTransaction(() -> readDefinition(uei.trim()));
+    }
+
+    /**
+     * Creates or updates the definition for a UEI. A new one goes into the daemon's source;
+     * an existing one is rewritten in place, keeping the parts this tab does not edit.
+     */
+    @PUT
+    @javax.ws.rs.Path("definition")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public WsmanEventLogDefinitionDto saveDefinition(@Context final SecurityContext securityContext, final WsmanEventLogDefinitionDto update) {
+        requireAdmin(securityContext);
+        if (update == null || update.uei == null || !update.uei.trim().startsWith("uei.")) {
+            throw badRequest("A UEI starting with 'uei.' is required.");
+        }
+        if (update.label == null || update.label.trim().isEmpty()) {
+            throw badRequest("The definition needs a label.");
+        }
+        if (update.severity == null || update.severity.trim().isEmpty()
+                || (OnmsSeverity.get(update.severity.trim()) == OnmsSeverity.INDETERMINATE && !"Indeterminate".equalsIgnoreCase(update.severity.trim()))) {
+            throw badRequest("Unknown severity '" + update.severity + "'.");
+        }
+        if (update.alarm && update.alarmType != null
+                && update.alarmType != WsmanEventLogDefinitionDto.ALARM_TYPE_PROBLEM
+                && update.alarmType != WsmanEventLogDefinitionDto.ALARM_TYPE_PROBLEM_WITHOUT_RESOLUTION) {
+            throw badRequest("The alarm type must be 1 (problem) or 3 (problem without resolution).");
+        }
+        final String uei = update.uei.trim();
+        final String user = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "admin";
+        final EventConfEvent existing = sessionUtils.withReadOnlyTransaction(() -> {
+            final EventConfEvent row = eventConfEventDao.findByUei(uei);
+            if (row != null) {
+                row.getSource().getName();
+            }
+            return row;
+        });
+        if (existing != null) {
+            final Event event = parseDefinition(existing);
+            update.applyTo(event);
+            final EventConfEventEditRequest request = new EventConfEventEditRequest();
+            request.setEnabled(existing.getEnabled() == null || existing.getEnabled());
+            request.setEvent(event);
+            eventConfPersistenceService.updateEventConfEvent(existing.getSource().getId(), existing.getId(), request);
+        } else {
+            final Event event = new Event();
+            update.applyTo(event);
+            eventConfPersistenceService.addEventConfSourceEvent(definitionSourceId(user), user, event);
+        }
+        eventConfPersistenceService.reloadEventsIntoMemory();
+        return sessionUtils.withReadOnlyTransaction(() -> readDefinition(uei));
+    }
+
+    private WsmanEventLogDefinitionDto readDefinition(final String uei) {
+        final EventConfEvent row = eventConfEventDao.findByUei(uei);
+        if (row == null) {
+            return WsmanEventLogDefinitionDto.missing(uei);
+        }
+        return WsmanEventLogDefinitionDto.from(row, parseDefinition(row));
+    }
+
+    private static Event parseDefinition(final EventConfEvent row) {
+        try {
+            return JaxbUtils.unmarshal(Event.class, row.getXmlContent());
+        } catch (final RuntimeException e) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN)
+                    .entity("The stored definition of " + row.getUei() + " could not be parsed: " + rootMessage(e)).build());
+        }
+    }
+
+    private Long definitionSourceId(final String user) {
+        final EventConfSource source = sessionUtils.withReadOnlyTransaction(() -> eventConfSourceDao.findByName(DEFINITION_SOURCE));
+        if (source != null) {
+            return source.getId();
+        }
+        final EventConfSource created = new EventConfSource();
+        created.setName(DEFINITION_SOURCE);
+        created.setDescription("Windows event log records read by WsManEventLogd");
+        created.setVendor("opennms");
+        created.setEnabled(true);
+        created.setEventCount(0);
+        created.setCreatedTime(new Date());
+        created.setLastModified(new Date());
+        created.setUploadedBy(user);
+        return eventConfPersistenceService.createEventConfSource(created);
     }
 
     private void validate(final WsmanEventLogConfigDto update) {

@@ -256,6 +256,22 @@ export interface WsmanEventLogMapping {
   severity: string | null
 }
 
+// The editable part of the event definition behind a mapping's UEI.
+export interface WsmanEventLogDefinition {
+  uei: string
+  exists: boolean
+  sourceName?: string | null
+  sourceId?: number | null
+  eventId?: number | null
+  label: string | null
+  description: string | null
+  logMessage: string | null
+  severity: string | null
+  alarm: boolean
+  alarmType: number | null
+  reductionKey: string | null
+}
+
 export interface WsmanEventLogPackage {
   name: string
   filter: string

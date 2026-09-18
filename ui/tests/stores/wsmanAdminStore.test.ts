@@ -31,6 +31,9 @@ vi.mock('@/services', () => ({
     updateWsmanEventLogConfig: vi.fn(),
     previewWsmanEventLogFilter: vi.fn(),
     getWsmanEventLogStatus: vi.fn(),
+    getWsmanEventLogDefinitions: vi.fn(),
+    getWsmanEventLogDefinition: vi.fn(),
+    saveWsmanEventLogDefinition: vi.fn(),
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
     getWsmanStatus: vi.fn(),
@@ -173,5 +176,24 @@ describe('event log configuration', () => {
     vi.mocked(API.updateWsmanEventLogConfig).mockResolvedValue({ success: false, message: 'stale' })
     expect(await store.saveEventLog(doc)).toEqual({ success: false, message: 'stale' })
     expect(store.eventLog?.version).toBe('v2')
+  })
+})
+
+describe('event log definitions', () => {
+  it('keys the definitions by UEI and refreshes them after a save', async () => {
+    const store = useWsmanAdminStore()
+    const missing = { uei: 'uei.opennms.org/wsman/eventlog/diskFull', exists: false, label: null, description: null, logMessage: null, severity: null, alarm: false, alarmType: null, reductionKey: null }
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue([missing])
+    expect(await store.getEventLogDefinitions()).toBe(true)
+    expect(store.eventLogDefinitions?.['uei.opennms.org/wsman/eventlog/diskFull']?.exists).toBe(false)
+
+    vi.mocked(API.saveWsmanEventLogDefinition).mockResolvedValue({ success: true, message: '' })
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue([{ ...missing, exists: true, label: 'Disk full' }])
+    expect((await store.saveEventLogDefinition({ ...missing, label: 'Disk full', severity: 'Major' })).success).toBe(true)
+    expect(store.eventLogDefinitions?.['uei.opennms.org/wsman/eventlog/diskFull']?.label).toBe('Disk full')
+
+    vi.mocked(API.getWsmanEventLogDefinitions).mockResolvedValue(null)
+    expect(await store.getEventLogDefinitions()).toBe(false)
+    expect(store.eventLogDefinitions).toBeNull()
   })
 })

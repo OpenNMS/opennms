@@ -50,8 +50,12 @@ const status = [
   { nodeId: 68, nodeLabel: 'win-12', ipAddress: '127.0.0.3', location: 'Default', packageName: 'other', log: 'System', lastSuccess: 1789936800000, lastFailure: null, lastError: null, consecutiveFailures: 0, backingOff: false, recordsRead: 1, eventsPublished: 1, cursor: 5 }
 ]
 
-const mountPanel = (rows: typeof status | null = status) => mount(WsmanEventLogPanel, {
-  props: { config, status: rows },
+const definitions = {
+  'uei.opennms.org/wsman/eventlog/unexpectedShutdown': { uei: 'uei.opennms.org/wsman/eventlog/unexpectedShutdown', exists: true, label: 'Windows unexpected shutdown', description: null, logMessage: null, severity: 'Major', alarm: true, alarmType: 3, reductionKey: null }
+}
+
+const mountPanel = (rows: typeof status | null = status, defs: typeof definitions | Record<string, never> | null = definitions) => mount(WsmanEventLogPanel, {
+  props: { config, status: rows, definitions: defs },
   global: { plugins: [PrimeVue], stubs: { OnmsCard: OnmsCardStub }}
 })
 
@@ -120,5 +124,11 @@ describe('WsmanEventLogPanel.vue', () => {
     expect(wrapper.emitted('editMapping')?.[0]).toEqual(['windows-servers', 0, config.packages[0].eventMappings[0]])
     await wrapper.find('[data-test="add-mapping"]').trigger('click')
     expect(wrapper.emitted('addMapping')?.[0]).toEqual(['windows-servers'])
+  })
+
+  it('shows the definition label per mapping, or that it is missing', () => {
+    expect(mountPanel().find('[data-test="definition-label"]').text()).toBe('Windows unexpected shutdown')
+    expect(mountPanel(status, {}).find('[data-test="definition-missing"]').exists()).toBe(true)
+    expect(mountPanel(status, null).find('[data-test="definition-unknown"]').exists()).toBe(true)
   })
 })
