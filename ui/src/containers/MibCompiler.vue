@@ -61,9 +61,11 @@
       @ok="deleteFile"
       @cancel="deleteDialog.visible = false"
     >
-      <p data-test="delete-confirmation-message">
-        Are you sure you want to delete '{{ deleteDialog.file?.name }}' from the {{ deleteDialog.location }} directory?
-      </p>
+      <template #content>
+        <p data-test="delete-confirmation-message">
+          Are you sure you want to delete '{{ deleteDialog.file?.name }}' from the {{ deleteDialog.location }} directory?
+        </p>
+      </template>
     </OnmsConfirmationDialog>
 
     <OnmsConfirmationDialog
@@ -74,10 +76,12 @@
       @ok="compileWithOverwrite"
       @cancel="overwriteDialog.visible = false"
     >
-      <p data-test="overwrite-confirmation-message">
-        A compiled MIB named '{{ overwriteDialog.targetFile }}' already exists.
-        Do you want to overwrite it with the contents of '{{ overwriteDialog.pendingFile }}'?
-      </p>
+      <template #content>
+        <p data-test="overwrite-confirmation-message">
+          A compiled MIB named '{{ overwriteDialog.targetFile }}' already exists.
+          Do you want to overwrite it with the contents of '{{ overwriteDialog.pendingFile }}'?
+        </p>
+      </template>
     </OnmsConfirmationDialog>
 
     <CompileErrorsDialog

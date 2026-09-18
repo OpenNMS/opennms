@@ -139,9 +139,24 @@ const profileOptions = ref<ProfileOption[]>([])
 const selectedProfiles = ref<ProfileOption[]>([])
 const existingSourceNames = ref<string[]>([])
 
-// the upload endpoint derives the source name from the file name and requires
-// at least one profile when the source does not exist yet
-const sourceName = computed(() => (preview.value?.suggestedFileName ?? '').replace(/\.xml$/, ''))
+const uploadFileName = computed(() =>
+  preview.value?.suggestedFileName ?? `${props.fileName.replace(/\.[^.]+$/, '')}.xml`)
+
+// mirrors DataCollectionConfRestService: the source is keyed on the
+// <datacollection-group name="..."> attribute of the (possibly edited) XML and
+// falls back to the file name without its extension; a new source requires
+// at least one profile
+const sourceName = computed(() => {
+  const parsed = new DOMParser().parseFromString(dataCollectionXml.value, 'application/xml')
+  const root = parsed.documentElement
+  if (parsed.querySelector('parsererror') === null && root?.tagName === 'datacollection-group') {
+    const name = root.getAttribute('name')
+    if (name) {
+      return name
+    }
+  }
+  return uploadFileName.value.replace(/\.[^.]*$/, '').trim()
+})
 const isNewSource = computed(() =>
   !existingSourceNames.value.some(name => name.toLowerCase() === sourceName.value.toLowerCase()))
 
@@ -189,8 +204,7 @@ const save = async () => {
   }
   isLoading.value = true
   try {
-    const fileName = preview.value?.suggestedFileName ?? `${props.fileName.replace(/\.[^.]+$/, '')}.xml`
-    const file = new File([xml], fileName, { type: 'application/xml' })
+    const file = new File([xml], uploadFileName.value, { type: 'application/xml' })
     const response = await uploadDataCollectionFiles([file], selectedProfiles.value.map(profile => profile.name))
     if (response.errors?.length) {
       validationError.value = response.errors.map(item => `${item.file}: ${item.error}`).join('; ')

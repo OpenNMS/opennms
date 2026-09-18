@@ -46,6 +46,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -134,9 +138,21 @@ public class MibFileService {
         return buffer.toByteArray();
     }
 
+    /**
+     * Vendor MIBs are frequently Latin-1 (e.g. a raw {@code ©} in the copyright banner) rather
+     * than UTF-8, so decode leniently instead of failing the whole read on one bad byte.
+     */
     public String readMibFile(String dir, String name) throws IOException {
         final File file = existingFile(dir, name);
-        return Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        final byte[] bytes = Files.readAllBytes(file.toPath());
+        final CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        try {
+            return decoder.decode(ByteBuffer.wrap(bytes)).toString();
+        } catch (CharacterCodingException e) {
+            return new String(bytes, StandardCharsets.ISO_8859_1);
+        }
     }
 
     public void updatePendingMibFile(String name, String content) throws IOException {

@@ -134,6 +134,17 @@ public class MibFileServiceTest {
     }
 
     @Test
+    public void testReadNonUtf8MibFallsBackToLatin1() throws Exception {
+        pendingDir.mkdirs();
+        final String banner = "-- Copyright \u00a9 ACME Corp\nACME-MIB DEFINITIONS ::= BEGIN\nEND\n";
+        Files.write(new File(pendingDir, "ACME-MIB.txt").toPath(), banner.getBytes(StandardCharsets.ISO_8859_1));
+
+        final String content = service.readMibFile(MibFileService.PENDING, "ACME-MIB.txt");
+        assertTrue(content.contains("Copyright \u00a9 ACME"));
+        assertTrue(content.contains("ACME-MIB DEFINITIONS"));
+    }
+
+    @Test
     public void testReadUpdateDelete() throws Exception {
         addPending("IF-MIB.txt");
         final String content = service.readMibFile(MibFileService.PENDING, "IF-MIB.txt");

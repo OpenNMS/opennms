@@ -23,7 +23,8 @@ export const isDuplicateFile = (fileName: string, existingFiles: UploadMibFileTy
   return existingFiles.some(file => file.file.name === fileName)
 }
 
-export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+// must match MAX_MIB_FILE_SIZE in MibFileService.java
+export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 // the parser resolves dependencies against files with these suffixes (plus no suffix)
 export const VALID_FILE_EXTENSION = ['.txt', '.mib', '.my']
 

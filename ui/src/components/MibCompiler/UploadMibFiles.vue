@@ -161,10 +161,11 @@ const handleUpload = async (e: Event) => {
   }
 
   isLoading.value = true
+  // only files that actually reached the server count as existing; files rejected
+  // client-side must stay re-uploadable once the user has corrected them
   const existingNames = new Set([
     ...store.pendingFiles.map(file => file.name.toLowerCase()),
-    ...store.compiledFiles.map(file => file.name.toLowerCase()),
-    ...mibFiles.value.map(mibFile => mibFile.file.name.toLowerCase())
+    ...store.compiledFiles.map(file => file.name.toLowerCase())
   ])
 
   const toUpload: File[] = []

@@ -101,11 +101,20 @@ const write = async () => {
   isLoading.value = true
   try {
     const result = await generateGraphTemplates(props.fileName, false)
-    if (result.written) {
-      preview.value = result
-      snackbar.showSnackBar({ msg: `Graph templates for '${result.mibName}' written successfully.` })
-      step.value = 'done'
+    if (!result.success) {
+      emit('failed', result)
+      return
     }
+    if (!result.written) {
+      snackbar.showSnackBar({
+        msg: `Graph templates for '${result.mibName ?? props.fileName}' were not written.`,
+        error: true
+      })
+      return
+    }
+    preview.value = result
+    snackbar.showSnackBar({ msg: `Graph templates for '${result.mibName}' written successfully.` })
+    step.value = 'done'
   } catch (error: unknown) {
     snackbar.showSnackBar({
       msg: getGeneralErrorMessage(error, 'Failed to write the graph templates.'),
