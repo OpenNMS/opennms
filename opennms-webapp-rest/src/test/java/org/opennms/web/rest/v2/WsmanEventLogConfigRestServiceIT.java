@@ -1,0 +1,190 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
+package org.opennms.web.rest.v2;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.UUID;
+
+import javax.ws.rs.core.MediaType;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+
+/**
+ * Drives the Event Logs REST resource against a scratch opennms.home holding a copy of
+ * the shipped wsman-eventlog-configuration.xml.
+ */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
+@JUnitTemporaryDatabase
+public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
+    private static final String URL = "/wsman-config/event-log";
+
+    private File m_home;
+    private File m_file;
+    private String m_previousHome;
+
+    public WsmanEventLogConfigRestServiceIT() {
+        super(CXF_REST_V2_CONTEXT_PATH);
+    }
+
+    @Before
+    public void useScratchHome() throws Exception {
+        MockLogAppender.setupLogging(true);
+        m_previousHome = System.getProperty("opennms.home");
+        m_home = new File("target/test-work-dir/wsman-eventlog-home-" + UUID.randomUUID());
+        final File etc = new File(m_home, "etc");
+        assertTrue(etc.mkdirs());
+        m_file = new File(etc, WsmanEventLogConfigRestService.FILE_NAME);
+        Files.copy(new File("../opennms-base-assembly/src/main/filtered/etc/" + WsmanEventLogConfigRestService.FILE_NAME).toPath(), m_file.toPath());
+        System.setProperty("opennms.home", m_home.getAbsolutePath());
+    }
+
+    @After
+    public void restoreHome() {
+        if (m_previousHome != null) {
+            System.setProperty("opennms.home", m_previousHome);
+        }
+    }
+
+    @Test
+    public void readsTheShippedConfiguration() throws Exception {
+        final JSONObject config = new JSONObject(getJson(URL, 200));
+        assertEquals(4, config.getInt("threads"));
+        assertEquals("5m", config.getString("targetRefreshInterval"));
+        assertEquals(64, config.getString("version").length());
+        final JSONArray packages = config.getJSONArray("packages");
+        assertEquals(1, packages.length());
+        final JSONObject pkg = packages.getJSONObject(0);
+        assertEquals("windows-servers", pkg.getString("name"));
+        final JSONArray logs = pkg.getJSONArray("logs");
+        assertEquals("System", logs.getJSONObject(0).getString("name"));
+        assertTrue(logs.getJSONObject(0).getBoolean("enabled"));
+        assertEquals(60000, logs.getJSONObject(0).getLong("interval"));
+        assertEquals("wql", logs.getJSONObject(0).getString("mode"));
+        assertFalse(logs.getJSONObject(2).getBoolean("enabled"));
+        assertEquals("shell", logs.getJSONObject(3).getString("mode"));
+        assertEquals(6008, pkg.getJSONArray("eventMappings").getJSONObject(0).getInt("eventId"));
+    }
+
+    @Test
+    public void savesChangesAndBumpsTheVersion() throws Exception {
+        final JSONObject config = new JSONObject(getJson(URL, 200));
+        final String version = config.getString("version");
+        final JSONObject security = config.getJSONArray("packages").getJSONObject(0).getJSONArray("logs").getJSONObject(2);
+        security.put("enabled", true);
+        security.put("interval", 300000);
+
+        final JSONObject saved = new JSONObject(sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 200).getContentAsString());
+        assertFalse(version.equals(saved.getString("version")));
+        final JSONObject savedSecurity = saved.getJSONArray("packages").getJSONObject(0).getJSONArray("logs").getJSONObject(2);
+        assertTrue(savedSecurity.getBoolean("enabled"));
+        assertEquals(300000, savedSecurity.getLong("interval"));
+
+        final String xml = new String(Files.readAllBytes(m_file.toPath()), StandardCharsets.UTF_8);
+        assertTrue(xml, xml.contains("name=\"Security\""));
+        assertTrue(xml, xml.contains("interval=\"300000\""));
+        assertTrue(xml, xml.contains("event-id=\"6008\""));
+
+        // the version the page loaded before the save is stale now
+        sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 409);
+    }
+
+    @Test
+    public void rejectsInvalidValuesWithoutTouchingTheFile() throws Exception {
+        final long before = m_file.lastModified();
+        final byte[] bytes = Files.readAllBytes(m_file.toPath());
+        final JSONObject config = new JSONObject(getJson(URL, 200));
+        final JSONObject log = config.getJSONArray("packages").getJSONObject(0).getJSONArray("logs").getJSONObject(0);
+
+        log.put("interval", 10);
+        String reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("at least 1000 ms"));
+
+        log.put("interval", 60000);
+        log.put("lookback", "soon");
+        reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("lookback"));
+
+        log.put("lookback", "1h");
+        log.put("levels", "Critical");
+        reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("Unknown event log level"));
+
+        log.put("levels", "Error");
+        config.getJSONArray("packages").getJSONObject(0).put("filter", "IPADDR IPLIKE");
+        sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400);
+
+        config.getJSONArray("packages").getJSONObject(0).put("filter", "IPADDR != '0.0.0.0'");
+        config.remove("version");
+        sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400);
+
+        assertEquals(before, m_file.lastModified());
+        assertEquals(new String(bytes, StandardCharsets.UTF_8), new String(Files.readAllBytes(m_file.toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void forbiddenForNonAdmin() throws Exception {
+        setUser("user", new String[] { "ROLE_USER" });
+        getJson(URL, 403);
+        sendData(PUT, MediaType.APPLICATION_JSON, URL, "{}", 403);
+    }
+
+    private String getJson(final String url, final int expectedStatus) throws Exception {
+        final MockHttpServletRequest request = createRequest(GET, url);
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        return sendRequest(request, expectedStatus);
+    }
+}

@@ -59,6 +59,10 @@ public class Log {
     @XmlAttribute(name = "exclude-event-ids")
     private String excludeEventIds;
 
+    /** {@code wql} (Win32_NTLogEvent, classic logs) or {@code shell} (Get-WinEvent through WinRS, any log). */
+    @XmlAttribute(name = "mode")
+    private String mode;
+
     public String getName() {
         return name;
     }
@@ -123,9 +127,17 @@ public class Log {
         this.excludeEventIds = excludeEventIds;
     }
 
+    public String getMode() {
+        return mode == null || mode.trim().isEmpty() ? "wql" : mode.trim().toLowerCase();
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(name, enabled, interval, maxRecords, lookback, levels, includeEventIds, excludeEventIds);
+        return Objects.hash(name, enabled, interval, maxRecords, lookback, levels, includeEventIds, excludeEventIds, mode);
     }
 
     @Override
@@ -144,6 +156,7 @@ public class Log {
                 && Objects.equals(lookback, other.lookback)
                 && Objects.equals(levels, other.levels)
                 && Objects.equals(includeEventIds, other.includeEventIds)
-                && Objects.equals(excludeEventIds, other.excludeEventIds);
+                && Objects.equals(excludeEventIds, other.excludeEventIds)
+                && Objects.equals(mode, other.mode);
     }
 }

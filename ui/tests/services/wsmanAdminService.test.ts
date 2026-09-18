@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from '@/services/wsmanAdminService'
+import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanEventLogConfig, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile, updateWsmanEventLogConfig } from '@/services/wsmanAdminService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -126,5 +126,26 @@ describe('wsmanAdminService', () => {
     // a payload without the version token cannot be saved back safely
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { defaults: {}}})
     expect(await getWsmanConfig()).toBeNull()
+  })
+})
+
+describe('event log configuration', () => {
+  it('reads the document and returns null on failure', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ data: { version: 'v1', packages: [] }} as any)
+    expect(await getWsmanEventLogConfig()).toEqual({ version: 'v1', packages: [] })
+    expect(vi.mocked(v2.get).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log')
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getWsmanEventLogConfig()).toBeNull()
+  })
+
+  it('saves the document and surfaces a short server reason', async () => {
+    vi.mocked(v2.put).mockResolvedValueOnce({} as any)
+    const ok = await updateWsmanEventLogConfig({ version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] })
+    expect(ok.success).toBe(true)
+    expect(vi.mocked(v2.put).mock.calls.at(-1)?.[0]).toBe('/wsman-config/event-log')
+    vi.mocked(v2.put).mockRejectedValueOnce({ response: { status: 409, data: 'wsman-eventlog-configuration.xml changed since it was loaded' }})
+    const stale = await updateWsmanEventLogConfig({ version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] })
+    expect(stale.success).toBe(false)
+    expect(stale.message).toContain('changed since it was loaded')
   })
 })

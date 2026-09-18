@@ -234,3 +234,39 @@ export interface WsmanReadiness {
   unpolledServers: number
   requisitionsWithUnpolled: string[]
 }
+
+// wsman-eventlog-configuration.xml as the Event Logs tab shows and saves it
+export interface WsmanEventLogLog {
+  name: string
+  enabled: boolean
+  interval: number
+  maxRecords: number
+  lookback: string
+  levels: string | null
+  includeEventIds: string | null
+  excludeEventIds: string | null
+  mode: 'wql' | 'shell'
+}
+
+export interface WsmanEventLogMapping {
+  logfile: string | null
+  source: string | null
+  eventId: number
+  uei: string
+  severity: string | null
+}
+
+export interface WsmanEventLogPackage {
+  name: string
+  filter: string
+  logs: WsmanEventLogLog[]
+  eventMappings: WsmanEventLogMapping[]
+}
+
+export interface WsmanEventLogConfig {
+  version: string
+  threads: number
+  retries: number
+  targetRefreshInterval: string
+  packages: WsmanEventLogPackage[]
+}

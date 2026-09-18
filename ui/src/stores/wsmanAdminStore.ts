@@ -21,7 +21,8 @@
 ///
 
 import API from '@/services'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -111,5 +112,22 @@ export const useWsmanAdminStore = defineStore('wsmanAdminStore', () => {
     return null
   }
 
-  return { config, loadError, isLoading, status, readiness, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition, runReadinessAction, resetDataCollection }
+  const eventLog = ref<WsmanEventLogConfig | null>(null)
+  const eventLogError = ref(false)
+
+  const getEventLog = async (): Promise<boolean> => {
+    const result = await API.getWsmanEventLogConfig()
+    eventLog.value = result
+    eventLogError.value = result === null
+    return result !== null
+  }
+
+  // re-read on success and failure alike so the next attempt carries the current version
+  const saveEventLog = async (input: WsmanEventLogConfig): Promise<ValidationResult> => {
+    const result = await API.updateWsmanEventLogConfig(input)
+    await getEventLog()
+    return result
+  }
+
+  return { eventLog, eventLogError, getEventLog, saveEventLog, config, loadError, isLoading, status, readiness, getConfig, saveConfig, dataCollection, dataCollectionError, getDataCollection, saveDataCollectionFile, syncDefinition, runReadinessAction, resetDataCollection }
 })

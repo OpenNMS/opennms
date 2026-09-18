@@ -39,7 +39,8 @@ Credentials and endpoints come from `wsman-config.xml`; a node is read when an i
 
 == Reload
 
-Run `opennms:reload-daemon WsManEventLogd` in the Karaf shell, or send `uei.opennms.org/internal/reloadDaemonConfig` with `daemonName` set to `WsManEventLogd`, to apply changes to `wsman-eventlog-configuration.xml` without a restart.
+Saving on the *Event Logs* tab of the *Manage WS-Man* page reloads the daemon automatically.
+Otherwise, run `opennms:reload-daemon WsManEventLogd` in the Karaf shell, or send `uei.opennms.org/internal/reloadDaemonConfig` with `daemonName` set to `WsManEventLogd`, to apply changes to `wsman-eventlog-configuration.xml` without a restart.
 
 == Metrics
 

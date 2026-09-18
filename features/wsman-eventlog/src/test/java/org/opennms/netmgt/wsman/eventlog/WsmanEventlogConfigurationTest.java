@@ -48,7 +48,9 @@ public class WsmanEventlogConfigurationTest {
         final Package pkg = config.getPackages().get(0);
         assertEquals("windows-servers", pkg.getName());
         assertEquals("IPADDR != '0.0.0.0'", pkg.getFilter());
-        assertEquals(3, pkg.getLogs().size());
+        assertEquals(4, pkg.getLogs().size());
+        assertEquals("shell", pkg.getLogs().get(3).getMode());
+        assertEquals("wql", pkg.getLogs().get(0).getMode());
         final Log system = pkg.getLogs().get(0);
         assertEquals("System", system.getName());
         assertTrue(system.isEnabled());

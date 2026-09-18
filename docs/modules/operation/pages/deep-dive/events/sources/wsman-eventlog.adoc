@@ -14,6 +14,9 @@ No agent is needed on the host: the xref:reference:daemons/daemon-config-files/w
 
 == Configuration
 
+The *Event Logs* tab of the *Manage WS-Man* page (*Administration > Manage WS-Man*) lists the logs read for each package with a switch to turn each one on or off, and edits their frequency, level and Event ID filters, read mode and mappings.
+Saving there rewrites `wsman-eventlog-configuration.xml` and reloads the daemon.
+
 `wsman-eventlog-configuration.xml` holds one or more packages.
 A package selects nodes with a filter, lists the logs to read, and can give specific Event IDs their own UEI and severity.
 
@@ -64,9 +67,13 @@ A package selects nodes with a filter, lists the logs to read, and can give spec
 exclude-event-ids
 | Comma-separated Event IDs to keep or drop.
 | none
+
+| mode
+| `wql` reads the log through WMI's `Win32_NTLogEvent`, which only exposes the classic logs. `shell` runs `Get-WinEvent` through WinRS and reaches any log, including the "Applications and Services" logs such as `Microsoft-Windows-TaskScheduler/Operational`; the account then also needs the right to run commands, for example membership in `Remote Management Users`.
+| `wql`
 |===
 
-The `Security` log is disabled in the shipped configuration because of its volume.
+The `Security` log is disabled in the shipped configuration because of its volume, and the Task Scheduler example shows the `shell` mode.
 
 == Events
 

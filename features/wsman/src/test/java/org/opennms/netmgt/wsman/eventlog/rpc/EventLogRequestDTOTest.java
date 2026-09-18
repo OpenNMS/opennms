@@ -51,7 +51,7 @@ public class EventLogRequestDTOTest extends XmlTestNoCastor<EventLogRequestDTO> 
               "<?xml version=\"1.0\"?>\n"
               + "<wsman-eventlog-request location=\"MINION\" resource-uri=\"" + EventLogRequestDTO.DEFAULT_RESOURCE_URI + "\" retries=\"2\">\n"
               + "  <endpoint-attribute key=\"url\">http://10.0.0.5:5985/wsman</endpoint-attribute>\n"
-              + "  <query logfile=\"System\" after-record-number=\"42\" max-records=\"100\">\n"
+              + "  <query logfile=\"System\" after-record-number=\"42\" max-records=\"100\" mode=\"wql\">\n"
               + "    <event-type>1</event-type>\n"
               + "    <event-type>2</event-type>\n"
               + "  </query>\n"

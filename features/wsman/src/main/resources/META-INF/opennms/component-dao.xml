@@ -16,10 +16,4 @@
     <property name="configResource" value="file:${opennms.home}/etc/wsman-config.xml" />
   </bean>
 
-  <bean id="wsManEventLogRpcModule" class="org.opennms.netmgt.wsman.eventlog.rpc.WsManEventLogRpcModule" destroy-method="destroy">
-    <constructor-arg value="${org.opennms.netmgt.wsman.eventlog.rpc.threadCount:4}"/>
-  </bean>
-
-  <bean id="locationAwareWsManEventLogClient" class="org.opennms.netmgt.wsman.eventlog.rpc.LocationAwareWsManEventLogClientRpcImpl" />
-
 </beans>

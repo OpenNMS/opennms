@@ -37,6 +37,9 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class EventLogQueryDTO {
 
+    public static final String MODE_WQL = "wql";
+    public static final String MODE_SHELL = "shell";
+
     @XmlAttribute(name = "logfile")
     private String logfile;
 
@@ -49,6 +52,10 @@ public class EventLogQueryDTO {
 
     @XmlAttribute(name = "max-records")
     private int maxRecords = 500;
+
+    /** {@link #MODE_WQL} reads Win32_NTLogEvent; {@link #MODE_SHELL} runs Get-WinEvent through WinRS. */
+    @XmlAttribute(name = "mode")
+    private String mode = MODE_WQL;
 
     /** Win32_NTLogEvent.EventType values to keep; empty means every level. */
     @XmlElement(name = "event-type")
@@ -93,6 +100,18 @@ public class EventLogQueryDTO {
         this.maxRecords = maxRecords;
     }
 
+    public String getMode() {
+        return mode == null ? MODE_WQL : mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public boolean isShellMode() {
+        return MODE_SHELL.equalsIgnoreCase(getMode());
+    }
+
     public List<Integer> getEventTypes() {
         return eventTypes;
     }
@@ -103,7 +122,7 @@ public class EventLogQueryDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(logfile, afterRecordNumber, sinceTime, maxRecords, eventTypes);
+        return Objects.hash(logfile, afterRecordNumber, sinceTime, maxRecords, mode, eventTypes);
     }
 
     @Override
@@ -119,6 +138,7 @@ public class EventLogQueryDTO {
                 && Objects.equals(afterRecordNumber, other.afterRecordNumber)
                 && Objects.equals(sinceTime, other.sinceTime)
                 && maxRecords == other.maxRecords
+                && Objects.equals(getMode(), other.getMode())
                 && Objects.equals(eventTypes, other.eventTypes);
     }
 }

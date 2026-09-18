@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.wsman.eventlog.rpc;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManConstants;
 import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.exceptions.WSManException;
+import org.opennms.core.wsman.shell.CommandResult;
 import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
@@ -46,8 +48,9 @@ import org.w3c.dom.Node;
 import com.google.common.collect.ListMultimap;
 
 /**
- * Runs the event log enumeration where the node lives. Records are pulled a page at a
- * time so a large backlog stops at the cap instead of being read to the end.
+ * Runs the event log read where the node lives. WQL records are pulled a page at a
+ * time so a large backlog stops at the cap instead of being read to the end; the
+ * Get-WinEvent mode asks for one record past the cap for the same reason.
  */
 public class WsManEventLogRpcModule extends AbstractXmlRpcModule<EventLogRequestDTO, EventLogResponseDTO> {
 
@@ -105,24 +108,36 @@ public class WsManEventLogRpcModule extends AbstractXmlRpcModule<EventLogRequest
 
     private EventLogBatchDTO readLog(WSManClient client, EventLogRequestDTO request, EventLogQueryDTO query) {
         final EventLogBatchDTO batch = new EventLogBatchDTO(query.getLogfile());
-        final String wql = EventLogWql.forQuery(query);
         final int max = Math.max(1, query.getMaxRecords());
         final RetryNTimesLoop retryLoop = new RetryNTimesLoop(Math.max(0, request.getRetries()));
         while (retryLoop.shouldContinue()) {
             try {
-                final List<Node> nodes = new ArrayList<>();
-                LOG.debug("Enumerating {} on {} with '{}'", query.getLogfile(), client, wql);
-                String context = client.enumerateWithFilter(request.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wql);
-                boolean exhausted = context == null;
-                while (!exhausted && nodes.size() < max) {
-                    context = client.pull(context, request.getResourceUri(), nodes, false);
+                final List<EventLogRecordDTO> records;
+                boolean exhausted;
+                if (query.isShellMode()) {
+                    LOG.debug("Reading {} on {}", EventLogPowerShell.describe(query), client);
+                    final CommandResult result = client.runCommand(EventLogPowerShell.command(), EventLogPowerShell.arguments(query), commandTimeout(request));
+                    if (result.exitCode() != 0) {
+                        throw new WSManException("Get-WinEvent exited with " + result.exitCode() + ": " + firstLine(result.stderr()));
+                    }
+                    records = EventLogPowerShell.parse(result.stdout(), query.getLogfile());
+                    exhausted = true;
+                } else {
+                    final String wql = EventLogWql.forQuery(query);
+                    final List<Node> nodes = new ArrayList<>();
+                    LOG.debug("Enumerating {} on {} with '{}'", query.getLogfile(), client, wql);
+                    String context = client.enumerateWithFilter(request.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wql);
                     exhausted = context == null;
-                }
-                final List<EventLogRecordDTO> records = new ArrayList<>(nodes.size());
-                for (Node node : nodes) {
-                    final EventLogRecordDTO record = toRecord(node, query.getLogfile());
-                    if (record != null) {
-                        records.add(record);
+                    while (!exhausted && nodes.size() < max) {
+                        context = client.pull(context, request.getResourceUri(), nodes, false);
+                        exhausted = context == null;
+                    }
+                    records = new ArrayList<>(nodes.size());
+                    for (Node node : nodes) {
+                        final EventLogRecordDTO record = toRecord(node, query.getLogfile());
+                        if (record != null) {
+                            records.add(record);
+                        }
                     }
                 }
                 records.sort(Comparator.comparingLong(EventLogRecordDTO::getRecordNumber));
@@ -145,6 +160,28 @@ public class WsManEventLogRpcModule extends AbstractXmlRpcModule<EventLogRequest
             }
         }
         return batch;
+    }
+
+    /** The shell has to outlive the WinRM receive timeout, which is what the endpoint carries. */
+    private static Duration commandTimeout(EventLogRequestDTO request) {
+        final String receive = request.getEndpointAttributes().get("receive-timeout");
+        long millis = 60_000L;
+        if (receive != null) {
+            try {
+                millis = Math.max(millis, Long.parseLong(receive.trim()));
+            } catch (NumberFormatException ignored) {
+                // keep the default
+            }
+        }
+        return Duration.ofMillis(millis);
+    }
+
+    private static String firstLine(String text) {
+        if (text == null) {
+            return "";
+        }
+        final int nl = text.indexOf('\n');
+        return (nl < 0 ? text : text.substring(0, nl)).trim();
     }
 
     static EventLogRecordDTO toRecord(Node node, String logfile) {

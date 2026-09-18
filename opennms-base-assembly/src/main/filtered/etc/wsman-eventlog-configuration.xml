@@ -15,6 +15,10 @@
     lookback          how far back the first poll of a node reads (30s, 15m, 1h, 2d)
     levels            Error,Warning,Information,AuditSuccess,AuditFailure (empty = all)
     include-event-ids / exclude-event-ids   comma-separated Event IDs
+    mode              wql (default; Win32_NTLogEvent, the classic Application/System/Security
+                      logs) or shell (Get-WinEvent through WinRS, needed for the
+                      "Applications and Services" logs; the account must be allowed to run
+                      commands, e.g. member of Remote Management Users)
 
   event-mapping gives one Event ID (optionally in one log and from one source) its
   own UEI and severity; every other record uses uei.opennms.org/wsman/eventlog/<log>.
@@ -25,6 +29,7 @@
     <log name="System" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
     <log name="Application" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
     <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" levels="AuditFailure"/>
+    <log name="Microsoft-Windows-TaskScheduler/Operational" enabled="false" mode="shell" interval="300000" max-records="200" lookback="1h" levels="Error,Warning"/>
     <event-mapping logfile="System" event-id="6008" uei="uei.opennms.org/wsman/eventlog/unexpectedShutdown" severity="Major"/>
     <event-mapping logfile="Security" event-id="4625" uei="uei.opennms.org/wsman/eventlog/logonFailure" severity="Minor"/>
   </package>

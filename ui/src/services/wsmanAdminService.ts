@@ -22,8 +22,9 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
 import { rest, v2 } from './axiosInstances'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 
 // Manage WS-Man (NMS-20286): wsman-config.xml through /api/v2/wsman-config.
 
@@ -205,4 +206,27 @@ const resetWsmanDataCollection = async (): Promise<WsmanDataCollection | string>
   }
 }
 
-export { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile }
+// Event Logs tab: the whole file in one document; null on failure.
+const getWsmanEventLogConfig = async (): Promise<WsmanEventLogConfig | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/event-log`, { headers: { Accept: 'application/json' }})
+    return resp.data as WsmanEventLogConfig
+  } catch (err) {
+    console.error('Error loading the WS-Man event log configuration:', err)
+    return null
+  }
+}
+
+const updateWsmanEventLogConfig = async (config: WsmanEventLogConfig): Promise<ValidationResult> => {
+  try {
+    await v2.put(`${endpoint}/event-log`, config, { headers: { Accept: 'application/json' }})
+    return createSuccessResponse()
+  } catch (err: any) {
+    console.error('Error saving the WS-Man event log configuration:', err)
+    return createFailureResult(errorMessage(err, 'Failed to save the WS-Man event log configuration.'))
+  }
+}
+
+export {
+  getWsmanEventLogConfig,
+  updateWsmanEventLogConfig, getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile }

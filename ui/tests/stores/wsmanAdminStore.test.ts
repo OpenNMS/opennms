@@ -27,6 +27,8 @@ import API from '@/services'
 
 vi.mock('@/services', () => ({
   default: {
+    getWsmanEventLogConfig: vi.fn(),
+    updateWsmanEventLogConfig: vi.fn(),
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
     getWsmanStatus: vi.fn(),
@@ -146,5 +148,28 @@ describe('wsmanAdminStore', () => {
     await store.getConfig()
     expect(store.loadError).toBe(true)
     expect(store.config).toEqual(CONFIG)
+  })
+})
+
+describe('event log configuration', () => {
+  it('loads the document and flags a failure', async () => {
+    setActivePinia(createPinia())
+    const store = useWsmanAdminStore()
+    vi.mocked(API.getWsmanEventLogConfig).mockResolvedValue({ version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] })
+    expect(await store.getEventLog()).toBe(true)
+    expect(store.eventLog?.version).toBe('v1')
+    vi.mocked(API.getWsmanEventLogConfig).mockResolvedValue(null)
+    expect(await store.getEventLog()).toBe(false)
+    expect(store.eventLogError).toBe(true)
+  })
+
+  it('re-reads after a save whether or not it succeeded', async () => {
+    setActivePinia(createPinia())
+    const store = useWsmanAdminStore()
+    const doc = { version: 'v1', threads: 4, retries: 1, targetRefreshInterval: '5m', packages: [] }
+    vi.mocked(API.getWsmanEventLogConfig).mockResolvedValue({ ...doc, version: 'v2' })
+    vi.mocked(API.updateWsmanEventLogConfig).mockResolvedValue({ success: false, message: 'stale' })
+    expect(await store.saveEventLog(doc)).toEqual({ success: false, message: 'stale' })
+    expect(store.eventLog?.version).toBe('v2')
   })
 })

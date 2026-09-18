@@ -133,6 +133,7 @@ public class EventLogPoller {
 
         final EventLogQueryDTO query = new EventLogQueryDTO(log.getName());
         query.setMaxRecords(log.getMaxRecords());
+        query.setMode(log.getMode());
         query.setEventTypes(EventLogLevel.parseEventTypes(log.getLevels()));
         final Long cursor = cursorStore.get(target.getNodeId(), log.getName());
         if (cursor != null) {
