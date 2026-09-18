@@ -35,6 +35,21 @@ import { useRoute } from 'vue-router'
 
 const mockNodeId = '42'
 
+// Hoisted: vi.mock is lifted above these declarations, and useSnackbar is pulled in at module
+// init by services/index, so a plain const would be read before it exists.
+const { showSnackBar, getFlowGraphUrl } = vi.hoisted(() => ({
+  showSnackBar: vi.fn(),
+  getFlowGraphUrl: vi.fn()
+}))
+
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar, hideSnackbar: vi.fn() })
+}))
+
+vi.mock('@/services/flowService', () => ({
+  getFlowGraphUrl: (...args: unknown[]) => getFlowGraphUrl(...args)
+}))
+
 // A reactive route, so a test can change the node id the way navigating to another node does.
 // The details page keeps one component instance across those changes.
 vi.mock('vue-router', async () => {
@@ -85,19 +100,24 @@ describe('SnmpInterfacesTable.vue', () => {
       expect(wrapper.find('[data-test="snmp-interfaces-table"]').exists()).toBe(true)
     })
 
-    it('renders all 5 column headers', () => {
-      const headers = wrapper.findAll('th')
-      const headerTexts = headers.map(h => h.text())
-      expect(headerTexts).toContain('SNMP ifIndex')
-      expect(headerTexts).toContain('Status')
-      expect(headerTexts).toContain('SNMP ifName')
-      expect(headerTexts).toContain('SNMP ifAlias')
-      expect(headerTexts).toContain('SNMP ifSpeed')
+    // Order matters as much as membership: Index and Name lead because they are what say which
+    // interface a row is.
+    it('renders the seven columns in order', () => {
+      expect(wrapper.findAll('th').map(h => h.text()))
+        .toEqual(['Index', 'Name', 'Status', 'Alias', 'Speed', 'Descr', 'Flows'])
     })
 
-    // ifDescr lost its column and is surfaced in the ifName tooltip instead.
-    it('has no ifDescr column', () => {
-      expect(wrapper.findAll('th').map(h => h.text())).not.toContain('SNMP ifDescr')
+    // Seven columns do not fit the panel, so the table scrolls horizontally instead of
+    // compressing them. No column is frozen: pinning the first two left barely 250px of
+    // scrolling region in a half-width panel.
+    it('scrolls horizontally with no frozen column', () => {
+      const table = wrapper.findComponent({ name: 'OnmsTable' })
+      expect(table.props('scrollable')).toBe(true)
+      expect(table.props('tableStyle')).toContain('min-width')
+
+      const frozen = wrapper.findAllComponents({ name: 'Column' })
+        .filter(c => c.props('frozen'))
+      expect(frozen).toHaveLength(0)
     })
 
     it('renders rows for each SNMP interface', async () => {
@@ -120,7 +140,7 @@ describe('SnmpInterfacesTable.vue', () => {
       expect(rows[0].text()).toContain('Uplink')
     })
 
-    it('shows N/A fallback for null ifName and ifAlias', async () => {
+    it('shows N/A fallback for a null ifName, ifAlias and ifDescr', async () => {
       nodeStore.snmpInterfaces = [
         {
           id: 2,
@@ -134,9 +154,20 @@ describe('SnmpInterfacesTable.vue', () => {
       nodeStore.snmpInterfacesTotalCount = 1
       await nextTick()
 
-      const rowText = wrapper.find('tbody tr').text()
-      expect(rowText).toContain('N/A')
+      expect(wrapper.find('[data-test="if-name"]').text()).toBe('N/A')
+      expect(wrapper.find('[data-test="if-descr"]').text()).toBe('N/A')
     })
+
+    it('renders ifDescr in its own column', async () => {
+      nodeStore.snmpInterfaces = [
+        { id: 1, ifIndex: 1, ifName: 'eth0', ifDescr: 'GigabitEthernet0/1' }
+      ] as any
+      nodeStore.snmpInterfacesTotalCount = 1
+      await nextTick()
+
+      expect(wrapper.find('[data-test="if-descr"]').text()).toBe('GigabitEthernet0/1')
+    })
+
 
     it('renders ifSpeed formatted rather than as raw bits per second', async () => {
       nodeStore.snmpInterfaces = [{ id: 3, ifIndex: 3, ifName: 'lo', ifSpeed: 100000000 }] as any
@@ -271,20 +302,18 @@ describe('SnmpInterfacesTable.vue', () => {
         .toBe('Admin Status: 1 (Up)\nOperational Status: 5 (Dormant)')
     })
 
-    // ifDescr has no column any more, so this tooltip is the only place it shows.
-    it('carries the name and description on the ifName cell', async () => {
-      await mountRow({ ifName: 'eth0', ifDescr: 'Uplink port' })
-
-      expect(tooltipOf(wrapper.find('[data-test="if-name"]').element))
-        .toBe('Name: eth0\nDescription: Uplink port')
-    })
-
     // Nothing here is clickable, so the cursor is the only cue that a tooltip exists.
-    it('marks both tooltip hosts as hoverable', async () => {
+    it('marks the status tag as hoverable', async () => {
       await mountRow({ ifAdminStatus: 1, ifOperStatus: 1, ifName: 'eth0' })
 
       expect(wrapper.find('[data-test="status-tag"]').classes()).toContain('tooltip-target')
-      expect(wrapper.find('[data-test="if-name"]').classes()).toContain('tooltip-target')
+    })
+
+    // ifDescr has a column of its own now, so the name cell has nothing left to explain.
+    it('leaves the ifName cell without a tooltip', async () => {
+      await mountRow({ ifName: 'eth0', ifDescr: 'Uplink port' })
+
+      expect(tooltipOf(wrapper.find('[data-test="if-name"]').element)).toBeUndefined()
     })
   })
 
@@ -311,14 +340,14 @@ describe('SnmpInterfacesTable.vue', () => {
 
     // Numeric, not lexical: a lexical sort would put 10 before 2.
     it('sorts ifIndex numerically', async () => {
-      await headerFor('SNMP ifIndex').trigger('click')
+      await headerFor('Index').trigger('click')
       await nextTick()
 
       expect(rows()).toEqual(['10', '2', '1'])
     })
 
     it('sorts on another column when its header is clicked', async () => {
-      await headerFor('SNMP ifName').trigger('click')
+      await headerFor('Name').trigger('click')
       await nextTick()
 
       expect(wrapper.findAll('[data-test="if-name"]').map(c => c.text()))
@@ -335,7 +364,7 @@ describe('SnmpInterfacesTable.vue', () => {
         { id: 4, ifIndex: 4, ifName: 'delta', ifAdminStatus: 1, ifOperStatus: 1 }
       ] as any
       await nextTick()
-      await headerFor('SNMP ifName').trigger('click')
+      await headerFor('Name').trigger('click')
       await nextTick()
 
       expect(wrapper.findAll('[data-test="if-name"]').map(c => c.text()))
@@ -351,7 +380,7 @@ describe('SnmpInterfacesTable.vue', () => {
         { id: 3, ifIndex: 3, ifSpeed: 10000000, ifAdminStatus: 1, ifOperStatus: 1 }
       ] as any
       await nextTick()
-      await headerFor('SNMP ifSpeed').trigger('click')
+      await headerFor('Speed').trigger('click')
       await nextTick()
 
       expect(wrapper.findAll('[data-test="if-speed"]').map(c => c.text()))
@@ -687,4 +716,176 @@ describe('SnmpInterfacesTable.vue', () => {
       expect(w.find('[data-test="empty-list"]').exists()).toBe(true)
     })
   })
+
+  // Which directions an interface carries is on the row already (hasIngressFlows /
+  // hasEgressFlows); only the URL behind the button costs a request.
+  describe('Flows column', () => {
+    const mountRow = async (snmpInterface: Record<string, unknown>) => {
+      nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 14, ifName: 'eth0', ...snmpInterface }] as any
+      nodeStore.snmpInterfacesTotalCount = 1
+      await nextTick()
+    }
+
+    const tags = () => wrapper.findAll('[data-test^="flows-"][data-test$="-tag"]').map(t => t.text())
+
+    it('shows an I tag for an interface with only ingress flows', async () => {
+      await mountRow({ hasIngressFlows: true, hasEgressFlows: false })
+
+      expect(tags()).toEqual(['I'])
+    })
+
+    it('shows an E tag for an interface with only egress flows', async () => {
+      await mountRow({ hasIngressFlows: false, hasEgressFlows: true })
+
+      expect(tags()).toEqual(['E'])
+    })
+
+    it('shows both tags for an interface carrying flows in both directions', async () => {
+      await mountRow({ hasIngressFlows: true, hasEgressFlows: true })
+
+      expect(tags()).toEqual(['I', 'E'])
+    })
+
+    it('colours the tags as success', async () => {
+      await mountRow({ hasIngressFlows: true, hasEgressFlows: true })
+
+      const severities = wrapper.findAllComponents({ name: 'OnmsTag' })
+        .filter(t => ['I', 'E'].includes(t.props('value') as string))
+        .map(t => t.props('severity'))
+      expect(severities).toEqual(['success', 'success'])
+    })
+
+    // Both tags say the same thing: the tooltip describes the row, not the tag it hangs off.
+    it.each([
+      [true, false, 'Ingress flow data available'],
+      [false, true, 'Egress flow data available'],
+      [true, true, 'Ingress/egress flow data available']
+    ])('explains %s/%s flows with "%s"', async (hasIngressFlows, hasEgressFlows, text) => {
+      await mountRow({ hasIngressFlows, hasEgressFlows })
+
+      const tooltips = wrapper.findAll('[data-test^="flows-"][data-test$="-tag"]')
+        .map(t => (t.element as never as Record<string, unknown>).$_ptooltipValue)
+      expect(tooltips.length).toBeGreaterThan(0)
+      tooltips.forEach(tooltip => expect(tooltip).toBe(text))
+    })
+
+    // 'If none of the 3 flows conditions applies, leave the field empty.'
+    it('leaves the cell empty for an interface with no flows', async () => {
+      await mountRow({ hasIngressFlows: false, hasEgressFlows: false })
+
+      expect(wrapper.find('[data-test="flows"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="flows-button"]').exists()).toBe(false)
+    })
+
+    it('offers the graphs button whenever there are flows', async () => {
+      await mountRow({ hasIngressFlows: false, hasEgressFlows: true })
+
+      expect(wrapper.find('[data-test="flows-button"]').exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'OnmsIconButton' }).props('tooltip'))
+        .toBe('View Egress flow graphs.')
+    })
+
+    describe('opening the graphs', () => {
+      let tab: { location: { href: string }, close: ReturnType<typeof vi.fn>, opener: unknown }
+
+      beforeEach(async () => {
+        tab = { location: { href: '' }, close: vi.fn(), opener: {}}
+        vi.stubGlobal('open', vi.fn().mockReturnValue(tab))
+        showSnackBar.mockClear()
+        getFlowGraphUrl.mockReset()
+        await mountRow({ hasIngressFlows: true, hasEgressFlows: true })
+      })
+
+      afterEach(() => {
+        vi.unstubAllGlobals()
+      })
+
+      const click = async () => {
+        await wrapper.find('[data-test="flows-button"]').trigger('click')
+        await flushPromises()
+      }
+
+      // Resolved for the row that was clicked, on the node currently being shown.
+      it('asks for the URL of that interface only when clicked', async () => {
+        getFlowGraphUrl.mockResolvedValue('https://grafana:3000/d/flows?node=42&interface=14')
+
+        expect(getFlowGraphUrl).not.toHaveBeenCalled()
+
+        await click()
+
+        expect(getFlowGraphUrl).toHaveBeenCalledWith(mockNodeId, 14)
+      })
+
+      // The tab is opened inside the click, before the await -- a tab opened afterwards is
+      // blocked, the user gesture having expired.
+      it('opens the tab on the click and navigates it once the URL arrives', async () => {
+        const url = 'https://grafana:3000/d/flows?node=42&interface=14'
+        getFlowGraphUrl.mockResolvedValue(url)
+
+        await click()
+
+        expect(window.open).toHaveBeenCalledWith('', '_blank')
+        expect(tab.opener).toBeNull()
+        expect(tab.location.href).toBe(url)
+        expect(tab.close).not.toHaveBeenCalled()
+      })
+
+      // flowGraphUrl is unset by default, and the endpoint then answers 204 with no body.
+      it('reports an unconfigured flowGraphUrl and closes the tab', async () => {
+        getFlowGraphUrl.mockResolvedValue('')
+
+        await click()
+
+        expect(tab.close).toHaveBeenCalled()
+        expect(showSnackBar).toHaveBeenCalledWith({
+          msg: 'No \'flowGraphUrl\' was configured.',
+          error: true
+        })
+      })
+
+      // Distinct from the unconfigured case: the flows feature may be absent altogether.
+      it('reports a failed lookup and closes the tab', async () => {
+        getFlowGraphUrl.mockRejectedValue(new Error('404'))
+
+        await click()
+
+        expect(tab.close).toHaveBeenCalled()
+        expect(showSnackBar).toHaveBeenCalledWith({
+          msg: 'Could not look up the flow graph URL.',
+          error: true
+        })
+      })
+
+      // Nothing at all happens otherwise: the blank tab never appeared to explain itself.
+      it('reports a blocked pop-up', async () => {
+        vi.stubGlobal('open', vi.fn().mockReturnValue(null))
+        getFlowGraphUrl.mockResolvedValue('https://grafana:3000/d/flows')
+
+        await click()
+
+        expect(showSnackBar).toHaveBeenCalledWith({
+          msg: 'The browser blocked the new tab. Allow pop-ups for this site to open flow graphs.',
+          error: true
+        })
+      })
+
+      // A second click while the first is in flight would open a second tab.
+      it('ignores a click while a lookup is already running', async () => {
+        let resolve: (url: string) => void = () => undefined
+        getFlowGraphUrl.mockReturnValue(new Promise<string>((r) => {
+          resolve = r
+        }))
+
+        await wrapper.find('[data-test="flows-button"]').trigger('click')
+        await nextTick()
+        await wrapper.find('[data-test="flows-button"]').trigger('click')
+
+        expect(getFlowGraphUrl).toHaveBeenCalledTimes(1)
+
+        resolve('https://grafana:3000/d/flows')
+        await flushPromises()
+      })
+    })
+  })
+
 })

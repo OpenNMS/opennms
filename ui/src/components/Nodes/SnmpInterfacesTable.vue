@@ -12,22 +12,26 @@
     <OnmsTable
       :value="rows"
       paginator
+      scrollable
       :rows="pageSize"
       :first="first"
       :rowsPerPageOptions="[5, 10, 20, 50]"
       :loading="showSpinner"
-      tableStyle="table-layout: fixed; width: 100%"
+      :tableStyle="`min-width: ${TABLE_MIN_WIDTH_PX}px`"
       sortField="ifIndex"
       :sortOrder="1"
       data-test="snmp-interfaces-table"
       @page="onPage"
     >
-      <OnmsColumn style="width: 19%" field="ifIndex" header="SNMP ifIndex" sortable>
+      <OnmsColumn style="min-width: 90px" field="ifIndex" header="Index" sortable>
         <template #body="{ data }">
           <a :href="snmpInterfaceLink(baseHref, nodeId, data.ifIndex)" data-test="if-index-link">{{ data.ifIndex }}</a>
         </template>
       </OnmsColumn>
-      <OnmsColumn style="width: 22%" field="status" header="Status" sortable>
+      <OnmsColumn style="min-width: 110px" field="ifName" header="Name" sortable>
+        <template #body="{ data }"><span data-test="if-name">{{ data.ifName || 'N/A' }}</span></template>
+      </OnmsColumn>
+      <OnmsColumn style="min-width: 110px" field="status" header="Status" sortable>
         <template #body="{ data }">
           <OnmsTag
             v-onms-tooltip.top="snmpInterfaceStatusTooltip(data)"
@@ -38,20 +42,44 @@
           />
         </template>
       </OnmsColumn>
-      <OnmsColumn style="width: 20%" field="ifName" header="SNMP ifName" sortable>
-        <template #body="{ data }">
-          <span
-            v-onms-tooltip.top="snmpInterfaceNameTooltip(data)"
-            class="tooltip-target"
-            data-test="if-name"
-          >{{ data.ifName || 'N/A' }}</span>
-        </template>
-      </OnmsColumn>
-      <OnmsColumn style="width: 19%" field="ifAlias" header="SNMP ifAlias" sortable>
+      <OnmsColumn style="min-width: 140px" field="ifAlias" header="Alias" sortable>
         <template #body="{ data }">{{ data.ifAlias || 'N/A' }}</template>
       </OnmsColumn>
-      <OnmsColumn style="width: 20%" field="ifSpeed" header="SNMP ifSpeed" sortable>
+      <OnmsColumn style="min-width: 110px" field="ifSpeed" header="Speed" sortable>
         <template #body="{ data }"><span data-test="if-speed">{{ data.speedLabel }}</span></template>
+      </OnmsColumn>
+      <OnmsColumn style="min-width: 200px" field="ifDescr" header="Descr" sortable>
+        <template #body="{ data }"><span data-test="if-descr">{{ data.ifDescr || 'N/A' }}</span></template>
+      </OnmsColumn>
+      <OnmsColumn style="min-width: 130px" field="flows" header="Flows" sortable>
+        <template #body="{ data }">
+          <span v-if="data.flows" class="flows-cell" data-test="flows">
+            <OnmsTag
+              v-if="data.hasIngressFlows"
+              v-onms-tooltip.top="snmpInterfaceFlowsTooltip(data)"
+              value="I"
+              severity="success"
+              class="tooltip-target"
+              data-test="flows-ingress-tag"
+            />
+            <OnmsTag
+              v-if="data.hasEgressFlows"
+              v-onms-tooltip.top="snmpInterfaceFlowsTooltip(data)"
+              value="E"
+              severity="success"
+              class="tooltip-target"
+              data-test="flows-egress-tag"
+            />
+            <OnmsIconButton
+              :icon="ViewDetails"
+              iconSize="1.25rem"
+              :tooltip="snmpInterfaceFlowGraphsTooltip(data)"
+              :disabled="pendingFlowsIfIndex === data.ifIndex"
+              data-test="flows-button"
+              @click="openFlowGraphs(data)"
+            />
+          </span>
+        </template>
       </OnmsColumn>
       <template #empty>
         <EmptyList v-if="!isFetching" :content="emptyListContent" data-test="empty-list" />
@@ -63,17 +91,22 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { OnmsColumn, OnmsSearchInput, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
+import { OnmsColumn, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
+import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { snmpInterfaceLink } from '@/lib/linkUtils'
+import { getFlowGraphUrl } from '@/services/flowService'
+import useSnackbar from '@/composables/useSnackbar'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
 import { useDelayedLoading } from './hooks/useDelayedLoading'
 import {
   formatIfSpeed,
   matchesSearchTerm,
-  snmpInterfaceNameTooltip,
+  snmpInterfaceFlowGraphsTooltip,
+  snmpInterfaceFlows,
+  snmpInterfaceFlowsTooltip,
   snmpInterfaceStatus,
   snmpInterfaceStatusTooltip,
   type SnmpInterfaceStatus
@@ -87,12 +120,18 @@ const props = withDefaults(defineProps<{
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
+const { showSnackBar } = useSnackbar()
 const route = useRoute()
 
 const nodeId = computed(() => route.params.id as string)
 const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const DEFAULT_PAGE_SIZE = 5
+
+// The sum of the columns' own min-widths. The table is wider than the half-page panel it sits
+// in, deliberately: it scrolls horizontally rather than squeezing seven columns into ~463px.
+// Keep in step with the styles on the columns below.
+const TABLE_MIN_WIDTH_PX = 890
 
 const pageSize = ref(DEFAULT_PAGE_SIZE)
 const first = ref(0)
@@ -125,17 +164,22 @@ const decorated = computed(() =>
   nodeStore.snmpInterfaces.map(snmpInterface => ({
     ...snmpInterface,
     status: snmpInterfaceStatus(snmpInterface),
-    speedLabel: formatIfSpeed(snmpInterface.ifSpeed)
+    speedLabel: formatIfSpeed(snmpInterface.ifSpeed),
+    flows: snmpInterfaceFlows(snmpInterface)
   })))
 
-// Filters on what the columns actually show. ifDescr is deliberately absent: it lost its column
-// and only appears in the ifName tooltip.
+// Filters on what the columns actually show -- so the formatted speed label rather than the raw
+// ifSpeed. Flows is the one exception: the cells show 'I' and 'E', but the term is matched
+// against the full 'Ingress/Egress' key behind them, so typing 'ingress' narrows the table to
+// the interfaces carrying flows the same way sorting that column groups them.
 const rows = computed(() => decorated.value.filter(row => matchesSearchTerm(appliedTerm.value, [
   row.ifIndex,
-  row.status,
   row.ifName,
+  row.status,
   row.ifAlias,
-  row.speedLabel
+  row.speedLabel,
+  row.ifDescr,
+  row.flows
 ])))
 
 // The store action resolves once it has assigned the rows, so awaiting it is all the loading
@@ -148,6 +192,55 @@ const fetchInterfaces = async () => {
     await nodeStore.getNodeSnmpInterfaces({ id: nodeId.value, queryParameters })
   } finally {
     stopLoading()
+  }
+}
+
+// Resolving a flow graph URL is one request per interface, and the server runs a flow count for
+// each one, so the URLs are fetched when a user asks for one rather than for every row up front.
+// Nothing is kept afterwards: this is the whole of the flows state.
+const pendingFlowsIfIndex = ref<number | undefined>(undefined)
+
+const openFlowGraphs = async (row: { ifIndex: number }) => {
+  if (pendingFlowsIfIndex.value !== undefined) {
+    return
+  }
+
+  // Opened here rather than once the URL arrives: by then the click that authorised it has
+  // expired and the browser blocks the tab. Deliberately without 'noopener', which would sever
+  // the handle needed to navigate it (window.open returns null with that flag) -- the opener is
+  // dropped below instead, while the tab is still about:blank and same-origin.
+  const tab = window.open('', '_blank')
+
+  if (tab) {
+    tab.opener = null
+  }
+
+  pendingFlowsIfIndex.value = row.ifIndex
+
+  try {
+    const url = await getFlowGraphUrl(nodeId.value, row.ifIndex)
+
+    if (!url) {
+      tab?.close()
+      showSnackBar({ msg: 'No \'flowGraphUrl\' was configured.', error: true })
+      return
+    }
+
+    if (!tab) {
+      showSnackBar({
+        msg: 'The browser blocked the new tab. Allow pop-ups for this site to open flow graphs.',
+        error: true
+      })
+      return
+    }
+
+    // An absolute URL into a separate tool (Grafana, typically), not an OpenNMS page.
+    tab.location.href = url
+  } catch {
+    tab?.close()
+    showSnackBar({ msg: 'Could not look up the flow graph URL.', error: true })
+  } finally {
+    pendingFlowsIfIndex.value = undefined
   }
 }
 
@@ -182,24 +275,22 @@ watch(nodeId, () => {
 
 watch([() => props.active, nodeId], fetchInterfacesIfShown, { immediate: true })
 
-defineExpose({ onPage })
+defineExpose({ onPage, openFlowGraphs })
 </script>
 
 <style lang="scss" scoped>
-// The panel is half the page wide (~463px of table), and five sortable columns did not fit: each
-// header needs its widest word plus the sort indicator plus the cell's horizontal padding, which
-// measured ~100-108px apiece -- ~513px against 463px available. So the table overflowed into a
-// horizontal scrollbar that hid ifSpeed.
+// Seven columns do not fit the half-width panel (~463px of table), so this one scrolls
+// horizontally instead of compressing them: each column carries its own min-width and the table
+// a min-width that is their sum. Nothing is frozen -- pinning Index and Name left only ~253px of
+// scrolling region, which was worse than scrolling past them.
 //
-// Percentages alone cannot solve that, since the shortfall is in the minimums. The stock 16px of
-// padding per side is what gives: at 8px the five minimums come to ~433px and fit with room to
-// spare. Shortening the headers would NOT have helped -- the binding word is already 'ifIndex',
-// not the 'SNMP' prefix, so dropping it changes the header's height, not its width.
+// The horizontal padding stays tightened to 8px a side (the stock 16px is what made five columns
+// overflow before scrolling was an option). It is density now rather than necessity, and it
+// matches the IP interfaces table on the neighbouring tab.
 //
 // Wrapping stays at word boundaries (no overflow-wrap: anywhere): forcing mid-word breaks at
 // these widths shredded the headers a character at a time and split the UNKNOWN tag across two
-// lines. The widths above are set so each column's widest atom -- that tag, an ifSpeed value --
-// fits on one line.
+// lines.
 :deep(.p-datatable-tbody > tr > td),
 :deep(.p-datatable-thead > tr > th) {
   padding-inline: 8px;
@@ -209,8 +300,20 @@ defineExpose({ onPage })
   margin-bottom: 15px;
 }
 
-// Both tooltip hosts are hover-only affordances with nothing to click, so the
-// cursor is the only cue that there is more behind them.
+// Tags and the graphs button on one line, and the button pulled in: an icon button's own padding
+// is sized for a toolbar, not for sitting beside a pair of one-letter tags.
+.flows-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  :deep(.p-button) {
+    padding: 2px;
+  }
+}
+
+// The status tag is a hover-only affordance with nothing to click, so the cursor is the only cue
+// that there is more behind it.
 .tooltip-target {
   cursor: pointer;
 }

@@ -142,11 +142,12 @@ defineExpose({ onPage })
 </script>
 
 <style lang="scss" scoped>
-// See the note in SnmpInterfacesTable: fixed layout, explicit widths, and tightened horizontal
-// padding keep the table inside the half-width panel instead of overflowing into a horizontal
-// scrollbar. This table has four columns rather than five so it has more room, but it shares the
-// treatment so the two tabs line up. The widths are driven by the headers, not the values:
-// 'Managed' is the widest atom in this table even though its cell holds a single letter.
+// Fixed layout, explicit widths and tightened horizontal padding (8px a side rather than the
+// stock 16px) keep this table inside the half-width panel instead of overflowing. Four columns
+// fit where the SNMP table's seven do not -- that one scrolls horizontally instead -- but the
+// padding is shared so the two tabs read at the same density. The widths are driven by the
+// headers, not the values: 'Managed' is the widest atom here even though its cells hold a
+// single letter.
 :deep(.p-datatable-tbody > tr > td),
 :deep(.p-datatable-thead > tr > th) {
   padding-inline: 8px;

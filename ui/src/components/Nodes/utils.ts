@@ -209,12 +209,49 @@ export const snmpInterfaceStatusTooltip = (snmpInterface: SnmpInterface) =>
     `Operational Status: ${snmpIfStatusText(snmpInterface.ifOperStatus)}`
   ].join('\n')
 
-/** Tooltip behind the ifName cell, which is where ifDescr is surfaced now it has no column. */
-export const snmpInterfaceNameTooltip = (snmpInterface: SnmpInterface) =>
-  [
-    `Name: ${snmpInterface.ifName || 'N/A'}`,
-    `Description: ${snmpInterface.ifDescr || 'N/A'}`
-  ].join('\n')
+/**
+ * Which directions of flow data an interface carries, as a label that doubles as the Flows
+ * column's sort key -- '' (none) < 'Egress' < 'Ingress' < 'Ingress/Egress' sorts the interfaces
+ * with flows together at one end, which is the point of sorting that column.
+ *
+ * Derived entirely from the row: whether flows exist is a property of the interface, and needs
+ * none of the per-interface requests that resolving a flow graph URL does.
+ */
+export type SnmpInterfaceFlows = '' | 'Ingress' | 'Egress' | 'Ingress/Egress'
+
+export const snmpInterfaceFlows = (snmpInterface: SnmpInterface): SnmpInterfaceFlows => {
+  const { hasIngressFlows, hasEgressFlows } = snmpInterface
+
+  if (hasIngressFlows && hasEgressFlows) {
+    return 'Ingress/Egress'
+  }
+
+  if (hasIngressFlows) {
+    return 'Ingress'
+  }
+
+  return hasEgressFlows ? 'Egress' : ''
+}
+
+// Spelled out rather than built from the label above: the two-direction case reads
+// 'Ingress/egress', which no capitalisation rule applied to 'Ingress/Egress' would produce.
+const FLOWS_TOOLTIPS: Record<SnmpInterfaceFlows, string> = {
+  '': '',
+  Ingress: 'Ingress flow data available',
+  Egress: 'Egress flow data available',
+  'Ingress/Egress': 'Ingress/egress flow data available'
+}
+
+/** Tooltip behind each flow tag. Both tags on a row carry the same text. */
+export const snmpInterfaceFlowsTooltip = (snmpInterface: SnmpInterface) =>
+  FLOWS_TOOLTIPS[snmpInterfaceFlows(snmpInterface)]
+
+/** Tooltip behind the button that opens the external flow graphs. */
+export const snmpInterfaceFlowGraphsTooltip = (snmpInterface: SnmpInterface) => {
+  const flows = snmpInterfaceFlows(snmpInterface)
+
+  return flows ? `View ${flows} flow graphs.` : ''
+}
 
 /**
  * Case-insensitive "does any of these values contain the term" match, for the client-side table

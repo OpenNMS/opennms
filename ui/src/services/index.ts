@@ -60,6 +60,7 @@ import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { getSnmpInterfaces, getNodeSnmpInterfaceQuery } from './snmpInterfaceService'
+import { getFlowGraphUrl } from './flowService'
 import { search } from './searchService'
 import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
@@ -136,6 +137,7 @@ export default {
   getIpInterfaces,
   getNodeIpInterfaceQuery,
   getSnmpInterfaces,
+  getFlowGraphUrl,
   getNodeSnmpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,

@@ -30,7 +30,9 @@ import {
   hasIngressFlow,
   matchesSearchTerm,
   snmpIfStatusText,
-  snmpInterfaceNameTooltip,
+  snmpInterfaceFlowGraphsTooltip,
+  snmpInterfaceFlows,
+  snmpInterfaceFlowsTooltip,
   snmpInterfaceStatus,
   snmpInterfaceStatusTooltip
 } from '@/components/Nodes/utils'
@@ -199,21 +201,6 @@ describe('Nodes utils test', () => {
       expect(snmpInterfaceStatusTooltip({} as SnmpInterface))
         .toBe('Admin Status: N/A\nOperational Status: N/A')
     })
-
-    // ifDescr has no column of its own any more, so this tooltip is the only place it shows.
-    test('the name tooltip carries the name and the description', () => {
-      expect(snmpInterfaceNameTooltip({ ifName: 'eth0', ifDescr: 'Uplink port' } as SnmpInterface))
-        .toBe('Name: eth0\nDescription: Uplink port')
-    })
-
-    test.each([
-      [null, null],
-      [undefined, undefined],
-      ['', '']
-    ])('the name tooltip falls back to N/A for %s / %s', (ifName, ifDescr) => {
-      expect(snmpInterfaceNameTooltip({ ifName, ifDescr } as SnmpInterface))
-        .toBe('Name: N/A\nDescription: N/A')
-    })
   })
 
   // The term arrives already trimmed and lowercased from useDebouncedSearch, so these cases are
@@ -306,4 +293,52 @@ describe('Nodes utils test', () => {
       expect(formatIfSpeed(speed)).toBe('N/A')
     })
   })
+
+  // Flow availability is a property of the interface row -- unlike the flow graph URL, which
+  // costs a request apiece -- so both the tags and the column's sort key derive from it.
+  describe('flows', () => {
+    test.each([
+      [true, true, 'Ingress/Egress'],
+      [true, false, 'Ingress'],
+      [false, true, 'Egress'],
+      [false, false, ''],
+      [undefined, undefined, '']
+    ])('reads %s / %s as "%s"', (hasIngressFlows, hasEgressFlows, expected) => {
+      expect(snmpInterfaceFlows({ hasIngressFlows, hasEgressFlows } as SnmpInterface)).toBe(expected)
+    })
+
+    // Sorting the column groups the interfaces carrying flows at one end, which is the whole
+    // reason to sort it. Ascending puts the ones with none first.
+    test('sorts interfaces without flows below those with them', () => {
+      const keys = [
+        { hasIngressFlows: true, hasEgressFlows: true },
+        { hasIngressFlows: false, hasEgressFlows: false },
+        { hasIngressFlows: false, hasEgressFlows: true },
+        { hasIngressFlows: true, hasEgressFlows: false }
+      ].map(i => snmpInterfaceFlows(i as SnmpInterface)).sort()
+
+      expect(keys).toEqual(['', 'Egress', 'Ingress', 'Ingress/Egress'])
+    })
+
+    test.each([
+      [true, true, 'Ingress/egress flow data available'],
+      [true, false, 'Ingress flow data available'],
+      [false, true, 'Egress flow data available'],
+      [false, false, '']
+    ])('describes %s / %s flows as "%s"', (hasIngressFlows, hasEgressFlows, expected) => {
+      expect(snmpInterfaceFlowsTooltip({ hasIngressFlows, hasEgressFlows } as SnmpInterface))
+        .toBe(expected)
+    })
+
+    test.each([
+      [true, true, 'View Ingress/Egress flow graphs.'],
+      [true, false, 'View Ingress flow graphs.'],
+      [false, true, 'View Egress flow graphs.'],
+      [false, false, '']
+    ])('labels the graphs button for %s / %s flows as "%s"', (hasIngressFlows, hasEgressFlows, expected) => {
+      expect(snmpInterfaceFlowGraphsTooltip({ hasIngressFlows, hasEgressFlows } as SnmpInterface))
+        .toBe(expected)
+    })
+  })
+
 })
