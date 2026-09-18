@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -77,6 +78,8 @@ import org.opennms.web.rest.v2.model.WsmanEventLogConfigDto;
 import org.opennms.web.rest.v2.model.WsmanEventLogDefinitionDto;
 import org.opennms.web.rest.v2.model.WsmanEventLogFilterPreviewDto;
 import org.opennms.web.rest.v2.model.WsmanEventLogStatusDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -93,10 +96,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "WsmanConfig", description = "WS-Man agent configuration API")
 public class WsmanEventLogConfigRestService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(WsmanEventLogConfigRestService.class);
+
     static final String FILE_NAME = "wsman-eventlog-configuration.xml";
 
     private static final long MIN_INTERVAL_MS = 1_000L;
     private static final int MAX_RECORDS_LIMIT = 10_000;
+    private static final int MAX_TEXT_LENGTH = 256;
 
     @Autowired
     private EventProxy eventProxy;
@@ -211,7 +217,7 @@ public class WsmanEventLogConfigRestService {
         return WsmanEventLogStatusDto.from(new EventLogStatusStore(jsonStore).getAll());
     }
 
-    /** The event definition behind every UEI the mappings and the default per-log UEIs use. */
+    /** The event definition behind every UEI the mappings use. */
     @GET
     @javax.ws.rs.Path("definitions")
     @Produces(MediaType.APPLICATION_JSON)
@@ -220,7 +226,7 @@ public class WsmanEventLogConfigRestService {
         final Set<String> ueis = new LinkedHashSet<>();
         for (final WsmanEventLogConfigDto.PackageDto pkg : WsmanEventLogConfigDto.from(unmarshal(readBytes()), "").packages) {
             for (final WsmanEventLogConfigDto.EventMappingDto mapping : pkg.eventMappings) {
-                if (mapping.uei != null) {
+                if (mapping.uei != null && !mapping.uei.trim().isEmpty()) {
                     ueis.add(mapping.uei.trim());
                 }
             }
@@ -247,8 +253,9 @@ public class WsmanEventLogConfigRestService {
     }
 
     /**
-     * Creates or updates the definition for a UEI. A new one goes into the daemon's source;
-     * an existing one is rewritten in place, keeping the parts this tab does not edit.
+     * Creates or updates the definition for a UEI. Only the daemon's own source is written: a new
+     * definition joins it, an existing one there is rewritten in place keeping the parts this tab
+     * does not edit, and a UEI defined by any other source is refused.
      */
     @PUT
     @javax.ws.rs.Path("definition")
@@ -259,8 +266,18 @@ public class WsmanEventLogConfigRestService {
         if (update == null || update.uei == null || !update.uei.trim().startsWith("uei.")) {
             throw badRequest("A UEI starting with 'uei.' is required.");
         }
+        final String uei = update.uei.trim();
+        if (uei.length() > MAX_TEXT_LENGTH) {
+            throw badRequest("The UEI cannot be longer than " + MAX_TEXT_LENGTH + " characters.");
+        }
+        if (uei.chars().anyMatch(Character::isWhitespace)) {
+            throw badRequest("The UEI cannot contain whitespace.");
+        }
         if (update.label == null || update.label.trim().isEmpty()) {
             throw badRequest("The definition needs a label.");
+        }
+        if (update.label.trim().length() > MAX_TEXT_LENGTH) {
+            throw badRequest("The label cannot be longer than " + MAX_TEXT_LENGTH + " characters.");
         }
         if (update.severity == null || update.severity.trim().isEmpty()
                 || (OnmsSeverity.get(update.severity.trim()) == OnmsSeverity.INDETERMINATE && !"Indeterminate".equalsIgnoreCase(update.severity.trim()))) {
@@ -268,31 +285,54 @@ public class WsmanEventLogConfigRestService {
         }
         if (update.alarm && update.alarmType != null
                 && update.alarmType != WsmanEventLogDefinitionDto.ALARM_TYPE_PROBLEM
+                && update.alarmType != WsmanEventLogDefinitionDto.ALARM_TYPE_RESOLUTION
                 && update.alarmType != WsmanEventLogDefinitionDto.ALARM_TYPE_PROBLEM_WITHOUT_RESOLUTION) {
-            throw badRequest("The alarm type must be 1 (problem) or 3 (problem without resolution).");
+            throw badRequest("The alarm type must be 1 (problem), 2 (resolution) or 3 (problem without resolution).");
         }
-        final String uei = update.uei.trim();
+        update.uei = uei;
+        update.label = update.label.trim();
+        update.severity = OnmsSeverity.get(update.severity.trim()).getLabel();
         final String user = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "admin";
-        final EventConfEvent existing = sessionUtils.withReadOnlyTransaction(() -> {
-            final EventConfEvent row = eventConfEventDao.findByUei(uei);
-            if (row != null) {
-                row.getSource().getName();
+        synchronized (this) {
+            final EventConfSource source = sessionUtils.withReadOnlyTransaction(() -> eventConfSourceDao.findByName(DEFINITION_SOURCE));
+            final Long sourceId = source != null ? source.getId() : null;
+            final EventConfEvent existing = sessionUtils.withReadOnlyTransaction(() -> {
+                if (sourceId != null) {
+                    final List<EventConfEvent> own = eventConfEventDao.findByUeiAndSourceId(uei, sourceId);
+                    if (!own.isEmpty()) {
+                        return own.get(0);
+                    }
+                }
+                final EventConfEvent other = eventConfEventDao.findByUei(uei);
+                if (other != null) {
+                    throw new WebApplicationException(Response.status(Status.CONFLICT).type(MediaType.TEXT_PLAIN)
+                            .entity(uei + " is defined in source '" + other.getSource().getName() + "'; edit it on the Event Configuration page.").build());
+                }
+                return null;
+            });
+            try {
+                if (existing != null) {
+                    final Event event = parseDefinition(existing);
+                    update.applyTo(event);
+                    final EventConfEventEditRequest request = new EventConfEventEditRequest();
+                    request.setEnabled(existing.getEnabled() == null || existing.getEnabled());
+                    request.setEvent(event);
+                    eventConfPersistenceService.updateEventConfEvent(sourceId, existing.getId(), request);
+                } else {
+                    final Event event = new Event();
+                    update.applyTo(event);
+                    eventConfPersistenceService.addEventConfSourceEvent(sourceId != null ? sourceId : createDefinitionSource(user), user, event);
+                }
+            } catch (final RuntimeException e) {
+                throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN)
+                        .entity("The definition could not be saved: " + rootMessage(e)).build());
             }
-            return row;
-        });
-        if (existing != null) {
-            final Event event = parseDefinition(existing);
-            update.applyTo(event);
-            final EventConfEventEditRequest request = new EventConfEventEditRequest();
-            request.setEnabled(existing.getEnabled() == null || existing.getEnabled());
-            request.setEvent(event);
-            eventConfPersistenceService.updateEventConfEvent(existing.getSource().getId(), existing.getId(), request);
-        } else {
-            final Event event = new Event();
-            update.applyTo(event);
-            eventConfPersistenceService.addEventConfSourceEvent(definitionSourceId(user), user, event);
         }
-        eventConfPersistenceService.reloadEventsIntoMemory();
+        try {
+            eventConfPersistenceService.reloadEventsIntoMemory();
+        } catch (final RuntimeException e) {
+            LOG.warn("The definition of {} is saved, but the in-memory event configuration could not be reloaded", uei, e);
+        }
         return sessionUtils.withReadOnlyTransaction(() -> readDefinition(uei));
     }
 
@@ -301,7 +341,7 @@ public class WsmanEventLogConfigRestService {
         if (row == null) {
             return WsmanEventLogDefinitionDto.missing(uei);
         }
-        return WsmanEventLogDefinitionDto.from(row, parseDefinition(row));
+        return WsmanEventLogDefinitionDto.from(row, parseDefinition(row), DEFINITION_SOURCE);
     }
 
     private static Event parseDefinition(final EventConfEvent row) {
@@ -313,11 +353,7 @@ public class WsmanEventLogConfigRestService {
         }
     }
 
-    private Long definitionSourceId(final String user) {
-        final EventConfSource source = sessionUtils.withReadOnlyTransaction(() -> eventConfSourceDao.findByName(DEFINITION_SOURCE));
-        if (source != null) {
-            return source.getId();
-        }
+    private Long createDefinitionSource(final String user) {
         final EventConfSource created = new EventConfSource();
         created.setName(DEFINITION_SOURCE);
         created.setDescription("Windows event log records read by WsManEventLogd");
@@ -378,16 +414,25 @@ public class WsmanEventLogConfigRestService {
                 } catch (final IllegalArgumentException e) {
                     throw badRequest("Log '" + log.name + "': " + e.getMessage());
                 }
-                checkIds(log.includeEventIds, "include-event-ids of log '" + log.name + "'");
-                checkIds(log.excludeEventIds, "exclude-event-ids of log '" + log.name + "'");
+                final Set<Integer> included = checkIds(log.includeEventIds, "include-event-ids of log '" + log.name + "'");
+                final Set<Integer> excluded = checkIds(log.excludeEventIds, "exclude-event-ids of log '" + log.name + "'");
+                for (final Integer id : included) {
+                    if (excluded.contains(id)) {
+                        throw badRequest("Log '" + log.name + "': Event ID " + id + " is both included and excluded.");
+                    }
+                }
                 if (log.mode != null && !log.mode.trim().isEmpty()
                         && !"wql".equalsIgnoreCase(log.mode.trim()) && !"shell".equalsIgnoreCase(log.mode.trim())) {
                     throw badRequest("The mode of log '" + log.name + "' must be wql or shell.");
                 }
             }
+            final Set<String> mappingKeys = new HashSet<>();
             for (final WsmanEventLogConfigDto.EventMappingDto mapping : pkg.eventMappings) {
-                if (mapping.eventId == null || mapping.eventId < 0) {
-                    throw badRequest("Every event mapping in package '" + pkg.name + "' needs an Event ID.");
+                if (mapping.eventId == null || mapping.eventId < 1) {
+                    throw badRequest("Every event mapping in package '" + pkg.name + "' needs an Event ID of 1 or more.");
+                }
+                if (!mappingKeys.add(mapping.eventId + "|" + normalized(mapping.logfile) + "|" + normalized(mapping.source))) {
+                    throw badRequest("Package '" + pkg.name + "' maps Event ID " + mapping.eventId + " twice.");
                 }
                 if (mapping.uei == null || !mapping.uei.trim().startsWith("uei.")) {
                     throw badRequest("The mapping for Event ID " + mapping.eventId + " needs a UEI starting with 'uei.'.");
@@ -401,20 +446,26 @@ public class WsmanEventLogConfigRestService {
         }
     }
 
-    private static void checkIds(final String csv, final String what) {
+    private static String normalized(final String value) {
+        return value == null ? "" : value.trim().toLowerCase();
+    }
+
+    private static Set<Integer> checkIds(final String csv, final String what) {
+        final Set<Integer> ids = new HashSet<>();
         if (csv == null || csv.trim().isEmpty()) {
-            return;
+            return ids;
         }
         for (final String token : csv.split(",")) {
             if (token.trim().isEmpty()) {
                 continue;
             }
             try {
-                Integer.parseInt(token.trim());
+                ids.add(Integer.parseInt(token.trim()));
             } catch (final NumberFormatException e) {
                 throw badRequest("The " + what + " must be comma-separated numbers.");
             }
         }
+        return ids;
     }
 
     private static void parseDuration(final String value, final String what) {
@@ -463,9 +514,16 @@ public class WsmanEventLogConfigRestService {
         } catch (final RuntimeException e) {
             throw badRequest("The configuration could not be written: " + rootMessage(e));
         }
+        final Path target = configFile();
+        final Path tmp = target.resolveSibling(FILE_NAME + ".tmp");
         try {
-            Files.write(configFile(), xml.getBytes(StandardCharsets.UTF_8));
+            Files.write(tmp, xml.getBytes(StandardCharsets.UTF_8));
+            Files.move(tmp, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
         } catch (final IOException e) {
+            try {
+                Files.deleteIfExists(tmp);
+            } catch (final IOException ignored) {
+            }
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN)
                     .entity("Could not write " + FILE_NAME + ": " + e.getMessage()).build());
         }

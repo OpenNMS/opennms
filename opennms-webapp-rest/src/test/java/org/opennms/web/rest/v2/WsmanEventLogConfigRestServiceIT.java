@@ -196,6 +196,36 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
     }
 
     @Test
+    public void rejectsDuplicateMappingsAndOverlappingIds() throws Exception {
+        final long before = m_file.lastModified();
+        final byte[] bytes = Files.readAllBytes(m_file.toPath());
+        final JSONObject config = new JSONObject(getJson(URL, 200));
+        final JSONObject pkg = config.getJSONArray("packages").getJSONObject(0);
+        final JSONArray mappings = pkg.getJSONArray("eventMappings");
+        final JSONObject shutdown = mappings.getJSONObject(0);
+
+        final JSONObject duplicate = new JSONObject(shutdown.toString()).put("logfile", "system").put("uei", "uei.opennms.org/wsman/eventlog/other");
+        mappings.put(duplicate);
+        String reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("maps Event ID 6008 twice"));
+
+        mappings.remove(mappings.length() - 1);
+        shutdown.put("eventId", 0);
+        reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("Event ID of 1 or more"));
+
+        shutdown.put("eventId", 6008);
+        final JSONObject log = pkg.getJSONArray("logs").getJSONObject(0);
+        log.put("includeEventIds", "1,2");
+        log.put("excludeEventIds", "2");
+        reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("Event ID 2 is both included and excluded"));
+
+        assertEquals(before, m_file.lastModified());
+        assertEquals(new String(bytes, StandardCharsets.UTF_8), new String(Files.readAllBytes(m_file.toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
     public void previewsAFilter() throws Exception {
         JSONObject preview = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, URL + "/preview-filter", "{\"filter\":\"IPADDR != '0.0.0.0'\"}", 200).getContentAsString());
         assertTrue(preview.getBoolean("valid"));
@@ -264,6 +294,7 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
                 .put("logMessage", "Disk full on %parm[computerName]%").put("alarm", true).put("alarmType", 3);
         final JSONObject created = new JSONObject(sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", create.toString(), 200).getContentAsString());
         assertTrue(created.getBoolean("exists"));
+        assertTrue(created.getBoolean("editable"));
         assertEquals("opennms.wsman.eventlog.events", created.getString("sourceName"));
         assertEquals("Windows disk full", created.getString("label"));
         assertEquals("Windows disk full", created.getString("description"));
@@ -277,10 +308,36 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
         assertEquals("Windows volume full", updated.getString("label"));
         assertEquals("Minor", updated.getString("severity"));
         assertFalse(updated.getBoolean("alarm"));
+        assertTrue(updated.getBoolean("editable"));
 
         sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", new JSONObject().put("uei", uei).put("severity", "Major").toString(), 400);
         sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", new JSONObject().put("uei", "nope").put("label", "x").put("severity", "Major").toString(), 400);
         sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", create.put("severity", "Loud").toString(), 400);
+        create.put("severity", "Major");
+        final String longUei = "uei.opennms.org/wsman/eventlog/" + "x".repeat(300 - "uei.opennms.org/wsman/eventlog/".length());
+        assertEquals(300, longUei.length());
+        String reason = sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", create.put("uei", longUei).toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("256"));
+        reason = sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", create.put("uei", "uei.opennms.org/wsman/eventlog/disk full").toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("whitespace"));
+    }
+
+    @Test
+    public void refusesToRewriteADefinitionOfAnotherSource() throws Exception {
+        final String uei = "uei.opennms.org/nodes/nodeDown";
+        final JSONObject definition = new JSONObject(getJson(URL + "/definition?uei=" + uei, 200));
+        assertTrue(definition.getBoolean("exists"));
+        assertFalse(definition.getBoolean("editable"));
+        assertFalse("opennms.wsman.eventlog.events".equals(definition.getString("sourceName")));
+
+        final JSONObject update = new JSONObject()
+                .put("uei", uei).put("label", "Node down, rewritten").put("severity", "Major").put("alarm", true);
+        final String reason = sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", update.toString(), 409).getContentAsString();
+        assertTrue(reason, reason.contains("is defined in source '" + definition.getString("sourceName") + "'"));
+
+        final JSONObject after = new JSONObject(getJson(URL + "/definition?uei=" + uei, 200));
+        assertEquals(definition.getString("label"), after.getString("label"));
+        assertEquals(definition.getString("sourceName"), after.getString("sourceName"));
     }
 
     @Test
@@ -291,6 +348,7 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
         sendData(POST, MediaType.APPLICATION_JSON, URL + "/preview-filter", "{}", 403);
         getJson(URL + "/status", 403);
         getJson(URL + "/definitions", 403);
+        getJson(URL + "/definition?uei=x", 403);
         sendData(PUT, MediaType.APPLICATION_JSON, URL + "/definition", "{}", 403);
     }
 

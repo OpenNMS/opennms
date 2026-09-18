@@ -43,10 +43,13 @@ public class WsmanEventLogDefinitionDto {
 
     public static final String DEFAULT_REDUCTION_KEY = "%uei%:%dpname%:%nodeid%";
     public static final int ALARM_TYPE_PROBLEM = 1;
+    public static final int ALARM_TYPE_RESOLUTION = 2;
     public static final int ALARM_TYPE_PROBLEM_WITHOUT_RESOLUTION = 3;
 
     public String uei;
     public boolean exists;
+    /** Whether the Event Logs tab may write this definition: it is missing or lives in the daemon's own source. */
+    public boolean editable;
     public String sourceName;
     public Long sourceId;
     public Long eventId;
@@ -66,14 +69,16 @@ public class WsmanEventLogDefinitionDto {
         final WsmanEventLogDefinitionDto dto = new WsmanEventLogDefinitionDto();
         dto.uei = uei;
         dto.exists = false;
+        dto.editable = true;
         return dto;
     }
 
-    public static WsmanEventLogDefinitionDto from(final EventConfEvent row, final Event event) {
+    public static WsmanEventLogDefinitionDto from(final EventConfEvent row, final Event event, final String editableSource) {
         final WsmanEventLogDefinitionDto dto = new WsmanEventLogDefinitionDto();
         dto.uei = row.getUei();
         dto.exists = true;
         dto.sourceName = row.getSource() != null ? row.getSource().getName() : null;
+        dto.editable = editableSource != null && editableSource.equals(dto.sourceName);
         dto.sourceId = row.getSource() != null ? row.getSource().getId() : null;
         dto.eventId = row.getId();
         dto.label = event.getEventLabel();
