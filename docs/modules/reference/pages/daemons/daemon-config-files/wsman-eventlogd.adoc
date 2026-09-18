@@ -45,3 +45,4 @@ Otherwise, run `opennms:reload-daemon WsManEventLogd` in the Karaf shell, or sen
 == Metrics
 
 The `OpenNMS:Name=WsManEventLogd,Type=Metrics` MBean exposes the records read, events published, polls completed, failed and truncated, and the number of targets.
+The `OpenNMS-JVM` JMX collection reads it, together with `OpenNMS:Name=WsMan` (requests, failures and shell commands sent by every WS-Man client, monitor polls, collections and metrics collected), so the node running {page-component-title} shows *OpenNMS WS-Man* and *OpenNMS WS-Man Event Log* graphs under Resource Graphs.

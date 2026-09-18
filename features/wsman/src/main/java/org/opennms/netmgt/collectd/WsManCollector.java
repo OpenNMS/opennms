@@ -43,6 +43,7 @@ import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.exceptions.InvalidResourceURI;
 import org.opennms.core.wsman.exceptions.WSManException;
 import org.opennms.core.wsman.utils.CachingWSManClientFactory;
+import org.opennms.core.wsman.utils.WsManMetrics;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
@@ -173,12 +174,17 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
                 } catch (WSManException e) {
                     // If collecting any individual group fails, mark the collection set as
                     // failed, and abort trying to collect any other groups
+                    WsManMetrics.INSTANCE.collectionFailed();
                     throw new CollectionException(String.format("Collecting group '%s' on %s failed with '%s'. See logs for details.",
                             group.getName(), agent, e.getMessage()), e);
                 }
             }
+        } catch (RuntimeException e) {
+            WsManMetrics.INSTANCE.collectionFailed();
+            throw e;
         }
 
+        WsManMetrics.INSTANCE.collectionCompleted();
         return collectionSetBuilder.build();
     }
 
@@ -268,6 +274,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
                 }
 
                 builder.withAttribute(resource, group.getName(), attrib.getAlias(), valueAsString, attrib.getType());
+                WsManMetrics.INSTANCE.attributeCollected();
             }
 
             if (CollectionResource.RESOURCE_TYPE_NODE.equals(resource.getTypeName())) {
