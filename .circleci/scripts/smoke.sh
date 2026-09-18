@@ -141,13 +141,33 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
     echo "#### Failed tests: $FAILED_TESTS"
     RETRIED_TESTS="$FAILED_TESTS"
 
-    # Preserve failing XMLs as flaky evidence before overwriting with retry results
+    # Preserve failing test evidence as flaky evidence before overwriting with retry results.
+    # The XML alone is often not enough to diagnose testcontainers-based IT failures (e.g. a
+    # ContainerLaunchException just shows up as errors="1"), so also grab the plain-text
+    # failsafe reports (captured stdout/stderr) and the per-container logs/thread dumps under
+    # target/logs/<test>/<container>/ that DevDebugUtils.clearLogs() will otherwise wipe as
+    # soon as the retry's teardown runs.
     FLAKY_EVIDENCE_DIR="/tmp/flaky-evidence/attempt-${ATTEMPT}"
     mkdir -p "${FLAKY_EVIDENCE_DIR}"
     set +e +o pipefail
     find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
       -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
       | xargs -I{} cp {} "${FLAKY_EVIDENCE_DIR}/"
+
+    echo "$FAILED_TESTS" | while IFS= read -r TEST_CLASS; do
+      [ -z "$TEST_CLASS" ] && continue
+
+      find . \( -path "*/surefire-reports/${TEST_CLASS}.txt" -o -path "*/failsafe-reports/${TEST_CLASS}.txt" \) \
+        | xargs -I{} cp {} "${FLAKY_EVIDENCE_DIR}/"
+
+      SIMPLE_CLASS="${TEST_CLASS##*.}"
+      find . -type d -path "*/target/logs/*${SIMPLE_CLASS}*" | while IFS= read -r LOGDIR; do
+        DEST_NAME=$(echo "$LOGDIR" | sed 's|^\./||; s|/|_|g')
+        mkdir -p "${FLAKY_EVIDENCE_DIR}/logs/${DEST_NAME}"
+        cp -r "${LOGDIR}/." "${FLAKY_EVIDENCE_DIR}/logs/${DEST_NAME}/"
+      done
+    done
+
     # Now delete originals so fresh results are written by the retry
     find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
       -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \

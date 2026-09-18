@@ -71,10 +71,10 @@ commands:
             if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
               (
                 cd /tmp/flaky-evidence || exit 1
-                find . -name '*.xml' -type f | while read -r xml; do
-                  xml="${xml#./}"
-                  mkdir -p ~/test-results/flaky-evidence/"$(dirname "$xml")"
-                  cp "$xml" ~/test-results/flaky-evidence/"$xml"
+                find . -type f | while read -r f; do
+                  f="${f#./}"
+                  mkdir -p ~/test-results/flaky-evidence/"$(dirname "$f")"
+                  cp "$f" ~/test-results/flaky-evidence/"$f"
                 done
               )
               echo "#### Flaky tests detected (passed only after retry):"
