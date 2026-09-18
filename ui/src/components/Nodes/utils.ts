@@ -210,6 +210,45 @@ export const snmpInterfaceStatusTooltip = (snmpInterface: SnmpInterface) =>
   ].join('\n')
 
 /**
+ * The ipinterface.isManaged codes, spelled out. Labels are ElementUtil's m_interfaceStatusMap
+ * (opennms-webapp/.../web/element/ElementUtil.java), which is the only place in the product that
+ * turns these codes into words -- the column is an unconstrained char(1) with no enum behind it,
+ * and OnmsIpInterface.isManaged() treats everything that is not 'M' as unmanaged.
+ *
+ * Who writes what: 'M' provisiond and the admin Manage action; 'U' a scan that found the
+ * interface at status 3; 'F' the admin Unmanage action, an operator's explicit choice, which is
+ * what separates it from 'U'; 'D' a soft delete, removed later by the nightly vacuum; 'N' is
+ * read-only legacy, written by nothing in the tree today.
+ *
+ * 'A' is the odd one. It is the ifservices code for Managed, and it appears in ipinterface
+ * queries (GetInterfacesServlet, GetNodesServlet, AddNewInterfaceServlet) that look copy-pasted
+ * from the service ones, so nothing should ever write it here. It is listed rather than left to
+ * the fallback below only to record that it is reachable and that we know it is wrong.
+ */
+export const IP_INTERFACE_STATUS_LABELS: Record<string, string> = {
+  M: 'Managed',
+  U: 'Unmanaged',
+  F: 'Forced Unmanaged',
+  N: 'Not Monitored',
+  D: 'Deleted',
+  A: 'Unknown (A)'
+}
+
+/**
+ * The label for one isManaged code. An unrecognised code reads 'Unknown (X)' rather than
+ * rendering blank the way the JSP does -- ElementUtil returns null for anything not in its map,
+ * and a column that is empty for a code nobody has seen before hides the surprise instead of
+ * showing it.
+ */
+export const ipInterfaceStatus = (isManaged?: string | null) => {
+  if (!isManaged) {
+    return 'Unknown'
+  }
+
+  return IP_INTERFACE_STATUS_LABELS[isManaged] ?? `Unknown (${isManaged})`
+}
+
+/**
  * Which directions of flow data an interface carries, as a label that doubles as the Flows
  * column's sort key -- '' (none) < 'Egress' < 'Ingress' < 'Ingress/Egress' sorts the interfaces
  * with flows together at one end, which is the point of sorting that column.

@@ -80,13 +80,17 @@ describe('IpInterfacesTable.vue', () => {
       expect(wrapper.find('[data-test="ip-interfaces-table"]').exists()).toBe(true)
     })
 
-    it('renders all 4 column headers', () => {
-      const headers = wrapper.findAll('th')
-      const headerTexts = headers.map(h => h.text())
-      expect(headerTexts).toContain('IP Address')
-      expect(headerTexts).toContain('IP Host Name')
-      expect(headerTexts).toContain('SNMP ifIndex')
-      expect(headerTexts).toContain('Managed')
+    it('renders the four columns in order', () => {
+      expect(wrapper.findAll('th').map(h => h.text()))
+        .toEqual(['IP Address', 'IP Host Name', 'SNMP ifIndex', 'Status'])
+    })
+
+    // Spelling the status out makes the column too wide for a half-page panel, so this table
+    // scrolls like the SNMP one rather than compressing its columns.
+    it('scrolls horizontally', () => {
+      const table = wrapper.findComponent({ name: 'OnmsTable' })
+      expect(table.props('scrollable')).toBe(true)
+      expect(table.props('tableStyle')).toContain('min-width')
     })
 
     it('renders rows for each IP interface', async () => {
@@ -295,6 +299,21 @@ describe('IpInterfacesTable.vue', () => {
       expect(addresses()).toEqual(['10.0.0.2'])
     })
 
+    // The point of spelling the code out: the raw column only ever answered to 'M'.
+    it('matches on the spelled-out status', async () => {
+      await type('unmanaged')
+
+      expect(addresses()).toEqual(['10.0.0.2'])
+    })
+
+    // Substring matching, so the broader term takes in the narrower labels too -- 'Unmanaged'
+    // and 'Forced Unmanaged' both contain 'managed'.
+    it('matches every managed state on managed', async () => {
+      await type('managed')
+
+      expect(addresses()).toEqual(['10.0.0.2', '10.0.0.7', '192.168.1.1'])
+    })
+
     it('matches on the address', async () => {
       await type('10.0.0.')
 
@@ -346,7 +365,7 @@ describe('IpInterfacesTable.vue', () => {
   describe('Node changes under the same component instance', () => {
     // /node/42 -> /node/99 reuses this instance, so a table that only reads the route id at
     // mount would keep showing the interfaces of the node the user navigated away from.
-    it('refetches every interface for the new node, keeping the isManaged scope', async () => {
+    it('refetches every interface for the new node', async () => {
       await wrapper.vm.onPage({ first: 20, rows: 10, page: 2, pageCount: 3 } as any)
       await flushPromises()
       vi.clearAllMocks()
@@ -356,10 +375,7 @@ describe('IpInterfacesTable.vue', () => {
 
       expect(nodeStore.getNodeIpInterfaces).toHaveBeenCalledWith({
         id: '99',
-        queryParameters: {
-          limit: 0,
-          _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
-        }
+        queryParameters: { limit: 0 }
       })
       ;(useRoute() as any).params.id = '42'
     })
@@ -517,4 +533,91 @@ describe('IpInterfacesTable.vue', () => {
       expect(w.find('[data-test="empty-list"]').exists()).toBe(true)
     })
   })
+
+  // isManaged is an unconstrained char(1) with no enum behind it; the labels are ElementUtil's
+  // m_interfaceStatusMap, the only place in the product that turns these codes into words.
+  describe('Status column', () => {
+    const mountRows = async (codes: Array<string | null>) => {
+      nodeStore.ipInterfaces = codes.map((isManaged, i) => ({
+        id: String(i + 1),
+        ipAddress: `10.0.0.${i + 1}`,
+        hostName: `host-${i + 1}`,
+        ifIndex: i + 1,
+        isManaged
+      })) as any
+      nodeStore.ipInterfacesTotalCount = codes.length
+      await nextTick()
+    }
+
+    it.each([
+      ['M', 'Managed', 'success'],
+      ['U', 'Unmanaged', 'warn'],
+      ['F', 'Forced Unmanaged', 'warn'],
+      ['N', 'Not Monitored', 'secondary'],
+      ['D', 'Deleted', 'danger'],
+      ['A', 'Unknown (A)', 'warn']
+    ])('renders %s as "%s" with %s severity', async (code, label, severity) => {
+      await mountRows([code])
+
+      expect(wrapper.find('[data-test="status-tag"]').text()).toBe(label)
+      expect(wrapper.findComponent({ name: 'OnmsTag' }).props('severity')).toBe(severity)
+    })
+
+    // The column is a bare char(1), so a code nobody has defined is possible. Naming it beats
+    // rendering an empty cell, which is what the JSP does (ElementUtil returns null).
+    it('names an undefined code rather than rendering nothing', async () => {
+      await mountRows(['X'])
+
+      expect(wrapper.find('[data-test="status-tag"]').text()).toBe('Unknown (X)')
+      expect(wrapper.findComponent({ name: 'OnmsTag' }).props('severity')).toBe('warn')
+    })
+
+    it('reads a missing code as Unknown', async () => {
+      await mountRows([null])
+
+      expect(wrapper.find('[data-test="status-tag"]').text()).toBe('Unknown')
+    })
+
+    it('tags each row on its own status', async () => {
+      await mountRows(['M', 'U', 'F', 'D'])
+
+      expect(wrapper.findAll('[data-test="status-tag"]').map(t => t.text()))
+        .toEqual(['Managed', 'Unmanaged', 'Forced Unmanaged', 'Deleted'])
+    })
+
+    // status is derived, not stored, so it is decorated onto the rows to be sortable.
+    it('sorts on the derived label', async () => {
+      await mountRows(['U', 'M', 'D'])
+      const header = wrapper.findAll('th').find(th => th.text() === 'STATUS' || th.text() === 'Status')!
+      await header.trigger('click')
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="status-tag"]').map(t => t.text()))
+        .toEqual(['Deleted', 'Managed', 'Unmanaged'])
+    })
+  })
+
+  // The panel used to ask for isManaged==U,P,N,M: 'P' is an isSnmpPrimary code, not an interface
+  // status, and 'F' -- the state the admin Unmanage action writes -- was missing, so every
+  // explicitly unmanaged interface was absent from the table.
+  describe('Fetching every interface', () => {
+    it('does not narrow the fetch by isManaged', async () => {
+      expect(nodeStore.getNodeIpInterfaces).toHaveBeenCalledWith({
+        id: '42',
+        queryParameters: { limit: 0 }
+      })
+    })
+
+    it('shows an interface an operator has unmanaged', async () => {
+      nodeStore.ipInterfaces = [
+        { id: '1', ipAddress: '10.0.0.1', hostName: 'host-1', ifIndex: 1, isManaged: 'F' }
+      ] as any
+      nodeStore.ipInterfacesTotalCount = 1
+      await nextTick()
+
+      expect(wrapper.findAll('[data-test="ip-address-link"]').map(l => l.text())).toEqual(['10.0.0.1'])
+      expect(wrapper.find('[data-test="status-tag"]').text()).toBe('Forced Unmanaged')
+    })
+  })
+
 })

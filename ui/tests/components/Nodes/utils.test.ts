@@ -28,6 +28,7 @@ import {
   getTableCssClasses,
   hasEgressFlow,
   hasIngressFlow,
+  ipInterfaceStatus,
   matchesSearchTerm,
   snmpIfStatusText,
   snmpInterfaceFlowGraphsTooltip,
@@ -338,6 +339,31 @@ describe('Nodes utils test', () => {
     ])('labels the graphs button for %s / %s flows as "%s"', (hasIngressFlows, hasEgressFlows, expected) => {
       expect(snmpInterfaceFlowGraphsTooltip({ hasIngressFlows, hasEgressFlows } as SnmpInterface))
         .toBe(expected)
+    })
+  })
+
+
+  // ipinterface.isManaged is an unconstrained char(1) -- no enum, no check constraint -- so this
+  // has to cope with a code nobody has defined as well as the ones the product writes.
+  describe('ipInterfaceStatus', () => {
+    test.each([
+      ['M', 'Managed'],
+      ['U', 'Unmanaged'],
+      ['F', 'Forced Unmanaged'],
+      ['N', 'Not Monitored'],
+      ['D', 'Deleted'],
+      ['A', 'Unknown (A)']
+    ])('reads %s as "%s"', (code, label) => {
+      expect(ipInterfaceStatus(code)).toBe(label)
+    })
+
+    // ElementUtil returns null here and the JSP renders an empty cell, which hides the surprise.
+    test('names an undefined code', () => {
+      expect(ipInterfaceStatus('X')).toBe('Unknown (X)')
+    })
+
+    test.each([[null], [undefined], ['']])('reads %s as Unknown', (code) => {
+      expect(ipInterfaceStatus(code)).toBe('Unknown')
     })
   })
 
