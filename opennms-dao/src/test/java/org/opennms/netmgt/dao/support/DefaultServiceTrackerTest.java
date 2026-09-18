@@ -114,6 +114,23 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
         session.close();
     }
 
+    @Test
+    public void reportsEveryServiceRemovedInOneRefresh() throws IOException {
+        // Deleting a requisition removes many nodes between two filter refreshes.
+        Closeable session = serviceTracker.trackService(OPENCONFIG, this);
+        for (int i = 1; i < 50; i++) {
+            mockFilterWatcher.addServiceSilently(i, InetAddressUtils.addr("10.0.0." + i), OPENCONFIG);
+        }
+        mockFilterWatcher.addService(50, InetAddressUtils.addr("10.0.0.50"), OPENCONFIG);
+        assertThat(numServicesAdded, equalTo(50));
+
+        mockFilterWatcher.deleteAllAndNotify();
+
+        assertThat("every removed service must be reported", numServicesRemoved, equalTo(50));
+        assertThat(activeServices, hasSize(0));
+        session.close();
+    }
+
     @Override
     public void onServiceMatched(ServiceRef serviceRef) {
         activeServices.add(serviceRef);
@@ -140,6 +157,15 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
 
         public void addService(int nodeId, InetAddress interfaceAddress, String serviceName) {
             exposedServices.add(new ServiceRef(nodeId, interfaceAddress, serviceName,DEFAULT_LOCATION));
+            rebuildResultsAndNotify();
+        }
+
+        public void addServiceSilently(int nodeId, InetAddress interfaceAddress, String serviceName) {
+            exposedServices.add(new ServiceRef(nodeId, interfaceAddress, serviceName, DEFAULT_LOCATION));
+        }
+
+        public void deleteAllAndNotify() {
+            exposedServices.clear();
             rebuildResultsAndNotify();
         }
 
