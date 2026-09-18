@@ -20,6 +20,7 @@ import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
 import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { createLinkItemsList } from './nodeActionLinks'
+import useRole from '@/composables/useRole'
 import { Node } from '@/types'
 
 const props = defineProps({
@@ -45,12 +46,15 @@ const props = defineProps({
   }
 })
 
+const { adminRole } = useRole()
+
 const menuIcon = markRaw(MoreVert)
 const menu = ref()
 const menuId = computed(() => `node-actions-menu-${props.node.id}`)
 
-// Info... opens a dialog describing the node, which is redundant on a page already showing it:
-// a call site that omits the handler gets the navigation links alone.
+// Info... opens a dialog describing the node. Optional: a call site that omits the handler gets
+// the navigation links alone. Both current call sites supply it -- the node list, and the node
+// details page, which used to show the same attributes in a panel of its own.
 const items = computed<OnmsMenuItem[]>(() => {
   const infoItem = props.triggerNodeInfo
     ? [{ label: 'Info...', command: () => props.triggerNodeInfo?.(props.node) }]
@@ -60,7 +64,10 @@ const items = computed<OnmsMenuItem[]>(() => {
   // Status for a node with no building.
   return [
     ...infoItem,
-    ...createLinkItemsList(props.node, { snmpPrimaryIpAddress: props.snmpPrimaryIpAddress }).map(li => ({
+    ...createLinkItemsList(props.node, {
+      snmpPrimaryIpAddress: props.snmpPrimaryIpAddress,
+      isAdmin: adminRole.value
+    }).map(li => ({
       label: li.label,
       command: () => window.location.assign(`${props.baseHref}${li.link}`)
     }))

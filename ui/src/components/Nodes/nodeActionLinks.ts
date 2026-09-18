@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { nodeOutageListLink } from '@/lib/linkUtils'
 import { IpInterface, Node } from '@/types'
 
 // The node action links, shared by every place the actions menu is rendered: the Node Details
@@ -31,6 +32,7 @@ export const linkItems = [
   { name: 'assets', label: 'Assets' },
   { name: 'metadata', label: 'Metadata' },
   { name: 'hardware', label: 'Hardware Inventory' },
+  { name: 'surveillance-categories', label: 'Surveillance Categories' },
   { name: 'availability', label: 'Availability' },
   { name: 'siteStatus', label: 'Site Status' },
   { name: 'graphs', label: 'Resource Graphs' },
@@ -55,22 +57,51 @@ export const getSnmpPrimaryIpAddress = (ipInterfaces: IpInterface[]): string | u
 // SNMP-primary address from the interface data it has.
 export interface NodeActionLinkContext {
   snmpPrimaryIpAddress?: string
+  // Gates the admin-only destinations below. A boolean rather than a role list so the role
+  // vocabulary stays in useRole, which already owns it.
+  isAdmin?: boolean
 }
 
+// Destinations the server refuses to anyone but ROLE_ADMIN, so offering them to everyone else is
+// offering an access denial. Four sit under /admin/**, which
+// applicationContext-spring-security.xml pins to ROLE_ADMIN wholesale; rescan is under /element/
+// but has an intercept-url rule of its own. The legacy node page gates the same set
+// (element/node.jsp wraps them in <c:if test="${model.admin}">).
+//
+// Note updateSnmp is plain ROLE_ADMIN here, NOT useRole's snmpRole (ROLE_ADMIN or
+// ROLE_PROVISION) -- admin/updateSnmp.jsp is covered by the /admin/** rule like the rest.
+const ADMIN_ONLY_LINKS = new Set([
+  'surveillance-categories',
+  'rescan',
+  'admin',
+  'updateSnmp',
+  'schedule-outage'
+])
+
 export const mapLink = (name: string, node: Node, context: NodeActionLinkContext = {}) => {
+  if (ADMIN_ONLY_LINKS.has(name) && !context.isAdmin) {
+    return ''
+  }
+
   switch (name) {
     case 'events':
       return `event/list?filter=node%3D${node.id}`
     case 'alarms':
       return `alarm/list.htm?filter=node%3D${node.id}`
     case 'view-outages':
-      return `outage/list.htm?filter=node%3D${node.id}`
+      // Relative, like every link here: mapLink's callers prepend baseHref themselves. No
+      // outtype, so the legacy list applies its own default.
+      return nodeOutageListLink('', node.id)
     case 'assets':
       return `asset/modify.jsp?node=${node.id}`
     case 'metadata':
       return `element/node-metadata.jsp?node=${node.id}`
     case 'hardware':
       return `hardware/list.jsp?node=${node.id}`
+    // The category edit page, which is where the Surveillance Category Memberships panel's Edit
+    // button used to go -- and which that button was gated on admin for, as is this.
+    case 'surveillance-categories':
+      return `admin/categories.htm?edit&node=${node.id}`
     case 'availability':
       return `element/availability.jsp?node=${node.id}`
     case 'siteStatus': {
