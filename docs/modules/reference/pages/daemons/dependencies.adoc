@@ -39,7 +39,7 @@ This table lists dependencies beyond those two.
 
 | Alarmd
 |
-| Every alarm consumer: Bsmd, the northbound interfaces, the Kafka producer, and alarm history
+| Every alarm consumer: Bsmd, the northbound interfaces, alarm forwarding in the Kafka producer, and alarm history
 
 | Bsmd
 | Alarmd
@@ -59,7 +59,7 @@ This table lists dependencies beyond those two.
 
 | Enlinkd
 | Provisiond, SNMP configuration
-| The topology map, the graph service ReST API, and user-defined link layers
+| Link discovery, the Enlinkd-populated layers of the topology map and the graph service ReST API, and user-defined link layers
 
 | EventTranslator
 |
@@ -150,8 +150,11 @@ Backups run as Pollerd polls of the device configuration services, on a schedule
 
 == Alarms and notifications
 
-Everything that consumes alarms is hosted by Alarmd itself, so disabling it removes the northbound interfaces, the Kafka producer, alarm history, and business service status along with it.
+Everything that consumes alarms is hosted by Alarmd itself, so disabling it removes the northbound interfaces, alarm history, and business service status along with it.
 None of those report an error; they stop receiving alarms.
+
+Disabling Alarmd stops only the alarm-related part of the Kafka producer, which covers alarms and alarm feedback.
+The producer continues to forward events, topology updates, and collected metrics, because those do not pass through Alarmd.
 
 [WARNING]
 ====
