@@ -528,6 +528,18 @@ describe('SnmpInterfacesTable.vue', () => {
   })
 
   describe('Node changes under the same component instance', () => {
+    // Fake, like the filter tests above: the only wait here is the search debounce, and sleeping
+    // on a real timer for it makes the case both slow and dependent on the machine it runs on.
+    // In beforeEach/afterEach rather than inside the one case that needs them, so a failed
+    // assertion cannot leave fake timers installed for the rest of the file.
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
     // /node/42 -> /node/99 reuses this instance, so a table that only reads the route id at
     // mount would keep showing the interfaces of the node the user navigated away from.
     it('refetches every interface for the new node', async () => {
@@ -550,7 +562,7 @@ describe('SnmpInterfacesTable.vue', () => {
       nodeStore.snmpInterfaces = [{ id: 1, ifIndex: 1, ifName: 'eth0' }] as any
       await nextTick()
       await wrapper.find('[data-test="snmp-interfaces-search"]').setValue('nothing-matches')
-      await new Promise(r => setTimeout(r, SEARCH_DEBOUNCE_MS + 25))
+      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS)
       await nextTick()
       expect(wrapper.findAll('[data-test="if-index-link"]').length).toBe(0)
 

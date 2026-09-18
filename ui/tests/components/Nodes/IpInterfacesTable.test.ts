@@ -233,6 +233,40 @@ describe('IpInterfacesTable.vue', () => {
       expect(addresses()).toEqual(['10.0.0.2', '10.0.0.5', '10.0.0.7'])
     })
 
+    // These fixtures order the same lexically and numerically, so they cannot tell the two
+    // apart. .10 sorting after .2 is the part that can only come from a numeric comparison --
+    // lexically '10.0.0.10' < '10.0.0.2', since '1' precedes '2'.
+    it('sorts the last octet numerically, not lexically', async () => {
+      nodeStore.ipInterfaces = [
+        { id: '1', ipAddress: '10.0.0.10', hostName: 'ten', ifIndex: 1, isManaged: 'M' },
+        { id: '2', ipAddress: '10.0.0.2', hostName: 'two', ifIndex: 2, isManaged: 'M' }
+      ] as any
+      nodeStore.ipInterfacesTotalCount = 2
+      await nextTick()
+
+      expect(addresses()).toEqual(['10.0.0.2', '10.0.0.10'])
+    })
+
+    // Addresses are sorted as text, not taken apart into their numeric parts, which for IPv4
+    // happens to come out the same. IPv6 is where the two part company, because the numeric
+    // comparison above reads hex digit groups as decimal: '10' is sixteen in an address but ten
+    // to the comparator, so it lands before 'a' instead of after it.
+    //
+    // This pins the text behaviour deliberately. If address-aware sorting is ever added, the
+    // right order becomes fe80::9, fe80::a, fe80::10 and this test SHOULD fail -- update it
+    // rather than work around it.
+    it('sorts IPv6 addresses as text, so ::10 comes before ::a', async () => {
+      nodeStore.ipInterfaces = [
+        { id: '1', ipAddress: 'fe80::10', hostName: 'sixteen', ifIndex: 1, isManaged: 'M' },
+        { id: '2', ipAddress: 'fe80::a', hostName: 'ten', ifIndex: 2, isManaged: 'M' },
+        { id: '3', ipAddress: 'fe80::9', hostName: 'nine', ifIndex: 3, isManaged: 'M' }
+      ] as any
+      nodeStore.ipInterfacesTotalCount = 3
+      await nextTick()
+
+      expect(addresses()).toEqual(['fe80::9', 'fe80::10', 'fe80::a'])
+    })
+
     it('reverses when the header is clicked', async () => {
       await headerFor('IP Address').trigger('click')
       await nextTick()

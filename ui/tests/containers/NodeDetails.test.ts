@@ -161,9 +161,8 @@ describe('NodeDetails.vue', () => {
     // second limit=0 request purely to fill that; the IP interfaces table's own fetch now does it
     // (see nodeStore), so there is nothing for the page to do.
     it('does not fetch interfaces of its own for the dialog', async () => {
-      const { wrapper, nodeStore } = mountComponent('42', true)
+      const { nodeStore } = mountComponent('42', true)
       await flushPromises()
-      void wrapper
 
       expect(nodeStore.getIpInterfacesForNodes).not.toHaveBeenCalled()
     })
