@@ -69,7 +69,7 @@ commands:
             if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
               (
                 cd /tmp/flaky-evidence &&
-                find . -name '*.xml' -exec cp --parents {} ~/test-results/flaky-evidence/ \;
+                find . -type f -exec cp --parents {} ~/test-results/flaky-evidence/ \;
               )
               echo "#### Flaky tests detected (passed only after retry):"
               find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
