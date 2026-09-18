@@ -34,7 +34,7 @@ public class EventLogWqlTest {
     public void buildsCursorQuery() {
         final EventLogQueryDTO q = new EventLogQueryDTO("System");
         q.setAfterRecordNumber(184233L);
-        assertEquals("SELECT " + EventLogWql.COLUMNS + " FROM Win32_NTLogEvent WHERE Logfile = 'System' AND RecordNumber > 184233",
+        assertEquals("SELECT " + EventLogWql.COLUMNS + " FROM Win32_NTLogEvent WHERE Logfile = 'System' AND RecordNumber > 184233 AND RecordNumber <= 184734",
                 EventLogWql.forQuery(q));
     }
 
@@ -54,12 +54,13 @@ public class EventLogWqlTest {
         final EventLogQueryDTO q = new EventLogQueryDTO("System");
         q.setAfterRecordNumber(5L);
         q.setSinceTime("20260918120000.000000+000");
-        assertEquals("SELECT " + EventLogWql.COLUMNS + " FROM Win32_NTLogEvent WHERE Logfile = 'System' AND RecordNumber > 5", EventLogWql.forQuery(q));
+        assertEquals("SELECT " + EventLogWql.COLUMNS + " FROM Win32_NTLogEvent WHERE Logfile = 'System' AND RecordNumber > 5 AND RecordNumber <= 506", EventLogWql.forQuery(q));
     }
 
     @Test
-    public void escapesQuotesInLogNames() {
-        assertEquals("SELECT " + EventLogWql.COLUMNS + " FROM Win32_NTLogEvent WHERE Logfile = 'O''Brien'", EventLogWql.forQuery(new EventLogQueryDTO("O'Brien")));
+    public void escapesQuotesAndBackslashesWqlStyle() {
+        assertEquals("SELECT " + EventLogWql.COLUMNS + " FROM Win32_NTLogEvent WHERE Logfile = 'O\\'Brien'", EventLogWql.forQuery(new EventLogQueryDTO("O'Brien")));
+        assertEquals("SELECT RecordNumber FROM Win32_NTLogEvent WHERE Logfile = 'a\\\\b'", EventLogWql.newestQuery("a\\b"));
     }
 
     @Test

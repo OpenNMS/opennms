@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 final class WqlWhere {
 
     private static final Pattern COMPARISON = Pattern.compile(
-            "^\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(<>|!=|>=|<=|=|>|<)\\s*(?:'((?:[^']|'')*)'|(-?\\d+(?:\\.\\d+)?))\\s*$");
+            "^\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(<>|!=|>=|<=|=|>|<)\\s*(?:'((?:[^'\\\\]|\\\\.)*)'|(-?\\d+(?:\\.\\d+)?))\\s*$");
 
     private WqlWhere() {
     }
@@ -83,7 +83,7 @@ final class WqlWhere {
         if (m.group(4) != null) {
             cmp = Double.compare(Double.parseDouble(actual.trim()), Double.parseDouble(m.group(4)));
         } else {
-            cmp = actual.compareToIgnoreCase(m.group(3).replace("''", "'"));
+            cmp = actual.compareToIgnoreCase(unescape(m.group(3)));
         }
         switch (op) {
             case "=": return cmp == 0;
@@ -96,6 +96,20 @@ final class WqlWhere {
         }
     }
 
+    /** WQL escapes with a backslash. */
+    private static String unescape(final String literal) {
+        final StringBuilder sb = new StringBuilder(literal.length());
+        for (int i = 0; i < literal.length(); i++) {
+            final char c = literal.charAt(i);
+            if (c == '\\' && i + 1 < literal.length()) {
+                sb.append(literal.charAt(++i));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
     /** Splits on a keyword that sits outside quotes and parentheses. */
     private static List<String> splitTopLevel(final String s, final String keyword) {
         final List<String> parts = new ArrayList<>();
@@ -105,7 +119,9 @@ final class WqlWhere {
         final String lower = s.toLowerCase();
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
-            if (c == '\'') {
+            if (c == '\\' && quoted) {
+                i++;
+            } else if (c == '\'') {
                 quoted = !quoted;
             } else if (!quoted && c == '(') {
                 depth++;

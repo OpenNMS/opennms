@@ -105,12 +105,42 @@ public class WsManEventLogRpcModuleTest {
     @Test
     public void capsTheBatchAndFlagsTruncation() throws Exception {
         final EventLogQueryDTO query = new EventLogQueryDTO("System");
-        query.setAfterRecordNumber(0L);
+        query.setAfterRecordNumber(9L);
         query.setMaxRecords(2);
         final EventLogBatchDTO batch = module.execute(request(query)).get().getBatches().get(0);
 
         assertTrue(batch.isTruncated());
         assertEquals(List.of(10L, 11L), batch.getRecords().stream().map(EventLogRecordDTO::getRecordNumber).collect(Collectors.toList()));
+        assertNull(batch.getNewestRecordNumber());
+    }
+
+    // WMI hands out the newest records first; a capped cursor read must still continue from the cursor
+    @Test
+    public void aCappedCursorReadKeepsTheOldestRecordsWhateverTheAgentOrder() throws Exception {
+        agent.withInstances(EventLogWql.CLASS_NAME, List.of(
+                record("System", 13, 4, 2, "Kernel", "20260918100300.000000+000", "d"),
+                record("System", 12, 1074, 3, "User32", "20260918100200.000000+000", "c"),
+                record("System", 11, 7036, 3, "Service Control Manager", "20260918100100.000000+000", "b"),
+                record("System", 10, 6008, 1, "EventLog", "20260918100000.000000+000", "a")));
+        final EventLogQueryDTO query = new EventLogQueryDTO("System");
+        query.setAfterRecordNumber(9L);
+        query.setMaxRecords(2);
+        final EventLogBatchDTO batch = module.execute(request(query)).get().getBatches().get(0);
+
+        assertTrue(batch.isTruncated());
+        assertEquals(List.of(10L, 11L), batch.getRecords().stream().map(EventLogRecordDTO::getRecordNumber).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void anEmptyCursorReadReportsTheNewestRecordOfTheLog() throws Exception {
+        final EventLogQueryDTO query = new EventLogQueryDTO("System");
+        query.setAfterRecordNumber(500L);
+        final EventLogBatchDTO batch = module.execute(request(query)).get().getBatches().get(0);
+
+        assertNull(batch.getError());
+        assertTrue(batch.getRecords().isEmpty());
+        assertFalse(batch.isTruncated());
+        assertEquals(Long.valueOf(13L), batch.getNewestRecordNumber());
     }
 
     @Test

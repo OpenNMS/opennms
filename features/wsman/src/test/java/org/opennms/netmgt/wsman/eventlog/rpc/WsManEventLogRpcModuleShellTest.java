@@ -24,6 +24,7 @@ package org.opennms.netmgt.wsman.eventlog.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,6 +85,21 @@ public class WsManEventLogRpcModuleShellTest {
         query.setMode(EventLogQueryDTO.MODE_SHELL);
         query.setMaxRecords(2);
         assertFalse(module.execute(request(query)).get().getBatches().get(0).isTruncated());
+    }
+
+    @Test
+    public void anEmptyCursorReadProbesTheNewestRecord() throws Exception {
+        when(client.runCommand(eq("powershell.exe"), any(), any()))
+                .thenReturn(new CommandResult(0, "", ""))
+                .thenReturn(new CommandResult(0, "42\r\n", ""));
+        final EventLogQueryDTO query = new EventLogQueryDTO("Microsoft-Windows-TaskScheduler/Operational");
+        query.setMode(EventLogQueryDTO.MODE_SHELL);
+        query.setAfterRecordNumber(100L);
+
+        final EventLogBatchDTO batch = module.execute(request(query)).get().getBatches().get(0);
+        assertNull(batch.getError());
+        assertTrue(batch.getRecords().isEmpty());
+        assertEquals(Long.valueOf(42L), batch.getNewestRecordNumber());
     }
 
     @Test

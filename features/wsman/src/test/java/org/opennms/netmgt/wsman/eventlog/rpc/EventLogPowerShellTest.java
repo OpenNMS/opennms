@@ -52,7 +52,7 @@ public class EventLogPowerShellTest {
     public void xpathMapsAuditLevelsToKeywords() {
         final EventLogQueryDTO q = new EventLogQueryDTO("Security");
         q.setEventTypes(List.of(5));
-        assertEquals("*[System[(band(Keywords, -9218868437227405312))]]", EventLogPowerShell.xpath(q));
+        assertEquals("*[System[(band(Keywords, 4503599627370496))]]", EventLogPowerShell.xpath(q));
         assertEquals("*", EventLogPowerShell.xpath(new EventLogQueryDTO("System")));
     }
 
@@ -66,6 +66,11 @@ public class EventLogPowerShellTest {
         final String script = new String(Base64.getDecoder().decode(args[5]), StandardCharsets.UTF_16LE);
         assertTrue(script, script.contains("Get-WinEvent -LogName 'Microsoft-Windows-TaskScheduler/Operational' -FilterXPath '*' -Oldest -MaxEvents 201"));
         assertTrue(script, script.contains("ToBase64String"));
+        // Keywords is a signed Int64 on Windows and the empty-log error is matched by id, not by localized text
+        assertTrue(script, script.contains("[string][int64]$e.Keywords"));
+        assertTrue(script, script.contains("FullyQualifiedErrorId -like 'NoMatchingEventsFound*'"));
+        final String newest = new String(Base64.getDecoder().decode(EventLogPowerShell.newestArguments(q)[5]), StandardCharsets.UTF_16LE);
+        assertTrue(newest, newest.contains("-LogName 'Microsoft-Windows-TaskScheduler/Operational' -MaxEvents 1"));
     }
 
     @Test
@@ -73,11 +78,12 @@ public class EventLogPowerShellTest {
         final String message = "Task Scheduler failed to start\r\n\"Backup\" task.";
         final String b64 = Base64.getEncoder().encodeToString(message.getBytes(StandardCharsets.UTF_8));
         final String stdout = "12\t101\t2\t0\tMicrosoft-Windows-TaskScheduler\t20260918120000.000000+000\tWIN-12\t" + b64 + "\r\n"
-                + "13\t4625\t0\t9227875636482146304\tMicrosoft-Windows-Security-Auditing\t20260918120001.000000+000\tWIN-12\t\r\n"
+                + "13\t4625\t0\t-9218868437227405312\tMicrosoft-Windows-Security-Auditing\t20260918120001.000000+000\tWIN-12\t\r\n"
+                + "14\t1\t\t\tProvider\t20260918120002.000000+000\tWIN-12\t\r\n"
                 + "garbage line\r\n";
         final List<EventLogRecordDTO> records = EventLogPowerShell.parse(stdout, "Security");
 
-        assertEquals(2, records.size());
+        assertEquals(3, records.size());
         assertEquals(12L, records.get(0).getRecordNumber());
         assertEquals(Integer.valueOf(101), records.get(0).getEventCode());
         assertEquals(Integer.valueOf(1), records.get(0).getEventType());
@@ -87,6 +93,17 @@ public class EventLogPowerShellTest {
         // an audit-failure keyword wins over the level
         assertEquals(Integer.valueOf(5), records.get(1).getEventType());
         assertEquals("", records.get(1).getMessage());
+        // blank Level and Keywords read as 0
+        assertEquals(Integer.valueOf(3), records.get(2).getEventType());
+    }
+
+    @Test
+    public void stripsCharactersXmlCannotCarry() {
+        final EventLogRecordDTO record = new EventLogRecordDTO();
+        record.setMessage("bad\u0000esc\u001bok\ttab");
+        record.setInsertionStrings(List.of("a\u0007b"));
+        assertEquals("badescok\ttab", record.getMessage());
+        assertEquals(List.of("ab"), record.getInsertionStrings());
     }
 
     @Test

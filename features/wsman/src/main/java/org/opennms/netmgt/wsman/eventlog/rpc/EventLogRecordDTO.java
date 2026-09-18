@@ -98,7 +98,7 @@ public class EventLogRecordDTO {
     }
 
     public void setSourceName(String sourceName) {
-        this.sourceName = sourceName;
+        this.sourceName = xmlSafe(sourceName);
     }
 
     public String getTimeGenerated() {
@@ -114,7 +114,7 @@ public class EventLogRecordDTO {
     }
 
     public void setComputerName(String computerName) {
-        this.computerName = computerName;
+        this.computerName = xmlSafe(computerName);
     }
 
     public String getMessage() {
@@ -122,7 +122,7 @@ public class EventLogRecordDTO {
     }
 
     public void setMessage(String message) {
-        this.message = message;
+        this.message = xmlSafe(message);
     }
 
     public List<String> getInsertionStrings() {
@@ -130,7 +130,12 @@ public class EventLogRecordDTO {
     }
 
     public void setInsertionStrings(List<String> insertionStrings) {
-        this.insertionStrings = insertionStrings == null ? new ArrayList<>() : insertionStrings;
+        this.insertionStrings = new ArrayList<>();
+        if (insertionStrings != null) {
+            for (String s : insertionStrings) {
+                this.insertionStrings.add(xmlSafe(s));
+            }
+        }
     }
 
     @Override
@@ -161,5 +166,19 @@ public class EventLogRecordDTO {
     @Override
     public String toString() {
         return "EventLogRecord[" + logfile + "#" + recordNumber + " id=" + eventCode + " type=" + eventType + " source=" + sourceName + "]";
+    }
+    /** Drops the control characters XML 1.0 cannot carry, so a record never poisons the RPC response. */
+    static String xmlSafe(String value) {
+        if (value == null) {
+            return null;
+        }
+        final StringBuilder sb = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            final char c = value.charAt(i);
+            if (c == 0x9 || c == 0xA || c == 0xD || (c >= 0x20 && c <= 0xD7FF) || (c >= 0xE000 && c <= 0xFFFD)) {
+                sb.append(c);
+            }
+        }
+        return sb.length() == value.length() ? value : sb.toString();
     }
 }

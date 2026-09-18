@@ -44,6 +44,10 @@ public class EventLogBatchDTO {
     @XmlAttribute(name = "error")
     private String error;
 
+    /** Set when a cursor query found nothing: the log's newest record, so a cleared log can be detected. */
+    @XmlAttribute(name = "newest-record-number")
+    private Long newestRecordNumber;
+
     @XmlElement(name = "record")
     private List<EventLogRecordDTO> records = new ArrayList<>();
 
@@ -88,7 +92,7 @@ public class EventLogBatchDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(logfile, truncated, error, records);
+        return Objects.hash(logfile, truncated, error, newestRecordNumber, records);
     }
 
     @Override
@@ -103,6 +107,14 @@ public class EventLogBatchDTO {
         return truncated == other.truncated
                 && Objects.equals(logfile, other.logfile)
                 && Objects.equals(error, other.error)
+                && Objects.equals(newestRecordNumber, other.newestRecordNumber)
                 && Objects.equals(records, other.records);
+    }
+    public Long getNewestRecordNumber() {
+        return newestRecordNumber;
+    }
+
+    public void setNewestRecordNumber(Long newestRecordNumber) {
+        this.newestRecordNumber = newestRecordNumber;
     }
 }

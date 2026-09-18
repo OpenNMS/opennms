@@ -174,7 +174,6 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
                 } catch (WSManException e) {
                     // If collecting any individual group fails, mark the collection set as
                     // failed, and abort trying to collect any other groups
-                    WsManMetrics.INSTANCE.collectionFailed();
                     throw new CollectionException(String.format("Collecting group '%s' on %s failed with '%s'. See logs for details.",
                             group.getName(), agent, e.getMessage()), e);
                 }

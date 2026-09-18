@@ -49,6 +49,10 @@ public final class EventLogWql {
                 .append(" WHERE Logfile = '").append(escape(query.getLogfile())).append("'");
         if (query.getAfterRecordNumber() != null) {
             sb.append(" AND RecordNumber > ").append(query.getAfterRecordNumber());
+            if (query.getMaxRecords() > 0) {
+                // WMI enumerates newest first, so an unbounded backlog would be read from the wrong end
+                sb.append(" AND RecordNumber <= ").append(query.getAfterRecordNumber() + query.getMaxRecords() + 1);
+            }
         } else if (query.getSinceTime() != null) {
             sb.append(" AND TimeGenerated >= '").append(escape(query.getSinceTime())).append("'");
         }
@@ -61,9 +65,14 @@ public final class EventLogWql {
         return sb.toString();
     }
 
-    /** WQL string literals escape a single quote by doubling it. */
+    /** The newest record of a log, for detecting a cleared log. */
+    public static String newestQuery(String logfile) {
+        return "SELECT RecordNumber FROM " + CLASS_NAME + " WHERE Logfile = '" + escape(logfile) + "'";
+    }
+
+    /** WQL string literals escape with a backslash, unlike SQL. */
     public static String escape(String value) {
-        return value == null ? "" : value.replace("'", "''");
+        return value == null ? "" : value.replace("\\", "\\\\").replace("'", "\\'");
     }
 
     public static String toDmtf(Instant instant) {

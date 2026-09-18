@@ -26,6 +26,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 /**
@@ -39,9 +42,15 @@ import java.util.stream.Collectors;
  */
 public final class EventLogPowerShell {
 
-    /** Windows Level values: 1 Critical, 2 Error, 3 Warning, 4 Information, 5 Verbose, 0 LogAlways. */
-    private static final long KEYWORD_AUDIT_SUCCESS = 0x8020000000000000L;
-    private static final long KEYWORD_AUDIT_FAILURE = 0x8010000000000000L;
+    private static final Logger LOG = LoggerFactory.getLogger(EventLogPowerShell.class);
+
+    /**
+     * The audit keyword bits alone: Windows reports Keywords as a signed Int64 whose
+     * sign bit is the Classic flag, so the XPath and the bit tests must not include it.
+     * Level values: 1 Critical, 2 Error, 3 Warning, 4 Information, 5 Verbose, 0 LogAlways.
+     */
+    static final long KEYWORD_AUDIT_SUCCESS = 0x0020000000000000L;
+    static final long KEYWORD_AUDIT_FAILURE = 0x0010000000000000L;
 
     private EventLogPowerShell() {
     }
@@ -61,11 +70,11 @@ public final class EventLogPowerShell {
         final int limit = Math.max(1, query.getMaxRecords()) + 1;
         return "$ErrorActionPreference = 'Stop'\n"
                 + "try { $events = Get-WinEvent -LogName '" + log + "' -FilterXPath '" + xpath(query) + "' -Oldest -MaxEvents " + limit + " -ErrorAction Stop }"
-                + " catch [Exception] { if ($_.Exception.Message -match 'No events were found') { $events = @() } else { throw } }\n"
+                + " catch [Exception] { if ($_.FullyQualifiedErrorId -like 'NoMatchingEventsFound*') { $events = @() } else { throw } }\n"
                 + "foreach ($e in $events) {\n"
                 + "  $m = if ($e.Message) { [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($e.Message)) } else { '' }\n"
                 + "  $t = $e.TimeCreated.ToUniversalTime().ToString('yyyyMMddHHmmss.ffffff') + '+000'\n"
-                + "  $k = if ($e.Keywords) { [uint64]$e.Keywords } else { 0 }\n"
+                + "  $k = if ($null -ne $e.Keywords) { [string][int64]$e.Keywords } else { '0' }\n"
                 + "  Write-Output ([string]$e.RecordId + \"`t\" + [string]$e.Id + \"`t\" + [string]$e.Level + \"`t\" + $k + \"`t\" + $e.ProviderName + \"`t\" + $t + \"`t\" + $e.MachineName + \"`t\" + $m)\n"
                 + "}\n";
     }
@@ -99,6 +108,16 @@ public final class EventLogPowerShell {
         return terms.isEmpty() ? "*" : "*[System[" + String.join(" and ", terms) + "]]";
     }
 
+    /** The newest record of a log, for detecting a cleared log; prints one RecordId or nothing. */
+    public static String[] newestArguments(EventLogQueryDTO query) {
+        final String log = query.getLogfile().replace("'", "''");
+        final String script = "$ErrorActionPreference = 'Stop'\n"
+                + "try { Get-WinEvent -LogName '" + log + "' -MaxEvents 1 -ErrorAction Stop | ForEach-Object { Write-Output ([string]$_.RecordId) } }"
+                + " catch [Exception] { if ($_.FullyQualifiedErrorId -like 'NoMatchingEventsFound*') { Write-Output '0' } else { throw } }\n";
+        final String encoded = Base64.getEncoder().encodeToString(script.getBytes(StandardCharsets.UTF_16LE));
+        return new String[] { "-NoProfile", "-NonInteractive", "-OutputFormat", "Text", "-EncodedCommand", encoded };
+    }
+
     /** Parses the script's output; malformed lines are skipped rather than failing the batch. */
     public static List<EventLogRecordDTO> parse(String stdout, String logfile) {
         final List<EventLogRecordDTO> records = new ArrayList<>();
@@ -118,28 +137,33 @@ public final class EventLogPowerShell {
                 record.setLogfile(logfile);
                 record.setRecordNumber(Long.parseLong(f[0].trim()));
                 record.setEventCode(Integer.valueOf(f[1].trim()));
-                record.setEventType(eventType(Integer.parseInt(f[2].trim()), Long.parseUnsignedLong(f[3].trim().isEmpty() ? "0" : f[3].trim())));
+                record.setEventType(eventType(parseOrZero(f[2]), parseOrZero(f[3])));
                 record.setSourceName(f[4]);
                 record.setTimeGenerated(f[5].trim());
                 record.setComputerName(f[6]);
                 record.setMessage(f[7].isEmpty() ? "" : new String(Base64.getDecoder().decode(f[7].trim()), StandardCharsets.UTF_8));
                 records.add(record);
             } catch (RuntimeException e) {
-                continue;
+                LOG.debug("Skipping an unparseable {} record line ({}): {}", logfile, e.getMessage(), line);
             }
         }
         return records;
     }
 
+    private static long parseOrZero(String field) {
+        final String value = field.trim();
+        return value.isEmpty() ? 0L : Long.parseLong(value);
+    }
+
     /** Maps the modern Level/Keywords pair onto the classic EventType values the rest of the pipeline uses. */
-    static int eventType(int level, long keywords) {
-        if ((keywords & KEYWORD_AUDIT_FAILURE) == KEYWORD_AUDIT_FAILURE) {
+    static int eventType(long level, long keywords) {
+        if ((keywords & KEYWORD_AUDIT_FAILURE) != 0) {
             return 5;
         }
-        if ((keywords & KEYWORD_AUDIT_SUCCESS) == KEYWORD_AUDIT_SUCCESS) {
+        if ((keywords & KEYWORD_AUDIT_SUCCESS) != 0) {
             return 4;
         }
-        switch (level) {
+        switch ((int) level) {
             case 1:
             case 2: return 1;
             case 3: return 2;
