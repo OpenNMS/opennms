@@ -23,6 +23,7 @@ package org.opennms.netmgt.wsman.eventlog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** What the daemon last saw for one node, one entry per package and log; stored as JSON. */
 public class EventLogReadStatus {
@@ -48,7 +49,7 @@ public class EventLogReadStatus {
 
     public LogStatus forLog(String packageName, String log) {
         for (LogStatus status : logs) {
-            if (status.packageName.equals(packageName) && status.log.equalsIgnoreCase(log)) {
+            if (Objects.equals(status.packageName, packageName) && log.equalsIgnoreCase(status.log)) {
                 return status;
             }
         }

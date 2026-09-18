@@ -31,7 +31,7 @@ A package selects nodes with a filter, lists the logs to read, and can give spec
     <filter>IPADDR != '0.0.0.0'</filter>
     <log name="System" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
     <log name="Application" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
-    <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" levels="AuditFailure"/>
+    <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" include-event-ids="1102,4625,4719,4720,4724,4726,4728,4732,4740,4756"/>
     <event-mapping logfile="System" event-id="6008" uei="uei.opennms.org/wsman/eventlog/unexpectedShutdown" severity="Major"/>
   </package>
 </wsman-eventlog-configuration>
@@ -60,7 +60,7 @@ A package selects nodes with a filter, lists the logs to read, and can give spec
 | `500`
 
 | lookback
-| How far back the first poll of a node reads (`30s`, `15m`, `1h`, `2d`). Later polls continue from the last record seen, which survives restarts.
+| How far back the first poll of a node reads (`30s`, `15m`, `1h`, `2d`). Later polls continue from the last record seen, which survives restarts; when a log is cleared and its numbering restarts below that record, the lookback applies again.
 | `1h`
 
 | levels
@@ -100,10 +100,11 @@ The Task Scheduler example shows the `shell` mode.
 == Events
 
 Each record becomes an event with the node and interface set and these parameters: `logfile`, `eventId`, `eventType`, `level`, `sourceName`, `recordNumber`, `computerName`, `timeGenerated`, `message`, and `insertionString1..n`.
-The severity follows the level: errors are Major, warnings are Warning, audit failures are Minor, and everything else is Normal.
+The severity follows the level: errors are Major, warnings are Warning, audit failures are Minor, information and audit successes are Normal, and an unknown level is Indeterminate.
 
 The UEI is `uei.opennms.org/wsman/eventlog/System`, `.../Application` or `.../Security`, and `.../other` for any other log.
 An `event-mapping` gives one Event ID its own UEI and severity, optionally limited to one log (`logfile`) and one `source`; the shipped configuration maps System 6008 to `uei.opennms.org/wsman/eventlog/unexpectedShutdown` and Security 4625 to `.../logonFailure`, both with alarms.
+When several mappings match one record, the first one listed wins, so list the specific mappings (with a log or source) before the general ones.
 A mapped UEI needs an event definition to have a label and to raise an alarm.
 The mapping dialog looks the UEI up and, when nothing is defined, creates the definition with the mapping: label, log message, description, severity and alarm behavior (one alarm per node by default).
 New definitions join the `opennms.wsman.eventlog.events` source; an existing definition, from any source, is updated in place only when *Update the event definition* is ticked, and only the fields the dialog shows change.

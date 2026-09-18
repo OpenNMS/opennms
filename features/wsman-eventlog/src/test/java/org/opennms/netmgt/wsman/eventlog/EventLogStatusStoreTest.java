@@ -31,6 +31,24 @@ import org.junit.Test;
 public class EventLogStatusStoreTest {
 
     @Test
+    public void prunesLogsNoLongerConfiguredAndClearsNodes() {
+        final EventLogStatusStore store = new EventLogStatusStore(new InMemoryJsonStore());
+        final EventLogTarget a = new EventLogTarget(1, "a", EventLogEventMapperTest.addr("10.0.0.1"), "Default");
+        final EventLogTarget b = new EventLogTarget(2, "b", EventLogEventMapperTest.addr("10.0.0.2"), "Remote");
+        store.update(a, "p", "System", st -> st.recordsRead = 1);
+        store.update(a, "p", "Application", st -> st.recordsRead = 2);
+        store.update(b, "old", "System", st -> st.recordsRead = 3);
+
+        store.retainOnly(java.util.Set.of("p/system"));
+        assertEquals(1, store.getAll().size());
+        assertEquals(1, store.getAll().get(0).logs.size());
+        assertEquals("System", store.getAll().get(0).logs.get(0).log);
+
+        store.clear(1);
+        assertTrue(store.getAll().isEmpty());
+    }
+
+    @Test
     public void keepsOneEntryPerPackageAndLogAndListsAllNodes() {
         final EventLogStatusStore store = new EventLogStatusStore(new InMemoryJsonStore());
         final EventLogTarget a = new EventLogTarget(1, "a", EventLogEventMapperTest.addr("10.0.0.1"), "Default");

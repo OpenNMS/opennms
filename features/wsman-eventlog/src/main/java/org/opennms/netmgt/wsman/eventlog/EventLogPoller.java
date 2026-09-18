@@ -180,6 +180,15 @@ public class EventLogPoller {
     }
 
     private void publish(Package pkg, Log log, EventLogTarget target, EventLogBatchDTO batch) {
+        if (batch.getRecords().isEmpty() && batch.getNewestRecordNumber() != null) {
+            final Long cursor = cursorStore.get(target.getNodeId(), log.getName());
+            if (cursor != null && batch.getNewestRecordNumber() < cursor) {
+                // the log was cleared or re-created: its numbering restarted below the cursor
+                cursorStore.clear(target.getNodeId(), log.getName());
+                LOG.info("The {} log on {} restarted at record {} below the cursor {}; reading it from the lookback again", log.getName(), target, batch.getNewestRecordNumber(), cursor);
+            }
+            return;
+        }
         final Set<Integer> include = parseIds(log.getIncludeEventIds());
         final Set<Integer> exclude = parseIds(log.getExcludeEventIds());
         final List<Event> events = new ArrayList<>();

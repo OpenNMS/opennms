@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.opennms.features.distributed.kvstore.api.JsonStore;
@@ -99,5 +100,27 @@ public class EventLogStatusStore {
 
     public void clear() {
         jsonStore.truncateContext(CONTEXT);
+    }
+
+    public void clear(int nodeId) {
+        jsonStore.delete(Integer.toString(nodeId), CONTEXT);
+    }
+
+    /** Drops the entries of package/log pairs that are no longer configured; keys are "package/log" lower-cased. */
+    public synchronized void retainOnly(Set<String> packageLogKeys) {
+        for (EventLogReadStatus status : getAll()) {
+            final int before = status.logs.size();
+            status.logs.removeIf(l -> l.packageName == null || l.log == null
+                    || !packageLogKeys.contains((l.packageName + "/" + l.log).toLowerCase()));
+            if (status.logs.isEmpty()) {
+                clear(status.nodeId);
+            } else if (status.logs.size() != before) {
+                try {
+                    jsonStore.put(Integer.toString(status.nodeId), mapper.writeValueAsString(status), CONTEXT);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
     }
 }

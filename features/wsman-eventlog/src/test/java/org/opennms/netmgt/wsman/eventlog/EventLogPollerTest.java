@@ -148,6 +148,20 @@ public class EventLogPollerTest {
         assertEquals(Long.valueOf(13), cursors.get(42, "System"));
     }
 
+    // a cleared log restarts its numbering below the cursor; the cursor is dropped and the lookback applies again
+    @Test
+    public void aClearedLogResetsTheCursor() {
+        final Log log = log("System", 500, null, null);
+        cursors.put(42, "System", 5000L);
+        poller.poll(pkg, log, target);
+
+        assertTrue(sent.isEmpty());
+        assertNull(cursors.get(42, "System"));
+        poller.poll(pkg, log, target);
+        assertEquals(4, sent.size());
+        assertEquals(Long.valueOf(13), cursors.get(42, "System"));
+    }
+
     @Test
     public void includeAndExcludeIdsFilterWithoutMovingTheCursorBackwards() {
         final Log log = log("System", 500, null, "7036,1074");

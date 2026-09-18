@@ -22,8 +22,6 @@
 package org.opennms.netmgt.wsman.eventlog;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,7 +29,6 @@ import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -44,8 +41,6 @@ public class EventLogCursorStore {
 
     public static final String CONTEXT = "wsman-eventlog";
 
-    private static final TypeReference<Map<String, Long>> CURSORS = new TypeReference<Map<String, Long>>() { };
-
     private final JsonStore jsonStore;
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -53,34 +48,49 @@ public class EventLogCursorStore {
         this.jsonStore = Objects.requireNonNull(jsonStore);
     }
 
-    public Map<String, Long> get(int nodeId) {
-        final Optional<String> json = jsonStore.get(Integer.toString(nodeId), CONTEXT);
-        if (!json.isPresent()) {
-            return new HashMap<>();
-        }
-        try {
-            return mapper.readValue(json.get(), CURSORS);
-        } catch (IOException e) {
-            LOG.warn("Ignoring unreadable cursors for node {}: {}", nodeId, e.getMessage());
-            return new HashMap<>();
-        }
+    /** One key per node and log, so concurrent polls of one node never overwrite each other. */
+    static String key(int nodeId, String logfile) {
+        return nodeId + "/" + logfile.toLowerCase();
     }
 
     public Long get(int nodeId, String logfile) {
-        return get(nodeId).get(logfile);
+        final Optional<String> json = jsonStore.get(key(nodeId, logfile), CONTEXT);
+        if (!json.isPresent()) {
+            return null;
+        }
+        try {
+            final Cursor cursor = mapper.readValue(json.get(), Cursor.class);
+            return cursor.cursor;
+        } catch (IOException e) {
+            LOG.warn("Ignoring an unreadable cursor for node {} log {}: {}", nodeId, logfile, e.getMessage());
+            return null;
+        }
     }
 
     public void put(int nodeId, String logfile, long recordNumber) {
-        final Map<String, Long> cursors = get(nodeId);
-        cursors.put(logfile, recordNumber);
+        final Cursor cursor = new Cursor();
+        cursor.cursor = recordNumber;
         try {
-            jsonStore.put(Integer.toString(nodeId), mapper.writeValueAsString(cursors), CONTEXT);
+            jsonStore.put(key(nodeId, logfile), mapper.writeValueAsString(cursor), CONTEXT);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
+    public void clear(int nodeId, String logfile) {
+        jsonStore.delete(key(nodeId, logfile), CONTEXT);
+    }
+
     public void clear(int nodeId) {
-        jsonStore.delete(Integer.toString(nodeId), CONTEXT);
+        final String prefix = nodeId + "/";
+        for (String key : jsonStore.enumerateContext(CONTEXT).keySet()) {
+            if (key.startsWith(prefix)) {
+                jsonStore.delete(key, CONTEXT);
+            }
+        }
+    }
+
+    public static class Cursor {
+        public Long cursor;
     }
 }

@@ -24,6 +24,9 @@ package org.opennms.netmgt.wsman.eventlog;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,6 +93,7 @@ public class WsManEventLogd implements SpringServiceDaemon {
     private ExecutorService workers;
     private final List<ScheduledFuture<?>> tasks = new ArrayList<>();
     private final Map<String, CachedTargets> targetsByPackage = new ConcurrentHashMap<>();
+    private final Set<String> inFlight = ConcurrentHashMap.newKeySet();
     private volatile EventLogPoller poller;
     private volatile Duration targetRefresh = Duration.ofMinutes(5);
 
@@ -117,10 +121,39 @@ public class WsManEventLogd implements SpringServiceDaemon {
         Objects.requireNonNull(eventForwarder, "eventForwarder");
     }
 
+    /** Everything the daemon parses lazily is parsed here first, so a bad reload never stops a running daemon. */
+    static void validate(WsmanEventlogConfiguration config) {
+        Durations.parse(config.getTargetRefreshInterval());
+        final Set<String> names = new HashSet<>();
+        for (Package pkg : config.getPackages()) {
+            if (pkg.getName() == null || !names.add(pkg.getName())) {
+                throw new IllegalArgumentException("Package names must be unique; '" + pkg.getName() + "' is not");
+            }
+            for (Log log : pkg.getLogs()) {
+                Durations.parse(log.getLookback());
+                EventLogLevel.parseEventTypes(log.getLevels());
+                EventLogPoller.parseIds(log.getIncludeEventIds());
+                EventLogPoller.parseIds(log.getExcludeEventIds());
+            }
+        }
+    }
+
     @Override
     public synchronized void start() {
         final WsmanEventlogConfiguration config = configDao.getConfig();
+        validate(config);
         targetRefresh = Durations.parse(config.getTargetRefreshInterval());
+        final Set<String> configured = new HashSet<>();
+        for (Package pkg : config.getPackages()) {
+            for (Log log : pkg.getLogs()) {
+                configured.add((pkg.getName() + "/" + log.getName()).toLowerCase());
+            }
+        }
+        try {
+            statusStore.retainOnly(configured);
+        } catch (RuntimeException e) {
+            LOG.warn("Could not prune the read status: {}", e.getMessage());
+        }
         poller = new EventLogPoller(wsManConfigDao, client, cursorStore, new EventLogEventMapper(NAME), eventForwarder, metrics, statusStore, config.getRetries());
         scheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("WsManEventLogd-Scheduler").build());
         workers = Executors.newFixedThreadPool(config.getThreads(), new ThreadFactoryBuilder().setNameFormat("WsManEventLogd-Poll-%d").build());
@@ -149,8 +182,17 @@ public class WsManEventLogd implements SpringServiceDaemon {
         }
         if (workers != null) {
             workers.shutdownNow();
+            try {
+                // a poll still publishing must finish before a restarted poller reads the same log
+                if (!workers.awaitTermination(30, TimeUnit.SECONDS)) {
+                    LOG.warn("Polls still running after 30 s; continuing");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             workers = null;
         }
+        inFlight.clear();
         targetsByPackage.clear();
         metrics.unregister();
         LOG.info("Stopped");
@@ -165,13 +207,24 @@ public class WsManEventLogd implements SpringServiceDaemon {
                 return;
             }
             for (EventLogTarget target : targets) {
-                pool.execute(() -> {
-                    try {
-                        current.poll(pkg, log, target);
-                    } catch (RuntimeException e) {
-                        LOG.error("Unexpected failure polling {} on {}", log.getName(), target, e);
-                    }
-                });
+                final String key = target.getNodeId() + "/" + log.getName().toLowerCase();
+                if (!inFlight.add(key)) {
+                    LOG.debug("Skipping {} {}: the previous poll has not finished", target, log.getName());
+                    continue;
+                }
+                try {
+                    pool.execute(() -> {
+                        try {
+                            current.poll(pkg, log, target);
+                        } catch (RuntimeException e) {
+                            LOG.error("Unexpected failure polling {} on {}", log.getName(), target, e);
+                        } finally {
+                            inFlight.remove(key);
+                        }
+                    });
+                } catch (RejectedExecutionException e) {
+                    inFlight.remove(key);
+                }
             }
         } catch (RuntimeException e) {
             LOG.error("Could not resolve the targets of package {}: {}", pkg.getName(), e.getMessage(), e);
@@ -193,9 +246,25 @@ public class WsManEventLogd implements SpringServiceDaemon {
     public void handleReloadDaemonConfig(IEvent event) {
         DaemonTools.handleReloadEvent(event, NAME, ev -> {
             configDao.reload();
+            validate(configDao.getConfig());
             destroy();
             start();
         });
+    }
+
+    @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
+    public void handleNodeDeleted(IEvent event) {
+        if (event.getNodeid() == null) {
+            return;
+        }
+        final int nodeId = event.getNodeid().intValue();
+        try {
+            cursorStore.clear(nodeId);
+            statusStore.clear(nodeId);
+        } catch (RuntimeException e) {
+            LOG.warn("Could not clear the cursors of deleted node {}: {}", nodeId, e.getMessage());
+        }
+        targetsByPackage.clear();
     }
 
     WsManEventLogdMetrics getMetrics() {
