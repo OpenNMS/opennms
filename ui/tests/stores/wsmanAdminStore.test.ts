@@ -29,6 +29,8 @@ vi.mock('@/services', () => ({
   default: {
     getWsmanEventLogConfig: vi.fn(),
     updateWsmanEventLogConfig: vi.fn(),
+    previewWsmanEventLogFilter: vi.fn(),
+    getWsmanEventLogStatus: vi.fn(),
     getWsmanConfig: vi.fn(),
     getWsmanDataCollection: vi.fn(),
     getWsmanStatus: vi.fn(),

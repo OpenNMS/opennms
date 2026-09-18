@@ -21,6 +21,10 @@
     <constructor-arg ref="jsonStore" />
   </bean>
 
+  <bean id="wsManEventLogStatusStore" class="org.opennms.netmgt.wsman.eventlog.EventLogStatusStore">
+    <constructor-arg ref="jsonStore" />
+  </bean>
+
   <!-- The RPC module lives in the WS-Man bundle so the Minion can serve it; the core-side
        client is wired here rather than in that bundle's shared context, since only this
        daemon needs an RpcClientFactory. -->

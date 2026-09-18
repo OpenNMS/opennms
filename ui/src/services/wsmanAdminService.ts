@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
+import { WsmanConfig, WsmanConfigInput, WsmanDataCollection, WsmanDataCollectionFileInput, WsmanEventLogConfig, WsmanEventLogFilterPreview, WsmanEventLogStatusRow, WsmanReadiness, WsmanStatus, WsmanSyncResult } from '@/types/wsmanAdmin'
 import { rest, v2 } from './axiosInstances'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 
@@ -227,6 +227,29 @@ const updateWsmanEventLogConfig = async (config: WsmanEventLogConfig): Promise<V
   }
 }
 
+// Which nodes a package filter would read; null when the request itself failed.
+const previewWsmanEventLogFilter = async (filter: string): Promise<WsmanEventLogFilterPreview | null> => {
+  try {
+    const resp = await v2.post(`${endpoint}/event-log/preview-filter`, { filter }, { headers: { Accept: 'application/json' }})
+    return resp.data as WsmanEventLogFilterPreview
+  } catch (err) {
+    console.error('Error previewing the WS-Man event log filter:', err)
+    return null
+  }
+}
+
+const getWsmanEventLogStatus = async (): Promise<WsmanEventLogStatusRow[] | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/event-log/status`, { headers: { Accept: 'application/json' }})
+    return (resp.data?.rows ?? []) as WsmanEventLogStatusRow[]
+  } catch (err) {
+    console.error('Error loading the WS-Man event log status:', err)
+    return null
+  }
+}
+
 export {
   getWsmanEventLogConfig,
-  updateWsmanEventLogConfig, getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile }
+  updateWsmanEventLogConfig,
+  previewWsmanEventLogFilter,
+  getWsmanEventLogStatus, getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile }

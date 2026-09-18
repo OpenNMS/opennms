@@ -6,11 +6,21 @@
       Changes are applied on save without a restart.
     </p>
 
+    <div class="toolbar">
+      <OnmsButton variant="outlined" label="Add package" icon="pi pi-plus" data-test="add-package" @click="emit('addPackage')" />
+      <OnmsButton variant="outlined" label="Refresh status" data-test="refresh-status" @click="emit('refreshStatus')" />
+    </div>
+    <p v-if="!config.packages.length" class="intro" data-test="no-packages">No packages: no Windows event logs are read. Add a package to start.</p>
+
     <OnmsCard v-for="pkg in config.packages" :key="pkg.name" class="section" :data-test="`package-${pkg.name}`">
       <template #title>
         <div class="card-header">
           <span class="card-title">Package {{ pkg.name }}</span>
           <span class="filter" :title="pkg.filter">Filter: <code>{{ pkg.filter }}</code></span>
+          <span class="action-container">
+            <OnmsIconButton :icon="Edit" :title="`Edit package ${pkg.name}`" :aria-label="`Edit package ${pkg.name}`" data-test="edit-package" @click="emit('editPackage', pkg)" />
+            <OnmsIconButton :icon="Delete" severity="danger" :title="`Delete package ${pkg.name}`" :aria-label="`Delete package ${pkg.name}`" data-test="delete-package" @click="emit('deletePackage', pkg)" />
+          </span>
         </div>
       </template>
       <template #content>
@@ -84,6 +94,31 @@
             </template>
           </OnmsColumn>
         </OnmsTable>
+
+        <div class="table-header mappings">
+          <span class="section-title">Read status ({{ statusFor(pkg.name).length }})</span>
+          <span v-if="status === null" class="filter" data-test="status-unavailable">Status could not be loaded.</span>
+        </div>
+        <OnmsTable :value="statusFor(pkg.name)" paginator :rows="10" :rowsPerPageOptions="[10, 25, 50]" sortField="nodeLabel" :sortOrder="1" data-test="status-table">
+          <template #empty><span>Nothing read yet: the daemon records a row after its first poll of each node and log.</span></template>
+          <OnmsColumn field="nodeLabel" header="Node" sortable>
+            <template #body="{ data }"><span :title="data.ipAddress">{{ data.nodeLabel }}</span></template>
+          </OnmsColumn>
+          <OnmsColumn field="log" header="Log" sortable />
+          <OnmsColumn header="State">
+            <template #body="{ data }">
+              <OnmsTag :value="stateOf(data).label" :severity="stateOf(data).severity" :title="data.lastError ?? ''" data-test="status-state" />
+            </template>
+          </OnmsColumn>
+          <OnmsColumn field="lastSuccess" header="Last read" sortable>
+            <template #body="{ data }">{{ formatWhen(data.lastSuccess) }}</template>
+          </OnmsColumn>
+          <OnmsColumn field="recordsRead" header="Records" sortable />
+          <OnmsColumn field="eventsPublished" header="Events" sortable />
+          <OnmsColumn header="Cursor">
+            <template #body="{ data }">{{ data.cursor ?? '—' }}</template>
+          </OnmsColumn>
+        </OnmsTable>
       </template>
     </OnmsCard>
   </div>
@@ -93,14 +128,36 @@
 import { OnmsButton, OnmsCard, OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
-import { formatInterval } from './wsmanEventLogForm'
-import { WsmanEventLogConfig, WsmanEventLogLog, WsmanEventLogMapping } from '@/types/wsmanAdmin'
+import { type OnmsTagSeverity } from '@opennms/onms-ui'
+import { formatInterval, formatWhen } from './wsmanEventLogForm'
+import { WsmanEventLogConfig, WsmanEventLogLog, WsmanEventLogMapping, WsmanEventLogPackage, WsmanEventLogStatusRow } from '@/types/wsmanAdmin'
 
-defineProps<{
+const props = defineProps<{
   config: WsmanEventLogConfig
+  // null when the status request failed, which must read differently from "nothing yet"
+  status: WsmanEventLogStatusRow[] | null
 }>()
 
+const statusFor = (packageName: string) => (props.status ?? []).filter(r => r.packageName === packageName)
+
+const stateOf = (row: WsmanEventLogStatusRow): { label: string; severity: OnmsTagSeverity } => {
+  if (row.backingOff) {
+    return { label: `Backing off (${row.consecutiveFailures} failed)`, severity: 'danger' }
+  }
+  if (row.consecutiveFailures > 0) {
+    return { label: `Failing (${row.consecutiveFailures})`, severity: 'warn' }
+  }
+  if (row.lastSuccess) {
+    return { label: 'OK', severity: 'success' }
+  }
+  return { label: 'Never read', severity: 'secondary' }
+}
+
 const emit = defineEmits<{
+  addPackage: []
+  editPackage: [pkg: WsmanEventLogPackage]
+  deletePackage: [pkg: WsmanEventLogPackage]
+  refreshStatus: []
   addLog: [packageName: string]
   editLog: [packageName: string, log: WsmanEventLogLog]
   deleteLog: [packageName: string, log: WsmanEventLogLog]
@@ -125,10 +182,18 @@ const emit = defineEmits<{
 
 .card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
+
+  .filter {
+    flex: 1;
+  }
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .card-title {

@@ -28,9 +28,20 @@
     <filter>IPADDR != '0.0.0.0'</filter>
     <log name="System" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
     <log name="Application" interval="60000" max-records="500" lookback="1h" levels="Error,Warning"/>
-    <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" levels="AuditFailure"/>
+    <!-- Security stays off by default because of its volume; when enabled, only the
+         account, group, lockout and audit-policy IDs mapped below are read -->
+    <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" include-event-ids="1102,4625,4719,4720,4724,4726,4728,4732,4740,4756"/>
     <log name="Microsoft-Windows-TaskScheduler/Operational" enabled="false" mode="shell" interval="300000" max-records="200" lookback="1h" levels="Error,Warning"/>
     <event-mapping logfile="System" event-id="6008" uei="uei.opennms.org/wsman/eventlog/unexpectedShutdown" severity="Major"/>
     <event-mapping logfile="Security" event-id="4625" uei="uei.opennms.org/wsman/eventlog/logonFailure" severity="Minor"/>
+    <event-mapping logfile="Security" event-id="4740" uei="uei.opennms.org/wsman/eventlog/accountLockedOut" severity="Major"/>
+    <event-mapping logfile="Security" event-id="1102" uei="uei.opennms.org/wsman/eventlog/auditLogCleared" severity="Major"/>
+    <event-mapping logfile="Security" event-id="4719" uei="uei.opennms.org/wsman/eventlog/auditPolicyChanged" severity="Major"/>
+    <event-mapping logfile="Security" event-id="4720" uei="uei.opennms.org/wsman/eventlog/userAccountCreated" severity="Warning"/>
+    <event-mapping logfile="Security" event-id="4726" uei="uei.opennms.org/wsman/eventlog/userAccountDeleted" severity="Warning"/>
+    <event-mapping logfile="Security" event-id="4724" uei="uei.opennms.org/wsman/eventlog/passwordResetAttempt" severity="Warning"/>
+    <event-mapping logfile="Security" event-id="4728" uei="uei.opennms.org/wsman/eventlog/groupMemberAdded" severity="Warning"/>
+    <event-mapping logfile="Security" event-id="4732" uei="uei.opennms.org/wsman/eventlog/groupMemberAdded" severity="Warning"/>
+    <event-mapping logfile="Security" event-id="4756" uei="uei.opennms.org/wsman/eventlog/groupMemberAdded" severity="Warning"/>
   </package>
 </wsman-eventlog-configuration>

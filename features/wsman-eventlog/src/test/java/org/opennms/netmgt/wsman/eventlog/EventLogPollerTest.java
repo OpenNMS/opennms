@@ -64,6 +64,7 @@ public class EventLogPollerTest {
     private EventLogCursorStore cursors;
     private List<Event> sent;
     private WsManEventLogdMetrics metrics;
+    private EventLogStatusStore statusStore;
     private EventLogPoller poller;
     private final EventLogTarget target = new EventLogTarget(42, "win-12", EventLogEventMapperTest.addr("127.0.0.1"), "Default");
     private final Package pkg = new Package();
@@ -86,8 +87,9 @@ public class EventLogPollerTest {
         final EventForwarder forwarder = mock(EventForwarder.class);
         org.mockito.Mockito.doAnswer(i -> { sent.add(i.getArgument(0)); return null; }).when(forwarder).sendNow(any(Event.class));
         metrics = new WsManEventLogdMetrics();
+        statusStore = new EventLogStatusStore(new InMemoryJsonStore());
         poller = new EventLogPoller(configDao, new LocationAwareWsManEventLogClientRpcImpl(new MockRpcClientFactory(), module), cursors,
-                new EventLogEventMapper("WsManEventLogd"), forwarder, metrics, 0);
+                new EventLogEventMapper("WsManEventLogd"), forwarder, metrics, statusStore, 0);
         pkg.setName("test");
         pkg.setFilter("IPADDR != '0.0.0.0'");
         pkg.getEventMappings().add(EventLogEventMapperTest.mapping("System", null, 6008, "uei.opennms.org/wsman/eventlog/unexpectedShutdown", "Major"));
@@ -110,6 +112,11 @@ public class EventLogPollerTest {
         assertEquals(Long.valueOf(13), cursors.get(42, "System"));
         assertEquals(2, metrics.getRecordsRead());
         assertEquals(1, metrics.getPollsCompleted());
+        final EventLogReadStatus.LogStatus status = statusStore.get(42).orElseThrow().forLog("test", "System");
+        assertTrue(status.lastSuccess > 0);
+        assertEquals(2, status.recordsRead);
+        assertEquals(Long.valueOf(13), status.cursor);
+        assertNull(status.lastError);
 
         // nothing new: no events, cursor unchanged
         sent.clear();
@@ -159,6 +166,10 @@ public class EventLogPollerTest {
         assertEquals(1, metrics.getPollsFailed());
         assertTrue(sent.isEmpty());
         assertNull(cursors.get(42, "System"));
+        final EventLogReadStatus.LogStatus failed = statusStore.get(42).orElseThrow().forLog("test", "System");
+        assertEquals(1, failed.consecutiveFailures);
+        assertTrue(failed.backingOff);
+        assertTrue(failed.lastError, failed.lastError.contains("Could not send Message") || failed.lastError.contains("401"));
 
         // the next poll is skipped while backing off, then the password is fixed and the poll succeeds
         poller.poll(pkg, log, target);

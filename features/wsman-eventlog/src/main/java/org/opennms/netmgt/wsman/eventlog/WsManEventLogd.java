@@ -79,6 +79,9 @@ public class WsManEventLogd implements SpringServiceDaemon {
     private EventLogCursorStore cursorStore;
 
     @Autowired
+    private EventLogStatusStore statusStore;
+
+    @Autowired
     private EventForwarder eventForwarder;
 
     private final WsManEventLogdMetrics metrics = new WsManEventLogdMetrics();
@@ -94,12 +97,13 @@ public class WsManEventLogd implements SpringServiceDaemon {
     }
 
     public WsManEventLogd(WsManEventLogConfigDao configDao, WSManConfigDao wsManConfigDao, LocationAwareWsManEventLogClient client,
-            EventLogTargetResolver targetResolver, EventLogCursorStore cursorStore, EventForwarder eventForwarder) {
+            EventLogTargetResolver targetResolver, EventLogCursorStore cursorStore, EventLogStatusStore statusStore, EventForwarder eventForwarder) {
         this.configDao = configDao;
         this.wsManConfigDao = wsManConfigDao;
         this.client = client;
         this.targetResolver = targetResolver;
         this.cursorStore = cursorStore;
+        this.statusStore = statusStore;
         this.eventForwarder = eventForwarder;
     }
 
@@ -117,7 +121,7 @@ public class WsManEventLogd implements SpringServiceDaemon {
     public synchronized void start() {
         final WsmanEventlogConfiguration config = configDao.getConfig();
         targetRefresh = Durations.parse(config.getTargetRefreshInterval());
-        poller = new EventLogPoller(wsManConfigDao, client, cursorStore, new EventLogEventMapper(NAME), eventForwarder, metrics, config.getRetries());
+        poller = new EventLogPoller(wsManConfigDao, client, cursorStore, new EventLogEventMapper(NAME), eventForwarder, metrics, statusStore, config.getRetries());
         scheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("WsManEventLogd-Scheduler").build());
         workers = Executors.newFixedThreadPool(config.getThreads(), new ThreadFactoryBuilder().setNameFormat("WsManEventLogd-Poll-%d").build());
         metrics.register();

@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.UUID;
@@ -42,6 +43,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.wsman.eventlog.EventLogStatusStore;
+import org.opennms.netmgt.wsman.eventlog.EventLogTarget;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
@@ -72,6 +78,15 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
 
     private static final String URL = "/wsman-config/event-log";
 
+    @Autowired
+    private JsonStore m_jsonStore;
+
+    @Autowired
+    private DatabasePopulator m_populator;
+
+    // the temporary database is reused across the methods of this class, so populate once
+    private static boolean s_populated;
+
     private File m_home;
     private File m_file;
     private String m_previousHome;
@@ -90,6 +105,10 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
         m_file = new File(etc, WsmanEventLogConfigRestService.FILE_NAME);
         Files.copy(new File("../opennms-base-assembly/src/main/filtered/etc/" + WsmanEventLogConfigRestService.FILE_NAME).toPath(), m_file.toPath());
         System.setProperty("opennms.home", m_home.getAbsolutePath());
+        if (!s_populated) {
+            m_populator.populateDatabase();
+            s_populated = true;
+        }
     }
 
     @After
@@ -176,10 +195,52 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
     }
 
     @Test
+    public void previewsAFilter() throws Exception {
+        JSONObject preview = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, URL + "/preview-filter", "{\"filter\":\"IPADDR != '0.0.0.0'\"}", 200).getContentAsString());
+        assertTrue(preview.getBoolean("valid"));
+        assertEquals("", preview.optString("error", ""));
+        // the populated database has nodes but none carries the WS-Man service
+        assertTrue(preview.getInt("matchedNodes") > 0);
+        assertEquals(0, preview.getInt("readableNodes"));
+
+        preview = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, URL + "/preview-filter", "{\"filter\":\"IPADDR IPLIKE\"}", 200).getContentAsString());
+        assertFalse(preview.getBoolean("valid"));
+        assertFalse(preview.optString("error", "").isEmpty());
+
+        preview = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, URL + "/preview-filter", "{\"filter\":\"\"}", 200).getContentAsString());
+        assertFalse(preview.getBoolean("valid"));
+    }
+
+    @Test
+    public void reportsTheReadStatusRecordedByTheDaemon() throws Exception {
+        assertEquals(0, new JSONObject(getJson(URL + "/status", 200)).getJSONArray("rows").length());
+        final EventLogStatusStore store = new EventLogStatusStore(m_jsonStore);
+        final EventLogTarget target = new EventLogTarget(42, "win-12", InetAddress.getByName("10.0.0.12"), "Default");
+        store.update(target, "windows-servers", "System", st -> { st.lastSuccess = 1_700_000_000_000L; st.recordsRead = 7; st.cursor = 1003L; });
+        store.update(target, "windows-servers", "Security", st -> { st.lastFailure = 1_700_000_100_000L; st.lastError = "401"; st.consecutiveFailures = 2; st.backingOff = true; });
+        try {
+            final JSONArray rows = new JSONObject(getJson(URL + "/status", 200)).getJSONArray("rows");
+            assertEquals(2, rows.length());
+            final JSONObject system = rows.getJSONObject(0);
+            assertEquals("win-12", system.getString("nodeLabel"));
+            assertEquals("System", system.getString("log"));
+            assertEquals(7, system.getLong("recordsRead"));
+            assertEquals(1003, system.getLong("cursor"));
+            final JSONObject security = rows.getJSONObject(1);
+            assertTrue(security.getBoolean("backingOff"));
+            assertEquals("401", security.getString("lastError"));
+        } finally {
+            store.clear();
+        }
+    }
+
+    @Test
     public void forbiddenForNonAdmin() throws Exception {
         setUser("user", new String[] { "ROLE_USER" });
         getJson(URL, 403);
         sendData(PUT, MediaType.APPLICATION_JSON, URL, "{}", 403);
+        sendData(POST, MediaType.APPLICATION_JSON, URL + "/preview-filter", "{}", 403);
+        getJson(URL + "/status", 403);
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {

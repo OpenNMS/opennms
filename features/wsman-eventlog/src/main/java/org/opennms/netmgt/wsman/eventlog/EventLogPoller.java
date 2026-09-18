@@ -73,18 +73,25 @@ public class EventLogPoller {
     private final EventLogEventMapper mapper;
     private final EventForwarder eventForwarder;
     private final WsManEventLogdMetrics metrics;
+    private final EventLogStatusStore statusStore;
     private final int retries;
 
     private final Map<String, Backoff> backoffs = new ConcurrentHashMap<>();
 
     public EventLogPoller(WSManConfigDao wsManConfigDao, LocationAwareWsManEventLogClient client, EventLogCursorStore cursorStore,
             EventLogEventMapper mapper, EventForwarder eventForwarder, WsManEventLogdMetrics metrics, int retries) {
+        this(wsManConfigDao, client, cursorStore, mapper, eventForwarder, metrics, null, retries);
+    }
+
+    public EventLogPoller(WSManConfigDao wsManConfigDao, LocationAwareWsManEventLogClient client, EventLogCursorStore cursorStore,
+            EventLogEventMapper mapper, EventForwarder eventForwarder, WsManEventLogdMetrics metrics, EventLogStatusStore statusStore, int retries) {
         this.wsManConfigDao = Objects.requireNonNull(wsManConfigDao);
         this.client = Objects.requireNonNull(client);
         this.cursorStore = Objects.requireNonNull(cursorStore);
         this.mapper = Objects.requireNonNull(mapper);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.metrics = Objects.requireNonNull(metrics);
+        this.statusStore = statusStore;
         this.retries = retries;
     }
 
@@ -93,6 +100,7 @@ public class EventLogPoller {
         final Backoff backoff = backoffs.computeIfAbsent(key, k -> new Backoff());
         if (backoff.skip()) {
             LOG.debug("Skipping {} {} while backing off", target, log.getName());
+            recordStatus(target, pkg, log, st -> st.backingOff = true);
             return;
         }
         try {
@@ -110,13 +118,38 @@ public class EventLogPoller {
             }
             backoff.succeeded();
             metrics.pollCompleted();
+            recordStatus(target, pkg, log, st -> {
+                st.lastSuccess = System.currentTimeMillis();
+                st.consecutiveFailures = 0;
+                st.backingOff = false;
+                st.lastError = null;
+                st.cursor = cursorStore.get(target.getNodeId(), log.getName());
+            });
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException | TimeoutException | RuntimeException e) {
             final Throwable cause = e instanceof ExecutionException && e.getCause() != null ? e.getCause() : e;
             backoff.failed();
             metrics.pollFailed();
-            LOG.warn("Reading the {} log on {} failed ({} consecutive): {}", log.getName(), target, backoff.failures, cause.getMessage());
+            final String reason = cause.getMessage() == null ? cause.getClass().getSimpleName() : cause.getMessage();
+            recordStatus(target, pkg, log, st -> {
+                st.lastFailure = System.currentTimeMillis();
+                st.lastError = reason;
+                st.consecutiveFailures = backoff.failures;
+                st.backingOff = backoff.skipsLeft > 0;
+            });
+            LOG.warn("Reading the {} log on {} failed ({} consecutive): {}", log.getName(), target, backoff.failures, reason);
+        }
+    }
+
+    private void recordStatus(EventLogTarget target, Package pkg, Log log, java.util.function.Consumer<EventLogReadStatus.LogStatus> change) {
+        if (statusStore == null) {
+            return;
+        }
+        try {
+            statusStore.update(target, pkg.getName(), log.getName(), change);
+        } catch (RuntimeException e) {
+            LOG.debug("Could not record the read status of {} {}: {}", target, log.getName(), e.getMessage());
         }
     }
 
@@ -168,6 +201,12 @@ public class EventLogPoller {
             eventForwarder.sendNow(event);
         }
         metrics.eventsPublished(events.size());
+        final int read = batch.getRecords().size();
+        final int published = events.size();
+        recordStatus(target, pkg, log, st -> {
+            st.recordsRead += read;
+            st.eventsPublished += published;
+        });
         if (highest >= 0) {
             cursorStore.put(target.getNodeId(), log.getName(), highest);
         }

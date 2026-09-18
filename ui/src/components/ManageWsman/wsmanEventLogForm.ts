@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { WsmanEventLogConfig, WsmanEventLogLog, WsmanEventLogMapping } from '@/types/wsmanAdmin'
+import { WsmanEventLogConfig, WsmanEventLogLog, WsmanEventLogMapping, WsmanEventLogPackage } from '@/types/wsmanAdmin'
 
 export const LEVEL_OPTIONS = ['Error', 'Warning', 'Information', 'AuditSuccess', 'AuditFailure']
 
@@ -134,3 +134,36 @@ export const toggleLog = (config: WsmanEventLogConfig, packageName: string, name
   }
   return next
 }
+
+export const DEFAULT_FILTER = 'IPADDR != \'0.0.0.0\''
+
+// A new package starts with the two logs every Windows host has, so it reads something at once.
+export const defaultPackage = (): WsmanEventLogPackage => ({
+  name: '',
+  filter: DEFAULT_FILTER,
+  logs: [
+    { ...defaultLog(), name: 'System' },
+    { ...defaultLog(), name: 'Application' }
+  ],
+  eventMappings: []
+})
+
+// Replaces (or appends) a package, keyed by its original name; logs and mappings travel with it.
+export const upsertPackage = (config: WsmanEventLogConfig, originalName: string | null, pkg: WsmanEventLogPackage): WsmanEventLogConfig => {
+  const next = cloneConfig(config)
+  const index = originalName === null ? -1 : next.packages.findIndex(p => p.name === originalName)
+  if (index < 0) {
+    next.packages.push(pkg)
+  } else {
+    next.packages[index] = { ...next.packages[index], name: pkg.name, filter: pkg.filter }
+  }
+  return next
+}
+
+export const removePackage = (config: WsmanEventLogConfig, name: string): WsmanEventLogConfig => {
+  const next = cloneConfig(config)
+  next.packages = next.packages.filter(p => p.name !== name)
+  return next
+}
+
+export const formatWhen = (ms: number | null | undefined): string => (ms ? new Date(ms).toLocaleString() : 'never')

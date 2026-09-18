@@ -48,7 +48,7 @@ Existing rows in the `statisticsreport` tables are left in place and continue to
 
 === Windows event logs over WS-Man
 The new WsManEventLogd daemon reads the Windows event logs of monitored hosts over WS-Man and creates one event per record, using the endpoints and credentials in `wsman-config.xml` and running the poll through the Minion at the node's location.
-It is configured in `etc/wsman-eventlog-configuration.xml` and enabled by default; set `CORE_SERVICE_WSMANEVENTLOGD_ENABLED=false` to turn it off.
+It is configured on the *Event Logs* tab of the *Manage WS-Man* page (or in `etc/wsman-eventlog-configuration.xml`) and enabled by default; set `CORE_SERVICE_WSMANEVENTLOGD_ENABLED=false` to turn it off.
 See xref:operation:deep-dive/events/sources/wsman-eventlog.adoc[Windows event logs].
 
 === SNMP datacollection config moved to DB with new UI

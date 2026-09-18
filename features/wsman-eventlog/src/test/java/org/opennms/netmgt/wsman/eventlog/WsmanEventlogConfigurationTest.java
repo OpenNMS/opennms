@@ -60,7 +60,8 @@ public class WsmanEventlogConfigurationTest {
         assertEquals("Error,Warning", system.getLevels());
         assertFalse(pkg.getLogs().get(2).isEnabled());
 
-        assertEquals(2, pkg.getEventMappings().size());
+        assertEquals("1102,4625,4719,4720,4724,4726,4728,4732,4740,4756", pkg.getLogs().get(2).getIncludeEventIds());
+        assertEquals(11, pkg.getEventMappings().size());
         assertEquals(6008, pkg.getEventMappings().get(0).getEventId());
         assertEquals("uei.opennms.org/wsman/eventlog/unexpectedShutdown", pkg.getEventMappings().get(0).getUei());
         assertEquals("Major", pkg.getEventMappings().get(0).getSeverity());

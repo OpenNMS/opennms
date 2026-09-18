@@ -270,3 +270,29 @@ export interface WsmanEventLogConfig {
   targetRefreshInterval: string
   packages: WsmanEventLogPackage[]
 }
+
+export interface WsmanEventLogFilterPreview {
+  valid: boolean
+  error?: string
+  readableNodes: number
+  matchedNodes: number
+  matches: { nodeId: number; label: string; ipAddress: string; location: string | null }[]
+}
+
+// one row per node, package and log, as the daemon last recorded it
+export interface WsmanEventLogStatusRow {
+  nodeId: number
+  nodeLabel: string
+  ipAddress: string
+  location: string | null
+  packageName: string
+  log: string
+  lastSuccess: number | null
+  lastFailure: number | null
+  lastError: string | null
+  consecutiveFailures: number
+  backingOff: boolean
+  recordsRead: number
+  eventsPublished: number
+  cursor: number | null
+}

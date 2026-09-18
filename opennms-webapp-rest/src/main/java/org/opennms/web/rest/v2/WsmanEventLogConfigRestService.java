@@ -29,11 +29,13 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -48,15 +50,23 @@ import org.opennms.netmgt.config.wsman.eventlog.WsmanEventlogConfiguration;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.wsman.eventlog.Durations;
 import org.opennms.netmgt.wsman.eventlog.EventLogLevel;
+import org.opennms.netmgt.wsman.eventlog.EventLogStatusStore;
+import org.opennms.netmgt.wsman.eventlog.EventLogTarget;
+import org.opennms.netmgt.wsman.eventlog.EventLogTargetResolver;
 import org.opennms.netmgt.wsman.eventlog.WsManEventLogd;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.model.WsmanEventLogConfigDto;
+import org.opennms.web.rest.v2.model.WsmanEventLogFilterPreviewDto;
+import org.opennms.web.rest.v2.model.WsmanEventLogStatusDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -83,6 +93,17 @@ public class WsmanEventLogConfigRestService {
 
     @Autowired
     private FilterDao filterDao;
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private SessionUtils sessionUtils;
+
+    @Autowired
+    private JsonStore jsonStore;
+
+    private static final int PREVIEW_LIMIT = 50;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -116,6 +137,56 @@ public class WsmanEventLogConfigRestService {
         sendDaemonReload();
         final byte[] bytes = readBytes();
         return WsmanEventLogConfigDto.from(unmarshal(bytes), digest(bytes));
+    }
+
+    /** Which nodes a package filter would read, before it is saved. */
+    @POST
+    @javax.ws.rs.Path("preview-filter")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public WsmanEventLogFilterPreviewDto previewFilter(@Context final SecurityContext securityContext, final WsmanEventLogFilterPreviewDto.Request request) {
+        requireAdmin(securityContext);
+        final WsmanEventLogFilterPreviewDto result = new WsmanEventLogFilterPreviewDto();
+        final String filter = request == null ? null : request.filter;
+        if (filter == null || filter.trim().isEmpty()) {
+            result.error = "A filter is required.";
+            return result;
+        }
+        try {
+            filterDao.validateRule(filter);
+        } catch (final FilterParseException e) {
+            result.error = rootMessage(e);
+            return result;
+        }
+        result.valid = true;
+        try {
+            result.matchedNodes = filterDao.getNodeMap(filter).size();
+            final List<EventLogTarget> targets = new EventLogTargetResolver(filterDao, nodeDao, sessionUtils).resolve(filter);
+            result.readableNodes = targets.size();
+            for (final EventLogTarget target : targets) {
+                if (result.matches.size() >= PREVIEW_LIMIT) {
+                    break;
+                }
+                final WsmanEventLogFilterPreviewDto.Match match = new WsmanEventLogFilterPreviewDto.Match();
+                match.nodeId = target.getNodeId();
+                match.label = target.getNodeLabel();
+                match.ipAddress = target.getAddress().getHostAddress();
+                match.location = target.getLocation();
+                result.matches.add(match);
+            }
+        } catch (final RuntimeException e) {
+            result.error = "The filter is valid, but the preview could not be built: " + rootMessage(e);
+        }
+        return result;
+    }
+
+    /** The daemon's last read per node and log, as it records them in the key-value store. */
+    @GET
+    @javax.ws.rs.Path("status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WsmanEventLogStatusDto getStatus(@Context final SecurityContext securityContext) {
+        requireAdmin(securityContext);
+        return WsmanEventLogStatusDto.from(new EventLogStatusStore(jsonStore).getAll());
     }
 
     private void validate(final WsmanEventLogConfigDto update) {

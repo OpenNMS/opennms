@@ -44,8 +44,14 @@ const config: WsmanEventLogConfig = {
   }]
 }
 
-const mountPanel = () => mount(WsmanEventLogPanel, {
-  props: { config },
+const status = [
+  { nodeId: 67, nodeLabel: 'win-11', ipAddress: '127.0.0.2', location: 'Default', packageName: 'windows-servers', log: 'System', lastSuccess: 1789936800000, lastFailure: null, lastError: null, consecutiveFailures: 0, backingOff: false, recordsRead: 12, eventsPublished: 4, cursor: 1003 },
+  { nodeId: 68, nodeLabel: 'win-12', ipAddress: '127.0.0.3', location: 'Default', packageName: 'windows-servers', log: 'System', lastSuccess: null, lastFailure: 1789936800000, lastError: '401', consecutiveFailures: 3, backingOff: true, recordsRead: 0, eventsPublished: 0, cursor: null },
+  { nodeId: 68, nodeLabel: 'win-12', ipAddress: '127.0.0.3', location: 'Default', packageName: 'other', log: 'System', lastSuccess: 1789936800000, lastFailure: null, lastError: null, consecutiveFailures: 0, backingOff: false, recordsRead: 1, eventsPublished: 1, cursor: 5 }
+]
+
+const mountPanel = (rows: typeof status | null = status) => mount(WsmanEventLogPanel, {
+  props: { config, status: rows },
   global: { plugins: [PrimeVue], stubs: { OnmsCard: OnmsCardStub }}
 })
 
@@ -73,6 +79,35 @@ describe('WsmanEventLogPanel.vue', () => {
     expect(wrapper.emitted('addLog')?.[0]).toEqual(['windows-servers'])
     wrapper.findAllComponents({ name: 'OnmsToggleSwitch' })[1].vm.$emit('update:modelValue', true)
     expect(wrapper.emitted('toggleLog')?.[0]).toEqual(['windows-servers', 'Microsoft-Windows-TaskScheduler/Operational', true])
+  })
+
+  it('emits package actions from the toolbar and the card header', async () => {
+    const wrapper = mountPanel()
+    await wrapper.find('[data-test="add-package"]').trigger('click')
+    expect(wrapper.emitted('addPackage')).toHaveLength(1)
+    await wrapper.find('[data-test="edit-package"]').trigger('click')
+    expect(wrapper.emitted('editPackage')?.[0]).toEqual([config.packages[0]])
+    await wrapper.find('[data-test="delete-package"]').trigger('click')
+    expect(wrapper.emitted('deletePackage')?.[0]).toEqual([config.packages[0]])
+    await wrapper.find('[data-test="refresh-status"]').trigger('click')
+    expect(wrapper.emitted('refreshStatus')).toHaveLength(1)
+  })
+
+  it('shows the read status rows of this package only, with a state per row', () => {
+    const wrapper = mountPanel()
+    const rows = wrapper.findAll('[data-test="status-table"] tbody tr')
+    expect(rows).toHaveLength(2)
+    expect(rows[0].text()).toContain('win-11')
+    expect(rows[0].text()).toContain('OK')
+    expect(rows[0].text()).toContain('1003')
+    expect(rows[1].text()).toContain('Backing off (3 failed)')
+    expect(wrapper.find('[data-test="status-unavailable"]').exists()).toBe(false)
+  })
+
+  it('says when the status could not be loaded', () => {
+    const wrapper = mountPanel(null)
+    expect(wrapper.find('[data-test="status-unavailable"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="status-table"]').text()).toContain('Nothing read yet')
   })
 
   it('lists the mappings and emits their actions with the index', async () => {

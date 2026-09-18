@@ -76,7 +76,7 @@ import {
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
-import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanEventLogConfig, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile, updateWsmanEventLogConfig } from './wsmanAdminService'
+import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanEventLogConfig, getWsmanEventLogStatus, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile, updateWsmanEventLogConfig, previewWsmanEventLogFilter } from './wsmanAdminService'
 import {
   createManagedUser,
   deleteManagedUser,
@@ -237,5 +237,7 @@ export default {
   updateWsmanConfig,
   updateWsmanDataCollectionFile,
   getWsmanEventLogConfig,
-  updateWsmanEventLogConfig
+  updateWsmanEventLogConfig,
+  previewWsmanEventLogFilter,
+  getWsmanEventLogStatus
 }

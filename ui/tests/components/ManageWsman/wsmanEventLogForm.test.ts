@@ -21,7 +21,7 @@
 ///
 
 import { describe, expect, it } from 'vitest'
-import { formatInterval, removeLog, removeMapping, toggleLog, upsertLog, upsertMapping } from '@/components/ManageWsman/wsmanEventLogForm'
+import { defaultPackage, formatInterval, removeLog, removeMapping, removePackage, toggleLog, upsertLog, upsertMapping, upsertPackage } from '@/components/ManageWsman/wsmanEventLogForm'
 import { WsmanEventLogConfig } from '@/types/wsmanAdmin'
 
 const config = (): WsmanEventLogConfig => ({
@@ -64,6 +64,21 @@ describe('wsmanEventLogForm', () => {
     expect(upsertMapping(original, 'windows', null, mapping).packages[0].eventMappings).toHaveLength(2)
     expect(upsertMapping(original, 'windows', 0, mapping).packages[0].eventMappings[0].eventId).toBe(41)
     expect(removeMapping(original, 'windows', 0).packages[0].eventMappings).toHaveLength(0)
+  })
+
+  it('adds a package with the default logs, edits name and filter in place, and removes one', () => {
+    const original = config()
+    const added = upsertPackage(original, null, { ...defaultPackage(), name: 'dcs', filter: 'catincDomain-Controllers' })
+    expect(added.packages.map(p => p.name)).toEqual(['windows', 'dcs'])
+    expect(added.packages[1].logs.map(l => l.name)).toEqual(['System', 'Application'])
+    const renamed = upsertPackage(original, 'windows', { ...original.packages[0], name: 'all', filter: 'IPADDR IPLIKE 10.*.*.*', logs: [], eventMappings: [] })
+    expect(renamed.packages[0].name).toBe('all')
+    expect(renamed.packages[0].filter).toBe('IPADDR IPLIKE 10.*.*.*')
+    // an edit never drops the package's logs and mappings
+    expect(renamed.packages[0].logs).toHaveLength(2)
+    expect(renamed.packages[0].eventMappings).toHaveLength(1)
+    expect(removePackage(original, 'windows').packages).toHaveLength(0)
+    expect(original.packages).toHaveLength(1)
   })
 
   it('formats the frequency for the table', () => {
