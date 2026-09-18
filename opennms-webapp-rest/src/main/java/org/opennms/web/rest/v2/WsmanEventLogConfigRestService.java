@@ -421,9 +421,8 @@ public class WsmanEventLogConfigRestService {
                         throw badRequest("Log '" + log.name + "': Event ID " + id + " is both included and excluded.");
                     }
                 }
-                if (log.mode != null && !log.mode.trim().isEmpty()
-                        && !"wql".equalsIgnoreCase(log.mode.trim()) && !"shell".equalsIgnoreCase(log.mode.trim())) {
-                    throw badRequest("The mode of log '" + log.name + "' must be wql or shell.");
+                if (log.mode != null && !log.mode.trim().isEmpty() && !"wql".equalsIgnoreCase(log.mode.trim())) {
+                    throw badRequest("The mode of log '" + log.name + "' must be wql; reading through Get-WinEvent is not available in this release.");
                 }
             }
             final Set<String> mappingKeys = new HashSet<>();

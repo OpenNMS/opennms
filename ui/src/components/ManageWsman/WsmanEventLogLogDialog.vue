@@ -10,11 +10,8 @@
     <div class="form-column">
       <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
       <div class="two-columns">
-        <FormField label="Log" for="log-name" required :error="nameProblem || undefined" hint="System, Application, Security, or any log name such as Microsoft-Windows-TaskScheduler/Operational.">
+        <FormField label="Log" for="log-name" required :error="nameProblem || undefined" hint="System, Application, Security, or another classic log; the Applications and Services logs are not supported yet.">
           <OnmsInputText id="log-name" v-model="log.name" :invalid="!!nameProblem" fluid data-test="name-input" />
-        </FormField>
-        <FormField label="Read with" for="log-mode" hint="WQL reaches the classic logs only; Get-WinEvent reaches every log but needs an account allowed to run commands.">
-          <OnmsSelect inputId="log-mode" v-model="log.mode" :options="MODE_OPTIONS" optionLabel="label" optionValue="value" fluid data-test="mode-select" />
         </FormField>
         <FormField label="Frequency" for="log-interval">
           <OnmsSelect inputId="log-interval" v-model="log.interval" :options="intervalOptions" optionLabel="label" optionValue="value" fluid data-test="interval-select" />
@@ -51,7 +48,7 @@
 import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsInputNumber, OnmsInputText, OnmsMultiSelect, OnmsSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
-import { DURATION, INTERVAL_OPTIONS, LEVEL_OPTIONS, MODE_OPTIONS, defaultLog, joinCsv, splitCsv, upsertLog } from './wsmanEventLogForm'
+import { DURATION, INTERVAL_OPTIONS, LEVEL_OPTIONS, defaultLog, joinCsv, splitCsv, upsertLog } from './wsmanEventLogForm'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { WsmanEventLogConfig, WsmanEventLogLog } from '@/types/wsmanAdmin'
 

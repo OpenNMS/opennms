@@ -47,9 +47,6 @@
           <OnmsColumn header="Levels">
             <template #body="{ data }">{{ data.levels || 'All' }}</template>
           </OnmsColumn>
-          <OnmsColumn header="Mode">
-            <template #body="{ data }"><OnmsTag :value="data.mode === 'shell' ? 'Get-WinEvent' : 'WQL'" severity="secondary" /></template>
-          </OnmsColumn>
           <OnmsColumn header="Max records">
             <template #body="{ data }">{{ data.maxRecords }}</template>
           </OnmsColumn>

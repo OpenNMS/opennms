@@ -73,13 +73,12 @@ exclude-event-ids
 | none
 
 | mode
-| `wql` reads the log through WMI's `Win32_NTLogEvent`, which only exposes the classic logs. `shell` runs `Get-WinEvent` through WinRS and reaches any log, including the "Applications and Services" logs such as `Microsoft-Windows-TaskScheduler/Operational`; the account then also needs the right to run commands, for example membership in `Remote Management Users`.
+| `wql` reads the log through WMI's `Win32_NTLogEvent`, which exposes the classic logs (Application, System, Security and the other logs listed under Windows Logs). The "Applications and Services" logs, such as `Microsoft-Windows-TaskScheduler/Operational`, cannot be read in this release.
 | `wql`
 |===
 
 The `Security` log is disabled in the shipped configuration because of its volume.
 When you enable it, its `include-event-ids` keeps only the account, group, lockout and audit-policy records listed in the table below, each mapped to its own UEI with an alarm; clear the list to read the whole log.
-The Task Scheduler example shows the `shell` mode.
 
 .Security log defaults
 [options="header"]

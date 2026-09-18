@@ -135,7 +135,7 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
         assertEquals(60000, logs.getJSONObject(0).getLong("interval"));
         assertEquals("wql", logs.getJSONObject(0).getString("mode"));
         assertFalse(logs.getJSONObject(2).getBoolean("enabled"));
-        assertEquals("shell", logs.getJSONObject(3).getString("mode"));
+        assertEquals(3, logs.length());
         assertEquals(6008, pkg.getJSONArray("eventMappings").getJSONObject(0).getInt("eventId"));
     }
 
@@ -174,6 +174,10 @@ public class WsmanEventLogConfigRestServiceIT extends AbstractSpringJerseyRestTe
         assertTrue(reason, reason.contains("at least 1000 ms"));
 
         log.put("interval", 60000);
+        log.put("mode", "shell");
+        reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
+        assertTrue(reason, reason.contains("Get-WinEvent"));
+        log.put("mode", "wql");
         log.put("lookback", "soon");
         reason = sendData(PUT, MediaType.APPLICATION_JSON, URL, config.toString(), 400).getContentAsString();
         assertTrue(reason, reason.contains("lookback"));

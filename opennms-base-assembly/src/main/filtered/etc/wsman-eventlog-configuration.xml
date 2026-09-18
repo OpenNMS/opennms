@@ -15,10 +15,9 @@
     lookback          how far back the first poll of a node reads (30s, 15m, 1h, 2d)
     levels            Error,Warning,Information,AuditSuccess,AuditFailure (empty = all)
     include-event-ids / exclude-event-ids   comma-separated Event IDs
-    mode              wql (default; Win32_NTLogEvent, the classic Application/System/Security
-                      logs) or shell (Get-WinEvent through WinRS, needed for the
-                      "Applications and Services" logs; the account must be allowed to run
-                      commands, e.g. member of Remote Management Users)
+    mode              wql (Win32_NTLogEvent: the classic Application, System and Security
+                      logs). Reading the "Applications and Services" logs through
+                      Get-WinEvent is not available in this release.
 
   event-mapping gives one Event ID (optionally in one log and from one source) its
   own UEI and severity; every other record uses uei.opennms.org/wsman/eventlog/<log>.
@@ -31,7 +30,9 @@
     <!-- Security stays off by default because of its volume; when enabled, only the
          account, group, lockout and audit-policy IDs mapped below are read -->
     <log name="Security" enabled="false" interval="60000" max-records="500" lookback="15m" include-event-ids="1102,4625,4719,4720,4724,4726,4728,4732,4740,4756"/>
+    <!-- Reserved for a later release: "Applications and Services" logs through Get-WinEvent.
     <log name="Microsoft-Windows-TaskScheduler/Operational" enabled="false" mode="shell" interval="300000" max-records="200" lookback="1h" levels="Error,Warning"/>
+    -->
     <event-mapping logfile="System" event-id="6008" uei="uei.opennms.org/wsman/eventlog/unexpectedShutdown" severity="Major"/>
     <event-mapping logfile="Security" event-id="4625" uei="uei.opennms.org/wsman/eventlog/logonFailure" severity="Minor"/>
     <event-mapping logfile="Security" event-id="4740" uei="uei.opennms.org/wsman/eventlog/accountLockedOut" severity="Major"/>

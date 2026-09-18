@@ -130,6 +130,9 @@ public class WsManEventLogd implements SpringServiceDaemon {
                 throw new IllegalArgumentException("Package names must be unique; '" + pkg.getName() + "' is not");
             }
             for (Log log : pkg.getLogs()) {
+                if (log.getMode() != null && !"wql".equalsIgnoreCase(log.getMode().trim())) {
+                    throw new IllegalArgumentException("Log '" + log.getName() + "' uses mode '" + log.getMode() + "'; only wql is available in this release");
+                }
                 Durations.parse(log.getLookback());
                 EventLogLevel.parseEventTypes(log.getLevels());
                 EventLogPoller.parseIds(log.getIncludeEventIds());

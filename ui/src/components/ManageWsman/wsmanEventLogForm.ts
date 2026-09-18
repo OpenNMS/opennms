@@ -24,9 +24,9 @@ import { WsmanEventLogConfig, WsmanEventLogDefinition, WsmanEventLogLog, WsmanEv
 
 export const LEVEL_OPTIONS = ['Error', 'Warning', 'Information', 'AuditSuccess', 'AuditFailure']
 
+// Get-WinEvent (mode "shell") is not offered in this release; the daemon reads the classic logs through WQL only.
 export const MODE_OPTIONS = [
-  { label: 'WQL (Win32_NTLogEvent, classic logs)', value: 'wql' },
-  { label: 'Shell (Get-WinEvent, any log)', value: 'shell' }
+  { label: 'WQL (Win32_NTLogEvent, classic logs)', value: 'wql' }
 ]
 
 export const SEVERITY_OPTIONS = ['Critical', 'Major', 'Minor', 'Warning', 'Normal', 'Cleared', 'Indeterminate']

@@ -38,7 +38,7 @@ const config: WsmanEventLogConfig = {
     filter: 'IPADDR != \'0.0.0.0\'',
     logs: [
       { name: 'System', enabled: true, interval: 60000, maxRecords: 500, lookback: '1h', levels: 'Error,Warning', includeEventIds: null, excludeEventIds: null, mode: 'wql' },
-      { name: 'Microsoft-Windows-TaskScheduler/Operational', enabled: false, interval: 300000, maxRecords: 200, lookback: '1h', levels: null, includeEventIds: null, excludeEventIds: null, mode: 'shell' }
+      { name: 'Security', enabled: false, interval: 300000, maxRecords: 200, lookback: '1h', levels: null, includeEventIds: null, excludeEventIds: null, mode: 'wql' }
     ],
     eventMappings: [{ logfile: 'System', source: null, eventId: 6008, uei: 'uei.opennms.org/wsman/eventlog/unexpectedShutdown', severity: 'Major' }]
   }]
@@ -60,16 +60,14 @@ const mountPanel = (rows: typeof status | null = status, defs: typeof definition
 })
 
 describe('WsmanEventLogPanel.vue', () => {
-  it('lists the logs with frequency, mode and enabled state per package', () => {
+  it('lists the logs with frequency and enabled state per package', () => {
     const wrapper = mountPanel()
     expect(wrapper.find('[data-test="package-windows-servers"]').exists()).toBe(true)
     const rows = wrapper.findAll('[data-test="logs-table"] tbody tr')
     expect(rows).toHaveLength(2)
     expect(rows[0].text()).toContain('System')
     expect(rows[0].text()).toContain('minute')
-    expect(rows[0].text()).toContain('WQL')
     expect(rows[1].text()).toContain('5 minutes')
-    expect(rows[1].text()).toContain('Get-WinEvent')
     expect(rows[1].text()).toContain('All')
   })
 
@@ -82,7 +80,7 @@ describe('WsmanEventLogPanel.vue', () => {
     await wrapper.find('[data-test="add-log"]').trigger('click')
     expect(wrapper.emitted('addLog')?.[0]).toEqual(['windows-servers'])
     wrapper.findAllComponents({ name: 'OnmsToggleSwitch' })[1].vm.$emit('update:modelValue', true)
-    expect(wrapper.emitted('toggleLog')?.[0]).toEqual(['windows-servers', 'Microsoft-Windows-TaskScheduler/Operational', true])
+    expect(wrapper.emitted('toggleLog')?.[0]).toEqual(['windows-servers', 'Security', true])
   })
 
   it('emits package actions from the toolbar and the card header', async () => {
