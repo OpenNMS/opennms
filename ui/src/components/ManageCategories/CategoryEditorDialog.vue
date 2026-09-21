@@ -77,6 +77,10 @@ const nameProblem = computed(() => {
   if (/[/\\%?#<>"'`]/.test(trimmed)) {
     return 'The category name must not contain the characters / \\ % ? # < > " \' `'
   }
+  // "." and ".." fold into the collection URL, so their item calls would hit every category
+  if (trimmed === '.' || trimmed === '..') {
+    return 'The category name cannot be . or ..'
+  }
   return null
 })
 

@@ -57,6 +57,12 @@ describe('CategoryEditorDialog.vue', () => {
       expect(ctx.wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
     })
 
+    it('rejects a name of . since its item URL would be the collection', async () => {
+      await ctx.wrapper.find('[data-test="category-name-input"]').setValue('.')
+      expect(ctx.wrapper.find('.field-error').text()).toContain('cannot be . or ..')
+      expect(ctx.wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+    })
+
     it('rejects path and markup characters but allows spaces and punctuation the legacy page accepted', async () => {
       await ctx.wrapper.find('[data-test="category-name-input"]').setValue('net/core')
       expect(ctx.wrapper.find('.field-error').exists()).toBe(true)
