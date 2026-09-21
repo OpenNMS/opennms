@@ -265,11 +265,15 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     public Integer getMaxBufferSize() {
         int maxBufferSize = DEFAULT_MAX_BUFFER_SIZE;
-        // Properties.getProperty() returns null for non-String values, and ConfigAdmin may hand us an Integer.
         Object bufferSize = kafkaConfig.get(MAX_BUFFER_SIZE_PROPERTY);
         if (bufferSize != null) {
             try {
-                maxBufferSize = Integer.parseInt(bufferSize.toString().trim());
+                int configured = Integer.parseInt(bufferSize.toString().trim());
+                if (configured > 0) {
+                    maxBufferSize = configured;
+                } else {
+                    LOG.warn("Configured max buffer size {} is not positive, using default {}", configured, DEFAULT_MAX_BUFFER_SIZE);
+                }
             } catch (NumberFormatException ex){
                 LOG.warn("Configured max buffer size '{}' is not a number, using default {}", bufferSize, DEFAULT_MAX_BUFFER_SIZE);
             }
