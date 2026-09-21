@@ -14,6 +14,7 @@
         :baseHref="baseHref"
         :node="nodeStore.node"
         :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+        :triggerNodeInfo="onNodeInfo"
       />
     </div>
     <template v-if="nodeLoaded">
@@ -24,21 +25,15 @@
       </div>
       <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
         <div class="onms-col-6">
-          <NodeSnmpAttributes :node="nodeStore.node" />
+          <NodeAvailabilityGraph :node="nodeStore.node" :base-href="baseHref" />
         </div>
         <div class="onms-col-6">
-          <NodeCategoriesPanel :node="nodeStore.node" :base-href="baseHref" />
           <NodeNotificationsPanel :node="nodeStore.node" :base-href="baseHref" />
         </div>
       </div>
     </template>
     <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
       <div class="onms-col-6">
-        <NodeAvailabilityGraph
-          v-if="nodeLoaded"
-          :node="nodeStore.node"
-          :base-href="baseHref"
-        />
         <InterfacesTabs />
       </div>
       <div class="onms-col-6">
@@ -46,21 +41,26 @@
         <OutagesTable />
       </div>
     </div>
+
+    <NodeDetailsDialog
+      :visible="dialogVisible"
+      :node="nodeStore.node"
+      @close="dialogVisible = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
 import EventsTable from '@/components/Nodes/EventsTable.vue'
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
-import NodeCategoriesPanel from '@/components/Nodes/NodeCategoriesPanel.vue'
+import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
 import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'
 import OutagesTable from '@/components/Nodes/OutagesTable.vue'
-import NodeSnmpAttributes from '@/components/Nodes/NodeSnmpAttributes.vue'
 import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
@@ -77,6 +77,15 @@ const props = defineProps({
 })
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+
+// The node attributes now live behind the actions menu's Info... rather than in a panel of their
+// own. The dialog takes the node it is given; this page only ever has one, so the handler
+// ignores the node the menu hands back and shows the page's.
+const dialogVisible = ref(false)
+
+const onNodeInfo = () => {
+  dialogVisible.value = true
+}
 
 // Panels that read the node wait for a real one: the store's node starts as {}, which is
 // truthy and answers undefined for every field. The events, outages and interface tables fetch

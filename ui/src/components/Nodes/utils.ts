@@ -22,7 +22,9 @@
 
 import {
   Node,
-  NodeColumnSelectionItem
+  NodeColumnSelectionItem,
+  SnmpIfStatus,
+  SnmpInterface
 } from '@/types'
 import { isNumber } from '@/lib/utils'
 import { normalizeMacSearch, type InterfaceListMode } from './hooks/useInterfaceListing'
@@ -123,4 +125,228 @@ export const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined 
   }
 
   return undefined
+}
+
+const SNMP_IF_STATUS_LABELS: Record<SnmpIfStatus, string> = {
+  [SnmpIfStatus.UP]: 'Up',
+  [SnmpIfStatus.DOWN]: 'Down',
+  [SnmpIfStatus.TESTING]: 'Testing',
+  [SnmpIfStatus.UNKNOWN]: 'Unknown',
+  [SnmpIfStatus.DORMANT]: 'Dormant',
+  [SnmpIfStatus.NOT_PRESENT]: 'Not Present',
+  [SnmpIfStatus.LOWER_LAYER_DOWN]: 'Lower Layer Down'
+}
+
+export type SnmpInterfaceStatus = 'UP' | 'DOWN' | 'DISABLED' | 'TESTING' | 'UNKNOWN'
+
+/**
+ * Status shown in the SNMP interfaces table.
+ *
+ * This is deliberately finer-grained than setStylesForSnmpInterfaces() in the JSP interfaces
+ * page (core/web-assets/src/main/assets/js/apps/onms-interfaces/onms-interfaces-app/index.js),
+ * which had only up / down / unknown and folded every non-up ifAdminStatus into 'unknown'. An
+ * interface that is administratively down was deliberately turned off, and one under test is
+ * mid-change; neither is unknown, and neither is a fault. Separating them leaves UNKNOWN meaning
+ * what it says: the agent gave us no ifAdminStatus, or one outside the MIB's range.
+ *
+ * ifAdminStatus decides first, since it says what the interface is being ASKED to do. Note the
+ * label for that case is DISABLED rather than the MIB's own 'down', so it cannot be misread as
+ * the operational down that DOWN means here:
+ *   down     -> DISABLED, whatever it is operationally
+ *   testing  -> TESTING
+ *   up       -> ifOperStatus decides: up -> UP, testing -> TESTING, anything else -> DOWN
+ *   missing  -> UNKNOWN
+ *
+ * Note this is NOT the isManaged/isDown rule the JSP applies to IP interfaces -- SNMP
+ * interfaces carry neither field.
+ */
+export const snmpInterfaceStatus = (snmpInterface: SnmpInterface): SnmpInterfaceStatus => {
+  const { ifAdminStatus, ifOperStatus } = snmpInterface
+
+  if (ifAdminStatus === SnmpIfStatus.DOWN) {
+    return 'DISABLED'
+  }
+
+  if (ifAdminStatus === SnmpIfStatus.TESTING) {
+    return 'TESTING'
+  }
+
+  if (ifAdminStatus !== SnmpIfStatus.UP) {
+    return 'UNKNOWN'
+  }
+
+  // Meant to be up, so what it is actually doing decides. Testing is called out rather than
+  // lumped in with down: the interface is mid-change, not broken.
+  if (ifOperStatus === SnmpIfStatus.TESTING) {
+    return 'TESTING'
+  }
+
+  return ifOperStatus === SnmpIfStatus.UP ? 'UP' : 'DOWN'
+}
+
+/**
+ * One IF-MIB status as '<value> (<label>)', e.g. '5 (Dormant)'.
+ *
+ * A value outside the MIB's range is shown bare rather than guessed at -- an
+ * agent reporting 9 is telling us something, and labelling it 'Unknown' would
+ * conflate it with ifOperStatus 4, which means exactly that. An interface the
+ * poller has not reached yet carries no status at all.
+ */
+export const snmpIfStatusText = (status: number | undefined | null) => {
+  if (status === undefined || status === null) {
+    return 'N/A'
+  }
+
+  const label = SNMP_IF_STATUS_LABELS[status as SnmpIfStatus]
+
+  return label ? `${status} (${label})` : `${status}`
+}
+
+/** Tooltip behind the status tag: the two raw IF-MIB statuses the status is derived from. */
+export const snmpInterfaceStatusTooltip = (snmpInterface: SnmpInterface) =>
+  [
+    `Admin Status: ${snmpIfStatusText(snmpInterface.ifAdminStatus)}`,
+    `Operational Status: ${snmpIfStatusText(snmpInterface.ifOperStatus)}`
+  ].join('\n')
+
+/**
+ * The ipinterface.isManaged codes, spelled out. Labels are ElementUtil's m_interfaceStatusMap
+ * (opennms-webapp/.../web/element/ElementUtil.java), which is the only place in the product that
+ * turns these codes into words -- the column is an unconstrained char(1) with no enum behind it,
+ * and OnmsIpInterface.isManaged() treats everything that is not 'M' as unmanaged.
+ *
+ * Who writes what: 'M' provisiond and the admin Manage action; 'U' a scan that found the
+ * interface at status 3; 'F' the admin Unmanage action, an operator's explicit choice, which is
+ * what separates it from 'U'; 'D' a soft delete, removed later by the nightly vacuum; 'N' is
+ * read-only legacy, written by nothing in the tree today.
+ *
+ * 'A' is the odd one. It is the ifservices code for Managed, and it appears in ipinterface
+ * queries (GetInterfacesServlet, GetNodesServlet, AddNewInterfaceServlet) that look copy-pasted
+ * from the service ones, so nothing should ever write it here. It is listed rather than left to
+ * the fallback below only to record that it is reachable and that we know it is wrong.
+ */
+export const IP_INTERFACE_STATUS_LABELS: Record<string, string> = {
+  M: 'Managed',
+  U: 'Unmanaged',
+  F: 'Forced Unmanaged',
+  N: 'Not Monitored',
+  D: 'Deleted',
+  A: 'Unknown (A)'
+}
+
+/**
+ * The label for one isManaged code. An unrecognised code reads 'Unknown (X)' rather than
+ * rendering blank the way the JSP does -- ElementUtil returns null for anything not in its map,
+ * and a column that is empty for a code nobody has seen before hides the surprise instead of
+ * showing it.
+ */
+export const ipInterfaceStatus = (isManaged?: string | null) => {
+  if (!isManaged) {
+    return 'Unknown'
+  }
+
+  return IP_INTERFACE_STATUS_LABELS[isManaged] ?? `Unknown (${isManaged})`
+}
+
+/**
+ * Which directions of flow data an interface carries, as a label that doubles as the Flows
+ * column's sort key -- '' (none) < 'Egress' < 'Ingress' < 'Ingress/Egress' sorts the interfaces
+ * with flows together at one end, which is the point of sorting that column.
+ *
+ * Derived entirely from the row: whether flows exist is a property of the interface, and needs
+ * none of the per-interface requests that resolving a flow graph URL does.
+ */
+export type SnmpInterfaceFlows = '' | 'Ingress' | 'Egress' | 'Ingress/Egress'
+
+export const snmpInterfaceFlows = (snmpInterface: SnmpInterface): SnmpInterfaceFlows => {
+  const { hasIngressFlows, hasEgressFlows } = snmpInterface
+
+  if (hasIngressFlows && hasEgressFlows) {
+    return 'Ingress/Egress'
+  }
+
+  if (hasIngressFlows) {
+    return 'Ingress'
+  }
+
+  return hasEgressFlows ? 'Egress' : ''
+}
+
+// Spelled out rather than built from the label above: the two-direction case reads
+// 'Ingress/egress', which no capitalisation rule applied to 'Ingress/Egress' would produce.
+const FLOWS_TOOLTIPS: Record<SnmpInterfaceFlows, string> = {
+  '': '',
+  Ingress: 'Ingress flow data available',
+  Egress: 'Egress flow data available',
+  'Ingress/Egress': 'Ingress/egress flow data available'
+}
+
+/** Tooltip behind each flow tag. Both tags on a row carry the same text. */
+export const snmpInterfaceFlowsTooltip = (snmpInterface: SnmpInterface) =>
+  FLOWS_TOOLTIPS[snmpInterfaceFlows(snmpInterface)]
+
+/** Tooltip behind the button that opens the external flow graphs. */
+export const snmpInterfaceFlowGraphsTooltip = (snmpInterface: SnmpInterface) => {
+  const flows = snmpInterfaceFlows(snmpInterface)
+
+  return flows ? `View ${flows} flow graphs.` : ''
+}
+
+/**
+ * Case-insensitive "does any of these values contain the term" match, for the client-side table
+ * filters. `term` is expected already trimmed and lowercased (useDebouncedSearch does it once).
+ *
+ * Absent values simply do not match -- the tables render those cells as 'N/A', but matching that
+ * placeholder would make 'a' pick up every row with a missing field.
+ */
+export const matchesSearchTerm = (term: string, values: Array<string | number | null | undefined>) => {
+  if (!term) {
+    return true
+  }
+
+  return values.some(value =>
+    value !== null && value !== undefined && String(value).toLowerCase().includes(term))
+}
+
+// Thresholds and unit names from SIUtils.getHumanReadableIfSpeed
+// (opennms-util/src/main/java/org/opennms/core/utils/SIUtils.java), which is the platform's
+// canonical rendering of an ifSpeed. Decimal, not binary: a megabit is 1000000 bits.
+const IF_SPEED_UNITS = [
+  { divisor: 1000000000, units: 'Gbps' },
+  { divisor: 1000000, units: 'Mbps' },
+  { divisor: 1000, units: 'kbps' }
+]
+
+/**
+ * An ifSpeed in bits per second as a readable string -- '100 Mbps', '2.5 Gbps', '0 bps'.
+ *
+ * Follows SIUtils.getHumanReadableIfSpeed: an exact multiple of the unit prints with no decimals
+ * at all (DecimalFormat "0"), anything else with one to three (DecimalFormat "0.0##"), and
+ * grouping is off in both, so a very large value reads '5000 Gbps' rather than '5,000 Gbps'.
+ *
+ * This is display only. The column still sorts on the raw number, since sorting these strings
+ * would put '1 Gbps' before '100 Mbps'.
+ */
+export const formatIfSpeed = (ifSpeed: number | null | undefined) => {
+  if (ifSpeed === null || ifSpeed === undefined) {
+    return 'N/A'
+  }
+
+  for (const { divisor, units } of IF_SPEED_UNITS) {
+    if (ifSpeed >= divisor) {
+      const scaled = ifSpeed / divisor
+
+      const text = ifSpeed % divisor === 0
+        ? String(scaled)
+        : scaled.toLocaleString('en-US', {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 3,
+          useGrouping: false
+        })
+
+      return `${text} ${units}`
+    }
+  }
+
+  return `${ifSpeed} bps`
 }

@@ -1804,8 +1804,7 @@
     <fopVersion>2.10</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
-    <!-- this has to match FST's direct dependency because we specify it in karaf features -->
-    <objenesisVersion>2.5.1</objenesisVersion>
+    <objenesisVersion>3.5</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
@@ -3065,6 +3064,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.tests</groupId>
+        <artifactId>org.opennms.tests.mock-wsman-agent</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>activemq-dependencies</artifactId>
         <version>${project.version}</version>
@@ -3994,6 +3999,11 @@
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.xstream</artifactId>
         <version>${xstreamVersion}_1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>${objenesisVersion}</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -5187,17 +5197,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-orm</artifactId>
         <version>${springVersion}</version>
         <exclusions>
@@ -5267,17 +5266,6 @@
         </exclusions>
       </dependency>
       <!-- spring-webmvc-portlet was removed in Spring 5.0; no OpenNMS module consumes it. -->
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-websocket</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
