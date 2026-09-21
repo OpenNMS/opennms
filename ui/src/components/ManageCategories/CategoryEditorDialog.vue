@@ -11,7 +11,7 @@
       <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
 
       <FormField v-if="!isEditing" label="Category Name" for="category-name" required :error="nameProblem || undefined">
-        <OnmsInputText id="category-name" v-model="name" :invalid="!!nameProblem" fluid data-test="category-name-input" />
+        <OnmsInputText id="category-name" v-model="name" :invalid="!!nameProblem" :maxlength="MAX_NAME_LENGTH" fluid data-test="category-name-input" />
         <small v-if="nameProblem" class="field-error" data-test="name-error">{{ nameProblem }}</small>
       </FormField>
 
@@ -61,6 +61,9 @@ const originalName = computed(() => props.category?.name ?? '')
 
 // the category name is a URL path segment on write and is matched by name in
 // filters; block characters that break addressing or markup
+// the categories.categoryname column is varchar(64)
+const MAX_NAME_LENGTH = 64
+
 const nameProblem = computed(() => {
   if (isEditing.value) {
     return null
@@ -68,6 +71,9 @@ const nameProblem = computed(() => {
   const trimmed = name.value.trim()
   if (!trimmed) {
     return null
+  }
+  if (trimmed.length > MAX_NAME_LENGTH) {
+    return `The category name cannot be longer than ${MAX_NAME_LENGTH} characters.`
   }
   // / \ % ? # break URL/path addressing; markup chars are unsafe; , ; = ( ) ! +
   // break the FIQL category.name== search used to load this category's members

@@ -89,10 +89,6 @@ const deleteCategory = async (name: string): Promise<ValidationResult> => {
     await rest.delete(`${endpoint}/${encodeURIComponent(name)}`)
     return createSuccessResponse()
   } catch (err: any) {
-    // already gone — the desired end-state holds, so treat it as success
-    if (err?.response?.status === 404) {
-      return createSuccessResponse()
-    }
     console.error('Error deleting category:', err)
     return createFailureResult(errorMessage(err, `Failed to delete category '${name}'.`))
   }
@@ -100,7 +96,8 @@ const deleteCategory = async (name: string): Promise<ValidationResult> => {
 
 const addNodeToCategory = async (name: string, nodeId: number): Promise<boolean> => {
   try {
-    await rest.put(`${endpoint}/${encodeURIComponent(name)}/nodes/${nodeId}`)
+    // the endpoint consumes XML; say so rather than rely on CXF matching a missing Content-Type
+    await rest.put(`${endpoint}/${encodeURIComponent(name)}/nodes/${nodeId}`, null, { headers: { 'Content-Type': 'application/xml' }})
     return true
   } catch (err) {
     console.error('Error adding node to category:', err)

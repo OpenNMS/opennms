@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
 import {
-  createCategory, deleteCategory, listCategories
+  addNodeToCategory,
+  createCategory,
+  deleteCategory,
+  listCategories
 } from '@/services/categoryAdminService'
 import { rest } from '@/services/axiosInstances'
 
@@ -34,9 +37,11 @@ describe('categoryAdminService', () => {
   })
 
   describe('deleteCategory', () => {
-    it('treats a 404 (already gone) as success', async () => {
-      vi.mocked(rest.delete).mockRejectedValueOnce(http(404))
-      expect(await deleteCategory('gone')).toEqual({ success: true, message: '' })
+    it('surfaces the server reason when the category is unknown', async () => {
+      vi.mocked(rest.delete).mockRejectedValueOnce(http(400, 'A category with name \'gone\' does not exist.'))
+      const result = await deleteCategory('gone')
+      expect(result.success).toBe(false)
+      expect(result.message).toContain('does not exist')
     })
     it('does not surface an HTML error page verbatim', async () => {
       vi.mocked(rest.delete).mockRejectedValueOnce(http(500, '<html>Internal Server Error</html>'))
@@ -53,6 +58,14 @@ describe('categoryAdminService', () => {
       expect((await createCategory({ name: 'Routers' })).success).toBe(true)
       vi.mocked(rest.post).mockRejectedValueOnce(http(400, 'Category already exists'))
       expect(await createCategory({ name: 'Routers' })).toEqual({ success: false, message: 'Category already exists' })
+    })
+  })
+
+  describe('addNodeToCategory', () => {
+    it('declares the XML content type the endpoint consumes', async () => {
+      vi.mocked(rest.put).mockResolvedValueOnce({} as any)
+      expect(await addNodeToCategory('Routers', 7)).toBe(true)
+      expect(vi.mocked(rest.put).mock.calls.at(-1)?.[2]).toMatchObject({ headers: { 'Content-Type': 'application/xml' }})
     })
   })
 })
