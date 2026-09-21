@@ -21,43 +21,48 @@
         label="Location Name"
         for="location-name"
         required
+        :error="nameProblem || undefined"
+        hint="The name is the identifier and cannot be changed after creation."
       >
         <OnmsInputText
           id="location-name"
           v-model="locationName"
           :invalid="!!nameProblem"
+          :maxlength="MAX_NAME_LENGTH"
           fluid
           data-test="location-name-input"
         />
-        <small v-if="nameProblem" class="field-error" data-test="name-error">{{ nameProblem }}</small>
       </FormField>
 
       <FormField
         label="Monitoring Area"
         for="monitoring-area"
         required
+        :error="areaProblem || undefined"
       >
         <OnmsInputText
           id="monitoring-area"
           v-model="monitoringArea"
           :invalid="!!areaProblem"
+          :maxlength="MAX_AREA_LENGTH"
           fluid
           data-test="monitoring-area-input"
         />
-        <small v-if="areaProblem" class="field-error" data-test="area-error">{{ areaProblem }}</small>
       </FormField>
 
-      <FormField label="Geolocation (address)" for="geolocation">
+      <FormField label="Geolocation (address)" for="geolocation" :error="geolocationProblem || undefined">
         <OnmsInputText
           id="geolocation"
           v-model="geolocation"
+          :invalid="!!geolocationProblem"
+          :maxlength="MAX_GEOLOCATION_LENGTH"
           fluid
           data-test="geolocation-input"
         />
       </FormField>
 
       <div class="lat-lng">
-        <FormField label="Latitude" for="latitude">
+        <FormField label="Latitude" for="latitude" :error="latProblem || undefined">
           <OnmsInputNumber
             v-model="latitude"
             inputId="latitude"
@@ -68,9 +73,8 @@
             fluid
             data-test="latitude-input"
           />
-          <small v-if="latProblem" class="field-error" data-test="lat-error">{{ latProblem }}</small>
         </FormField>
-        <FormField label="Longitude" for="longitude">
+        <FormField label="Longitude" for="longitude" :error="lngProblem || undefined">
           <OnmsInputNumber
             v-model="longitude"
             inputId="longitude"
@@ -81,11 +85,15 @@
             fluid
             data-test="longitude-input"
           />
-          <small v-if="lngProblem" class="field-error" data-test="lng-error">{{ lngProblem }}</small>
         </FormField>
       </div>
 
-      <FormField label="Priority" for="priority">
+      <FormField
+        label="Priority"
+        for="priority"
+        :error="priorityProblem || undefined"
+        hint="Lower numbers sort first; leave empty for the server default."
+      >
         <OnmsInputNumber
           v-model="priority"
           inputId="priority"
@@ -96,13 +104,11 @@
           fluid
           data-test="priority-input"
         />
-        <small v-if="priorityProblem" class="field-error" data-test="priority-error">{{ priorityProblem }}</small>
-        <small v-else class="hint">Lower numbers sort first (1 = highest); the default location is 100.</small>
       </FormField>
     </div>
 
     <template #footer>
-      <OnmsButton variant="text" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+      <OnmsButton variant="ghost" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
       <OnmsButton
         :label="isEditing ? 'Save Location' : 'Add Location'"
         :disabled="!isValid || saving"
@@ -116,7 +122,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsInputNumber, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsInputNumber, OnmsInputText, useOnmsToast } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
@@ -130,6 +136,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useMonitoringLocationAdminStore()
+const { showToast } = useOnmsToast()
 
 const locationName = ref('')
 const monitoringArea = ref('')
@@ -143,8 +150,12 @@ const errorText = ref('')
 const isEditing = computed(() => props.location !== null)
 const originalName = computed(() => props.location?.['location-name'] ?? '')
 
-// the location-name is a URL path segment on write; block characters that
-// would break addressing or the FIQL/path encoding
+// monitoringlocations.id and monitoringarea are varchar(256), geolocation varchar(2048)
+const MAX_NAME_LENGTH = 256
+const MAX_AREA_LENGTH = 256
+const MAX_GEOLOCATION_LENGTH = 2048
+
+// the location name is a URL path segment on write; block what breaks addressing or markup
 const nameProblem = computed(() => {
   if (isEditing.value) {
     return null
@@ -153,14 +164,21 @@ const nameProblem = computed(() => {
   if (!trimmed) {
     return null
   }
-  // / \ % ? # break URL/path addressing; , ; = ( ) break FIQL filter queries
-  // that later reference the location by name
-  if (/[/\\%?#\s,;=()]/.test(trimmed)) {
-    return 'The location name must not contain whitespace or the characters / \\ % ? # , ; = ( )'
+  if (trimmed.length > MAX_NAME_LENGTH) {
+    return `The location name cannot be longer than ${MAX_NAME_LENGTH} characters.`
+  }
+  if (/[/\\%?#<>"'`]/.test(trimmed)) {
+    return 'The location name must not contain the characters / \\ % ? # < > " \' `'
+  }
+  if (store.locations.some(existing => existing['location-name'] === trimmed)) {
+    return `A location named '${trimmed}' already exists.`
   }
   return null
 })
-const areaProblem = computed(() => (monitoringArea.value.trim() ? null : 'A monitoring area is required.'))
+const areaProblem = computed(() =>
+  monitoringArea.value.trim().length > MAX_AREA_LENGTH ? `The monitoring area cannot be longer than ${MAX_AREA_LENGTH} characters.` : null)
+const geolocationProblem = computed(() =>
+  geolocation.value.trim().length > MAX_GEOLOCATION_LENGTH ? `The geolocation cannot be longer than ${MAX_GEOLOCATION_LENGTH} characters.` : null)
 const latProblem = computed(() =>
   latitude.value !== null && (latitude.value < -90 || latitude.value > 90) ? 'Latitude must be between -90 and 90.' : null)
 const lngProblem = computed(() =>
@@ -170,7 +188,7 @@ const lngProblem = computed(() =>
 const MAX_PRIORITY = 2147483647
 const priorityProblem = computed(() => {
   if (priority.value === null || priority.value === undefined) {
-    return null // blank is allowed; the server defaults it to 100
+    return null
   }
   if (!Number.isInteger(priority.value)) {
     return 'Priority must be a whole number.'
@@ -186,7 +204,9 @@ const priorityProblem = computed(() => {
 
 const isValid = computed(() =>
   (isEditing.value || !!locationName.value.trim())
-  && !nameProblem.value && !areaProblem.value && !latProblem.value && !lngProblem.value && !priorityProblem.value)
+  && !!monitoringArea.value.trim()
+  && !nameProblem.value && !areaProblem.value && !geolocationProblem.value
+  && !latProblem.value && !lngProblem.value && !priorityProblem.value)
 
 watch(
   () => props.visible,
@@ -195,21 +215,12 @@ watch(
       return
     }
     errorText.value = ''
-    if (props.location) {
-      locationName.value = props.location['location-name']
-      monitoringArea.value = props.location['monitoring-area'] ?? ''
-      geolocation.value = props.location.geolocation ?? ''
-      latitude.value = props.location.latitude ?? null
-      longitude.value = props.location.longitude ?? null
-      priority.value = props.location.priority ?? null
-    } else {
-      locationName.value = ''
-      monitoringArea.value = ''
-      geolocation.value = ''
-      latitude.value = null
-      longitude.value = null
-      priority.value = null
-    }
+    locationName.value = props.location?.['location-name'] ?? ''
+    monitoringArea.value = props.location?.['monitoring-area'] ?? ''
+    geolocation.value = props.location?.geolocation ?? ''
+    latitude.value = props.location?.latitude ?? null
+    longitude.value = props.location?.longitude ?? null
+    priority.value = props.location?.priority ?? null
   }
 )
 
@@ -218,20 +229,22 @@ const save = async () => {
   try {
     // spread the original so fields this form doesn't expose (tags) round-trip
     const base = props.location ?? {}
+    const name = isEditing.value ? originalName.value : locationName.value.trim()
     const payload = {
       ...base,
-      'location-name': isEditing.value ? originalName.value : locationName.value.trim(),
+      'location-name': name,
       'monitoring-area': monitoringArea.value.trim(),
       geolocation: geolocation.value.trim() || null,
       latitude: latitude.value,
       longitude: longitude.value,
       priority: priority.value
     } as MonitoringLocation
-    const error = isEditing.value ? await store.updateLocation(payload) : await store.createLocation(payload)
-    if (error === null) {
+    const result = isEditing.value ? await store.updateLocation(payload) : await store.createLocation(payload)
+    if (result.success) {
+      showToast({ message: `Monitoring location '${name}' ${isEditing.value ? 'updated' : 'created'}.`, severity: 'success' })
       emit('update:visible', false)
     } else {
-      errorText.value = error
+      errorText.value = result.message
     }
   } finally {
     saving.value = false
@@ -265,17 +278,5 @@ const save = async () => {
   background: var(--p-red-50, #fef2f2);
   color: var(--p-red-700, #b91c1c);
   font-size: 0.9rem;
-}
-
-.field-error {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-red-500, #e24c4c);
-}
-
-.hint {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-text-muted-color);
 }
 </style>

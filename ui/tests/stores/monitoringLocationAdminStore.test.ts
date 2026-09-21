@@ -24,6 +24,8 @@ const loc = (name: string): MonitoringLocation => ({
   priority: 100,
   tags: []
 })
+const ok = { success: true, message: '' }
+const failed = (message: string) => ({ success: false, message })
 
 describe('useMonitoringLocationAdminStore', () => {
   let store: ReturnType<typeof useMonitoringLocationAdminStore>
@@ -34,48 +36,66 @@ describe('useMonitoringLocationAdminStore', () => {
     vi.clearAllMocks()
   })
 
-  it('starts empty', () => {
+  it('starts empty and idle', () => {
     expect(store.locations).toEqual([])
+    expect(store.loading).toBe(false)
   })
 
   it('getLocations loads on success and preserves the list on failure', async () => {
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default')], totalCount: 1 })
-    await store.getLocations()
+    expect(await store.getLocations()).toBe(true)
     expect(store.locations).toEqual([loc('Default')])
     expect(store.loadError).toBe(false)
 
     vi.mocked(API.listMonitoringLocations).mockResolvedValue(null)
-    await store.getLocations()
+    expect(await store.getLocations()).toBe(false)
     expect(store.locations).toEqual([loc('Default')])
     expect(store.loadError).toBe(true)
   })
 
-  it('createLocation refreshes on success and not on failure', async () => {
-    vi.mocked(API.createMonitoringLocation).mockResolvedValue(null)
+  it('getLocations sets loading around the fetch, also when it fails', async () => {
+    let release!: (value: null) => void
+    vi.mocked(API.listMonitoringLocations).mockReturnValue(new Promise((resolve) => {
+      release = resolve
+    }))
+    const pending = store.getLocations()
+    expect(store.loading).toBe(true)
+    release(null)
+    await pending
+    expect(store.loading).toBe(false)
+  })
+
+  it('createLocation bubbles the result and refreshes only on success', async () => {
+    vi.mocked(API.createMonitoringLocation).mockResolvedValue(ok)
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
-    expect(await store.createLocation(loc('A'))).toBeNull()
+    expect(await store.createLocation(loc('A'))).toEqual(ok)
     expect(API.listMonitoringLocations).toHaveBeenCalledTimes(1)
 
     vi.clearAllMocks()
-    vi.mocked(API.createMonitoringLocation).mockResolvedValue('boom')
-    expect(await store.createLocation(loc('A'))).toBe('boom')
+    vi.mocked(API.createMonitoringLocation).mockResolvedValue(failed('boom'))
+    expect(await store.createLocation(loc('A'))).toEqual({ success: false, message: 'boom' })
     expect(API.listMonitoringLocations).not.toHaveBeenCalled()
   })
 
   it('updateLocation passes the payload through and refreshes', async () => {
-    vi.mocked(API.updateMonitoringLocation).mockResolvedValue(null)
+    vi.mocked(API.updateMonitoringLocation).mockResolvedValue(ok)
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
     const payload = loc('A')
-    await store.updateLocation(payload)
+    expect(await store.updateLocation(payload)).toEqual(ok)
     expect(API.updateMonitoringLocation).toHaveBeenCalledWith(payload)
     expect(API.listMonitoringLocations).toHaveBeenCalledTimes(1)
   })
 
-  it('deleteLocation refreshes on success', async () => {
-    vi.mocked(API.deleteMonitoringLocation).mockResolvedValue(null)
+  it('deleteLocation refreshes on success and bubbles a failure untouched', async () => {
+    vi.mocked(API.deleteMonitoringLocation).mockResolvedValue(ok)
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [], totalCount: 0 })
-    await store.deleteLocation('A')
+    expect(await store.deleteLocation('A')).toEqual(ok)
     expect(store.locations).toEqual([])
+
+    vi.clearAllMocks()
+    vi.mocked(API.deleteMonitoringLocation).mockResolvedValue(failed('nodes still assigned'))
+    expect(await store.deleteLocation('A')).toEqual({ success: false, message: 'nodes still assigned' })
+    expect(API.listMonitoringLocations).not.toHaveBeenCalled()
   })
 
   it('flags truncation when the server had more rows than were fetched', async () => {

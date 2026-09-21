@@ -6,7 +6,6 @@
   </div>
   <div class="manage-locations-container">
     <h1 class="page-title">Manage Monitoring Locations</h1>
-    <LocationsHelpPanel />
     <LocationsTable />
   </div>
 </template>
@@ -14,8 +13,9 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
+import { useOnmsToast } from '@opennms/onms-ui'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import LocationsHelpPanel from '@/components/ManageMonitoringLocations/LocationsHelpPanel.vue'
 import LocationsTable from '@/components/ManageMonitoringLocations/LocationsTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
@@ -33,8 +33,12 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
+const { showToast } = useOnmsToast()
+
 onMounted(async () => {
-  await store.getLocations()
+  if (!(await store.getLocations())) {
+    showToast({ message: 'Failed to load monitoring locations.', severity: 'error' })
+  }
 })
 </script>
 

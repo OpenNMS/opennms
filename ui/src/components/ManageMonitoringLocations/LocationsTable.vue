@@ -17,9 +17,15 @@
           data-test="add-location-button"
           @click="openEditor(null)"
         />
+        <AboutDialogButton title="Monitoring Locations">
+          <LocationsAbout />
+        </AboutDialogButton>
       </div>
     </div>
 
+    <p v-if="store.loadError && store.locations.length" class="reload-error" role="alert" data-test="reload-error">
+      The list could not be reloaded and may be out of date. Refresh the page.
+    </p>
     <p v-if="store.truncated" class="truncation-note" data-test="truncation-note">
       Showing the first {{ store.locations.length }} of {{ store.totalCount }} locations. Use search to narrow the list.
     </p>
@@ -28,6 +34,7 @@
       :value="store.locations"
       v-model:filters="filters"
       :globalFilterFields="['location-name', 'monitoring-area', 'geolocation']"
+      :loading="store.loading"
       :paginator="store.locations.length > 0"
       dataKey="location-name"
       sortField="location-name"
@@ -57,19 +64,25 @@
       <OnmsColumn field="priority" header="Priority" sortable />
       <OnmsColumn header="Actions">
         <template #body="{ data }">
-          <div class="action-container">
-            <OnmsButton
-              variant="text"
-              label="Edit"
+          <span
+            v-if="!isPathAddressable(data['location-name'])"
+            class="unaddressable"
+            v-tooltip.top="'This location name contains / \\ or %, which the API cannot address; rename it through the database.'"
+            data-test="unaddressable-note"
+          >not editable here</span>
+          <div v-else class="action-container">
+            <OnmsIconButton
+              :icon="Edit"
+              :title="`Edit ${data['location-name']}`"
               :aria-label="`Edit ${data['location-name']}`"
               data-test="edit-location-button"
               @click="openEditor(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Delete"
+            <OnmsIconButton
+              :icon="Delete"
               severity="danger"
-              :disabled="data['location-name'] === 'Default'"
+              :disabled="data['location-name'] === DEFAULT_LOCATION"
+              :title="data['location-name'] === DEFAULT_LOCATION ? 'The Default location cannot be deleted' : `Delete ${data['location-name']}`"
               :aria-label="`Delete ${data['location-name']}`"
               data-test="delete-location-button"
               @click="askDelete(data)"
@@ -94,9 +107,10 @@
     <template #content>
       <p>
         Are you sure you want to delete the monitoring location
-        <strong>{{ locationToDelete?.['location-name'] }}</strong>? Nodes and
-        minions still assigned to it will be left without a valid location.
-        This action cannot be undone.
+        <strong>{{ locationToDelete?.['location-name'] }}</strong>? The
+        location must have no nodes assigned to it first (reassign them), and
+        Minions still pointing at it keep the old location name until they are
+        re-registered. This action cannot be undone.
       </p>
     </template>
   </OnmsConfirmationDialog>
@@ -105,15 +119,24 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, useOnmsToast } from '@opennms/onms-ui'
 
+import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import LocationEditorDialog from '@/components/ManageMonitoringLocations/LocationEditorDialog.vue'
+import LocationsAbout from '@/components/ManageMonitoringLocations/LocationsAbout.vue'
+import { isPathAddressable } from '@/lib/adminValidation'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
 import { MonitoringLocation } from '@/types'
 
+// the built-in location nodes fall back to; the server would refuse the delete anyway
+const DEFAULT_LOCATION = 'Default'
+
 const store = useMonitoringLocationAdminStore()
+const { showToast } = useOnmsToast()
 
 const showEditor = ref(false)
 const locationToEdit = ref<MonitoringLocation | null>(null)
@@ -140,11 +163,20 @@ const askDelete = (location: MonitoringLocation) => {
 }
 
 const confirmDelete = async () => {
-  if (locationToDelete.value) {
-    await store.deleteLocation(locationToDelete.value['location-name'])
-  }
+  const location = locationToDelete.value
   showDeleteConfirmation.value = false
+  if (!location) {
+    return
+  }
+  const name = location['location-name']
+  const result = await store.deleteLocation(name)
+  // cleared after the dialog has closed, so the name does not blank out mid-animation
   locationToDelete.value = null
+  if (result.success) {
+    showToast({ message: `Monitoring location '${name}' deleted.`, severity: 'success' })
+  } else {
+    showToast({ message: result.message, severity: 'error' })
+  }
 }
 
 const cancelDelete = () => {
@@ -173,13 +205,24 @@ const cancelDelete = () => {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+}
+
+.reload-error {
+  margin: 0 0 0.75rem 0;
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.9rem;
 }
 
 .truncation-note {
   margin: 0 0 0.75rem 0;
   font-size: 0.85rem;
   color: var(--p-text-muted-color);
+}
+
+.unaddressable {
+  color: var(--p-text-muted-color);
+  font-style: italic;
 }
 
 .action-container {

@@ -22,18 +22,23 @@
 
 import API from '@/services'
 import { MonitoringLocation } from '@/types'
+import { ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAdminStore', () => {
   const locations = ref([] as MonitoringLocation[])
   const loadError = ref(false)
+  const loading = ref(false)
   const totalCount = ref(0)
   // true if the server had more rows than we fetched (the safety cap was hit)
   const truncated = computed(() => locations.value.length < totalCount.value)
 
-  const getLocations = async () => {
+  // false when the load failed; the previous list is kept
+  const getLocations = async (): Promise<boolean> => {
+    loading.value = true
     const result = await API.listMonitoringLocations()
+    loading.value = false
     if (result !== null) {
       locations.value = result.locations
       totalCount.value = result.totalCount
@@ -41,35 +46,37 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     } else {
       loadError.value = true
     }
+    return result !== null
   }
 
-  const createLocation = async (location: MonitoringLocation) => {
-    const error = await API.createMonitoringLocation(location)
-    if (error === null) {
+  const createLocation = async (location: MonitoringLocation): Promise<ValidationResult> => {
+    const result = await API.createMonitoringLocation(location)
+    if (result.success) {
       await getLocations()
     }
-    return error
+    return result
   }
 
-  const updateLocation = async (location: MonitoringLocation) => {
-    const error = await API.updateMonitoringLocation(location)
-    if (error === null) {
+  const updateLocation = async (location: MonitoringLocation): Promise<ValidationResult> => {
+    const result = await API.updateMonitoringLocation(location)
+    if (result.success) {
       await getLocations()
     }
-    return error
+    return result
   }
 
-  const deleteLocation = async (name: string) => {
-    const error = await API.deleteMonitoringLocation(name)
-    if (error === null) {
+  const deleteLocation = async (name: string): Promise<ValidationResult> => {
+    const result = await API.deleteMonitoringLocation(name)
+    if (result.success) {
       await getLocations()
     }
-    return error
+    return result
   }
 
   return {
     locations,
     loadError,
+    loading,
     totalCount,
     truncated,
     getLocations,

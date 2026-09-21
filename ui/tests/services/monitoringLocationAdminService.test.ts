@@ -6,8 +6,6 @@ import {
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() }}))
-vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar: vi.fn() }) }))
-vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
 
 const http = (status: number, data: any = '') => {
   const e = new AxiosError('x')
@@ -16,62 +14,103 @@ const http = (status: number, data: any = '') => {
 }
 
 describe('monitoringLocationAdminService', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
   afterEach(() => vi.restoreAllMocks())
 
-  it('listMonitoringLocations fetches a bounded page and reports the total', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { location: [{ 'location-name': 'Default' }], totalCount: 42 }})
-    const result = await listMonitoringLocations()
-    expect(result).toEqual({ locations: [{ 'location-name': 'Default' }], totalCount: 42 })
-    // bounded, not limit=0
-    expect(vi.mocked(v2.get).mock.calls[0][0]).toMatch(/limit=\d+/)
-    expect(vi.mocked(v2.get).mock.calls[0][0]).not.toContain('limit=0')
-  })
+  describe('listMonitoringLocations', () => {
+    it('fetches a bounded page and reports the total', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: { location: [{ 'location-name': 'Default' }], totalCount: 42 }})
+      const result = await listMonitoringLocations()
+      expect(result).toEqual({ locations: [{ 'location-name': 'Default' }], totalCount: 42 })
+      // bounded, not limit=0
+      expect(vi.mocked(v2.get).mock.calls[0][0]).toMatch(/limit=\d+/)
+      expect(vi.mocked(v2.get).mock.calls[0][0]).not.toContain('limit=0')
+    })
 
-  it('listMonitoringLocations returns null on failure so the store can flag an error', async () => {
-    vi.mocked(v2.get).mockRejectedValue(http(500))
-    expect(await listMonitoringLocations()).toBeNull()
-  })
+    it('normalizes a single object to an array and defaults the total', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: { location: { 'location-name': 'Default' }}})
+      expect(await listMonitoringLocations()).toEqual({ locations: [{ 'location-name': 'Default' }], totalCount: 1 })
+    })
 
-  it('createMonitoringLocation returns the scrubbed error message on failure', async () => {
-    vi.mocked(v2.post).mockRejectedValue(http(400, 'A location named Default already exists'))
-    const msg = await createMonitoringLocation({ 'location-name': 'Default' } as any)
-    expect(msg).toContain('already exists')
-  })
-
-  it('updateMonitoringLocation reads the current row and patches only the editable fields', async () => {
-    // the fresh server row carries a tag this page never edits; it must survive
-    vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'old', priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] }})
-    vi.mocked(v2.put).mockResolvedValue({})
-
-    await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'new', priority: 100, latitude: 35, longitude: -78 } as any)
-
-    const [, body] = vi.mocked(v2.put).mock.calls[0]
-    expect(body).toMatchObject({
-      'location-name': 'Raleigh', 'monitoring-area': 'new', priority: 100, latitude: 35, longitude: -78,
-      tags: ['keep-me'] // untouched field round-trips from the fresh read
+    it('returns null (not []) on failure so the store can flag a load error', async () => {
+      vi.mocked(v2.get).mockRejectedValue(http(500))
+      expect(await listMonitoringLocations()).toBeNull()
     })
   })
 
-  it('updateMonitoringLocation applies an edited geolocation (regression: it was dropped)', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'old address', priority: 100, latitude: 1, longitude: 2 }})
-    vi.mocked(v2.put).mockResolvedValue({})
+  describe('createMonitoringLocation', () => {
+    it('returns a success result and keeps a short server message on failure', async () => {
+      vi.mocked(v2.post).mockResolvedValueOnce({})
+      expect(await createMonitoringLocation({ 'location-name': 'Default' } as any)).toEqual({ success: true, message: '' })
+      vi.mocked(v2.post).mockRejectedValueOnce(http(400, 'A location named Default already exists'))
+      expect(await createMonitoringLocation({ 'location-name': 'Default' } as any))
+        .toEqual({ success: false, message: 'A location named Default already exists' })
+    })
 
-    await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: '123 New St', priority: 100, latitude: 1, longitude: 2 } as any)
-
-    const [, body] = vi.mocked(v2.put).mock.calls[0]
-    expect((body as any).geolocation).toBe('123 New St')
+    it('falls back to a generic message when the server body is not a short plain string', async () => {
+      vi.mocked(v2.post).mockRejectedValueOnce(http(500, '<html>Internal Server Error</html>'))
+      const result = await createMonitoringLocation({ 'location-name': 'Raleigh' } as any)
+      expect(result.success).toBe(false)
+      expect(result.message).toBe('Failed to create monitoring location \'Raleigh\'.')
+    })
   })
 
-  it('deleteMonitoringLocation treats a 404 (already deleted) as success', async () => {
-    vi.mocked(v2.delete).mockRejectedValue(http(404))
-    expect(await deleteMonitoringLocation('gone')).toBeNull()
+  describe('updateMonitoringLocation', () => {
+    it('reads the current row and patches only the editable fields', async () => {
+      // the fresh server row carries a tag this page never edits; it must survive
+      vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'old', priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] }})
+      vi.mocked(v2.put).mockResolvedValue({})
+
+      const result = await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'new', priority: 100, latitude: 35, longitude: -78 } as any)
+
+      expect(result.success).toBe(true)
+      const [path, body] = vi.mocked(v2.put).mock.calls[0]
+      expect(path).toBe('/monitoringLocations/Raleigh')
+      expect(body).toMatchObject({
+        'location-name': 'Raleigh', 'monitoring-area': 'new', priority: 100, latitude: 35, longitude: -78,
+        tags: ['keep-me'] // untouched field round-trips from the fresh read
+      })
+    })
+
+    it('applies an edited geolocation (regression: it was dropped)', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'old address', priority: 100, latitude: 1, longitude: 2 }})
+      vi.mocked(v2.put).mockResolvedValue({})
+
+      await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: '123 New St', priority: 100, latitude: 1, longitude: 2 } as any)
+
+      const [, body] = vi.mocked(v2.put).mock.calls[0]
+      expect((body as any).geolocation).toBe('123 New St')
+    })
+
+    it('returns the scrubbed server message on failure', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh' }})
+      vi.mocked(v2.put).mockRejectedValue(http(400, 'The ID of the object doesn\'t match the ID of the path'))
+      const result = await updateMonitoringLocation({ 'location-name': 'Raleigh' } as any)
+      expect(result).toEqual({ success: false, message: 'The ID of the object doesn\'t match the ID of the path' })
+    })
   })
 
-  it('does not surface an HTML error page verbatim', async () => {
-    vi.mocked(v2.delete).mockRejectedValue(http(500, '<html><body>Internal Server Error</body></html>'))
-    const msg = await deleteMonitoringLocation('Raleigh')
-    expect(msg).not.toContain('<html>')
-    expect(msg).toContain('Raleigh')
+  describe('deleteMonitoringLocation', () => {
+    it('returns success on 204', async () => {
+      vi.mocked(v2.delete).mockResolvedValue({})
+      expect(await deleteMonitoringLocation('Raleigh')).toEqual({ success: true, message: '' })
+      expect(vi.mocked(v2.delete).mock.calls[0][0]).toBe('/monitoringLocations/Raleigh')
+    })
+
+    it('reports a missing location as a failure (the server answers 404)', async () => {
+      vi.mocked(v2.delete).mockRejectedValue(http(404))
+      expect((await deleteMonitoringLocation('gone')).success).toBe(false)
+    })
+
+    it('hides an HTML error page and explains the nodes prerequisite instead', async () => {
+      vi.mocked(v2.delete).mockRejectedValue(http(500, '<html><body>Internal Server Error</body></html>'))
+      const result = await deleteMonitoringLocation('Raleigh')
+      expect(result.success).toBe(false)
+      expect(result.message).not.toContain('<html>')
+      expect(result.message).toBe('Monitoring location \'Raleigh\' could not be deleted. Make sure no nodes are assigned to it.')
+    })
   })
 })

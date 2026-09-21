@@ -20,17 +20,14 @@
 /// License.
 ///
 
-import useSnackbar from '@/composables/useSnackbar'
-import useSpinner from '@/composables/useSpinner'
 import { MonitoringLocation } from '@/types'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { v2 } from './axiosInstances'
 
 // PrimeVue Manage Monitoring Locations (NMS-20129). Reuses the existing v2
 // AbstractDaoRestService CRUD at /api/v2/monitoringLocations — no backend or
 // XML change. The v1 REST and the JSON contract stay as they are.
 
-const { showSnackBar } = useSnackbar()
-const { startSpinner, stopSpinner } = useSpinner()
 const endpoint = '/monitoringLocations'
 
 // Only surface a server detail if it looks like a short, plain message — a 500
@@ -46,38 +43,30 @@ const errorMessage = (err: any, fallback: string): string => {
   return fallback
 }
 
-// null on failure (not []) so callers can keep showing the previous list
 // Bound the fetch instead of limit=0 (unbounded). Locations are few in practice,
 // so the cap is a safety net; the caller surfaces a note if it is ever hit.
 const LIST_CAP = 2000
 
+// null on failure (not []) so callers can keep showing the previous list
 const listMonitoringLocations = async (): Promise<{ locations: MonitoringLocation[]; totalCount: number } | null> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}?limit=${LIST_CAP}`)
     const raw = resp.data?.location ?? []
     const locations = Array.isArray(raw) ? raw : [raw]
     return { locations, totalCount: resp.data?.totalCount ?? locations.length }
-  } catch (_err) {
-    showSnackBar({ msg: 'Failed to load monitoring locations.' })
+  } catch (err) {
+    console.error('Error loading monitoring locations:', err)
     return null
-  } finally {
-    stopSpinner()
   }
 }
 
-const createMonitoringLocation = async (location: MonitoringLocation): Promise<string | null> => {
+const createMonitoringLocation = async (location: MonitoringLocation): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.post(endpoint, location)
-    showSnackBar({ msg: `Monitoring location '${location['location-name']}' created.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to create monitoring location '${location['location-name']}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error creating monitoring location:', err)
+    return createFailureResult(errorMessage(err, `Failed to create monitoring location '${location['location-name']}'.`))
   }
 }
 
@@ -88,11 +77,10 @@ const createMonitoringLocation = async (location: MonitoringLocation): Promise<s
 const EDITABLE_FIELDS = ['location-name', 'monitoring-area', 'geolocation', 'priority', 'latitude', 'longitude'] as const
 
 // the v2 doUpdate requires a JSON body whose location-name matches the path id
-const updateMonitoringLocation = async (location: MonitoringLocation): Promise<string | null> => {
+const updateMonitoringLocation = async (location: MonitoringLocation): Promise<ValidationResult> => {
   const name = location['location-name']
   const path = `${endpoint}/${encodeURIComponent(name)}`
   try {
-    startSpinner()
     const current = (await v2.get(path))?.data ?? {}
     const body: Record<string, unknown> = { ...current }
     const source = location as unknown as Record<string, unknown>
@@ -100,34 +88,23 @@ const updateMonitoringLocation = async (location: MonitoringLocation): Promise<s
       body[field] = source[field]
     }
     await v2.put(path, body)
-    showSnackBar({ msg: `Monitoring location '${name}' updated.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to update monitoring location '${name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error updating monitoring location:', err)
+    return createFailureResult(errorMessage(err, `Failed to update monitoring location '${name}'.`))
   }
 }
 
-const deleteMonitoringLocation = async (name: string): Promise<string | null> => {
+// node.location has a foreign key without ON DELETE CASCADE, so the server
+// rejects the delete (with an HTML 500 page, hidden by the scrubber) while
+// any node is still assigned; the fallback message says so.
+const deleteMonitoringLocation = async (name: string): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.delete(`${endpoint}/${encodeURIComponent(name)}`)
-    showSnackBar({ msg: `Monitoring location '${name}' deleted.` })
-    return null
+    return createSuccessResponse()
   } catch (err: any) {
-    // already gone — the desired end-state holds, so treat it as success
-    if (err?.response?.status === 404) {
-      showSnackBar({ msg: `Monitoring location '${name}' deleted.` })
-      return null
-    }
-    const msg = errorMessage(err, `Failed to delete monitoring location '${name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
-  } finally {
-    stopSpinner()
+    console.error('Error deleting monitoring location:', err)
+    return createFailureResult(errorMessage(err, `Monitoring location '${name}' could not be deleted. Make sure no nodes are assigned to it.`))
   }
 }
 
