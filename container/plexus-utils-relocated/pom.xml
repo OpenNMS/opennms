@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>37.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.plexus-utils-relocated</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenNMS :: Container :: plexus-utils (Relocated)</name>
+    <description>
+        plexus-utils, relocated into the same "shaded" package prefix that the
+        pax-url-aether uber-bundle uses. This is not meant to be deployed anywhere: it
+        only exists so that container/pax-url-aether-patch can swap the vulnerable
+        plexus-utils 3.3.1 shaded into pax-url-aether for a fixed one (CVE-2025-67030).
+    </description>
+
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <!-- keep plexus-utils' own META-INF/maven metadata as the only one
+                             in the jar; that is what gets copied into the patched bundle
+                             and what vulnerability scanners read -->
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven.shade.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.codehaus.plexus:plexus-utils</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <!-- must match the relocation used by pax-url-aether -->
+                                    <pattern>org.codehaus.plexus.util</pattern>
+                                    <shadedPattern>shaded.org.codehaus.plexus.util</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+            <version>${plexusUtilsVersion}</version>
+        </dependency>
+    </dependencies>
+</project>

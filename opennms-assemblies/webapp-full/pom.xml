@@ -186,6 +186,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!--
+      The generated OpenAPI documents live here rather than in opennms-webapp-rest
+      because they describe every ReST module merged into this war, and several of
+      those depend on opennms-webapp-rest.
+    -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-openapi-docs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>org.opennms.container.servlet</artifactId>

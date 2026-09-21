@@ -2,7 +2,7 @@
   <OnmsIconButton
     class="compare-btn"
     aria-label="Compare configs"
-    v-tooltip="'Compare configs'"
+    tooltip="Compare configs"
     v-if="!isCompareView"
     :disabled="!config1 || !config2"
     :icon="Compare"
@@ -12,7 +12,7 @@
   <OnmsIconButton
     class="return-btn"
     aria-label="Return"
-    v-tooltip="'Return'"
+    tooltip="Return"
     v-if="isCompareView"
     :icon="Restore"
     @click="onReturn"
@@ -21,7 +21,7 @@
   <OnmsIconButton
     class="dwnld-btn"
     aria-label="Download configs"
-    v-tooltip="'Download configs'"
+    tooltip="Download configs"
     v-if="isCompareView"
     :icon="Download"
     @click="onDownload"
@@ -82,8 +82,8 @@ import { computed, onMounted, ref } from 'vue'
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
 import { OnmsCheckbox, OnmsChip, OnmsIconButton } from '@opennms/onms-ui'
-import Restore from '@/components/icons/action/Restore.vue'
-import Download from '@/components/icons/action/DownloadFile.vue'
+import Restore from '@opennms/onms-ui/icons/action/Restore.vue'
+import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
 import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'

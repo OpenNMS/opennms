@@ -23,10 +23,11 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.LinkDetailsAware;
 import org.opennms.features.topology.api.topo.simple.SimpleConnector;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 
-public class LinkdEdge extends AbstractEdge implements Edge {
+public class LinkdEdge extends AbstractEdge implements Edge, LinkDetailsAware {
 
     public static LinkdEdge create(String id,
             LinkdPort sourceport, LinkdPort targetport,
@@ -99,5 +100,19 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     public LinkdPort getTargetPort() {
         return m_targetPort;
     }
-    
+
+    @Override
+    public Integer getSourceIfIndex() {
+        return m_sourcePort.getIfIndex();
+    }
+
+    @Override
+    public Integer getTargetIfIndex() {
+        return m_targetPort.getIfIndex();
+    }
+
+    @Override
+    public String getDiscoveryProtocol() {
+        return m_discoveredBy.name();
+    }
 }

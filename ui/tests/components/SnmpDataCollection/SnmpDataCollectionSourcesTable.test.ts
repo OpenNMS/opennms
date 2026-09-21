@@ -4,7 +4,7 @@ import { SnmpCollectionSource } from '@/types/snmpDataCollection'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import Tooltip from 'primevue/tooltip'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
@@ -63,7 +63,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   const mountTable = () => mount(SnmpDataCollectionSourcesTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      directives: { tooltip: Tooltip },
+      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })

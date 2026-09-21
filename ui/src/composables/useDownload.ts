@@ -36,7 +36,18 @@ const useDownload = () => {
     generateDownload(blob, name)
   }
 
-  return { downloadFile }
+  /**
+   * Download an already-built Blob (e.g. a client-generated CSV or PDF) under
+   * the given name, reusing the same anchor mechanism as downloadFile.
+   *
+   * @param  {Blob}    blob  the file contents
+   * @param  {string}  name  the download filename
+   */
+  const downloadBlob = (blob: Blob, name: string): void => {
+    generateDownload(blob, name)
+  }
+
+  return { downloadFile, downloadBlob }
 }
 
 export default useDownload
@@ -71,7 +82,8 @@ const getNameFromHeaders = (headers: AxiosResponse['headers']): string => {
  * @return  {Blob}               file object
  */
 const generateBlob = (file: AxiosResponse, extension: string, forceBlob = false): Blob => {
-  const contentType = file.headers['content-type']
+  const rawContentType = file.headers['content-type']
+  const contentType = typeof rawContentType === 'string' ? rawContentType : undefined
 
   // stringify if it's a JSON file, unless forceBlob is true
   if (!forceBlob && extension.toLowerCase() === 'json') {

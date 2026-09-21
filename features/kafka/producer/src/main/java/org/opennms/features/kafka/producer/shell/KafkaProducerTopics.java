@@ -66,6 +66,7 @@ public class KafkaProducerTopics implements Action {
     private static final String TOPOLOGY_VERTEX_TOPIC_PROP = "topologyVertexTopic";
     private static final String TOPOLOGY_EDGE_TOPIC_PROP = "topologyEdgeTopic";
     private static final String ALARM_FEEDBACK_TOPIC_PROP = "alarmFeedbackTopic";
+    private static final String METRIC_ROUTING_ENABLED_PROP = "metricRouting.enabled";
 
     // Default topic names
     private static final String DEFAULT_EVENT_TOPIC = "events";
@@ -170,7 +171,22 @@ public class KafkaProducerTopics implements Action {
         System.out.println();
         System.out.printf("Summary: %d of %d topics exist%n", existCount, totalCount);
 
+        // The list above only covers the statically configured topics. With metric routing on,
+        // metrics also go to topics named by meta-data, which cannot be enumerated from the
+        // configuration.
+        if (isMetricRoutingEnabled(producerConfig)) {
+            System.out.println();
+            System.out.println("Metric routing is enabled, so metrics may also be published to topics named by"
+                    + " meta-data, which are not listed above.");
+            System.out.println("Use 'opennms:kafka-metric-routing-test' to resolve the topic for a given node.");
+        }
+
         return null;
+    }
+
+    private static boolean isMetricRoutingEnabled(Properties producerConfig) {
+        return producerConfig != null
+                && Boolean.parseBoolean(producerConfig.getProperty(METRIC_ROUTING_ENABLED_PROP, "false"));
     }
 
     private Properties getProducerConfig() {

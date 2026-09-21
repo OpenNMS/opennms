@@ -193,11 +193,7 @@
         <property name="businessServiceManager" ref="businessServiceManager"/>
     </bean>
 
-    <bean name="/trend/trend.htm" class="org.opennms.web.controller.trend.TrendController">
-    </bean>
 
-    <bean name="/trend/trend-box.htm" class="org.opennms.web.controller.trend.TrendBoxController">
-    </bean>
 
     <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
         <property name="successView" value="application/summary-box"/>
@@ -422,16 +418,6 @@
                                 <property name="locationMatch" value="surveillance-view"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Heatmap"/>
-                                <property name="url" value="heatmap/index.jsp"/>
-                                <property name="locationMatch" value="heatmap"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Trend"/>
-                                <property name="url" value="trend/index.jsp"/>
-                                <property name="locationMatch" value="trend"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Application"/>
                                 <property name="url" value="application/index.jsp"/>
                                 <property name="locationMatch" value="application"/>
@@ -446,11 +432,6 @@
                     <property name="entries">
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Charts"/>
-                                <property name="url" value="charts/index.jsp"/>
-                                <property name="locationMatch" value="chart"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Resource Graphs"/>
                                 <property name="url" value="graph/index.jsp"/>
                                 <property name="locationMatch" value="performance"/>
@@ -464,11 +445,6 @@
                                 <property name="name" value="Database Reports"/>
                                 <property name="url" value="report/database/index.jsp"/>
                                 <property name="locationMatch" value="database-reports"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Statistics"/>
-                                <property name="url" value="statisticsReports/index.htm"/>
-                                <property name="locationMatch" value="reports"/>
                             </bean>
                         </list>
                     </property>
@@ -567,13 +543,7 @@
         <property name="resourceService" ref="resourceService"/>
     </bean>
 
-    <bean id="statisticsReportCommandValidator" class="org.opennms.web.validator.StatisticsReportCommandValidator">
-        <property name="statisticsReportDao" ref="statisticsReportDao"/>
-    </bean>
 
-    <bean name="/statisticsReports/index.htm" class="org.opennms.web.controller.statisticsReports.ListController">
-        <property name="statisticsReportService" ref="statisticsReportService"/>
-    </bean>
 
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

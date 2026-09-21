@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.notifd.Argument;
@@ -150,6 +151,15 @@ public class TicketNotificationStrategyTest {
     }
 
     @Test
+    public void testNoticeWithCreatePendingAndNoTicketIdDoesNotCreateAnother() {
+    	when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+    	m_ticketNotificationStrategy.setAlarmState(new TicketNotificationStrategy.AlarmState(1, "", TroubleTicketState.CREATE_PENDING.getValue()));
+    	List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+    	assertEquals("Strategy should succeed while a ticket creation is in flight.", 0, m_ticketNotificationStrategy.send(arguments));
+    	assertEquals("Strategy should not create a second ticket while creation is in flight.", 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    @Test
     public void testNoticeWithClosedTicketCreatesNewTicket() {
     	assertTicketStateAllowsCreate(TroubleTicketState.CLOSED);
     }
@@ -221,6 +231,61 @@ public class TicketNotificationStrategyTest {
         assertEquals(0, m_ticketNotificationStrategy.send(arguments));
         assertTrue("Expected events not forthcoming", m_eventIpcManager.getEventAnticipator().waitForAnticipated(0).isEmpty());
         assertEquals("Received unexpected events", 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    @Test
+    public void testClearedAlarmWithOpenTicketClosesIt() {
+    	assertClearedStateClosesTicket(TroubleTicketState.OPEN);
+    }
+
+    @Test
+    public void testClearedAlarmWithCloseFailedTicketClosesItAgain() {
+    	assertClearedStateClosesTicket(TroubleTicketState.CLOSE_FAILED);
+    }
+
+    @Test
+    public void testClearedAlarmWithoutTicketSendsNothing() {
+    	assertClearedStateSendsNothing("", TroubleTicketState.OPEN);
+    }
+
+    @Test
+    public void testClearedAlarmWithClosedTicketSendsNothing() {
+    	assertClearedStateSendsNothing("TICKET-1", TroubleTicketState.CLOSED);
+    }
+
+    @Test
+    public void testClearedAlarmWithClosePendingTicketSendsNothing() {
+    	assertClearedStateSendsNothing("TICKET-1", TroubleTicketState.CLOSE_PENDING);
+    }
+
+    private void assertClearedStateClosesTicket(TroubleTicketState state) {
+    	EventBuilder closeTicketBuilder = new EventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, m_ticketNotificationStrategy.getName());
+    	closeTicketBuilder.setParam(EventConstants.PARM_ALARM_ID, "1");
+    	closeTicketBuilder.setParam(EventConstants.PARM_ALARM_UEI, EventConstants.NODE_DOWN_EVENT_UEI);
+    	closeTicketBuilder.setParam(EventConstants.PARM_USER, "noc");
+    	closeTicketBuilder.setParam(EventConstants.PARM_TROUBLE_TICKET, "TICKET-1");
+    	m_eventIpcManager.getEventAnticipator().anticipateEvent(closeTicketBuilder.getEvent());
+
+    	when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+    	m_ticketNotificationStrategy.setAlarmState(buildClearedAlarmState("TICKET-1", state));
+    	List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+    	arguments.add(new Argument("ticketUser", null, "noc", false));
+
+    	assertEquals("Strategy should succeed for ticket state " + state, 0, m_ticketNotificationStrategy.send(arguments));
+    	assertTrue("Strategy should send a close-ticket event for ticket state " + state, m_eventIpcManager.getEventAnticipator().waitForAnticipated(0).isEmpty());
+    	assertEquals("Received unexpected events for ticket state " + state, 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    private void assertClearedStateSendsNothing(String ticketID, TroubleTicketState state) {
+    	when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+    	m_ticketNotificationStrategy.setAlarmState(buildClearedAlarmState(ticketID, state));
+    	List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+    	assertEquals("Strategy should succeed for ticket state " + state, 0, m_ticketNotificationStrategy.send(arguments));
+    	assertEquals("Strategy should not send an event for ticket state " + state, 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    private TicketNotificationStrategy.AlarmState buildClearedAlarmState(String ticketID, TroubleTicketState state) {
+    	return new TicketNotificationStrategy.AlarmState(1, ticketID, state.getValue(), OnmsSeverity.CLEARED.getId());
     }
 
     protected Event buildAlarmEvent(int alarmType) {

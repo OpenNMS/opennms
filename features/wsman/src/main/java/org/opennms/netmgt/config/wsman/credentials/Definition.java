@@ -76,6 +76,8 @@ public class Definition implements WsmanAgentConfig {
     protected List<String> specific;
     @XmlElement(name = "ip-match")
     protected List<String> ipMatch;
+    @XmlAttribute(name = "requisition")
+    protected String requisition;
     @XmlAttribute(name = "retry")
     protected Integer retry;
     @XmlAttribute(name = "timeout")
@@ -100,6 +102,8 @@ public class Definition implements WsmanAgentConfig {
     protected String productVersion;
     @XmlAttribute(name = "gss-auth")
     protected Boolean gssAuth;
+    @XmlAttribute(name = "kerberos-encryption")
+    protected Boolean kerberosEncryption;
 
     public Definition() { }
 
@@ -116,6 +120,7 @@ public class Definition implements WsmanAgentConfig {
         setProductVendor(config.getProductVendor());
         setProductVersion(config.getProductVersion());
         setGssAuth(config.isGssAuth());
+        setKerberosEncryption(config.isKerberosEncryption());
     }
 
     /**
@@ -213,6 +218,15 @@ public class Definition implements WsmanAgentConfig {
      *     {@link Integer }
      *     
      */
+    /** The requisition (foreign source) the named servers are provisioned into; optional. */
+    public String getRequisition() {
+        return requisition;
+    }
+
+    public void setRequisition(final String requisition) {
+        this.requisition = requisition;
+    }
+
     public Integer getRetry() {
         return retry;
     }
@@ -447,9 +461,18 @@ public class Definition implements WsmanAgentConfig {
     }
 
     @Override
+    public Boolean isKerberosEncryption() {
+        return kerberosEncryption;
+    }
+
+    public void setKerberosEncryption(Boolean value) {
+        this.kerberosEncryption = value;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(range, specific, ipMatch, timeout, retry, username, password, port, maxElements,
-                ssl, strictSsl, path, productVendor, gssAuth);
+                ssl, strictSsl, path, productVendor, productVersion, gssAuth, kerberosEncryption, requisition);
     }
 
     @Override
@@ -475,6 +498,8 @@ public class Definition implements WsmanAgentConfig {
                 Objects.equals(this.path, other.path) &&
                 Objects.equals(this.productVendor, other.productVendor) &&
                 Objects.equals(this.productVersion, other.productVersion) &&
-                Objects.equals(this.gssAuth, other.gssAuth);
+                Objects.equals(this.gssAuth, other.gssAuth) &&
+                Objects.equals(this.kerberosEncryption, other.kerberosEncryption) &&
+                Objects.equals(this.requisition, other.requisition);
     }
 }

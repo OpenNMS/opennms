@@ -85,11 +85,12 @@ a {
 a:hover {
   text-decoration: underline;
 }
-a:visited {
-  // App convention: visited links keep the normal color (mirrors the override
-  // in opennms-styles.scss), rather than a distinct visited color.
-  color: var(--onms-clickable-normal);
-}
+// No `a:visited` rule on purpose. App convention is that visited links keep the
+// normal color, and the `a` rule above already does that for both states (an
+// author declaration beats the UA's visited color). Restating it as `a:visited`
+// adds a pseudo-class to the selector, which then outranks single-class button
+// styles — e.g. Bootstrap's `.btn-secondary` on the alarm/event list menus,
+// whose white label turned blue once the link had been visited (NMS-20182).
 
 .sr-text {
   position: absolute;

@@ -70,7 +70,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { BreadCrumb } from '@/types'
 import { OnmsButton, OnmsIcon, OnmsMenu, OnmsMenuItem, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
-import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
+import DownloadIcon from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 
 const menuStore = useMenuStore()
 const store = useSnmpDataCollectionStore()

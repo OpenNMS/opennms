@@ -172,9 +172,9 @@ import {
   type OnmsTablePageEvent,
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
-import Edit from '@/components/icons/action/Edit.vue'
-import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import Refresh from '@/components/icons/navigation/Refresh.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
+import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
+import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { deleteMibGroups, enableDisableSnmpMibGroups } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'

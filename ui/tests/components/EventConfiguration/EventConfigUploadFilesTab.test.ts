@@ -8,7 +8,7 @@ import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import Tooltip from 'primevue/tooltip'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reactive } from 'vue'
 
@@ -50,7 +50,7 @@ describe('EventConfigUploadFilesTab.vue', () => {
   const mountTab = () => mount(EventConfigUploadFilesTab, {
     global: {
       plugins: [PrimeVue],
-      directives: { tooltip: Tooltip },
+      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })
@@ -123,6 +123,36 @@ describe('EventConfigUploadFilesTab.vue', () => {
       await wrapper.vm.$nextTick()
       wrapper.vm.removeFile(0)
       expect(wrapper.vm.eventFiles.map((f: any) => f.file.name)).toEqual(['b.xml'])
+    })
+  })
+
+  describe('Per-file status controls', () => {
+    it('opens the rename dialog from the duplicate-file button', async () => {
+      wrapper.vm.eventFiles = [makeFile('dup.xml', { isDuplicate: true })]
+      await wrapper.vm.$nextTick()
+
+      const duplicate = wrapper.find('button.warning-icon')
+      expect(duplicate.exists()).toBe(true)
+      await duplicate.trigger('click')
+
+      expect(wrapper.vm.displayRenameDialog).toBe(true)
+      expect(wrapper.vm.selectedIndex).toBe(0)
+    })
+
+    // Status only, so these stay plain icons rather than buttons that do nothing
+    it('flags valid and invalid files with a tooltipped status icon', async () => {
+      wrapper.vm.eventFiles = [makeFile('good.xml'), makeFile('bad.xml', { isValid: false, errors: ['Schema mismatch'] })]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('svg.success-icon').exists()).toBe(true)
+      const invalid = wrapper.find('svg.error-icon')
+      expect(invalid.exists()).toBe(true)
+      expect(wrapper.find('button.success-icon').exists()).toBe(false)
+      expect(wrapper.find('button.error-icon').exists()).toBe(false)
+
+      // the tooltip carries the validation errors
+      const tooltipValue = (invalid.element as never as Record<string, string>).$_ptooltipValue
+      expect(tooltipValue).toContain('Schema mismatch')
     })
   })
 

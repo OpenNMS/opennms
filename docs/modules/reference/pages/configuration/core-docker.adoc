@@ -27,6 +27,10 @@
 | `PROM_JMX_EXPORTER_JAR`     | Path to the JMX Prometheus agent                       | optional | `/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar`
 |===
 
+TIP: By default, the JVM temp directory (`java.io.tmpdir`) is `$\{OPENNMS_HOME}/tmp` and the embedded ActiveMQ
+broker's on-disk store (`activemq.data`) is `$\{OPENNMS_HOME}/var/activemq`. To use different paths, pass them
+via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/some/other/path"`.
+
 .PostgreSQL connection configuration in opennms-datasources.xml
 [options="header, %autowidth"]
 |===

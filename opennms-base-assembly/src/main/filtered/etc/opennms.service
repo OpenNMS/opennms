@@ -13,6 +13,8 @@ Type=forking
 RuntimeDirectory=opennms
 RuntimeDirectoryMode=0775
 PIDFile=${install.pid.file}
+# Restart=always
+# RestartSec=30s
 
 ExecStart=${install.bin.dir}/opennms -s start
 # cosmetic: sleep just long enough that Systemd doesn't complain about not seeing the PID file yet

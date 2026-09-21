@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import { PropType, computed, ref } from 'vue'
 import { OnmsIcon } from '@opennms/onms-ui'
-import SubdirectoryArrowLeft from '@/components/icons/navigation/SubdirectoryArrowLeft.vue'
+import SubdirectoryArrowLeft from '@opennms/onms-ui/icons/navigation/SubdirectoryArrowLeft.vue'
 import { SearchResultItem } from '@/types'
 
 const props = defineProps({

@@ -25,18 +25,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Address;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.Address;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message;
+import jakarta.mail.Message.RecipientType;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.Session;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -125,7 +125,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
             Address[] addrs = new Address[1];
             addrs[0] = new InternetAddress("david@opennms.org");
             msg.addFrom(addrs);
-            msg.addRecipient(javax.mail.internet.MimeMessage.RecipientType.TO, addrs[0]);
+            msg.addRecipient(jakarta.mail.internet.MimeMessage.RecipientType.TO, addrs[0]);
             msg.setSubject("Re: Notice #1234 JavaMailReaderImplTest Test Message");
             msg.setText("ACK");
         } catch (AddressException e) {

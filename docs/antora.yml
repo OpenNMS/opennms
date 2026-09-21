@@ -21,7 +21,7 @@ asciidoc:
     compatible-postgresql: '14.x - 18.x'
     compatible-rrdtool: '1.7.x'
     jasperreportsversion: '6.3.0'
-    latest-meridian-stable: '2025'
+    latest-meridian-stable: '2026'
     postgresql-version: '15'
     jmx-prom-exporter-version: '1.4.0'
 nav:

@@ -46,15 +46,10 @@ Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications
 
 | javamail-configuration.properties
 | Configuration to send notification emails via specific mail servers.
-Metadata expression can be used for the authenticateUser and authenticatePassword fields in order to reference credentials stored in the secure credentials vault.
+Metadata expression can be used for the authenticateUser and authenticatePassword fields in order to reference credentials stored in the secure credentials vault, or an OAuth2 access token via `${token:<name>}` for providers that require XOAUTH2 (see xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] for a worked Microsoft 365 example).
 | no
 | no
 
-| microblog-configuration.properties
-| Configuration to send notification emails via specific mail servers.
-Metadata expression can be used for the authen-* and oauth-* fields in order to reference credentials stored in the secure credentials vault.
-| no
-| no
 |===
 
 .Notifd log file overview

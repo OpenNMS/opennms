@@ -92,7 +92,7 @@ These files are provided as examples and can be uploaded to {page-component-titl
 You only need to upload the event files relevant to the devices in your network.
 
 [[migrating-event-files-after-upgrade]]
-==== Migrating event files after upgrade
+=== Migrating event files after upgrade
 
 During the upgrade to the database-backed event configuration, your existing event files from `$\{OPENNMS_HOME}/etc/events/`
 are moved to `$\{OPENNMS_HOME}/etc_archive/events/` and are *not* automatically imported into the database.

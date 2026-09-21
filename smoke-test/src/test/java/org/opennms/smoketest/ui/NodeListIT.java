@@ -106,5 +106,19 @@ public class NodeListIT extends OpenNMSSeleniumIT {
         // Ensure we are on the "classic" node page for that link
         wait.until(pageContainsText("Node: Test_Node1"));
     }
+
+    @Test
+    public void canRenderWithFlowsFilter() {
+        // Navigate to the Nodes page with the flows filter query param set and
+        // confirm the Vue table still renders without error. This is a cheap
+        // smoke check for the URL param path only; it does not assert on the
+        // filter chip DOM, which is brittle and cannot be verified locally.
+        getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/nodes?flows=true");
+
+        wait.until(pageContainsText("Nodes"));
+        wait.until(pageContainsText("Test_Node1"));
+
+        findElementByXpath("//div[contains(@class, 'node-table')]//table/tbody/tr/td/a[text()='Test_Node1']");
+    }
 }
 

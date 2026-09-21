@@ -46,6 +46,37 @@ describe('OnmsTable', () => {
     expect(inner.props('tableStyle')).toBe('min-width: 50rem')
   })
 
+  it('forwards rowClass to DataTable', () => {
+    const rowClass = (data: any) => `status-${data.id}`
+    const inner = mount(OnmsTable, {
+      props: { value: rows, rowClass },
+      global: globalPlugins
+    }).findComponent({ name: 'DataTable' })
+    expect(inner.props('rowClass')).toBe(rowClass)
+  })
+
+  it('forwards loading to DataTable', () => {
+    const inner = mount(OnmsTable, { props: { value: rows, loading: true }, global: globalPlugins })
+      .findComponent({ name: 'DataTable' })
+    expect(inner.props('loading')).toBe(true)
+  })
+
+  // Prop forwarding alone would not catch a `loading` that reaches DataTable and renders nothing;
+  // the point of the prop is the visible mask.
+  it('renders a loading mask over the body when loading', () => {
+    const shown = mount(OnmsTable, { props: { value: rows, loading: true }, global: globalPlugins })
+    const hidden = mount(OnmsTable, { props: { value: rows, loading: false }, global: globalPlugins })
+
+    expect(shown.find('.p-datatable-mask').exists()).toBe(true)
+    expect(hidden.find('.p-datatable-mask').exists()).toBe(false)
+  })
+
+  it('is not loading by default', () => {
+    const inner = mount(OnmsTable, { props: { value: rows }, global: globalPlugins })
+      .findComponent({ name: 'DataTable' })
+    expect(inner.props('loading')).toBe(false)
+  })
+
   it('maps virtualScrollItemSize to virtualScrollerOptions', () => {
     const inner = mount(OnmsTable, {
       props: { value: rows, virtualScrollItemSize: 44 },
@@ -133,5 +164,46 @@ describe('OnmsTable', () => {
     })
     expect(wrapper.find('[aria-label="My table"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="my-table"]').exists()).toBe(true)
+  })
+
+  it('forwards the #expansion slot with the row scope (object-form expandedRows)', () => {
+    const wrapper = mount(defineComponent({
+      components: { OnmsTable, OnmsColumn },
+      setup: () => ({ rows }),
+      template: `
+        <OnmsTable :value="rows" dataKey="id" :expandedRows="{ 1: true }">
+          <OnmsColumn expander style="width: 3rem" />
+          <OnmsColumn field="name" header="Name" />
+          <template #expansion="{ data }"><em class="exp">expanded-{{ data.name }}</em></template>
+        </OnmsTable>`
+    }), { global: globalPlugins })
+    const expanded = wrapper.findAll('em.exp')
+    expect(expanded).toHaveLength(1)
+    expect(expanded[0].text()).toBe('expanded-node-a')
+  })
+
+  it('re-emits update:expandedRows with the object form intact', () => {
+    const wrapper = mount(OnmsTable, { props: { value: rows, dataKey: 'id' }, global: globalPlugins })
+    wrapper.findComponent({ name: 'DataTable' }).vm.$emit('update:expandedRows', { 1: true, 2: true })
+    expect(wrapper.emitted('update:expandedRows')![0]).toEqual([{ 1: true, 2: true }])
+  })
+
+  it('maps selectionMode through, defaulting to unset', () => {
+    const plain = mount(OnmsTable, { props: { value: rows, dataKey: 'id' }, global: globalPlugins })
+    // undefined falls back to PrimeVue's own default, which is null
+    expect(plain.findComponent({ name: 'DataTable' }).props('selectionMode')).toBeNull()
+
+    const selectable = mount(OnmsTable, {
+      props: { value: rows, dataKey: 'id', selectionMode: 'single' },
+      global: globalPlugins
+    })
+    expect(selectable.findComponent({ name: 'DataTable' }).props('selectionMode')).toBe('single')
+  })
+
+  it('forwards row-click', () => {
+    const wrapper = mount(OnmsTable, { props: { value: rows, dataKey: 'id', selectionMode: 'single' }, global: globalPlugins })
+    const event = { originalEvent: new MouseEvent('click'), data: rows[1], index: 1 }
+    wrapper.findComponent({ name: 'DataTable' }).vm.$emit('row-click', event)
+    expect(wrapper.emitted('row-click')![0]).toEqual([event])
   })
 })

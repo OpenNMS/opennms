@@ -55,6 +55,41 @@
         <build.assembly.format>dir</build.assembly.format>
       </properties>
     </profile>
+    <profile>
+      <id>build-meridian</id>
+      <activation>
+        <property>
+          <name>build.meridian</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.karaf.tooling</groupId>
+            <artifactId>karaf-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>features-add-to-repository-ha</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>features-add-to-repository</goal>
+                </goals>
+                <configuration>
+                  <descriptors>
+                    <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                  </descriptors>
+                  <features>
+                    <feature>opennms-ha-shell</feature>
+                    <feature>opennms-ha-rest</feature>
+                  </features>
+                  <repository>${project.build.directory}/opennms-repo</repository>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <build>
     <plugins>
@@ -217,7 +252,7 @@
                 <artifactItem>
                   <groupId>com.fasterxml.jackson.core</groupId>
                   <artifactId>jackson-annotations</artifactId>
-                  <version>${jackson2Version}</version>
+                  <version>${jackson2AnnotationsVersion}</version>
                   <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -697,6 +732,25 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740);
+               force jlineVersion (see root pom.xml) instead of reverting this. -->
+          <execution>
+            <id>remove-superseded-jline</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete includeemptydirs="true">
+                  <fileset dir="${project.build.directory}/opennms-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                  <fileset dir="${project.build.directory}/experimental-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                </delete>
+              </target>
+            </configuration>
+          </execution>
           <execution>
             <phase>verify</phase>
             <goals>
@@ -824,23 +878,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.cifs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.radius</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -889,18 +926,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>lib</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>io.hawt</groupId>
