@@ -172,7 +172,9 @@ describe('resource tree cache', () => {
 
   it('keeps a fetch that is still in flight across a refresh tick', async () => {
     let resolve: (v: unknown) => void = () => undefined
-    vi.mocked(rest.get).mockReturnValue(new Promise(r => { resolve = r }) as any)
+    vi.mocked(rest.get).mockReturnValue(new Promise((r) => {
+      resolve = r
+    }) as any)
     const first = listAvailableKpis()
     invalidateKpiSources()
     const second = listAvailableKpis()

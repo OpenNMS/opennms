@@ -288,8 +288,8 @@ const loadEntities = async (metricChanged = false) => {
 
 // Only a user's change reloads in drop mode; syncFromPanel sets the metric
 // without going through here, so opening the dialog never discards the entity.
-const onMetricChanged = (metric: string) => {
-  chartMetric.value = metric
+const onMetricChanged = (metric: unknown) => {
+  chartMetric.value = String(metric ?? DEFAULT_CHART_METRIC)
   if (props.panel.type === 'metric-chart') {
     loadEntities(true)
   }

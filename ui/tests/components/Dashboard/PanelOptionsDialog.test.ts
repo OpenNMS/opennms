@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import PrimeVue from 'primevue/config'
 import PanelOptionsDialog from '@/components/Dashboard/PanelOptionsDialog.vue'
-import { listMetricEntities } from '@/services/metricChartService'
+import { listMetricEntities, type MetricEntity } from '@/services/metricChartService'
 import { useDashboardStore } from '@/stores/dashboardStore'
 
 vi.mock('@/services/metricChartService', () => ({
@@ -70,8 +70,8 @@ describe('PanelOptionsDialog.vue (metric chart)', () => {
   })
 
   it('lets the latest metric change win when two are in flight', async () => {
-    const pending: Array<(v: unknown) => void> = []
-    vi.mocked(listMetricEntities).mockImplementation(() => new Promise(r => pending.push(r)))
+    const pending: Array<(v: MetricEntity[]) => void> = []
+    vi.mocked(listMetricEntities).mockImplementation(() => new Promise<MetricEntity[]>(r => pending.push(r)))
     const { entitySelect, metricSelect } = await openDialog({ metric: 'response-time', entity: '' })
     pending.shift()?.([other, saved])
     await flushPromises()
