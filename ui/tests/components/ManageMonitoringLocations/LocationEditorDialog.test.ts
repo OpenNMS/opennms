@@ -84,6 +84,12 @@ describe('LocationEditorDialog.vue', () => {
       expect(saveDisabled(ctx.wrapper)).toBe(false)
     })
 
+    it('rejects a name of . since its item URL would be the collection', async () => {
+      await ctx.wrapper.find('[data-test="location-name-input"]').setValue('.')
+      expect(ctx.wrapper.find('.field-error').text()).toContain('cannot be . or ..')
+      expect(ctx.wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+    })
+
     it('flags a name that already exists (case-sensitive) and disables Save', async () => {
       await ctx.wrapper.find('[data-test="monitoring-area-input"]').setValue('Area')
       await ctx.wrapper.find('[data-test="location-name-input"]').setValue('Raleigh')
@@ -139,8 +145,7 @@ describe('LocationEditorDialog.vue', () => {
       await fillValidNameArea()
       await setPriority(5)
       expect(fieldErrors(ctx.wrapper)).toEqual([])
-      expect(ctx.wrapper.text()).toContain('Lower numbers sort first; leave empty for the server default.')
-      expect(ctx.wrapper.text()).not.toContain('100')
+      expect(ctx.wrapper.text()).toContain('Lower numbers sort first (default 100).')
       expect(saveDisabled(ctx.wrapper)).toBe(false)
     })
 
@@ -193,6 +198,16 @@ describe('LocationEditorDialog.vue', () => {
       expect(ctx.store.updateLocation).toHaveBeenCalledWith(expect.objectContaining({ tags: ['keepme'], 'monitoring-area': 'New Area' }))
       expect(showToast).toHaveBeenCalledWith({ message: 'Monitoring location \'LocA\' updated.', severity: 'success' })
       expect(ctx.wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    })
+
+    it('shows an update rejection inline, does not toast and stays open', async () => {
+      vi.mocked(ctx.store.updateLocation).mockResolvedValue({ success: false, message: 'Failed to update monitoring location \'LocA\'.' })
+      await ctx.wrapper.find('[data-test="monitoring-area-input"]').setValue('New Area')
+      await ctx.wrapper.find('[data-test="save-button"]').trigger('click')
+      await flushPromises()
+      expect(ctx.wrapper.find('[data-test="dialog-error"]').text()).toContain('Failed to update')
+      expect(showToast).not.toHaveBeenCalled()
+      expect(ctx.wrapper.emitted('update:visible')).toBeFalsy()
     })
   })
 })

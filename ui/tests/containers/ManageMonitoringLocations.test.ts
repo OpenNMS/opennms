@@ -25,12 +25,11 @@ const mountPage = (loaded: boolean) => {
 describe('ManageMonitoringLocations.vue (container)', () => {
   beforeEach(() => showToast.mockClear())
 
-  it('loads locations on mount and renders the page title without an inline help panel', async () => {
+  it('loads locations on mount and renders the page title', async () => {
     const { wrapper, store } = mountPage(true)
     await flushPromises()
     expect(store.getLocations).toHaveBeenCalled()
     expect(wrapper.find('.page-title').text()).toBe('Manage Monitoring Locations')
-    expect(wrapper.findComponent({ name: 'LocationsHelpPanel' }).exists()).toBe(false)
     expect(showToast).not.toHaveBeenCalled()
   })
 

@@ -105,6 +105,14 @@ describe('monitoringLocationAdminService', () => {
       expect((await deleteMonitoringLocation('gone')).success).toBe(false)
     })
 
+    it('hides a raw persistence error from a 5xx behind the node-assignment hint', async () => {
+      vi.mocked(v2.delete).mockRejectedValue(http(500, 'could not execute statement; constraint [fk_node_location]; nested exception is org.hibernate.exception.ConstraintViolationException'))
+      const result = await deleteMonitoringLocation('Branch')
+      expect(result.success).toBe(false)
+      expect(result.message).not.toContain('hibernate')
+      expect(result.message).toContain('no nodes are assigned')
+    })
+
     it('hides an HTML error page and explains the nodes prerequisite instead', async () => {
       vi.mocked(v2.delete).mockRejectedValue(http(500, '<html><body>Internal Server Error</body></html>'))
       const result = await deleteMonitoringLocation('Raleigh')

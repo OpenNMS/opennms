@@ -30,11 +30,12 @@ import { v2 } from './axiosInstances'
 
 const endpoint = '/monitoringLocations'
 
-// Only surface a server detail if it looks like a short, plain message — a 500
-// often returns a servlet HTML error page, which must not be shown verbatim.
+// Only surface a server detail from a 4xx that looks like a short, plain message;
+// a 500 carries an HTML page or a raw persistence exception, neither for the user.
 const errorMessage = (err: any, fallback: string): string => {
   const detail = err?.response?.data
-  if (typeof detail === 'string') {
+  const status = Number(err?.response?.status ?? 0)
+  if (typeof detail === 'string' && status >= 400 && status < 500) {
     const trimmed = detail.trim()
     if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
       return trimmed

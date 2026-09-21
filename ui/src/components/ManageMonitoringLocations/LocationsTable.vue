@@ -7,6 +7,7 @@
           v-if="store.locations.length"
           v-model="search"
           placeholder="Search locations"
+          ariaLabel="Search locations"
           dataTest="location-search"
           class="search"
         />
@@ -67,7 +68,7 @@
           <span
             v-if="!isPathAddressable(data['location-name'])"
             class="unaddressable"
-            v-tooltip.top="'This location name contains / \\ or %, which the API cannot address; rename it through the database.'"
+            title="This location name cannot be addressed by the API; rename it through the database."
             data-test="unaddressable-note"
           >not editable here</span>
           <div v-else class="action-container">
@@ -132,7 +133,7 @@ import { isPathAddressable } from '@/lib/adminValidation'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
 import { MonitoringLocation } from '@/types'
 
-// the built-in location nodes fall back to; the server would refuse the delete anyway
+// the built-in location nodes fall back to; nothing server-side protects it
 const DEFAULT_LOCATION = 'Default'
 
 const store = useMonitoringLocationAdminStore()

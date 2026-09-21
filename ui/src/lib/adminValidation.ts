@@ -58,9 +58,10 @@ export const validateAdminComments = (value: string): string | null => {
 /**
  * Names containing / \ or % cannot be addressed as a URL path segment (the
  * security filter rejects their encoded forms), so per-item API operations
- * are unavailable for such hand-edited legacy entries.
+ * are unavailable for such hand-edited legacy entries. "." and ".." are
+ * normalised away by the browser, so their item URL would hit the collection.
  */
-export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name)
+export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name) && name !== '.' && name !== '..'
 
 /** Field hint for a name that fails isPathAddressable. */
 export const UNADDRESSABLE_NAME_HINT = 'The name must not contain / \\ or %'

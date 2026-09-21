@@ -66,7 +66,7 @@
           <OnmsInputNumber
             v-model="latitude"
             inputId="latitude"
-            :maxFractionDigits="6"
+            :maxFractionDigits="4"
             :min="-90"
             :max="90"
             :invalid="!!latProblem"
@@ -78,7 +78,7 @@
           <OnmsInputNumber
             v-model="longitude"
             inputId="longitude"
-            :maxFractionDigits="6"
+            :maxFractionDigits="4"
             :min="-180"
             :max="180"
             :invalid="!!lngProblem"
@@ -92,7 +92,7 @@
         label="Priority"
         for="priority"
         :error="priorityProblem || undefined"
-        hint="Lower numbers sort first; leave empty for the server default."
+        hint="Lower numbers sort first (default 100)."
       >
         <OnmsInputNumber
           v-model="priority"
@@ -125,6 +125,7 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsInputNumber, OnmsInputText, useOnmsToast } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
+import { isPathAddressable } from '@/lib/adminValidation'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
 import { MonitoringLocation } from '@/types'
 
@@ -169,6 +170,9 @@ const nameProblem = computed(() => {
   }
   if (/[/\\%?#<>"'`]/.test(trimmed)) {
     return 'The location name must not contain the characters / \\ % ? # < > " \' `'
+  }
+  if (!isPathAddressable(trimmed)) {
+    return 'The location name cannot be . or ..'
   }
   if (store.locations.some(existing => existing['location-name'] === trimmed)) {
     return `A location named '${trimmed}' already exists.`
