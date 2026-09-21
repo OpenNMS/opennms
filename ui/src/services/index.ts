@@ -68,6 +68,7 @@ import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { getSnmpInterfaces, getNodeSnmpInterfaceQuery } from './snmpInterfaceService'
+import { getFlowGraphUrl } from './flowService'
 import { search } from './searchService'
 import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
@@ -84,6 +85,7 @@ import {
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
+import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
   createManagedUser,
   deleteManagedUser,
@@ -144,6 +146,7 @@ export default {
   getIpInterfaces,
   getNodeIpInterfaceQuery,
   getSnmpInterfaces,
+  getFlowGraphUrl,
   getNodeSnmpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
@@ -238,5 +241,15 @@ export default {
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
-  updateManagedGroup
+  updateManagedGroup,
+  getWsmanConfig,
+  getWsmanDataCollection,
+  getWsmanStatus,
+  getRequisitionNames,
+  getWsmanReadiness,
+  runWsmanReadinessAction,
+  resetWsmanDataCollection,
+  syncWsmanDefinition,
+  updateWsmanConfig,
+  updateWsmanDataCollectionFile
 }
