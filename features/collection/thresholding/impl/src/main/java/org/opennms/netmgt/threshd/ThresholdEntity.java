@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.LazyScope;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
@@ -234,6 +235,14 @@ public final class ThresholdEntity implements Cloneable {
      * @param resource a {@link org.opennms.netmgt.threshd.CollectionResourceWrapper} object.
      */
     public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
+        return evaluateAndCreateEvents(resource, values, date, getScopeForResource(resource));
+    }
+
+    /**
+     * Like {@link #evaluateAndCreateEvents(CollectionResourceWrapper, Map, Date)}, but the caller
+     * provides the scope so one instance can be shared across all thresholds for a resource.
+     */
+    public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date, Scope scope) {
         List<Event> events = new LinkedList<Event>();
 
         String instance = null;
@@ -251,9 +260,6 @@ public final class ThresholdEntity implements Cloneable {
 
         // This reference contains the function that will be used by each evaluator to retrieve the status
         AtomicReference<EvaluateFunction> evaluateFunctionRef = new AtomicReference<>(null);
-
-        // compute scope here, see NMS-16966
-        final Scope scope = getScopeForResource(resource);
 
         // Depending on the type of threshold, we want to evaluate it differently
         // Threshold Values like value, rearm, trigger and expression are interpolated and cached in state so that
@@ -325,18 +331,23 @@ public final class ThresholdEntity implements Cloneable {
     }
 
     public static Scope getScopeForResource(EntityScopeProvider entityScopeProvider, CollectionResourceWrapper resource) {
+        if (resource == null) {
+            return getScope(entityScopeProvider, null, null, null);
+        }
+        return getScope(entityScopeProvider, resource.getNodeId(), resource.getHostAddress(), resource.getServiceName());
+    }
+
+    public static Scope getScope(EntityScopeProvider entityScopeProvider, Integer nodeId, String hostAddress, String serviceName) {
         // Default to empty scopes and then attempt to populate each of node, interface, and service
-        // scopes below
+        // scopes below. Scopes are lazy: entities are only loaded if an expression is resolved (NMS-16966).
         Scope[] scopes = new Scope[]{EmptyScope.EMPTY, EmptyScope.EMPTY, EmptyScope.EMPTY};
 
-        if (resource != null) {
-            scopes[0] = entityScopeProvider.getScopeForNode(resource.getNodeId());
-            String interfaceIp = resource.getHostAddress();
-            if (interfaceIp != null) {
-                scopes[1] = entityScopeProvider.getScopeForInterface(resource.getNodeId(),
-                        interfaceIp);
-                scopes[2] = entityScopeProvider.getScopeForService(resource.getNodeId(),
-                        InetAddresses.forString(interfaceIp), resource.getServiceName());
+        if (nodeId != null) {
+            scopes[0] = new LazyScope(() -> entityScopeProvider.getScopeForNode(nodeId));
+            if (hostAddress != null) {
+                scopes[1] = new LazyScope(() -> entityScopeProvider.getScopeForInterface(nodeId, hostAddress));
+                scopes[2] = new LazyScope(() -> entityScopeProvider.getScopeForService(nodeId,
+                        InetAddresses.forString(hostAddress), serviceName));
             }
         }
         return new FallbackScope(scopes);

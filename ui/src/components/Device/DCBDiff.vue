@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { DeviceConfigBackup } from '@/types/deviceConfig'
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import { useAppStore } from '@/stores/appStore'
 type Mode = 'split' | 'unified'
 

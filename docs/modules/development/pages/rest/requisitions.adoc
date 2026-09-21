@@ -36,6 +36,15 @@ The following table describes GET requests and how they are formatted:
 | /requisitions/deployed/count
 | Get the number of deployed requisitions (returns plaintext rather than XML or JSON).
 
+| /requisitions/deployed/stats
+| Get statistics for all deployed requisitions. Returns, for each deployed foreign source, its name, the date it was last imported, and the list of requisitioned foreign IDs.
+
+| /requisitions/deployed/stats/\{foreignSource}
+| Get statistics for the named deployed requisition: its name, the date it was last imported, and the list of requisitioned foreign IDs.
+
+| /requisitions/repositoryStrategy
+| Get the currently configured foreign source repository strategy (returns plaintext rather than XML or JSON).
+
 | /requisitions/\{name}
 | Get the active requisition for the given foreign source name.
 

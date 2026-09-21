@@ -63,7 +63,7 @@ public class ReportCatalogEntry implements Serializable {
      */
     @Id
     @Column(name="id")
-    @SequenceGenerator(name="reportCatalogSequence", sequenceName="reportCatalogNxtId")
+    @SequenceGenerator(name="reportCatalogSequence", sequenceName="reportCatalogNxtId", allocationSize = 1)
     @GeneratedValue(generator="reportCatalogSequence")
     public Integer getId() {
         return m_id;

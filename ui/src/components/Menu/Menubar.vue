@@ -1,32 +1,49 @@
 <template>
-  <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
-    <template v-slot:left>
+  <header class="onms-menubar" ref="outsideClick" @mouseleave="resetMenuItems">
+    <div class="onms-menubar__left">
       <div class="center-flex">
-        <FeatherAppBarLink :icon="IconLogo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
+        <a class="logo-link home" title="Home" :href="mainMenu.homeUrl || '/'">
+          <IconLogo class="onms-menubar__logo" />
+        </a>
       </div>
-    </template>
+    </div>
 
-    <template v-slot:center>
-        <Search class="search-left-margin" id="onms-central-search-control" />
+    <div class="onms-menubar__center">
+      <Search
+        ref="searchRef"
+        class="search-left-margin"
+        id="onms-central-search-control"
+      />
 
-        <!-- Provision/Quick add node menu -->
-        <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
-          <FeatherButton
-            primary
-            v-if="mainMenu.provisionMenu"
-            @click="onAddNode"
-          >Add a Node</FeatherButton>
-        </div>
-    </template>
+      <!-- Provision/Quick add node menu -->
+      <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
+        <OnmsButton
+          v-if="mainMenu.provisionMenu"
+          label="Add a Node"
+          @click="onAddNode"
+        />
+      </div>
+    </div>
 
-    <template v-slot:right>
+    <div class="onms-menubar__right">
       <div class="date-wrapper">
         <div class="date-formatted-time">{{ formattedTime }}</div>
         <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
 
+      <span
+        v-if="dateTimeLabel"
+        class="date-icon-wrapper"
+        v-onms-tooltip.bottom="dateTimeLabel"
+      >
+        <OnmsIcon
+          :icon="CalendarIcon"
+          :title="dateTimeLabel"
+        />
+      </span>
+
        <span title="Toggle Light/Dark Mode">
-        <FeatherIcon
+        <OnmsIcon
             :icon="LightDarkMode"
             title="Toggle Light/Dark Mode"
             class="light-dark"
@@ -49,16 +66,17 @@
           @menuHide="() => onMenuHide(DropdownMenuType.SelfService)"
         />
       </template>
-    </template>
-  </FeatherAppBar>
+    </div>
+  </header>
 </template>
 
 <script setup lang="ts">
-import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
-import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import LightDarkMode from '@featherds/icon/action/LightDarkMode'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+
+import { useOutsideClick } from '@/composables/useOutsideClick'
+import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import LightDarkMode from '@opennms/onms-ui/icons/action/LightDarkMode.vue'
+import CalendarIcon from '@opennms/onms-ui/icons/action/Calendar.vue'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'
@@ -74,6 +92,7 @@ const appStore = useAppStore()
 const menuStore = useMenuStore()
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const outsideClick = ref()
+const searchRef = ref<InstanceType<typeof Search> | null>(null)
 const currentDropdownMenu = ref<DropdownMenuType>(DropdownMenuType.None)
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
@@ -82,8 +101,32 @@ const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButto
 const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
 const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
 
-useOutsideClick(outsideClick.value, () => {
-  resetMenuItems()
+// Empty until the menu data loads. The calendar icon exists only to carry this
+// label (the visible date/time text is hidden at narrow widths, NMS-20201), so
+// it is v-if'd on it — no point in a date icon before there is a date.
+//
+// That v-if is no longer load-bearing for the tooltip: it used to be the local
+// workaround for PrimeVue capturing the configured z-index only when the
+// directive mounted with a non-empty value, which left the tooltip behind this
+// fixed header's 1030. The OnmsTooltip seam wrapper now stamps the z-index after
+// `updated` too, so a label that arrives with the menu data is fine either way
+// (tests/onms-ui/OnmsTooltip.test.ts pins that).
+//
+// The `.bottom` modifier is a placement choice, not a workaround: PrimeVue's
+// default `right` puts the tooltip inside the header band, on top of the
+// neighbouring menubar items.
+const dateTimeLabel = computed<string>(() => [formattedTime.value, formattedDate.value].filter(Boolean).join(' '))
+
+// `outsideClick`, not `outsideClick.value`: the composable stores the ref and
+// reads `.value` when the click arrives, so passing the (still-undefined) value
+// at setup time left it looking at nothing. It also stays dormant until its
+// returned `active` ref is set — enable it only while a dropdown is open, which
+// is the only time there is any state to reset. Both dropdowns are inline
+// Popovers (appendTo="self"), so clicks inside them count as inside the header.
+const outsideClickActive = useOutsideClick(outsideClick, () => resetMenuItems())
+
+watch(currentDropdownMenu, (menu) => {
+  outsideClickActive.value = menu !== DropdownMenuType.None
 })
 
 const resetMenuItems = () => {
@@ -120,20 +163,20 @@ const clearShiftCheck = () => {
  * key in quick succession (less than 2000 ms). Only stores a single shift keypress, ignores
  * all other input. Upon detection of the second shift keypress, it clears all stored values,
  * focuses the search box in the MenuBar and returns to its default state.
- * 
+ *
  * Logic:
- * If user presses either left or right shift key and we're in a default state, store it in temporary memory, 
+ * If user presses either left or right shift key and we're in a default state, store it in temporary memory,
  * along with the time it was pressed.
- * 
+ *
  * If user presses any other key, clear stored values and stored timestamp.
- * 
- * If user's last keypress was a shift key, 
- * but they take longer than the variable shiftDelay (currently 2000ms), 
+ *
+ * If user's last keypress was a shift key,
+ * but they take longer than the variable shiftDelay (currently 2000ms),
  * clear state and return to default.
- * 
- * If the user presses a shift key, directly after pressing a shift key, 
+ *
+ * If the user presses a shift key, directly after pressing a shift key,
  * focus the search box, clear the values and return to a default state.
- * 
+ *
  */
 const shiftCheck = (e: KeyboardEvent) => {
   const shiftCodes = ['ShiftLeft', 'ShiftRight']
@@ -144,11 +187,7 @@ const shiftCheck = (e: KeyboardEvent) => {
       if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
         clearShiftCheck()
 
-        const elem: HTMLInputElement | null = document.querySelector('.onms-search-input-wrapper input.search-input')
-
-        if (elem) {
-          elem.focus()
-        }
+        searchRef.value?.focus()
       } else {
         clearShiftCheck()
       }
@@ -171,35 +210,88 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/styles/mixins/typography" as typo;
-@import "@featherds/dropdown/scss/mixins";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
-// Notification-status colors stay on their light-theme Feather values so
-// the indicator meaning doesn't change with the active theme. We re-declare
-// the Feather CSS variables locally with their light-mode values and keep
-// the consuming rules pointing at the Feather variable names.
+// Fixed top menu bar. Replaces FeatherAppBar, which was used only as a fixed
+// 3-column flex bar (its skip-link, responsive hamburger, scroll-hide and
+// full-width features were all inactive/hidden here).
+.onms-menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--onms-zindex-fixed, 1030);
+  display: flex;
+  align-items: center;
+  height: var(--onms-header-height, 3.75rem);
+  padding: 0 1rem;
+  background-color: var(--onms-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
+}
+
+// No `min-width: 0` here: the flex-item default of `min-width: auto` keeps
+// this column from collapsing below the logo's intrinsic width, so the
+// (rigid) center column can never paint over the logo (NMS-20201).
+.onms-menubar__left {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+}
+
+.onms-menubar__center {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.onms-menubar__right {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.logo-link.home {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+// The logo is a wide wordmark SVG (viewBox 624x69). Size by height and let
+// width follow. The max-width is a guard for rebranded logos substituted via
+// VITE_APP_LOGO_NAME: since the left column refuses to shrink below the logo,
+// an unbounded ultra-wide asset would crowd out the rest of the bar. An SVG
+// wider than the cap letterboxes (scales down) rather than distorts.
+.onms-menubar__logo {
+  height: 1.75rem;
+  width: auto;
+  max-width: 18rem;
+}
+
+// Notification-status colors stay on their light-mode values so the indicator
+// meaning doesn't change with the active theme. We re-declare the onms token
+// variables locally with those fixed values and keep the consuming rules
+// pointing at the token variable names.
 .alarm-error,
 .alarm-ok,
 .alarm-unknown {
-  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
+  --onms-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
 }
 
 .alarm-error {
-  --feather-error: #a5021f;
+  --onms-error: #a5021f;
   background-color: var($error);
 }
 
 .alarm-ok {
-  --feather-success: #0b720c;
+  --onms-success: #0b720c;
   background-color: var($success);
 }
 
 .alarm-unknown {
-  --feather-indeterminate: #0092c7;
+  --onms-indeterminate: #0092c7;
   background-color: var($indeterminate);
 }
 
@@ -214,17 +306,6 @@ onUnmounted(() => {
 .quick-add-node-wrapper {
   margin-left: 1em;
   margin-right: 1em;
-
-  .btn {
-    :deep(.btn-content) {
-      @include typo.button();
-      color: var(--feather-primary-text-on-color);
-      font-family: var(--feather-header-font-family);
-      font-size: var(--feather-button-font-size);
-      font-weight: var(--feather-button-font-weight);
-      letter-spacing: var(--feather-button-letter-spacing);
-    }
-  }
 }
 
 .notice-status-display {
@@ -236,9 +317,13 @@ onUnmounted(() => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
-  font-family: var(--feather-header-font-family);
+  font-family: var(--onms-header-font-family);
   font-size: 0.875rem;
+  margin-left: 1em;
   margin-right: 1em;
+  // Keep time/date each on one line; without this the text word-wraps and
+  // spills out of the fixed-height bar when the right column is squeezed.
+  white-space: nowrap;
 
   .date-formatted-date {
     display: flex;
@@ -251,14 +336,39 @@ onUnmounted(() => {
     font-weight: 800;
   }
 }
+
+// Compact date representation: below 1024px the two-line date text is
+// replaced by a calendar icon whose tooltip carries the full date/time.
+.date-icon-wrapper {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .date-wrapper {
+    display: none;
+  }
+
+  .date-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    font-size: 24px;
+    margin-left: 1em;
+    margin-right: 1em;
+  }
+}
 </style>
 
 <style lang="scss">
+// Shared header height, consumed by both the top menu bar and the side menu rail.
+:root {
+  --onms-header-height: 3.75rem;
+}
+
 .light-dark {
   font-size: 24px;
   margin-top: 2px;
   margin-right: 0.5rem;
-  color: var(--feather-state-text-color-on-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
   cursor: pointer;
   outline: none;
 
@@ -267,50 +377,15 @@ onUnmounted(() => {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--feather-primary);
+    outline: 2px solid var(--onms-primary);
     outline-offset: 2px;
     border-radius: 4px;
   }
-}
-
-.header .header-content {
-  padding-left: 1rem;
-  padding-right: 1rem;
-  max-width: 100%;
-}
-
-.banner .header {
-  .logo-link.home {
-    padding-left: 0;
-    margin-right: 1rem;
-    padding-top: 2px;
-    padding-bottom: 0;
-    padding-right: 0;
-  }
-}
-
-// remove elevation from menubar
-.header-wrapper.feather-app-bar-wrapper .header {
-  box-shadow: none;
-}
-
-.header-wrapper.feather-app-bar-wrapper a.skip {
-  display: none;
 }
 
 .center-flex {
   display: flex;
   align-items: center;
   padding-top: 3px;
-}
-
-.header-content {
-  .right.center-horiz {
-    margin-right:2px;
-  }
-
-  .top-menu-search {
-    margin-right:5px;
-  }
 }
 </style>

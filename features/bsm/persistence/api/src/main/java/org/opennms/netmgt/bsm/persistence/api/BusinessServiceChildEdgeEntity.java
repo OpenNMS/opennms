@@ -24,7 +24,6 @@ package org.opennms.netmgt.bsm.persistence.api;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -37,7 +36,6 @@ import com.google.common.collect.Sets;
 @Entity
 @Table(name = "bsm_service_children")
 @PrimaryKeyJoinColumn(name="id")
-@DiscriminatorValue(value="children")
 public class BusinessServiceChildEdgeEntity extends BusinessServiceEdgeEntity {
 
     // The Business Service Entity where the parent points to (child relationship)

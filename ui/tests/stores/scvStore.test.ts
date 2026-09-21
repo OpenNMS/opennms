@@ -266,7 +266,7 @@ describe('useScvStore', () => {
     it('should return items sorted by alias', () => {
       const results = store.queryCredentials('alias')
 
-      const aliasItems = results.filter((item) => item.type === 'alias')
+      const aliasItems = results.filter(item => item.type === 'alias')
       expect(aliasItems[0].alias).toBe('alias1')
       expect(aliasItems[1].alias).toBe('alias2')
       expect(aliasItems[2].alias).toBe('zAlias')
@@ -276,8 +276,8 @@ describe('useScvStore', () => {
       const results = store.queryCredentials('searchKey')
 
       expect(results.length).toBeGreaterThan(0)
-      const aliasItem = results.find((item) => item.type === 'alias' && item.alias === 'zAlias')
-      const keyItem = results.find((item) => item.type === 'key' && item.key === 'searchKey')
+      const aliasItem = results.find(item => item.type === 'alias' && item.alias === 'zAlias')
+      const keyItem = results.find(item => item.type === 'key' && item.key === 'searchKey')
 
       expect(aliasItem).toBeDefined()
       expect(keyItem).toBeDefined()
@@ -294,7 +294,7 @@ describe('useScvStore', () => {
       const results = store.queryCredentials('username')
 
       expect(results.length).toBeGreaterThan(0)
-      expect(results.some((item) => item.key === 'username')).toBe(true)
+      expect(results.some(item => item.key === 'username')).toBe(true)
     })
 
     it('should return empty array when no matches found', () => {
@@ -305,7 +305,7 @@ describe('useScvStore', () => {
 
     it('should return all keys when a partial query matches all aliases', () => {
       const results = store.queryCredentials('alia')
-    
+
       expect(results.length).toBe(13) // 3 alias items + 10 keys total
       expect(results[0].alias).toBe('alias1')
       expect(results[0].type).toBe('alias')
@@ -414,7 +414,7 @@ describe('useScvStore', () => {
 
     it('should return correct keys for a partial query match on password', () => {
       const results = store.queryCredentials('pass')
-    
+
       expect(results.length).toBe(6) // 3 matching password keys, plus 3 parent aliases
       expect(results[0].alias).toBe('alias1')
       expect(results[0].type).toBe('alias')
@@ -456,7 +456,7 @@ describe('useScvStore', () => {
       expect(results[4].key).toBe('attr3')
       expect(results[4].type).toBe('key')
     })
- 
+
     it('should return correct keys for a partial query match on a different attribute', () => {
       const results = store.queryCredentials('earch')
 

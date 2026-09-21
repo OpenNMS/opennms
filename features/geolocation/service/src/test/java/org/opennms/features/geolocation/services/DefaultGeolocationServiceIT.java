@@ -89,6 +89,7 @@ public class DefaultGeolocationServiceIT {
     private DefaultGeolocationService geolocationService;
 
     @Before
+    @Transactional
     public void before() {
         geolocationService = new DefaultGeolocationService(genericPersistenceAccessor, statusCalculator);
 

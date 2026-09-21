@@ -23,7 +23,9 @@
 const getOrCreateLegendList = (id: string) => {
   const legendContainer = document.getElementById(id)
 
-  if (!legendContainer) return
+  if (!legendContainer) {
+    return
+  }
 
   let listContainer = legendContainer.querySelector('ul')
 
@@ -44,7 +46,9 @@ const HtmlLegendPlugin = {
   afterUpdate(chart: any, args: any, options: any) {
     const ul = getOrCreateLegendList(options.containerID)
 
-    if (!ul) return
+    if (!ul) {
+      return
+    }
 
     // Remove old legend items
     while (ul.firstChild) {

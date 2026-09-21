@@ -41,6 +41,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.opennms.core.utils.StringUtils;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao;
 import org.slf4j.Logger;
@@ -70,6 +71,8 @@ public class RpkiValidatorClient {
 
     private BmpRpkiInfoDao bmpRpkiInfoDao;
 
+    private SessionUtils sessionUtils;
+
     private String rpkiUsername;
 
     private String rpkiPassword;
@@ -92,7 +95,16 @@ public class RpkiValidatorClient {
 
     public void init() {
         Long hourOfTheDayInMinutes = Utils.getHourOfTheDayInMinutes(hourOfTheDay);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateRpkiInfo, hourOfTheDayInMinutes, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
+        // An exception escaping the task permanently cancels the scheduleAtFixedRate schedule
+        // (e.g. a constraint violation surfacing at transaction commit), so catch everything
+        // and let the next interval retry.
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                updateRpkiInfo();
+            } catch (Throwable t) {
+                LOG.error("RPKI info update failed; will retry at the next scheduled interval", t);
+            }
+        }, hourOfTheDayInMinutes, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
     }
 
     public void destroy() {
@@ -103,15 +115,18 @@ public class RpkiValidatorClient {
         String jsonResponse = getJsonRestResponse();
         if (jsonResponse != null) {
             List<RpkiInfo> rpkiInfoList = parseRpkiInfoFromResponse(jsonResponse);
-            rpkiInfoList.forEach(rpkiInfo -> {
-                BmpRpkiInfo bmpRpkiInfo = buildBmpRpkiValidator(rpkiInfo);
-                if (bmpRpkiInfo != null && bmpRpkiInfoDao != null) {
-                    try {
-                        bmpRpkiInfoDao.saveOrUpdate(bmpRpkiInfo);
-                    } catch (Exception e) {
-                        LOG.error("Exception while persisting BMP Rpki validator {}", bmpRpkiInfo, e);
+            sessionUtils.withTransaction(() -> {
+                rpkiInfoList.forEach(rpkiInfo -> {
+                    BmpRpkiInfo bmpRpkiInfo = buildBmpRpkiValidator(rpkiInfo);
+                    if (bmpRpkiInfo != null && bmpRpkiInfoDao != null) {
+                        try {
+                            bmpRpkiInfoDao.saveOrUpdate(bmpRpkiInfo);
+                        } catch (Exception e) {
+                            LOG.error("Exception while persisting BMP Rpki validator {}", bmpRpkiInfo, e);
+                        }
                     }
-                }
+                });
+                return null;
             });
         }
     }
@@ -202,6 +217,10 @@ public class RpkiValidatorClient {
 
     public void setBmpRpkiInfoDao(BmpRpkiInfoDao bmpRpkiInfoDao) {
         this.bmpRpkiInfoDao = bmpRpkiInfoDao;
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
 
     public void setRpkiUsername(String rpkiUsername) {

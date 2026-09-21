@@ -34,13 +34,11 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
-import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
-import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -64,13 +62,11 @@ public class BeanFieldCopyUtilTest<T> {
                 {
                         DiscoveryConfiguration.class,
                         SnmpConfig.class,
-                        WmiConfig.class,
                         PollerConfiguration.class,
                         EventdConfiguration.class,
                         NotifdConfiguration.class,
                         VacuumdConfiguration.class,
                         JmxDatacollectionConfig.class,
-                        MicroblogConfiguration.class,
                         ReadmailConfig.class,
                         HwInventoryAdapterConfiguration.class,
                         TrapdConfiguration.class

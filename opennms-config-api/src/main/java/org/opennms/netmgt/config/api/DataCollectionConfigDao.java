@@ -125,4 +125,18 @@ public interface DataCollectionConfigDao {
     void reload();
 
     Date getLastUpdate();
+
+    /**
+     * Replace the in-memory config with one built from database.
+     * Called by the persistence service after all DAOs are available.
+     *
+     * @param config the fully-built DatacollectionConfig from DB
+     * @param configuredResourceTypes all resource types from DB sources
+     * @param dataCollectionGroups list of source/group names
+     */
+    default void loadFromDatabase(DatacollectionConfig config,
+                                  Map<String, ResourceType> configuredResourceTypes,
+                                  List<String> dataCollectionGroups) {
+        // Default no-op for backward compatibility
+    }
 }

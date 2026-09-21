@@ -1,38 +1,23 @@
 <template>
   <div
+    ref="searchControlRef"
     class="onms-search-control-wrapper"
     :id="props.searchId"
   >
-    <div class="onms-search-input-wrapper">
-      <div class="search-icon">
-        <FeatherIcon :icon="SearchIcon" />
-      </div>
-      <input
-        ref="searchInputRef"
-        type="text"
-        placeholder="Search..."
-        v-model="searchValue"
-        @input="handleSearch"
-        @keydown="onKeyDown"
-        class="search-input"
-      />
-    </div>
+    <OnmsSearchInput
+      ref="searchInputRef"
+      class="onms-search-input"
+      placeholder="Search..."
+      aria-label="Search"
+      :modelValue="searchValue"
+      @update:modelValue="onSearchInput"
+      @keydown="onKeyDown"
+    />
     <div
       v-if="showResults && hasResults"
       class="search-results-dropdown"
       @mousedown.prevent
     >
-      <div class="search-results-toolbar">
-        <FeatherIcon
-          :icon="CancelIcon"
-          class="search-results-close"
-          role="button"
-          tabindex="0"
-          title="Close"
-          @click="closeResults"
-          @keydown.enter.space.prevent="closeResults"
-        />
-      </div>
       <template
         v-for="(searchResultByContext, searchResultByContextKey) in filteredResults"
         :key="searchResultByContextKey"
@@ -71,9 +56,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import SearchIcon from '@featherds/icon/action/Search'
-import CancelIcon from '@featherds/icon/navigation/Cancel'
+import { OnmsSearchInput } from '@opennms/onms-ui'
+import { useOutsideClick } from '@/composables/useOutsideClick'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'
@@ -82,7 +66,8 @@ import { useSearchStore } from '@/stores/searchStore'
 const menuStore = useMenuStore()
 const searchStore = useSearchStore()
 const iconClasses = ref<any>([[]])
-const searchInputRef = ref<any>(null)
+const searchControlRef = ref()
+const searchInputRef = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
 const searchResultRefs = ref<Map<string, any>>(new Map())
 
 const props = defineProps({
@@ -128,7 +113,7 @@ const setSearchResultRef = (el: any, contextKey: string | number, subContextKey:
 const updateFlatResults = () => {
   const results: any[] = []
   searchResultRefs.value.clear()
-  
+
   Object.entries(filteredResults.value).forEach(([contextKey, searchResultByContext]: any) => {
     if (searchResultByContext?.results) {
       Object.entries(searchResultByContext.results).forEach(([subContextKey, contextSearchResults]: any) => {
@@ -148,7 +133,7 @@ const updateFlatResults = () => {
       })
     }
   })
-  
+
   flatResults.value = results
 }
 
@@ -158,8 +143,8 @@ watch(filteredResults, () => {
   selectedIndex.value = -1 // Reset selection when results change
 }, { deep: true })
 
-const handleSearch = (event: any) => {
-  const stringValue = String(event.target?.value || '')
+const onSearchInput = (value?: string) => {
+  const stringValue = value ?? ''
   searchValue.value = stringValue
 
   if (searchTimeout) {
@@ -192,9 +177,9 @@ const handleItemClick = (item: any) => {
 }
 
 const setSelectedIndex = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
-  const foundIndex = flatResults.value.findIndex(result => 
-    result.contextKey === String(contextKey) && 
-    result.subContextKey === String(subContextKey) && 
+  const foundIndex = flatResults.value.findIndex(result =>
+    result.contextKey === String(contextKey) &&
+    result.subContextKey === String(subContextKey) &&
     result.itemIndex === itemIndex
   )
 
@@ -207,12 +192,12 @@ const isSelected = (contextKey: string | number, subContextKey: string | number,
   if (selectedIndex.value === -1) {
     return false
   }
-  
+
   const currentResult = flatResults.value[selectedIndex.value]
 
-  return currentResult && 
-         currentResult.contextKey === String(contextKey) && 
-         currentResult.subContextKey === String(subContextKey) && 
+  return currentResult &&
+         currentResult.contextKey === String(contextKey) &&
+         currentResult.subContextKey === String(subContextKey) &&
          currentResult.itemIndex === itemIndex
 }
 
@@ -234,17 +219,40 @@ const closeResults = () => {
   selectedIndex.value = -1
 }
 
+// Dismiss the results (keeping the query) once attention moves elsewhere. The
+// composable's window-blur leg matters here: the menu app is embedded in legacy
+// JSP/Vaadin pages, and a click inside one of their iframes never reaches this
+// document — the window losing focus is the only signal we get. Only listen
+// while the dropdown is actually open.
+const outsideClickActive = useOutsideClick(searchControlRef, () => closeResults())
+
+watch(showResults, (isShown) => {
+  outsideClickActive.value = isShown
+})
+
+// Lets the Menubar's shift-shift shortcut focus the field without reaching into
+// this component's DOM.
+defineExpose({
+  focus: () => searchInputRef.value?.focus()
+})
+
 const onKeyDown = async (event: KeyboardEvent) => {
+  // Keydown is listened for on OnmsSearchInput's container, so it also sees keys
+  // aimed at the field's clear button; those must keep their own behavior.
+  if (!(event.target instanceof HTMLInputElement)) {
+    return
+  }
+
   if (!showResults.value || !hasResults.value) {
     return
   }
-  
+
   if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
     event.preventDefault()
     // prevent Escape from closing side menu
     event.stopPropagation()
     event.stopImmediatePropagation()
-    
+
     switch (event.key) {
       case 'ArrowDown':
         if (selectedIndex.value < flatResults.value.length - 1) {
@@ -254,7 +262,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
         }
         await focusSelectedResult()
         break
-        
+
       case 'ArrowUp':
         if (selectedIndex.value > 0) {
           selectedIndex.value--
@@ -263,11 +271,11 @@ const onKeyDown = async (event: KeyboardEvent) => {
         }
         await focusSelectedResult()
         break
-        
+
       case 'Enter':
         selectCurrentItem()
         break
-        
+
       case 'Escape':
         closeResults()
         break
@@ -277,23 +285,28 @@ const onKeyDown = async (event: KeyboardEvent) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
-
 .onms-search-control-wrapper {
   position: relative;
-  min-width: 30em;
+  // Fluid width: 24em on wide viewports, shrinking down to a 10em floor so
+  // the menubar degrades gracefully as the window narrows (NMS-20201).
+  min-width: clamp(10em, 28vw, 24em);
 }
 
 .search-results-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
+  // Anchor to the input's right edge: when min-width exceeds the input's
+  // width the dropdown grows leftward (over the logo area, still on-screen)
+  // instead of rightward past the viewport edge, where the fixed header
+  // provides no scrollbar to reach it.
+  left: auto;
+  right: 0;
   width: 100%;
-  background: var($background);
-  color: var(--feather-secondary-text-on-surface);
-  border: 1px solid var($secondary);
+  // Keep results readable even when the input has shrunk to its floor width.
+  min-width: 24em;
+  background: var(--p-content-background);
+  color: var(--p-text-muted-color);
+  border: 1px solid var(--p-content-border-color);
   border-radius: 4px;
   max-height: 400px;
   overflow-y: auto;
@@ -301,48 +314,25 @@ const onKeyDown = async (event: KeyboardEvent) => {
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  .search-results-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0.25em 0.5em;
-    border-bottom: 1px solid var($border-on-surface);
-
-    .search-results-close {
-      cursor: pointer;
-      color: var($secondary-text-on-surface);
-      font-size: 1.25rem;
-
-      &:hover {
-        color: var($primary-text-on-surface);
-      }
-
-      &:focus-visible {
-        outline: 2px solid var($primary);
-        outline-offset: 2px;
-        border-radius: 2px;
-      }
-    }
-  }
-
   .search-category {
-    background-color: var(--feather-background);
+    background-color: var(--p-content-background);
     padding: 0.5em 0.75em;
-    border-bottom: 1px solid var(--feather-surface);
+    border-bottom: 1px solid var(--p-content-border-color);
     font-weight: 800;
   }
 
   .search-result-item {
-    border-bottom: 1px solid var(--feather-surface);
+    border-bottom: 1px solid var(--p-content-border-color);
     transition: background-color 0.15s ease;
     padding-left: 0.5em;
-    color: var(--feather-secondary-text-on-surface);
+    color: var(--p-text-muted-color);
 
     &:hover {
-      background-color: var(--feather-surface);
+      background-color: var(--p-highlight-background);
     }
 
     &.keyboard-selected {
-      background-color: var(--feather-surface);
+      background-color: var(--p-highlight-background);
     }
 
     &:last-child {
@@ -351,59 +341,11 @@ const onKeyDown = async (event: KeyboardEvent) => {
   }
 }
 
-.onms-search-input-wrapper {
-  display: flex;
-  position: relative;
-  align-items: center;
-  width: 100%;
-  background-color: var($surface);
-  border: 1px solid var($border-on-surface);
-  border-radius: 4px;
-
-  .search-icon {
-    position: absolute;
-    left: 8px;
-    z-index: 1;
-    color: var($secondary-text-on-surface);
-    pointer-events: none;
-  }
-
-  .search-input {
+// The field is the seam's standard search input; it only needs to fill the
+// (fluid) width of this wrapper.
+.onms-search-input {
+  :deep(.p-inputtext) {
     width: 100%;
-    padding: 8px 12px 8px 36px;
-    border: none;
-    background: transparent;
-    outline: none;
-    font-size: 14px;
-    color: var($primary-text-on-surface);
-
-    &::placeholder {
-      color: var($secondary-text-on-surface);
-    }
-    
-    &:focus {
-      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
-    }
   }
-}
-
-:deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
-  border-radius: 0 !important;
-}
-
-:deep(.feather-input-wrapper-container .feather-input-border .post-border) {
-  border-radius: 0 !important;
-}
-
-:deep(.feather-input-border) {
-  background: var(--surface);
-}
-
-:deep(.feather-input-sub-text) {
-  display: none !important;
-}
-
-:deep(.feather-input-wrapper-container.raised .feather-input-label) {
-  display: none !important;
 }
 </style>

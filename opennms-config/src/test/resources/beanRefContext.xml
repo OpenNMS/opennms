@@ -3,7 +3,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd" default-lazy-init="true">
 
-    <!-- Test daoContext with minimal context for WmiPeerFactoryTest -->
     <bean id="daoContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
         <constructor-arg>
             <list>

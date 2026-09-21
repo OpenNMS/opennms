@@ -14,7 +14,6 @@
     <module>opennms-mock-simpleserver</module>
     <module>opennms-detector-lineoriented</module>
     <module>opennms-detector-simple</module>
-    <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>
     <module>opennms-provision-geolocation</module>
     <module>opennms-provision-persistence</module>
@@ -54,11 +53,6 @@
             <dependency>
                 <groupId>org.opennms</groupId>
                 <artifactId>opennms-detector-simple</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opennms</groupId>
-                <artifactId>opennms-snmp-scanners</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

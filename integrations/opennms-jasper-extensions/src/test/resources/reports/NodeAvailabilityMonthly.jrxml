@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NodeAvailabilityMonthly" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport name="NodeAvailabilityMonthly" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f4fea788-3994-48e2-b694-35907c615884">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="startDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
 	</parameter>
-	<queryString>
-		<![CDATA[SELECT
+	<query language="sql"><![CDATA[SELECT
 	CASE
 		WHEN
 			interval_helper.reportMonth = interval_helper.thisMonth
@@ -39,54 +37,31 @@ FROM (
 		extract(month FROM NOW()) AS thisMonth,
 		extract(month FROM NOW() - INTERVAL '1 month') AS lastMonth,
 		extract(year FROM NOW()) AS thisYear
-) AS interval_helper]]>
-	</queryString>
+) AS interval_helper]]></query>
 	<field name="intervaldescription" class="java.lang.String"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="51" splitType="Stretch"/>
-	</title>
-	<pageHeader>
-		<band height="52" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="15" width="96" height="20"/>
-				<textElement/>
-				<text><![CDATA[Node Availability - ]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title height="51" splitType="Stretch"/>
+	<pageHeader height="52" splitType="Stretch">
+		<element kind="staticText" uuid="f4d80b43-5dab-43c9-b734-99fc41ddfd9b" x="0" y="15" width="96" height="20">
+			<text><![CDATA[Node Availability - ]]></text>
+		</element>
 	</pageHeader>
-	<columnHeader>
-		<band height="61" splitType="Stretch">
-			<staticText>
-				<reportElement x="74" y="0" width="100" height="20"/>
-				<textElement/>
-				<text><![CDATA[nodelabel]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="209" y="0" width="100" height="20"/>
-				<textElement/>
-				<text><![CDATA[nodesysoid]]></text>
-			</staticText>
-		</band>
+	<columnHeader height="61" splitType="Stretch">
+		<element kind="staticText" uuid="ebbe70ac-282d-44ed-aaf0-789b99bb8a6d" x="74" y="0" width="100" height="20">
+			<text><![CDATA[nodelabel]]></text>
+		</element>
+		<element kind="staticText" uuid="a1bf3243-b7ec-456a-acdc-e983f0133c34" x="209" y="0" width="100" height="20">
+			<text><![CDATA[nodesysoid]]></text>
+		</element>
 	</columnHeader>
 	<detail>
 		<band height="125" splitType="Stretch">
-			<staticText>
-				<reportElement x="242" y="77" width="100" height="20"/>
-				<textElement/>
+			<element kind="staticText" uuid="adf4fdbf-c2d9-4ce6-813d-7802629e5b29" x="242" y="77" width="100" height="20">
 				<text><![CDATA[Static text]]></text>
-			</staticText>
+			</element>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band height="54" splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
 </jasperReport>

@@ -68,6 +68,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withService(MonitoredService service) {
         this.service = service;
+        this.scope = null;
         return this;
     }
 
@@ -115,16 +116,24 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withPatternVariables(Map<String, String> patternVariables) {
         this.patternVariables.putAll(patternVariables);
+        this.scope = null;
         return this;
     }
 
+    // memoized scope; invalidated by the mutators that feed it (withService, withPatternVariables)
+    private Scope scope;
+
     private Scope getScope() {
-        return new FallbackScope(
-                this.client.getEntityScopeProvider().getScopeForNode(this.service.getNodeId()),
-                this.client.getEntityScopeProvider().getScopeForInterface(this.service.getNodeId(), this.service.getIpAddr()),
-                this.client.getEntityScopeProvider().getScopeForService(this.service.getNodeId(), this.service.getAddress(), this.service.getSvcName()),
-                MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
-        );
+        // execute() needs the scope twice and each build hits the database
+        if (this.scope == null) {
+            this.scope = new FallbackScope(
+                    this.client.getEntityScopeProvider().getScopeForNode(this.service.getNodeId()),
+                    this.client.getEntityScopeProvider().getScopeForInterface(this.service.getNodeId(), this.service.getIpAddr()),
+                    this.client.getEntityScopeProvider().getScopeForService(this.service.getNodeId(), this.service.getAddress(), this.service.getSvcName()),
+                    MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
+            );
+        }
+        return this.scope;
     }
 
     @Override

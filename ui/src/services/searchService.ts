@@ -35,7 +35,7 @@ const search = async (searchStr: string): Promise<SearchResultResponse[] | false
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

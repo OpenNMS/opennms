@@ -1,0 +1,68 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Dell">
+   <!-- DELL Remote Access Controller Resource Types -->
+   <resourceType name="drsChassisIndex" label="Dell DRAC Chassis">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="drsPSUIndex" label="Dell DRAC PSU" resourceLabel="Chassis ${drsPSUChassisIndex} - ${drsPSULocation}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <!-- Dell OpenManage Resource Types -->
+   <resourceType name="coolingDeviceIndex" label="Dell Cooling Device" resourceLabel="${coolingDeviceLocationName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="temperatureProbeIndex" label="Dell Temperature Probe" resourceLabel="${temperatureProbeLocationName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="powerUsageIndex" label="Dell Power Usage" resourceLabel="${powerUsageEntityName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <!-- Dell OpenManage MIBs -->
+   <group name="openmanage-coolingdevices" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.12.1.6" instance="coolingDeviceIndex" alias="coolingDevReading" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.12.1.8" instance="coolingDeviceIndex" alias="coolingDeviceLocationName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.12.1.13" instance="coolingDeviceIndex" alias="coolDevLowCritThres" type="integer"/>
+   </group>
+   <group name="openmanage-temperatureprobe" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.6" instance="temperatureProbeIndex" alias="tempProbeReading" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.8" instance="temperatureProbeIndex" alias="temperatureProbeLocationName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.10" instance="temperatureProbeIndex" alias="tempProbeUpCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.11" instance="temperatureProbeIndex" alias="tempProbeUpNonCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.12" instance="temperatureProbeIndex" alias="tempProbeLowNonCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.13" instance="temperatureProbeIndex" alias="tempProbeLowCrit" type="integer"/>
+   </group>
+   <group name="openmanage-powerusage" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.6" instance="powerUsageIndex" alias="powerUsageEntityName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.7" instance="powerUsageIndex" alias="powerUsageWattage" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.9" instance="powerUsageIndex" alias="powerUsagePeakWatts" type="integer"/>
+   </group>
+   <group name="dell-rac-chassis" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.8" instance="drsChassisIndex" alias="drsWattsPeakUsage" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.10" instance="drsChassisIndex" alias="drsWattsMinUsage" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.13" instance="drsChassisIndex" alias="drsWattsReading" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.1.1.14" instance="drsChassisIndex" alias="drsAmpsReading" type="integer"/>
+   </group>
+   <group name="dell-rac-psu" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.1" instance="drsPSUIndex" alias="drsPSUChassisIndex" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.3" instance="drsPSUIndex" alias="drsPSULocation" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.5" instance="drsPSUIndex" alias="drsPSUVoltsReading" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.6" instance="drsPSUIndex" alias="drsPSUAmpsReading" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.674.10892.2.4.2.1.7" instance="drsPSUIndex" alias="drsPSUWattsReading" type="integer"/>
+   </group>
+   <systemDef name="DELL RAC">
+      <sysoid>.1.3.6.1.4.1.674.10892.2</sysoid>
+      <collect>
+         <includeGroup>mib2-interfaces</includeGroup>
+         <includeGroup>mib2-tcp</includeGroup>
+         <includeGroup>dell-rac-chassis</includeGroup>
+         <includeGroup>dell-rac-psu</includeGroup>
+         <includeGroup>openmanage-coolingdevices</includeGroup>
+         <includeGroup>openmanage-temperatureprobe</includeGroup>
+         <includeGroup>openmanage-powerusage</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

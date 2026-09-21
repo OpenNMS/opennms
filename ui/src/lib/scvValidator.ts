@@ -29,3 +29,7 @@ export const SCV_PREFIX_REGEX = /^\$\{/
 export const validateScvPattern = (scv: string): boolean => {
   return SCV_REGEX.test(scv)
 }
+
+export const hasScvPrefix = (value: string): boolean => {
+  return SCV_PREFIX_REGEX.test(value)
+}

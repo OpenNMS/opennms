@@ -24,9 +24,9 @@
 const L = require('vendor/leaflet-js');
 
 // Do not remove unused as they are not included in the assets directory otherwise
-import MarkerIcon from '../../static/legacy/leaflet/dist/images/marker-icon.png';
-import MarkerRetinaIcon from '../../static/legacy/leaflet/dist/images/marker-icon-2x.png';
-import MarkerShadowIcon from '../../static/legacy/leaflet/dist/images/marker-shadow.png';
+import MarkerIcon from 'leaflet/dist/images/marker-icon.png';
+import MarkerRetinaIcon from 'leaflet/dist/images/marker-icon-2x.png';
+import MarkerShadowIcon from 'leaflet/dist/images/marker-shadow.png';
 import NotMarkedIcon from './not-marked-icon.png';
 import NotMarkedRetinaIcon from './not-marked-icon-2x.png';
 

@@ -5,46 +5,68 @@
         <h3>Trap Listener Settings</h3>
       </div>
     </div>
+    <div class="info-section">
+      <span>Configure trap listener settings.</span>
+      <OnmsIcon
+        :icon="InfoIcon"
+        class="info-icon"
+        role="button"
+        tabindex="0"
+        @click="isMessageDialogVisible = true"
+        @keydown.enter.space.prevent="isMessageDialogVisible = true"
+        data-test="trap-config-general-info-icon"
+      />
+    </div>
     <div class="section">
-      <FeatherInput
+      <FormField
         label="Port"
-        placeholder="Enter port number"
-        v-model="port"
-        :min="MIN_PORT"
-        :max="MAX_PORT"
+        for="trap-port"
         :error="trapConfigError.port"
-        type="number"
-        :hint="'Default: 10162'"
-      />
-      <FeatherInput
+        hint="Default: 10162"
+      >
+        <OnmsInputNumber
+          inputId="trap-port"
+          v-model="port"
+          :min="MIN_PORT"
+          :max="MAX_PORT"
+          :invalid="!!trapConfigError.port"
+        />
+      </FormField>
+      <FormField
         label="Bind Address"
-        placeholder="Enter host name"
-        v-model="bindAddress"
+        for="trap-bind-address"
         :error="trapConfigError.bindAddress"
-        :hint="'* for all, or specify IP address'"
-      />
+        hint="* for all, or specify IP address"
+      >
+        <OnmsInputText
+          id="trap-bind-address"
+          v-model="bindAddress"
+          :invalid="!!trapConfigError.bindAddress"
+        />
+      </FormField>
     </div>
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="switch-row">
-      <SwitchRender
-        :checked="status"
-        @click="onChangeStatus"
+      <OnmsToggleSwitch
+        v-model="newSuspectOnTrap"
         data-test="unknown-devices-input"
       />
-      <label class="switch-label">Auto-discover unknown devices</label>
+      <label class="switch-label">Create new nodes when receiving an SNMP trap with an unknown source IP address?</label>
     </div>
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="expansion-panel">
-      <FeatherExpansionPanel title="Advanced Configuration Options">
+      <TogglePanel
+        header="Advanced Configuration Options"
+        v-model:collapsed="advancedCollapsed"
+      >
         <div class="expansion-section">
           <div class="spacer"></div>
           <div class="spacer"></div>
           <div class="trap-message-row">
-            <SwitchRender
-              :checked="trapMessageStatus"
-              @click="onChangeTrapMessageStatus"
+            <OnmsToggleSwitch
+              v-model="trapMessageStatus"
               data-test="trap-message-input"
             />
             <label class="switch-label">Include raw trap message (before processing)</label>
@@ -52,92 +74,120 @@
           <div class="spacer"></div>
           <div class="spacer"></div>
           <div class="trap-source-address-row">
-            <SwitchRender
-              :checked="trapSourceAddressStatus"
-              @click="onChangeTrapSourceAddressStatus"
+            <OnmsToggleSwitch
+              v-model="trapSourceAddressStatus"
               data-test="trap-source-address-input"
             />
             <label class="switch-label">Use forwarded trap source address (for forwarded SNMPv2 traps)</label>
           </div>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherInput
+          <FormField
             label="Threads"
-            placeholder="Enter number of threads"
-            v-model="threads"
-            :min="0"
+            for="trap-threads"
             :error="trapConfigError.threads"
-            type="number"
-            :hint="'Default: 0'"
-          />
+            hint="Default: 0"
+          >
+            <OnmsInputNumber
+              inputId="trap-threads"
+              v-model="threads"
+              :min="0"
+              :invalid="!!trapConfigError.threads"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherInput
+          <FormField
             label="Queue Size"
-            placeholder="Enter queue size"
-            v-model="queueSize"
-            :min="0"
+            for="trap-queue-size"
             :error="trapConfigError.queueSize"
-            type="number"
-            :hint="'Default: 10000'"
-          />
+            hint="Default: 10000"
+          >
+            <OnmsInputNumber
+              inputId="trap-queue-size"
+              v-model="queueSize"
+              :min="0"
+              :invalid="!!trapConfigError.queueSize"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherInput
+          <FormField
             label="Batch Size"
-            placeholder="Enter batch size"
-            v-model="batchSize"
-            :min="0"
+            for="trap-batch-size"
             :error="trapConfigError.batchSize"
-            type="number"
-            :hint="'Default: 1000'"
-          />
+            hint="Default: 1000"
+          >
+            <OnmsInputNumber
+              inputId="trap-batch-size"
+              v-model="batchSize"
+              :min="0"
+              :invalid="!!trapConfigError.batchSize"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherInput
-            label="Batch Interval"
-            placeholder="Enter batch interval"
-            v-model="batchInterval"
-            :min="0"
+          <FormField
+            label="Batch Interval ms"
+            for="trap-batch-interval"
             :error="trapConfigError.batchInterval"
-            type="number"
-            :hint="'Default: 500'"
-          />
+            hint="Default: 500ms"
+          >
+            <OnmsInputNumber
+              inputId="trap-batch-interval"
+              v-model="batchInterval"
+              :min="0"
+              :invalid="!!trapConfigError.batchInterval"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
         </div>
-      </FeatherExpansionPanel>
+      </TogglePanel>
     </div>
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="footer">
-      <FeatherButton
-        primary
+      <OnmsButton
         data-test="save-button"
+        label="Update Changes"
         :disabled="isSaveDisabled || isSaving"
         @click="updateConfig"
-      >
-        Update Changes
-      </FeatherButton>
+      />
     </div>
+    <OnmsMessageDialog
+      :visible="isMessageDialogVisible"
+      maxHeight="22em"
+      maxWidth="50em"
+      title="Trap Configuration"
+      @close="isMessageDialogVisible = false"
+    >
+      <template #content>
+        <div>
+          <p>Configure trap listener settings. <strong>Note</strong> that the settings here only apply to the OpenNMS core system, not to any Minions or other distributed components.</p>
+        </div>
+      </template>
+    </OnmsMessageDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
+import { ref, watch, watchEffect } from 'vue'
+
+import { isEqual } from 'lodash'
+import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsToggleSwitch } from '@opennms/onms-ui'
+import FormField from '../Common/FormField.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
 import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { TrapConfig, TrapdConfigurationError } from '@/types/trapConfig'
-import { FeatherButton } from '@featherds/button'
-import { FeatherExpansionPanel } from '@featherds/expansion'
-import { FeatherInput } from '@featherds/input'
-import { SwitchRender } from '@featherds/switch'
-import { isEqual } from 'lodash'
 import TableCard from '../Common/TableCard.vue'
+import TogglePanel from '../Common/TogglePanel.vue'
 
-const status = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
+const newSuspectOnTrap = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
 const port = ref<number>(DEFAULT_TRAPD_PORT)
 const bindAddress = ref(DEFAULT_TRAPD_BIND_ADDRESS)
 const trapMessageStatus = ref(DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE)
@@ -151,18 +201,8 @@ const isSaveDisabled = ref(true)
 const isSaving = ref(false)
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
-
-const onChangeStatus = () => {
-  status.value = !status.value
-}
-
-const onChangeTrapMessageStatus = () => {
-  trapMessageStatus.value = !trapMessageStatus.value
-}
-
-const onChangeTrapSourceAddressStatus = () => {
-  trapSourceAddressStatus.value = !trapSourceAddressStatus.value
-}
+const isMessageDialogVisible = ref(false)
+const advancedCollapsed = ref(true)
 
 const validateInputs = (): TrapdConfigurationError => {
   const trapConfigError: TrapdConfigurationError = {}
@@ -205,7 +245,7 @@ const updateConfig = async () => {
   const newConfig: TrapConfig = {
     snmpTrapPort: Number(port.value),
     snmpTrapAddress: bindAddress.value,
-    newSuspectOnTrap: status.value,
+    newSuspectOnTrap: newSuspectOnTrap.value,
     useAddressFromVarbind: trapSourceAddressStatus.value,
     includeRawMessage: trapMessageStatus.value,
     threads: Number(threads.value),
@@ -233,9 +273,9 @@ const loadInitialConfig = () => {
   if (store.trapdConfig) {
     port.value = store.trapdConfig.snmpTrapPort || DEFAULT_TRAPD_PORT
     bindAddress.value = store.trapdConfig.snmpTrapAddress || DEFAULT_TRAPD_BIND_ADDRESS
-    status.value = store.trapdConfig.newSuspectOnTrap || DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP
-    trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind || DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND
-    trapMessageStatus.value = store.trapdConfig.includeRawMessage || DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE
+    newSuspectOnTrap.value = store.trapdConfig.newSuspectOnTrap ?? DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP
+    trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind ?? DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND
+    trapMessageStatus.value = store.trapdConfig.includeRawMessage ?? DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE
     threads.value = store.trapdConfig.threads || DEFAULT_TRAPD_THREADS
     queueSize.value = store.trapdConfig.queueSize || DEFAULT_TRAPD_QUEUE_SIZE
     batchSize.value = store.trapdConfig.batchSize || DEFAULT_TRAPD_BATCH_SIZE
@@ -248,7 +288,7 @@ watchEffect(() => {
   isSaveDisabled.value = Object.keys(trapConfigError.value).length > 0 || isEqual({
     snmpTrapPort: Number(port.value),
     snmpTrapAddress: bindAddress.value,
-    newSuspectOnTrap: status.value,
+    newSuspectOnTrap: newSuspectOnTrap.value,
     useAddressFromVarbind: trapSourceAddressStatus.value,
     includeRawMessage: trapMessageStatus.value,
     threads: Number(threads.value),
@@ -274,13 +314,12 @@ watch(() => store.trapdConfig, () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .general-configuration {
   margin-top: 10px;
   padding: 25px;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .header {
     display: flex;
@@ -289,13 +328,13 @@ watch(() => store.trapdConfig, () => {
 
     .section-left {
       h3 {
-        @include typography.headline3;
-        color: var(--feather-text-primary);
+        @include onms-headline3;
+        color: var(--p-text-color);
       }
 
       p {
-        @include typography.body-large;
-        color: var(--feather-text-secondary);
+        @include onms-body-large;
+        color: var(--p-text-muted-color);
       }
     }
   }
@@ -304,21 +343,41 @@ watch(() => store.trapdConfig, () => {
     height: 0.5em;
   }
 
+  .info-section {
+    margin-bottom: 1em;
+
+    .label {
+      color: var(--p-text-color);
+    }
+
+    .info-icon {
+      cursor: pointer;
+      font-size: 1.5em;
+      margin-left: 0.5em;
+      color: var(--p-primary-color);
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
   .switch-row {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 
     .switch-label {
-      @include typography.body-small;
+      @include onms-body-small;
     }
   }
 
   .section {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
     width: 50%;
+    margin-top: 1.5em;
 
     &>* {
       flex: 1;
@@ -326,30 +385,23 @@ watch(() => store.trapdConfig, () => {
   }
 
   .expansion-panel {
-    :deep(.feather-expansion) {
-      [role="heading"] {
-        background-color: rgba(10, 12, 27, 0.12);
-        border: 1px solid var(--feather-border-on-surface);
+    .expansion-section {
+      width: 45%;
+      margin-top: 1.5em;
 
-        a {
-          span {
-            @include typography.headline4;
-          }
-        }
+      // keep the stacked fields from smooshing together
+      .form-field {
+        margin-top: 1em;
       }
 
-      .expansion-section {
-        width: 45%;
+      .trap-message-row,
+      .trap-source-address-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
 
-        .trap-message-row,
-        .trap-source-address-row {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-
-          .switch-label {
-            @include typography.body-small;
-          }
+        .switch-label {
+          @include onms-body-small;
         }
       }
     }
@@ -357,7 +409,7 @@ watch(() => store.trapdConfig, () => {
 
   .footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 }
 </style>

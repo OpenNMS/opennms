@@ -35,7 +35,7 @@ const getAliases = async (): Promise<string[]> => {
     startSpinner()
     const resp = await rest.get(endpoint)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     showSnackBar({ msg: 'Failed to return aliases.' })
     return []
   } finally {
@@ -48,7 +48,7 @@ const getCredentialsByAlias = async (alias: string): Promise<SCVCredentials | nu
     startSpinner()
     const resp = await rest.get(`${endpoint}/${alias}`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     showSnackBar({ msg: 'Failed to retrieve credentials.' })
     return null
   } finally {
@@ -61,7 +61,7 @@ const getAllCredentials = async (): Promise<SCVCredentials[] | null> => {
     startSpinner()
     const resp = await rest.get(`${endpoint}/${SCV_GET_ALL_ALIAS}`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     showSnackBar({ msg: 'Failed to retrieve credentials.' })
     return null
   } finally {
@@ -75,7 +75,7 @@ const addCredentials = async (credentials: SCVCredentials): Promise<number | nul
     const resp = await rest.post(endpoint, credentials)
     showSnackBar({ msg: 'Credentials added.' })
     return resp.status
-  } catch (err) {
+  } catch (_err) {
     showSnackBar({ msg: 'Failed to add credentials.' })
     return null
   } finally {
@@ -89,7 +89,7 @@ const updateCredentials = async (credentials: SCVCredentials): Promise<number | 
     const resp = await rest.put(`${endpoint}/${credentials.alias}`, credentials)
     showSnackBar({ msg: 'Credentials updated.' })
     return resp.status
-  } catch (err) {
+  } catch (_err) {
     showSnackBar({ msg: 'Failed to update credentials.' })
     return null
   } finally {
@@ -98,4 +98,3 @@ const updateCredentials = async (credentials: SCVCredentials): Promise<number | 
 }
 
 export { addCredentials, getAliases, getAllCredentials, getCredentialsByAlias, updateCredentials }
-

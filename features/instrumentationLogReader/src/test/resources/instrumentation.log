@@ -27049,10 +27049,10 @@
 2013-07-23 11:39:20,164 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: begin: VMware-VirtualMachine
 2013-07-23 11:39:20,590 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: end: VMware-VirtualMachine. found 0 interfaces.
 2013-07-23 11:39:20,590 INFO [LegacyScheduler-Thread-1-of-50] scheduleInterfacesWithService: end: VMware-VirtualMachine
-2013-07-23 11:39:20,590 INFO [LegacyScheduler-Thread-1-of-50] scheduleInterfacesWithService: begin: WMI
-2013-07-23 11:39:20,590 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: begin: WMI
-2013-07-23 11:39:21,091 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: end: WMI. found 0 interfaces.
-2013-07-23 11:39:21,091 INFO [LegacyScheduler-Thread-1-of-50] scheduleInterfacesWithService: end: WMI
+2013-07-23 11:39:20,590 INFO [LegacyScheduler-Thread-1-of-50] scheduleInterfacesWithService: begin: WS-Man
+2013-07-23 11:39:20,590 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: begin: WS-Man
+2013-07-23 11:39:21,091 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: end: WS-Man. found 0 interfaces.
+2013-07-23 11:39:21,091 INFO [LegacyScheduler-Thread-1-of-50] scheduleInterfacesWithService: end: WS-Man
 2013-07-23 11:39:21,091 INFO [LegacyScheduler-Thread-1-of-50] scheduleInterfacesWithService: begin: VMware-HostSystem
 2013-07-23 11:39:21,091 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: begin: VMware-HostSystem
 2013-07-23 11:39:21,629 INFO [LegacyScheduler-Thread-1-of-50] scheduleFindInterfacesWithService: end: VMware-HostSystem. found 0 interfaces.

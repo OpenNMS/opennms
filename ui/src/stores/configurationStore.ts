@@ -22,6 +22,7 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
+import { ref } from 'vue'
 
 export const useConfigurationStore = defineStore('configurationStore', () => {
   const types = ref([] as any[])

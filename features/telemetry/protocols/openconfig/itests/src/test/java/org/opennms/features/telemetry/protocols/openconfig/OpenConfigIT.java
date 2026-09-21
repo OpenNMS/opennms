@@ -63,6 +63,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -108,6 +110,9 @@ public class OpenConfigIT {
     @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -135,9 +140,15 @@ public class OpenConfigIT {
         nb.setNodeMetaDataEntry("device","oc.mode","/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp");
 
         OnmsServiceType onmsServiceType = new OnmsServiceType("OpenConfig");
-        serviceTypeDao.save(onmsServiceType);
         nb.addService(onmsServiceType);
-        nodeDao.save(nb.getCurrentNode());
+        final OnmsNode node = nb.getCurrentNode();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            serviceTypeDao.save(onmsServiceType);
+            serviceTypeDao.flush();
+            nodeDao.save(node);
+            nodeDao.flush();
+            return null;
+        });
 
         // Resync after adding nodes/interfaces
         interfaceToNodeCache.dataSourceSync();

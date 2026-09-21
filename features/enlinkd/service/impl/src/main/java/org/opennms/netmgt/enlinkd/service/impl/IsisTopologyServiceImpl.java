@@ -61,6 +61,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
     }
 
     @Override
+    @Transactional
     public void delete(int nodeid) {
         m_isisElementDao.deleteByNodeId(nodeid);
         m_isisLinkDao.deleteByNodeId(nodeid);
@@ -69,6 +70,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
     }
 
     @Override
+    @Transactional
     public void reconcile(int nodeId, Date now) {
         IsIsElement element = m_isisElementDao.findByNodeId(nodeId);
         if (element != null
@@ -221,6 +223,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
     }
 
     @Override
+    @Transactional
     public void deletePersistedData() {
         m_isisElementDao.deleteAll();
         m_isisElementDao.flush();

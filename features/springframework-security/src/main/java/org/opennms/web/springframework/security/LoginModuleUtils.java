@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +49,14 @@ public abstract class LoginModuleUtils {
 
     private static final String[] INVALID_SAVED_REQUEST_URL_SUFFIXES = new String[] {
         ".css", ".js", ".ttf"
+    };
+
+    // NMS-20174: REST/API requests captured in the request cache (e.g. an XHR that fired
+    // while unauthenticated) must never become the post-login redirect target — navigating
+    // to them top-level makes the browser download the response instead of showing a page.
+    // Matched against the servlet path, so the bare prefix ("/rest") counts as well.
+    private static final String[] INVALID_SAVED_REQUEST_URL_PREFIXES = new String[] {
+        "/rest", "/api"
     };
 
     protected LoginModuleUtils() {}
@@ -114,7 +123,7 @@ public abstract class LoginModuleUtils {
         if (handler.requiresAdminRole()) {
             allowed = false;
             for (final Principal principal : principals) {
-                final String name = principal.getName().toLowerCase().replaceAll("^role_", "");
+                final String name = principal.getName().toLowerCase(Locale.ROOT).replaceAll("^role_", "");
                 if ("admin".equals(name)) {
                     allowed = true;
                 }
@@ -141,15 +150,21 @@ public abstract class LoginModuleUtils {
     }
 
     /**
-     * Do not save asset files in the saved request cache.
+     * Whether a URL from the saved request cache must not be used as a
+     * post-login redirect target: asset files (by suffix) and REST/API
+     * endpoints (by servlet-path prefix), neither of which is a navigable page.
      */
     public static boolean isInvalidSavedRequestUrl(String url) {
         if (StringUtils.isEmpty(url)) {
             return true;
         }
 
-        String urlLower = url.toLowerCase();
+        // Locale.ROOT: under a Turkish default locale, "I".toLowerCase() is a
+        // dotless ı, so "/API" would no longer match the "/api" prefix.
+        String urlLower = url.toLowerCase(Locale.ROOT);
 
-        return Arrays.stream(INVALID_SAVED_REQUEST_URL_SUFFIXES).anyMatch(urlLower::endsWith);
+        return Arrays.stream(INVALID_SAVED_REQUEST_URL_SUFFIXES).anyMatch(urlLower::endsWith)
+                || Arrays.stream(INVALID_SAVED_REQUEST_URL_PREFIXES)
+                        .anyMatch(prefix -> urlLower.equals(prefix) || urlLower.startsWith(prefix + "/"));
     }
 }

@@ -60,9 +60,9 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     @Override
     public OnmsCategory findByName(String name, boolean useCached) {
         if (useCached) {
-            return findByCacheKey("from OnmsCategory as category where category.name = ?", name);
+            return findByCacheKey("from OnmsCategory as category where category.name = ?1", name);
         } else {
-            return findUnique("from OnmsCategory as category where category.name = ?", name);
+            return findUnique("from OnmsCategory as category where category.name = ?1", name);
         }
     }
     

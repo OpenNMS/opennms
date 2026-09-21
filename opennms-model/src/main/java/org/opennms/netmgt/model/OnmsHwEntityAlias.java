@@ -91,7 +91,7 @@ public class OnmsHwEntityAlias implements Serializable, Comparable<OnmsHwEntityA
     @Id
     @Column(nullable=false)
     @XmlTransient
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="opennmsSequence")
     public Integer getId() {
         return m_id;

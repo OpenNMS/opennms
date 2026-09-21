@@ -58,8 +58,8 @@
 		}
 	}%>
 <%
-	WriteableThreshdDao threshdDao = BeanUtils.getBean("thresholdingContext", "threshdDao", WriteableThreshdDao.class);
-	WriteablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
+	WriteableThreshdDao threshdDao = BeanUtils.getBean("daoContext", "threshdDao", WriteableThreshdDao.class);
+	WriteablePollOutagesDao pollOutagesDao = BeanUtils.getBean("daoContext", "pollOutagesDao",
 			WriteablePollOutagesDao.class);
 
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui

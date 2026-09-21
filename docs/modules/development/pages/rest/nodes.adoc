@@ -70,9 +70,6 @@ POST requires XML using `application/xml` as its `Content-Type`.
 | /nodes
 | Add a node.
 
-| /nodes/\{id}/rescan
-| Rescan the node for new interfaces.
-
 | /nodes/\{id}/ipinterfaces
 | Add an IP interface to the node.
 
@@ -105,6 +102,9 @@ PUT requires form data using `application/x-www-form-urlencoded` as a content ty
 
 | /nodes/\{id}
 | Modify a node with the given ID.
+
+| /nodes/\{id}/rescan
+| Rescan the node for new interfaces.
 
 | /nodes/\{id}/ipinterfaces/\{ipaddress}
 | Modify the IP interface with the given node ID and IP address.

@@ -20,13 +20,16 @@
 /// License.
 ///
 
-import { TrapConfig, XmlValidationError, XmlValidationResult } from '@/types/trapConfig'
-import { ISelectItemType } from '@featherds/select'
+import { SnmpV3UserError, TrapConfig, TrapdValidationError, TrapdValidationResult } from '@/types/trapConfig'
+import { ISelectItemType } from '@/types'
 import { DEFAULT_TRAPD_BIND_ADDRESS } from './constants'
+import { hasScvPrefix, validateScvPattern } from './scvValidator'
+import { isMaskedPassword } from './securityHelper'
+import { isConvertibleToInteger } from './utils'
 
 export const MIN_PORT = 1
 export const MAX_PORT = 65535
-export const MIN_PASSPHRASE_BYTES = 8
+export const MIN_PASSPHRASE_CHARACTERS = 8
 export const TRAPD_XML_NAMESPACE = 'http://xmlns.opennms.org/xsd/config/trapd'
 
 export const passphraseByteLength = (value: string): number =>
@@ -96,15 +99,91 @@ export const isValidPort = (port: number | undefined): boolean => {
   return port !== undefined && !isNaN(port) && port >= MIN_PORT && port <= MAX_PORT
 }
 
-export const AUTH_PROTOCOL_OPTIONS: ISelectItemType[] = AuthProtocols.map((protocol) => ({
+export const AUTH_PROTOCOL_OPTIONS: ISelectItemType[] = AuthProtocols.map(protocol => ({
   _text: protocol,
   _value: protocol
 }))
 
-export const PRIVACY_PROTOCOL_OPTIONS: ISelectItemType[] = PrivacyProtocols.map((protocol) => ({
+export const PRIVACY_PROTOCOL_OPTIONS: ISelectItemType[] = PrivacyProtocols.map(protocol => ({
   _text: protocol,
   _value: protocol
 }))
+
+export const validateSnmpV3UserForm = (
+  securityName: string,
+  securityLevel: ISelectItemType | undefined,
+  authProtocol: ISelectItemType | undefined,
+  authPassphrase: string,
+  privacyProtocol: ISelectItemType | undefined,
+  privacyPassphrase: string
+): SnmpV3UserError => {
+  const newError: SnmpV3UserError = {}
+  const levelValue = Number(securityLevel?._value)
+  const authProtocolVisible = levelValue === SecurityLevel.AuthNoPriv || levelValue === SecurityLevel.AuthPriv
+  const privacyProtocolVisible = levelValue === SecurityLevel.AuthPriv
+
+  if (!securityName) {
+    newError.securityName = 'Security Name is required'
+  }
+
+  if (levelValue === SecurityLevel.NoAuthNoPriv && (authProtocol || authPassphrase || privacyProtocol || privacyPassphrase)) {
+    newError.securityLevel = 'Security level 1 does not allow auth or privacy credentials'
+  }
+
+  if (levelValue === SecurityLevel.AuthNoPriv && (privacyProtocol || privacyPassphrase)) {
+    newError.privacyProtocol = 'Security level 2 does not allow privacy credentials'
+  }
+
+  if (authProtocolVisible) {
+    if (!authProtocol) {
+      newError.authProtocol = 'Auth Protocol is required for selected security level'
+    }
+
+    if (authPassphrase && !authProtocol) {
+      newError.authPassphrase = 'Auth Passphrase requires an Auth Protocol to be selected'
+    }
+
+    if (!!authProtocol && !authPassphrase) {
+      newError.authPassphrase = 'Auth Passphrase is required for selected auth protocol'
+    }
+
+    if (!!authProtocol && authPassphrase && !isMaskedPassword(authPassphrase)) {
+      if (hasScvPrefix(authPassphrase) && !validateScvPattern(authPassphrase)) {
+        newError.authPassphrase = 'Invalid SCV expression'
+      } else if (authPassphrase.startsWith('*')) {
+        newError.authPassphrase = 'Auth Passphrase should not start with a \'*\' character.'
+      } else if (!hasScvPrefix(authPassphrase) && passphraseByteLength(authPassphrase) < MIN_PASSPHRASE_CHARACTERS) {
+        newError.authPassphrase = `Auth Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
+      }
+    }
+  }
+
+  if (privacyProtocolVisible) {
+    if (!privacyProtocol) {
+      newError.privacyProtocol = 'Privacy Protocol is required for selected security level'
+    }
+
+    if (privacyPassphrase && !privacyProtocol) {
+      newError.privacyPassphrase = 'Privacy Passphrase requires a Privacy Protocol to be selected'
+    }
+
+    if (!!privacyProtocol && !privacyPassphrase) {
+      newError.privacyPassphrase = 'Privacy Passphrase is required for selected privacy protocol'
+    }
+
+    if (!!privacyProtocol && privacyPassphrase && !isMaskedPassword(privacyPassphrase)) {
+      if (hasScvPrefix(privacyPassphrase) && !validateScvPattern(privacyPassphrase)) {
+        newError.privacyPassphrase = 'Invalid SCV expression'
+      } else if (privacyPassphrase.startsWith('*')) {
+        newError.privacyPassphrase = 'Privacy Passphrase should not start with a \'*\' character.'
+      } else if (!hasScvPrefix(privacyPassphrase) && passphraseByteLength(privacyPassphrase) < MIN_PASSPHRASE_CHARACTERS) {
+        newError.privacyPassphrase = `Privacy Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
+      }
+    }
+  }
+
+  return newError
+}
 
 export const getDefaultTrapdConfig = (): TrapConfig => ({
   snmpTrapAddress: DEFAULT_TRAPD_BIND_ADDRESS,
@@ -125,177 +204,191 @@ const VALID_AUTH_PROTOCOL_VALUES = new Set(AuthProtocols)
 // All valid privacy protocol values
 const VALID_PRIVACY_PROTOCOL_VALUES = new Set(PrivacyProtocols as string[])
 
-const addError = (errors: XmlValidationError[], field: string, message: string) => errors.push({ field, message })
+const addError = (errors: TrapdValidationError[], field: string, message: string) => errors.push({ field, message })
 
-const validateSnmpV3UserElement = (user: Element, index: number, errors: XmlValidationError[]): void => {
-  const prefix = `snmpv3-user[${index}]`
+const fieldName = (xmlName: string, jsonName: string, isXml: boolean): string => isXml ? xmlName : jsonName
 
-  const securityName = user.getAttribute('security-name')
-  if (!securityName || securityName.trim() === '') {
-    addError(errors, `${prefix}.security-name`, `${prefix}: security-name is required`)
+const validateSnmpTrapAddress = (address: string | null | undefined, isXml: boolean, errors: TrapdValidationError[]): void => {
+  const field = fieldName('snmp-trap-address', 'snmpTrapAddress', isXml)
+  if (address != null && address !== '*' && !isValidIP(address)) {
+    addError(errors, field, `Invalid ${field} '${address}': must be '*' or a valid IPv4 address`)
+  }
+}
+
+const validateSnmpTrapPort = (value: string | number | null | undefined, isXml: boolean, errors: TrapdValidationError[]): void => {
+  const field = fieldName('snmp-trap-port', 'snmpTrapPort', isXml)
+  if (value == null || value === '') {
+    addError(errors, field, `${field} is required`)
+    return
   }
 
-  const securityLevelAttr = user.getAttribute('security-level')
+  if (!isConvertibleToInteger(value)) {
+    addError(errors, field, `Invalid ${field} '${value}': must be an integer`)
+    return
+  }
+
+  const port = typeof value === 'string' ? parseInt(value, 10) : value
+  if (!isValidPort(port)) {
+    addError(errors, field, `Invalid ${field} '${value}': must be an integer between ${MIN_PORT} and ${MAX_PORT}`)
+  }
+}
+
+const validateNewSuspectOnTrap = (value: string | boolean | null | undefined, isXml: boolean, errors: TrapdValidationError[]): void => {
+  if (!isXml) {
+    return
+  }
+
+  const field = 'new-suspect-on-trap'
+  if (value !== null && value !== undefined && value !== 'true' && value !== 'false') {
+    addError(errors, field, `Invalid ${field} '${value}': must be 'true' or 'false'`)
+  }
+}
+
+const validateSnmpV3UserValues = (
+  securityName: string | null | undefined,
+  securityLevelInput: string | number | null | undefined,
+  authProtocol: string | null | undefined,
+  authPassphrase: string | null | undefined,
+  privacyProtocol: string | null | undefined,
+  privacyPassphrase: string | null | undefined,
+  index: number,
+  isXml: boolean,
+  errors: TrapdValidationError[]
+): void => {
+  const userField = fieldName('snmpv3-user', 'snmpv3User', isXml)
+  const prefix = `${userField}[${index}]`
+  const snField = fieldName('security-name', 'securityName', isXml)
+  const slField = fieldName('security-level', 'securityLevel', isXml)
+  const apField = fieldName('auth-protocol', 'authProtocol', isXml)
+  const appField = fieldName('auth-passphrase', 'authPassphrase', isXml)
+  const ppField = fieldName('privacy-protocol', 'privacyProtocol', isXml)
+  const pppField = fieldName('privacy-passphrase', 'privacyPassphrase', isXml)
+
+  if (!securityName || securityName.trim() === '') {
+    addError(errors, `${prefix}.${snField}`, `${prefix}: ${snField} is required`)
+  }
+
   let securityLevel: number | undefined
-  if (securityLevelAttr !== null && securityLevelAttr.trim() !== '') {
-    securityLevel = parseInt(securityLevelAttr, 10)
+
+  if (typeof securityLevelInput === 'number') {
+    securityLevel = securityLevelInput
     if (!isValidSnmpSecurityLevel(securityLevel)) {
-      addError(
-        errors,
-        `${prefix}.security-level`,
-        `${prefix}: invalid security-level '${securityLevelAttr}'. Valid values: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)`
-      )
+      securityLevel = undefined
+    }
+  } else if (securityLevelInput != null && securityLevelInput !== '' && isConvertibleToInteger(securityLevelInput)) {
+    securityLevel = parseInt(securityLevelInput, 10)
+    if (!isValidSnmpSecurityLevel(securityLevel)) {
       securityLevel = undefined
     }
   }
 
-  const authProtocol = user.getAttribute('auth-protocol')
-  const authPassphrase = user.getAttribute('auth-passphrase')
-  const privacyProtocol = user.getAttribute('privacy-protocol')
-  const privacyPassphrase = user.getAttribute('privacy-passphrase')
-
-  if (authPassphrase && authPassphrase.trim() !== ''
-      && passphraseByteLength(authPassphrase) < MIN_PASSPHRASE_BYTES) {
-    addError(
-      errors,
-      `${prefix}.auth-passphrase`,
-      `${prefix}: auth-passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
-    )
-  }
-  if (privacyPassphrase && privacyPassphrase.trim() !== ''
-      && passphraseByteLength(privacyPassphrase) < MIN_PASSPHRASE_BYTES) {
-    addError(
-      errors,
-      `${prefix}.privacy-passphrase`,
-      `${prefix}: privacy-passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
+  if (securityLevel === undefined) {
+    addError(errors,
+      `${prefix}.${slField}`,
+      `${prefix}: invalid ${slField} '${securityLevelInput}'. Valid values: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)`
     )
   }
 
-  if (authProtocol !== null) {
-    if (!VALID_AUTH_PROTOCOL_VALUES.has(authProtocol as AuthProtocol)) {
+  // Normalize undefined → null for consistent presence checks
+  const authProtocolVal = authProtocol ?? null
+  const authPassphraseVal = authPassphrase ?? null
+  const privacyProtocolVal = privacyProtocol ?? null
+  const privacyPassphraseVal = privacyPassphrase ?? null
+
+  if (authPassphraseVal && authPassphraseVal.trim() !== '' && !isMaskedPassword(authPassphraseVal) && passphraseByteLength(authPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
+    addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`)
+  }
+  if (privacyPassphraseVal && privacyPassphraseVal.trim() !== '' && !isMaskedPassword(privacyPassphraseVal) && passphraseByteLength(privacyPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
+    addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`)
+  }
+
+  if (authProtocolVal !== null) {
+    if (!VALID_AUTH_PROTOCOL_VALUES.has(authProtocolVal as AuthProtocol)) {
       addError(
         errors,
-        `${prefix}.auth-protocol`,
-        `${prefix}: invalid auth-protocol '${authProtocol}'. Valid values: ${AuthProtocols.join(', ')}`
+        `${prefix}.${apField}`,
+        `${prefix}: invalid ${apField} '${authProtocolVal}'. Valid values: ${AuthProtocols.join(', ')}`
       )
     }
-    if (!authPassphrase || authPassphrase.trim() === '') {
-      addError(errors, `${prefix}.auth-passphrase`, `${prefix}: auth-passphrase is required when auth-protocol is set`)
+    if (!authPassphraseVal || authPassphraseVal.trim() === '') {
+      addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} is required when ${apField} is set`)
     }
   }
 
-  if (privacyProtocol !== null) {
-    if (!VALID_PRIVACY_PROTOCOL_VALUES.has(privacyProtocol)) {
+  if (privacyProtocolVal !== null) {
+    if (!VALID_PRIVACY_PROTOCOL_VALUES.has(privacyProtocolVal)) {
       addError(
         errors,
-        `${prefix}.privacy-protocol`,
-        `${prefix}: invalid privacy-protocol '${privacyProtocol}'. Valid values: ${PrivacyProtocols.join(', ')}`
+        `${prefix}.${ppField}`,
+        `${prefix}: invalid ${ppField} '${privacyProtocolVal}'. Valid values: ${PrivacyProtocols.join(', ')}`
       )
     }
-    if (!privacyPassphrase || privacyPassphrase.trim() === '') {
-      addError(
-        errors,
-        `${prefix}.privacy-passphrase`,
-        `${prefix}: privacy-passphrase is required when privacy-protocol is set`
-      )
+    if (!privacyPassphraseVal || privacyPassphraseVal.trim() === '') {
+      addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} is required when ${ppField} is set`)
     }
-    if (authProtocol === null) {
-      addError(errors, `${prefix}.auth-protocol`, `${prefix}: auth-protocol is required when privacy-protocol is set`)
+    if (authProtocolVal === null) {
+      addError(errors, `${prefix}.${apField}`, `${prefix}: ${apField} is required when ${ppField} is set`)
     }
   }
 
   if (securityLevel === SecurityLevel.NoAuthNoPriv) {
-    if (authProtocol !== null) {
-      addError(
-        errors,
-        `${prefix}.auth-protocol`,
-        `${prefix}: auth-protocol must not be set when security-level is 1 (NoAuthNoPriv)`
-      )
+    if (authProtocolVal !== null) {
+      addError(errors, `${prefix}.${apField}`, `${prefix}: ${apField} must not be set when ${slField} is 1 (NoAuthNoPriv)`)
     }
-    if (authPassphrase !== null) {
-      addError(
-        errors,
-        `${prefix}.auth-passphrase`,
-        `${prefix}: auth-passphrase must not be set when security-level is 1 (NoAuthNoPriv)`
-      )
+    if (authPassphraseVal !== null) {
+      addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} must not be set when ${slField} is 1 (NoAuthNoPriv)`)
     }
-    if (privacyProtocol !== null) {
-      addError(
-        errors,
-        `${prefix}.privacy-protocol`,
-        `${prefix}: privacy-protocol must not be set when security-level is 1 (NoAuthNoPriv)`
-      )
+    if (privacyProtocolVal !== null) {
+      addError(errors, `${prefix}.${ppField}`, `${prefix}: ${ppField} must not be set when ${slField} is 1 (NoAuthNoPriv)`)
     }
-    if (privacyPassphrase !== null) {
-      addError(
-        errors,
-        `${prefix}.privacy-passphrase`,
-        `${prefix}: privacy-passphrase must not be set when security-level is 1 (NoAuthNoPriv)`
-      )
+    if (privacyPassphraseVal !== null) {
+      addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} must not be set when ${slField} is 1 (NoAuthNoPriv)`)
     }
   }
 
   if (securityLevel === SecurityLevel.AuthNoPriv) {
-    if (authProtocol === null) {
-      addError(
-        errors,
-        `${prefix}.auth-protocol`,
-        `${prefix}: auth-protocol is required when security-level is 2 (AuthNoPriv)`
-      )
+    if (authProtocolVal === null) {
+      addError(errors, `${prefix}.${apField}`, `${prefix}: ${apField} is required when ${slField} is 2 (AuthNoPriv)`)
     }
-    if (!authPassphrase || authPassphrase.trim() === '') {
-      addError(
-        errors,
-        `${prefix}.auth-passphrase`,
-        `${prefix}: auth-passphrase is required when security-level is 2 (AuthNoPriv)`
-      )
+    if (!authPassphraseVal || authPassphraseVal.trim() === '') {
+      addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} is required when ${slField} is 2 (AuthNoPriv)`)
     }
-    if (privacyProtocol !== null) {
-      addError(
-        errors,
-        `${prefix}.privacy-protocol`,
-        `${prefix}: privacy-protocol must not be set when security-level is 2 (AuthNoPriv)`
-      )
+    if (privacyProtocolVal !== null) {
+      addError(errors, `${prefix}.${ppField}`, `${prefix}: ${ppField} must not be set when ${slField} is 2 (AuthNoPriv)`)
     }
-    if (privacyPassphrase !== null) {
-      addError(
-        errors,
-        `${prefix}.privacy-passphrase`,
-        `${prefix}: privacy-passphrase must not be set when security-level is 2 (AuthNoPriv)`
-      )
+    if (privacyPassphraseVal !== null) {
+      addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} must not be set when ${slField} is 2 (AuthNoPriv)`)
     }
   }
 
   if (securityLevel === SecurityLevel.AuthPriv) {
-    if (authProtocol === null) {
-      addError(
-        errors,
-        `${prefix}.auth-protocol`,
-        `${prefix}: auth-protocol is required when security-level is 3 (AuthPriv)`
-      )
+    if (authProtocolVal === null) {
+      addError(errors, `${prefix}.${apField}`, `${prefix}: ${apField} is required when ${slField} is 3 (AuthPriv)`)
     }
-    if (!authPassphrase || authPassphrase.trim() === '') {
-      addError(
-        errors,
-        `${prefix}.auth-passphrase`,
-        `${prefix}: auth-passphrase is required when security-level is 3 (AuthPriv)`
-      )
+    if (!authPassphraseVal || authPassphraseVal.trim() === '') {
+      addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} is required when ${slField} is 3 (AuthPriv)`)
     }
-    if (privacyProtocol === null) {
-      addError(
-        errors,
-        `${prefix}.privacy-protocol`,
-        `${prefix}: privacy-protocol is required when security-level is 3 (AuthPriv)`
-      )
+    if (privacyProtocolVal === null) {
+      addError(errors, `${prefix}.${ppField}`, `${prefix}: ${ppField} is required when ${slField} is 3 (AuthPriv)`)
     }
-    if (!privacyPassphrase || privacyPassphrase.trim() === '') {
-      addError(
-        errors,
-        `${prefix}.privacy-passphrase`,
-        `${prefix}: privacy-passphrase is required when security-level is 3 (AuthPriv)`
-      )
+    if (!privacyPassphraseVal || privacyPassphraseVal.trim() === '') {
+      addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} is required when ${slField} is 3 (AuthPriv)`)
     }
   }
+}
+
+const validateSnmpV3UserElement = (user: Element, index: number, isXml: boolean, errors: TrapdValidationError[]): void => {
+  validateSnmpV3UserValues(
+    user.getAttribute('security-name'),
+    user.getAttribute('security-level'),
+    user.getAttribute('auth-protocol'),
+    user.getAttribute('auth-passphrase'),
+    user.getAttribute('privacy-protocol'),
+    user.getAttribute('privacy-passphrase'),
+    index,
+    isXml,
+    errors
+  )
 }
 
 /**
@@ -307,8 +400,8 @@ const validateSnmpV3UserElement = (user: Element, index: number, errors: XmlVali
  *   ... (zero or more snmpv3-user elements)
  * </trapd-configuration>
  */
-export const validateTrapdXml = (xmlString: string): XmlValidationResult => {
-  const errors: XmlValidationError[] = []
+export const validateTrapdXml = (xmlString: string): TrapdValidationResult => {
+  const errors: TrapdValidationError[] = []
 
   if (!xmlString || xmlString.trim() === '') {
     return { valid: false, errors: [{ field: 'xml', message: 'XML content is empty' }] }
@@ -345,45 +438,63 @@ export const validateTrapdXml = (xmlString: string): XmlValidationResult => {
     addError(errors, 'xmlns', `Invalid xmlns '${xmlns ?? ''}': expected '${TRAPD_XML_NAMESPACE}'`)
   }
 
-  // snmp-trap-address: optional and defaults to '*' in trapd-configuration.xsd.
-  const snmpTrapAddress = root.getAttribute('snmp-trap-address')
-  if (snmpTrapAddress !== null && snmpTrapAddress !== '*' && !isValidIP(snmpTrapAddress)) {
-    addError(
-      errors,
-      'snmp-trap-address',
-      `Invalid snmp-trap-address '${snmpTrapAddress}': must be '*' or a valid IPv4 address`
-    )
-  }
-
-  // snmp-trap-port: required; must be an integer in [MIN_PORT, MAX_PORT]
-  const snmpTrapPortStr = root.getAttribute('snmp-trap-port')
-  if (snmpTrapPortStr === null) {
-    addError(errors, 'snmp-trap-port', 'snmp-trap-port attribute is required')
-  } else {
-    const snmpTrapPort = parseInt(snmpTrapPortStr, 10)
-    if (!isValidPort(snmpTrapPort)) {
-      addError(
-        errors,
-        'snmp-trap-port',
-        `Invalid snmp-trap-port '${snmpTrapPortStr}': must be an integer between ${MIN_PORT} and ${MAX_PORT}`
-      )
-    }
-  }
-
-  // new-suspect-on-trap: optional; must be 'true' or 'false' if present
-  const newSuspectOnTrap = root.getAttribute('new-suspect-on-trap')
-  if (newSuspectOnTrap !== null && newSuspectOnTrap !== 'true' && newSuspectOnTrap !== 'false') {
-    addError(
-      errors,
-      'new-suspect-on-trap',
-      `Invalid new-suspect-on-trap '${newSuspectOnTrap}': must be 'true' or 'false'`
-    )
-  }
+  validateSnmpTrapAddress(root.getAttribute('snmp-trap-address'), true, errors)
+  validateSnmpTrapPort(root.getAttribute('snmp-trap-port'), true, errors)
+  validateNewSuspectOnTrap(root.getAttribute('new-suspect-on-trap'), true, errors)
 
   // snmpv3-user: zero or more child elements
   const snmpv3Users = root.getElementsByTagName('snmpv3-user')
   for (let i = 0; i < snmpv3Users.length; i++) {
-    validateSnmpV3UserElement(snmpv3Users[i], i + 1, errors)
+    validateSnmpV3UserElement(snmpv3Users[i], i + 1, true, errors)
+  }
+
+  return { valid: errors.length === 0, errors }
+}
+
+export const validateTrapdJson = (jsonString: string): TrapdValidationResult => {
+  const errors: TrapdValidationError[] = []
+
+  if (!jsonString || jsonString.trim() === '') {
+    return { valid: false, errors: [{ field: 'json', message: 'JSON content is empty' }] }
+  }
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(jsonString)
+  } catch {
+    return { valid: false, errors: [{ field: 'json', message: 'Failed to parse JSON' }] }
+  }
+
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    return { valid: false, errors: [{ field: 'json', message: 'JSON must be an object' }] }
+  }
+
+  const raw = parsed as Record<string, unknown>
+  const config = {
+    ...raw,
+    includeRawMessage: raw['includeRawMessage'] ?? false,
+    newSuspectOnTrap: raw['newSuspectOnTrap'] ?? false,
+    useAddressFromVarbind: raw['useAddressFromVarbind'] ?? false
+  } as TrapConfig
+
+  validateSnmpTrapAddress(config.snmpTrapAddress, false, errors)
+  validateSnmpTrapPort(config.snmpTrapPort, false, errors)
+  validateNewSuspectOnTrap(config.newSuspectOnTrap, false, errors)
+
+  if (Array.isArray(config.snmpv3User)) {
+    config.snmpv3User.forEach((user, i) => {
+      validateSnmpV3UserValues(
+        user.securityName,
+        user.securityLevel,
+        user.authProtocol,
+        user.authPassphrase,
+        user.privacyProtocol,
+        user.privacyPassphrase,
+        i + 1,
+        false,
+        errors
+      )
+    })
   }
 
   return { valid: errors.length === 0, errors }

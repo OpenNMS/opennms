@@ -61,6 +61,13 @@ public class SentinelRestIT {
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
 
+    @Test
+    public void testHawtio() {
+        given().get("/hawtio/jolokia/version")
+                .then().assertThat()
+                .statusCode(200);
+    }
+
     public void testRestHealthServiceOnSentinel() throws Exception {
 
         LOG.info("testing /sentinel/rest/health .........");

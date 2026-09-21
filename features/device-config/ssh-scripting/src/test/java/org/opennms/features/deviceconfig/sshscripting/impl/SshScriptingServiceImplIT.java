@@ -22,7 +22,9 @@
 package org.opennms.features.deviceconfig.sshscripting.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -206,6 +208,55 @@ public class SshScriptingServiceImplIT {
                                                                                       List.of(AuthorizedKeyEntry.parseAuthorizedKeyEntry(AUTH_KEY_PUB), AuthorizedKeyEntry.parseAuthorizedKeyEntry(AUTH_KEY_PUB_ED25519)),
                                                                                       null));
         sshd.start();
+    }
+
+    /**
+     * {@code capture:} (bare form): capture starts at the current stdout position, after the
+     * command echo has already been consumed by an explicit {@code await:}.  The captured output
+     * should contain the config lines sent after the capture marker and must not include the
+     * command echo or the trailing prompt.
+     */
+    @Test
+    public void capturesBareForm() {
+        var result = execute(
+                "send: show running-config",
+                "await: show running-config",
+                "capture:",
+                "send: interface eth0",
+                "send: router#",
+                "await: router#"
+        );
+        assertThat(result.isSuccess(), is(true));
+        assertThat(result.capturedConfig.isPresent(), is(true));
+        var captured = new String(result.capturedConfig.get(), StandardCharsets.UTF_8);
+        assertThat(captured, is("interface eth0\n"));
+        assertThat(captured, not(containsString("show running-config")));
+        assertThat(captured, not(containsString("router#")));
+    }
+
+    /**
+     * {@code capture: <string>} form: the argument is awaited via {@link
+     * org.opennms.features.deviceconfig.sshscripting.impl.SshInteraction#awaitAndCapture} which
+     * sets the capture start atomically inside the await lock.  This means the command echo is
+     * excluded from the captured output even if the full config arrives before the next polling
+     * interval.  The captured output must contain the config lines and must not include the
+     * command echo or the trailing prompt.
+     */
+    @Test
+    public void capturesWithArgument() {
+        var result = execute(
+                "send: show running-config",
+                "capture: show running-config",
+                "send: interface eth0",
+                "send: router#",
+                "await: router#"
+        );
+        assertThat(result.isSuccess(), is(true));
+        assertThat(result.capturedConfig.isPresent(), is(true));
+        var captured = new String(result.capturedConfig.get(), StandardCharsets.UTF_8);
+        assertThat(captured, containsString("interface eth0"));
+        assertThat(captured, not(containsString("show running-config")));
+        assertThat(captured, not(containsString("router#")));
     }
 
     public void testIpAddresses() throws Exception {

@@ -319,16 +319,17 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor(getContext().getLocationAwareSnmpClient());
                     pollMonitor.setLocation(location);
                     pollMonitor.setInterval(getSnmppollableconfig().getInterval());
-                    int maxiface = getMaxInterfacePerPdu();
-                    if (maxiface == 0) maxiface=m_snmpinterfaces.size();
-                    LOG.debug("Max Interface Per Pdu is: {}", maxiface);
                     List<SnmpMinimalPollInterface> mifaces = getSnmpMinimalPollInterface();
-                    int start =0;
-                    while (start + maxiface< m_snmpinterfaces.size()) {
-                        doPoll(pollMonitor,mifaces.subList(start, start+maxiface));
-                        start += maxiface;
+                    int size = mifaces.size();
+                    int maxInterfacePdu = getMaxInterfacePerPdu();
+                    if (maxInterfacePdu == 0) maxInterfacePdu = size;
+                    LOG.debug("Max Interface Per Pdu is: {}", maxInterfacePdu);
+                    int start = 0;
+                    while (start + maxInterfacePdu < size) {
+                        doPoll(pollMonitor, mifaces.subList(start, start + maxInterfacePdu));
+                        start += maxInterfacePdu;
                     }
-                    doPoll(pollMonitor,mifaces.subList(start, m_snmpinterfaces.size()));
+                    doPoll(pollMonitor, mifaces.subList(start, size));
                 }
 
             }  else {

@@ -25,8 +25,13 @@ fi
 
 
 if [ -z "${OPENNMS_HOME}" ]; then
-  # shellcheck disable=SC2154
-  OPENNMS_HOME="${install.dir}"
+  _script="$0"
+  case "$_script" in
+    */*) ;;
+    *) _script="$(command -v "$_script" 2>/dev/null || echo "$_script")" ;;
+  esac
+  OPENNMS_HOME="$(cd "$(dirname "$_script")/.." && pwd)"
+  unset _script
 fi
 
 if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then

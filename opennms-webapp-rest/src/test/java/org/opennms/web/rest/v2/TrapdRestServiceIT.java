@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -44,10 +45,14 @@ import org.mockito.ArgumentCaptor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.exception.ValidationException;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.TrapdConfigDao;
+import org.opennms.web.api.Authentication;
+import org.opennms.web.rest.support.SecurityHelper;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.config.trapd.Snmpv3User;
+
+import javax.ws.rs.core.SecurityContext;
 import org.opennms.web.rest.v2.model.Snmpv3UserDto;
 import org.opennms.web.rest.v2.model.TrapdConfigDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,12 +86,151 @@ public class TrapdRestServiceIT {
         setField(trapdRestService, "trapdConfigDao", trapdConfigDao);
     }
 
+    // --- Download XML Tests ---
 
     @Test
-    public void uploadShouldReturnBadRequestWhenAttachmentMissing() {
-        try (Response response = trapdRestService.uploadTrapdConfiguration(null, null)) {
+    public void downloadXmlShouldReturnOkWithCorrectHeaders() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml", adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertTrue(response.getMediaType().toString().contains("application/xml"));
+            assertEquals("attachment; filename=trapd-config.xml", response.getHeaderString("Content-Disposition"));
+            assertEquals("public", response.getHeaderString("Pragma"));
+            assertEquals("no-cache, must-revalidate", response.getHeaderString("Cache-Control"));
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldReturnBodyWithConfigData() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml", adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            String xml = new String((byte[]) response.getEntity(), StandardCharsets.UTF_8);
+            assertTrue(xml.contains("snmp-trap-port=\"162\""));
+            assertTrue(xml.contains("snmp-trap-address=\"*\""));
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldReturnNotFoundWhenConfigMissing() {
+        when(trapdConfigDao.getConfig()).thenReturn(null);
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml", adminSecurityContext())) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("Trapd configuration not found.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldReturnServerErrorWhenExceptionThrown() {
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).getConfig();
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml", adminSecurityContext())) {
+            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertEquals("Error retrieving Trapd config.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldBeCaseInsensitiveForFormatParam() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        for (String format : new String[]{"XML", "Xml", "xMl"}) {
+            try (Response response = trapdRestService.downloadTrapdConfig(format, adminSecurityContext())) {
+                assertEquals("Expected XML response for format=" + format,
+                        Response.Status.OK.getStatusCode(), response.getStatus());
+                assertEquals("attachment; filename=trapd-config.xml", response.getHeaderString("Content-Disposition"));
+            }
+        }
+    }
+
+    // --- Download JSON Tests ---
+
+    @Test
+    public void downloadJsonShouldReturnOkWithCorrectHeaders() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json", adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertTrue(response.getMediaType().toString().contains("application/json"));
+            assertEquals("attachment; filename=trapd-config.json", response.getHeaderString("Content-Disposition"));
+            assertEquals("public", response.getHeaderString("Pragma"));
+            assertEquals("no-cache, must-revalidate", response.getHeaderString("Cache-Control"));
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldReturnBodyWithConfigData() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json", adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            String json = new String((byte[]) response.getEntity(), StandardCharsets.UTF_8);
+            assertTrue(json.contains("snmpTrapPort"));
+            assertTrue(json.contains("162"));
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldDefaultToJsonWhenFormatIsNull() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig(null, adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertEquals("attachment; filename=trapd-config.json", response.getHeaderString("Content-Disposition"));
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldReturnNotFoundWhenConfigMissing() {
+        when(trapdConfigDao.getConfig()).thenReturn(null);
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json", adminSecurityContext())) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("Trapd configuration not found.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldReturnServerErrorWhenExceptionThrown() {
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).getConfig();
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json", adminSecurityContext())) {
+            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertEquals("Error retrieving Trapd config.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadShouldReturnBadRequestForUnsupportedFormat() {
+        try (Response response = trapdRestService.downloadTrapdConfig("csv", adminSecurityContext())) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Missing uploaded file for trapd file upload.", response.getEntity());
+            assertEquals("Invalid format parameter. Supported values are 'json' and 'xml'.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldBeCaseInsensitiveForFormatParam() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        for (String format : new String[]{"JSON", "Json", "jSoN"}) {
+            try (Response response = trapdRestService.downloadTrapdConfig(format, adminSecurityContext())) {
+                assertEquals("Expected JSON response for format=" + format,
+                        Response.Status.OK.getStatusCode(), response.getStatus());
+                assertEquals("attachment; filename=trapd-config.json", response.getHeaderString("Content-Disposition"));
+            }
+        }
+    }
+
+    // --- Upload XML Tests ---
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenAttachmentMissingXml() {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(null, adminSecurityContext())) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Missing uploaded file for Trap Configuration XML file upload.", response.getEntity());
         }
     }
 
@@ -97,9 +241,9 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream("<trapd-configuration".getBytes(StandardCharsets.UTF_8))
         );
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, adminSecurityContext())) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Invalid trapd XML configuration.", response.getEntity());
+            assertEquals("Invalid Trapd XML configuration.", response.getEntity());
         }
     }
 
@@ -110,7 +254,7 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
         );
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, adminSecurityContext())) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             assertNull(response.getEntity());
         }
@@ -127,7 +271,7 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream(validTrapdConfigXmlWithUseAddressFromVarbind().getBytes(StandardCharsets.UTF_8))
         );
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, adminSecurityContext())) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             assertNull(response.getEntity());
         }
@@ -138,32 +282,132 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void uploadShouldReturnBadRequestWhenValidationFails() {
+    public void uploadShouldReturnBadRequestWhenValidationFailsXml() {
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
                 new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
         );
-        whenValidationFailsOnUpdate("schema error");
+        whenValidationFailsOnUpdate("Invalid Trapd XML configuration.");
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, adminSecurityContext())) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("schema error", response.getEntity());
+            assertEquals("Invalid Trapd XML configuration.", response.getEntity());
         }
     }
 
     @Test
-    public void uploadShouldReturnServerErrorWhenPersistenceFails() {
+    public void uploadShouldReturnServerErrorWhenPersistenceFailsXml() {
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
                 new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
         );
         org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, adminSecurityContext())) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            assertEquals("Failed to persist trapd configuration.", response.getEntity());
+            assertEquals("Failed to persist Trapd configuration.", response.getEntity());
         }
     }
+
+    // --- Upload JSON Tests ---
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenAttachmentMissingJson() {
+        try (Response response = trapdRestService.uploadTrapdConfiguration(null, adminSecurityContext())) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Missing uploaded file for Trap Configuration JSON file upload.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenXmlPassedInsteadOfJsonIsInvalid() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream("<trapd-configuration".getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Invalid Trapd JSON configuration.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenJsonIsInvalid() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream("{ \"something }".getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Invalid Trapd JSON configuration.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldPersistValidJsonAndReturnOk() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertNull(response.getEntity());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals(10163, captor.getValue().getSnmpTrapPort());
+    }
+
+    @Test
+    public void uploadShouldPersistUseAddressFromVarbindWhenProvidedInJson() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigJsonWithUseAddressFromVarbind().getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertNull(response.getEntity());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertTrue(captor.getValue().shouldUseAddressFromVarbind());
+    }
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenValidationFailsJson() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
+        );
+        whenValidationFailsOnUpdate("Invalid Trapd JSON configuration.");
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Invalid Trapd JSON configuration.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldReturnServerErrorWhenPersistenceFailsJson() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
+        );
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertEquals("Failed to persist Trapd configuration.", response.getEntity());
+        }
+    }
+
+    // --- Get Config Tests ---
 
     @Test
     public void getShouldReturnOkWithConfigWhenExists() {
@@ -198,14 +442,15 @@ public class TrapdRestServiceIT {
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            assertEquals("Failed to retrieve trapd configuration.", response.getEntity());
+            assertEquals("Failed to retrieve Trapd configuration.", response.getEntity());
         }
     }
 
     @Test
-    public void getShouldReturnSnmpv3UserFieldsUnchanged() {
+    public void getShouldReturnSnmpv3UserFieldsUnchangedButStillMaskCredentials() {
         TrapdConfiguration config = buildMinimalConfig();
         Snmpv3User user = new Snmpv3User();
+        user.setId("test-user-id-1");
         user.setSecurityName("engine-user");
         user.setEngineId("0x8000000001020304");
         user.setSecurityLevel(3);
@@ -220,13 +465,14 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
             Snmpv3UserDto returnedUser = returned.getSnmpv3User().get(0);
+            assertEquals("test-user-id-1", returnedUser.getId());
             assertEquals("engine-user", returnedUser.getSecurityName());
             assertEquals("0x8000000001020304", returnedUser.getEngineId());
             assertEquals("SHA", returnedUser.getAuthProtocol());
             assertEquals("AES", returnedUser.getPrivacyProtocol());
             assertEquals(Integer.valueOf(3), returnedUser.getSecurityLevel());
-            assertEquals("authpass", returnedUser.getAuthPassphrase());
-            assertEquals("privpass", returnedUser.getPrivacyPassphrase());
+            assertEquals(SecurityHelper.MASKED_PASSWORD, returnedUser.getAuthPassphrase());
+            assertEquals(SecurityHelper.MASKED_PASSWORD, returnedUser.getPrivacyPassphrase());
         }
     }
 
@@ -289,11 +535,13 @@ public class TrapdRestServiceIT {
         return payload;
     }
 
+    // --- Update Config Tests ---
+
     @Test
     public void updateShouldReturnBadRequestWhenPayloadMissing() {
         try (Response response = trapdRestService.updateTrapdConfiguration(null, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Missing trapd configuration in request body.", response.getEntity());
+            assertEquals("Missing Trapd configuration in request body.", response.getEntity());
         }
     }
 
@@ -393,7 +641,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Provided trapd configuration failed schema validation.", response.getEntity());
+            assertEquals("Provided Trapd configuration failed schema validation.", response.getEntity());
         }
     }
 
@@ -409,7 +657,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            assertEquals("Failed to persist trapd configuration.", response.getEntity());
+            assertEquals("Failed to persist Trapd configuration.", response.getEntity());
         }
     }
 
@@ -615,6 +863,58 @@ public class TrapdRestServiceIT {
     }
 
     @Test
+    public void updateShouldRejectAuthPassphraseStartingWithStar() {
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("*notmasked"); // starts with * but is not MASKED_PASSWORD
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("authPassphrase must not begin with '*'."));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void updateShouldRejectPrivacyPassphraseStartingWithStar() {
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("authpass1");
+        user.setPrivacyProtocol("AES");
+        user.setPrivacyPassphrase("*notmasked"); // starts with * but is not MASKED_PASSWORD
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("privacyPassphrase must not begin with '*'."));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void updateShouldAcceptPassphraseWithStarNotAtStart() {
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("pass*word"); // * is not at the start
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
     public void updateShouldAcceptScvPlaceholderPassphrase() {
         // ${scv:alias:key} is always > 8 bytes; the literal length check passes trivially
         // and the placeholder is resolved by the daemon at runtime via SecureCredentialsVault.
@@ -771,6 +1071,7 @@ public class TrapdRestServiceIT {
     }
 
     // --- Boundary Value Tests ---
+
     @Test
     public void updateShouldAcceptSnmpTrapPortAtLowerAndUpperBound() {
         TrapdConfigDto payload = new TrapdConfigDto();
@@ -872,30 +1173,6 @@ public class TrapdRestServiceIT {
         }
     }
 
-    private void whenValidationFailsOnUpdate(final String message) {
-        org.mockito.Mockito.doThrow(new ValidationException(message)).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
-    }
-
-    private static void setField(final Object target, final String fieldName, final Object value) throws Exception {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
-    }
-
-    private static String validTrapdConfigXml() {
-        return "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
-                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\" "
-                + "include-raw-message=\"false\" threads=\"0\" queue-size=\"10000\" "
-                + "batch-size=\"1000\" batch-interval=\"500\"/>";
-    }
-
-    private static String validTrapdConfigXmlWithUseAddressFromVarbind() {
-        return "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
-                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\" "
-                + "include-raw-message=\"false\" threads=\"0\" queue-size=\"10000\" "
-                + "batch-size=\"1000\" batch-interval=\"500\" use-address-from-varbind=\"true\"/>";
-    }
-
     @Test
     public void uploadShouldNotCallReplaceConfigWhenXmlParsingFails() {
         Attachment attachment = mock(Attachment.class);
@@ -903,24 +1180,25 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream("<trapd-configuration".getBytes(StandardCharsets.UTF_8))
         );
 
-        trapdRestService.uploadTrapdConfiguration(attachment, null);
+        trapdRestService.uploadTrapdConfigurationXml(attachment, adminSecurityContext());
 
         verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
     public void uploadShouldRejectXmlWhenLevel3MissingPrivacyCredentials() {
-        String xml = "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
-                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\">"
-                + "<snmpv3-user security-name=\"user\" security-level=\"3\" "
-                + "auth-protocol=\"SHA\" auth-passphrase=\"authpass\"/>"
-                + "</trapd-configuration>";
+        final String xml = """
+                <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" \
+                snmp-trap-address="*" snmp-trap-port="10163" new-suspect-on-trap="false"> \
+                <snmpv3-user security-name="user" security-level="3" \
+                auth-protocol="SHA" auth-passphrase="authpass"/> \
+                </trapd-configuration>""";
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
                 new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))
         );
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, adminSecurityContext())) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             assertTrue(((String) response.getEntity()).contains("securityLevel 3 requires both auth and privacy credentials."));
         }
@@ -1042,5 +1320,479 @@ public class TrapdRestServiceIT {
         }
 
         verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    // --- Credential masking tests ---
+
+    @Test
+    public void getShouldReturnMaskedPassphrasesForSnmpv3Users() {
+        TrapdConfiguration config = buildMinimalConfig();
+        Snmpv3User user = new Snmpv3User();
+        user.setSecurityName("testUser");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("realAuthPass");
+        user.setPrivacyProtocol("AES");
+        user.setPrivacyPassphrase("realPrivPass");
+        config.addSnmpv3User(user);
+        when(trapdConfigDao.getConfig()).thenReturn(config);
+
+        try (Response response = trapdRestService.getTrapdConfiguration(null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
+            assertEquals(1, returned.getSnmpv3User().size());
+            Snmpv3UserDto userDto = returned.getSnmpv3User().get(0);
+            assertEquals(SecurityHelper.MASKED_PASSWORD, userDto.getAuthPassphrase());
+            assertEquals(SecurityHelper.MASKED_PASSWORD, userDto.getPrivacyPassphrase());
+            // original entity must not be mutated
+            assertEquals("realAuthPass", user.getAuthPassphrase());
+            assertEquals("realPrivPass", user.getPrivacyPassphrase());
+        }
+    }
+
+    @Test
+    public void downloadShouldReturnPlaintextPassphrasesNotMasked() {
+        TrapdConfiguration config = buildMinimalConfig();
+        Snmpv3User user = new Snmpv3User();
+        user.setSecurityName("testUser");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("realAuthPass");
+        config.addSnmpv3User(user);
+        when(trapdConfigDao.getConfig()).thenReturn(config);
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json", adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            String json = new String((byte[]) response.getEntity(), StandardCharsets.UTF_8);
+            assertTrue(json.contains("realAuthPass"));
+            assertFalse(json.contains(SecurityHelper.MASKED_PASSWORD));
+        }
+    }
+
+    @Test
+    public void updateWithMaskedPassphraseShouldPreserveExistingCredential() {
+        TrapdConfiguration existingConfig = buildMinimalConfig();
+        Snmpv3User existingUser = new Snmpv3User();
+        existingUser.setId("user-id-1");
+        existingUser.setSecurityName("testUser");
+        existingUser.setAuthProtocol("SHA");
+        existingUser.setAuthPassphrase("realAuthPass");
+        existingConfig.addSnmpv3User(existingUser);
+        when(trapdConfigDao.getConfig()).thenReturn(existingConfig);
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto incomingUser = new Snmpv3UserDto();
+        incomingUser.setId("user-id-1");
+        incomingUser.setSecurityName("testUser");
+        incomingUser.setAuthProtocol("SHA");
+        incomingUser.setAuthPassphrase(SecurityHelper.MASKED_PASSWORD);
+        payload.setSnmpv3User(java.util.List.of(incomingUser));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals("realAuthPass", captor.getValue().getSnmpv3User(0).getAuthPassphrase());
+    }
+
+    /**
+     * Two users sharing the same securityName but with different credentials must each
+     * resolve a masked passphrase against <em>their own</em> stored secret, correlated by id.
+     * This is the core scenario that securityName-based matching could not handle.
+     */
+    @Test
+    public void updateWithDuplicateSecurityNamesResolvesEachByItsOwnId() {
+        TrapdConfiguration existingConfig = buildMinimalConfig();
+        Snmpv3User userA = new Snmpv3User();
+        userA.setId("id-a");
+        userA.setSecurityName("dupUser");
+        userA.setAuthProtocol("SHA");
+        userA.setAuthPassphrase("secretPassphraseA");
+        existingConfig.addSnmpv3User(userA);
+        Snmpv3User userB = new Snmpv3User();
+        userB.setId("id-b");
+        userB.setSecurityName("dupUser");
+        userB.setAuthProtocol("MD5");
+        userB.setAuthPassphrase("secretPassphraseB");
+        existingConfig.addSnmpv3User(userB);
+        when(trapdConfigDao.getConfig()).thenReturn(existingConfig);
+
+        // Submit both users back with masked passphrases, in reverse order, to prove the
+        // resolution is keyed by id and not by list position or security name.
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto incomingB = new Snmpv3UserDto();
+        incomingB.setId("id-b");
+        incomingB.setSecurityName("dupUser");
+        incomingB.setAuthProtocol("MD5");
+        incomingB.setAuthPassphrase(SecurityHelper.MASKED_PASSWORD);
+        Snmpv3UserDto incomingA = new Snmpv3UserDto();
+        incomingA.setId("id-a");
+        incomingA.setSecurityName("dupUser");
+        incomingA.setAuthProtocol("SHA");
+        incomingA.setAuthPassphrase(SecurityHelper.MASKED_PASSWORD);
+        payload.setSnmpv3User(java.util.List.of(incomingB, incomingA));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        TrapdConfiguration saved = captor.getValue();
+        assertEquals("secretPassphraseA", saved.getSnmpv3UserById("id-a").getAuthPassphrase());
+        assertEquals("secretPassphraseB", saved.getSnmpv3UserById("id-b").getAuthPassphrase());
+    }
+
+    /**
+     * A masked passphrase paired with an id that does not match any stored user must be
+     * rejected — there is no secret to resolve, so it is treated like a new entry.
+     */
+    @Test
+    public void updateWithMaskedPassphraseAndUnknownIdReturnsBadRequest() {
+        TrapdConfiguration existingConfig = buildMinimalConfig();
+        Snmpv3User existingUser = new Snmpv3User();
+        existingUser.setId("known-id");
+        existingUser.setSecurityName("testUser");
+        existingUser.setAuthProtocol("SHA");
+        existingUser.setAuthPassphrase("realAuthPass");
+        existingConfig.addSnmpv3User(existingUser);
+        when(trapdConfigDao.getConfig()).thenReturn(existingConfig);
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto incomingUser = new Snmpv3UserDto();
+        incomingUser.setId("stale-or-unknown-id");
+        incomingUser.setSecurityName("testUser");
+        incomingUser.setAuthProtocol("SHA");
+        incomingUser.setAuthPassphrase(SecurityHelper.MASKED_PASSWORD);
+        payload.setSnmpv3User(java.util.List.of(incomingUser));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("masked passphrase"));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void updateWithRealPassphraseShouldUpdateToNewValue() {
+        TrapdConfiguration existingConfig = buildMinimalConfig();
+        Snmpv3User existingUser = new Snmpv3User();
+        existingUser.setSecurityName("testUser");
+        existingUser.setAuthProtocol("SHA");
+        existingUser.setAuthPassphrase("oldAuthPass");
+        existingConfig.addSnmpv3User(existingUser);
+        when(trapdConfigDao.getConfig()).thenReturn(existingConfig);
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto incomingUser = new Snmpv3UserDto();
+        incomingUser.setSecurityName("testUser");
+        incomingUser.setAuthProtocol("SHA");
+        incomingUser.setAuthPassphrase("newAuthPass");
+        payload.setSnmpv3User(java.util.List.of(incomingUser));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals("newAuthPass", captor.getValue().getSnmpv3User(0).getAuthPassphrase());
+    }
+
+    @Test
+    public void updateWithMaskedPassphraseForNewUserShouldReturnBadRequest() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig()); // no users
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto incomingUser = new Snmpv3UserDto();
+        incomingUser.setSecurityName("brandNewUser");
+        incomingUser.setAuthProtocol("SHA");
+        incomingUser.setAuthPassphrase(SecurityHelper.MASKED_PASSWORD);
+        payload.setSnmpv3User(java.util.List.of(incomingUser));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("masked passphrase"));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    /**
+     * Two incoming users sharing the same non-blank id would break id-based credential
+     * correlation and persist an unreachable duplicate, so the request must be rejected.
+     */
+    @Test
+    public void updateWithDuplicateUserIdsReturnsBadRequest() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto userA = new Snmpv3UserDto();
+        userA.setId("dup-id");
+        userA.setSecurityName("userA");
+        Snmpv3UserDto userB = new Snmpv3UserDto();
+        userB.setId("dup-id");
+        userB.setSecurityName("userB");
+        payload.setSnmpv3User(java.util.List.of(userA, userB));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("Duplicate SNMPv3 user id"));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    /**
+     * Multiple new users with blank ids are legitimate (ids are assigned at persist time) and
+     * must not be mistaken for duplicates.
+     */
+    @Test
+    public void updateWithMultipleBlankUserIdsIsAllowed() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto userA = new Snmpv3UserDto();
+        userA.setSecurityName("newUserA");
+        Snmpv3UserDto userB = new Snmpv3UserDto();
+        userB.setSecurityName("newUserB");
+        payload.setSnmpv3User(java.util.List.of(userA, userB));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void uploadJsonWithDuplicateUserIdsReturnsBadRequest() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        String json = """
+                {"snmpTrapAddress":"*","snmpTrapPort":162,"newSuspectOnTrap":false,\
+                "snmpv3User":[{"id":"dup-id","securityName":"userA"},\
+                {"id":"dup-id","securityName":"userB"}]}""";
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("Duplicate SNMPv3 user id"));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    // --- SCV expression tests ---
+
+    @Test
+    public void getShouldReturnScvExpressionUnmasked() {
+        TrapdConfiguration config = buildMinimalConfig();
+        Snmpv3User user = new Snmpv3User();
+        user.setSecurityName("scvUser");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("${scv:myalias:authkey}");
+        user.setPrivacyProtocol("AES");
+        user.setPrivacyPassphrase("${scv:myalias:privkey}");
+        config.addSnmpv3User(user);
+        when(trapdConfigDao.getConfig()).thenReturn(config);
+
+        try (Response response = trapdRestService.getTrapdConfiguration(null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
+            Snmpv3UserDto userDto = returned.getSnmpv3User().get(0);
+            assertEquals("${scv:myalias:authkey}", userDto.getAuthPassphrase());
+            assertEquals("${scv:myalias:privkey}", userDto.getPrivacyPassphrase());
+        }
+    }
+
+    @Test
+    public void updateWithScvExpressionShouldPersistItAsIs() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto incomingUser = new Snmpv3UserDto();
+        incomingUser.setSecurityName("scvUser");
+        incomingUser.setAuthProtocol("SHA");
+        incomingUser.setAuthPassphrase("${scv:myalias:authkey}");
+        payload.setSnmpv3User(java.util.List.of(incomingUser));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals("${scv:myalias:authkey}", captor.getValue().getSnmpv3User(0).getAuthPassphrase());
+    }
+
+    @Test
+    public void uploadJsonWithScvExpressionShouldPersistItAsIs() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        String json = """
+                {"snmpTrapAddress":"*","snmpTrapPort":162,"newSuspectOnTrap":false,\
+                "snmpv3User":[{"securityName":"scvUser","authProtocol":"SHA",\
+                "authPassphrase":"${scv:myalias:authkey}"}]}""";
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals("${scv:myalias:authkey}", captor.getValue().getSnmpv3User(0).getAuthPassphrase());
+    }
+
+    @Test
+    public void uploadJsonWithMaskedPassphraseShouldPreserveExistingCredential() {
+        TrapdConfiguration existingConfig = buildMinimalConfig();
+        Snmpv3User existingUser = new Snmpv3User();
+        existingUser.setId("upload-id-1");
+        existingUser.setSecurityName("testUser");
+        existingUser.setAuthProtocol("SHA");
+        existingUser.setAuthPassphrase("realAuthPass");
+        existingConfig.addSnmpv3User(existingUser);
+        when(trapdConfigDao.getConfig()).thenReturn(existingConfig);
+
+        String json = """
+                {"snmpTrapAddress":"*","snmpTrapPort":162,"newSuspectOnTrap":false,\
+                "snmpv3User":[{"id":"upload-id-1","securityName":"testUser","authProtocol":"SHA",\
+                "authPassphrase":"******"}]}""";
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals("realAuthPass", captor.getValue().getSnmpv3User(0).getAuthPassphrase());
+    }
+
+    // --- Authorization Tests ---
+
+    @Test
+    public void downloadShouldReturn403ForNonAdminUser() {
+        try (Response response = trapdRestService.downloadTrapdConfig("json", nonAdminSecurityContext())) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+            assertEquals("Admin role required to download Trapd configuration.", response.getEntity());
+        }
+        verify(trapdConfigDao, never()).getConfig();
+    }
+
+    @Test
+    public void downloadXmlShouldReturn403ForNonAdminUser() {
+        try (Response response = trapdRestService.downloadTrapdConfig("xml", nonAdminSecurityContext())) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+            assertEquals("Admin role required to download Trapd configuration.", response.getEntity());
+        }
+        verify(trapdConfigDao, never()).getConfig();
+    }
+
+    @Test
+    public void uploadJsonShouldReturn403ForNonAdminUser() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, nonAdminSecurityContext())) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+            assertEquals("Admin role required to upload Trapd configuration.", response.getEntity());
+        }
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void uploadXmlShouldReturn403ForNonAdminUser() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, nonAdminSecurityContext())) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+            assertEquals("Admin role required to upload Trapd configuration.", response.getEntity());
+        }
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    private void whenValidationFailsOnUpdate(final String message) {
+        org.mockito.Mockito.doThrow(new ValidationException(message)).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    private static SecurityContext adminSecurityContext() {
+        SecurityContext sc = mock(SecurityContext.class);
+        when(sc.isUserInRole(Authentication.ROLE_ADMIN)).thenReturn(true);
+        return sc;
+    }
+
+    private static SecurityContext nonAdminSecurityContext() {
+        SecurityContext sc = mock(SecurityContext.class);
+        when(sc.isUserInRole(Authentication.ROLE_ADMIN)).thenReturn(false);
+        return sc;
+    }
+
+    private static void setField(final Object target, final String fieldName, final Object value) throws Exception {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private static String validTrapdConfigXml() {
+        return """
+                <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" \
+                snmp-trap-address="*" snmp-trap-port="10163" new-suspect-on-trap="false" \
+                include-raw-message="false" threads="0" queue-size="10000" \
+                batch-size="1000" batch-interval="500"/>""";
+    }
+
+    private static String validTrapdConfigXmlWithUseAddressFromVarbind() {
+        return """
+                <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" \
+                snmp-trap-address="*" snmp-trap-port="10163" new-suspect-on-trap="false" \
+                include-raw-message="false" threads="0" queue-size="10000" \
+                batch-size="1000" batch-interval="500" use-address-from-varbind="true"/>""";
+    }
+
+    private static String validTrapdConfigJson() {
+        return """
+                {
+                "snmpTrapAddress": "*", \
+                "snmpTrapPort": 10163, \
+                "newSuspectOnTrap": false, \
+                "includeRawMessage": false, \
+                "threads": 0, \
+                "queueSize": 10000, \
+                "batchSize": 1000, \
+                "batchInterval": 500 \
+                }""";
+    }
+
+    private static String validTrapdConfigJsonWithUseAddressFromVarbind() {
+        return """
+                {
+                "snmpTrapAddress": "*", \
+                "snmpTrapPort": 10163, \
+                "newSuspectOnTrap": false, \
+                "includeRawMessage": false, \
+                "threads": 0, \
+                "queueSize": 10000, \
+                "batchSize": 1000, \
+                "batchInterval": 500, \
+                "useAddressFromVarbind": true \
+                }""";
     }
 }

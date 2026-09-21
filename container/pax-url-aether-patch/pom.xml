@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>37.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.pax-url-aether-patch</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Container :: pax-url-aether Patch</name>
+    <description>
+        The pax-url-aether uber-bundle that provides the mvn: URL handler shades
+        plexus-utils 3.3.1, which is affected by CVE-2025-67030 (directory traversal in
+        org.codehaus.plexus.util.Expand.extractFile). There is no upstream release that
+        fixes this: every pax-url-aether 2.6.x shades plexus-utils 3.3.1 and 3.0.x still
+        shades 3.6.0. A vulnerable class shaded into an uber-jar can also not be dealt with
+        via blacklisting or etc/overrides.properties.
+
+        So this module rebuilds the bundle with plexus-utils ${plexusUtilsVersion} shaded in
+        and publishes it as its own artifact. The assembly modules (container/karaf for
+        Horizon, container/shared for Minion and Sentinel) copy it over the bundle that
+        Karaf's framework feature put into their assembled system/ directory.
+
+        Note that the patched bundle is deliberately NOT installed over
+        org.ops4j.pax.url:pax-url-aether in the local Maven repository: the karaf-maven-plugin
+        loads that very artifact into its own plugin class realm, so replacing it while the
+        build is running breaks the assembly goal.
+
+        Once Apache Karaf ships a pax-url-aether that shades plexus-utils 3.6.1 or newer,
+        this module and container/plexus-utils-relocated can be deleted.
+    </description>
+
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+        <paxUrlAetherJar>pax-url-aether-${paxUrlAetherVersion}.jar</paxUrlAetherJar>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-pax-url-aether-and-relocated-plexus-utils</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.ops4j.pax.url</groupId>
+                                    <artifactId>pax-url-aether</artifactId>
+                                    <version>${paxUrlAetherVersion}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/original</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.plexus-utils-relocated</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <destFileName>plexus-utils-relocated.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven.antrun.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>patch-pax-url-aether-plexus-utils</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <unzip src="${project.build.directory}/original/${paxUrlAetherJar}"
+                                       dest="${project.build.directory}/bundle"/>
+
+                                <!-- drop the vulnerable plexus-utils (CVE-2025-67030); the other
+                                     shaded plexus artifacts (interpolation, cipher,
+                                     sec-dispatcher) are unaffected and stay as they are -->
+                                <delete dir="${project.build.directory}/bundle/shaded/org/codehaus/plexus/util"/>
+                                <delete dir="${project.build.directory}/bundle/META-INF/maven/org.codehaus.plexus/plexus-utils"/>
+
+                                <!-- overlay the relocated plexus-utils ${plexusUtilsVersion} plus its
+                                     Maven metadata; its META-INF/versions/** entries are
+                                     deliberately not matched, since pax-url-aether is not a
+                                     multi-release bundle -->
+                                <unzip src="${project.build.directory}/plexus-utils-relocated.jar"
+                                       dest="${project.build.directory}/bundle">
+                                    <patternset>
+                                        <include name="shaded/org/codehaus/plexus/util/**"/>
+                                        <include name="META-INF/maven/org.codehaus.plexus/plexus-utils/**"/>
+                                    </patternset>
+                                </unzip>
+
+                                <!-- repack; passing the original manifest keeps the OSGi headers
+                                     untouched and writes META-INF/MANIFEST.MF as the first entry,
+                                     which Karaf's JarInputStream based manifest readers depend
+                                     on -->
+                                <jar destfile="${project.build.directory}/${paxUrlAetherJar}"
+                                     basedir="${project.build.directory}/bundle"
+                                     manifest="${project.build.directory}/bundle/META-INF/MANIFEST.MF"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-patched-pax-url-aether</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${paxUrlAetherJar}</file>
+                                    <type>jar</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- not used for the build path itself (the jar is copied by the dependency
+             plugin above), but it makes the reactor build the relocated plexus-utils
+             first -->
+        <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>org.opennms.container.plexus-utils-relocated</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

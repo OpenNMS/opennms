@@ -79,7 +79,7 @@ public class BusinessServiceEntity {
     }
 
     @Id
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator = "opennmsSequence")
     @Column(name = "id", nullable = false)
     public Long getId() {

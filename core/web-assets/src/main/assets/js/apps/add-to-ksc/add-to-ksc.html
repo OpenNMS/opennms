@@ -1,6 +1,6 @@
 <ng-form name="kscForm">
   <div class="modal-header">
-    <h3 class="modal-title">Add {{ graphTitle }} to KSC</h3>
+    <h3 class="modal-title">Add {{ graphTitle }} to Graph Collection</h3>
   </div>
   <div class="modal-body">
     <div class="form-group">
@@ -25,14 +25,14 @@
       <p class="invalid-feedback">Time range is required.</p>
     </div>
     <div class="form-group">
-      <label class="col-form-label" for="kscReport">Target KSC Report</label>
+      <label class="col-form-label" for="kscReport">Target Graph Collection</label>
       <input required class="form-control" type="text" id="kscReport" name="kscReport" ng-model="kscReport" 
-        placeholder="Choose the target KSC Report by typing the name here..."
+        placeholder="Choose the target Graph Collection by typing the name here..."
         uib-typeahead="ksc as ksc.label for ksc in kscReports | filter:$viewValue"
         typeahead-editable="false"
         typeahead-min-length="0"
         ng-class="{ 'is-invalid' : kscForm.kscReport.$invalid }">
-      <p class="invalid-feedback">Target KSC Report is required.</p>
+      <p class="invalid-feedback">Target Graph Collection is required.</p>
     </div>
   </div>
   <div class="modal-footer">

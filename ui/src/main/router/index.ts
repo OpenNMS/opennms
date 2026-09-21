@@ -36,6 +36,8 @@ import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { computed } from 'vue'
+import { whenever } from '@vueuse/core'
 
 const { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded } = useRole()
 const menuStore = computed(() => useMenuStore())
@@ -90,6 +92,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      // configurable system-wide dashboard (NMS-19851); home route repoints here at cutover
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import('@/containers/Dashboard.vue')
     },
     {
       // for compatibility with legacy plugins
@@ -157,6 +165,106 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin/users',
+      name: 'Manage Users',
+      component: () => import('@/containers/ManageUsers.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage users.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/admin/notifications',
+      name: 'Notifications',
+      component: () => import('@/containers/Notifications.vue')
+    },
+    {
+      path: '/admin/groups',
+      name: 'Manage Groups',
+      component: () => import('@/containers/ManageGroups.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage groups.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/admin/wsman-config',
+      name: 'Manage WS-Man',
+      component: () => import('@/containers/ManageWsman.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage WS-Man configuration.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/scheduled-outages',
+      name: 'Scheduled Outages',
+      component: () => import('@/containers/ScheduledOutages.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage scheduled outages.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/scheduled-outages/edit',
+      name: 'Edit Scheduled Outage',
+      component: () => import('@/containers/ScheduledOutageEditor.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage scheduled outages.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/map',
       name: 'Map',
       component: () => import('@/containers/Map.vue'),
@@ -174,14 +282,42 @@ const router = createRouter({
       ]
     },
     {
+      // Topology type lives in the path (custom today; enlinkd-l2/bsm/... later);
+      // the specific view is a `?view=<name>` query so it's bookmarkable.
+      // Bare /topology redirects to the custom catalog.
+      path: '/topology',
+      redirect: '/topology/custom'
+    },
+    {
+      path: '/topology/:source',
+      name: 'Topology',
+      component: () => import('@/containers/Topology.vue')
+    },
+    {
       path: '/nodes',
       name: 'Nodes',
       component: () => import('@/containers/Nodes.vue')
     },
     {
-      path: '/node/:id',
+      // Constrain :id to a positive integer (1+, no leading zeros). Non-matching
+      // paths (e.g. /node/abc, /node/0) fall through to the catch-all redirect.
+      path: '/node/:id([1-9]\\d*)',
       name: 'Node Details',
+      props: true,
       component: () => import('@/containers/NodeDetails.vue')
+    },
+    {
+      path: '/adhoc-graphs',
+      name: 'AdhocGraphs',
+      component: () => import('@/containers/AdhocGraphs.vue')
+    },
+    {
+      // Graph-only view of an ad-hoc graph, rendered entirely from the query
+      // string. This is what the builder's pop-out button opens in a new tab.
+      path: '/adhoc-graphs/view',
+      name: 'AdhocGraphsView',
+      component: () => import('@/containers/AdhocGraphs.vue'),
+      props: { viewOnly: true }
     },
     {
       path: '/resource-graphs',
@@ -237,6 +373,25 @@ const router = createRouter({
         const checkRoles = () => {
           if (!adminRole.value) {
             showSnackBar({ msg: 'Must be admin to access SCV.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/system-report',
+      name: 'Generate System Report',
+      component: () => import('@/containers/SystemReport.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to generate a system report.' })
             router.push(from.path)
           }
         }
@@ -346,14 +501,25 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },
     {
+      path: '/snmp-data-collection',
+      name: 'SNMP Data Collection',
+      component: () => import('@/containers/SnmpDataCollection.vue')
+    },
+    {
+      // :id can be either a source id for an existing source, or 'create' for creating a new source
+      path: '/snmp-data-collection/source/:id',
+      name: 'SNMP Data Collection Source Detail',
+      component: () => import('@/containers/SnmpDataCollectionSourceDetail.vue')
+    },
+    {
+      path: '/snmp-data-collection/profile/:id',
+      name: 'SNMP Data Collection Profile Detail',
+      component: () => import('@/components/SnmpDataCollection/SnmpDataCollectionProfile/SnmpDataCollectionProfileDetails.vue')
+    },
+    {
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')
-    },
-    {
-      path: '/primevue-test',
-      name: 'PrimeVueTest',
-      component: () => import('@/components/PrimeVueTest.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

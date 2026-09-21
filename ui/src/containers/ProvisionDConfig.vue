@@ -1,13 +1,12 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
-      <div class="wrapper feather-container center">
-        <Snackbar />
+  <div class="onms-row">
+    <div class="onms-col-12">
+      <div class="wrapper onms-container center">
         <ConfigurationHeader
           title="Configuration"
           headline="External Requisitions and Thread Pools"
@@ -24,7 +23,8 @@
   setup
   lang="ts"
 >
-import Snackbar from '@/components/Common/Snackbar.vue'
+import { computed } from 'vue'
+
 import ConfigurationHeader from '@/components/Configuration/ConfigurationHeader.vue'
 import ConfigurationTableWrapper from '@/components/Configuration/ConfigurationTableWrapper.vue'
 import ThreadPools from '@/components/Configuration/ConfigurationThreadPools.vue'
@@ -51,12 +51,10 @@ configurationStore.getProvisionDService()
   lang="scss"
   scoped
 >
-@import '@featherds/styles/mixins/typography';
-@import '@featherds/styles/mixins/elevation';
+@import '@/styles/onms-typography';
 
 .wrapper {
   margin-top: 20px;
   margin-left: 20px;
 }
 </style>
-

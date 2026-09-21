@@ -1,35 +1,36 @@
 <?xml version="1.0"?>
 <scriptd-configuration>
-	<engine language="beanshell" className="bsh.util.BeanShellBSFEngine" extensions="bsh"/>
+	<engine language="groovy" className="org.codehaus.groovy.bsf.GroovyEngine" extensions="groovy gy"/>
 
-	<start-script language="beanshell">
+	<start-script language="groovy">
 
-		import org.opennms.core.utils.InetAddressUtils;
-		import org.opennms.netmgt.snmp.SnmpTrapBuilder;
-		import org.opennms.netmgt.config.DataSourceFactory;
-		import org.opennms.netmgt.utils.SingleResultQuerier;
-        import org.opennms.netmgt.events.api.model.IEvent;
+		import org.opennms.core.utils.InetAddressUtils
+		import org.opennms.netmgt.snmp.SnmpTrapBuilder
+		import org.opennms.netmgt.config.DataSourceFactory
+		import org.opennms.netmgt.utils.SingleResultQuerier
+		import org.opennms.netmgt.events.api.model.IEvent
 
-		log = bsf.lookupBean("log");
-		snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper();
+		// assign without 'def' so these stay in the binding shared with the
+		// stop-script, the event-script and the file evaluated below
+		log = bsf.lookupBean("log")
+		snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper()
 
-        source("${install.dir}/etc/scriptd-event-forwarder.bsh");
- 
+		evaluate(new File('${install.dir}/etc/scriptd-event-forwarder.groovy'))
+
 	</start-script>
 
-	<stop-script language="beanshell">
+	<stop-script language="groovy">
 
-		snmpTrapHelper.stop();
-		log.debug("executing a stop script");
+		snmpTrapHelper.stop()
+		log.debug("executing a stop script")
 
 	</stop-script>
 
-	<event-script language="beanshell">
+	<event-script language="groovy">
 
-	    event = bsf.lookupBean("event");
-        forwardEvent(event);
+		event = bsf.lookupBean("event")
+		forwardEvent(event)
 
 	</event-script>
 
 </scriptd-configuration>
-

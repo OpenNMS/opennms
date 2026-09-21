@@ -44,7 +44,7 @@ public class BmpBaseAttribute implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "bmpBaseAttrsSequence")
-    @SequenceGenerator(name = "bmpBaseAttrsSequence", sequenceName = "baseattrsnxtid")
+    @SequenceGenerator(name = "bmpBaseAttrsSequence", sequenceName = "baseattrsnxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

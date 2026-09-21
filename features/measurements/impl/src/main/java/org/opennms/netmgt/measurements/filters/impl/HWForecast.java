@@ -24,6 +24,8 @@ package org.opennms.netmgt.measurements.filters.impl;
 import java.util.Date;
 
 
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
@@ -60,14 +62,24 @@ public class HWForecast implements Filter {
     @FilterParam(key="periodInSeconds", required=true, displayName="Period", description="Size of a period in seconds.")
     private long m_periodInSeconds;
 
+    @FilterParam(key="confidenceLevel", value="0.95", displayName="Level", description="Probability used for confidence bounds. Set this to 0 in order to disable the bounds.")
+    private double m_confidenceLevel;
+
     protected HWForecast() {}
 
     public HWForecast(String outputPrefix, String inputColumn,
             int numPeriodsToForecast, long periodInSeconds) {
+        this(outputPrefix, inputColumn, numPeriodsToForecast, periodInSeconds, 0.95);
+    }
+
+    public HWForecast(String outputPrefix, String inputColumn,
+            int numPeriodsToForecast, long periodInSeconds,
+            double confidenceLevel) {
         m_outputPrefix = outputPrefix;
         m_inputColumn = inputColumn;
         m_numPeriodsToForecast = numPeriodsToForecast;
         m_periodInSeconds = periodInSeconds;
+        m_confidenceLevel = confidenceLevel;
     }
 
     @Override
@@ -107,19 +119,50 @@ public class HWForecast implements Filter {
                 .setInitTrainingMethod(HoltWintersTrainingMethod.SIMPLE);
 
         var subject = new HoltWintersPointForecaster(params);
-        long firstIndexForTraining = Math.max(limits.firstRowWithValues, (limits.lastRowWithValues - (numSamplesPerPeriod * 2L)));
+        // Use all available history. The SIMPLE training method consumes the first
+        // 2 * frequency observations; anything beyond that feeds the online algorithm,
+        // which is what produces meaningful forecasts (and therefore meaningful
+        // residuals for the confidence-bound calculation below).
+        long firstIndexForTraining = limits.firstRowWithValues;
 
+        // Collect one-step-ahead residuals during training to derive a Gaussian prediction
+        // interval. PointForecast.getValue() returns the forecast made BEFORE observing the
+        // new sample, so actual - forecast is the prediction error for the current sample.
+        // Warmup samples are skipped because the model hasn't learned the seasonal state yet.
+        DescriptiveStatistics residuals = new DescriptiveStatistics();
         double lastValue = Double.NaN;
         for (long i = firstIndexForTraining; i < limits.lastRowWithValues; i++) {
             lastValue = table.get(i, m_inputColumn);
-            subject.forecast(lastValue);
+            PointForecast fc = subject.forecast(lastValue);
+            if (!fc.isWarmup()) {
+                residuals.addValue(lastValue - fc.getValue());
+            }
         }
+
+        double sigma = residuals.getN() > 1 ? residuals.getStandardDeviation() : 0.0;
+        double z = 0.0;
+        if (m_confidenceLevel > 0.0 && m_confidenceLevel < 1.0) {
+            z = new NormalDistribution().inverseCumulativeProbability(1.0 - (1.0 - m_confidenceLevel) / 2.0);
+        }
+        boolean emitBounds = z > 0.0;
 
         for (long i = limits.lastRowWithValues + 1; i <= (limits.lastRowWithValues + numForecasts); i++) {
             PointForecast forecast = subject.forecast(lastValue);
             long idxForecast = i - limits.lastRowWithValues;
-            table.put(i, m_outputPrefix + "Fit", forecast.getValue());
+            double fitValue = forecast.getValue();
+            table.put(i, m_outputPrefix + "Fit", fitValue);
             table.put(i, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
+
+            if (emitBounds) {
+                // Variance grows with forecast horizon, but σ·√h on a pure-random-walk
+                // assumption wildly overstates uncertainty for the near-stationary data
+                // typical of monitoring. Cap the horizon at one period so bounds widen
+                // briefly and then plateau rather than fanning open without bound.
+                double horizon = Math.min((double) idxForecast, (double) numSamplesPerPeriod);
+                double delta = z * sigma * Math.sqrt(horizon);
+                table.put(i, m_outputPrefix + "Lwr", fitValue - delta);
+                table.put(i, m_outputPrefix + "Upr", fitValue + delta);
+            }
 
             // Save value for next iteration
             lastValue = forecast.getValue();

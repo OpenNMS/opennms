@@ -1,0 +1,68 @@
+
+= Geolocation API
+
+The `/geolocation` endpoint returns nodes with their geographic coordinates and computed status (for the geographical map), and the map's tile-server configuration. It is mounted under `/opennms/api/v2/geolocation` and produces/consumes `application/json` and `application/xml`.
+
+== GETs (reading data)
+
+[caption=]
+.Geolocation API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/geolocation/config` | Returns the map/tile-server configuration used to render the geographic map: `tileServerName` (optional), `tileServerUrl` (Leaflet tile-layer URL), and `options` (a map of Leaflet tile-layer options, typically including `attribution`). Returns `503` if no provider is registered.
+
+|===
+
+== POSTs (querying data)
+
+`POST` consumes `application/json` and returns the matching nodes.
+
+[caption=]
+.Geolocation API POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/geolocation` a|
+Returns the list of nodes with geographic coordinates and computed status, filtered by the supplied query.
+
+Body (`GeolocationQueryDTO`):
+
+* `strategy` (String): status-calculation strategy — `Alarms` or `Outages`.
+* `severityFilter` (String): minimum severity to include — `Normal`, `Warning`, `Minor`, `Major`, or `Critical`.
+* `includeAcknowledgedAlarms` (boolean, default `false`).
+
+Returns `200 OK` with a list of `GeolocationInfo` (node info, coordinates, severity, address, unacknowledged-alarm count), `204 No Content` if empty, `400 Bad Request` for an invalid strategy/severity, or `503` if no provider is registered.
+
+|===
+
+== Examples using cURL
+
+.Fetch the map/tile-server configuration
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/geolocation/config"
+----
+
+.Query nodes by status
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"strategy":"Alarms","severityFilter":"Minor","includeAcknowledgedAlarms":false}' \
+  "http://127.0.0.1:8980/opennms/api/v2/geolocation"
+----
+
+.Response
+[source,json]
+----
+[
+  {
+    "nodeInfo": {"nodeId":1,"nodeLabel":"router-01"},
+    "coordinates": {"longitude":-79.06,"latitude":35.72},
+    "severityInfo": {"id":5,"label":"Major"},
+    "alarmUnackedCount": 3
+  }
+]
+----

@@ -10,8 +10,7 @@ Whether it is a MIB-2 `host-resources` storage table, a Brocade Fibre Channel po
 == Create a resourceType definition
 
 The process to create a custom resourceType definition is the same as configuring your data collection settings, with only a few small differences.
-First, you must make sure that a resourceType element exists in `datacollection-config.xml` to specify the custom resource type.
-This element needs to be placed before the "groups" element.
+First, you must make sure that a resourceType is defined for it through *Admin -> Manage SNMP Data Collection Config* (the underlying schema is shown below).
 
 For the MIB-2 host resources storage table, {page-component-title} uses the following definition:
 
@@ -27,7 +26,7 @@ For the MIB-2 host resources storage table, {page-component-title} uses the foll
 === Name attribute
 
 The name attribute ("hrStorageIndex" in the example above) is not magical in any way; it does not need to correlate to a MIB that OpenNMS has knowledge of.
-`datacollection-config.xml` and `snmp-graph.properties` use this attribute to refer to the custom resource type.
+Other parts of the SNMP data collection config and `snmp-graph.properties` use this attribute to refer to the custom resource type.
 
 To ensure that all resource type data stays separate, all RRD data goes into a directory based on this attribute.
 For example, for node 1, all data for the example resource type goes into `$\{OPENNMS_HOME}/share/rrd/snmp/1/hrStorageIndex`.
@@ -68,10 +67,10 @@ This code snippet shows what data is collected for the `hrStorageIndex` resource
 [[system-def]]
 == Add the group to a system definition
 
-{page-component-title} needs to be able to map a remote SNMP agent's system object ID to a set of data collection groups in `datacollection-config.xml`.
+{page-component-title} needs to be able to map a remote SNMP agent's system object ID to a set of data collection groups.
 This ensures that {page-component-title} knows what it should gather for different types of SNMP agents.
 
-You must add any newly created collection groups to one or more system definitions in `datacollection-config.xml`.
+You must add any newly created collection groups to one or more system definitions through *Admin -> Manage SNMP Data Collection Config*.
 Otherwise, {page-component-title} will not collect data for that collection group.
 
 This code snippet shows that the group for `mib2-host-resources-storage` was added to the `Net-SNMP` definition, which matches any agent that has a system object ID that begins with `.1.3.6.1.4.8072.3.`:

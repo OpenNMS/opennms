@@ -30,8 +30,8 @@ export const sortFilesAndFolders = (files: IFile[]): IFile[] => {
     }
   }
 
-  const folders = files.filter((x) => x.children).sort((a, b) => a.name.localeCompare(b.name))
-  const noFolders = files.filter((x) => !x.children).sort((a, b) => a.name.localeCompare(b.name))
+  const folders = files.filter(x => x.children).sort((a, b) => a.name.localeCompare(b.name))
+  const noFolders = files.filter(x => !x.children).sort((a, b) => a.name.localeCompare(b.name))
 
   return [...folders, ...noFolders]
 }
@@ -65,7 +65,7 @@ const addFileOrCreateFolder = (folder: IFile[], file: string, fullPath: string):
     const folderName = fileNamePieces[0]
     fileNamePieces.shift()
     const remaining = fileNamePieces.join('/')
-    const existingFolder = folder.filter((x) => x.name === folderName)[0] as Required<IFile>
+    const existingFolder = folder.filter(x => x.name === folderName)[0] as Required<IFile>
 
     if (existingFolder) {
       addFileOrCreateFolder(existingFolder.children, remaining, fullPath)

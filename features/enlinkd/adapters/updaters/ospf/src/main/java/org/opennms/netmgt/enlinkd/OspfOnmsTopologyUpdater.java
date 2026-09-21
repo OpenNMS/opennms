@@ -87,20 +87,20 @@ public class OspfOnmsTopologyUpdater extends TopologyUpdater {
         Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
         OnmsTopology topology = new OnmsTopology();
         for (OspfElement element: m_ospfTopologyService.findAllOspfElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ipMap.get(element.getNode().getId())));
+            topology.addVertex(create(nodeMap.get(element.getNode().getId()),ipMap.get(element.getNode().getId())));
         }
         
         for(TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity> pair : m_ospfTopologyService.match()) {
             OspfLinkTopologyEntity left = pair.getLeft();
             if (topology.getVertex(left.getNodeIdAsString()) == null) {
-                topology.getVertices().add(create(nodeMap.get(left.getNodeId()),ipMap.get(left.getNodeId())));                
+                topology.addVertex(create(nodeMap.get(left.getNodeId()),ipMap.get(left.getNodeId())));                
             }
             OspfLinkTopologyEntity right = pair.getRight();
             if (topology.getVertex(right.getNodeIdAsString()) == null) {
-                topology.getVertices().add(create(nodeMap.get(right.getNodeId()),ipMap.get(right.getNodeId())));                
+                topology.addVertex(create(nodeMap.get(right.getNodeId()),ipMap.get(right.getNodeId())));                
             }
             
-            topology.getEdges().add(OnmsTopologyEdge.create(
+            topology.addEdge(OnmsTopologyEdge.create(
                                                             Topology.getDefaultEdgeId(left.getId(), right.getId()),
                                                             create(
                                                                    topology.getVertex(left.getNodeIdAsString()), 

@@ -1,23 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-08-25T10:49:08 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceAvailabilityReport_subreport1" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="11b570a9-5266-4072-a8c1-1431b0c149b1">
+<jasperReport name="InterfaceAvailabilityReport_subreport1" language="java" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="11b570a9-5266-4072-a8c1-1431b0c149b1">
 	<property name="ireport.zoom" value="2.2578957202151093"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Warning/Critical">
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" backcolor="#FF3333">
 			<conditionExpression><![CDATA[$F{avail_percent} < $P{AVAILABILITY_CRITICAL}]]></conditionExpression>
-			<style mode="Opaque" backcolor="#FF3333"/>
 		</conditionalStyle>
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" backcolor="#FF9900">
 			<conditionExpression><![CDATA[$F{avail_percent} < $P{AVAILABILITY_WARNING}]]></conditionExpression>
-			<style mode="Opaque" backcolor="#FF9900"/>
 		</conditionalStyle>
 	</style>
 	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
-		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<description><![CDATA[The directory where all reports can be found]]></description>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="NODE_ID" class="java.lang.Integer">
@@ -34,20 +29,19 @@
 	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+	<parameter name="TIME_RANGE" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false">
+	<parameter name="AVAILABILITY_WARNING" forPrompting="false" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[98.0]]></defaultValueExpression>
 	</parameter>
-	<parameter name="AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false">
+	<parameter name="AVAILABILITY_CRITICAL" forPrompting="false" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[95.0]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+	<parameter name="START_TIME_STRING" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
-	<queryString>
-		<![CDATA[SELECT
+	<query language="sql"><![CDATA[SELECT
 	interface_outages.nodelabel,
 	interface_outages.ipaddr,
 	interface_outages.nodeid,
@@ -98,8 +92,7 @@ GROUP BY
 	interface_outages.ipaddr,
 	interface_outages.nodeid,
 	interface_outages.nodelabel,
-	interface_outages.avail_total]]>
-	</queryString>
+	interface_outages.avail_total]]></query>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="ipaddr" class="java.lang.String"/>
 	<field name="nodeid" class="java.lang.Integer"/>
@@ -111,87 +104,48 @@ GROUP BY
 	<field name="avail_percent" class="java.lang.Double"/>
 	<field name="outages_percent" class="java.lang.Double"/>
 	<field name="avail_total" class="java.lang.Double"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<pageHeader>
-		<band height="40" splitType="Stretch">
-			<rectangle radius="5">
-				<reportElement mode="Opaque" x="0" y="0" width="555" height="20" forecolor="#F2F2F2" backcolor="#F2F2F2" uuid="1630075f-5b83-4eb7-b031-ca0c02f25b9f"/>
-			</rectangle>
-			<textField>
-				<reportElement style="Sub-header" x="0" y="0" width="555" height="20" uuid="ce1756ec-9aec-42dd-a757-62e14de3e748"/>
-				<textFieldExpression><![CDATA["Node " + $P{NODE_LABEL}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="333" y="20" width="72" height="20" uuid="96ec70c4-8351-4ed5-a58b-8ac5427b13b0"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Outage (hours)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="189" y="20" width="72" height="20" uuid="c186cfe5-da58-45b4-893a-ff22d456cf8b"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Outage Count]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="405" y="20" width="72" height="20" uuid="4039ead3-94d5-43de-b778-bf4fb3a97db0"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Outage (%)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="477" y="20" width="78" height="20" uuid="be8eea95-0657-4db1-8211-4e1cf269915f"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Availability (%)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="261" y="20" width="72" height="20" uuid="90ab0386-a4ba-4ea3-964c-f986636c48d8"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[MTTR (hours)]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<pageHeader height="40" splitType="Stretch">
+		<element kind="rectangle" uuid="1630075f-5b83-4eb7-b031-ca0c02f25b9f" mode="Opaque" x="0" y="0" width="555" height="20" forecolor="#F2F2F2" backcolor="#F2F2F2" radius="5"/>
+		<element kind="textField" uuid="ce1756ec-9aec-42dd-a757-62e14de3e748" x="0" y="0" width="555" height="20" style="Sub-header">
+			<expression><![CDATA["Node " + $P{NODE_LABEL}]]></expression>
+		</element>
+		<element kind="staticText" uuid="96ec70c4-8351-4ed5-a58b-8ac5427b13b0" x="333" y="20" width="72" height="20" fontSize="8.0" hTextAlign="Center" vTextAlign="Bottom">
+			<text><![CDATA[Outage (hours)]]></text>
+		</element>
+		<element kind="staticText" uuid="c186cfe5-da58-45b4-893a-ff22d456cf8b" x="189" y="20" width="72" height="20" fontSize="8.0" hTextAlign="Center" vTextAlign="Bottom">
+			<text><![CDATA[Outage Count]]></text>
+		</element>
+		<element kind="staticText" uuid="4039ead3-94d5-43de-b778-bf4fb3a97db0" x="405" y="20" width="72" height="20" fontSize="8.0" hTextAlign="Center" vTextAlign="Bottom">
+			<text><![CDATA[Outage (%)]]></text>
+		</element>
+		<element kind="staticText" uuid="be8eea95-0657-4db1-8211-4e1cf269915f" x="477" y="20" width="78" height="20" fontSize="8.0" hTextAlign="Center" vTextAlign="Bottom">
+			<text><![CDATA[Availability (%)]]></text>
+		</element>
+		<element kind="staticText" uuid="90ab0386-a4ba-4ea3-964c-f986636c48d8" x="261" y="20" width="72" height="20" fontSize="8.0" hTextAlign="Center" vTextAlign="Bottom">
+			<text><![CDATA[MTTR (hours)]]></text>
+		</element>
 	</pageHeader>
 	<detail>
 		<band height="22">
-			<textField>
-				<reportElement style="Warning/Critical" x="0" y="2" width="189" height="20" uuid="7173f627-d00b-496f-b76f-738aca9bd10a"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{ipaddr}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="Warning/Critical" x="189" y="2" width="72" height="20" uuid="66ec70ca-c848-4db3-9702-6f20710c9a2a"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{outages_count}]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="261" y="2" width="72" height="20" uuid="302d005a-e309-4dac-816e-77bfbb936aad"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="333" y="2" width="72" height="20" uuid="33ea8302-647b-41f9-8c51-6c2b8abdde44"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="405" y="2" width="72" height="20" uuid="98651cc4-8e87-4de8-8afd-424abed23054"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{outages_percent}]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="477" y="2" width="78" height="20" uuid="13f1db76-22b7-41c7-a036-a7bfd152f66a"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{avail_percent}]]></textFieldExpression>
-			</textField>
+			<element kind="textField" uuid="7173f627-d00b-496f-b76f-738aca9bd10a" x="0" y="2" width="189" height="20" vTextAlign="Middle" style="Warning/Critical">
+				<expression><![CDATA[$F{ipaddr}]]></expression>
+			</element>
+			<element kind="textField" uuid="66ec70ca-c848-4db3-9702-6f20710c9a2a" x="189" y="2" width="72" height="20" hTextAlign="Center" vTextAlign="Middle" style="Warning/Critical">
+				<expression><![CDATA[$F{outages_count}]]></expression>
+			</element>
+			<element kind="textField" uuid="302d005a-e309-4dac-816e-77bfbb936aad" x="261" y="2" width="72" height="20" pattern="###0.00" hTextAlign="Center" vTextAlign="Middle" style="Warning/Critical">
+				<expression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></expression>
+			</element>
+			<element kind="textField" uuid="33ea8302-647b-41f9-8c51-6c2b8abdde44" x="333" y="2" width="72" height="20" pattern="###0.00" hTextAlign="Center" vTextAlign="Middle" style="Warning/Critical">
+				<expression><![CDATA[$F{outages_seconds}/new Double("3600")]]></expression>
+			</element>
+			<element kind="textField" uuid="98651cc4-8e87-4de8-8afd-424abed23054" x="405" y="2" width="72" height="20" pattern="###0.00" hTextAlign="Center" vTextAlign="Middle" style="Warning/Critical">
+				<expression><![CDATA[$F{outages_percent}]]></expression>
+			</element>
+			<element kind="textField" uuid="13f1db76-22b7-41c7-a036-a7bfd152f66a" x="477" y="2" width="78" height="20" pattern="###0.00" hTextAlign="Center" vTextAlign="Middle" style="Warning/Critical">
+				<expression><![CDATA[$F{avail_percent}]]></expression>
+			</element>
 		</band>
 	</detail>
 </jasperReport>

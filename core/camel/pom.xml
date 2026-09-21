@@ -51,6 +51,12 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <!-- XmlFrameDecoderFactory; camel-netty4 2.x used to provide this transitively -->
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-xml</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi.core</artifactId>
       <scope>provided</scope>

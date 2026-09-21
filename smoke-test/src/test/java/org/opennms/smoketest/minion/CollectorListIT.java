@@ -64,16 +64,12 @@ public class CollectorListIT {
             "org.opennms.netmgt.collectd.Jsr160Collector",
             "org.opennms.netmgt.collectd.VmwareCimCollector",
             "org.opennms.netmgt.collectd.VmwareCollector",
-            "org.opennms.netmgt.collectd.WmiCollector",
             "org.opennms.netmgt.collectd.WsManCollector",
             "org.opennms.netmgt.collectd.prometheus.PrometheusCollector",
             "org.opennms.protocols.xml.collector.XmlCollector")
             .build();
 
-    private ImmutableSet<String> expectedMinionCollectors = ImmutableSet.<String> builder().add(
-            "org.opennms.protocols.nsclient.collector.NSClientCollector")
-            .addAll(commonCollectors)
-            .build();
+    private ImmutableSet<String> expectedMinionCollectors = commonCollectors;
 
     private ImmutableSet<String> expectedOpenNMSCollectors = ImmutableSet.<String> builder().add(
             "org.opennms.netmgt.collectd.SnmpCollector")

@@ -48,10 +48,6 @@ public class ServiceParameters {
         COLLECTION("collection"),
         @Deprecated
         HTTP_COLLECTION("http-collection"),
-        @Deprecated
-        NSCLIENT_COLLECTION("nsclient-collection"),
-        @Deprecated
-        WMI_COLLECTION("wmi-collection"),
         PORT("port"),
         RETRY("retry"),
         RETRIES("retries"),
@@ -190,10 +186,6 @@ public class ServiceParameters {
             return ParameterMap.getKeyedString(getParameters(), ParameterName.COLLECTION.toString(), "default");
         } else if(getParameters().containsKey("http-collection")) {
             return ParameterMap.getKeyedString(getParameters(), ParameterName.HTTP_COLLECTION.toString(), "default");
-        } else if(getParameters().containsKey("nsclient-collection")) {
-            return ParameterMap.getKeyedString(getParameters(), ParameterName.NSCLIENT_COLLECTION.toString(), "default");
-        } else if(m_parameters.containsKey("wmi-collection")) {
-            return ParameterMap.getKeyedString(getParameters(), ParameterName.WMI_COLLECTION.toString(), "default");
         } else {
             return "default";
         }

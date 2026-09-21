@@ -199,7 +199,7 @@
 	final int month = today.get(Calendar.MONTH) + 1;
 	final int year = today.get(Calendar.YEAR);
 
-	WriteablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
+	WriteablePollOutagesDao pollOutagesDao = BeanUtils.getBean("daoContext", "pollOutagesDao",
 			WriteablePollOutagesDao.class);
 	Outage theOutage;
 
@@ -281,7 +281,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 		enabledOutages.add("notifications");
 	}
 
-	WriteableThreshdDao threshdDao = BeanUtils.getBean("thresholdingContext", "threshdDao", WriteableThreshdDao.class);
+	WriteableThreshdDao threshdDao = BeanUtils.getBean("daoContext", "threshdDao", WriteableThreshdDao.class);
 	
 	// ******* Threshd outages config *********
 	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();

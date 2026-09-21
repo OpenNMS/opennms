@@ -200,7 +200,7 @@
       </div>
       <div class="card-body">
         <ul class="list-unstyled mb-0">
-            <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
+            <li><a href="ui/index.html#/scheduled-outages">Configure Scheduled Outages</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
             <%=getAdminPageNavEntries("service-monitoring")%>
         </ul>
@@ -213,7 +213,7 @@
       </div>
       <div class="card-body">
         <ul class="list-unstyled mb-0">
-            <li><a href="admin/manageSnmpCollections.jsp">Configure SNMP Collections and Data Collection Groups</a></li>
+            <li><a href="ui/index.html#/snmp-data-collection">Manage SNMP Data Collection Config</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
             <li><a href="admin/thresholds/index.htm">Configure Thresholds</a></li>
         </ul>

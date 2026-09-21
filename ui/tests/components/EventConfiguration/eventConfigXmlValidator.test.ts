@@ -233,17 +233,27 @@ describe('eventConfigXmlValidator', () => {
         parseFromString() {
           return {
             querySelector: (selector: string) => {
-              if (selector === 'parsererror') return null
+              if (selector === 'parsererror') {
+                return null
+              }
               if (selector === 'events') {
                 return {
                   getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
                   querySelectorAll: () => [
                     {
                       querySelector: (sel: string) => {
-                        if (sel === 'uei') return { textContent: 'uei.opennms.org/test' }
-                        if (sel === 'event-label') return { textContent: 'Test' }
-                        if (sel === 'severity') return { textContent: 'Minor' }
-                        if (sel === 'descr') return { textContent: 'Description' }
+                        if (sel === 'uei') {
+                          return { textContent: 'uei.opennms.org/test' }
+                        }
+                        if (sel === 'event-label') {
+                          return { textContent: 'Test' }
+                        }
+                        if (sel === 'severity') {
+                          return { textContent: 'Minor' }
+                        }
+                        if (sel === 'descr') {
+                          return { textContent: 'Description' }
+                        }
                         return null
                       }
                     }
@@ -348,7 +358,7 @@ describe('eventConfigXmlValidator', () => {
 
       // Mock XMLValidator to return false for this case
       const { XMLValidator } = await import('fast-xml-parser')
-      vi.spyOn(XMLValidator, 'validate').mockReturnValue({ err: { msg: 'Duplicate attribute' } } as ValidationError)
+      vi.spyOn(XMLValidator, 'validate').mockReturnValue({ err: { msg: 'Duplicate attribute' }} as ValidationError)
       const result = await validateEventConfigFile(mockFile)
       expect(result).toEqual({
         isValid: false,
@@ -384,7 +394,9 @@ describe('eventConfigXmlValidator', () => {
         parseFromString() {
           return {
             querySelector: (selector: string) => {
-              if (selector === 'parsererror') return null
+              if (selector === 'parsererror') {
+                return null
+              }
               if (selector === 'events') {
                 return {
                   getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
@@ -394,8 +406,12 @@ describe('eventConfigXmlValidator', () => {
                         tagName: 'event',
                         querySelector: () => {
                           callCount++
-                          if (callCount === 1) return { textContent: 'uei' } // uei ok
-                          if (callCount === 2) throw new Error('Query error') // event-label throws
+                          if (callCount === 1) {
+                            return { textContent: 'uei' }
+                          } // uei ok
+                          if (callCount === 2) {
+                            throw new Error('Query error')
+                          } // event-label throws
                           return { textContent: 'Minor' }
                         }
                       }
@@ -600,4 +616,3 @@ describe('eventConfigXmlValidator', () => {
     })
   })
 })
-

@@ -114,10 +114,6 @@
          <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
          <parameter key="thresholding-enabled" value="true" />
       </service>
-      <service name="WMI" interval="300000" user-defined="false" status="off">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
       <service name="WS-Man" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
          <parameter key="thresholding-enabled" value="true" />
@@ -154,7 +150,6 @@
    <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector" />
    <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector" />
    <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector" />
-   <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector" />
    <collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector" />
    <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector" />
    <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector" />

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!-- NMS-18291: 64-bit UCD-SNMP memory gauges, applied to already-migrated
+     databases by SnmpDataCollectionDefaultsUpdate.
+
+     Fragment semantics (see SnmpDataCollectionDefaultsUpdate#applyFragment):
+       * the datacollection-group name selects the target collection source;
+       * each <group> is inserted if no MIB group of that name exists there;
+       * each <systemDef> is a reference stub: of its includeGroup entries, only
+         those naming a <group> DEFINED IN THIS FRAGMENT are added to the
+         existing systemDef of the same name. Other entries (here: ucd-memory)
+         are position anchors only and are never (re-)added, so entries an
+         administrator removed stay removed.
+
+     The <group> content must stay identical to the ucd-memory-X group shipped
+     in etc/datacollection/netsnmp.xml so the XML-migration path and the
+     DB-delta path produce the same rows (enforced by
+     SnmpDataCollectionDefaultsUpdateTest). -->
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Net-SNMP">
+   <group name="ucd-memory-X" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.2021.4.18" instance="0" alias="memTotalSwapX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.19" instance="0" alias="memAvailSwapX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.20" instance="0" alias="memTotalRealX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.21" instance="0" alias="memAvailRealX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.22" instance="0" alias="memTotalFreeX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.24" instance="0" alias="memSharedX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.25" instance="0" alias="memBufferX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.26" instance="0" alias="memCachedX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.27" instance="0" alias="memSysAvail" type="integer"/>
+   </group>
+   <systemDef name="Net-SNMP">
+      <collect>
+         <includeGroup>ucd-memory</includeGroup>
+         <includeGroup>ucd-memory-X</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

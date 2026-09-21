@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -77,33 +78,238 @@ public class BSFNotificationStrategyIT {
     public void setUp() {
         MockLogAppender.setupLogging();
 
-        // Add nodes to the database - we reference node with id 1
+        // Add nodes to the database; node ids are sequence-assigned, so tests
+        // must reference databasePopulator.getNode1().getId() rather than 1
         databasePopulator.populateDatabase();
+    }
+
+    private String node1Id() {
+        return String.valueOf(databasePopulator.getNode1().getId());
     }
 
     @After
     public void tearDown() {
+        // the temporary database outlives individual test methods
+        databasePopulator.resetDatabase();
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
     /**
-     * Verifies that we can invoke a BSH script and that
+     * Verifies that we can invoke a Groovy script and that
      * the an instance of the appropriate OnmsNode object is
-     * passed to the script. 
+     * passed to the script.
      */
     @Test
     public void canUseNodeInScript() throws IOException {
-        // Create a simple BSH script that verifies the node bean
-        File notifyBsh = tempFolder.newFile("notify.bsh");
-        FileUtils.write(notifyBsh, "results.put(\"status\", node.id == 1 ? \"OK\" : \"NOT_OK\");");
+        // Create a simple Groovy script that verifies the node bean
+        File notifyScript = tempFolder.newFile("notify.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", node.id == " + node1Id() + " ? \"OK\" : \"NOT_OK\")");
 
         List<Argument> arguments = new ArrayList<>();
         // Point to our script
-        arguments.add(new Argument("file-name", null, notifyBsh.getAbsolutePath(), false));
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
         // Reference node 1
-        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, "1", false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
 
         // Should succeed
         assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void canEvalScript() throws IOException {
+        // Under run-type=eval the script's last expression becomes the status
+        File notifyScript = tempFolder.newFile("notify-eval.groovy");
+        FileUtils.write(notifyScript, "node.id == " + node1Id() + " ? \"OK\" : \"NOT_OK\"");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
+        arguments.add(new Argument("run-type", null, "eval", false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void beanshellScriptIsNoLongerSupported() throws IOException {
+        // BeanShell was removed along with BSF; a .bsh script must now fail
+        // cleanly with a diagnosable message rather than silently doing nothing
+        File notifyBsh = tempFolder.newFile("notify-legacy.bsh");
+        FileUtils.write(notifyBsh, "results.put(\"status\", \"OK\");");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyBsh.getAbsolutePath(), false));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.ERROR, "No JSR-223 script engine found");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void beanshellLangClassIsNoLongerSupported() throws IOException {
+        // likewise for an explicit lang-class left over from a BSF-era config
+        File notifyScript = tempFolder.newFile("notify-legacy-lang.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", \"OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
+        arguments.add(new Argument("lang-class", null, "beanshell", false));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.ERROR, "No JSR-223 script engine found");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void canUseGroovyScript() throws IOException {
+        File notifyGroovy = tempFolder.newFile("notify.groovy");
+        FileUtils.write(notifyGroovy, "results.put(\"status\", node.getId() == " + node1Id() + " ? \"OK\" : \"NOT_OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyGroovy.getAbsolutePath(), false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void canResolveGyExtensionAsGroovy() throws IOException {
+        // BSF registered .gy for Groovy; the JSR-223 Groovy engine does not
+        File notifyGy = tempFolder.newFile("notify.gy");
+        FileUtils.write(notifyGy, "results.put(\"status\", node.getId() == " + node1Id() + " ? \"OK\" : \"NOT_OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyGy.getAbsolutePath(), false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void canResolveEngineViaLangClass() throws IOException {
+        // No usable extension; lang-class selects the engine by JSR-223 name
+        File notifyTxt = tempFolder.newFile("notify.txt");
+        FileUtils.write(notifyTxt, "results.put(\"status\", node.id == " + node1Id() + " ? \"OK\" : \"NOT_OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyTxt.getAbsolutePath(), false));
+        arguments.add(new Argument("lang-class", null, "groovy", false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void nullVariablesStayDefined() throws IOException {
+        // no -nodeid argument: node, node_label, foreign_source etc. are null.
+        // They must still be *defined* so scripts can test them against null,
+        // rather than failing with a missing-property error.
+        File notifyScript = tempFolder.newFile("notify-null.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", (node == null && foreign_source == null) ? \"OK\" : \"NOT_OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void fileNameFromSubstitutionWorks() throws IOException {
+        // notifd passes "" as the value for switches without a notification
+        // parameter; the command's <substitution> must be honored then
+        File notifyScript = tempFolder.newFile("notify-subst.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", node.id == " + node1Id() + " ? \"OK\" : \"NOT_OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", notifyScript.getAbsolutePath(), "", false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void missingFileNameArgumentReturnsFailure() {
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "No 'file-name' argument supplied");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void editedGroovyScriptIsRecompiled() throws IOException {
+        // exercises the compiled-script cache: reuse, then mtime invalidation
+        File notifyGroovy = tempFolder.newFile("notify-cache.groovy");
+        FileUtils.write(notifyGroovy, "results.put(\"status\", \"OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyGroovy.getAbsolutePath(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+        // second run served from the cache
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+
+        FileUtils.write(notifyGroovy, "results.put(\"status\", \"NOT_OK\")");
+        // mtime granularity can swallow quick successive writes; force it
+        assertEquals(true, notifyGroovy.setLastModified(notifyGroovy.lastModified() + 2000));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "did not indicate successful notification");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void missingScriptFileReturnsFailure() {
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, new File(tempFolder.getRoot(), "no-such-script.groovy").getAbsolutePath(), false));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "Cannot locate or read script file");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void nonOkStatusReturnsFailure() throws IOException {
+        File notifyScript = tempFolder.newFile("notify-nok.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", \"NOT_OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "did not indicate successful notification");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void invalidRunTypeReturnsFailure() throws IOException {
+        File notifyScript = tempFolder.newFile("notify-bogus.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", \"OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
+        arguments.add(new Argument("run-type", null, "bogus", false));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "Invalid run-type parameter value");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void deprecatedBsfEngineSwitchWarnsButStillWorks() throws IOException {
+        File notifyScript = tempFolder.newFile("notify-deprecated.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", node.id == " + node1Id() + " ? \"OK\" : \"NOT_OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
+        arguments.add(new Argument("lang-class", null, "groovy", false));
+        // a genuine BSF-era value: it must be ignored, not acted on
+        arguments.add(new Argument("bsf-engine", null, "bsh.util.BeanShellBSFEngine", false));
+        arguments.add(new Argument("file-extensions", null, "bsh", false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "'bsf-engine' and 'file-extensions' switches are no longer supported");
+        MockLogAppender.resetState();
     }
 }

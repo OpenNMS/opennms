@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { SearchResultResponse, SearchResultsByContext } from '@/types'
+import { ref } from 'vue'
 
 /**
  * Could be moved to a Services/Helper area.
@@ -34,19 +35,19 @@ const makeArrayUnique = (anyArray: Array<string>) => {
 }
 
 /**
- * 
+ *
  * @param responses A list of search results provided by OpenNMS API.Search()
  * @returns The same search results, but organized by Context Label (Alarm, Node)
  */
 const buildResponsesByLabel = (responses: SearchResultResponse[] | false) => {
-  const responsesByLabel: Array<{results:SearchResultResponse[],label:string}> = []
+  const responsesByLabel: Array<{ results:SearchResultResponse[], label:string }> = []
 
-  if (responses){
-    const listOfAllContexts = responses.map((i) => i.context.name)
+  if (responses) {
+    const listOfAllContexts = responses.map(i => i.context.name)
     const contextList = makeArrayUnique(listOfAllContexts)
 
-    for (const label of contextList){
-      responsesByLabel.push({label,results:responses.filter((res) => res.context.name === label)})
+    for (const label of contextList) {
+      responsesByLabel.push({ label, results:responses.filter(res => res.context.name === label) })
     }
   }
   return responsesByLabel

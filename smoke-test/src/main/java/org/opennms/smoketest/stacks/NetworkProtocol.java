@@ -35,6 +35,7 @@ import java.util.Objects;
 public enum NetworkProtocol {
     SSH(TCP),
     HTTP(TCP),
+    HTTPS(TCP),
 
     // Java Debug Wire Protocol
     JDWP(TCP),

@@ -81,7 +81,7 @@ public class EchoRpcBlueprintIT extends org.opennms.core.rpc.camel.EchoRpcBluepr
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:OSGI-INF/blueprint/blueprint-rpc-server.xml";
+        return "OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
 }

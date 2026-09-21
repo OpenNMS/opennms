@@ -1,0 +1,44 @@
+
+= UI Extension (Plugins) API
+
+The `/plugins` endpoint serves the metadata and static resources (JavaScript modules and CSS) for installed UI extensions/plugins. It is mounted under `/opennms/rest/plugins`. It is read-only.
+
+== GETs (reading data)
+
+[caption=]
+.UI Extension API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/plugins`                              | Lists the installed UI extensions/plugins. Produces `application/json`.
+| `/plugins/ui-extension/module/\{id}`    | Returns a JavaScript module for the extension identified by `id`. The `path` query parameter selects the resource within the extension. Produces `application/javascript`.
+| `/plugins/ui-extension/css/\{id}`       | Returns the CSS for the extension identified by `id`. Produces `text/css`.
+
+|===
+
+== Examples using cURL
+
+.List the installed UI extensions
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/plugins"
+----
+
+.Response
+[source,json]
+----
+[{"id":"my-plugin","menuEntry":"My Plugin","resourceRootPath":"my-plugin","moduleFileName":"main.js"}]
+----
+
+.Fetch an extension's JavaScript module
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/plugins/ui-extension/module/my-plugin?path=main.js"
+----
+
+.Fetch an extension's CSS
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/plugins/ui-extension/css/my-plugin"
+----

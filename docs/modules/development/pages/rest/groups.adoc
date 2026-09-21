@@ -20,8 +20,14 @@ Like users, groups have a simplified interface.
 | /groups/\{groupname}/users
 | Get the users for a group, given a group name.
 
+| /groups/\{groupname}/users/\{username}
+| Get a specific user in a group, given a group name and username.
+
 | /groups/\{groupname}/categories
 | Get the categories associated with a group, given a group name.
+
+| /groups/\{groupname}/categories/\{categoryname}
+| Get a specific category associated with a group, given a group name and category name.
 |===
 
 == POST (adding data)

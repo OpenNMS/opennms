@@ -4,6 +4,7 @@
 Use the Resources API to list or delete resources at the node level and below.
 This service is especially useful in conjunction with the Measurements API.
 
+[#gets-reading-data]
 == GETs (reading data)
 
 [caption=]
@@ -57,6 +58,22 @@ The following table shows all supported query string parameters and their defaul
 | GET only.
 Limits the tree depth for retrieved resources.
 Defaults to `1` when listing all resources, or to `-1` (no limit) when listing a single resource.
+|===
+
+== POSTs (creating data)
+
+POST requires JSON using `application/json` as its `Content-Type`.
+
+[caption=]
+.Resources API POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /resources/generateId
+| Store a set of resource IDs in the JSON store and return a generated key.
+The request body is a JSON array of resource-ID strings.
+The same input always produces the same key, and the response is the generated key as a JSON string.
 |===
 
 == Use examples with cURL

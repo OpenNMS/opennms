@@ -2,7 +2,7 @@
 <features name="minion-core-features" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 
     <!-- Apache ActiveMQ features -->
-    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/activemq</repository>
 
     <!-- Apache Camel features -->
     <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/camel</repository>
@@ -26,8 +26,9 @@
         <feature>minion-core</feature>
         <feature>geronimo-jms-api</feature>
 
-        <!-- Needed by activemq-camel -->
+        <!-- Needed by the camel/activemq bundles -->
         <bundle>mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}</bundle>
+        <!-- Aggregator feature: pulls activemq-client plus the camel-jms/camel-spring/camel-blueprint features -->
         <feature>activemq-camel</feature>
 
         <!-- netty-transport-classes-epoll is required by netty-transport-native-epoll at runtime -->

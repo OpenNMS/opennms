@@ -41,7 +41,7 @@ public class XRequestedWithAwareLoginUrlAuthEntryPoint extends LoginUrlAuthentic
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.hasText(realmName, "realmName must be specified");
     }
 

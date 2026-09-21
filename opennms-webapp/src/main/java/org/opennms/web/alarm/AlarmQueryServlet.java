@@ -338,9 +338,9 @@ public class AlarmQueryServlet extends HttpServlet {
             throw new MissingParameterException(prefix + "ampm", this.getRequiredDateFields(prefix));
         }
 
-        if (amPmString.equalsIgnoreCase("am")) {
+        if (amPmString.equalsIgnoreCase("am") || amPmString.equalsIgnoreCase("midnight")) {
             cal.set(Calendar.AM_PM, Calendar.AM);
-        } else if (amPmString.equalsIgnoreCase("pm")) {
+        } else if (amPmString.equalsIgnoreCase("pm") || amPmString.equalsIgnoreCase("noon")) {
             cal.set(Calendar.AM_PM, Calendar.PM);
         } else {
             throw new IllegalArgumentException("Illegal AM/PM value: " + amPmString);

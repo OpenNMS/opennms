@@ -210,28 +210,33 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      * Initialize vendor attributes.
      */
     private void initializeVendorAttributes() {
-        m_vendorAttributes.clear();
-        for (HwEntityAttributeType type : m_hwEntityAttributeTypeDao.findAll()) {
-            LOG.debug("Loading attribute type {}", type);
-            m_vendorAttributes.put(type.getSnmpObjId(), type);
-        }
-        
-        for (HwExtension ext : m_hwInventoryAdapterConfigDao.getConfiguration().getExtensions()) {
-            for (MibObj obj : ext.getMibObjects()) {
-                HwEntityAttributeType type = m_vendorAttributes.get(obj.getOid());
-                if (type == null) {
-                    type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
-                    LOG.debug("Creating attribute type {}", type);
-                } else {
-                    type.setOid(obj.getOid().toString());
-                    type.setName(obj.getAlias());
-                    type.setAttributeClass(obj.getType());
-                    LOG.debug("Updating attribute type {}", type);
-                }
-                m_hwEntityAttributeTypeDao.saveOrUpdate(type);
+        // Hibernate 5 rejects writes outside a transaction; afterPropertiesSet() runs this
+        // before any ambient transaction exists, so wrap the seeding in the injected template.
+        m_template.execute(status -> {
+            m_vendorAttributes.clear();
+            for (HwEntityAttributeType type : m_hwEntityAttributeTypeDao.findAll()) {
+                LOG.debug("Loading attribute type {}", type);
                 m_vendorAttributes.put(type.getSnmpObjId(), type);
             }
-        }
+
+            for (HwExtension ext : m_hwInventoryAdapterConfigDao.getConfiguration().getExtensions()) {
+                for (MibObj obj : ext.getMibObjects()) {
+                    HwEntityAttributeType type = m_vendorAttributes.get(obj.getOid());
+                    if (type == null) {
+                        type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
+                        LOG.debug("Creating attribute type {}", type);
+                    } else {
+                        type.setOid(obj.getOid().toString());
+                        type.setName(obj.getAlias());
+                        type.setAttributeClass(obj.getType());
+                        LOG.debug("Updating attribute type {}", type);
+                    }
+                    m_hwEntityAttributeTypeDao.saveOrUpdate(type);
+                    m_vendorAttributes.put(type.getSnmpObjId(), type);
+                }
+            }
+            return null;
+        });
     }
 
     /**

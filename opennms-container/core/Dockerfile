@@ -23,7 +23,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.5.b357-jre-21"
+ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.6.7.b377-jre-21"
 
 FROM ${BASE_IMAGE} AS core-tarball
 
@@ -43,15 +43,6 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
         /opt/usr-share/opennms/logs \
         /opt/usr-share/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
-
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} AS core-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
-
 
 FROM ${BASE_IMAGE} AS core-base
 
@@ -78,8 +69,6 @@ RUN groupadd \
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /opt/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /opt
 
-COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
-
 ##
 # Install and setup OpenNMS RPMS
 ##
@@ -102,6 +91,8 @@ RUN rm -rf /opt/opennms/share/rrd \
             /opt/opennms-jetty-webinf-overlay \
             /opt/opennms-overlay \
             /opennms-data \
+            /opt/opennms/tmp \
+            /opt/opennms/var/activemq \
             /var/log && \
     install -d -m 775 -o 10001 -g 0 \
             /opennms-data/rrd \

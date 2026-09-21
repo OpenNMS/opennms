@@ -25,6 +25,8 @@ require('lib/onms-http');
 const Backshift = require('vendor/backshift-js');
 const $ = require('vendor/jquery-js');
 const _ = require('vendor/underscore-js');
+const buildFilter = require('./buildFilter');
+const checkForecastWarning = require('./checkForecastWarning');
 require('apps/onms-default-apps');
 
 const INTEGER_REGEXP = /^-?\d+$/;
@@ -209,6 +211,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
 
     $scope.reset = function() {
         clearUserInput();
+        $scope.forecastWarning = null;
         // Re-render the original graph model
         const rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
             graphDef: $scope.graphDef,
@@ -241,7 +244,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
             'name': 'HW Fit',
             'metric': 'HWFit',
             'type': 'line',
-            'color': '#0000ff'
+            'color': '#9d4edd'
         });
         graphModel.series.push({
             'name': 'HW Lwr',
@@ -262,77 +265,48 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
         const graphStartInMillis = now - ($scope.forecastingOptions.graphStart * numberOfSecondsInADay * 1000);
         const graphEndInMillis = now;
 
-        // Add metric filters to prepare, trend and forecast the target metric
-        graphModel.metrics.push({
-            'type': 'filter',
-            'name': 'Chomp',
-            'parameter': [{
-                'key': 'stripNaNs',
-                'value': 'true'
-            }]
-        });
-        graphModel.metrics.push({
-            'type': 'filter',
-            'name': 'Outlier',
-            'parameter': [{
-                'key': 'inputColumn',
-                'value': $scope.metricToForecast.metric
-            }, {
-                'key': 'quantile',
-                'value': String($scope.forecastingOptions.outlierThreshold)
-            }]
-        });
-        graphModel.metrics.push({
-            'type': 'filter',
-            'name': 'HoltWinters',
-            'parameter': [{
-                'key': 'inputColumn',
-                'value': $scope.metricToForecast.metric
-            }, {
-                'key': 'outputPrefix',
-                'value': 'HW'
-            }, {
-                'key': 'numPeriodsToForecast',
-                'value': String($scope.forecastingOptions.forecasts)
-            }, {
-                'key': 'periodInSeconds',
-                'value': String($scope.forecastingOptions.season * numberOfSecondsInADay)
-            }, {
-                'key': 'confidenceLevel',
-                'value': String($scope.forecastingOptions.confidenceLevel)
-            }]
-        });
-        graphModel.metrics.push({
-            'type': 'filter',
-            'name': 'Trend',
-            'parameter': [{
-                'key': 'inputColumn',
-                'value': $scope.metricToForecast.metric
-            }, {
-                'key': 'outputColumn',
-                'value': 'Trend'
-            }, {
-                'key': 'secondsAhead',
-                'value': String($scope.forecastingOptions.forecasts * $scope.forecastingOptions.season * numberOfSecondsInADay)
-            }, {
-                'key': 'polynomialOrder',
-                'value': $scope.forecastingOptions.trendOrder
-            }]
-        });
+        // Add metric filters to prepare, trend and forecast the target metric.
+        // buildFilter() wraps every value in String() so numeric Angular inputs
+        // don't leak raw numbers into the REST payload.
+        graphModel.metrics.push(buildFilter('Chomp', {
+            stripNaNs: true
+        }));
+        graphModel.metrics.push(buildFilter('Outlier', {
+            inputColumn: $scope.metricToForecast.metric,
+            quantile: $scope.forecastingOptions.outlierThreshold
+        }));
+        graphModel.metrics.push(buildFilter('HoltWinters', {
+            inputColumn: $scope.metricToForecast.metric,
+            outputPrefix: 'HW',
+            numPeriodsToForecast: $scope.forecastingOptions.forecasts,
+            periodInSeconds: $scope.forecastingOptions.season * numberOfSecondsInADay,
+            confidenceLevel: $scope.forecastingOptions.confidenceLevel
+        }));
+        graphModel.metrics.push(buildFilter('Trend', {
+            inputColumn: $scope.metricToForecast.metric,
+            outputColumn: 'Trend',
+            secondsAhead: $scope.forecastingOptions.forecasts * $scope.forecastingOptions.season * numberOfSecondsInADay,
+            polynomialOrder: $scope.forecastingOptions.trendOrder
+        }));
 
-        // Add another filter to trim all of the records in the training period
-        graphModel.metrics.push({
-            'type': 'filter',
-            'name': 'Chomp',
-            'parameter': [{
-                'key': 'stripNaNs',
-                'value': 'false'
-            }, {
-                'key': 'cutoffDate',
-                'value': String(graphStartInMillis)
-            }]
-        });
+        // Trim all of the records in the training period
+        graphModel.metrics.push(buildFilter('Chomp', {
+            stripNaNs: false,
+            cutoffDate: graphStartInMillis
+        }));
         renderGraph(graphModel, trainingStartInMillis, graphEndInMillis);
+
+        // Wrap drawChart to surface forecast failures in the UI. The REST
+        // response arrives asynchronously; we inspect its columns to detect
+        // (a) a completely bailed forecast (no HWFit column) or (b) bounds
+        // that coincide with the fit due to zero residual variance.
+        var origDrawChart = $scope.graph.drawChart.bind($scope.graph);
+        $scope.graph.drawChart = function(results) {
+            $scope.$apply(function() {
+                $scope.forecastWarning = checkForecastWarning(results);
+            });
+            return origDrawChart(results);
+        };
     };
 
     if (window.forecastError) {

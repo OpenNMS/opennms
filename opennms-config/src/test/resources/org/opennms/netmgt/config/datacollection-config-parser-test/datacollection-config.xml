@@ -20,6 +20,5 @@
         <include-collection dataCollectionGroup="Novell"/>
         <include-collection dataCollectionGroup="Routers"/>
         <include-collection dataCollectionGroup="SUN Microsystems"/>
-        <include-collection dataCollectionGroup="WMI"/>
     </snmp-collection>
 </datacollection-config>

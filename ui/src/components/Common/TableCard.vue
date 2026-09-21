@@ -5,10 +5,8 @@
 </template>
 
 <style lang="scss" scoped>
-@use "@featherds/styles/themes/variables";
-
 .table-card {
-  background: var(variables.$surface);
+  background: var(--p-content-background);
   width: 100%;
   padding: 25px 0px;
   border-radius: 5px;

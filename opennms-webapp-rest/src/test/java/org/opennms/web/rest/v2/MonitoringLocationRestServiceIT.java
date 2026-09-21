@@ -49,6 +49,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TODO
@@ -110,6 +111,19 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
     public void testDelete() throws Exception {
         sendPost("/monitoringLocations", "<location location-name=\"Test\" monitoring-area=\"test\" priority=\"100\"/>", 201);
         sendRequest(DELETE, "/monitoringLocations/Test", 204);
+    }
+
+    /**
+     * This service does not implement a property update, so the bulk endpoint must report that
+     * instead of reporting success.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void bulkUpdateDoesNotSilentlyReportSuccess() throws Exception {
+        sendPost("/monitoringLocations", "<location location-name=\"Test\" monitoring-area=\"test\" priority=\"100\"/>", 201);
+        sendRequest(PUT, "/monitoringLocations", parseParamData("monitoringArea=hijacked"), 501);
+        assertTrue(sendRequest(GET, "/monitoringLocations/Test", 200).contains("test"));
     }
 
     @Test

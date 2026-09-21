@@ -107,9 +107,9 @@ public class DetectorsCommandIT {
             .put("TCP", "org.opennms.netmgt.provision.detector.simple.TcpDetector")
             .put("TrivialTime", "org.opennms.netmgt.provision.detector.simple.TrivialTimeDetector")
             .put("WEB", "org.opennms.netmgt.provision.detector.web.WebDetector")
-            .put("WMI", "org.opennms.netmgt.provision.detector.wmi.WmiDetector")
             .put("WS-Man", "org.opennms.netmgt.provision.detector.wsman.WsManDetector")
             .put("WSManWQL", "org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector")
+            .put("WsManShell", "org.opennms.netmgt.provision.detector.wsman.WsManShellDetector")
             .put("Win32Service", "org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector").build();
 
     @Test

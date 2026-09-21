@@ -43,9 +43,9 @@
 
     <camelContext id="sinkServer" xmlns="http://camel.apache.org/schema/blueprint">
         <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
-        <properties>
-            <property key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
-        </properties>
+        <globalOptions>
+            <globalOption key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
+        </globalOptions>
 
         <!-- The routes are managed by the CamelMessageConsumerManager -->
     </camelContext>

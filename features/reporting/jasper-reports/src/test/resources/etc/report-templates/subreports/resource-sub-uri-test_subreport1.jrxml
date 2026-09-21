@@ -1,36 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="resource-sub-uri-test_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport name="resource-sub-uri-test_subreport1" language="java" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2e4c569f-1039-48b1-804f-3a45929c99ec">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="43" splitType="Stretch">
-			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="555" height="43" backcolor="#FFFFCC"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<text><![CDATA[Ich bin ein subreport von resource-sub-uri-test_subreport1.jrxml]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title height="43" splitType="Stretch">
+		<element kind="staticText" uuid="0062cb74-1624-455b-9981-7111a43a77fc" mode="Opaque" x="0" y="0" width="555" height="43" backcolor="#FFFFCC" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Ich bin ein subreport von resource-sub-uri-test_subreport1.jrxml]]></text>
+		</element>
 	</title>
-	<pageHeader>
-		<band splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band splitType="Stretch"/>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter splitType="Stretch"/>
+	<summary splitType="Stretch"/>
 </jasperReport>

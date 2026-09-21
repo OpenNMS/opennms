@@ -1,8 +1,7 @@
 import CreateSnmpV3User from '@/components/TrapdConfiguration/CreateSnmpV3User.vue'
 import {
   DEFAULT_SNMP_V3_AUTH_PROTOCOL,
-  DEFAULT_SNMP_V3_PRIVACY_PROTOCOL,
-  DEFAULT_SNMP_V3_SECURITY_NAME
+  DEFAULT_SNMP_V3_PRIVACY_PROTOCOL
 } from '@/lib/constants'
 import {
   AUTH_PROTOCOL_OPTIONS,
@@ -19,7 +18,8 @@ import type { SnmpV3User } from '@/types/trapConfig'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
 
@@ -49,27 +49,6 @@ vi.mock('@/stores/scvStore', () => ({
     populate: populateScvMock
   }))
 }))
-
-const FeatherInputStub = defineComponent({
-  name: 'FeatherInput',
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    label: {
-      type: String,
-      default: ''
-    },
-    dataTest: {
-      type: String,
-      default: ''
-    }
-  },
-  emits: ['update:modelValue'],
-  template:
-    '<input :data-test="dataTest || label" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />'
-})
 
 const ScvSearchDrawerStub = defineComponent({
   name: 'ScvSearchDrawer',
@@ -102,30 +81,17 @@ describe('CreateSnmpV3User.vue', () => {
   const mountComponent = () => {
     return mount(CreateSnmpV3User, {
       global: {
+        plugins: [PrimeVue],
         stubs: {
           TableCard: {
             template: '<div><slot /></div>'
           },
-          FeatherIcon: true,
-          FeatherInput: FeatherInputStub,
-          'feather-input': FeatherInputStub,
-          FeatherSelect: true,
-          'feather-select': true,
+          OnmsIcon: true,
           ScvInputIcon: {
             emits: ['click'],
             template: '<button :data-test="$attrs[\'data-test\']" @click="$emit(\'click\')" />'
           },
-          ScvSearchDrawer: ScvSearchDrawerStub,
-          FeatherButton: {
-            props: ['dataTest', 'disabled'],
-            emits: ['click'],
-            template: '<button :data-test="dataTest" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>'
-          },
-          'feather-button': {
-            props: ['dataTest', 'disabled'],
-            emits: ['click'],
-            template: '<button :data-test="dataTest" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>'
-          }
+          ScvSearchDrawer: ScvSearchDrawerStub
         }
       }
     })
@@ -173,7 +139,7 @@ describe('CreateSnmpV3User.vue', () => {
     store.openCredentialDrawer = vi.fn()
     store.closeCredentialDrawer = vi.fn()
 
-    mapUserToServerMock.mockImplementation((payload) => payload as SnmpV3User)
+    mapUserToServerMock.mockImplementation(payload => payload as SnmpV3User)
     updateTrapdConfigurationMock.mockResolvedValue(undefined)
   })
 
@@ -194,7 +160,7 @@ describe('CreateSnmpV3User.vue', () => {
   it('renders create mode with heading and action buttons', () => {
     const wrapper = mountComponent()
 
-    expect(wrapper.find('h3').text()).toBe('New SNMPv3 User Management')
+    expect(wrapper.find('h3').text()).toBe('New SNMPv3 User')
     expect(wrapper.find('[data-test="create-user-button"]').text()).toContain('Create User')
     expect(wrapper.find('[data-test="cancel-button"]').exists()).toBe(true)
   })
@@ -357,7 +323,7 @@ describe('CreateSnmpV3User.vue', () => {
     await nextTick()
 
     expect((wrapper.vm as any).securityLevel).toEqual(SECURITY_LEVEL_OPTIONS[0])
-    expect((wrapper.vm as any).securityName).toBe(DEFAULT_SNMP_V3_SECURITY_NAME)
+    expect((wrapper.vm as any).securityName).toBe('')
     expect((wrapper.vm as any).engineId).toBe('')
   })
 
@@ -435,7 +401,7 @@ describe('CreateSnmpV3User.vue', () => {
     await setInputValue(wrapper, 'security-name-input', 'new-user')
     await setBindingValue(wrapper, 'securityLevel', createEmptySelectItem())
 
-    expect((wrapper.vm as any).error.securityLevel).toBeUndefined()
+    expect((wrapper.vm as any).formError.securityLevel).toBeUndefined()
   })
 
   it('shows validation error when level 1 has auth credentials (backend cross-field rule)', async () => {
@@ -447,7 +413,7 @@ describe('CreateSnmpV3User.vue', () => {
     ;(wrapper.vm as any).authProtocol = AUTH_PROTOCOL_OPTIONS[0]
     await nextTick()
 
-    expect((wrapper.vm as any).error.securityLevel).toBe(
+    expect((wrapper.vm as any).formError.securityLevel).toBe(
       'Security level 1 does not allow auth or privacy credentials'
     )
     expect((wrapper.vm as any).isSaveDisabled).toBe(true)
@@ -461,7 +427,7 @@ describe('CreateSnmpV3User.vue', () => {
     ;(wrapper.vm as any).privacyProtocol = PRIVACY_PROTOCOL_OPTIONS[0]
     await nextTick()
 
-    expect((wrapper.vm as any).error.securityLevel).toBe(
+    expect((wrapper.vm as any).formError.securityLevel).toBe(
       'Security level 1 does not allow auth or privacy credentials'
     )
     expect((wrapper.vm as any).isSaveDisabled).toBe(true)
@@ -474,12 +440,11 @@ describe('CreateSnmpV3User.vue', () => {
     ;(wrapper.vm as any).securityLevel = SECURITY_LEVEL_OPTIONS[1]
     await nextTick()
 
-    // Now inject dirty privacy state AFTER the watcher ran, and call validateInputs
-    // directly before the Vue scheduler has a chance to run watchEffect again
+    // Now inject dirty privacy state AFTER the watcher ran and let watchEffect re-run
     ;(wrapper.vm as any).privacyProtocol = PRIVACY_PROTOCOL_OPTIONS[0]
-    const errors = (wrapper.vm as any).validateInputs()
+    await nextTick()
 
-    expect(errors.privacyProtocol).toBe('Security level 2 does not allow privacy credentials')
+    expect((wrapper.vm as any).formError.privacyProtocol).toBe('Security level 2 does not allow privacy credentials')
   })
 
   it('requires auth protocol and auth passphrase for auth-only security level', async () => {
@@ -498,7 +463,7 @@ describe('CreateSnmpV3User.vue', () => {
     })
   })
 
-  it('shows auth protocol error with passphrase-specific message when passphrase is set but protocol is cleared', async () => {
+  it('shows auth protocol error and passphrase-specific error message when passphrase is set but protocol is cleared', async () => {
     const wrapper = mountComponent()
 
     await setInputValue(wrapper, 'security-name-input', 'auth-user')
@@ -506,10 +471,11 @@ describe('CreateSnmpV3User.vue', () => {
     await setBindingValue(wrapper, 'authProtocol', createEmptySelectItem())
     await setBindingValue(wrapper, 'authPassphrase', 'some-passphrase')
 
-    expect((wrapper.vm as any).error.authProtocol).toBe('Auth Passphrase requires an Auth Protocol to be selected')
+    expect((wrapper.vm as any).formError.authProtocol).toBe('Auth Protocol is required for selected security level')
+    expect((wrapper.vm as any).formError.authPassphrase).toBe('Auth Passphrase requires an Auth Protocol to be selected')
   })
 
-  it('shows generic auth protocol error when passphrase is also missing', async () => {
+  it('shows generic auth protocol error but no authPassphrase error when passphrase is also missing', async () => {
     const wrapper = mountComponent()
 
     await setInputValue(wrapper, 'security-name-input', 'auth-user')
@@ -517,7 +483,8 @@ describe('CreateSnmpV3User.vue', () => {
     await setBindingValue(wrapper, 'authProtocol', createEmptySelectItem())
     await setBindingValue(wrapper, 'authPassphrase', '')
 
-    expect((wrapper.vm as any).error.authProtocol).toBe('Auth Protocol is required for selected security level')
+    expect((wrapper.vm as any).formError.authProtocol).toBe('Auth Protocol is required for selected security level')
+    expect((wrapper.vm as any).formError.authPassphrase).toBeUndefined()
   })
 
   it('requires privacy protocol and privacy passphrase for auth-priv security level', async () => {
@@ -546,7 +513,8 @@ describe('CreateSnmpV3User.vue', () => {
     await setBindingValue(wrapper, 'privacyProtocol', createEmptySelectItem())
     await setBindingValue(wrapper, 'privacyPassphrase', 'privacy-secret')
 
-    expect((wrapper.vm as any).error.privacyProtocol).toBe('Privacy Passphrase requires a Privacy Protocol to be selected')
+    expect((wrapper.vm as any).formError.privacyProtocol).toBe('Privacy Protocol is required for selected security level')
+    expect((wrapper.vm as any).formError.privacyPassphrase).toBe('Privacy Passphrase requires a Privacy Protocol to be selected')
   })
 
   it('shows generic privacy protocol error when privacy passphrase is also missing', async () => {
@@ -559,7 +527,8 @@ describe('CreateSnmpV3User.vue', () => {
     await setBindingValue(wrapper, 'privacyProtocol', createEmptySelectItem())
     await setBindingValue(wrapper, 'privacyPassphrase', '')
 
-    expect((wrapper.vm as any).error.privacyProtocol).toBe('Privacy Protocol is required for selected security level')
+    expect((wrapper.vm as any).formError.privacyProtocol).toBe('Privacy Protocol is required for selected security level')
+    expect((wrapper.vm as any).formError.privacyPassphrase).toBeUndefined()
   })
 
   it('shows service error when updateTrapdConfiguration throws Error', async () => {

@@ -24,8 +24,10 @@ package org.opennms.netmgt.collectd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,6 +60,8 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -67,6 +71,7 @@ import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.FileAnticipator;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -75,6 +80,7 @@ public class CollectableServiceTest {
     private CollectionSpecification spec;
     private Scheduler scheduler;
     private CollectableService service;
+    private ThresholdingService thresholdingService;
 
     private File snmpDirectory;
     private FileAnticipator fileAnticipator;
@@ -219,7 +225,78 @@ public class CollectableServiceTest {
                 lastUpdateTimeInSecs < (afterInSecs - (collectionDelayInSecs / 2d)));
     }
 
+    @Test
+    public void thresholdingSessionIsNotCreatedWhenExplicitlyDisabled() throws Exception {
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("thresholding-enabled", "false");
+        createCollectableService(paramsMap);
+
+        verify(thresholdingService, never()).createSession(anyInt(), any(), any(), any());
+    }
+
+    @Test
+    public void thresholdingSessionIsCreatedWhenParameterIsAbsent() throws Exception {
+        createCollectableService(new HashMap<>());
+
+        verify(thresholdingService, times(1)).createSession(anyInt(), any(), any(), any());
+    }
+
+    @Test
+    public void thresholdingSessionIsCreatedWhenExplicitlyEnabled() throws Exception {
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("thresholding-enabled", "true");
+        createCollectableService(paramsMap);
+
+        verify(thresholdingService, times(1)).createSession(anyInt(), any(), any(), any());
+    }
+
+    /**
+     * A CollectableService starts with no known status, so the first successful collection is a transition
+     * and emits dataCollectionSucceeded. That is what clears a dataCollectionFailed alarm raised before a
+     * restart or a collectd reload, both of which rebuild every CollectableService. See NMS-19979.
+     */
+    @Test
+    public void sendsSucceededEventOnFirstSuccessfulCollection() throws CollectionInitializationException, CollectionException, IOException {
+        EventIpcManager eventIpcManager = mock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(eventIpcManager);
+
+        createCollectableService();
+        when(spec.collect(any())).thenReturn(null);
+
+        service.run();
+
+        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(eventIpcManager, times(1)).sendNow(eventCaptor.capture());
+        assertEquals(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI, eventCaptor.getValue().getUei());
+    }
+
+    /**
+     * Only the transition emits, so a service that keeps collecting successfully stays quiet after the
+     * first pass rather than sending an event per collection cycle.
+     */
+    @Test
+    public void sendsNoFurtherEventWhileCollectionKeepsSucceeding() throws CollectionInitializationException, CollectionException, IOException {
+        EventIpcManager eventIpcManager = mock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(eventIpcManager);
+
+        createCollectableService();
+        when(spec.collect(any())).thenReturn(null);
+
+        service.run();
+        service.run();
+        service.run();
+
+        verify(eventIpcManager, times(1)).sendNow(any(Event.class));
+    }
+
     private void createCollectableService() throws CollectionInitializationException, IOException {
+        // Disable thresholding
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("thresholding-enabled", Boolean.FALSE.toString());
+        createCollectableService(paramsMap);
+    }
+
+    private void createCollectableService(Map<String, Object> paramsMap) throws CollectionInitializationException, IOException {
         // Mock it all!
         OnmsIpInterface iface = mock(OnmsIpInterface.class, RETURNS_DEEP_STUBS);
         IpInterfaceDao ifaceDao = mock(IpInterfaceDao.class);
@@ -231,9 +308,6 @@ public class CollectableServiceTest {
         persisterFactory.setRrdStrategy(rrdStrategy);
         ResourceStorageDao resourceStorageDao = mock(ResourceStorageDao.class);
 
-        // Disable thresholding
-        Map<String, Object> paramsMap = new HashMap<>();
-        paramsMap.put("thresholding-enabled", Boolean.FALSE.toString());
         ServiceParameters params = new ServiceParameters(paramsMap);
 
         when(iface.getNode().getId()).thenReturn(1);
@@ -242,9 +316,9 @@ public class CollectableServiceTest {
         when(ifaceDao.load(any())).thenReturn(iface);
         when(iface.getIpAddress()).thenReturn(InetAddrUtils.getLocalHostAddress());
 
-        ThresholdingService mockThresholdingService = mock(ThresholdingService.class, RETURNS_DEEP_STUBS);
+        thresholdingService = mock(ThresholdingService.class, RETURNS_DEEP_STUBS);
 
-        service = new CollectableService(iface, ifaceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, mockThresholdingService);
+        service = new CollectableService(iface, ifaceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, thresholdingService);
     }
 
     private RrdRepository createRrdRepository() throws IOException {

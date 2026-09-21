@@ -24,20 +24,34 @@ package org.opennms.netmgt.scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Executable implements PriorityReadyRunnable, Comparable<Executable> {
+public abstract class Executable implements PriorityReadyRunnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Executable.class);
 
     private boolean m_suspend = false;
 
-    private Integer m_priority = 0;
+    private int m_priority = 0;
 
-    public Integer getPriority() {
+    private long m_delayUntil = 0;
+
+    @Override
+    public int getPriority() {
           return m_priority;
     }
 
-    public void setPriority(Integer priority) {
+    @Override
+    public void setPriority(int priority) {
         m_priority=priority;
+    }
+
+    @Override
+    public void setDelayUntil(long timestampMs) {
+        m_delayUntil = timestampMs;
+    }
+
+    @Override
+    public long getDelayUntil() {
+        return m_delayUntil;
     }
 
     public Executable() {
@@ -94,8 +108,4 @@ public abstract class Executable implements PriorityReadyRunnable, Comparable<Ex
         return  getName() + ": Priority: " + m_priority;
     }
 
-    @Override
-    public int compareTo(Executable o) {
-        return m_priority-o.getPriority();
-    }
 }

@@ -24,6 +24,7 @@ package org.opennms.netmgt.collection.core;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.CollectionUnknown;
+import org.opennms.netmgt.collection.api.CollectorAdaptor;
 import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -81,8 +83,9 @@ public class CollectionSpecification {
     private final ReadablePollOutagesDao m_pollOutagesDao;
     private final String collectorImplClassName;
     private final ScopeProvider scopeProvider;
+    private final List<CollectorAdaptor> m_collectorAdaptors;
 
-    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName, final ScopeProvider scopeProvider) {
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName, final ScopeProvider scopeProvider, final List<CollectorAdaptor> collectorAdaptors) {
         m_package = Objects.requireNonNull(wpkg);
         m_svcName = Objects.requireNonNull(svcName);
         m_collector = Objects.requireNonNull(collector);
@@ -91,7 +94,12 @@ public class CollectionSpecification {
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
         this.collectorImplClassName = collectorImplClassName;
         this.scopeProvider = scopeProvider;
+        this.m_collectorAdaptors = collectorAdaptors != null ? collectorAdaptors : Collections.emptyList();
         initializeParameters();
+    }
+
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName, final ScopeProvider scopeProvider) {
+        this(wpkg, svcName, collector, instrumentation, locationAwareCollectorClient, pollOutagesDao, collectorImplClassName, scopeProvider, Collections.emptyList());
     }
 
     public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName) {
@@ -287,6 +295,9 @@ public class CollectionSpecification {
             requestBuilder.withAgent(agent)
                     .withAttributes(getPropertyMap())
                     .withTimeToLive(getService().getInterval());
+            for (final CollectorAdaptor adaptor : m_collectorAdaptors) {
+                requestBuilder.withAdaptor(adaptor);
+            }
             if(!getCollector().getClass().getCanonicalName().equals(collectorImplClassName)) {
                 requestBuilder.withCollectorClassName(collectorImplClassName);
             } else {

@@ -21,10 +21,13 @@
  */
 package org.opennms.netmgt.collection.client.rpc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
@@ -36,9 +39,12 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.CollectorAdaptor;
 import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +66,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     private Long ttlInMs;
 
     private String className;
+
+    private final List<CollectorAdaptor> adaptors = new ArrayList<>();
 
     public CollectorRequestBuilderImpl(LocationAwareCollectorClientImpl client) {
         this.client = Objects.requireNonNull(client);
@@ -109,6 +117,14 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     }
 
     @Override
+    public CollectorRequestBuilder withAdaptor(CollectorAdaptor adaptor) {
+        if (adaptor != null) {
+            this.adaptors.add(adaptor);
+        }
+        return this;
+    }
+
+    @Override
     public CompletableFuture<CollectionSet> execute() {
         if (serviceCollector == null) {
             throw new IllegalArgumentException("Collector or collector class name is required.");
@@ -148,28 +164,83 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
         // Retrieve the runtime attributes, which may include attributes
         // such as the agent details and other state related attributes
-        // which should be included in the request
-        final Map<String, Object> runtimeAttributes = Interpolator.interpolateAttributes(serviceCollector.getRuntimeAttributes(agent, interpolatedAttributes), scope);
-        final Map<String, Object> allAttributes = new HashMap<>();
-        allAttributes.putAll(interpolatedAttributes);
-        allAttributes.putAll(runtimeAttributes);
+        // which should be included in the request.
+        Map<String, Object> rawRuntimeAttributes = serviceCollector.getRuntimeAttributes(agent, interpolatedAttributes);
+        // Same as above: adaptors substitute before Mate sees the tree.
+        for (final CollectorAdaptor adaptor : adaptors) {
+            final Map<String, Object> next = adaptor.beforeRuntimeInterpolation(agent, rawRuntimeAttributes);
+            rawRuntimeAttributes = next != null ? next : rawRuntimeAttributes;
+        }
+        final Map<String, Object> runtimeAttributes = Interpolator.interpolateAttributes(rawRuntimeAttributes, scope);
+        final Map<String, Object> dispatchedAttributes = new HashMap<>();
+        dispatchedAttributes.putAll(interpolatedAttributes);
+        dispatchedAttributes.putAll(runtimeAttributes);
 
         // The runtime attributes may include objects which need to be marshaled.
         // Only marshal these if the request is being executed at another location.
         if (MonitoringLocationUtils.isDefaultLocationName(request.getLocation())) {
             // As-is
             request.setAgent(agent);
-            request.addAttributes(allAttributes);
+            request.addAttributes(dispatchedAttributes);
         } else {
             // Marshal
             request.setAgent(new CollectionAgentDTO(agent));
-            final Map<String, String> marshaledParms = serviceCollector.marshalParameters(allAttributes);
+            final Map<String, String> marshaledParms = serviceCollector.marshalParameters(dispatchedAttributes);
             marshaledParms.forEach(request::addAttribute);
             request.setAttributesNeedUnmarshaling(true);
         }
 
-        // Execute the request
-        return client.getDelegate().execute(request).thenApply(CollectorResponseDTO::getCollectionSet);
+        return client.getDelegate().execute(request).handle((response, ex) ->
+                applyAdaptorsAndPropagate(agent, dispatchedAttributes, adaptors,
+                        ex == null ? response.getCollectionSet() : null, ex));
+    }
+
+    /**
+     * Runs each adaptor's {@link CollectorAdaptor#handleCollectionResult} on
+     * success and failure paths. On exceptional completion a synthetic
+     * FAILED {@link CollectionSet} is supplied so adaptors that key on
+     * {@code result.getStatus() == FAILED} (e.g. token-auth invalidation)
+     * still get notified, and the original exception is re-thrown so
+     * callers see it.
+     */
+    public static CollectionSet applyAdaptorsAndPropagate(
+            CollectionAgent agent,
+            Map<String, Object> dispatchedAttributes,
+            List<CollectorAdaptor> adaptors,
+            CollectionSet successResult,
+            Throwable ex) {
+        CollectionSet result = (ex != null)
+                ? new CollectionSetBuilder(agent).withStatus(CollectionStatus.FAILED).build()
+                : successResult;
+        if (ex != null && hasAuthFailureMarker(ex)) {
+            dispatchedAttributes.put(CollectorAdaptor.AUTH_FAILURE_PARAM, Boolean.TRUE);
+        }
+        for (final CollectorAdaptor adaptor : adaptors) {
+            result = adaptor.handleCollectionResult(agent, dispatchedAttributes, result);
+        }
+        if (ex != null) {
+            Throwable cause = (ex instanceof CompletionException && ex.getCause() != null) ? ex.getCause() : ex;
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new CompletionException(cause);
+        }
+        return result;
+    }
+
+    // Substring (not startsWith) so wrapped messages like
+    // "Can't retrieve ... because auth failure: HTTP 401 ..." still match.
+    private static boolean hasAuthFailureMarker(final Throwable ex) {
+        Throwable t = ex;
+        int depth = 0;
+        while (t != null && depth++ < 16) {
+            final String msg = t.getMessage();
+            if (msg != null && msg.contains("auth failure:")) {
+                return true;
+            }
+            t = t.getCause();
+        }
+        return false;
     }
 
 }

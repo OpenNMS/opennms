@@ -22,9 +22,19 @@
 package org.opennms.netmgt.reporting.service;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.activation.MimetypesFileTypeMap;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Part;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
@@ -35,7 +45,6 @@ import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.google.common.base.Strings;
 
@@ -76,19 +85,52 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
                 final SendmailMessage sendmailMessage = config.getSendmailMessage();
                 final SendmailProtocol sendmailProtocol = config.getSendmailProtocol();
 
-                MimeMessageHelper helper = new MimeMessageHelper(msg, true, sendmailProtocol.getCharSet());
-                helper.setFrom(sendmailMessage.getFrom());
+                final String charset = sendmailProtocol.getCharSet();
+                msg.setFrom(new InternetAddress(sendmailMessage.getFrom()));
                 if (!Strings.isNullOrEmpty(sendmailMessage.getReplyTo())) {
-                    helper.setReplyTo(sendmailMessage.getReplyTo());
+                    msg.setReplyTo(InternetAddress.parse(sendmailMessage.getReplyTo()));
                 }
-                helper.setTo(report.getRecipients().toArray(new String[0]));
-                helper.setSubject("OpenNMS Report: " + report.getReportName());
+                final List<InternetAddress> to = new ArrayList<>();
+                for (final String recipient : report.getRecipients()) {
+                    to.add(new InternetAddress(recipient));
+                }
+                msg.setRecipients(Message.RecipientType.TO, to.toArray(new InternetAddress[0]));
+                msg.setSubject("OpenNMS Report: " + report.getReportName(), charset);
+
+                final MimeBodyPart textPart = new MimeBodyPart();
                 if ("text/html".equals(sendmailProtocol.getMessageContentType().toLowerCase())) {
-                    helper.setText(sendmailMessage.getBody().replaceAll("\\<[^>]*>",""), sendmailMessage.getBody());
+                    // plain-text and HTML renditions of the body as a multipart/alternative
+                    final MimeMultipart alternative = new MimeMultipart("alternative");
+                    final MimeBodyPart plain = new MimeBodyPart();
+                    plain.setText(sendmailMessage.getBody().replaceAll("\\<[^>]*>",""), charset);
+                    alternative.addBodyPart(plain);
+                    final MimeBodyPart html = new MimeBodyPart();
+                    html.setContent(sendmailMessage.getBody(), "text/html; charset=" + charset);
+                    alternative.addBodyPart(html);
+                    textPart.setContent(alternative);
                 } else {
-                    helper.setText(sendmailMessage.getBody());
+                    textPart.setText(sendmailMessage.getBody(), charset);
                 }
-                helper.addAttachment(fileName, new File(fileName));
+
+                final MimeBodyPart attachmentPart = new MimeBodyPart();
+                final FileDataSource dataSource = new FileDataSource(new File(fileName));
+                // the default mime table lacks the report formats and would
+                // label everything application/octet-stream
+                final MimetypesFileTypeMap typeMap = new MimetypesFileTypeMap();
+                typeMap.addMimeTypes("application/pdf pdf PDF");
+                typeMap.addMimeTypes("text/csv csv CSV");
+                typeMap.addMimeTypes("text/html html htm HTML HTM");
+                typeMap.addMimeTypes("application/vnd.ms-excel xls XLS");
+                typeMap.addMimeTypes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx XLSX");
+                dataSource.setFileTypeMap(typeMap);
+                attachmentPart.setDataHandler(new DataHandler(dataSource));
+                attachmentPart.setFileName(fileName);
+                attachmentPart.setDisposition(Part.ATTACHMENT);
+
+                final MimeMultipart mixed = new MimeMultipart("mixed");
+                mixed.addBodyPart(textPart);
+                mixed.addBodyPart(attachmentPart);
+                msg.setContent(mixed);
                 sm.send(msg);
             } else {
                 LOG.error("sendmail-message or sendmail-protocol is not configured!");

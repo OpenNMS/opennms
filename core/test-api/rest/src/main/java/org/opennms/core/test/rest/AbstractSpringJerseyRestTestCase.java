@@ -75,7 +75,7 @@ import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
-import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
+import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -441,7 +441,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
         request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        request.setParameters(parameters);
+        @SuppressWarnings("unchecked")
+        final Map<String,?> stringKeyParams = (Map<String,?>) parameters;
+        request.setParameters(stringKeyParams);
         request.setQueryString(getQueryString(parameters));
         request.setRemoteUser(getUser());
         return sendRequest(request, expectedStatus, expectedUrlSuffix);

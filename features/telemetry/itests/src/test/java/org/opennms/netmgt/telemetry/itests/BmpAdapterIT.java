@@ -101,9 +101,12 @@ public class BmpAdapterIT {
         this.interfaceToNodeCache.dataSourceSync();
 
         // add metadata for nodeId 2
-        final OnmsNode onmsNode = databasePopulator.getNode2();
-        onmsNode.addMetaData("myContext", "myKey", "10.123.123.123");
-        databasePopulator.getNodeDao().update(onmsNode);
+        transactionTemplate.execute(status -> {
+            final OnmsNode onmsNode = databasePopulator.getNode2();
+            onmsNode.addMetaData("myContext", "myKey", "10.123.123.123");
+            databasePopulator.getNodeDao().update(onmsNode);
+            return null;
+        });
     }
 
     /**

@@ -52,6 +52,7 @@ export interface TrapConfig {
 }
 
 export interface SnmpV3User {
+  id?: string
   engineId: string | null
   securityName: string
   securityLevel: number
@@ -81,13 +82,12 @@ export interface SnmpV3UserError {
   privacyPassphrase?: string
 }
 
-export interface XmlValidationError {
+export interface TrapdValidationError {
   field: string
   message: string
 }
 
-export interface XmlValidationResult {
+export interface TrapdValidationResult {
   valid: boolean
-  errors: XmlValidationError[]
+  errors: TrapdValidationError[]
 }
-

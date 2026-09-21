@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { AppInfo } from '@/types'
+import { ref } from 'vue'
 
 export const useInfoStore = defineStore('infoStore', () => {
   const info = ref({} as AppInfo)

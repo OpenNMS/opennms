@@ -36,19 +36,10 @@
         /WEB-INF/spring-security.d/*.xml
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
 
-        <!-- From org.opennms.features.reporting.core -->
-        classpath:/META-INF/opennms/applicationContext-reportingCore.xml
-        <!-- From org.opennms.features.reporting.dao -->
-        classpath:/META-INF/opennms/applicationContext-reportingDao.xml
-        <!-- From org.opennms.features.reporting.repository -->
-        classpath:/META-INF/opennms/applicationContext-reportingRepository.xml
         <!-- From org.opennms.features.system-report -->
         classpath:/META-INF/opennms/applicationContext-systemReport.xml
 
-        classpath*:/META-INF/opennms/component-measurement.xml
         classpath*:/META-INF/opennms/component-service.xml
-        classpath*:/META-INF/opennms/component-reporting.xml
-        classpath*:/META-INF/opennms/component-timeformat.xml
 
         <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>
@@ -109,7 +100,7 @@
     <init-param>
       <description>Sets the header value.</description>
       <param-name>value</param-name>
-      <param-value>default-src 'none' ; frame-src 'self' ; manifest-src 'self' ; media-src 'self' ; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' https://fonts.googleapis.com  https://fonts.gstatic.com; connect-src 'self' ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; base-uri 'self' ; form-action 'self' ; img-src 'self' https://tiles.opennms.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tile.opentopomap.org https://*.tile.opentopomap.org data:</param-value>
+      <param-value>default-src 'none' ; frame-src 'self' ; frame-ancestors 'self' ; manifest-src 'self' ; media-src 'self' ; script-src 'self' 'unsafe-inline' 'unsafe-eval'; worker-src 'self' ; font-src 'self' https://fonts.googleapis.com  https://fonts.gstatic.com; connect-src 'self' ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; base-uri 'self' ; form-action 'self' ; img-src 'self' https://tiles.opennms.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tile.opentopomap.org https://*.tile.opentopomap.org data:</param-value>
     </init-param>
   </filter>
 
@@ -248,7 +239,7 @@
 
   <filter>
     <filter-name>openSessionInViewFilter</filter-name>
-    <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+    <filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
   </filter>
 
   <filter>
@@ -848,13 +839,7 @@
     <servlet-name>snmpManageNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpManageNodesServlet</servlet-class>
   </servlet>
-  <servlet>
-    <!-- servlet for configuring SNMP parameters -->
-    <servlet-name>snmpConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpConfigServlet</servlet-class>
-  </servlet>
-
-  <!--servlet for updating the notify flag in the ifservices table -->
+  <!-- servlet for updating the notify flag in the ifservices table -->
   <servlet>
         <servlet-name>updateServiceNotify</servlet-name>
         <servlet-class>org.opennms.web.admin.notification.ServiceNoticeUpdateServlet</servlet-class>
@@ -906,14 +891,6 @@
     <servlet-class>org.opennms.web.inventory.InvCloginServlet</servlet-class>
   </servlet-->
 
-  <servlet>
-  	<servlet-name>purdyChart</servlet-name>
-  	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
-  	<init-param>
-  		<param-name>chart-name</param-name>
-  		<param-value>sample-bar-chart</param-value>
-  	</init-param>
-  </servlet>
 
   <servlet>
         <servlet-name>dispatcher</servlet-name>
@@ -929,10 +906,6 @@
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->
 
-  <servlet-mapping>
-  	<servlet-name>purdyChart</servlet-name>
-  	<url-pattern>/charts</url-pattern>
-  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
@@ -1095,10 +1068,6 @@
   <servlet-mapping>
     <servlet-name>snmpManageNodes</servlet-name>
     <url-pattern>/admin/changeCollectStatus</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpConfig</servlet-name>
-    <url-pattern>/admin/snmpConfig</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -1266,10 +1235,6 @@
   <error-page>
     <exception-type>java.lang.SecurityException</exception-type>
     <location>/errors/sealingviolation.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.controller.statisticsReports.StatisticsReportIdNotFoundException</exception-type>
-    <location>/errors/statisticsreportidnotfound.jsp</location>
   </error-page>
   <error-page>
     <exception-type>org.opennms.netmgt.events.api.EventProxyException</exception-type>

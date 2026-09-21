@@ -31,6 +31,7 @@
     <bean id="camelRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.client.CamelRemoteMessageDispatcherFactory"
           init-method="init" destroy-method="destroy">
         <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="camelContext" ref="sinkClient"/>
         <property name="tracerRegistry" ref="tracerRegistry"/>
         <property name="identity" ref="identity"/>
         <property name="metrics" ref="camelSinkMetricRegistry"/>
@@ -39,9 +40,9 @@
 
     <camelContext id="sinkClient" xmlns="http://camel.apache.org/schema/blueprint">
       <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
-      <properties>
-        <property key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
-      </properties>
+      <globalOptions>
+        <globalOption key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
+      </globalOptions>
 
       <route id="sinkClient">
         <from uri="direct:sendMessage" />

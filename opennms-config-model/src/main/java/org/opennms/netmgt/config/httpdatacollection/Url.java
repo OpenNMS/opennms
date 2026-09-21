@@ -87,7 +87,8 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-        "m_parameters"
+        "m_parameters",
+        "m_headers"
 })
 @XmlRootElement(name = "url")
 @ValidateUsing("http-datacollection-config.xsd")
@@ -97,6 +98,9 @@ public class Url implements Serializable {
     @XmlElementWrapper(name = "parameters")
     @XmlElement(name = "parameter")
     protected List<Parameter> m_parameters;
+    @XmlElementWrapper(name = "headers")
+    @XmlElement(name = "header")
+    protected List<Header> m_headers;
     @XmlAttribute(name = "method")
     protected String m_method;
     @XmlAttribute(name = "http-version")
@@ -146,6 +150,21 @@ public class Url implements Serializable {
 
     public void setParameters(List<Parameter> value) {
         m_parameters = value;
+    }
+
+    /**
+     * Returns the request headers configured on this URL, or an empty
+     * list if none. Each header's value is interpolated through the
+     * metadata DSL at request build time, which is the entry point for
+     * {@code ${token:...}} dynamic auth tokens and for any per-node
+     * placeholders.
+     */
+    public List<Header> getHeaders() {
+        return m_headers == null ? Collections.emptyList() : m_headers;
+    }
+
+    public void setHeaders(final List<Header> value) {
+        m_headers = value;
     }
 
     public String getMethod() {
@@ -322,7 +341,8 @@ public class Url implements Serializable {
             return false;
         }
         final Url that = (Url) other;
-        return Objects.equals(this.m_parameters, that.m_parameters) && Objects.equals(this.m_method, that.m_method)
+        return Objects.equals(this.m_parameters, that.m_parameters) && Objects.equals(this.m_headers, that.m_headers)
+                && Objects.equals(this.m_method, that.m_method)
                 && Objects.equals(this.m_httpVersion, that.m_httpVersion) && Objects.equals(this.m_userAgent, that.m_userAgent)
                 && Objects.equals(this.m_virtualHost, that.m_virtualHost) && Objects.equals(this.m_scheme, that.m_scheme)
                 && Objects.equals(this.m_userInfo, that.m_userInfo) && Objects.equals(this.m_host, that.m_host)
@@ -338,7 +358,7 @@ public class Url implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_parameters, m_method, m_httpVersion, m_userAgent, m_virtualHost, m_scheme, m_userInfo, m_host, m_port, m_path,
+        return Objects.hash(m_parameters, m_headers, m_method, m_httpVersion, m_userAgent, m_virtualHost, m_scheme, m_userInfo, m_host, m_port, m_path,
                             m_query, m_fragment, m_matches, m_responseRange, m_canonicalEquivalence, m_caseInsensitive, m_comments, m_dotall,
                             m_literal, m_multiline, m_unicodeCase, m_unixLines);
     }

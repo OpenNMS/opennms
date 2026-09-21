@@ -23,16 +23,21 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { WhoAmIResponse } from '@/types'
+import { ref } from 'vue'
 
 export const useAuthStore = defineStore('authStore', () => {
   const whoAmI = ref({ roles: [] as string[] } as WhoAmIResponse)
   const loaded = ref(false)
 
   const getWhoAmI = async () => {
-    const resp = await API.getWhoAmI()
-    
-    if (resp) {
-      whoAmI.value = resp
+    try {
+      const resp = await API.getWhoAmI()
+      if (resp) {
+        whoAmI.value = resp
+      }
+    } finally {
+      // consumers gate on loaded (page loads, role guards); a failed whoami
+      // must still release them instead of hanging them forever
       loaded.value = true
     }
   }

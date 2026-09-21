@@ -65,7 +65,7 @@ public class CategorySearchProvider implements SearchProvider {
             final SearchResultItem searchResultItem = new SearchResultItem();
             searchResultItem.setIdentifier(category.getId().toString());
             searchResultItem.setLabel("Show nodes in category '" + category.getName() + "'");
-            searchResultItem.setUrl("element/nodeList.htm?category1=" + UrlUtils.encode(category.getName()));
+            searchResultItem.setUrl("ui/#/nodes?categories=" + UrlUtils.encode(category.getName()));
             return searchResultItem;
         }).collect(Collectors.toList());
         final SearchResult searchResult = new SearchResult(Contexts.Action).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);

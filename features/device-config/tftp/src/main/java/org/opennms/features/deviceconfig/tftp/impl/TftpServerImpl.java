@@ -22,18 +22,21 @@
 package org.opennms.features.deviceconfig.tftp.impl;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.net.io.FromNetASCIIOutputStream;
@@ -60,6 +63,7 @@ import org.slf4j.LoggerFactory;
 // - received files are not stored on disk but in memory and are handed off to registered listeners
 // - the maximum file size to receive can be configured
 // - requesting files is not supported
+// - added support for RFC2348 blksize
 
 public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
 
@@ -92,6 +96,8 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
             try {
                 int lastBlock = 0;
                 final String fileName = twrp.getFilename();
+                int negotiatedBlksize = TFTPDataPacket.MAX_DATA_LENGTH;
+                Map<String,String> twrpOptions = twrp.getOptions();
 
                 try {
                     if (twrp.getMode() == TFTP.NETASCII_MODE) {
@@ -104,9 +110,37 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             .getPort(), TFTPErrorPacket.UNDEFINED, e.getMessage()));
                     return;
                 }
-
                 TFTPAckPacket lastSentAck = new TFTPAckPacket(twrp.getAddress(), twrp.getPort(), 0);
-                sendData(transferTftp_, lastSentAck); // send the data
+
+                // Handle RFC2348 TFTP blksize
+                if (twrpOptions.containsKey("blksize")) {
+                    LOG.debug("Received blksize option from client '{}', attempting negotiation", twrp.getAddress());
+                    try {
+                        negotiatedBlksize = Integer.parseInt(twrpOptions.get("blksize"));
+                        if (negotiatedBlksize < 8 || negotiatedBlksize > 65464) {
+                            LOG.error("Received invalid blksize '{}' option from client {}", negotiatedBlksize, twrp.getAddress());
+                            transferTftp_.bufferedSend(new TFTPErrorPacket(twrp.getAddress(),
+                                    twrp.getPort(), TFTPErrorPacket.INVALID_OPTIONS_VALUE,
+                                    "Invalid blksize"));
+                            return;
+                        } else {
+                            LOG.debug("Negotiating tftp blksize '{}' with client '{}'", negotiatedBlksize, twrp.getAddress());
+                            // Create an OAck response packet - commons doesn't provide a method for this yet.
+                            DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
+                            sendOAckPacket(transferTftp_, oackPacket);
+                            transferTftp_.resetBuffersToSize(negotiatedBlksize);
+                            LOG.debug("Successfully negotiated blksize '{}' with client '{}'", negotiatedBlksize, twrp.getAddress());
+                        }
+                    } catch (final Exception e) {
+                        LOG.error("Received invalid blksize '{}' option from client {}:", negotiatedBlksize, twrp.getAddress(), e);
+                        transferTftp_.bufferedSend(new TFTPErrorPacket(twrp.getAddress(),
+                                twrp.getPort(), TFTPErrorPacket.INVALID_OPTIONS_VALUE,
+                                "Invalid blksize"));
+                        return;
+                    }
+                } else {
+                    sendData(transferTftp_, lastSentAck); // send the ack
+                }
 
                 while (true) {
                     // get the response - ensure it is from the right place.
@@ -134,21 +168,38 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             dataPacket = transferTftp_.bufferedReceive();
                         } catch (final SocketTimeoutException e) {
                             statistics.incErrors();
-                            LOG.error("did not receive data packet", e);
+                            LOG.error("did not receive data packet from client '{}': ", twrp.getAddress(), e);
                             if (timeoutCount >= maxTimeoutRetries_) {
                                 throw e;
                             }
-                            // It didn't get our ack. Resend it.
-                            transferTftp_.bufferedSend(lastSentAck);
+                            // Maybe the client didn't get our ack. If there is no blksize option, resend the last ack
+                            if (! twrpOptions.containsKey("blksize")) {
+                                LOG.debug("Resending missed ack to '{}'", twrp.getAddress());
+                                transferTftp_.bufferedSend(lastSentAck);
+                                }
+                            if (lastSentAck.getBlockNumber() == 0 && twrpOptions.containsKey("blksize")) {
+                                // if we haven't received any data block yet, we should resend the OACK
+                                LOG.debug("Resending missed OACK to '{}'", twrp.getAddress());
+                                DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
+                                sendOAckPacket(transferTftp_, oackPacket);
+                            }
                             timeoutCount++;
                             continue;
                         }
                     }
 
                     if (dataPacket instanceof TFTPWriteRequestPacket) {
-                        // it must have missed our initial ack. Send another.
-                        lastSentAck = new TFTPAckPacket(twrp.getAddress(), twrp.getPort(), 0);
-                        transferTftp_.bufferedSend(lastSentAck);
+                        // Client must have missed our initial ack. If this is a WRQ and
+                        // contains a blksize option, we need to resend the OACK.
+                        if (((TFTPWriteRequestPacket)dataPacket).getOptions().containsKey("blksize")) {
+                            DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
+                            LOG.debug("Resending WRQ OACK to '{}'", twrp.getAddress());
+                            sendOAckPacket(transferTftp_, oackPacket);
+                        } else {
+                            lastSentAck = new TFTPAckPacket(twrp.getAddress(), twrp.getPort(), 0);
+                            LOG.debug("Resending WRQ ack to '{}'", twrp.getAddress());
+                            transferTftp_.bufferedSend(lastSentAck);
+                        }
                     } else if (dataPacket == null || !(dataPacket instanceof TFTPDataPacket)) {
                         if (!shutdownTransfer) {
                             statistics.incErrors();
@@ -161,6 +212,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                         final byte[] data = ((TFTPDataPacket) dataPacket).getData();
                         final int dataLength = ((TFTPDataPacket) dataPacket).getDataLength();
                         final int dataOffset = ((TFTPDataPacket) dataPacket).getDataOffset();
+                        LOG.debug("Processing block {} from client '{}'", block, twrp.getAddress());
 
                         if (block > lastBlock || lastBlock == 65535 && block == 0) {
                             // it might resend a data block if it missed our ack
@@ -169,7 +221,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             statistics.incBytesReceived(dataLength);
                             if (bytesReceived > maximumReceiveSize) {
                                 statistics.incErrors();
-                                LOG.error("Maximum receive size exceeded - address: {}, fileName: {}; max: {}; received: ", twrp.getAddress(), twrp.getFilename(), maximumReceiveSize, bytesReceived);
+                                LOG.error("Maximum receive size exceeded - address: '{}', fileName: '{}'; max: '{}'; received: '{}'", twrp.getAddress(), twrp.getFilename(), maximumReceiveSize, bytesReceived);
                                 // make sure it was from the right client...
                                 transferTftp_
                                         .bufferedSend(new TFTPErrorPacket(dataPacket
@@ -184,8 +236,9 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                         }
 
                         lastSentAck = new TFTPAckPacket(twrp.getAddress(), twrp.getPort(), block);
+                        LOG.debug("Sending Ack for block {} from client '{}'", block, twrp.getAddress());
                         sendData(transferTftp_, lastSentAck); // send the data
-                        if (dataLength < TFTPDataPacket.MAX_DATA_LENGTH) {
+                        if (dataLength < negotiatedBlksize) {
                             // end of stream signal - The transfer is complete.
                             bos.close();
 
@@ -195,7 +248,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
 
                             List<TftpFileReceiver> rs;
                             synchronized (receivers) {
-                                rs = new ArrayList(receivers);
+                                rs = new ArrayList<>(receivers);
                             }
                             rs.forEach(r -> {
                                 r.onFileReceived(twrp.getAddress(), fileName, content);
@@ -209,6 +262,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                                 } catch (final SocketTimeoutException e) {
                                     // this is the expected route - the client
                                     // shouldn't be sending any more packets.
+                                    LOG.debug("tftp transfer from client '{}' complete.", twrp.getAddress());
                                     break;
                                 }
 
@@ -236,6 +290,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             }
 
                             // all done.
+                            LOG.debug("Timing out transfer from client '{}'", twrp.getAddress());
                             break;
                         }
                     }
@@ -266,6 +321,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             .getPort(), TFTPErrorPacket.ILLEGAL_OPERATION,
                             "Read not allowed by server."));
                 } else if (tftpPacket_ instanceof TFTPWriteRequestPacket) {
+                    LOG.debug("Received write request from client '{}'", tftpPacket_.getAddress());
                     handleWrite((TFTPWriteRequestPacket) tftpPacket_);
                 } else {
                     statistics.incWarnings();
@@ -598,5 +654,39 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     @Override
     public TftpStatistics getAndResetStatistics() {
         return statistics.cloneAndReset();
+    }
+
+    private DatagramPacket createBlksizeOAckPacket(int size, InetAddress addr, int port) throws IOException {
+        // build the oack packet - commons doesn't provide a method for this yet...
+        ByteArrayOutputStream oack = new ByteArrayOutputStream();
+        oack.write(0);
+        oack.write(TFTPPacket.OACK);
+        oack.write("blksize".getBytes(StandardCharsets.US_ASCII));
+        oack.write(0);
+        oack.write(String.valueOf(size).getBytes(StandardCharsets.US_ASCII));
+        oack.write(0);
+        //make it a byte array
+        byte[] oackData = oack.toByteArray();
+
+        return new DatagramPacket(oackData, oackData.length, addr, port);
+    }
+
+    //Helper method to send a DatagramPacket through transferTftp_'s underlying socket using reflection
+    private void sendOAckPacket(TFTP tftp, DatagramPacket oackPacket) throws IOException {
+        try {
+            // TFTP class extends DatagramSocketClient, which has a protected field "_socket_"
+            // that holds the underlying DatagramSocket.
+            java.lang.reflect.Field socketField =
+                    org.apache.commons.net.DatagramSocketClient.class.getDeclaredField("_socket_");
+            socketField.setAccessible(true);
+
+            DatagramSocket socket = (DatagramSocket) socketField.get(tftp);
+            if (socket == null || socket.isClosed()) {
+                throw new IOException("TFTP socket is not open");
+            }
+            socket.send(oackPacket);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IOException("Failed to access TFTP socket via reflection", e);
+        }
     }
 }

@@ -159,6 +159,13 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 }
             }
 
+            // capture whether the content differs before the DAO call overwrites the stored bytes
+            final byte[] previousContent = latestConfig.map(DeviceConfig::getConfig).orElse(null);
+            final boolean ignoreComments = Boolean.parseBoolean(
+                    getKeyedString(parameters, DeviceConfigConstants.COMPARE_IGNORE_COMMENTS, "false"));
+            final boolean configChanged = previousContent != null
+                    && !DeviceConfigUtil.configsAreEqual(previousContent, content, encoding, ignoreComments);
+
             Optional<Long> updatedId = deviceConfigDao.updateDeviceConfigContent(
                 ipInterface,
                 svc.getSvcName(),
@@ -168,6 +175,12 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 deviceConfig.getFilename());
             sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI, svc.getNodeId(), Map.of());
 
+            if (configChanged) {
+                sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_CHANGED_UEI, svc.getNodeId(), Map.of(
+                        DeviceConfigConstants.CONFIG_TYPE, configType
+                ));
+            }
+
             // if no record previously existed, don't need to call cleanup since
             // we just added the first record
             if (latestConfig.isPresent()) {
@@ -175,11 +188,14 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             }
         }
         // UsageAnalytics
-        if (status.isUp()) {
-            usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
-        } else {
-            usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());
-        }
+        sessionUtils.withTransaction(() -> {
+            if (status.isUp()) {
+                usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
+            } else {
+                usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());
+            }
+            return null;
+        });
 
         return status;
     }
@@ -237,7 +253,10 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
         if (!staleConfigs.isEmpty()) {
             LOG.debug("DCB: Found {} stale device config records to delete", staleConfigs.size());
-            staleConfigs.stream().map(DeviceConfig::getId).forEach(deviceConfigDao::delete);
+            sessionUtils.withTransaction(() -> {
+                staleConfigs.stream().map(DeviceConfig::getId).forEach(deviceConfigDao::delete);
+                return null;
+            });
         }
     }
 

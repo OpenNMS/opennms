@@ -52,7 +52,7 @@
   <!--
         Reduces the graceful shutdown time from 300 to 15 seconds.
    -->
-  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.engine.DefaultShutdownStrategy">
     <property name="timeout" value="15"/>
   </bean>
 

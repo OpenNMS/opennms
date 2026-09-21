@@ -28,6 +28,7 @@ export const mapEventConfigSourceFromServer = (source: any): EventConfigSource =
     enabled: source.enabled,
     eventCount: source.eventCount,
     fileOrder: source.fileOrder,
+    evaluationOrder: source.evaluationOrder,
     vendor: source.vendor,
     uploadedBy: source.uploadedBy,
     createdTime: new Date(source.createdTime),
@@ -52,7 +53,7 @@ const extractSeverity = (xmlContent: string): string | null => {
       const severityElement = xmlDoc.getElementsByTagName('severity')[0]
       severity = severityElement ? severityElement.textContent : null
       return severity
-    } catch (e) {
+    } catch (_e) {
       severity = null
       return severity
     }
@@ -76,7 +77,8 @@ export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
     modifiedBy: event.modifiedBy,
     sourceName: event.sourceName,
     vendor: event.vendor,
-    fileOrder: event.fileOrder
+    fileOrder: event.fileOrder,
+    eventOrder: event.eventOrder
   }
 }
 
@@ -97,4 +99,3 @@ export const mapUploadedSourceNamesFromServer = (content: any): Array<UploadedSo
     name: source.name
   } as UploadedSourceNamesResponse))
 }
-

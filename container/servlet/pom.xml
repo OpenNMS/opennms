@@ -31,14 +31,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core</groupId>
-            <artifactId>org.opennms.core.soa</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>org.apache.karaf.main</artifactId>
-            <version>${karafVersion}</version>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>org.opennms.container.daemon</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -55,6 +50,16 @@
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

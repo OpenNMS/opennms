@@ -134,7 +134,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
             for(BridgePort bp :shared.getBridgePorts()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
                 if (topology.getVertex(node.getId().toString()) == null) {
-                    topology.getVertices().add(create(node,ipMap.get(node.getId())));
+                    topology.addVertex(create(node,ipMap.get(node.getId())));
                 }
                 bpVtxMap.put(
                                bp,
@@ -150,7 +150,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
                 } else {
                     NodeTopologyEntity node = nodeMap.get(mp.getNodeId());
                     if (topology.getVertex(node.getId().toString()) ==  null) {
-                        topology.getVertices().add(create(node,ipMap.get(node.getId())));
+                        topology.addVertex(create(node,ipMap.get(node.getId())));
                     }
                     macPortToNodeVertexMap.put(
                                mp,
@@ -162,7 +162,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
             OnmsTopologyPort macsVertexPort = null;
             if (shared.getCloud() != null || portsWithoutNode.size() > 0) {
                 macsVertex = createMacsCloudVertex(portsWithoutNode, shared) ;
-                topology.getVertices().add(macsVertex);
+                topology.addVertex(macsVertex);
                 macsVertexPort= createVertexPort(macsVertex);
             }
             
@@ -184,12 +184,12 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
                 }
                 assert sourcebp != null;
                 assert targetbp != null;
-                topology.getEdges().add(OnmsTopologyEdge.create(Topology.getEdgeId(sourcebp, targetbp), sourceport, targetport));
+                topology.addEdge(OnmsTopologyEdge.create(Topology.getEdgeId(sourcebp, targetbp), sourceport, targetport));
             } else if (bpVtxMap.size() == 1 && 
                     macPortToNodeVertexMap.size() == 1 && macsVertex == null ){
                 BridgePort sourcebp = bpVtxMap.keySet().iterator().next();
                 MacPort targetmp = macPortToNodeVertexMap.keySet().iterator().next();
-                topology.getEdges().add(
+                topology.addEdge(
                       OnmsTopologyEdge.create(
                               Topology.getEdgeId(sourcebp, targetmp), 
                               create(
@@ -207,7 +207,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
             } else  if (bpVtxMap.size() == 1 && 
                     macPortToNodeVertexMap.size() == 0 && macsVertex != null ) {
                     BridgePort sourcebp = bpVtxMap.keySet().iterator().next();
-                    topology.getEdges().add(
+                    topology.addEdge(
                             OnmsTopologyEdge.create(
                                              Topology.getEdgeId(macsVertex.getId(),sourcebp), 
                                              create(
@@ -223,9 +223,9 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
             } else {
                 OnmsTopologyVertex segment = createSegmentVertex(shared);
                 OnmsTopologyPort segmentPort = createVertexPort(segment);
-                topology.getVertices().add(segment);
+                topology.addVertex(segment);
                 for (BridgePort bp: bpVtxMap.keySet()) {
-                    topology.getEdges().add(
+                    topology.addEdge(
                              OnmsTopologyEdge.create(
                                               Topology.getEdgeId(segment.getId(), bp), 
                                               segmentPort,
@@ -239,7 +239,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
                     
                 }
                 for (MacPort mp: macPortToNodeVertexMap.keySet()) {
-                    topology.getEdges().add(
+                    topology.addEdge(
                              OnmsTopologyEdge.create(
                                               Topology.getEdgeId(segment.getId(), mp), 
                                               segmentPort,
@@ -253,7 +253,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
                 }
                 
                 if (macsVertex != null) {
-                    topology.getEdges().add(
+                    topology.addEdge(
                              OnmsTopologyEdge.create(
                                                  Topology.getDefaultEdgeId(segment.getId(), macsVertex.getId()), 
                                                  segmentPort,

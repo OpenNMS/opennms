@@ -53,5 +53,5 @@ volumes:
 .Restart the Minion container
 [source, console]
 ----
-docker-compose restart minion
+docker compose restart minion
 ----

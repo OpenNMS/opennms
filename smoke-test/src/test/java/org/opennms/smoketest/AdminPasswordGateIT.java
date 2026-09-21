@@ -46,6 +46,7 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(AdminPasswordGateIT.class);
 
     private static final String ALTERNATE_ADMIN_PASSWORD = "Admin!admin1";
+    private static final String INVALID_ADMIN_PASSWORD = "jwV5wddWoSCFS6Vn7JTRZVGvVGfgBaEL";
 
     @Before
     public void setUp() throws Exception {
@@ -88,32 +89,61 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
         loginAndSkip();
     }
 
+    /**
+     * Tests:
+     * - logging in as "admin/admin", then getting the Password Change gate.
+     * - attempting to change password to one which does not contain a special character
+     * - should be rejected on client side
+     */
+    @Test
+    public void testAdminPasswordGateWithInvalidPasswordHavingNoSpecialCharacters() {
+        // login with "admin/admin", do not skip the password gate but instead change the password
+        LOG.debug("Test admin login and password change with invalid password having no special characters.");
+        logout();
+
+        // login with "admin/admin", do not skip past the password gate, skip cookie deletion
+        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, false, false, true, true);
+
+        if (!driver.getCurrentUrl().contains("passwordGate.jsp")) {
+            fail("Failed to get password gate page after 'admin/admin' login attempt.");
+        }
+
+        // Change the admin password to an invalid one
+        enterText(By.name("oldpass"), PASSWORD_GATE_PASSWORD);
+        enterText(By.name("pass1"), INVALID_ADMIN_PASSWORD);
+        enterText(By.name("pass2"), INVALID_ADMIN_PASSWORD);
+        clickElement(By.name("btn_change_password"));
+
+        // should stay on page and get an alert message
+        handleAlert("Password complexity is not correct!", false);
+    }
+
     @Ignore("Not currently working. RequestCache may not be saving correct page.")
     public void testAdminPasswordGateRetainsRequestedPage() {
         // logout and try to go to a non-login page
         // user will be redirected to login page, login with "admin/admin"
         // will get password gate page, click Skip, then should redirect to original page
-        LOG.debug("Test logout and login to the node page, confirm that skipping the password gate redirects there");
+        LOG.debug("Test logout and login to the outage page, confirm that skipping the password gate redirects there");
         logout();
-        nodePage();
+        outagePage();
         waitFor("login.jsp");
         login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, true, false, false, false);
-        waitFor("element/nodeList.htm");
+        waitFor("outage/index.jsp");
 
         // logout and try to go to a non-login page
         // user will be redirected to login page, login with "admin/admin"
-        // will get password gate page, change the password, then should redirect to node page
-        LOG.debug("Test logout and login to the node page, confirm that changing the password redirects to node page");
+        // will get password gate page, change the password, then should redirect to outage page
+        LOG.debug("Test logout and login to the outage page, confirm that changing the password redirects to outage page");
         logout();
-        nodePage();
+        outagePage();
         waitFor("login.jsp");
-        loginAndChangePassword("element/nodeList.htm", false);
+        loginAndChangePassword("outage/index.jsp", false);
 
         // Reset password back to "admin" using Rest API
         resetPassword();
 
         // login with "admin/admin", should succeed but display passwordGate page, which is skipped
-        LOG.debug("Test final logout and login to the node page and skip");
+        LOG.debug("Test final logout and login to the outage page and skip");
         logout();
         loginAndSkip();
     }

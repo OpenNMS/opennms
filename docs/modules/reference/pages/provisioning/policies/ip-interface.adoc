@@ -1,9 +1,9 @@
 = IP Interface Policy
 :description: Learn how to configure and use the IP interface policy in OpenNMS {page-component-title} to control the persistence of discovered interfaces.
 
-The `Matching IP Interface` policy controls whether discovered interfaces are persisted and if they are persisted, whether they will be forced to be managed or unmanaged.
+The `Matching IP Interface` policy (`MatchingIpInterfacePolicy`) controls whether interfaces discovered during a node scan are persisted, and, if they are, whether they are managed or unmanaged.
 
-The two required parameters for this policy are action and matchBehavior.
+Set the `action` parameter to one of the values below.
 
 [options="header"]
 [cols="1,3"]
@@ -27,17 +27,42 @@ The two required parameters for this policy are action and matchBehavior.
 | Allow SNMP polling on the interface.
 
 | MANAGE
-| Default setting. Add interface to node and allow polling and collection.
+| Add interface to node and allow polling and collection.
 
 | UNMANAGE
 | Add interface to node but do not process pollerd and collectd tasks for the interface.
 |===
 
-Any subsequent scan of the node or reimports of the requisition force this policy to be applied.
-IP Interface entities that already exist and match a policy will not be deleted, unless the `UNMANAGE` action is specified.
-Delete existing interfaces by recreating the node in the Requisition UI (simply change the foreign ID and reimport the group) or by using the REST API:
+NOTE: The web UI requires you to set both `action` and `matchBehavior` before it will save the policy.
+`matchBehavior` is otherwise optional and defaults to `ANY_PARAMETER`.
+
+This policy also accepts the common `matchBehavior` parameter.
+See xref:reference:provisioning/policies.adoc[Policies] for `matchBehavior` and the `~` regular-expression prefix.
+
+== Match criteria
+
+[options="header", cols="1,3"]
+|===
+| Property
+| Description
+
+| ipAddress
+| IP address of the discovered interface.
+
+| ipHostName
+| Resolved host name of the interface.
+|===
+
+== Persistence
+
+This policy is reapplied on each subsequent scan or reimport of the requisition.
+Note that `UNMANAGE` does not delete an interface -- it keeps the interface and marks it unmanaged.
+A `DO_NOT_PERSIST` match keeps a discovered interface from being persisted; a non-primary interface that was persisted on an earlier scan is then removed during scan reconciliation (the primary interface is never removed this way).
+To delete a specific interface outright, recreate the node in the Requisition UI (change the foreign ID and reimport the group) or use the REST API:
 
 [source, console]
 ----
 > curl -X DELETE -H "Content-Type: application/xml" -u admin:admin http://localhost:8980/opennms/rest/nodes/6/ipinterfaces/10.1.1.1
 ----
+
+For configuration examples, see xref:reference:provisioning/policies/examples.adoc[Policy Examples].

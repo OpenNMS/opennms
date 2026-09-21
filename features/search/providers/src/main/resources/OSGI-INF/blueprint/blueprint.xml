@@ -15,9 +15,10 @@
     <reference id="monitoringLocationDao"       interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"        availability="mandatory"/>
     <reference id="alarmDao"                    interface="org.opennms.netmgt.dao.api.AlarmDao"                     availability="mandatory"/>
     <reference id="genericPersistenceAccessor"  interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor"   availability="mandatory"/>
-    <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="mandatory"/>
-    <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="mandatory"/>
-    <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="mandatory"/>
+    <!-- These providers enrich search results when the web application is running. -->
+    <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="optional"/>
+    <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="optional"/>
+    <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="optional"/>
     <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" availability="mandatory"/>
 
     <!-- Node Providers -->

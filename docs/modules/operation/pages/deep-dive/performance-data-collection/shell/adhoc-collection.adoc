@@ -89,7 +89,7 @@ OPTIONS
         -t, --ttl
                 Time to live in milliseconds
         -x, --rra
-                Round Robin Archives, defaults to the pristine content on datacollection-config.xml
+                Round Robin Archives, defaults to the active SNMP data collection config
                 (multi-valued)
         --help
                 Display this help message

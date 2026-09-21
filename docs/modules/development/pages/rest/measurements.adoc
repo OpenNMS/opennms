@@ -15,6 +15,13 @@ NOTE: Unless otherwise specified, all units of time are expressed in millisecond
 
 | /measurements/\{resourceid}/\{attribute}
 | Retrieve the measurements for a single attribute.
+
+| /measurements/filters
+| Retrieve metadata describing all available filters that can be applied to measurement queries.
+
+| /measurements/filters/\{name}
+| Retrieve metadata for the filter with the given name.
+Returns `404 Not Found` if no filter with that name exists.
 |===
 
 This table shows all supported query string parameters and their default values:
@@ -51,6 +58,10 @@ The available options depend on the RRA definition.
 | fallback-attribute
 | Secondary attribute that is queried if the primary attribute does not exist.
 | _Blank_
+
+| relaxed
+| When set to `true`, the query does not fail if one or more of the requested attributes cannot be found; missing attributes are returned as `NaN` values instead.
+| false
 |===
 
 === Step sizes

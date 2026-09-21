@@ -35,6 +35,7 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.FilterFavoriteDao;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service to handle CRUD operations and such on {@link OnmsFilterFavorite} objects.
@@ -105,6 +106,7 @@ public class FilterFavoriteService {
      * @param username
      * @return true if the favorite was deleted, otherwise false.
      */
+    @Transactional
     public boolean deleteFavorite(String favoriteId, String username) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, username);
         return deleteFavorite(favorite);
@@ -150,6 +152,7 @@ public class FilterFavoriteService {
      * @param userName
      * @return
      */
+    @Transactional
     public boolean deleteFavorite(int favoriteId, String userName) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, userName);
         return deleteFavorite(favorite);
@@ -167,6 +170,7 @@ public class FilterFavoriteService {
         return favorites;
     }
 
+    @Transactional
     public OnmsFilterFavorite createFavorite(String userName, String favoriteName, String filterString, OnmsFilterFavorite.Page page) throws FilterFavoriteException {
         // Validate input
         validate(userName, favoriteName, filterString, page);

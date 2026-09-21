@@ -33,7 +33,6 @@ import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.camel.BeanInject;
 import org.apache.camel.util.KeyValueHolder;
 import org.apache.commons.io.IOUtils;
 
@@ -51,8 +50,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class EifAdapterBlueprintTest extends CamelBlueprintTest {
 
-    @BeanInject
-    protected EventIpcManager eventIpcManager;
+    // Camel 3's @BeanInject requires a unique bean per type, but the mock service we
+    // register also surfaces through the blueprint container; keep the instance instead
+    protected MockEventIpcManager eventIpcManager;
 
     @Autowired
     protected NodeDao nodeDao;
@@ -65,9 +65,9 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
     @SuppressWarnings("rawtypes")
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-        MockEventIpcManager mockEventIpcManager = new MockEventIpcManager();
+        eventIpcManager = new MockEventIpcManager();
         MockNodeDao mockNodeDao = new MockNodeDao();
-        services.put(EventIpcManager.class.getName(), asService(mockEventIpcManager, null));
+        services.put(EventIpcManager.class.getName(), asService(eventIpcManager, null));
         services.put(NodeDao.class.getName(), asService(mockNodeDao, null));
     }
 

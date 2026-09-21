@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.opennms.core.concurrent.FutureUtils;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
@@ -103,6 +104,37 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         // set the ip address and port of the tftp server
         vs.put(SCRIPT_VAR_TFTP_SERVER_PORT, String.valueOf(tftpServer.getPort()));
         vs.put(SCRIPT_VAR_CONFIG_TYPE, configType);
+
+        // If the script contains a 'capture:' statement, capture device output inline.
+        // No file transfer (TFTP/SCP/FTP) is used — the captured bytes come back in scriptResult.capturedConfig.
+        if (scriptContainsCapture(script)) {
+            return CompletableFuture.supplyAsync(() -> {
+                SshScriptingService.Result scriptResult;
+                try {
+                    scriptResult = sshScriptingService.execute(
+                            script, user, password, authKey, target, hostKeyFingerprint, shell, vs, timeout);
+                } catch (Exception e) {
+                    var msg = scriptingFailureMsg(target, e.getMessage());
+                    LOG.error(msg, e);
+                    return Either.<Failure, Success>left(new Failure(msg));
+                }
+
+                if (scriptResult.isFailed()) {
+                    return Either.<Failure, Success>left(new Failure(
+                            scriptingFailureMsg(target, scriptResult.message),
+                            scriptResult.stdout, scriptResult.stderr, scriptResult.scriptOutput));
+                }
+
+                if (scriptResult.capturedConfig.isEmpty() || !hasPrintableContent(scriptResult.capturedConfig.get())) {
+                    return Either.<Failure, Success>left(new Failure(
+                            "Script 'capture:' statement parsed but captured no output or no printable characters - target: " + target,
+                            scriptResult.stdout, scriptResult.stderr, scriptResult.scriptOutput));
+                }
+
+                return Either.<Failure, Success>right(
+                        new Success(scriptResult.capturedConfig.get(), configType, scriptResult.scriptOutput));
+            }, executor);
+        }
 
         if (protocol == Protocol.TFTP) {
             // Keep timeout common between TFTP server and scripting service
@@ -228,6 +260,21 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 }
             }
         }
+    }
+
+    static boolean hasPrintableContent(byte[] bytes) {
+        for (byte b : bytes) {
+            if (b >= 0x21 && b <= 0x7E) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean scriptContainsCapture(String script) {
+        return Stream.of(script.split("\\\\n|\\n"))
+                .map(String::trim)
+                .anyMatch(line -> line.startsWith("capture:"));
     }
 
     static String scriptingFailureMsg(final SocketAddress target, String msg) {

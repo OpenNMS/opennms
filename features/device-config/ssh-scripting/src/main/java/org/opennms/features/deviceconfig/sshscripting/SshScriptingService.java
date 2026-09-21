@@ -64,36 +64,48 @@ public interface SshScriptingService {
 
         public final String scriptOutput;
 
-        private Result(final boolean success, final String message, final Optional<String> stdout, final Optional<String> stderr, String scriptOutput) {
+        /**
+         * Config bytes captured via a {@code capture:} statement in the script.
+         * Present only when the script contained a {@code capture:} statement and
+         * the script executed successfully.
+         */
+        public final Optional<byte[]> capturedConfig;
+
+        private Result(final boolean success, final String message, final Optional<String> stdout, final Optional<String> stderr, String scriptOutput, Optional<byte[]> capturedConfig) {
             this.success = success;
             this.message = message;
             this.stdout = stdout;
             this.stderr = stderr;
             this.scriptOutput = scriptOutput;
+            this.capturedConfig = capturedConfig;
+        }
+
+        public static Result success(final String message, final String stdout, final String stderr, String scriptOutput, Optional<byte[]> capturedConfig) {
+            return new Result(true, message, Optional.of(stdout), Optional.of(stderr), scriptOutput, capturedConfig);
         }
 
         public static Result success(final String message, final String stdout, final String stderr, String scriptOutput) {
-            return new Result(true, message, Optional.of(stdout), Optional.of(stderr), scriptOutput);
+            return new Result(true, message, Optional.of(stdout), Optional.of(stderr), scriptOutput, Optional.empty());
         }
 
         public static Result success(final String message, final String stdout, final String stderr) {
-            return new Result(true, message, Optional.of(stdout), Optional.of(stderr), "");
+            return new Result(true, message, Optional.of(stdout), Optional.of(stderr), "", Optional.empty());
         }
 
         public static Result success(final String message) {
-            return new Result(true, message, Optional.empty(), Optional.empty(), "");
+            return new Result(true, message, Optional.empty(), Optional.empty(), "", Optional.empty());
         }
 
         public static Result failure(final String message, final String stdout, final String stderr, String scriptOutput) {
-            return new Result(false, message, Optional.of(stdout), Optional.of(stderr), scriptOutput);
+            return new Result(false, message, Optional.of(stdout), Optional.of(stderr), scriptOutput, Optional.empty());
         }
 
         public static Result failure(final String message, final String stdout, final String stderr) {
-            return new Result(false, message, Optional.of(stdout), Optional.of(stderr), "");
+            return new Result(false, message, Optional.of(stdout), Optional.of(stderr), "", Optional.empty());
         }
 
         public static Result failure(final String message) {
-            return new Result(false, message, Optional.empty(), Optional.empty(), "");
+            return new Result(false, message, Optional.empty(), Optional.empty(), "", Optional.empty());
         }
 
         public boolean isSuccess() {

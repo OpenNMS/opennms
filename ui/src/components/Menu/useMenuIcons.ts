@@ -20,42 +20,42 @@
 /// License.
 ///
 
-import IconDashboard from '@featherds/icon/action/Dashboard'
-import IconHelp from '@featherds/icon/action/Help'
-import IconHome from '@featherds/icon/action/Home'
-import IconLock from '@featherds/icon/action/Lock'
-import IconLogout from '@featherds/icon/action/LogOut'
-import IconLocation from '@featherds/icon/action/Location'
-import IconManageProfile from '@featherds/icon/action/ManageProfile'
-import IconPerson from '@featherds/icon/action/Person'
-import IconSearch from '@featherds/icon/action/Search'
-import IconContactSupport from '@featherds/icon/action/ContactSupport'
-import IconUnlock from '@featherds/icon/action/Unlock'
-import IconView from '@featherds/icon/action/View'
-import IconViewDetails from '@featherds/icon/action/ViewDetails'
-import IconWorkflow from '@featherds/icon/action/Workflow'
+import IconDashboard from '@opennms/onms-ui/icons/action/Dashboard.vue'
+import IconHelp from '@opennms/onms-ui/icons/action/Help.vue'
+import IconHome from '@opennms/onms-ui/icons/action/Home.vue'
+import IconLock from '@opennms/onms-ui/icons/action/Lock.vue'
+import IconLogout from '@opennms/onms-ui/icons/action/LogOut.vue'
+import IconLocation from '@opennms/onms-ui/icons/action/Location.vue'
+import IconManageProfile from '@opennms/onms-ui/icons/action/ManageProfile.vue'
+import IconPerson from '@opennms/onms-ui/icons/action/Person.vue'
+import IconSearch from '@opennms/onms-ui/icons/action/Search.vue'
+import IconContactSupport from '@opennms/onms-ui/icons/action/ContactSupport.vue'
+import IconUnlock from '@opennms/onms-ui/icons/action/Unlock.vue'
+import IconView from '@opennms/onms-ui/icons/action/View.vue'
+import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
+import IconWorkflow from '@opennms/onms-ui/icons/action/Workflow.vue'
 
-import IconColumnChart from '@featherds/icon/datavis/ColumnChart'
-import IconLineChart from '@featherds/icon/datavis/LineChart'
+import IconColumnChart from '@opennms/onms-ui/icons/datavis/ColumnChart.vue'
+import IconLineChart from '@opennms/onms-ui/icons/datavis/LineChart.vue'
 
-import IconApiConfig from '@featherds/icon/network/ApiConfig'
-import IconApiEndpoints from '@featherds/icon/network/ApiEndpoints'
-import IconBuild from '@featherds/icon/network/Build'
-import IconConfiguration from '@featherds/icon/network/Configuration'
-import IconDistributedMonitoring from '@featherds/icon/network/DistributedMonitoring'
-import IconInstances from '@featherds/icon/network/Instances'
-import IconLogsAlt from '@featherds/icon/network/LogsAlt'
-import IconInventory from '@featherds/icon/network/Inventory'
-import IconInventoryAlt from '@featherds/icon/network/InventoryAlt'
-import IconMonitoring from '@featherds/icon/network/Monitoring'
-import IconNetworkConnection from '@featherds/icon/network/Connection'
-import IconNetworkServer from '@featherds/icon/network/Server'
-import IconNodes from '@featherds/icon/network/Nodes'
+import IconApiConfig from '@opennms/onms-ui/icons/network/ApiConfig.vue'
+import IconApiEndpoints from '@opennms/onms-ui/icons/network/ApiEndpoints.vue'
+import IconBuild from '@opennms/onms-ui/icons/network/Build.vue'
+import IconConfiguration from '@opennms/onms-ui/icons/network/Configuration.vue'
+import IconDistributedMonitoring from '@opennms/onms-ui/icons/network/DistributedMonitoring.vue'
+import IconInstances from '@opennms/onms-ui/icons/network/Instances.vue'
+import IconLogsAlt from '@opennms/onms-ui/icons/network/LogsAlt.vue'
+import IconInventory from '@opennms/onms-ui/icons/network/Inventory.vue'
+import IconInventoryAlt from '@opennms/onms-ui/icons/network/InventoryAlt.vue'
+import IconMonitoring from '@opennms/onms-ui/icons/network/Monitoring.vue'
+import IconNetworkConnection from '@opennms/onms-ui/icons/network/Connection.vue'
+import IconNetworkServer from '@opennms/onms-ui/icons/network/Server.vue'
+import IconNodes from '@opennms/onms-ui/icons/network/Nodes.vue'
 
 const IconCategories = ['action', 'datavis', 'network']
 
 const useMenuIcons = () => {
-  // iconId should be a specifier from Feather, example:
+  // iconId should be a specifier from our Onms icons, example:
   // actions/accountCircle
   const getIcon = (iconId?: string | null) => {
     const arr = (iconId ?? '').split('/')

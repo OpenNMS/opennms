@@ -57,6 +57,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -107,7 +108,10 @@ public class DeviceConfigMonitorAdaptorIT {
 
     @Before
     public void init() {
-        populateIpInterface();
+        sessionUtils.withTransaction(() -> {
+            populateIpInterface();
+            return null;
+        });
     }
 
     /**
@@ -132,7 +136,8 @@ public class DeviceConfigMonitorAdaptorIT {
      *
      */
     @Test
-    public void testDeviceConfigPersistence() {
+    @Transactional(readOnly = false)
+    public void testDeviceConfigPersistence() throws InterruptedException {
         String config = "OpenNMS-Device-Config";
         MonitoredService service = Mockito.mock(MonitoredService.class);
         PollStatus pollStatus = Mockito.mock(PollStatus.class);
@@ -209,6 +214,10 @@ public class DeviceConfigMonitorAdaptorIT {
         Assert.assertEquals(configOnTuesday.get().getCreatedTime(), configOnTuesday.get().getLastUpdated());
 
         // Try to persist same config again ( Scenario 3)
+        // Brief pause so this backup gets a strictly-later timestamp than the previous one
+        // (the persisted createdTime/lastUpdated come from new Date(); consecutive backups within
+        // the same millisecond would otherwise compare equal).
+        Thread.sleep(10);
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnWednesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnWednesday.isPresent());
@@ -240,15 +249,20 @@ public class DeviceConfigMonitorAdaptorIT {
         Assert.assertEquals(configOnFriday.get().getId(), configOnThursday.get().getId());
         // Verify that lastupdated matches with lastfailed.
         Assert.assertEquals(configOnFriday.get().getLastUpdated(), configOnFriday.get().getLastFailed());
+        // Capture Friday's lastUpdated now: configOnFriday and configOnSaturday are the same managed
+        // entity (same row, single session), so after Saturday's update the live reference would
+        // otherwise also report Saturday's timestamp.
+        final Date fridayLastUpdated = configOnFriday.get().getLastUpdated();
 
         // Send failed update again ( Scenario 6)
+        Thread.sleep(10); // ensure a strictly-later timestamp than the previous backup
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnSaturday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnSaturday.isPresent());
         // Verify that failed config doesn't create new entry
         Assert.assertEquals(configOnSaturday.get().getId(), configOnFriday.get().getId());
         // Verify that lastUpdated got updated and matches with last failed.
-        Assert.assertNotEquals(configOnSaturday.get().getLastUpdated(), configOnFriday.get().getLastUpdated());
+        Assert.assertNotEquals(configOnSaturday.get().getLastUpdated(), fridayLastUpdated);
         Assert.assertEquals(configOnSaturday.get().getLastUpdated(), configOnSaturday.get().getLastFailed());
         Assert.assertArrayEquals(configOnSaturday.get().getConfig(), configOnThursday.get().getConfig());
 
@@ -256,6 +270,7 @@ public class DeviceConfigMonitorAdaptorIT {
         configInBytes = "updated-device-config".getBytes(StandardCharsets.UTF_16);
         deviceConfig = new org.opennms.netmgt.poller.DeviceConfig(configInBytes, fileName);
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
+        Thread.sleep(10); // ensure a strictly-later timestamp than the previous backup
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnSunday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnSunday.isPresent());
@@ -298,6 +313,7 @@ public class DeviceConfigMonitorAdaptorIT {
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void testPollStatusChangeForNonScheduledPolls() {
         MonitoredService service = Mockito.mock(MonitoredService.class);
         PollStatus pollStatus = Mockito.mock(PollStatus.class);

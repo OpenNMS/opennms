@@ -80,6 +80,11 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.config.service</groupId>
       <artifactId>org.opennms.features.config.service.api</artifactId>
       <version>${project.version}</version>
@@ -162,6 +167,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.encrypt-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>commons-beanutils</groupId>
@@ -181,8 +191,8 @@
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <groupId>javax.persistence</groupId>
+      <artifactId>javax.persistence-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

@@ -135,18 +135,23 @@ public class ServiceConfiguration implements Serializable {
             return userConfig;
         }
 
-        // Create a map of default services by name for quick lookup
-        final Map<String, Service> defaultServiceMap = new HashMap<>();
-        for (Service service : defaults.getServices()) {
-            defaultServiceMap.put(service.getName(), service);
+        // The defaults define the complete service catalog and its required
+        // startup order. The user configuration is an override layer.
+        final Map<String, Service> userServiceMap = new HashMap<>();
+        for (Service userService : userConfig.getServices()) {
+            userServiceMap.put(userService.getName(), userService);
         }
 
-        // Merge user services with defaults
         final ServiceConfiguration merged = new ServiceConfiguration();
-        for (Service userService : userConfig.getServices()) {
-            final Service defaultService = defaultServiceMap.get(userService.getName());
-            final Service mergedService = Service.merge(userService, defaultService);
-            merged.addService(mergedService);
+        for (Service defaultService : defaults.getServices()) {
+            final Service userService = userServiceMap.remove(defaultService.getName());
+            merged.addService(Service.merge(userService, defaultService));
+        }
+
+        // Entries absent from the current catalog may refer to modules that
+        // have been removed, so they must not be carried into the runtime list.
+        for (String serviceName : userServiceMap.keySet()) {
+            LOG.warn("Ignoring service override that is not present in the default catalog: {}", serviceName);
         }
 
         return merged;

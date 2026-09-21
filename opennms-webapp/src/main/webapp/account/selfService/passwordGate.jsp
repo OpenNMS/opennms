@@ -160,8 +160,8 @@
 
     if (document.goForm.pass1.value == document.goForm.pass2.value) {
       let newPassword = document.goForm.pass1.value
-      const passwordRegex = /${fn:escapeXml(PasswordGateActionServlet.PASSWORD_REGEX)}/;
-      const sameCharacterRegex = /${fn:escapeXml(PasswordGateActionServlet.SAME_CHARACTER_REGEX)}/;
+      const passwordRegex = /${PasswordGateActionServlet.PASSWORD_REGEX}/;
+      const sameCharacterRegex = /${PasswordGateActionServlet.SAME_CHARACTER_REGEX}/;
 
       if (newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex)) {
         document.goForm.currentPassword.value = document.goForm.oldpass.value;
@@ -236,3 +236,16 @@
         </div>
     </div>
 </div>
+
+<%--
+  These pages include bootstrap.jsp but not bootstrap-footer.jsp — they are
+  deliberately footer-less — so nothing else closes the two <div> tags that
+  include opens. Close them here: #content is a flex column at least as tall as
+  the window (see #content in opennms-theme.scss), and leaving the wrapper open
+  would put this page's markup and any later content in the wrong box. The
+  matching tags are in bootstrap.jsp, so they are emitted from JSP fragments to
+  keep the Eclipse HTML validator quiet, as that file does. <body> and <html>
+  stay unclosed here exactly as before.
+--%>
+<%= "</div>" %><!-- id="content-body" -->
+<%= "</div>" %><!-- id="content" class="container-fluid" -->

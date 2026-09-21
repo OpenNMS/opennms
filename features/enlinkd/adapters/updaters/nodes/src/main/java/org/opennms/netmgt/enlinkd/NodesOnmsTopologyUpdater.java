@@ -49,7 +49,7 @@ public class NodesOnmsTopologyUpdater extends TopologyUpdater {
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
         for (NodeTopologyEntity element: getNodeMap().values()) {
-            topology.getVertices().add(create(element,ipMap.get(element.getId())));
+            topology.addVertex(create(element,ipMap.get(element.getId())));
         }
         return topology;
     }

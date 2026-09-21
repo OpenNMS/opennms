@@ -1,102 +1,94 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-08-25T11:41:28 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="468f1459-7b6a-4d45-9e47-2b2d5ef91a96">
+<jasperReport name="InterfaceUtilizationSummary" language="java" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="468f1459-7b6a-4d45-9e47-2b2d5ef91a96">
 	<property name="ireport.zoom" value="1.3310000000000004"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Sans_Bold" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Sans_Italic" fontName="SansSerif" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
-	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
-		<conditionalStyle>
+	<style name="Sans_Normal" default="true" fontName="SansSerif" fontSize="12.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Bold" fontName="SansSerif" fontSize="12.0" bold="true" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Italic" fontName="SansSerif" fontSize="12.0" bold="false" italic="true" underline="false" strikeThrough="false"/>
+	<style name="Report_Title" forecolor="#000000" fontSize="20.0"/>
+	<style name="Report_Subtitle" forecolor="#000000" vTextAlign="Middle" vImageAlign="Middle" fontSize="10.0" bold="false" italic="true" underline="false" strikeThrough="false"/>
+	<style name="Table_Detail" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" fontName="SansSerif" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false">
+		<conditionalStyle mode="Opaque" backcolor="#FF3333">
 			<conditionExpression><![CDATA[$F{avail_percent} < $P{DS_AVAILABILITY_CRITICAL}]]></conditionExpression>
-			<style mode="Opaque" backcolor="#FF3333"/>
 		</conditionalStyle>
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" backcolor="#FFCC66">
 			<conditionExpression><![CDATA[$F{avail_percent} < $P{DS_AVAILABILITY_WARNING}]]></conditionExpression>
-			<style mode="Opaque" backcolor="#FFCC66"/>
 		</conditionalStyle>
 	</style>
-	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" bold="false" italic="false" underline="false" strikeThrough="false">
 		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
 		<box>
 			<bottomPen lineWidth="1.0"/>
 		</box>
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" forecolor="#999999">
+			<pen lineWidth="1.0" lineColor="#666666"/>
+			<box style="Table_Grid">
+				<bottomPen lineWidth="1.0"/>
+			</box>
 			<conditionExpression><![CDATA[new Boolean($V{style_helper_COUNT}%new Integer("5") == new Integer("0"))]]></conditionExpression>
-			<style mode="Opaque" forecolor="#999999">
-				<pen lineWidth="1.0" lineColor="#666666"/>
-				<box>
-					<bottomPen lineWidth="1.0"/>
-				</box>
-			</style>
 		</conditionalStyle>
 	</style>
-	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Page_Footer" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Table_Header" bold="true" italic="false" underline="false" strikeThrough="false"/>
 	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
-	<style name="Table_Surveillance_Cat" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Surveillance_Cat" forecolor="#000000" vTextAlign="Middle" vImageAlign="Middle" fontSize="10.0" bold="true" italic="false" underline="false" strikeThrough="false"/>
 	<style name="Table_Surveillance_Cat_BG" mode="Opaque" backcolor="#DFDFDF"/>
 	<style name="Table_Surveillance_Cat_Footer_BG" mode="Transparent" backcolor="#FFFFFF">
 		<pen lineWidth="1.0" lineStyle="Double"/>
 	</style>
-	<style name="Table_Surveillance_Cat_Footer" hAlign="Center" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+	<style name="Table_Surveillance_Cat_Footer" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" fontSize="10.0" bold="true" italic="false" underline="false" strikeThrough="false">
 		<box>
 			<bottomPen lineWidth="0.0" lineStyle="Double" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table_Surveillance_Cat_Footer_Line" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+	<style name="Table_Surveillance_Cat_Footer_Line" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" bold="true" italic="false" underline="false" strikeThrough="false">
 		<box>
 			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
 		</box>
 	</style>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+	<parameter name="ONMS_REPORT_DIR" forPrompting="false" class="java.lang.String">
+		<description><![CDATA[The directory where all reports can be found]]></description>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+	<parameter name="SUBREPORT_DIR" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
+	<parameter name="COMPANY_LOGO" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_NUM" class="java.lang.Integer">
-		<parameterDescription><![CDATA[Report Time Range]]></parameterDescription>
+		<description><![CDATA[Report Time Range]]></description>
 		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
-		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+		<description><![CDATA[Report Start Date]]></description>
 		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - $P{TIME_RANGE_NUM}).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+	<parameter name="endDate" forPrompting="false" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date($P{startDate}.getTime() + $P{TIME_RANGE_NUM}*86400000L)]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+	<parameter name="TIME_RANGE" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUM} + " Days"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
+	<parameter name="TIME_RANGE_DESCRIPTION" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{startDate}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="MEASUREMENT_URL" class="java.lang.String">
-		<parameterDescription><![CDATA[The URL of the Measurements API]]></parameterDescription>
+		<description><![CDATA[The URL of the Measurements API]]></description>
 		<defaultValueExpression><![CDATA["http://localhost:8980/opennms/rest/measurements"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String">
-		<parameterDescription><![CDATA[The username to use to authenticate against the Measurement API]]></parameterDescription>
+		<description><![CDATA[The username to use to authenticate against the Measurement API]]></description>
 		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String">
-		<parameterDescription><![CDATA[The password to use to authenticate against the Measurement API]]></parameterDescription>
+		<description><![CDATA[The password to use to authenticate against the Measurement API]]></description>
 		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
-		<![CDATA[SELECT
+	<query language="sql"><![CDATA[SELECT
 	node.nodelabel,
 	node.nodeid,
 	node.foreignsource,
@@ -117,8 +109,7 @@ WHERE
 	node.nodetype = 'A'
 ORDER BY
 	node.nodelabel,
-	snmpinterface.snmpifname]]>
-	</queryString>
+	snmpinterface.snmpifname]]></query>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodeid" class="java.lang.Integer"/>
 	<field name="foreignsource" class="java.lang.String"/>
@@ -132,17 +123,13 @@ ORDER BY
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
 	<group name="nodelabel_group">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<expression><![CDATA[$F{nodelabel}]]></expression>
 		<groupHeader>
 			<band height="21">
-				<rectangle>
-					<reportElement x="0" y="0" width="555" height="20" forecolor="#FEFEFE" backcolor="#F2F2F2" uuid="c6e3a59b-f67e-4049-afba-d1888ff6d1ff"/>
-				</rectangle>
-				<textField>
-					<reportElement style="Sub-header" mode="Transparent" x="0" y="0" width="555" height="20" uuid="43f617ae-cb2a-4176-8cbc-73081ac20d83"/>
-					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
-				</textField>
+				<element kind="rectangle" uuid="c6e3a59b-f67e-4049-afba-d1888ff6d1ff" x="0" y="0" width="555" height="20" forecolor="#FEFEFE" backcolor="#F2F2F2"/>
+				<element kind="textField" uuid="43f617ae-cb2a-4176-8cbc-73081ac20d83" mode="Transparent" x="0" y="0" width="555" height="20" hTextAlign="Left" style="Sub-header">
+					<expression><![CDATA["Node " + $F{nodelabel}]]></expression>
+				</element>
 			</band>
 		</groupHeader>
 		<groupFooter>
@@ -150,203 +137,154 @@ ORDER BY
 		</groupFooter>
 	</group>
 	<group name="physical_interface_group">
-		<groupExpression><![CDATA[$F{snmpifname}]]></groupExpression>
+		<expression><![CDATA[$F{snmpifname}]]></expression>
 		<groupHeader>
 			<band height="21">
-				<subreport>
-					<reportElement x="0" y="1" width="556" height="20" uuid="ad2cd226-9e65-461a-aa73-f6c6e5869fdd"/>
-					<subreportParameter name="ONMS_REPORT_DIR">
-						<subreportParameterExpression><![CDATA[$P{ONMS_REPORT_DIR}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="MEASUREMENT_URL">
-						<subreportParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="MEASUREMENT_USERNAME">
-						<subreportParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="MEASUREMENT_PASSWORD">
-						<subreportParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="startDate">
-						<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="snmpifalias">
-						<subreportParameterExpression><![CDATA[$F{snmpifalias}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="snmpifspeed">
-						<subreportParameterExpression><![CDATA[$F{snmpifspeed}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="snmpphysaddr">
-						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="endDate">
-						<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="snmpifdescr">
-						<subreportParameterExpression><![CDATA[$F{snmpifdescr}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="snmpifname">
-						<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="nodeid">
-						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="foreignsource">
-						<subreportParameterExpression><![CDATA[$F{foreignsource}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="foreignid">
-						<subreportParameterExpression><![CDATA[$F{foreignid}]]></subreportParameterExpression>
-					</subreportParameter>
+				<element kind="subreport" uuid="ad2cd226-9e65-461a-aa73-f6c6e5869fdd" x="0" y="1" width="556" height="20">
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "95thPercentileTrafficRate_subreport.jasper"]]></subreportExpression>
-				</subreport>
+					<expression><![CDATA[$P{SUBREPORT_DIR} + "95thPercentileTrafficRate_subreport.jasper"]]></expression>
+					<parameter name="ONMS_REPORT_DIR">
+						<expression><![CDATA[$P{ONMS_REPORT_DIR}]]></expression>
+					</parameter>
+					<parameter name="MEASUREMENT_URL">
+						<expression><![CDATA[$P{MEASUREMENT_URL}]]></expression>
+					</parameter>
+					<parameter name="MEASUREMENT_USERNAME">
+						<expression><![CDATA[$P{MEASUREMENT_USERNAME}]]></expression>
+					</parameter>
+					<parameter name="MEASUREMENT_PASSWORD">
+						<expression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></expression>
+					</parameter>
+					<parameter name="startDate">
+						<expression><![CDATA[$P{startDate}]]></expression>
+					</parameter>
+					<parameter name="snmpifalias">
+						<expression><![CDATA[$F{snmpifalias}]]></expression>
+					</parameter>
+					<parameter name="snmpifspeed">
+						<expression><![CDATA[$F{snmpifspeed}]]></expression>
+					</parameter>
+					<parameter name="snmpphysaddr">
+						<expression><![CDATA[$F{snmpphysaddr}]]></expression>
+					</parameter>
+					<parameter name="endDate">
+						<expression><![CDATA[$P{endDate}]]></expression>
+					</parameter>
+					<parameter name="snmpifdescr">
+						<expression><![CDATA[$F{snmpifdescr}]]></expression>
+					</parameter>
+					<parameter name="snmpifname">
+						<expression><![CDATA[$F{snmpifname}]]></expression>
+					</parameter>
+					<parameter name="nodeid">
+						<expression><![CDATA[$F{nodeid}]]></expression>
+					</parameter>
+					<parameter name="foreignsource">
+						<expression><![CDATA[$F{foreignsource}]]></expression>
+					</parameter>
+					<parameter name="foreignid">
+						<expression><![CDATA[$F{foreignid}]]></expression>
+					</parameter>
+				</element>
 			</band>
 		</groupHeader>
 		<groupFooter>
 			<band/>
 		</groupFooter>
 	</group>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="32" splitType="Stretch"/>
-	</title>
-	<pageHeader>
-		<band height="80" splitType="Stretch">
+	<background splitType="Stretch"/>
+	<title height="32" splitType="Stretch"/>
+	<pageHeader height="80" splitType="Stretch">
+		<element kind="staticText" uuid="5d155eae-6512-4492-ac0c-ddaa27fdc0c1" x="0" y="0" width="355" height="30" fontSize="20.0" bold="true" vTextAlign="Middle" style="Title">
+			<text><![CDATA[Interface Utilization Summary]]></text>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
 			<property name="local_mesure_unitheight" value="pixel"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<staticText>
-				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="5d155eae-6512-4492-ac0c-ddaa27fdc0c1">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font size="20" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Interface Utilization Summary]]></text>
-			</staticText>
-			<textField>
-				<reportElement key="" style="Range" x="0" y="30" width="355" height="20" uuid="3b35747f-9aef-40fe-803b-c1ecfa31245f">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
-			</textField>
-			<image>
-				<reportElement x="361" y="0" width="194" height="50" uuid="6c80c551-13c0-4af1-be41-7a2e573d7a17">
-					<property name="local_mesure_unitx" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
-			</image>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement key="" style="Creation-Date" x="0" y="60" width="355" height="20" uuid="b042e0cb-543b-4779-9969-acd1fd92cfa5">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement x="0" y="79" width="556" height="1" uuid="f9f9ee3a-e45c-4180-b045-113456c9aab0">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-			</line>
-		</band>
+		</element>
+		<element kind="textField" uuid="3b35747f-9aef-40fe-803b-c1ecfa31245f" key="" x="0" y="30" width="355" height="20" style="Range">
+			<expression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="image" uuid="6c80c551-13c0-4af1-be41-7a2e573d7a17" x="361" y="0" width="194" height="50">
+			<expression><![CDATA[$P{COMPANY_LOGO}]]></expression>
+			<property name="local_mesure_unitx" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="b042e0cb-543b-4779-9969-acd1fd92cfa5" key="" x="0" y="60" width="355" height="20" pattern="dd/MM/yyyy h.mm a" style="Creation-Date">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="line" uuid="f9f9ee3a-e45c-4180-b045-113456c9aab0" x="0" y="79" width="556" height="1">
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<property name="local_mesure_unitheight" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
 	</pageHeader>
-	<pageFooter>
-		<band height="30" splitType="Stretch">
+	<pageFooter height="30" splitType="Stretch">
+		<element kind="textField" uuid="0d83c67d-f49d-4a27-b793-091ad0d7b2f4" x="515" y="5" width="40" height="20" evaluationTime="Report" style="Paging-Footer">
+			<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="textField" uuid="193242e9-e0d3-4240-8945-9623bf214d19" x="435" y="5" width="80" height="20" hTextAlign="Right" style="Paging-Footer">
+			<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="line" uuid="f673929b-c114-4bc4-8dea-f2ea934e811b" x="0" y="0" width="555" height="1"/>
+		<property name="local_mesure_unitheight" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
+	</pageFooter>
+	<noData height="216">
+		<element kind="staticText" uuid="0c205b5b-97e0-47a8-8a76-e969c0c0538f" x="0" y="85" width="555" height="20" fontName="SansSerif">
+			<text><![CDATA[There is no data for this report. Maybe you don't have any snmp interfaces.]]></text>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="staticText" uuid="d001dddc-2ead-4860-8ac9-a6ff4e9f3c54" key="" x="0" y="0" width="355" height="30" fontSize="20.0" bold="true" vTextAlign="Middle" style="Title">
+			<text><![CDATA[Interface Utilization Summary]]></text>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
 			<property name="local_mesure_unitheight" value="pixel"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<textField evaluationTime="Report">
-				<reportElement style="Paging-Footer" x="515" y="5" width="40" height="20" uuid="0d83c67d-f49d-4a27-b793-091ad0d7b2f4">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="Paging-Footer" x="435" y="5" width="80" height="20" uuid="193242e9-e0d3-4240-8945-9623bf214d19">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement x="0" y="0" width="555" height="1" uuid="f673929b-c114-4bc4-8dea-f2ea934e811b"/>
-			</line>
-		</band>
-	</pageFooter>
-	<noData>
-		<band height="216">
-			<staticText>
-				<reportElement x="0" y="85" width="555" height="20" uuid="0c205b5b-97e0-47a8-8a76-e969c0c0538f">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement>
-					<font fontName="SansSerif"/>
-				</textElement>
-				<text><![CDATA[There is no data for this report. Maybe you don't have any snmp interfaces.]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="" style="Title" x="0" y="0" width="355" height="30" uuid="d001dddc-2ead-4860-8ac9-a6ff4e9f3c54">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font size="20" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Interface Utilization Summary]]></text>
-			</staticText>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Creation-Date" x="0" y="60" width="355" height="20" uuid="8ed8c4f1-7bdd-47e1-b9ce-fdb5cd8ecb05">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement x="0" y="80" width="556" height="1" uuid="ab1b5280-bb9d-461d-a775-dc35d31ad40f">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-			</line>
-			<image>
-				<reportElement x="361" y="0" width="194" height="50" uuid="a7e67cfa-0da7-47c9-af40-f4b1f523b399">
-					<property name="local_mesure_unitx" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
-			</image>
-			<textField>
-				<reportElement key="" style="Range" x="0" y="30" width="355" height="20" uuid="3666f83c-1021-4b7a-874b-f9dd8bef88e8">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
-			</textField>
-		</band>
+		</element>
+		<element kind="textField" uuid="8ed8c4f1-7bdd-47e1-b9ce-fdb5cd8ecb05" x="0" y="60" width="355" height="20" pattern="dd/MM/yyyy h.mm a" style="Creation-Date">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="line" uuid="ab1b5280-bb9d-461d-a775-dc35d31ad40f" x="0" y="80" width="556" height="1">
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
+		<element kind="image" uuid="a7e67cfa-0da7-47c9-af40-f4b1f523b399" x="361" y="0" width="194" height="50">
+			<expression><![CDATA[$P{COMPANY_LOGO}]]></expression>
+			<property name="local_mesure_unitx" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="3666f83c-1021-4b7a-874b-f9dd8bef88e8" key="" x="0" y="30" width="355" height="20" style="Range">
+			<expression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
 	</noData>
 </jasperReport>

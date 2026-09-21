@@ -41,6 +41,13 @@ public class DefaultNodeStatusCalculator implements NodeStatusCalculator {
     @Autowired
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
+    public DefaultNodeStatusCalculator() {
+    }
+
+    public DefaultNodeStatusCalculator(final GenericPersistenceAccessor genericPersistenceAccessor) {
+        this.genericPersistenceAccessor = genericPersistenceAccessor;
+    }
+
     @Override
     public Status calculateStatus(NodeStatusCalculatorConfig config) {
         final Status status = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).status();

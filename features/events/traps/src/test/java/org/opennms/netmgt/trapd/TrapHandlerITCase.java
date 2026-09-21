@@ -72,6 +72,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.collect.Lists;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -108,6 +110,9 @@ public class TrapHandlerITCase implements InitializingBean {
     @Autowired
     protected TrapdConfig m_trapdConfig;
 
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     private boolean m_doStop = false;
 
     protected static final InetAddress m_ip = InetAddressUtils.ONE_TWENTY_SEVEN;
@@ -132,13 +137,17 @@ public class TrapHandlerITCase implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        final OnmsNode node = new OnmsNode(m_dbPopulator.getMonitoringLocationDao().getDefaultLocation(), "test123");
-        final OnmsIpInterface iface = new OnmsIpInterface();
-        iface.setIpAddress(m_ip);
-        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        node.addIpInterface(iface);
 
-        m_nodeId = m_dbPopulator.getNodeDao().save(node);
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+                    final OnmsNode node = new OnmsNode(m_dbPopulator.getMonitoringLocationDao().getDefaultLocation(), "test123");
+                    final OnmsIpInterface iface = new OnmsIpInterface();
+                    iface.setIpAddress(m_ip);
+                    iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+                    node.addIpInterface(iface);
+
+                    m_nodeId = m_dbPopulator.getNodeDao().save(node);
+                    return null;
+                });
 
         m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_ip, m_nodeId);
 
@@ -433,12 +442,15 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testInterfaceReparentedModifiesIpMgr() throws Exception {
-        final OnmsNode node = new OnmsNode(m_dbPopulator.getMonitoringLocationDao().getDefaultLocation(), "test123");
-        final OnmsIpInterface iface = new OnmsIpInterface();
-        iface.setIpAddress(m_ip);
-        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        node.addIpInterface(iface);
-        int nodeId = m_dbPopulator.getNodeDao().save(node);
+
+        int nodeId = new TransactionTemplate(m_transactionManager).execute(status -> {
+                    final OnmsNode node = new OnmsNode(m_dbPopulator.getMonitoringLocationDao().getDefaultLocation(), "test123");
+                    final OnmsIpInterface iface = new OnmsIpInterface();
+                    iface.setIpAddress(m_ip);
+                    iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+                    node.addIpInterface(iface);
+                    return m_dbPopulator.getNodeDao().save(node);
+                });
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 

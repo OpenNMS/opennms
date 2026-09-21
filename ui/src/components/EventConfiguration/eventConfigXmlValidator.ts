@@ -18,7 +18,7 @@ export const validateEventConfigFile = async (file: File) => {
       let parser: any
       try {
         parser = new (DOMParser as any)()
-      } catch (e) {
+      } catch (_e) {
         parser = (DOMParser as any)()
       }
       const xmlDoc = parser.parseFromString(text, 'application/xml')
@@ -54,7 +54,7 @@ export const validateEventConfigFile = async (file: File) => {
       let parser: any
       try {
         parser = new (DOMParser as any)()
-      } catch (e) {
+      } catch (_e) {
         parser = (DOMParser as any)()
       }
       const xmlDoc = parser.parseFromString(text, 'application/xml')
@@ -120,7 +120,9 @@ export const validateEventConfigFile = async (file: File) => {
 
 // Helper function to extract inner text from XML element
 const getInnerText = (el: Element, tag: string): string => {
-  if (!el) return ''
+  if (!el) {
+    return ''
+  }
   const node = el.querySelector(tag) || el.getElementsByTagName(tag)[0]
   return node?.textContent?.trim() || ''
 }
@@ -145,5 +147,5 @@ export const validateEventElement = (event: Element, eventNumber: number): strin
 }
 
 export const isDuplicateFile = (fileName: string, existingFiles: UploadEventFileType[]): boolean => {
-  return !!existingFiles?.some((element) => element.file.name.toLowerCase() === fileName.toLowerCase())
+  return !!existingFiles?.some(element => element.file.name.toLowerCase() === fileName.toLowerCase())
 }

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -75,8 +76,10 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
 	private Date m_collectionTimestamp;
 
     private ThresholdingEventProxy m_thresholdingEventProxy;
-    
+
     private final Long m_sequenceNumber;
+
+    private Scope m_scope;
 
     protected ThresholdingVisitorImpl(ThresholdingSetImpl thresholdingSet,
                                       ThresholdingEventProxy eventProxy, Long sequenceNumber) {
@@ -107,6 +110,8 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
     @Override
     public void visitCollectionSet(CollectionSet set) {
         m_collectionTimestamp = set.getCollectionTimestamp();
+        // one lazy scope per collection set, shared by every resource in it (NMS-16966)
+        m_scope = m_thresholdingSet.buildScope();
     }
     
     /**
@@ -149,8 +154,9 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
      */
     @Override
     public void completeResource(CollectionResource resource) {
+        final Scope scope = m_scope != null ? m_scope : m_thresholdingSet.buildScope();
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap, m_collectionTimestamp,
-                m_sequenceNumber);
+                m_sequenceNumber, scope);
         for (Event event : eventList) {
             m_thresholdingEventProxy.sendEvent(event);
         }

@@ -149,6 +149,9 @@ Pollerd can generate the following device configuration backup events in {page-c
 
 | uei.opennms.org/deviceconfig/configBackupSucceeded
 | Configuration backup succeeded on a given service during the last poll on a given interface.
+
+| uei.opennms.org/deviceconfig/configChanged
+| Configuration backup on a given service has changed from the last poll on a given interface.
 |===
 
 == Device configuration backup parameters

@@ -46,6 +46,7 @@ public class RestHealthClient {
     private Client client;
 
     private final static String PROBE = "/rest/health/probe";
+    private final static String HEALTH = "/rest/health";
     private final static String SUCCESS_PROBE = "Everything is awesome";
     private final static String HEALTH_KEY = "Health";
 
@@ -85,4 +86,24 @@ public class RestHealthClient {
     }
 
     public String getProbeSuccessMessage(){return SUCCESS_PROBE;}
+
+    /**
+     * Fetch the full per-check health detail (JSON) from {@code /rest/health}. Unlike
+     * {@link #getProbeHealthResponse()}, which only returns the "Everything is awesome" /
+     * "Oh no, something is wrong" summary, this names each registered health check together with
+     * its status and message -- i.e. it tells you <em>which</em> check failed and <em>why</em>.
+     * Best-effort: returns a diagnostic string instead of throwing, so it is safe to call from a
+     * startup-failure path.
+     */
+    public String getHealthDetail() {
+        try {
+            final Response response = getTargetFor(HEALTH).request(MediaType.APPLICATION_JSON).get();
+            final String summary = response.getHeaders().containsKey(HEALTH_KEY)
+                    ? response.getHeaders().get(HEALTH_KEY).toString() : "(no " + HEALTH_KEY + " header)";
+            final String body = response.readEntity(String.class);
+            return "Status: " + response.getStatus() + "\n" + HEALTH_KEY + ": " + summary + "\n" + body;
+        } catch (Exception e) {
+            return "Failed to retrieve " + HEALTH + " detail: " + e;
+        }
+    }
 }

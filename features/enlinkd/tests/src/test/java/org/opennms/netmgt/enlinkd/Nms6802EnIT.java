@@ -52,8 +52,7 @@ public class Nms6802EnIT extends EnLinkdBuilderITCase {
     })
     public void testIsIsLinks() {
         
-        m_nodeDao.save(builder.getCiscoIosXrRouter());
-        m_nodeDao.flush();
+        saveNodes(builder.getCiscoIosXrRouter());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);

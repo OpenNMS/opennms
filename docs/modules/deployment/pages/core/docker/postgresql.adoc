@@ -43,13 +43,13 @@ services:
 .Start the service and run it in background
 [source, console]
 ----
-docker-compose up -d
+docker compose up -d
 ----
 
 .Verify the PostgreSQL process is up and running
 [source, console]
 ----
-docker-compose ps
+docker compose ps
 ----
 
 .The state should be Up (healthy) and the TCP port should be available on all interfaces

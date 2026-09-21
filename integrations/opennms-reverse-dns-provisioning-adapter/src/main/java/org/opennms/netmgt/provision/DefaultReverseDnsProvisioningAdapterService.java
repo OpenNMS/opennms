@@ -100,12 +100,17 @@ public class DefaultReverseDnsProvisioningAdapterService implements
     }
 
     @Override
-    public void update(Integer nodeid, ReverseDnsRecord rdr) {
-        OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, rdr.getIp().getHostAddress());
-        if (ipInterface != null) {
-            ipInterface.setIpHostName(rdr.getHostname());
-            m_ipInterfaceDao.update(ipInterface);
-        }
+    public void update(final Integer nodeid, final ReverseDnsRecord rdr) {
+        m_template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus arg0) {
+                OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, rdr.getIp().getHostAddress());
+                if (ipInterface != null) {
+                    ipInterface.setIpHostName(rdr.getHostname());
+                    m_ipInterfaceDao.update(ipInterface);
+                }
+            }
+        });
     }
 
 	public Integer getLevel() {

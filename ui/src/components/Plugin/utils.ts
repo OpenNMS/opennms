@@ -75,14 +75,16 @@ const externalComponent = (url: string) => {
     })
 
     return window[name] as any
-  } catch (err) {
+  } catch (_err) {
     console.log('Errors with component url.', url)
   }
 }
 
 const addStylesheet = (url: string) => {
   const exists = document.querySelector(`link[href='${url}']`)
-  if (exists) return
+  if (exists) {
+    return
+  }
 
   const head = document.head
   const link = document.createElement('link')

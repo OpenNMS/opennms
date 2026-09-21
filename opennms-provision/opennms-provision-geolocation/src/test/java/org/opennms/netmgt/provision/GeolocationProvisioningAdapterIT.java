@@ -94,8 +94,11 @@ public class GeolocationProvisioningAdapterIT {
         // Set a geolocation and resolve coordinates
         node.getAssetRecord().setGeolocation(new OnmsGeolocation());
         node.getAssetRecord().getGeolocation().setCity("Cardiff");
-        nodeDao.saveOrUpdate(node);
-        geolocationProvisioningAdapter.updateGeolocation(geolocationResolverMock, node);
+        databasePopulator.getTransactionTemplate().execute(status -> {
+            nodeDao.saveOrUpdate(node);
+            geolocationProvisioningAdapter.updateGeolocation(geolocationResolverMock, node);
+            return null;
+        });
 
         // Node should have been updated
         Assert.assertEquals(coordinates.getLongitude(), node.getAssetRecord().getGeolocation().getLongitude(), 0.001);

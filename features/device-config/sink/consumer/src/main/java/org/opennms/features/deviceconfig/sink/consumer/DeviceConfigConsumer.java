@@ -34,6 +34,7 @@ import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkDTO;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModule;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
@@ -49,17 +50,20 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
     private final DeviceConfigSinkModule module;
     private final IpInterfaceDao ipInterfaceDao;
     private final DeviceConfigDao deviceConfigDao;
+    private final SessionUtils sessionUtils;
 
     public DeviceConfigConsumer(
             MessageConsumerManager consumerManager,
             DeviceConfigSinkModule module,
             IpInterfaceDao ipInterfaceDao,
-            DeviceConfigDao deviceConfigDao
+            DeviceConfigDao deviceConfigDao,
+            SessionUtils sessionUtils
     ) throws Exception {
         this.consumerManager = consumerManager;
         this.module = module;
         this.ipInterfaceDao = ipInterfaceDao;
         this.deviceConfigDao = deviceConfigDao;
+        this.sessionUtils = sessionUtils;
         this.consumerManager.registerConsumer(this);
     }
 
@@ -83,15 +87,22 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
                         LOG.warn("Failed to decompress content from file {}", message.fileName);
                     }
                 }
-                deviceConfigDao.updateDeviceConfigContent(
-                        ipInterface,
-                        null,
-                        // use config type sink for configs that are pushed from Device.
-                        ConfigType.Sink,
-                        null,
-                        content,
-                        message.fileName
-                );
+                final byte[] configContent = content;
+                // This sink consumer is a plain Blueprint bean invoked directly by the sink dispatch
+                // (no @Transactional proxy), so under Hibernate 5 the DAO write must run in an
+                // explicit committing transaction or it is rejected in read-only FlushMode.MANUAL.
+                sessionUtils.withTransaction(() -> {
+                    deviceConfigDao.updateDeviceConfigContent(
+                            ipInterface,
+                            null,
+                            // use config type sink for configs that are pushed from Device.
+                            ConfigType.Sink,
+                            null,
+                            configContent,
+                            message.fileName
+                    );
+                    return null;
+                });
             } else {
                 LOG.warn("can not persist device config; did not find interface - location: "+ message.location + "; " + address.getHostAddress());
             }

@@ -43,6 +43,25 @@
                     </instructions>
                 </configuration>
             </plugin>
+
+            <!--
+                Hibernate 5's Bean Validation integration needs javax.validation 1.1+ (it calls
+                ConfigurationState.getParameterNameProvider()). The GWT widgetset pins
+                javax.validation:validation-api:1.0.0.GA (provided), which leaks onto the test
+                classpath ahead of the transitive jakarta.validation-api:2.0.2 and breaks the
+                Hibernate SessionFactory init in the ITs. Keep 1.0.0.GA for the GWT compile but
+                drop it from the test classpath so the 2.0 API (the javax.validation classes from
+                jakarta.validation-api:2.0.2) is used instead.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>javax.validation:validation-api</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
+                </configuration>
+            </plugin>
         </plugins>
 
     </build>
@@ -79,6 +98,26 @@
             <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jakarta.validation</groupId>
+                    <artifactId>jakarta.validation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>

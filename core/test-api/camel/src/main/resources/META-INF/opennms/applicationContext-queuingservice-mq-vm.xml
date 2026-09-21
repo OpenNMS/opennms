@@ -31,7 +31,7 @@
     <property name="concurrentConsumers" value="1" />
   </bean>
 
-  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent" lazy-init="true">
+  <bean id="queuingservice" class="org.apache.camel.component.jms.JmsComponent" lazy-init="true">
     <property name="configuration" ref="jmsConfig" />
   </bean>
 

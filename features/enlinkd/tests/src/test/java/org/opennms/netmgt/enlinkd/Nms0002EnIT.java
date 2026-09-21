@@ -81,9 +81,7 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
     })
     public void testNetworkLinksCiscoJuniperLldp() throws Exception {
         
-        m_nodeDao.save(builder.getRluck001());
-        m_nodeDao.save(builder.getSluck001());
-        m_nodeDao.flush();
+        saveNodes(builder.getRluck001(), builder.getSluck001());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -218,12 +216,7 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
     })
     public void testCiscoAlcatelEssnBrueLldp() {
         
-        m_nodeDao.save(builder.getRDeEssnBrue());
-        m_nodeDao.save(builder.getSDeEssnBrue081());
-        m_nodeDao.save(builder.getSDeEssnBrue121());
-        m_nodeDao.save(builder.getSDeEssnBrue142());
-        m_nodeDao.save(builder.getSDeEssnBrue165());
-        m_nodeDao.flush();
+        saveNodes(builder.getRDeEssnBrue(), builder.getSDeEssnBrue081(), builder.getSDeEssnBrue121(), builder.getSDeEssnBrue142(), builder.getSDeEssnBrue165());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);

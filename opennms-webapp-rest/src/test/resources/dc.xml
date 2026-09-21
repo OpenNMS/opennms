@@ -8,10 +8,6 @@
       <rra>RRA:MAX:0.5:288:366</rra>
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
-    <resourceType name="wmiTcpipNetworkInterface" label="Windows TCP/IP Network Interface" resourceLabel="${wmiIpNetIfName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
-    </resourceType>
     <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
@@ -21,10 +17,6 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="ggsnGtpuAddr"/>
       </storageStrategy>
-    </resourceType>
-    <resourceType name="wmiW3" label="Windows Web Requests" resourceLabel="${wmiW3Name}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="SensorCurrent" label="VMware Sensor Current" resourceLabel="${SensorName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
@@ -551,10 +543,6 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
-    <resourceType name="wmiLogicalDisk" label="Windows Logical Disk" resourceLabel="${wmiLDName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
-    </resourceType>
     <resourceType name="lcUpsOutputLine" label="Liebert Output Line Index">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
@@ -641,10 +629,6 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
-    <resourceType name="wmiOSCpu" label="Windows Processor" resourceLabel="CPU ${wmiOSCpuName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
-    </resourceType>
     <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
         <parameter key="match-expression" value="not(#diskIODevice matches '^(loop|ram).*')"/>
@@ -657,10 +641,6 @@
       </storageStrategy>
     </resourceType>
     <resourceType name="mtxrWlRtabAddr" label="Subscriber or Remote Radio (Mikrotik)" resourceLabel="SU ${index}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
-    </resourceType>
-    <resourceType name="wmiPhysicalDisk" label="Windows Physical Disk" resourceLabel="${wmiPDName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
@@ -759,7 +739,6 @@
     <include-collection dataCollectionGroup="SofaWare"/>
     <include-collection dataCollectionGroup="SUN Microsystems"/>
     <include-collection dataCollectionGroup="Trango"/>
-    <include-collection dataCollectionGroup="WMI"/>
     <include-collection dataCollectionGroup="Zeus"/>
     <include-collection dataCollectionGroup="VMware-Cim"/>
     <groups>

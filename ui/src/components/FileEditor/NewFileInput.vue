@@ -1,8 +1,9 @@
 <template>
-  <FeatherInput
+  <OnmsInputText
     class="new-input"
     ref="input"
-    label="New file name"
+    aria-label="New file name"
+    placeholder="New file name"
     @blur="addNewFile"
     @keyup.enter="addNewFile"
     v-model="newFileName"
@@ -10,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherInput } from '@featherds/input'
+import { OnmsInputText } from '@opennms/onms-ui'
 import { useFileEditorStore, IFile } from '@/stores/fileEditorStore'
 import { getExtensionFromFilenameSafely } from './utils'
-import { PropType } from 'vue'
+import { PropType, computed, onMounted, ref } from 'vue'
 
 const fileEditorStore = useFileEditorStore()
 const input = ref()
@@ -28,7 +29,6 @@ const props = defineProps({
   }
 })
 
-// eslint-disable-next-line vue/no-setup-props-destructure
 const { item } = props
 
 const addNewFile = () => {
@@ -82,19 +82,13 @@ const addNewFile = () => {
   fileEditorStore.setSearchValue(newFileName.value)
 }
 
-onMounted(() => input.value.focus())
+onMounted(() => input.value?.$el?.focus())
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+// InputText's root element is the <input>, so .new-input targets it directly
 .new-input {
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-
-  .feather-input-wrapper-container {
-    .feather-input-wrapper {
-      margin-bottom: -25px !important;
-      min-height: 31px !important;
-    }
-  }
+  width: 100%;
+  height: 2rem;
 }
 </style>

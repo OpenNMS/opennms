@@ -47,6 +47,12 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
+      <!-- httpclient's commons-logging is excluded above; provide the slf4j bridge for tests -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

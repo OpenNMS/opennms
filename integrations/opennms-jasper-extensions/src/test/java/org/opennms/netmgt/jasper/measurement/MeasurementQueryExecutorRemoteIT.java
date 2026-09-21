@@ -124,8 +124,10 @@ public class MeasurementQueryExecutorRemoteIT extends AbstractMeasurementQueryEx
                     params.put("resourceType", "nsVpnMonitor");
                 }
             });
-            Assert.fail("JRException expected, but not received");
-        } catch (JRException ex) {
+            Assert.fail("Exception expected, but not received");
+            // As of JasperReports 7.0 the JRXML loader rejects an unknown query language at load
+            // time with a (runtime) JacksonRuntimeException rather than a checked JRException.
+        } catch (JRException | RuntimeException ex) {
             Assert.assertTrue(ex.toString().contains("No query executer factory registered for the \"resourceQuery\" language."));
         }
         verifyHttpCalls(0);

@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { Resource } from '@/types'
+import { ref } from 'vue'
 
 export const useResourceStore = defineStore('resourceStore', () => {
   const resources = ref([] as Resource[])

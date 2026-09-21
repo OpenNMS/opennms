@@ -34,16 +34,16 @@ public class UserDefinedLinkDaoHibernate extends AbstractDaoHibernate<UserDefine
 
     @Override
     public List<UserDefinedLink> getOutLinks(int nodeIdA) {
-        return find("from UserDefinedLink udl where udl.nodeIdA = ?", nodeIdA);
+        return find("from UserDefinedLink udl where udl.nodeIdA = ?1", nodeIdA);
     }
 
     @Override
     public List<UserDefinedLink> getInLinks(int nodeIdZ) {
-        return find("from UserDefinedLink udl where udl.nodeIdZ = ?", nodeIdZ);
+        return find("from UserDefinedLink udl where udl.nodeIdZ = ?1", nodeIdZ);
     }
 
     @Override
     public List<UserDefinedLink> getLinksWithLabel(String label) {
-        return find("from UserDefinedLink udl where udl.linkLabel = ?", label);
+        return find("from UserDefinedLink udl where udl.linkLabel = ?1", label);
     }
 }

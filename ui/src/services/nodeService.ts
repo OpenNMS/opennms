@@ -50,7 +50,7 @@ const getNodes = async (queryParameters?: QueryParameters): Promise<NodeApiRespo
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -59,7 +59,7 @@ const getNodeById = async (id: string): Promise<any> => {
   try {
     const resp = await v2.get(`${endpoint}/${id}`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -84,7 +84,7 @@ const getNodeSnmpInterfaces = async (
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -109,7 +109,7 @@ const getNodeIpInterfaces = async (
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -120,7 +120,7 @@ const getNodeAvailabilityPercentage = async (id: string): Promise<NodeAvailabili
     resp.data.ipinterfaces = orderBy(resp.data.ipinterfaces, 'address')
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -137,7 +137,7 @@ const getNodeOutages = async (id: string, queryParameters?: QueryParameters): Pr
     const resp = await rest.get(outagesEndpointWithQueryString || outagesEndpoint)
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

@@ -47,13 +47,6 @@
         {
           "id": "nodes",
           "name": "Nodes",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },
-        {
-          "id": "structuredNodeList",
-          "name": "Structured Node List",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null
@@ -166,20 +159,6 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
-          "id": "trend",
-          "name": "Trend",
-          "url": "trend/index.jsp",
-          "locationMatch": "trend",
-          "roles": null
-        },
-        {
           "id": "applications",
           "name": "Application",
           "url": "application/index.jsp",
@@ -204,13 +183,6 @@
           "roles": null
         },
         {
-          "id": "charts",
-          "name": "Charts",
-          "url": "charts/index.jsp",
-          "locationMatch": "chart",
-          "roles": null
-        },
-        {
           "id": "resourceGraphs",
           "name": "Resource Graphs",
           "url": "graph/index.jsp",
@@ -219,7 +191,7 @@
         },
         {
           "id": "kscReports",
-          "name": "KSC Reports",
+          "name": "Graph Collections",
           "url": "KSC/index.jsp",
           "locationMatch": "ksc",
           "roles": null
@@ -229,13 +201,6 @@
           "name": "Database Reports",
           "url": "report/database/index.jsp",
           "locationMatch": "database-reports",
-          "roles": null
-        },
-        {
-          "id": "statistics",
-          "name": "Statistics",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
           "roles": null
         }
       ]
@@ -260,13 +225,6 @@
           "name": "Dashboard",
           "url": "dashboard.jsp",
           "locationMatch": "dashboard",
-          "roles": null
-        },
-        {
-          "id": "opsBoard",
-          "name": "Ops Board",
-          "url": "vaadin-wallboard",
-          "locationMatch": "vaadin-wallboard",
           "roles": null
         }
       ]

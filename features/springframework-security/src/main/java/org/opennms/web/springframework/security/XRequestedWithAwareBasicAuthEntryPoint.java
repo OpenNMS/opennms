@@ -23,7 +23,6 @@ package org.opennms.web.springframework.security;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,7 +33,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 public class XRequestedWithAwareBasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         final String requestedWithValue = request.getHeader("X-Requested-With");
         if (requestedWithValue != null && requestedWithValue.equals("XMLHttpRequest")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());

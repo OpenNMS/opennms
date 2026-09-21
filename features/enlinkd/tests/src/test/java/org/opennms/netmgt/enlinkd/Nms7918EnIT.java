@@ -72,6 +72,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
+import org.springframework.transaction.support.TransactionTemplate;
 /*
  * 
  * 
@@ -150,13 +151,16 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     
     @Before
     public void setUpNetwork() {
-        m_nodeDao.save(builder.getAsw01());
-        m_nodeDao.save(builder.getOspwl01());
-        m_nodeDao.save(builder.getPe01());
-        m_nodeDao.save(builder.getSamasw01());
-        m_nodeDao.save(builder.getStcasw01());
-        m_nodeDao.save(builder.getOspss01());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getAsw01());
+            m_nodeDao.save(builder.getOspwl01());
+            m_nodeDao.save(builder.getPe01());
+            m_nodeDao.save(builder.getSamasw01());
+            m_nodeDao.save(builder.getStcasw01());
+            m_nodeDao.save(builder.getOspss01());
+            m_nodeDao.flush();
+            return null;
+        });
     }
     
     @Test

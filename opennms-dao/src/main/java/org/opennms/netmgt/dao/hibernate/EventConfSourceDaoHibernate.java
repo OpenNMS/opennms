@@ -21,10 +21,14 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +44,9 @@ public class EventConfSourceDaoHibernate
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfSourceDaoHibernate.class);
 
+    /** Allocates {@code fileOrder} for new sources, see the 36.0.4 changelog. */
+    static final String FILE_ORDER_SEQUENCE = "eventconf_sources_file_order_seq";
+
     public EventConfSourceDaoHibernate() {
         super(EventConfSource.class);
     }
@@ -51,7 +58,7 @@ public class EventConfSourceDaoHibernate
 
     @Override
     public EventConfSource findByName(String name) {
-        List<EventConfSource> list = find("from EventConfSource s where s.name = ?", name);
+        List<EventConfSource> list = find("from EventConfSource s where s.name = ?1", name);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -62,7 +69,7 @@ public class EventConfSourceDaoHibernate
 
     @Override
     public List<EventConfSource> findByVendor(String vendor) {
-        return find("from EventConfSource s where s.vendor = ?", vendor);
+        return find("from EventConfSource s where s.vendor = ?1", vendor);
     }
 
     @Override
@@ -90,6 +97,7 @@ public class EventConfSourceDaoHibernate
         if (sourceIds == null || sourceIds.isEmpty()) {
             return;
         }
+        lockFileOrders(); // same lock order as the renumbering, which updates these rows one by one
         String hqlSource = "update EventConfSource s set s.enabled = :enabled where s.id in (:ids)";
         getSessionFactory().getCurrentSession()
                 .createQuery(hqlSource)
@@ -118,23 +126,24 @@ public class EventConfSourceDaoHibernate
         try {
             List<Object> queryParams = new ArrayList<>();
             List<String> conditions = new ArrayList<>();
+            int paramIndex = 0;
 
             // Add filter conditions dynamically
             if (filter != null && !filter.trim().isEmpty()) {
                 String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
-                conditions.add("lower(s.name) like ? escape '\\'");
+                conditions.add("lower(s.name) like ?" + (++paramIndex) + " escape '\\'");
                 queryParams.add(escapedFilter);
 
-                conditions.add("lower(s.vendor) like ? escape '\\'");
+                conditions.add("lower(s.vendor) like ?" + (++paramIndex) + " escape '\\'");
                 queryParams.add(escapedFilter);
 
-                conditions.add("lower(s.description) like ? escape '\\'");
+                conditions.add("lower(s.description) like ?" + (++paramIndex) + " escape '\\'");
                 queryParams.add(escapedFilter);
 
-                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.uei) like ? escape '\\')");
+                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.uei) like ?" + (++paramIndex) + " escape '\\')");
                 queryParams.add(escapedFilter);
 
-                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.eventLabel) like ? escape '\\')");
+                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.eventLabel) like ?" + (++paramIndex) + " escape '\\')");
                 queryParams.add(escapedFilter);
 
             }
@@ -150,30 +159,69 @@ public class EventConfSourceDaoHibernate
             // DATA QUERY: fetch paginated results
             if (resultCount > 0) {
 
-                String orderBy = "";
                 String sortField = sortBy;
 
                 String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
 
-                Set<String> allowedSortFields = Set.of("name", "vendor", "description", "fileOrder", "eventCount");
+                Set<String> allowedSortFields = Set.of("name", "vendor", "description", "fileOrder", "evaluationOrder", "eventCount");
 
-                if (!allowedSortFields.contains(sortBy)) {
+                if (sortBy == null || !allowedSortFields.contains(sortBy)) {
                     sortField = "createdTime";
+                } else if ("evaluationOrder".equals(sortBy)) {
+                    // the rank is derived from the unique fileOrder (evaluationOrder ASC == fileOrder DESC),
+                    // so sort on the indexed column instead of evaluating the formula's subquery per row
+                    sortField = "fileOrder";
+                    sortOrder = "ASC".equals(sortOrder) ? "DESC" : "ASC";
                 }
 
-                orderBy = " order by " + sortField + " " + sortOrder;
+                String orderBy = " order by s." + sortField + " " + sortOrder + ", s.id " + sortOrder;
 
                 String dataQuery = "from EventConfSource s " + whereClause + orderBy;
                 eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
             }
 
-        } catch (Exception e ) {
-            LOG.debug("Error filterEventConfSource method while fetching the records {} ", e);
+        } catch (Exception e) {
+            // never report a page count for a page we could not produce
+            LOG.warn("Failed to filter event-conf sources (filter='{}', sortBy='{}', order='{}')", filter, sortBy, order, e);
+            resultCount = 0;
+            eventConfSourceList = Collections.emptyList();
         }
 
         // Return map with results
         return Map.of("totalRecords", resultCount, "eventConfSourceList", eventConfSourceList);
 
+    }
+
+    @Override
+    public Integer nextFileOrder() {
+        // Sequences are non-transactional, so no lock is needed and a rolled-back creation just leaves a gap
+        final Number next = (Number) getSessionFactory().getCurrentSession()
+                .createNativeQuery("SELECT nextval('" + FILE_ORDER_SEQUENCE + "')")
+                .uniqueResult();
+        return next.intValue();
+    }
+
+    @Override
+    public void lockFileOrders() {
+        // The DAO's table-level named lock (accessLocks row EVENTCONF_SOURCES_ACCESS, held until the
+        // transaction ends): the next taker blocks until this transaction commits.
+        EventConfLocks.applyLockTimeout(getSessionFactory().getCurrentSession());
+        lock();
+    }
+
+    @Override
+    public EventConfSource lockForUpdate(Long sourceId) {
+        final var session = getSessionFactory().getCurrentSession();
+        EventConfLocks.applyLockTimeout(session);
+        // the row may have been created in this very transaction
+        session.flush();
+        final EventConfSource source = session.get(EventConfSource.class, sourceId);
+        if (source == null) {
+            throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
+        }
+        // refresh (not a plain lock upgrade) so the entity state is what the row holds now that we own it
+        session.refresh(source, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+        return source;
     }
 
     @Override
@@ -195,6 +243,7 @@ public class EventConfSourceDaoHibernate
 
     @Override
     public void deleteBySourceIds(List<Long> sourceIds) {
+        lockFileOrders(); // same lock order as the renumbering, which updates these rows one by one
         int deletedCount = getHibernateTemplate().execute(session ->
                 session.createQuery("delete from EventConfSource s where s.id in (:ids)")
                         .setParameterList("ids", sourceIds)

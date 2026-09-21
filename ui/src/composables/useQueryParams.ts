@@ -20,7 +20,8 @@
 /// License.
 ///
 
-import { FeatherSortObject, QueryParameters } from '@/types'
+import { ISortObject, QueryParameters } from '@/types'
+import { ref } from 'vue'
 
 const useQueryParameters = (
   initialParameters: QueryParameters,
@@ -30,9 +31,11 @@ const useQueryParameters = (
   const queryParameters = ref(initialParameters)
   const payload = ref({ queryParameters: queryParameters.value, ...optionalPayload })
 
-  const updateQueryParameters = (updatedParams: QueryParameters) => { queryParameters.value = updatedParams }
+  const updateQueryParameters = (updatedParams: QueryParameters) => {
+    queryParameters.value = updatedParams
+  }
 
-  const sort = (sortProps: FeatherSortObject) => {
+  const sort = (sortProps: ISortObject) => {
     const updatedQueryParams = {
       ...queryParameters.value,
       orderBy: sortProps.property,

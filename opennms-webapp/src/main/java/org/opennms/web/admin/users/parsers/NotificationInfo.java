@@ -48,11 +48,6 @@ public class NotificationInfo implements Cloneable {
     private String m_pagerEmail;
 
     /**
-     * The XMPP address of the user.
-     */
-    private String m_xmppAddress;
-
-    /**
      * The service to use for numerical pages
      */
     private String m_numericalService;
@@ -83,7 +78,6 @@ public class NotificationInfo implements Cloneable {
     public NotificationInfo() {
         m_email = "";
         m_pagerEmail = "";
-        m_xmppAddress = "";
         m_numericalService = "";
         m_numericalPin = "";
         m_textService = "";
@@ -108,7 +102,6 @@ public class NotificationInfo implements Cloneable {
 
         newInfo.setEmail(m_email);
         newInfo.setPagerEmail(m_pagerEmail);
-        newInfo.setXMPPAddress(m_xmppAddress);
         newInfo.setNumericalService(m_numericalService);
         newInfo.setNumericalPin(m_numericalPin);
         newInfo.setTextService(m_textService);
@@ -139,16 +132,6 @@ public class NotificationInfo implements Cloneable {
      */
     public void setPagerEmail(String anEmail) {
         m_pagerEmail = anEmail;
-    }
-
-    /**
-     * Sets the XMPP address
-     *
-     * @param anAddress
-     *            the new XMPP address
-     */
-    public void setXMPPAddress(String anAddress) {
-        m_xmppAddress = anAddress;
     }
 
     /**
@@ -227,15 +210,6 @@ public class NotificationInfo implements Cloneable {
      */
     public String getPagerEmail() {
         return m_pagerEmail;
-    }
-
-    /**
-     * Returns the XMPP address
-     *
-     * @return the XMPP address
-     */
-    public String getXMPPAddress() {
-    	return m_xmppAddress;
     }
 
     /**
@@ -331,7 +305,6 @@ public class NotificationInfo implements Cloneable {
         final StringBuilder buffer = new StringBuilder();
 
         buffer.append("email             = " + m_email + "\n");
-        buffer.append("xmpp              = " + m_xmppAddress + "\n");
         buffer.append("numerical service = " + m_numericalService + "\n");
         buffer.append("numerical pin     = " + m_numericalPin + "\n");
         buffer.append("text service      = " + m_textService + "\n");

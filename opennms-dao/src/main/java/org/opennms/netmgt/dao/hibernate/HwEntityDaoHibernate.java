@@ -53,13 +53,13 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
      */
     @Override
     public OnmsHwEntity findRootByNodeId(Integer nodeId) {
-        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?", nodeId);
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?1", nodeId);
     }
 
     @Override
     public OnmsHwEntity findRootEntityByNodeId(Integer nodeId) {
         List<OnmsHwEntity> entityList = getHibernateTemplate().execute(session -> (List<OnmsHwEntity>)
-                session.createSQLQuery("select * FROM hwEntity where nodeid = " + nodeId)
+                session.createNativeQuery("select * FROM hwEntity where nodeid = " + nodeId)
                         .setResultTransformer(
                                 new ResultTransformer() {
                                     @Override
@@ -121,7 +121,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
 
     private List<OnmsHwEntityAlias> findHwEntityAlias(OnmsHwEntity parent) {
          List<OnmsHwEntityAlias> hwEntityAliases = getHibernateTemplate().execute(session ->
-                 (List<OnmsHwEntityAlias>) session.createSQLQuery(
+                 (List<OnmsHwEntityAlias>) session.createNativeQuery(
                  "SELECT * FROM hwEntityAlias WHERE hwEntityId = " + parent.getId())
                  .setResultTransformer(new ResultTransformer() {
              @Override
@@ -147,7 +147,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
      */
     @Override
     public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex) {
-        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalIndex = ?", nodeId, entPhysicalIndex);
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ?1 and e.entPhysicalIndex = ?2", nodeId, entPhysicalIndex);
     }
 
     /* (non-Javadoc)
@@ -155,7 +155,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
      */
     @Override
     public OnmsHwEntity findEntityByName(Integer nodeId, String entPhysicalName) {
-        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalName = ?", nodeId, entPhysicalName);
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ?1 and e.entPhysicalName = ?2", nodeId, entPhysicalName);
     }
 
     /* (non-Javadoc)

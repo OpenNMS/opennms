@@ -36,6 +36,12 @@ CentOS/RHEL 9::
 include::centos-rhel9/install-sentinel.adoc[]
 --
 
+CentOS/RHEL 10::
++
+--
+include::centos-rhel10/install-sentinel.adoc[]
+--
+
 ifeval::["{page-component-title}" == "Horizon"]
 Ubuntu::
 +
@@ -57,7 +63,7 @@ IMPORTANT: Change the default user/password _admin/admin_ for the Karaf shell an
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8/9::
+CentOS/RHEL::
 +
 --
 include::centos-rhel/secure-karaf.adoc[]

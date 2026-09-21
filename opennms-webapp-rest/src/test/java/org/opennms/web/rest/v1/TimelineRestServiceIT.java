@@ -23,7 +23,9 @@ package org.opennms.web.rest.v1;
 
 import javax.xml.bind.JAXB;
 
-import org.apache.camel.StringSource;
+import java.io.StringReader;
+
+import javax.xml.transform.stream.StreamSource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +50,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath*:/META-INF/opennms/component-timeformat.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
@@ -107,7 +108,7 @@ public class TimelineRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", foobarServiceXml, 201, "/nodes/1/ipinterfaces/10.10.10.10/services/test-%2Ffoo%2Fbar");
 
         final String serviceXml = sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services/test-%2Ffoo%2Fbar", 200);
-        final int serviceId = JAXB.unmarshal(new StringSource(serviceXml), OnmsServiceType.class).getId();
+        final int serviceId = JAXB.unmarshal(new StreamSource(new StringReader(serviceXml)), OnmsServiceType.class).getId();
         final String xml = sendRequest(GET, "/timeline/html/1/10.10.10.10/" + serviceId + "/1559556000/1559642400/300", 200);
         Assert.assertEquals("<img src=\"/opennms/rest/timeline/image/1/10.10.10.10/" + serviceId + "/1559556000/1559642400/300\" usemap=\"#1-10.10.10.10-" + serviceId + "\"><map name=\"1-10.10.10.10-" + serviceId + "\"></map>", xml);
     }

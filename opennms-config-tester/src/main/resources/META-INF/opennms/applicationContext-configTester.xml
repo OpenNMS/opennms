@@ -27,14 +27,11 @@
     <property name="configs">
       <map>
         <entry key="ackd-configuration.xml" value="ackdConfigurationDao"/>
-        <entry key="actiond-configuration.xml" value="actiondConfigFactory"/>
-        <entry key="ami-config.xml" value="amiPeerFactory"/>
-        <!-- <entry key="asterisk-configuration.properties" value="asteriskConfigProperties"/> --><!-- Not part of standard build -->
         <entry key="availability-reports.xml" value="onmsReportConfigDao"/>
         <entry key="bsf-northbounder-configuration.xml" value="bsfNorthbounderConfigDao"/>
         <entry key="categories.xml" value="categoryFactory"/>
-        <entry key="chart-configuration.xml" value="chartConfigFactory"/>
         <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>
+        <entry key="token-auth-configuration.xml" value="tokenAuthConfigFactory"/>
         <entry key="database-reports.xml" value="databaseReportConfigDao"/>
         <entry key="database-schema.xml" value="databaseSchemaConfigFactory"/>
         <entry key="datacollection-config.xml" value="dataCollectionConfigDao"/>
@@ -55,13 +52,10 @@
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="xml-datacollection-config.xml" value="xmlDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
-        <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
         <entry key="notifications.xml" value="notificationFactory"/>
-        <!-- <entry key="nsclient-config.xml" value="nsClientPeerFactory"/> -->
-        <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms.properties" value="unknown"/>
         <entry key="poll-outages.xml" value="pollOutagesDao"/>
@@ -72,7 +66,6 @@
         <entry key="response-adhoc-graph.properties" value="responseAdhocGraph"/>
         <entry key="response-graph.properties" value="responsePrefabGraph"/>
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
-        <!-- <entry key="rt.properties" value="rtConfigDaoCheck"/> --><!-- Not part of standard build -->
         <entry key="rtc-configuration.xml" value="rtcConfigFactory"/>
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>
         <entry key="service-configuration.xml" value="serviceConfigFactory"/>
@@ -84,7 +77,6 @@
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
         <entry key="snmp-metadata-adapter-configuration.xml" value="snmpMetadataConfigDao"/>
         <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
-        <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
@@ -96,14 +88,11 @@
         <entry key="users.xml" value="userFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
-        <entry key="wmi-config.xml" value="wmiPeerFactory"/>
-        <entry key="wmi-datacollection-config.xml" value="wmiDataCollectionConfigFactory"/>
 
         <!-- VMware configuration files -->
         <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
         <entry key="vmware-datacollection-config.xml" value="VmwareDatacollectionConfigDao"/>
         <entry key="vmware-config.xml" value="VmwareConfigDao"/>
-        <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
 
         <!-- WS-Man configuration files -->
         <entry key="wsman-config.xml" value="wsManConfigDao"/>
@@ -118,23 +107,7 @@
   <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
   </bean>
-  
-  <bean id="actiondConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ActiondConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="actiondConfigFactory" class="org.opennms.netmgt.config.ActiondConfigFactory" depends-on="actiondConfigFactory-init" factory-method="getInstance"/>
-  
-  <bean id="amiPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.AmiPeerFactory.init</value></property>
-  </bean>
-
-  <bean id="amiPeerFactory" class="org.opennms.netmgt.config.AmiPeerFactory" depends-on="amiPeerFactory-init" factory-method="getInstance"/>
-  
-  <bean id="asteriskConfigProperties" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.asterisk.utils.AsteriskConfig.getProperties</value></property>
-  </bean>
-  
   <bean id="onmsReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/availability-reports.xml"/>
   </bean>
@@ -149,13 +122,14 @@
 
   <bean id="categoryFactory" class="org.opennms.netmgt.config.CategoryFactory" depends-on="categoryFactory-init" factory-method="getInstance"/>
   
-  <bean id="chartConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ChartConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="chartConfigFactory" class="org.opennms.netmgt.config.ChartConfigFactory" depends-on="chartConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
+
+  <bean id="tokenAuthConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.TokenAuthConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="tokenAuthConfigFactory" class="org.opennms.netmgt.config.TokenAuthConfigFactory" depends-on="tokenAuthConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="databaseReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultDatabaseReportConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/database-reports.xml"/>
@@ -281,10 +255,6 @@
     <property name="userManager" ref="userManager" />
   </bean>
   
-  <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
-  </bean>
-
   <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
   </bean>
@@ -303,20 +273,6 @@
 
   <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
   
-  <!--
-  <bean id="nsClientPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.nsclient.config.NSClientPeerFactory.init</value></property>
-  </bean>
-
-  <bean id="nsClientPeerFactory" class="org.opennms.netmgt.protocols.nsclient.config.NSClientPeerFactory" depends-on="nsClientPeerFactory-init" factory-method="getInstance"/>
-
-  <bean id="nsClientDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.nsclient.config.NSClientDataCollectionConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="nsClientDataCollectionConfigFactory" class="org.opennms.netmgt.protocols.nsclient.config.NSClientDataCollectionConfigFactory" depends-on="nsClientDataCollectionConfigFactory-init" factory-method="getInstance"/>
-  -->
-    
   <bean id="dataSourceTester" class="org.opennms.core.db.DataSourceConfigurationFactory">
     <constructor-arg value="${opennms.home}/etc/opennms-datasources.xml"/>
   </bean>
@@ -381,13 +337,6 @@
     <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdConfig.getProperties</value></property>
   </bean>
 
-  <bean id="rtConfigDao" class="org.opennms.netmgt.rt.ReadOnlyRtConfigDao"/>
-
-  <bean id="rtConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="rtConfigDao" />
-    <property name="targetMethod"><value>getBaseURL</value></property>
-  </bean>
-
   <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
 
   <bean id="scriptdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -444,9 +393,6 @@
     <property name="configResource" value="file:${opennms.home}/etc/snmptrap-northbounder-configuration.xml" />
   </bean>
 
-  <bean id="statisticsDaemonConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
-  </bean>
 
   <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml"/>
@@ -498,18 +444,6 @@
   </bean>
 
   <bean id="viewsDisplayFactory" class="org.opennms.netmgt.config.ViewsDisplayFactory" depends-on="viewsDisplayFactory-init" factory-method="getInstance"/>
-
-  <bean id="wmiPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
-  </bean>
-
-  <bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="wmiPeerFactory-init" factory-method="getInstance"/>
-
-  <bean id="wmiDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.WmiDataCollectionConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="wmiDataCollectionConfigFactory" class="org.opennms.netmgt.config.WmiDataCollectionConfigFactory" depends-on="wmiDataCollectionConfigFactory-init" factory-method="getInstance"/>
 
   <!-- VMware configuration files -->
   <bean id="VmwareCimDatacollectionConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareCimDatacollectionConfigDaoJaxb">

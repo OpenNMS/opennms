@@ -230,8 +230,8 @@ process-env:
 
 1. A Minion Docker image is required. It can be downloaded from a build in CircleCI. It is an artifact of the `tarball-assembly` job. 
 1. Load the image into Docker: `docker load minion.oci`
-1. Create a `docker-compose.yaml` file in the parent folder of the checked out `opennms` repo. An example compose file is given below
-1. Start the image: `docker-compose up -d`
+1. Create a `docker-compose.yml` file in the parent folder of the checked out `opennms` repo. An example compose file is given below
+1. Start the image: `docker compose up -d`
 1. Open a shell in the container using `docker exec -ti minion bash` or look at the logs `docker logs minion`
 1. If the result is not yet satisfactory then remove the container by `docker rm -f minion`, edit the files in your IDE, and start the image again
 

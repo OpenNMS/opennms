@@ -33,4 +33,5 @@ public interface DeviceConfigConstants {
     static final String PARM_DEVICE_CONFIG_BACKUP_START_TIME = "backupStartTime";
     static final String PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL = "backupDataProtocol";
     static final String PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL = "backupControlProtocol";
+    static final String COMPARE_IGNORE_COMMENTS = "ignore-comments";
 }

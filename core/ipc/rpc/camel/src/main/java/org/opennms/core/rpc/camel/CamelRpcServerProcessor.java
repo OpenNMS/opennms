@@ -112,13 +112,19 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
                 }  catch (Throwable t) {
                     LOG.error("Marshalling a response in RPC module {} failed.", module, t);
                     exchange.setException(t);
-                    exchange.getOut().setFault(true);
                 }
             } finally {
                 callback.done(false);
             }
         });
         return false;
+    }
+
+    @Override
+    public CompletableFuture<Exchange> processAsync(Exchange exchange) {
+        final CompletableFuture<Exchange> future = new CompletableFuture<>();
+        process(exchange, doneSync -> future.complete(exchange));
+        return future;
     }
 
     @Override

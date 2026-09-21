@@ -39,8 +39,8 @@
        <property name="concurrentConsumers" ref="brokerConcurrentConsumers"/>
     </bean>
 
-    <!-- A canonical ActiveMQ component pointing to the OpenNMS controller -->
-    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <!-- A canonical JMS component (backed by ActiveMQ) pointing to the OpenNMS controller -->
+    <bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
         <property name="configuration" ref="jmsConfig"/>
     </bean>
     <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">

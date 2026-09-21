@@ -10,6 +10,9 @@ We recommend that you complete some of these tasks before upgrading your {page-c
 [[prune-events]]
 === Prune unneeded events
 
+For the automated mechanisms in {page-component-title}, including the default events purge, alarm cleanup rules, and where to adjust them, see xref:deep-dive/admin/automatic-cleanup.adoc[Automatic database cleanup].
+This section covers the manual one-shot pruning that is sometimes useful before an upgrade.
+
 Use vacuumd or cron to regularly prune unneeded events.
 This helps to clean up your events table, and reduces the amount of data in your backups.
 We also recommend doing this before you begin the {page-component-title} upgrade process.

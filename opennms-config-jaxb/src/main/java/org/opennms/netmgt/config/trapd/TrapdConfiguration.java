@@ -23,6 +23,7 @@ package org.opennms.netmgt.config.trapd;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,8 +35,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.opennms.core.xml.ValidateUsing;
 
-
-
 /**
  * Top-level element for the trapd-configuration.xml
  *  configuration file.
@@ -44,10 +43,17 @@ import org.opennms.core.xml.ValidateUsing;
  */
 @XmlRootElement(name = "trapd-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("trapd-configuration.xsd")
+@ValidateUsing("trapd-configuration-1.1.xsd")
 @SuppressWarnings("all") 
 public class TrapdConfiguration implements  Serializable {
 	private static final long serialVersionUID = 2;
+
+	/**
+	 * Canonical name under which the trapd configuration is registered in the
+	 * Configuration Manager (kvstore_jsonb / CM REST). Shared by every component
+	 * that addresses trapd config through CM.
+	 */
+	public static final String CM_CONFIG_NAME = "trapd-config";
 
 	public static final boolean DEFAULT_USE_ADDRESS_FROM_VARBIND = false;
 
@@ -513,6 +519,43 @@ public class TrapdConfiguration implements  Serializable {
     public void setSnmpv3UserCollection(
             final java.util.List<Snmpv3User> snmpv3UserList) {
         this.snmpv3User = snmpv3UserList;
+    }
+
+    /**
+     * Looks up a configured SNMPv3 user by its server-assigned id. The id is
+     * guaranteed unique, so this is the correct key for correlating a user across
+     * read/write cycles (e.g. when resolving masked credentials).
+     */
+    public Snmpv3User getSnmpv3UserById(final String id) {
+        if (id == null || this.snmpv3User == null) {
+            return null;
+        }
+        for (Snmpv3User user : this.snmpv3User) {
+            if (id.equals(user.getId())) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Assigns a stable random UUID to every contained SNMPv3 user that does not
+     * already have one.
+     *
+     * @return {@code true} if at least one id was assigned (i.e. the config changed).
+     */
+    public boolean ensureSnmpv3UserIds() {
+        if (this.snmpv3User == null) {
+            return false;
+        }
+        boolean changed = false;
+        for (Snmpv3User user : this.snmpv3User) {
+            if (user != null && (user.getId() == null || user.getId().trim().isEmpty())) {
+                user.setId(UUID.randomUUID().toString());
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     public boolean isIncludeRawMessage() {

@@ -67,6 +67,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.io.Resources;
 
@@ -112,6 +114,9 @@ public class JtiIT {
     @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -124,15 +129,18 @@ public class JtiIT {
         rrdBaseDir = tempFolder.newFolder("rrd");
         scriptFile  = tempFolder.newFile("script-file.groovy");
 
-        NetworkBuilder nb = new NetworkBuilder();
-        nb.addNode("R1")
-                .setForeignSource("Juniper")
-                .setForeignId("1")
-                .setSysObjectId(".1.3.6.1.4.1.9.1.222")
-                .setType(OnmsNode.NodeType.ACTIVE);
-        nb.addInterface("192.0.2.1").setIsSnmpPrimary("P").setIsManaged("P");
-        nb.addInterface("172.23.2.12").setIsSnmpPrimary("P").setIsManaged("P");
-        nodeDao.save(nb.getCurrentNode());
+        new TransactionTemplate(transactionManager).execute(status -> {
+            NetworkBuilder nb = new NetworkBuilder();
+            nb.addNode("R1")
+                    .setForeignSource("Juniper")
+                    .setForeignId("1")
+                    .setSysObjectId(".1.3.6.1.4.1.9.1.222")
+                    .setType(OnmsNode.NodeType.ACTIVE);
+            nb.addInterface("192.0.2.1").setIsSnmpPrimary("P").setIsManaged("P");
+            nb.addInterface("172.23.2.12").setIsSnmpPrimary("P").setIsManaged("P");
+            nodeDao.save(nb.getCurrentNode());
+            return null;
+        });
 
         // Resync after adding nodes/interfaces
         interfaceToNodeCache.dataSourceSync();

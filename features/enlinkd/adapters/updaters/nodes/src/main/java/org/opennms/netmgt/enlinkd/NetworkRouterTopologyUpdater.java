@@ -90,7 +90,7 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
         Map<Integer, IpInterfaceTopologyEntity> ipPrimaryMap = getIpPrimaryMap();
         getNodeMap()
                 .values()
-                .forEach(element -> topology.getVertices().add(create(element, ipPrimaryMap.get(element.getId()))));
+                .forEach(element -> topology.addVertex(create(element, ipPrimaryMap.get(element.getId()))));
 
         Table<Integer, InetAddress, IpInterfaceTopologyEntity> ipTable = getIpInterfaceTable();
         Map<Integer, SnmpInterfaceTopologyEntity> snmpMap = getSnmpInterfaceMap();
@@ -121,12 +121,12 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
                 }   
                 OnmsTopologyPort sourcePort = create(source, sourceIp, (sourceIp.getSnmpInterfaceId() != null ? snmpMap.get(sourceIp.getSnmpInterfaceId()) : null));
                 OnmsTopologyPort targetPort = create(target, targetIp, (targetIp.getSnmpInterfaceId() != null ? snmpMap.get(targetIp.getSnmpInterfaceId()) : null));
-                topology.getEdges().add(OnmsTopologyEdge.create(sourceIp.getId().toString(), sourcePort, targetPort));
+                topology.addEdge(OnmsTopologyEdge.create(sourceIp.getId().toString(), sourcePort, targetPort));
             });
 
         getNodeTopologyService().findSubNetworkByNetworkPrefixLessThen(30, 126)
             .forEach(subnet -> {
-                topology.getVertices().add(createNetworkVertex(subnet));
+                topology.addVertex(createNetworkVertex(subnet));
                 OnmsTopologyVertex source = topology.getVertex(subnet.getCidr());
                 for (Integer targetNodeid : subnet.getNodeIds()) {
                     OnmsTopologyVertex target = topology.getVertex(targetNodeid.toString());
@@ -142,7 +142,7 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
                     }    
                     OnmsTopologyPort sourcePort = createNetworkPort(source, targetIp);
                     OnmsTopologyPort targetPort = create(target, targetIp, (targetIp.getSnmpInterfaceId() != null ? snmpMap.get(targetIp.getSnmpInterfaceId()) : null));
-                    topology.getEdges().add(OnmsTopologyEdge.create(targetIp.getId().toString(), sourcePort, targetPort));
+                    topology.addEdge(OnmsTopologyEdge.create(targetIp.getId().toString(), sourcePort, targetPort));
                 }
             });
 

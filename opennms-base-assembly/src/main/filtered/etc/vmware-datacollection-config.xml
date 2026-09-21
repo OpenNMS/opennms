@@ -380,6 +380,24 @@
         <attrib name="datastore.totalWriteLatency.average" alias="DaStTlWeLyAvg" type="Gauge"/>
         <attrib name="datastore.write.average" alias="DaStWeAvg" type="Gauge"/>
       </vmware-group>
+      <!--
+        Datastore capacity, free space, and provisioning state for the
+        datastores this host mounts. Dispatched by VmwareCollector when
+        resourceType="vmwareDatastoreCapacity"; values come from
+        Datastore.summary rather than PerformanceManager.
+      -->
+      <vmware-group name="vmwareDatastoreCapacity" resourceType="vmwareDatastoreCapacity">
+        <attrib name="capacity"           alias="DsCapacity"      type="Gauge"/>
+        <attrib name="freeSpace"          alias="DsFreeSpace"     type="Gauge"/>
+        <attrib name="used"               alias="DsUsed"          type="Gauge"/>
+        <attrib name="usedPct"            alias="DsUsedPct"       type="Gauge"/>
+        <attrib name="uncommitted"        alias="DsUncommitted"   type="Gauge"/>
+        <attrib name="overcommittedBytes" alias="DsOvercommitted" type="Gauge"/>
+        <attrib name="accessible"         alias="DsAccessible"    type="Gauge"/>
+        <attrib name="multipleHostAccess" alias="DsMultiHost"     type="Gauge"/>
+        <attrib name="type"               alias="DsType"          type="string"/>
+        <attrib name="url"                alias="DsUrl"           type="string"/>
+      </vmware-group>
     </vmware-groups>
   </vmware-collection>
 
@@ -743,6 +761,25 @@
         <attrib name="datastore.unmapSize.summation" alias="DaStUnmapSeSum" type="Gauge"/>
         <attrib name="datastore.write.average" alias="DaStWeAvg" type="Gauge"/>
       </vmware-group>
+      <!--
+        Datastore capacity, free space, and provisioning state for the
+        datastores this host mounts. Dispatched by VmwareCollector when
+        resourceType="vmwareDatastoreCapacity"; values come from
+        Datastore.summary rather than PerformanceManager.
+      -->
+      <vmware-group name="vmwareDatastoreCapacity" resourceType="vmwareDatastoreCapacity">
+        <attrib name="capacity"           alias="DsCapacity"      type="Gauge"/>
+        <attrib name="freeSpace"          alias="DsFreeSpace"     type="Gauge"/>
+        <attrib name="used"               alias="DsUsed"          type="Gauge"/>
+        <attrib name="usedPct"            alias="DsUsedPct"       type="Gauge"/>
+        <attrib name="uncommitted"        alias="DsUncommitted"   type="Gauge"/>
+        <attrib name="overcommittedBytes" alias="DsOvercommitted" type="Gauge"/>
+        <attrib name="accessible"         alias="DsAccessible"    type="Gauge"/>
+        <attrib name="multipleHostAccess" alias="DsMultiHost"     type="Gauge"/>
+        <attrib name="type"               alias="DsType"          type="string"/>
+        <attrib name="url"                alias="DsUrl"           type="string"/>
+      </vmware-group>
     </vmware-groups>
   </vmware-collection>
+
 </vmware-datacollection-config>

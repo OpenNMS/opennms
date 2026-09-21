@@ -1,0 +1,107 @@
+
+= Grafana Endpoints API
+
+The `/endpoints/grafana` endpoint manages the configured Grafana endpoints (used, for example, by the Grafana box report). It is mounted under `/opennms/rest/endpoints/grafana` and uses `application/json`. All operations require `ROLE_REST` or `ROLE_ADMIN`.
+
+A Grafana endpoint is represented by the `GrafanaEndpoint` model:
+
+* `id` (Long): server-assigned database ID (not required on create).
+* `uid` (String, required, unique): external unique identifier used by `/verify` and the dashboard endpoints.
+* `url` (String, required): base URL of the Grafana instance.
+* `apiKey` (String, required): Grafana API key.
+* `description` (String, optional)
+* `connectTimeout` (Integer, optional): connection timeout in milliseconds.
+* `readTimeout` (Integer, optional): read timeout in milliseconds.
+
+== GETs (reading data)
+
+[caption=]
+.Grafana Endpoints API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/endpoints/grafana`                              | Lists all configured Grafana endpoints. Returns `204 No Content` when there are none.
+| `/endpoints/grafana/\{id}`                        | Fetches a single Grafana endpoint by its numeric ID.
+| `/endpoints/grafana/\{uid}/dashboards`            | Lists all dashboards available from the Grafana endpoint identified by `uid`.
+| `/endpoints/grafana/\{uid}/dashboards/\{dashboardId}` | Fetches a single dashboard by `dashboardId` from the endpoint identified by `uid`.
+
+|===
+
+== POSTs (Creating Data)
+
+`POST` consumes `application/json`.
+
+[caption=]
+.Grafana Endpoints API POST functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/endpoints/grafana`        | Creates a new Grafana endpoint. Returns `202 Accepted`, or `400 Bad Request` with an error object on validation failure.
+| `/endpoints/grafana/verify` | Verifies connectivity to a Grafana endpoint. Uses the existing `uid` if set, otherwise the supplied `url`/`apiKey`/timeouts. Returns `200 OK` if reachable, otherwise `400 Bad Request`.
+
+|===
+
+== PUT (modifying data)
+
+`PUT` consumes `application/json`.
+
+[caption=]
+.Grafana Endpoints API PUT function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/endpoints/grafana/\{id}` | Updates an existing Grafana endpoint (the endpoint is identified by the `id` field in the request body). Returns `202 Accepted`, or `400 Bad Request` on validation failure.
+
+|===
+
+== DELETEs (Removing Data)
+
+[caption=]
+.Grafana Endpoints API DELETE functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/endpoints/grafana`       | Deletes all configured Grafana endpoints. Returns `202 Accepted`.
+| `/endpoints/grafana/\{id}` | Deletes a single Grafana endpoint by ID. Returns `202 Accepted`.
+
+|===
+
+== Examples using cURL
+
+.List all Grafana endpoints
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/endpoints/grafana"
+----
+
+.Response
+[source,json]
+----
+[{"id":1,"uid":"grafana-1","url":"http://grafana:3000","description":"Primary Grafana"}]
+----
+
+.Create a Grafana endpoint
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"uid":"grafana-1","url":"http://grafana:3000","apiKey":"eyJrIjoi...","connectTimeout":5000,"readTimeout":30000}' \
+  "http://127.0.0.1:8980/opennms/rest/endpoints/grafana"
+----
+
+.Verify connectivity to a Grafana endpoint
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"url":"http://grafana:3000","apiKey":"eyJrIjoi..."}' \
+  "http://127.0.0.1:8980/opennms/rest/endpoints/grafana/verify"
+----
+
+.List dashboards from an endpoint
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/endpoints/grafana/grafana-1/dashboards"
+----

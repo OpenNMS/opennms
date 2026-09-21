@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { inject, nextTick, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import { propsBinder, remapEvents } from '@vue-leaflet/vue-leaflet/src/utils'
 import {
@@ -39,7 +41,7 @@ export default {
     provide('canSetParentHtml', () => !!leafletRef.value.getElement())
     provide(
       'setParentHtml',
-      (html) => (leafletRef.value.getElement().innerHTML = html)
+      html => (leafletRef.value.getElement().innerHTML = html)
     )
     provide('addLayer', (layer) => {
       leafletRef.value.addLayer(layer.leafletObject)

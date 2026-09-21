@@ -37,6 +37,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.api.ReportCatalogDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
@@ -53,8 +54,10 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     private ReportCatalogDao m_reportCatalogDao;
     private ReportServiceLocator m_reportServiceLocator;
-    
+
     private GlobalReportRepository m_globalReportRepository;
+
+    private SessionUtils m_sessionUtils;
     
     private static final String LOG4J_CATEGORY = "reports";
     
@@ -85,14 +88,17 @@ public class DefaultReportStoreService implements ReportStoreService {
     public void delete(final Integer id) {
         Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
             @Override public void run() {
-                final String deleteFile = m_reportCatalogDao.get(id).getLocation();
-                final boolean success = (new File(deleteFile).delete());
-                if (success) {
-                    LOG.debug("deleted report XML file: {}", deleteFile);
-                } else {
-                    LOG.warn("unable to delete report XML file: {} will delete reportCatalogEntry anyway", deleteFile);
-                }
-                m_reportCatalogDao.delete(id);
+                m_sessionUtils.withTransaction(() -> {
+                    final String deleteFile = m_reportCatalogDao.get(id).getLocation();
+                    final boolean success = (new File(deleteFile).delete());
+                    if (success) {
+                        LOG.debug("deleted report XML file: {}", deleteFile);
+                    } else {
+                        LOG.warn("unable to delete report XML file: {} will delete reportCatalogEntry anyway", deleteFile);
+                    }
+                    m_reportCatalogDao.delete(id);
+                    return null;
+                });
             }
         });
     }
@@ -161,8 +167,11 @@ public class DefaultReportStoreService implements ReportStoreService {
     /** {@inheritDoc} */
     @Override
     public void save(final ReportCatalogEntry reportCatalogEntry) {
-        m_reportCatalogDao.save(reportCatalogEntry);
-        m_reportCatalogDao.flush();
+        m_sessionUtils.withTransaction(() -> {
+            m_reportCatalogDao.save(reportCatalogEntry);
+            m_reportCatalogDao.flush();
+            return null;
+        });
     }
 
     /** {@inheritDoc} */
@@ -187,5 +196,9 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     public void setGlobalReportRepository(GlobalReportRepository globalReportRepository) {
         this.m_globalReportRepository = globalReportRepository;
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.m_sessionUtils = sessionUtils;
     }
 }

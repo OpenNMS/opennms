@@ -49,7 +49,6 @@ export default class OnmsLoader {
       'leaflet': this.prefix + 'leaflet-js' + this.extension,
       'manifest': this.prefix + 'manifest' + this.extension,
       'onms-graph': this.prefix + 'onms-graph' + this.extension,
-//      'openlayers': this.prefix + 'legacy/openlayers-2.10/OpenLayers.js',
       'vendor': this.prefix + 'vendor' + this.extension,
     };
   }

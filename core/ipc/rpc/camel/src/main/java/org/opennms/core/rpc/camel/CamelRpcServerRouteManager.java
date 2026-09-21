@@ -112,7 +112,7 @@ public abstract class CamelRpcServerRouteManager {
             final RpcModule<RpcRequest,RpcResponse> rpcModule = (RpcModule<RpcRequest,RpcResponse>)module;
             final String routeId = routeIdsByModule.remove(rpcModule);
             if (routeId != null) {
-                context.stopRoute(routeId);
+                context.getRouteController().stopRoute(routeId);
                 context.removeRoute(routeId);
                 LOG.info("Deregistered RpcModule {} ({})", rpcModule.getId(), Integer.toHexString(rpcModule.hashCode()));
             } else {

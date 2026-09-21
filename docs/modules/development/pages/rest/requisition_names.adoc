@@ -1,0 +1,32 @@
+
+= Requisition Names API
+
+The `/requisitionNames` endpoint returns the list of requisition (foreign source) names known to OpenNMS. It produces `application/json`, `application/xml`, and `application/atom+xml`.
+
+NOTE: To manage the requisitions themselves, see xref:rest/requisitions.adoc[Requisitions API].
+
+== GETs (reading data)
+
+[caption=]
+.Requisition Names API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/requisitionNames` | Fetches the list of requisition (foreign source) names.
+
+|===
+
+== Examples using cURL
+
+.Get a list of all requisition names
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/requisitionNames"
+----
+
+.Response
+[source,json]
+----
+{"count":2,"totalCount":2,"offset":0,"foreign-source":["Servers","Routers"]}
+----

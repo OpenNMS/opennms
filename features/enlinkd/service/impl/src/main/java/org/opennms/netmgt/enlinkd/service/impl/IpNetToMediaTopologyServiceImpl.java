@@ -56,12 +56,14 @@ public class IpNetToMediaTopologyServiceImpl implements
     }
 
     @Override
+    @Transactional
     public void delete(int nodeid) {
         m_ipNetToMediaDao.deleteBySourceNodeId(nodeid);
         m_ipNetToMediaDao.flush();
     }
 
     @Override
+    @Transactional
     public void reconcile(int nodeId, Date now) {
         m_ipNetToMediaDao.deleteBySourceNodeIdOlderThen(nodeId, now);
         m_ipNetToMediaDao.flush();

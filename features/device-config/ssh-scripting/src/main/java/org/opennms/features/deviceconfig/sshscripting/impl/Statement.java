@@ -89,6 +89,34 @@ class Statement {
             public void execute(SshInteraction interaction, String string) throws Exception {
                 interaction.await(string);
             }
+        }, capture {
+            /**
+             * {@code capture:} may optionally take a string argument.
+             * With no argument ({@code capture:}), capture starts immediately at the current stdout position.
+             * With an argument ({@code capture: show running-config}), the argument is first awaited
+             * (consuming the device's echo of the preceding send: command), then capture starts —
+             * so the echoed command line is excluded from the captured bytes.
+             */
+            @Override
+            public Statement parse(String line) {
+                if (line.equals(name() + ":")) {
+                    return new Statement(this, "");
+                }
+                if (line.startsWith(name() + ":")) {
+                    var arg = line.substring(name().length() + 1).trim();
+                    return new Statement(this, arg);
+                }
+                return null;
+            }
+
+            @Override
+            public void execute(SshInteraction interaction, String string) throws Exception {
+                if (!string.isEmpty()) {
+                    interaction.awaitAndCapture(string);
+                } else {
+                    interaction.startCapture();
+                }
+            }
         };
 
         public Statement parse(String line) {

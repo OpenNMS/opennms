@@ -100,7 +100,7 @@ public class DataCollectionConfigResourceTest {
 
         @Override
         public DatacollectionConfig getRootDataCollection() {
-            throw new UnsupportedOperationException("Not yet implemented!");
+            return getContainer().getObject();
         }
 
         @Override
@@ -151,8 +151,8 @@ public class DataCollectionConfigResourceTest {
         final DataCollectionConfigImpl config = (DataCollectionConfigImpl) response.getEntity();
         assertEquals(2, config.getSnmpCollections().length);
         System.err.println(JaxbUtils.marshal(config));
-        assertEquals(145, config.getSnmpCollections()[0].getDataCollectionGroups()[0].getResourceTypes().length);
-        assertEquals(145, config.getSnmpCollections()[1].getDataCollectionGroups()[0].getResourceTypes().length);
+        assertEquals(140, config.getSnmpCollections()[0].getDataCollectionGroups()[0].getResourceTypes().length);
+        assertEquals(140, config.getSnmpCollections()[1].getDataCollectionGroups()[0].getResourceTypes().length);
     }
     
 }

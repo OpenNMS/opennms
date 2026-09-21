@@ -22,7 +22,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +32,8 @@ import org.hibernate.Session;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 public class GenericHibernateAccessor extends HibernateDaoSupport implements GenericPersistenceAccessor {
 
@@ -47,7 +46,17 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
 
     @Override
     public <T> List<T> find(final String query, final Object... values) {
-        return (List<T>) getHibernateTemplate().find(query, values);
+        // HibernateTemplate.find binds positional parameters 0-based, which Hibernate 5 rejects
+        // for ?1-style ordinals; bind them 1-based ourselves.
+        return getHibernateTemplate().execute(session -> {
+            final Query queryObject = session.createQuery(query);
+            if (values != null) {
+                for (int i = 0; i < values.length; i++) {
+                    queryObject.setParameter(i + 1, values[i]);
+                }
+            }
+            return (List<T>) queryObject.list();
+        });
     }
 
     @Override
@@ -88,7 +97,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     @Override
     public <T> List<T> executeNativeQuery(String sql, Map<String, Object> parameterMap) {
         final List result = getHibernateTemplate().execute(session -> {
-            final Query query = session.createSQLQuery(sql);
+            final Query query = session.createNativeQuery(sql);
             if (parameterMap != null) {
                 parameterMap.entrySet().forEach(entry -> {
                     if (entry.getValue() instanceof Collection) {
@@ -112,7 +121,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     public List findMatching(Criteria criteria) {
         final HibernateCallback<List> callback = new HibernateCallback<List>() {
             @Override
-            public List doInHibernate(final Session session) throws HibernateException, SQLException {
+            public List doInHibernate(final Session session) throws HibernateException {
                 final org.hibernate.Criteria hibernateCriteria = criteriaConverter.convert(criteria, session);
                 return hibernateCriteria.list();
             }

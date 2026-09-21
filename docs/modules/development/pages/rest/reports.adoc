@@ -1,0 +1,111 @@
+
+= Reports API
+
+The `/reports` endpoint lists and runs report templates, manages persisted (stored) reports, and manages scheduled report triggers. It is mounted under `/opennms/rest/reports` and uses `application/json` (report downloads stream the rendered output, e.g. `application/pdf`, `text/csv`).
+
+Write operations (running, delivering, scheduling, deleting) require one of `ROLE_REST`, `ROLE_ADMIN`, or `ROLE_REPORT_DESIGNER`; read operations also allow `ROLE_USER`/`ROLE_MOBILE`.
+
+== GETs (reading data)
+
+[caption=]
+.Reports API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/reports`                            | Lists all available report templates from the active repositories. Returns `204 No Content` if there are none.
+| `/reports/\{id}`                      | Returns details for one report template (formats, parameters, categories, default timezones). Optional `userId` query parameter additionally includes that user's saved delivery options.
+| `/reports/persisted`                  | Lists persisted (stored) report instances. Paginated (sends a `Content-Range` header); `204 No Content` if none.
+| `/reports/scheduled`                  | Lists scheduled report triggers. Paginated; `204 No Content` if none.
+| `/reports/scheduled/\{triggerName}`   | Returns details of one scheduled trigger (parameters, delivery options, cron expression). `404` if not found.
+| `/reports/download`                   | Downloads (or re-renders) a persisted report. Query parameters `locatorId` (catalog ID, required) and `format`. Streams PDF/SVG/HTML/CSV.
+
+|===
+
+== POSTs (running, delivering, scheduling)
+
+`POST` consumes `application/json`.
+
+[caption=]
+.Reports API POST functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/reports/\{id}`         | Runs the report template `id` immediately and streams the rendered output back (`application/pdf`, `text/csv`, …). `400` if the requested format is unsupported.
+| `/reports/persisted`     | Delivers a report (runs it immediately and applies delivery options such as email, webhook, or persist). Returns `202 Accepted`.
+| `/reports/scheduled`     | Creates a new cron-scheduled report. Returns `202 Accepted`, or `400` on validation error.
+
+|===
+
+== PUT (modifying data)
+
+`PUT` consumes `application/json`.
+
+[caption=]
+.Reports API PUT function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/reports/scheduled/\{triggerName}` | Updates an existing scheduled trigger's parameters, delivery options, and cron expression. Returns `202 Accepted`, `404` if not found, or `400` on validation error.
+
+|===
+
+== DELETEs (Removing Data)
+
+[caption=]
+.Reports API DELETE functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/reports/persisted`         | Deletes all persisted reports. Returns `202 Accepted`.
+| `/reports/persisted/\{id}`   | Deletes one persisted report by catalog ID. `202 Accepted` or `404`.
+| `/reports/scheduled`         | Deletes all scheduled report triggers. Returns `202 Accepted`.
+| `/reports/scheduled/\{id}`   | Deletes one scheduled trigger by name. `202 Accepted` or `404`.
+
+|===
+
+== Request body
+
+The body for running, delivering, and scheduling reports is a JSON object:
+
+* `id` (String): the report template ID (for `POST /reports/\{id}` the path value is used).
+* `format` (String): output format, matched case-insensitively against the `ReportFormat` enum (`PDF`, `SVG`, `CSV`, `HTML`, …).
+* `cronExpression` (String): for scheduling/updating a scheduled report only.
+* `parameters` (array): report parameters, each `{ "name", "type", "value", … }` where `type` is one of `string`, `integer`, `float`, `double`, `timezone`, or `date`.
+* `deliveryOptions` (object): `instanceId` (String, required), `sendMail` (boolean), `mailTo` (String, required when `sendMail` is true), `webhook` (boolean), `webhookUrl` (String), `persist` (boolean), `format` (String).
+
+Validation errors return `400 Bad Request` with `{ "message": …, "context": … }`.
+
+== Examples using cURL
+
+.List available report templates
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/reports"
+----
+
+.Run a report immediately and save the PDF
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"format":"PDF","parameters":[{"name":"startDate","type":"date","date":"2026-06-01"}]}' \
+  -o report.pdf \
+  "http://127.0.0.1:8980/opennms/rest/reports/local_Early-Morning-Report"
+----
+
+.Schedule a report
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{
+        "id":"local_Early-Morning-Report",
+        "format":"PDF",
+        "cronExpression":"0 0 6 * * ?",
+        "parameters":[],
+        "deliveryOptions":{"instanceId":"morning","sendMail":true,"mailTo":"ops@example.com","persist":true,"format":"PDF"}
+      }' \
+  "http://127.0.0.1:8980/opennms/rest/reports/scheduled"
+----

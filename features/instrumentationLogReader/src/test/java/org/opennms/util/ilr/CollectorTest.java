@@ -102,8 +102,8 @@ public class CollectorTest {
         c.addLog("2010-06-01 09:36:28,995 INFO [CollectdScheduler-50 Pool-fiber1] collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
         c.addLog("2010-06-01 09:33:31,964 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: begin:example1/60/192.0.2.202/SNMP");
         c.addLog("2010-06-01 09:33:32,477 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: end:example1/60/192.0.2.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WS-Man");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WS-Man");
         c.addLog("2010-06-01 08:39:46,648 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         c.addLog("2010-06-01 08:39:46,650 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         assertEquals(5, c.getThreadCount());
@@ -118,14 +118,14 @@ public class CollectorTest {
         c.addLog("2010-06-01 09:36:28,995 INFO [CollectdScheduler-50 Pool-fiber1] collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
         c.addLog("2010-06-01 09:33:31,964 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: begin:example1/60/192.0.2.202/SNMP");
         c.addLog("2010-06-01 09:33:32,477 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: end:example1/60/192.0.2.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WS-Man");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WS-Man");
         c.addLog("2010-06-01 08:39:46,648 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         c.addLog("2010-06-01 08:39:46,650 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         assertEquals(1,c.getCollectionsPerService("example1/24/216.216.217.254/SNMP"));
         assertEquals(0,c.getCollectionsPerService("example1/19/209.61.128.9/SNMP"));
         assertEquals(1,c.getCollectionsPerService("example1/60/192.0.2.202/SNMP"));
-        assertEquals(0,c.getCollectionsPerService("example1/86/192.0.2.25/WMI"));
+        assertEquals(0,c.getCollectionsPerService("example1/86/192.0.2.25/WS-Man"));
         assertEquals(0,c.getCollectionsPerService("example1/58/192.0.2.201/SNMP"));
     }
     @Test
@@ -137,14 +137,14 @@ public class CollectorTest {
         c.addLog("2010-06-01 09:36:28,995 INFO [CollectdScheduler-50 Pool-fiber1] collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
         c.addLog("2010-06-01 09:33:31,964 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: begin:example1/60/192.0.2.202/SNMP");
         c.addLog("2010-06-01 09:33:32,477 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: end:example1/60/192.0.2.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WS-Man");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WS-Man");
         c.addLog("2010-06-01 08:39:46,648 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         c.addLog("2010-06-01 08:39:46,650 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         assertEquals(7144,c.getAverageCollectionTimePerService("example1/24/216.216.217.254/SNMP"));
         assertEquals(0,c.getAverageCollectionTimePerService("example1/19/209.61.128.9/SNMP"));
         assertEquals(513,c.getAverageCollectionTimePerService("example1/60/192.0.2.202/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/192.0.2.25/WMI"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/192.0.2.25/WS-Man"));
         assertEquals(0,c.getAverageCollectionTimePerService("example1/58/192.0.2.201/SNMP"));
     }
     @Test
@@ -156,14 +156,14 @@ public class CollectorTest {
         c.addLog("2010-06-01 09:36:28,995 INFO [CollectdScheduler-50 Pool-fiber1] collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
         c.addLog("2010-06-01 09:33:31,964 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: begin:example1/60/192.0.2.202/SNMP");
         c.addLog("2010-06-01 09:33:32,477 INFO [CollectdScheduler-50 Pool-fiber0] collector.collect: end:example1/60/192.0.2.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: begin: example1/86/192.0.2.25/WS-Man");
+        c.addLog("2010-06-01 08:45:12,104 INFO [CollectdScheduler-50 Pool-fiber2] collector.collect: persistDataQueueing: end: example1/86/192.0.2.25/WS-Man");
         c.addLog("2010-06-01 08:39:46,648 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         c.addLog("2010-06-01 08:39:46,650 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: begin:example1/58/192.0.2.201/SNMP");
         assertEquals(7144,c.getAverageCollectionTimePerService("example1/24/216.216.217.254/SNMP"));
         assertEquals(0,c.getAverageCollectionTimePerService("example1/19/209.61.128.9/SNMP"));
         assertEquals(513,c.getAverageCollectionTimePerService("example1/60/192.0.2.202/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/192.0.2.25/WMI"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/192.0.2.25/WS-Man"));
         assertEquals(0,c.getAverageCollectionTimePerService("example1/58/192.0.2.201/SNMP"));
     }
 
@@ -192,7 +192,7 @@ public class CollectorTest {
         assertEquals(7144,c.getAverageCollectionTimePerService("example1/24/216.216.217.254/SNMP"));
         assertEquals(0,c.getAverageCollectionTimePerService("example1/19/209.61.128.9/SNMP"));
         assertEquals(513,c.getAverageCollectionTimePerService("example1/60/192.0.2.202/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/192.0.2.25/WMI"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/192.0.2.25/WS-Man"));
         assertEquals(0,c.getAverageCollectionTimePerService("example1/58/192.0.2.201/SNMP"));
     }
 

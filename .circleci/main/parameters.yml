@@ -8,27 +8,27 @@ parameters:
   previous_branch:
     description: the previous branch, if any
     type: string
-    default: foundation-2025
+    default: release-36.x
   previous_branch_label:
     description: the previous branch, if any (escaped, no slashes)
     type: string
-    default: foundation-2025
+    default: release-36.x
   main_branch:
     description: the auto-merge main branch
     type: string
-    default: release-36.x
+    default: develop
   main_branch_label:
     description: the auto-merge main branch (escaped, no slashes)
     type: string
-    default: release-36.x
+    default: develop
   next_branch:
     description: the auto-merge target branch
     type: string
-    default: develop
+    default: ""
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: develop
+    default: ""
 
   ### sub-tree "module" build setup ###
   trigger-docs:
@@ -47,6 +47,10 @@ parameters:
     description: whether to trigger a code coverage build
     type: boolean
     default: false
+  trigger-integration-changes-only:
+    description: whether integration tests should be limited to changed modules (false runs the full suite)
+    type: boolean
+    default: true
 
   ### config.yml parameters for when triggers are used (not used in main.yml, but needed defined here for trigger executions) ###
   trigger-prebuild:

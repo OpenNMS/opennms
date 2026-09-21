@@ -1,8 +1,16 @@
 #!/bin/sh - 
 
 JAVA_OPTIONS="-Xmx256m"
-OPENNMS_HOME="${install.dir}"
-OPENNMS_BINDIR="${install.bin.dir}"
+if [ -z "${OPENNMS_HOME}" ]; then
+  _script="$0"
+  case "$_script" in
+    */*) ;;
+    *) _script="$(command -v "$_script" 2>/dev/null || echo "$_script")" ;;
+  esac
+  OPENNMS_HOME="$(cd "$(dirname "$_script")/.." && pwd)"
+  unset _script
+fi
+OPENNMS_BINDIR="${OPENNMS_HOME}/bin"
 
 APP_CLASS=org.opennms.netmgt.config.DataCollectionConfigFactory
 

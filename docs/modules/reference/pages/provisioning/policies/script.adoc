@@ -2,12 +2,28 @@
 = Script Policy
 :description: Learn about the Script policy in OpenNMS {page-component-title} to use Groovy scripts to modify provisioned node data.
 
-This policy lets you use Groovy scripts to modify provisioned node data.
-These scripts have to be placed in the `$\{OPENNMS_HOME}/etc/script-policies` directory.
-An example would be to change the node's primary interface or location.
-The script will be invoked for each matching node.
+This policy (`ScriptPolicy`) lets you use Groovy scripts to modify provisioned node data when the built-in policies cannot express what you need.
+The script runs against each matching node during a node scan.
 
-The following example shows the source code for setting the `192.168.100.0/24` interface to `PRIMARY`, while all remaining interfaces are set to `SECONDARY`.
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Required
+
+| script
+| File name of the Groovy script, relative to `$\{OPENNMS_HOME}/etc/script-policies`.
+| yes
+|===
+
+This policy also accepts the common `matchBehavior` parameter and matches against the same node properties as the xref:reference:provisioning/policies/node-category.adoc#match-criteria[Node Categorization policy] (for example, `label`, `sysObjectId`, and `sysName`).
+See xref:reference:provisioning/policies.adoc[Policies] for `matchBehavior` and the `~` regular-expression prefix.
+
+The script receives two bindings: `node` (the current node, mutable) and `LOG` (a logger).
+Return the node to apply your changes.
+Returning `null` aborts the scan for that node -- its scan results are not applied -- but it does not delete the node, which remains as defined in the requisition.
+
+The following example sets the `192.168.100.0/24` interface to `PRIMARY`, while all remaining interfaces are set to `SECONDARY`.
 Furthermore, the node's location is set to `Minneapolis`.
 
 [source, groovy]
@@ -30,3 +46,5 @@ node.setLocation(new OnmsMonitoringLocation("Minneapolis", ""));
 
 return node;
 ----
+
+For a further example, see xref:reference:provisioning/policies/examples.adoc#custom-logic-with-the-script-policy[Custom logic with the Script Policy].

@@ -21,26 +21,32 @@
  */
 package org.opennms.netmgt.topologies.service.api;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class OnmsTopology {
 
     private Set<OnmsTopologyVertex> m_vertices;
     private Set<OnmsTopologyEdge> m_edges;
+    private Map<String, OnmsTopologyVertex> m_vertexIndex;
+    private Map<String, OnmsTopologyEdge> m_edgeIndex;
     private OnmsTopologyVertex m_defaultVertex;
 
     public OnmsTopology() {
-        m_vertices = new HashSet<OnmsTopologyVertex>();
-        m_edges = new HashSet<OnmsTopologyEdge>();
+        m_vertices = new HashSet<>();
+        m_edges = new HashSet<>();
+        m_vertexIndex = new HashMap<>();
+        m_edgeIndex = new HashMap<>();
     }
 
     public OnmsTopologyVertex getVertex(String id) {
-        return m_vertices.stream().filter(vertex -> id.equals(vertex.getId())).findAny().orElse(null);
+        return m_vertexIndex.get(id);
     }
 
     public OnmsTopologyEdge getEdge(String id) {
-        return m_edges.stream().filter(edge -> id.equals(edge.getId())).findAny().orElse(null);
+        return m_edgeIndex.get(id);
     }
 
     public Set<OnmsTopologyVertex> getVertices() {
@@ -49,10 +55,15 @@ public class OnmsTopology {
 
     public void addVertex(OnmsTopologyVertex v) {
         m_vertices.add(v);
+        m_vertexIndex.put(v.getId(), v);
     }
 
     public void setVertices(Set<OnmsTopologyVertex> vertices) {
         m_vertices = vertices;
+        m_vertexIndex = new HashMap<>();
+        for (OnmsTopologyVertex v : vertices) {
+            m_vertexIndex.put(v.getId(), v);
+        }
     }
 
     public Set<OnmsTopologyEdge> getEdges() {
@@ -61,25 +72,32 @@ public class OnmsTopology {
 
     public void addEdge(OnmsTopologyEdge e) {
         m_edges.add(e);
+        m_edgeIndex.put(e.getId(), e);
     }
 
     public void setEdges(Set<OnmsTopologyEdge> edges) {
         m_edges = edges;
+        m_edgeIndex = new HashMap<>();
+        for (OnmsTopologyEdge e : edges) {
+            m_edgeIndex.put(e.getId(), e);
+        }
     }    
 
     public boolean hasVertex(String id) {
-        return (getVertex(id) != null);
+        return m_vertexIndex.containsKey(id);
     }
     
     public boolean hasEdge(String id) {
-        return (getEdge(id) != null);
+        return m_edgeIndex.containsKey(id);
     }
     
     public OnmsTopology clone() {
         OnmsTopology topo = new OnmsTopology();
-        topo.setVertices(new HashSet<>(m_vertices));
-        topo.setEdges(new HashSet<>(m_edges));
-        topo.setDefaultVertex(m_defaultVertex);
+        topo.m_vertices = new HashSet<>(m_vertices);
+        topo.m_edges = new HashSet<>(m_edges);
+        topo.m_vertexIndex = new HashMap<>(m_vertexIndex);
+        topo.m_edgeIndex = new HashMap<>(m_edgeIndex);
+        topo.m_defaultVertex = m_defaultVertex;
         return topo;
     }
 

@@ -1,0 +1,43 @@
+
+= Foreign Source Configuration API
+
+The `/foreignSourcesConfig` endpoint is read-only and exposes the building blocks used to assemble foreign source definitions (detector and policy plugins, and the names available for services, assets, and categories).
+It produces `application/xml`, `application/json`, and `application/atom+xml`.
+
+NOTE: This is distinct from the `/foreignSources` endpoint (see xref:rest/foreign_sources.adoc[Foreign Sources API]), which manages the foreign source definitions themselves.
+
+== GETs (reading data)
+
+[caption=]
+.Foreign Source Configuration API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/foreignSourcesConfig/detectors`           | Lists the available detector plugins, including each plugin class and its required and optional parameters.
+| `/foreignSourcesConfig/policies`            | Lists the available policy plugins, including each plugin class and its required and optional parameters.
+| `/foreignSourcesConfig/services/\{groupName}` | Lists the service names available for the given foreign source `groupName`.
+| `/foreignSourcesConfig/assets`              | Lists the available asset field names (excluding `id`, `class`, `geolocation`, and `node`).
+| `/foreignSourcesConfig/categories`          | Lists the available surveillance category names.
+
+|===
+
+== Examples using cURL
+
+.List available detectors
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/foreignSourcesConfig/detectors"
+----
+
+.List available policies
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/foreignSourcesConfig/policies"
+----
+
+.List the asset field names
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/foreignSourcesConfig/assets"
+----

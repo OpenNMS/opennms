@@ -46,7 +46,7 @@ public class BmpCollector implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "bmpCollectorSequence")
-    @SequenceGenerator(name = "bmpCollectorSequence", sequenceName = "bmpcollectornxtid")
+    @SequenceGenerator(name = "bmpCollectorSequence", sequenceName = "bmpcollectornxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

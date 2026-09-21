@@ -43,33 +43,12 @@ body.v-generated-body {
     background: -ms-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
 }
 
-/* Wallboard UI, make space for Vue top and side menus */
-.dashboard.v-app.wallboardui {
-    margin-top: 4.5em;
-    margin-left: 4em;
-}
-
-/* Safari 10+/20+ specific, needs extra top margin */
-body[class*="v-sa1"] .dashboard.v-app.wallboardui,
-body[class*="v-sa2"] .dashboard.v-app.wallboardui {
-    margin-left: 4em;
-    padding-top: 4em !important;
-}
-
-.dashboard.v-app.wallboardui .v-panel-caption,
-.dashboard.v-app.wallboardui .v-panel-caption.v-panel-caption-novscroll {
-    padding-bottom: 2em;
-}
-
 /*  --------------------------------------------------
     :: Vue Menu UI
     -------------------------------------------------- */
 /**
 * Move topology UI over past the Vue top and side menus.
 * Note this only moves it past the collapsed side menu.
-* This same style is used in both the case where the Topology Map is the top-level item
-* (i.e. `/opennms/topology` accessed directly), as well as when the Topology Map is embedded
-* within the Wallboard UI.
 */
 .v-app.topo_default.topologyui {
   margin-top: 0.5em;
@@ -103,30 +82,6 @@ body[class*="v-sa2"] .v-app.topo_default.topologyui {
     text-indent:100%;
     white-space:nowrap;
     margin: 10px 0px 0px 10px;
-}
-
-.dashboard .wallboard-board {
-    color: #3ba300;
-    padding: 5px 5px;
-    margin: 1px;
-}
-
-.dashboard .wallboard-board {
-    font-size: 18px;
-    padding: 5px 5px;
-    margin: 1px;
-}
-
-.dashboard .wallboard-board .progress-paused {
-    font-size: 24px;
-    font-weight: bold;
-    background: orange;
-    border: 2px solid orangered;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-    display: block;
 }
 
 .configuration-title {
@@ -320,77 +275,6 @@ body[class*="v-sa2"] .v-app.topo_default.topologyui {
     background-image: url(/opennms/images/bgCleared.png);
 }
 
-/*  --------------------------------------------------
-    :: Ops Board/Panel styles
-    -------------------------------------------------- */
-
-.alert-details-dashlet.onms-table{
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #000000;
-}
-
-.alert-details-dashlet .onms { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
-.alert-details-dashlet .Critical{ background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; background-image: url(/opennms/images/bgCritical.png); }
-.alert-details-dashlet .Major{ background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; background-image: url(/opennms/images/bgMajor.png); }
-.alert-details-dashlet .Minor{ background-color: #FFEBCD; border-top: 2px solid #FF9900 !important; background-image: url(/opennms/images/bgMinor.png); }
-.alert-details-dashlet .Warning{ background-color: #FFF5CD; border-top: 2px solid #FFCC00 !important; background-image: url(/opennms/images/bgWarning.png); }
-.alert-details-dashlet .Indeterminate{ background-color: #EBEBCD; border-top: 2px solid #999000 !important; background-image: url(/opennms/images/bgIndeterminate.png); }
-.alert-details-dashlet .Normal{ background-color: #D7E1CD; border-top: 2px solid #336600 !important; background-image: url(/opennms/images/bgNormal.png); }
-.alert-details-dashlet .Cleared { background-color: #EEE; border-top: 2px solid #999 !important; background-image: url(/opennms/images/bgCleared.png); }
-.alert-details-dashlet .nobright { background-image: none;}
-
-.alert-details-dashlet .Critical .onms { background-color: #F5CDCD; }
-.alert-details-dashlet .Critical .divider { border-top: 2px solid #CC0000 !important; }
-.alert-details-dashlet .Critical .bright { background-image: url(/opennms/images/bgCritical.png); }
-
-.alert-details-dashlet .Major .onms { background-color: #FFD7CD; }
-.alert-details-dashlet .Major .divider { border-top: 2px solid #FF3300 !important; }
-.alert-details-dashlet .Major .bright { background-image: url(/opennms/images/bgMajor.png); }
-
-.alert-details-dashlet .Minor .onms { background-color: #FFEBCD; }
-.alert-details-dashlet .Minor .divider { border-top: 2px solid #FF9900 !important; }
-.alert-details-dashlet .Minor .bright { background-image: url(/opennms/images/bgMinor.png); }
-
-.alert-details-dashlet .Warning .onms { background-color: #FFF5CD; }
-.alert-details-dashlet .Warning .divider { border-top: 2px solid #FFCC00 !important; }
-.alert-details-dashlet .Warning .bright { background-image: url(/opennms/images/bgWarning.png); }
-
-.alert-details-dashlet .Indeterminate .onms { background-color: #EBEBCD; }
-.alert-details-dashlet .Indeterminate .divider { border-top: 2px solid #999900 !important; }
-.alert-details-dashlet .Indeterminate .bright { background-image: url(/opennms/images/bgIndeterminate.png); }
-
-.alert-details-dashlet .Normal .onms { background-color: #D7E1CD; }
-.alert-details-dashlet .Normal .divider { border-top: 2px solid #336600 !important; }
-.alert-details-dashlet .Normal .bright { background-image: url(/opennms/images/bgNormal.png); }
-
-.alert-details-dashlet .Cleared .onms { background-color: #EEE; }
-.alert-details-dashlet .Cleared .divider { border-top: 2px solid #999 !important; }
-.alert-details-dashlet .Cleared .bright { background-image: url(/opennms/images/bgCleared.png); }
-/*
-td.onms { font-size: 100%; }
-*/
-.alert-details-dashlet .onms-header-cell {
-    border:1px solid #999;
-    padding: 4px 5px;
-    background-color: #444;
-    font-weight: bold;
-    text-align: left;
-    color: #FFF;
-    height:1.5em;
-}
-
-.alert-details-dashlet .onms-cell {
-    border: 1px solid #999;
-    padding: 4px 5px;
-    background-color: #FFF;
-    font-size: 100%;
-    height:1.5em;
-    overflow:hidden;
-}
- 
 .novscroll {
     overflow-y: hidden;
     overflow-x: auto;

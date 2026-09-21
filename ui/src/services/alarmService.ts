@@ -42,7 +42,7 @@ const getAlarms = async (queryParameters?: QueryParameters): Promise<AlarmApiRes
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -57,9 +57,35 @@ const modifyAlarm = async (alarmId: string, alarmQueryParameters: AlarmQueryPara
   try {
     const resp = await rest.put(endpointWithQueryString, '')
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
 
-export { getAlarms, modifyAlarm }
+// v1 GET /alarms/summaries — AlarmDao.getNodeAlarmSummaries, the same source
+// the legacy node-alarm-summary box used: exact per-node unacked-alarm counts
+// and max severity, aggregated server-side (no page cap to fall off).
+export interface NodeAlarmSummary {
+  nodeId: number
+  nodeLabel: string
+  count: number
+  maxSeverity: string
+}
+
+const getNodeAlarmSummaries = async (): Promise<NodeAlarmSummary[] | null> => {
+  try {
+    const resp = await rest.get('/alarms/summaries', { headers: { Accept: 'application/json' }})
+    const raw = resp.data?.['alarm-summary'] ?? resp.data?.alarmSummary
+    const arr = Array.isArray(raw) ? raw : raw ? [raw] : []
+    return arr.map((s: any) => ({
+      nodeId: Number(s['node-id']),
+      nodeLabel: String(s['node-label'] ?? `Node ${s['node-id']}`),
+      count: Number(s.count ?? 0),
+      maxSeverity: String(s.severity ?? 'INDETERMINATE').toUpperCase()
+    }))
+  } catch (_err) {
+    return null
+  }
+}
+
+export { getAlarms, getNodeAlarmSummaries, modifyAlarm }

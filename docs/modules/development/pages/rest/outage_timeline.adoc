@@ -12,12 +12,12 @@
 | /header/\{start}/\{end}/\{width}
 | Generate the timeline header.
 
-| /image/\{nodeid}/\{ipaddress}/\{servicename}/\{start}/\{end}/\{width}
+| /image/\{nodeid}/\{ipaddress}/\{serviceid}/\{start}/\{end}/\{width}
 | Generate the timeline image.
 
 | /empty/\{start}/\{end}/\{width}
 | Generate an empty timeline for non-monitored services.
 
-| /html/\{nodeid}/\{ipaddress}/\{servicename}/\{start}/\{end}/\{width}
+| /html/\{nodeid}/\{ipaddress}/\{serviceid}/\{start}/\{end}/\{width}
 | Generate the raw HTML for the image.
 |===

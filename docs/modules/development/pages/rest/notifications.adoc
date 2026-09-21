@@ -2,7 +2,7 @@
 = Notifications
 
 NOTE: The default offset is 0, the default limit is 10 results.
-To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /events?limit=0`).
+To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /notifications?limit=0`).
 
 == GETs (reading data)
 
@@ -17,6 +17,9 @@ To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /events?
 
 | /notifications/count
 | Get the number of notifications (returns plaintext rather than XML or JSON).
+
+| /notifications/summary
+| Get a JSON summary of notification counts for the current user: total, total unacknowledged, the user's unacknowledged count, the team's unacknowledged count, and up to 10 of the user's newest unacknowledged notifications.
 
 | /notifications/\{id}
 | Get the notification specified by the given ID.
@@ -35,4 +38,32 @@ To acknowledge or unacknowledge a notification, use the `acks` endpoint (see xre
 | "/notifications/destination-paths/\{destinationPathName}/trigger"
 | Trigger the destination path's targets and commands with a test notification.
   Use to verify that commands are properly configured and that notifications get sent to the recipients.
+  This endpoint is available only in v1 and requires the `ROLE_ADMIN` role.
+  Returns `202 Accepted` on success, or `204 No Content` if the destination path has no targets.
+|===
+
+== Version 2 (/api/v2/notifications)
+
+The v2 Notifications API supports FIQL search expressions on `GET /api/v2/notifications`.
+
+[caption=]
+.Notifications API V2 GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/notifications
+| Get a list of notifications, optionally filtered with a FIQL search expression.
+
+| /api/v2/notifications/count
+| Get the number of notifications (returns plaintext).
+
+| /api/v2/notifications/\{id}
+| Get the notification specified by the given ID.
+
+| /api/v2/notifications/properties
+| Get the list of queryable notification properties. Accepts an optional `q` query parameter.
+
+| /api/v2/notifications/properties/\{propertyId}
+| Get the set of values for the given property. Accepts optional `q` and `limit` query parameters.
 |===

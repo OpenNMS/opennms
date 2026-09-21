@@ -1,25 +1,23 @@
 <template>
   <div class="editor">
     <div class="toolbar">
-      <FeatherButton
+      <OnmsIconButton
         v-if="reverseLog"
         :disabled="!selectedLog"
         class="btn"
-        icon="Display oldest first."
+        aria-label="Display oldest first."
+        :icon="KeyboardArrowDown"
         @click="getLog(false)"
-      >
-        <FeatherIcon :icon="KeyboardArrowDown" />
-      </FeatherButton>
+      />
 
-      <FeatherButton
+      <OnmsIconButton
         v-if="!reverseLog"
         :disabled="!selectedLog"
         class="btn"
-        icon="Display newest first."
+        aria-label="Display newest first."
+        :icon="KeyboardArrowUp"
         @click="getLog(true)"
-      >
-        <FeatherIcon :icon="KeyboardArrowUp" />
-      </FeatherButton>
+      />
     </div>
     <VAceEditor
       v-model:value="content"
@@ -33,12 +31,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watchEffect } from 'vue'
+
 import { VAceEditor } from 'vue3-ace-editor'
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from '@featherds/button'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { onKeyStroke } from '@vueuse/core'
-import KeyboardArrowUp from '@featherds/icon/hardware/KeyboardArrowUp'
-import KeyboardArrowDown from '@featherds/icon/hardware/KeyboardArrowDown'
+import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
+import KeyboardArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown.vue'
 import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-text'
 import 'ace-builds/src-noconflict/theme-xcode'
@@ -93,12 +92,18 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
+// Fit the height the app shell leaves for page content, or the page pushes the
+// footer past the bottom of the window and clips it. The shell takes the masthead
+// (--onms-header-height) off the top and the footer band (--onms-footer-height) off the bottom.
+//
+// This page also stacks a breadcrumb row (51px) above the card the editor sits
+// in, and that card pads it by 15px top and bottom.
 .editor {
-  height: calc(100vh - 120px);
+  height: calc(100vh - var(--onms-header-height, 3.75rem) - var(--onms-footer-height, 41px) - 51px - 30px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var($border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .toolbar {
     display: block;
@@ -114,9 +119,6 @@ const init = (editor: any) => {
       min-width: 25px !important;
       margin-right: 5px;
       margin-top: 2px;
-      svg {
-        font-size: 20px !important;
-      }
     }
   }
 }

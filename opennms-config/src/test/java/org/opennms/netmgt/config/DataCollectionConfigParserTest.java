@@ -48,7 +48,7 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 45;
+    private static final int resourceTypesCount = 40;
     private static final int systemDefCount = 89;
     private static final int groupsCount = 103;
 
@@ -114,7 +114,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate default datacollection content
         SnmpCollection collection = config.getSnmpCollections().get(0);
-        Assert.assertEquals(13, collection.getIncludeCollections().size());
+        Assert.assertEquals(12, collection.getIncludeCollections().size());
         Assert.assertEquals(0, collection.getResourceTypes().size()); 
         Assert.assertEquals(1, collection.getSystems().getSystemDefs().size());
         Assert.assertEquals(1, collection.getGroups().getGroups().size());

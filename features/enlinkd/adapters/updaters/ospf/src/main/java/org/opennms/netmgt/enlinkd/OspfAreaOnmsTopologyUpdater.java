@@ -134,15 +134,15 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
         for (OspfAreaTopologyEntity area : getOspfTopologyService().findAllOspfAreas()) {
 
             if (topology.getVertex(area.getNodeIdAsString()) == null) {
-                topology.getVertices().add(createOspfNodeVertex(nodeMap.get(area.getNodeId()), ospfElementMap.get(area.getNodeId())));
+                topology.addVertex(createOspfNodeVertex(nodeMap.get(area.getNodeId()), ospfElementMap.get(area.getNodeId())));
             }
             if (topology.getVertex(area.getOspfAreaId().getHostAddress()) == null) {
-                topology.getVertices().add(createAreaVertex(area));
+                topology.addVertex(createAreaVertex(area));
             }
 
             OnmsTopologyVertex nodeVertex = topology.getVertex(area.getNodeIdAsString());
             OnmsTopologyVertex areaVertex = topology.getVertex(area.getOspfAreaId().getHostAddress());
-            topology.getEdges().add(OnmsTopologyEdge.create(
+            topology.addEdge(OnmsTopologyEdge.create(
                             Topology.getDefaultEdgeId(nodeVertex.getId(), areaVertex.getId()),
                             createNodePort(nodeVertex, ospfElementMap.get(area.getNodeId()), area),
                             createAreaPort(areaVertex, area, ospfElementMap.get(area.getNodeId()))

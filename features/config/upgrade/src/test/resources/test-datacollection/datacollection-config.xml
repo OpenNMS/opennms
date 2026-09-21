@@ -1,0 +1,18 @@
+<datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/datacollection" rrdRepository="/opt/opennms/share/rrd/snmp/">
+   <snmp-collection name="default" snmpStorageFlag="select">
+      <rrd step="300">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+      </rrd>
+      <include-collection dataCollectionGroup="TestMIB"/>
+      <include-collection dataCollectionGroup="TestVendor"/>
+   </snmp-collection>
+
+   <snmp-collection name="custom" snmpStorageFlag="all" maxVarsPerPdu="20">
+      <rrd step="180">
+         <rra>RRA:AVERAGE:0.5:1:3360</rra>
+      </rrd>
+      <include-collection dataCollectionGroup="TestMIB"/>
+   </snmp-collection>
+</datacollection-config>

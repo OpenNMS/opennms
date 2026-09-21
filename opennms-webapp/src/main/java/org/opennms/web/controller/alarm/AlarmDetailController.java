@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.opennms.web.controller.OnmsMultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -57,7 +57,7 @@ import org.springframework.web.servlet.view.RedirectView;
  *
  * @author Ronny Trommer <ronny@opennms.org>
  */
-public class AlarmDetailController extends MultiActionController {
+public class AlarmDetailController extends OnmsMultiActionController {
     private static final int DEFAULT_SHORT_LIMIT = 20;
     private static final int DEFAULT_MULTIPLE = 0;
 

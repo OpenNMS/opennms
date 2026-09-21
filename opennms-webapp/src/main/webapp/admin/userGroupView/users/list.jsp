@@ -136,7 +136,6 @@
           <th width="15%">Full Name</th>
           <th width="15%">Email</th>
           <th width="15%">Pager Email</th>
-          <th width="15%">XMPP Address</th>
           </tr>
         </thead>
         <tbody>
@@ -146,7 +145,6 @@
               String userid = curUser.getUserId();
               String email = userFactory.getEmail(userid);
               String pagerEmail = userFactory.getPagerEmail(userid);
-              String xmppAddress = userFactory.getXMPPAddress(userid);
               String numericService = userFactory.getNumericPage(userid);
               String textService = userFactory.getTextPage(userid);
               String numericPin = userFactory.getNumericPin(userid);
@@ -159,7 +157,7 @@
             <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fas fa-trash-can fa-2x"></i></a>
           </td>
           <% } else { %>
-          <td rowspan="2" class="text-center" style="color: var(--feather-clickable-normal);">
+          <td rowspan="2" class="text-center">
             <i class="fas fa-trash-can fa-2x" onclick="alert('Sorry, the admin user cannot be deleted.')"></i>
           </td>
           <% } %>
@@ -191,14 +189,9 @@
             <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
             </div>
           </td>
-          <td>
-           <div id="<%= "users("+sanitizedUserId+").xmppAddress" %>" ng-non-bindable>
-            <%= ((xmppAddress == null || xmppAddress.equals("")) ? "&nbsp;" : xmppAddress) %>
-           </div>
-          </td>
           </tr>
           <tr>
-            <td colspan="5">
+            <td colspan="4">
              <div id="<%= "users("+sanitizedUserId+").userComments" %>" ng-non-bindable>
              <%= WebSecurityUtils.sanitizeString(curUser.getUserComments().orElse("No Comments")) %>
 	        </div>

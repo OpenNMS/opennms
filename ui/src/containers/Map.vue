@@ -1,12 +1,11 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <splitpanes
         :dbl-click-splitter="true"
         @pane-maximize="minimizeBottomPane"
-        class="default-theme"
+        class="default-theme map-panes"
         horizontal
-        style="height: calc(100vh - 80px)"
         ref="split"
         @resize="resize"
       >
@@ -23,6 +22,8 @@
 
 <!-- used to keep map alive once loaded -->
 <script lang="ts">
+import { onMounted, ref } from 'vue'
+
 export default { name: 'MapKeepAlive' }
 </script>
 
@@ -65,21 +66,30 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+// Fit the height the app shell leaves for page content, or the page pushes the
+// footer past the bottom of the window and clips it. The shell takes the masthead
+// (--onms-header-height) off the top and the footer band (--onms-footer-height) off the bottom.
+//
+// The map is the whole page — no breadcrumbs or heading above it — so the shell's
+// own chrome is all there is to subtract.
+.map-panes {
+  height: calc(100vh - var(--onms-header-height, 3.75rem) - var(--onms-footer-height, 41px));
+}
+
 .bottom-pane {
   position: relative;
 }
 </style>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
 .default-theme {
   .splitpanes__splitter {
     height: 10px !important;
-    background: var($shade-3) !important;
+    background: var(--p-datatable-header-cell-background) !important;
   }
   .splitpanes__splitter::after,
   .splitpanes__splitter::before {
-    background: var($primary-text-on-surface) !important;
+    background: var(--p-text-color) !important;
   }
 }
 </style>

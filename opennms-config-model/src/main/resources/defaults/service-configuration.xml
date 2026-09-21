@@ -2,6 +2,8 @@
 <!-- It is strongly recommended to maintain the order of all services as listed to ensure proper startup sequence.
 Note that omitting the enabled attribute will default to enabled = true -->
 <!-- WARNING: The first 2 services (Manager and Eventd) must never be disabled. -->
+<!-- NOTE: This is the default service configuration. User configurations in /etc/service-configuration.xml
+can override these defaults and support environment variable interpolation using ${env:VAR_NAME|default} syntax -->
 
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service enabled="true">
@@ -69,14 +71,6 @@ Note that omitting the enabled attribute will default to enabled = true -->
   <service enabled="true">
     <name>OpenNMS:Name=Queued</name>
     <class-name>org.opennms.netmgt.queued.jmx.Queued</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="true">
-    <name>OpenNMS:Name=Actiond</name>
-    <class-name>org.opennms.netmgt.actiond.jmx.Actiond</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
@@ -171,14 +165,6 @@ Note that omitting the enabled attribute will default to enabled = true -->
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="true">
-    <name>OpenNMS:Name=Statsd</name>
-    <class-name>org.opennms.netmgt.statsd.jmx.Statsd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="true">
     <name>OpenNMS:Name=Provisiond</name>
     <class-name>org.opennms.netmgt.provisiond.jmx.Provisiond</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -197,6 +183,14 @@ Note that omitting the enabled attribute will default to enabled = true -->
       <name>SpringContext</name>
       <value type="java.lang.String">ackdContext</value>
     </attribute>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service enabled="true">
+    <name>OpenNMS:Name=Karaf</name>
+    <class-name>org.opennms.container.daemon.jmx.KarafDaemon</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>

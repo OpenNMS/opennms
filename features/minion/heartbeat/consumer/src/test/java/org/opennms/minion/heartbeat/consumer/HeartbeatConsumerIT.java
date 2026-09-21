@@ -43,6 +43,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -83,6 +84,20 @@ public class HeartbeatConsumerIT {
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
 
+    @Autowired
+    private SessionUtils sessionUtils;
+
+    /**
+     * Invokes {@link HeartbeatConsumer#handleMessage} exactly as the sink dispatch does in
+     * production -- directly, not through a Spring {@code @Transactional} proxy. handleMessage now
+     * drives its own committing transaction (via {@link SessionUtils}), so the persisted Minion is
+     * visible to the separate-session readers (the async provisioning thread and
+     * {@link MinionDao#countAll()}).
+     */
+    private void handleMessageInTransaction(HeartbeatConsumer heartbeatConsumer, MinionIdentityDTO minionIdentityDTO) {
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+    }
+
     @Test
     public void testProvisioningOfMinions() throws IOException {
         EventProxy eventProxy = Mockito.mock(EventProxy.class);
@@ -118,9 +133,10 @@ public class HeartbeatConsumerIT {
         heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
         heartbeatConsumer.setEventSubscriptionService(eventSubscriptionService);
         heartbeatConsumer.setNodeDao(nodeDao);
+        heartbeatConsumer.setSessionUtils(sessionUtils);
 
         // Stream the messages in parallel.
-        minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
+        minionDTOs.parallelStream().forEach(dto -> handleMessageInTransaction(heartbeatConsumer, dto));
 
         //Verify that heartbeat does get consumed within short time.
         await().atMost(10, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 500);
@@ -144,7 +160,7 @@ public class HeartbeatConsumerIT {
             minionDTOs.add(minionIdentityDTO);
         }
         // Stream the messages in parallel.
-        minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
+        minionDTOs.parallelStream().forEach(dto -> handleMessageInTransaction(heartbeatConsumer, dto));
 
         //Verify that heartbeat does get consumed within short time.
         await().atMost(10, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 1000);
@@ -182,6 +198,7 @@ public class HeartbeatConsumerIT {
         heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
         heartbeatConsumer.setEventSubscriptionService(m_mockEventIpcManager);
         heartbeatConsumer.setNodeDao(nodeDao);
+        heartbeatConsumer.setSessionUtils(sessionUtils);
 
 
         MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
@@ -199,7 +216,7 @@ public class HeartbeatConsumerIT {
 
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
-        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        handleMessageInTransaction(heartbeatConsumer, minionIdentityDTO);
 
         // Wait until we receive monitoringSystemAdded event.
         await().atMost(15, TimeUnit.SECONDS).until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(1));
@@ -216,7 +233,7 @@ public class HeartbeatConsumerIT {
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, secondLocation);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
-        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        handleMessageInTransaction(heartbeatConsumer, minionIdentityDTO);
 
         // Wait until we receive monitoringSystemLocationChanged event.
         await().atMost(15, TimeUnit.SECONDS).until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));

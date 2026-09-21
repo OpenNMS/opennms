@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
+
 import { externalComponent } from './utils'
 
 const props = defineProps({

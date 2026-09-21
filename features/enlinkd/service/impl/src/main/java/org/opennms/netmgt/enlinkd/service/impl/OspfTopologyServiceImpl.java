@@ -64,6 +64,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     }
 
     @Override
+    @Transactional
     public void delete(int nodeid) {
         m_ospfElementDao.deleteByNodeId(nodeid);
         m_ospfLinkDao.deleteByNodeId(nodeid);
@@ -74,6 +75,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     }
 
     @Override
+    @Transactional
     public void reconcile(int nodeId, Date now) {
         OspfElement element = m_ospfElementDao.findByNodeId(nodeId);
         if (element != null
@@ -267,6 +269,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     }
 
     @Override
+    @Transactional
     public void deletePersistedData() {
         m_ospfElementDao.deleteAll();
         m_ospfElementDao.flush();

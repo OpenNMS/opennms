@@ -25,6 +25,7 @@ import API from '@/services'
 import useDownload from '@/composables/useDownload'
 import useSnackbar from '@/composables/useSnackbar'
 import { DeviceConfigBackup, DeviceConfigQueryParams, status } from '@/types/deviceConfig'
+import { ref } from 'vue'
 
 const { downloadFile } = useDownload()
 const { showSnackBar } = useSnackbar()
@@ -34,6 +35,10 @@ export const useDeviceStore = defineStore('deviceStore', () => {
   const deviceConfigBackupQueryParams = ref({ offset: 0, limit: 20 } as DeviceConfigQueryParams)
   const modalDeviceConfigBackup = ref({} as DeviceConfigBackup)
   const selectedIds = ref([] as number[])
+  const allSelected = ref(false)
+  // GET query-string bound: ~500 ids keeps the download URL well under common
+  // 8KB server limits; each chunk downloads as its own (zip) file.
+  const DOWNLOAD_CHUNK_SIZE = 500
   const vendorOptions = ref([] as string[])
   const backupStatusOptions = ref(['SUCCESS', 'FAILED', 'NONE'] as status[])
   const osImageOptions = ref([] as string[])
@@ -41,7 +46,7 @@ export const useDeviceStore = defineStore('deviceStore', () => {
   const historyModalBackups = ref([] as DeviceConfigBackup[])
 
   const getDeviceConfigBackupObjByIds = (deviceConfigs: DeviceConfigBackup[], ids: number[]) => {
-    return deviceConfigs.filter((dcb) => ids.includes(dcb.id))
+    return deviceConfigs.filter(dcb => ids.includes(dcb.id))
   }
 
   const getDeviceConfigBackups = async (pageEnter?: boolean) => {
@@ -70,14 +75,6 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     historyModalBackups.value = resp
   }
 
-  const getAndMergeDeviceConfigBackups = async () => {
-    const backups = await API.getDeviceConfigBackups(deviceConfigBackupQueryParams.value)
-
-    if (backups && backups.data) {
-      deviceConfigBackups.value = backups.data
-    }
-  }
-
   const downloadByConfig = async (configIds: number[]) => {
     const file = await API.downloadDeviceConfigs(configIds)
 
@@ -86,7 +83,31 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     }
   }
 
+  // Resolves the full "select all" set at action time: every config matching the
+  // CURRENT filters/search/sort, ignoring pagination. deviceConfigTotal comes
+  // from the last list fetch's content-range header.
+  const getAllMatchingDeviceConfigBackups = async (): Promise<DeviceConfigBackup[]> => {
+    const resp = await API.getDeviceConfigBackups({
+      ...deviceConfigBackupQueryParams.value,
+      offset: 0,
+      limit: deviceConfigTotal.value
+    })
+    return (resp && resp.data) || []
+  }
+
   const downloadSelectedDevices = async () => {
+    if (allSelected.value) {
+      const ids = (await getAllMatchingDeviceConfigBackups()).map(dcb => dcb.id)
+
+      for (let i = 0; i < ids.length; i += DOWNLOAD_CHUNK_SIZE) {
+        const file = await API.downloadDeviceConfigs(ids.slice(i, i + DOWNLOAD_CHUNK_SIZE))
+        if (file) {
+          downloadFile(file)
+        }
+      }
+      return
+    }
+
     const ids = selectedIds.value
     const file = await API.downloadDeviceConfigs(ids)
     if (file) {
@@ -95,10 +116,10 @@ export const useDeviceStore = defineStore('deviceStore', () => {
   }
 
   const backupSelectedDevices = async () => {
-    const ids = selectedIds.value
-    const configs = deviceConfigBackups.value
+    const configsForBackup = allSelected.value
+      ? await getAllMatchingDeviceConfigBackups()
+      : getDeviceConfigBackupObjByIds(deviceConfigBackups.value, selectedIds.value)
 
-    const configsForBackup = getDeviceConfigBackupObjByIds(configs, ids)
     const resp = await API.backupDeviceConfig(configsForBackup)
     const success = resp && (resp.status === 200 || resp.status === 202)
 
@@ -127,14 +148,16 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     const configs = deviceConfigBackups.value
 
     if (idsOrAll === 'all') {
-      const selIds = configs.map((dcb) => dcb.id)
+      const selIds = configs.map(dcb => dcb.id)
       selectedIds.value = selIds
+      allSelected.value = true
 
       if (configs.length === 1) {
         modalDeviceConfigBackup.value = configs[0]
       }
     } else {
       selectedIds.value = idsOrAll as number[]
+      allSelected.value = false
 
       if (idsOrAll.length === 1) {
         modalDeviceConfigBackup.value = getDeviceConfigBackupObjByIds(configs, idsOrAll)[0]
@@ -157,15 +180,16 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     deviceConfigBackupQueryParams,
     modalDeviceConfigBackup,
     selectedIds,
+    allSelected,
     vendorOptions,
     backupStatusOptions,
-    osImageOptions ,
+    osImageOptions,
     deviceConfigTotal,
     historyModalBackups,
     getDeviceConfigBackupObjByIds,
     getDeviceConfigBackups,
+    getAllMatchingDeviceConfigBackups,
     getHistoryByIpInterface,
-    getAndMergeDeviceConfigBackups,
     downloadByConfig,
     downloadSelectedDevices,
     backupSelectedDevices,

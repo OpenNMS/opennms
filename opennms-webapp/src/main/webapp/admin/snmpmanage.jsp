@@ -71,12 +71,13 @@
   </div>
   <div class="card-body">
     <p>
-      In the datacollection-config.xml file, for each different collection
-      scheme there is a parameter called <code>snmpStorageFlag</code>.  If
-      this value is set to "primary", then only values pertaining to the
-      node as a whole or the primary SNMP interface will be stored in the
-      system. If this value is set to "all", then all interfaces for which
-      values are collected will be stored.
+      In the SNMP Data Collection Config (see the
+      <a href="ui/index.html#/snmp-data-collection">Manage SNMP Data Collection Config</a>
+      admin page), each profile has a parameter called
+      <code>storage flag</code>.  If this value is set to "primary", then only
+      values pertaining to the node as a whole or the primary SNMP interface
+      will be stored in the system. If this value is set to "all", then all
+      interfaces for which values are collected will be stored.
     </p>
 
     <p>

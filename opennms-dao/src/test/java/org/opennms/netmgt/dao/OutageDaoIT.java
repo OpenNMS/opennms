@@ -438,6 +438,7 @@ public class OutageDaoIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     @JUnitTemporaryDatabase
     public void testNewestOutages() {
         for (final OnmsNode node : m_nodeDao.findAll()) {

@@ -62,6 +62,7 @@ import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms8000NetworkBuilder;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class Nms8000EnIT extends EnLinkdBuilderITCase {
         
@@ -94,13 +95,15 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=NMMSW2_IP, port=161, resource=NMMSW2_SNMP_RESOURCE)
     })
     public void testCdpLinks() {
-        m_nodeDao.save(builder.getNMMR1());
-        m_nodeDao.save(builder.getNMMR2());
-        m_nodeDao.save(builder.getNMMR3());
-        m_nodeDao.save(builder.getNMMSW1());
-        m_nodeDao.save(builder.getNMMSW2());
-
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getNMMR1());
+            m_nodeDao.save(builder.getNMMR2());
+            m_nodeDao.save(builder.getNMMR3());
+            m_nodeDao.save(builder.getNMMSW1());
+            m_nodeDao.save(builder.getNMMSW2());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(true);
@@ -157,13 +160,15 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=NMMSW2_IP, port=161, resource=NMMSW2_SNMP_RESOURCE_2)
     })
     public void testLldpLinks() {
-        m_nodeDao.save(builder.getNMMR1());
-        m_nodeDao.save(builder.getNMMR2());
-        m_nodeDao.save(builder.getNMMR3());
-        m_nodeDao.save(builder.getNMMSW1());
-        m_nodeDao.save(builder.getNMMSW2());
-
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getNMMR1());
+            m_nodeDao.save(builder.getNMMR2());
+            m_nodeDao.save(builder.getNMMR3());
+            m_nodeDao.save(builder.getNMMSW1());
+            m_nodeDao.save(builder.getNMMSW2());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
