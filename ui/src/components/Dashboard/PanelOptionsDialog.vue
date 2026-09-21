@@ -247,7 +247,12 @@ const chartMetric = ref(DEFAULT_CHART_METRIC)
 const entityOptions = ref<SelectOption[]>([])
 const entitiesLoading = ref(false)
 
-const loadEntities = async () => {
+const NO_DATA_SUFFIX = ' (no data for this metric)'
+
+// On open, a saved entity without data for the metric stays selectable but is
+// marked, so the panel's "No data" has a visible cause; after the user changes
+// the metric such an entity is dropped and the selection cleared instead.
+const loadEntities = async (metricChanged = false) => {
   entitiesLoading.value = true
   let entities: SelectOption[] = []
   try {
@@ -255,9 +260,13 @@ const loadEntities = async () => {
   } catch (err) {
     console.warn('Metric chart options: entities could not be listed', err)
   }
-  // keep the current selection listed even if it has no data right now
   if (chartEntity.value && !entities.some(e => e.value === chartEntity.value)) {
-    entities.unshift({ label: chartEntityLabel.value || chartEntity.value, value: chartEntity.value })
+    if (metricChanged) {
+      chartEntity.value = ''
+      chartEntityLabel.value = ''
+    } else {
+      entities.unshift({ label: (chartEntityLabel.value || chartEntity.value) + NO_DATA_SUFFIX, value: chartEntity.value })
+    }
   }
   entityOptions.value = entities
   entitiesLoading.value = false
@@ -266,13 +275,13 @@ const loadEntities = async () => {
 watch(chartEntity, (id) => {
   const picked = entityOptions.value.find(e => e.value === id)
   if (picked) {
-    chartEntityLabel.value = picked.label
+    chartEntityLabel.value = picked.label.endsWith(NO_DATA_SUFFIX) ? picked.label.slice(0, -NO_DATA_SUFFIX.length) : picked.label
   }
 })
 
 watch(chartMetric, () => {
   if (props.panel.type === 'metric-chart' && props.visible) {
-    loadEntities()
+    loadEntities(true)
   }
 })
 

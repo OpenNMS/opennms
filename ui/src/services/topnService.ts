@@ -44,9 +44,10 @@ const responseTimeKpi = (id: string, service: string, label: string): TopnKpiDef
   match: (resourceId, attrs) => (resourceId.includes('responseTime') && attrs.includes(service) ? service : null)
 })
 
+// SNMP response time is left out: the stock poller-configuration.xml collects no
+// ds-name "snmp", so the KPI would be hidden on every default install.
 export const TOPN_KPIS: TopnKpiDef[] = [
   responseTimeKpi('response-time', 'icmp', 'Node Response Time (ICMP)'),
-  responseTimeKpi('snmp-response-time', 'snmp', 'SNMP Response Time'),
   responseTimeKpi('http-response-time', 'http', 'HTTP Response Time'),
   responseTimeKpi('https-response-time', 'https', 'HTTPS Response Time'),
   responseTimeKpi('dns-response-time', 'dns', 'DNS Response Time'),
