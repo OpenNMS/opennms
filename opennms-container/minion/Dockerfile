@@ -133,6 +133,9 @@ STOPSIGNAL SIGTERM
 
 CMD [ "-f" ]
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=3m --retries=3 \
+    CMD [ "/health.sh" ]
+
 ### Runtime information and not relevant at build time
 ENV MINION_ID="00000000-0000-0000-0000-deadbeef0001" \
     MINION_LOCATION="MINION" \

@@ -115,6 +115,9 @@ STOPSIGNAL SIGTERM
 
 CMD [ "-f" ]
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=3m --retries=3 \
+    CMD [ "/health.sh" ]
+
 # Arguments for labels should not invalidate caches
 ARG VERSION
 ARG SOURCE

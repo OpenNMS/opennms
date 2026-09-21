@@ -146,6 +146,9 @@ STOPSIGNAL SIGTERM
 
 CMD [ "-h" ]
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5m --retries=3 \
+    CMD [ "/health.sh" ]
+
 ### Runtime information and not relevant at build time
 ENV JAVA_OPTS="-Xmx1024m -XX:MaxMetaspaceSize=512m"
 # Allow OpenNMS to detect whether it is run in a container
