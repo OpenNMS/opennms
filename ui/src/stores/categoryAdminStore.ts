@@ -28,10 +28,13 @@ import { ref } from 'vue'
 export const useCategoryAdminStore = defineStore('categoryAdminStore', () => {
   const categories = ref([] as AdminCategory[])
   const loadError = ref(false)
+  const loading = ref(false)
 
   // false when the load failed; the previous list is kept
   const getCategories = async (): Promise<boolean> => {
+    loading.value = true
     const result = await API.listCategories()
+    loading.value = false
     if (result !== null) {
       categories.value = result
       loadError.value = false
@@ -68,6 +71,7 @@ export const useCategoryAdminStore = defineStore('categoryAdminStore', () => {
   return {
     categories,
     loadError,
+    loading,
     getCategories,
     createCategory,
     updateCategoryDescription,

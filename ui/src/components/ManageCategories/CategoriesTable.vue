@@ -16,8 +16,12 @@
       </div>
     </div>
 
+    <p v-if="store.loadError && store.categories.length" class="reload-error" role="alert" data-test="reload-error">
+      The list could not be reloaded and may be out of date. Refresh the page.
+    </p>
     <OnmsTable
       :value="store.categories"
+      :loading="store.loading"
       :paginator="store.categories.length > 0"
       dataKey="name"
       sortField="name"
@@ -39,7 +43,13 @@
       </OnmsColumn>
       <OnmsColumn header="Actions">
         <template #body="{ data }">
-          <div class="action-container">
+          <span
+            v-if="!isPathAddressable(data.name)"
+            class="unaddressable"
+            v-tooltip.top="'This category name contains / \\ or %, which the API cannot address; rename it through the requisition or the database.'"
+            data-test="unaddressable-note"
+          >not editable here</span>
+          <div v-else class="action-container">
             <OnmsIconButton
               :icon="Nodes"
               :title="`Manage nodes in ${data.name}`"
@@ -102,6 +112,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import CategoriesAbout from '@/components/ManageCategories/CategoriesAbout.vue'
 import CategoryEditorDialog from '@/components/ManageCategories/CategoryEditorDialog.vue'
 import CategoryNodesDialog from '@/components/ManageCategories/CategoryNodesDialog.vue'
+import { isPathAddressable } from '@/lib/adminValidation'
 import { useCategoryAdminStore } from '@/stores/categoryAdminStore'
 import { AdminCategory } from '@/types/categoryAdmin'
 
@@ -138,11 +149,12 @@ const askDelete = (category: AdminCategory) => {
 const confirmDelete = async () => {
   const category = categoryToDelete.value
   showDeleteConfirmation.value = false
-  categoryToDelete.value = null
   if (!category) {
     return
   }
   const result = await store.deleteCategory(category.name)
+  // cleared after the dialog has closed, so the name does not blank out mid-animation
+  categoryToDelete.value = null
   if (result.success) {
     showToast({ message: `Category '${category.name}' deleted.`, severity: 'success' })
   } else {
@@ -157,6 +169,17 @@ const cancelDelete = () => {
 </script>
 
 <style lang="scss" scoped>
+.reload-error {
+  margin: 0 0 0.75rem 0;
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.9rem;
+}
+
+.unaddressable {
+  color: var(--p-text-muted-color);
+  font-style: italic;
+}
+
 .categories-table {
   padding: 25px;
 }

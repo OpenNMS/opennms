@@ -8,8 +8,8 @@
     @update:visible="onVisible"
   >
     <p class="hint">
-      Search the node inventory and toggle each node in or out of this category.
-      Changes are applied immediately against the category membership API.
+      The nodes in this category are listed first; untick <em>Only members</em> to search the whole inventory and add nodes.
+      Each switch applies immediately.
     </p>
 
     <div class="controls">
@@ -17,9 +17,13 @@
         v-model="searchTerm"
         class="search"
         placeholder="Search nodes by label"
-        aria-label="Search nodes by label"
+        ariaLabel="Search nodes by label"
         dataTest="node-search"
       />
+      <label class="allow-req" data-test="members-only">
+        <OnmsCheckbox v-model="membersOnly" binary />
+        <span>Only members</span>
+      </label>
       <label v-if="anyRequisitioned" class="allow-req" data-test="allow-requisitioned">
         <OnmsCheckbox v-model="allowRequisitioned" />
         <span>Allow editing requisitioned nodes</span>
@@ -93,7 +97,7 @@ import {
 } from '@opennms/onms-ui'
 
 import API from '@/services'
-import { SORT } from '@/types'
+import { Category, Node, QueryParameters, SORT } from '@/types'
 
 interface NodeRow {
   id: number
@@ -121,14 +125,16 @@ const first = ref(0)
 const rows = ref(10)
 const searchTerm = ref('')
 const allowRequisitioned = ref(false)
+const membersOnly = ref(true)
 const busyIds = ref<Set<number>>(new Set())
 let loadToken = 0
 
 const anyRequisitioned = computed(() => nodes.value.some(n => n.requisitioned))
 const isLocked = (row: NodeRow) => row.requisitioned && !allowRequisitioned.value
 
-// only allow a-z0-9 and a few safe chars into the FIQL label search
-const sanitize = (term: string) => term.replace(/[^\w.\-* ]/g, '').trim()
+// only letters, digits and a few safe chars reach the FIQL label search; _ is dropped
+// because it is a single-character wildcard in the LIKE the server builds
+const sanitize = (term: string) => term.replace(/[^A-Za-z0-9.\-* ]/g, '').trim()
 
 const load = async () => {
   if (props.categoryId === null) {
@@ -144,10 +150,17 @@ const load = async () => {
     orderBy: 'label',
     order: SORT.ASCENDING
   }
+  const filters: string[] = []
   if (term) {
-    params._s = `label==*${term}*`
+    filters.push(`label==*${term}*`)
   }
-  const resp = await API.getNodes(params as any)
+  if (membersOnly.value) {
+    filters.push(`category.id==${props.categoryId}`)
+  }
+  if (filters.length) {
+    params._s = filters.join(';')
+  }
+  const resp = await API.getNodes(params as QueryParameters)
   if (token !== loadToken) {
     return
   }
@@ -158,12 +171,12 @@ const load = async () => {
     loading.value = false
     return
   }
-  nodes.value = (resp.node ?? []).map((n: any) => ({
+  nodes.value = (resp.node ?? []).map((n: Node) => ({
     id: Number(n.id),
     label: n.label ?? `Node ${n.id}`,
     location: n.location ?? '-',
     requisitioned: !!n.foreignSource,
-    isMember: (n.categories ?? []).some((c: any) => Number(c.id) === props.categoryId)
+    isMember: (n.categories ?? []).some((c: Category) => Number(c.id) === props.categoryId)
   }))
   totalRecords.value = resp.totalCount ?? nodes.value.length
   loading.value = false
@@ -175,6 +188,10 @@ const debouncedSearch = debounce(() => {
 }, 300)
 
 watch(searchTerm, () => debouncedSearch())
+watch(membersOnly, () => {
+  first.value = 0
+  load()
+})
 
 watch(
   () => props.visible,
@@ -184,6 +201,7 @@ watch(
       first.value = 0
       searchTerm.value = ''
       allowRequisitioned.value = false
+      membersOnly.value = true
       nodes.value = []
       load()
     }
@@ -202,16 +220,21 @@ const toggle = async (row: NodeRow, target: boolean) => {
   }
   row.isMember = target // optimistic
   busyIds.value = new Set(busyIds.value).add(row.id)
+  const token = loadToken
   const ok = target
     ? await API.addNodeToCategory(props.categoryName, row.id)
     : await API.removeNodeFromCategory(props.categoryName, row.id)
-  if (!ok) {
-    row.isMember = !target
-    showToast({ message: `Failed to ${target ? 'add node to' : 'remove node from'} '${props.categoryName}'.`, severity: 'error' })
-  }
   const next = new Set(busyIds.value)
   next.delete(row.id)
   busyIds.value = next
+  if (!ok) {
+    showToast({ message: `Failed to ${target ? 'add node to' : 'remove node from'} '${props.categoryName}'.`, severity: 'error' })
+  }
+  // a failure may mean the membership changed elsewhere, and a page change while the
+  // call ran leaves the row stale either way: re-read rather than guess
+  if (!ok || token !== loadToken) {
+    await load()
+  }
 }
 
 const onVisible = (value: boolean) => emit('update:visible', value)

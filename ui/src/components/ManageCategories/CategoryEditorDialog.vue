@@ -10,13 +10,12 @@
     <div class="form-column">
       <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
 
-      <FormField v-if="!isEditing" label="Category Name" for="category-name" required :error="nameProblem || undefined">
+      <FormField v-if="!isEditing" label="Category Name" for="category-name" required :error="nameProblem || undefined" hint="The name is the identifier and cannot be changed after creation.">
         <OnmsInputText id="category-name" v-model="name" :invalid="!!nameProblem" :maxlength="MAX_NAME_LENGTH" fluid data-test="category-name-input" />
-        <small v-if="nameProblem" class="field-error" data-test="name-error">{{ nameProblem }}</small>
       </FormField>
 
-      <FormField label="Description" for="category-description" hint="The category name is the identifier and cannot be changed after creation.">
-        <OnmsInputText id="category-description" v-model="description" fluid data-test="category-description-input" />
+      <FormField label="Description" for="category-description" :error="descriptionProblem || undefined">
+        <OnmsInputText id="category-description" v-model="description" :invalid="!!descriptionProblem" :maxlength="MAX_DESCRIPTION_LENGTH" fluid data-test="category-description-input" />
       </FormField>
     </div>
 
@@ -59,10 +58,10 @@ const errorText = ref('')
 const isEditing = computed(() => props.category !== null)
 const originalName = computed(() => props.category?.name ?? '')
 
-// the category name is a URL path segment on write and is matched by name in
-// filters; block characters that break addressing or markup
-// the categories.categoryname column is varchar(64)
+// the category name is a URL path segment on write; block what breaks addressing or markup
+// the categories columns are varchar(64) and varchar(256)
 const MAX_NAME_LENGTH = 64
+const MAX_DESCRIPTION_LENGTH = 256
 
 const nameProblem = computed(() => {
   if (isEditing.value) {
@@ -75,15 +74,16 @@ const nameProblem = computed(() => {
   if (trimmed.length > MAX_NAME_LENGTH) {
     return `The category name cannot be longer than ${MAX_NAME_LENGTH} characters.`
   }
-  // / \ % ? # break URL/path addressing; markup chars are unsafe; , ; = ( ) ! +
-  // break the FIQL category.name== search used to load this category's members
-  if (/[/\\%?#\s&<>"'`,;=()!+]/.test(trimmed)) {
-    return 'The category name must not contain whitespace, markup, or the characters / \\ % ? # , ; = ( ) ! +'
+  if (/[/\\%?#<>"'`]/.test(trimmed)) {
+    return 'The category name must not contain the characters / \\ % ? # < > " \' `'
   }
   return null
 })
 
-const isValid = computed(() => (isEditing.value || !!name.value.trim()) && !nameProblem.value)
+const descriptionProblem = computed(() =>
+  description.value.trim().length > MAX_DESCRIPTION_LENGTH ? `The description cannot be longer than ${MAX_DESCRIPTION_LENGTH} characters.` : null)
+
+const isValid = computed(() => (isEditing.value || !!name.value.trim()) && !nameProblem.value && !descriptionProblem.value)
 
 watch(
   () => props.visible,

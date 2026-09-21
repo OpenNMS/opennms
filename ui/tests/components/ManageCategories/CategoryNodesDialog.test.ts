@@ -90,17 +90,29 @@ describe('CategoryNodesDialog.vue (server-paged node picker)', () => {
     expect(wrapper.find('[data-test="requisitioned-warning"]').exists()).toBe(true)
     expect(toggles()[2].props('disabled')).toBe(true) // node 3 requisitioned, locked
 
-    await wrapper.find('.cb-stub').trigger('change') // allow requisitioned
+    await wrapper.find('[data-test="allow-requisitioned"] .cb-stub').trigger('change') // allow requisitioned
     await flushPromises()
     expect(toggles()[2].props('disabled')).toBe(false)
   })
 
-  it('reverts the optimistic toggle when the add call fails', async () => {
+  it('re-reads the page instead of guessing when the add call fails', async () => {
     vi.mocked(API.addNodeToCategory).mockResolvedValue(false)
     await mountDialog()
+    const loads = vi.mocked(API.getNodes).mock.calls.length
     await toggles()[1].trigger('click')
     await flushPromises()
-    expect(toggles()[1].props('modelValue')).toBe(false) // reverted
+    expect(vi.mocked(API.getNodes).mock.calls.length).toBe(loads + 1)
+    expect(toggles()[1].props('modelValue')).toBe(false) // what the server still says
+  })
+
+  it('lists members only by default and the whole inventory when unticked', async () => {
+    await mountDialog()
+    const first = vi.mocked(API.getNodes).mock.calls.at(-1)?.[0] as any
+    expect(first._s).toBe(`category.id==${CAT_ID}`)
+    await wrapper.find('[data-test="members-only"] .cb-stub').trigger('change')
+    await flushPromises()
+    const all = vi.mocked(API.getNodes).mock.calls.at(-1)?.[0] as any
+    expect(all._s).toBeUndefined()
   })
 
   it('searches server-side (sends a label== FIQL filter) after typing', async () => {
@@ -116,7 +128,7 @@ describe('CategoryNodesDialog.vue (server-paged node picker)', () => {
     vi.advanceTimersByTime(350)
     await Promise.resolve()
     const params = vi.mocked(API.getNodes).mock.calls.at(-1)?.[0] as any
-    expect(params._s).toBe('label==*rout*')
+    expect(params._s).toBe(`label==*rout*;category.id==${CAT_ID}`)
   })
 
   it('shows an error state when the node fetch fails', async () => {

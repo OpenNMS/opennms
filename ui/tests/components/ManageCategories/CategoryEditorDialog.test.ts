@@ -44,16 +44,26 @@ describe('CategoryEditorDialog.vue', () => {
 
     it('rejects a name longer than the 64-character column', async () => {
       await ctx.wrapper.find('[data-test="category-name-input"]').setValue('x'.repeat(65))
-      expect(ctx.wrapper.find('[data-test="name-error"]').text()).toContain('64')
+      expect(ctx.wrapper.find('.field-error').text()).toContain('64')
       expect(ctx.wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
       await ctx.wrapper.find('[data-test="category-name-input"]').setValue('x'.repeat(64))
-      expect(ctx.wrapper.find('[data-test="name-error"]').exists()).toBe(false)
+      expect(ctx.wrapper.find('.field-error').exists()).toBe(false)
     })
 
-    it('rejects a name with FIQL/markup characters', async () => {
-      await ctx.wrapper.find('[data-test="category-name-input"]').setValue('net,core')
-      expect(ctx.wrapper.find('[data-test="name-error"]').exists()).toBe(true)
+    it('rejects a description longer than the 256-character column', async () => {
+      await ctx.wrapper.find('[data-test="category-name-input"]').setValue('Routers')
+      await ctx.wrapper.find('[data-test="category-description-input"]').setValue('d'.repeat(257))
+      expect(ctx.wrapper.find('.field-error').text()).toContain('256')
       expect(ctx.wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+    })
+
+    it('rejects path and markup characters but allows spaces and punctuation the legacy page accepted', async () => {
+      await ctx.wrapper.find('[data-test="category-name-input"]').setValue('net/core')
+      expect(ctx.wrapper.find('.field-error').exists()).toBe(true)
+      expect(ctx.wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+      await ctx.wrapper.find('[data-test="category-name-input"]').setValue('Core Routers (east)')
+      expect(ctx.wrapper.find('.field-error').exists()).toBe(false)
+      expect(ctx.wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
     })
 
     it('creates the category and closes on success', async () => {
