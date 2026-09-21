@@ -522,6 +522,85 @@ describe('nodeStore stale panel responses', () => {
     return { first, second }
   }
 
+  // The details page keeps the interface tables mounted across node ids, so rows left up while a
+  // new node's fetch is in flight are the PREVIOUS node's -- rendered under the new node's id.
+  // An ifIndex collides across nodes, so a link built that way goes somewhere real and wrong.
+  describe('clears interfaces before fetching a new node', () => {
+    it('empties the SNMP rows as soon as the fetch starts', async () => {
+      const pending = deferred<never>()
+      vi.mocked(API.getNodeSnmpInterfaces).mockImplementationOnce(() => pending.promise as never)
+      const store = useNodeStore()
+      store.snmpInterfaces = [{ id: 1, ifIndex: 7 }] as never
+      store.snmpInterfacesTotalCount = 1
+
+      const inFlight = store.getNodeSnmpInterfaces({ id: '99' })
+
+      // still in flight: the previous node's rows must already be gone
+      expect(store.snmpInterfaces).toEqual([])
+      expect(store.snmpInterfacesTotalCount).toBe(0)
+
+      pending.resolve({ snmpInterface: [{ id: 2, ifIndex: 1 }], totalCount: 1 } as never)
+      await inFlight
+
+      expect(store.snmpInterfaces).toEqual([{ id: 2, ifIndex: 1 }])
+    })
+
+    it('empties the IP rows as soon as the fetch starts', async () => {
+      const pending = deferred<never>()
+      vi.mocked(API.getNodeIpInterfaces).mockImplementationOnce(() => pending.promise as never)
+      const store = useNodeStore()
+      store.ipInterfaces = [{ id: '1', ipAddress: '10.0.0.7' }] as never
+      store.ipInterfacesTotalCount = 1
+
+      const inFlight = store.getNodeIpInterfaces({ id: '99' })
+
+      expect(store.ipInterfaces).toEqual([])
+      expect(store.ipInterfacesTotalCount).toBe(0)
+
+      pending.resolve({ ipInterface: [{ id: '2' }], totalCount: 1 } as never)
+      await inFlight
+
+      expect(store.ipInterfaces).toEqual([{ id: '2' }])
+    })
+
+    // A failed fetch leaves nothing rather than the node the user navigated away from.
+    it('leaves the rows empty when the fetch fails', async () => {
+      vi.mocked(API.getNodeSnmpInterfaces).mockResolvedValueOnce(false as never)
+      const store = useNodeStore()
+      store.snmpInterfaces = [{ id: 1, ifIndex: 7 }] as never
+
+      await store.getNodeSnmpInterfaces({ id: '99' })
+
+      expect(store.snmpInterfaces).toEqual([])
+    })
+  })
+
+  // What the node info dialog reads to pick a node's best IP. Filled from this fetch rather than
+  // a second request of its own.
+  it('records the fetched IP interfaces against the node', async () => {
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValueOnce(
+      { ipInterface: [{ id: '1', ipAddress: '10.0.0.7', snmpPrimary: 'P' }], totalCount: 1 } as never)
+    const store = useNodeStore()
+
+    await store.getNodeIpInterfaces({ id: '42' })
+
+    expect(store.nodeToIpInterfaceMap.get('42')).toEqual([
+      { id: '1', ipAddress: '10.0.0.7', snmpPrimary: 'P' }
+    ])
+  })
+
+  // Only ever one node at a time here, so the map holds that node alone -- the node list fills it
+  // via getIpInterfacesForNodes instead, and the two never run on the same page.
+  it('replaces the map rather than accumulating nodes', async () => {
+    const store = useNodeStore()
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValueOnce({ ipInterface: [{ id: '1' }], totalCount: 1 } as never)
+    await store.getNodeIpInterfaces({ id: '42' })
+    vi.mocked(API.getNodeIpInterfaces).mockResolvedValueOnce({ ipInterface: [{ id: '2' }], totalCount: 1 } as never)
+    await store.getNodeIpInterfaces({ id: '99' })
+
+    expect([...store.nodeToIpInterfaceMap.keys()]).toEqual(['99'])
+  })
+
   it('discards superseded SNMP interfaces', async () => {
     const { first, second } = racePair(vi.mocked(API.getNodeSnmpInterfaces) as never)
     const store = useNodeStore()

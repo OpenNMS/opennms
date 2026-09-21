@@ -26,18 +26,12 @@ import { PropType, computed } from 'vue'
 import { OnmsDialog } from '@opennms/onms-ui'
 import { hasEgressFlow, hasIngressFlow } from './utils'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
+import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
+import { interfaceLink, nodeLink } from '@/lib/linkUtils'
 import { Node } from '@/types'
 
 const props = defineProps({
-  computeNodeLink: {
-    required: true,
-    type: Function as PropType<(id: number | string) => string>
-  },
-  computeNodeIpInterfaceLink: {
-    required: true,
-    type: Function as PropType<(nodeId: number | string, ipAddress: string) => string>
-  },
   visible: {
     required: true,
     type: Boolean
@@ -57,16 +51,20 @@ const onUpdateVisible = (value: boolean) => {
 }
 
 const EMPTY = '--'
+const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const { getBestIpInterfaceForNode } = useIpInterfaceQuery()
 
 const nodeItems = computed(() => {
   const ipLabel = getBestIpInterfaceForNode(props.node?.id || '', nodeStore.nodeToIpInterfaceMap)
+  const { baseHref, baseNodeUrl } = menuStore.mainMenu
+  const nodeId = props.node?.id || 0
+  const nodeHref = nodeLink(baseHref, baseNodeUrl, nodeId)
 
   return [
-    { label: 'Node ID', text: props.node?.id, link: props.computeNodeLink(props.node?.id || 0) },
-    { label: 'Node Label', text: props.node?.label, link: props.computeNodeLink(props.node?.id || 0) },
-    { label: 'IP Address', text: ipLabel.label, link: props.computeNodeIpInterfaceLink(props.node?.id || 0, ipLabel.label) },
+    { label: 'Node ID', text: props.node?.id, link: nodeHref },
+    { label: 'Node Label', text: props.node?.label, link: nodeHref },
+    { label: 'IP Address', text: ipLabel.label, link: interfaceLink(baseHref, nodeId, ipLabel.label) },
     { label: 'Location', text: props.node?.location },
     { label: 'FS:FID', text: `${props.node?.foreignSource}:${props.node?.foreignId}` },
     { label: 'Sys Contact', text: props.node?.sysContact || EMPTY },
@@ -104,6 +102,13 @@ const flowsText = (node?: Node) => {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+
+  // Each attribute is its own .onms-row, i.e. its own grid container, so the grid's gap only
+  // separates the label from the value -- nothing separated one row from the next and the list
+  // read as a solid block. A flex column puts the spacing back between them.
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .label {

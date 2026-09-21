@@ -291,6 +291,20 @@ export interface DrawerState {
   isAdvanceFilterModal: boolean
 }
 
+/**
+ * IF-MIB ifAdminStatus / ifOperStatus values. ifAdminStatus only ever takes the
+ * first three; ifOperStatus uses the full range.
+ */
+export enum SnmpIfStatus {
+  UP = 1,
+  DOWN = 2,
+  TESTING = 3,
+  UNKNOWN = 4,
+  DORMANT = 5,
+  NOT_PRESENT = 6,
+  LOWER_LAYER_DOWN = 7
+}
+
 export interface SnmpInterface {
   collect: boolean
   collectFlag: string
