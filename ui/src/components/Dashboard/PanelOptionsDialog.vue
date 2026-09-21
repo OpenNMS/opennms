@@ -114,11 +114,12 @@ License.
         <div class="opts__field">
           <label class="opts__label">Metric</label>
           <OnmsSelect
-            v-model="chartMetric"
+            :model-value="chartMetric"
             :options="kpiOptions"
             option-label="label"
             option-value="value"
             class="opts__control"
+            @update:model-value="onMetricChanged"
           />
         </div>
       </template>
@@ -174,6 +175,7 @@ License.
       />
       <OnmsButton
         label="Apply"
+        :disabled="entitiesLoading"
         @click="apply"
       />
     </template>
@@ -248,17 +250,29 @@ const entityOptions = ref<SelectOption[]>([])
 const entitiesLoading = ref(false)
 
 const NO_DATA_SUFFIX = ' (no data for this metric)'
+let entitySeq = 0
 
 // On open, a saved entity without data for the metric stays selectable but is
 // marked, so the panel's "No data" has a visible cause; after the user changes
 // the metric such an entity is dropped and the selection cleared instead.
 const loadEntities = async (metricChanged = false) => {
+  const seq = ++entitySeq
   entitiesLoading.value = true
   let entities: SelectOption[] = []
   try {
     entities = (await listMetricEntities(chartMetric.value)).map(e => ({ label: e.label, value: e.id }))
   } catch (err) {
     console.warn('Metric chart options: entities could not be listed', err)
+  }
+  if (seq !== entitySeq) {
+    return
+  }
+  // panels saved before ids were stored hold the label; move them onto the id
+  const byLabel = chartEntity.value && !entities.some(e => e.value === chartEntity.value)
+    ? entities.find(e => e.label === chartEntity.value) : undefined
+  if (byLabel) {
+    chartEntityLabel.value = byLabel.label
+    chartEntity.value = byLabel.value
   }
   if (chartEntity.value && !entities.some(e => e.value === chartEntity.value)) {
     if (metricChanged) {
@@ -272,6 +286,15 @@ const loadEntities = async (metricChanged = false) => {
   entitiesLoading.value = false
 }
 
+// Only a user's change reloads in drop mode; syncFromPanel sets the metric
+// without going through here, so opening the dialog never discards the entity.
+const onMetricChanged = (metric: string) => {
+  chartMetric.value = metric
+  if (props.panel.type === 'metric-chart') {
+    loadEntities(true)
+  }
+}
+
 watch(chartEntity, (id) => {
   const picked = entityOptions.value.find(e => e.value === id)
   if (picked) {
@@ -279,11 +302,6 @@ watch(chartEntity, (id) => {
   }
 })
 
-watch(chartMetric, () => {
-  if (props.panel.type === 'metric-chart' && props.visible) {
-    loadEntities(true)
-  }
-})
 
 // External URLs are blocked by the dashboard CSP (frame-src 'self'); validate
 // up front so the user gets an explanation instead of a silent broken iframe.

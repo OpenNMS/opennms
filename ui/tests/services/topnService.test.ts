@@ -152,6 +152,39 @@ describe('collectSources', () => {
     const tree = { resource: [node('node[7]', 'Router3', ['172.16.50.1', '10.10.10.5']), node('node[8]', 'Switch1', ['172.16.10.1'])] }
     expect(collectSources(tree, TOPN_KPIS[0]).map(s => s.label)).toEqual(['Router3 (172.16.50.1)', 'Router3 (10.10.10.5)', 'Switch1'])
   })
+
+  it('qualifies two nodes that share a label so their rows stay distinct', () => {
+    const tree = { resource: [node('node[7]', 'server1', ['10.0.0.7']), node('node[8]', 'server1', ['10.0.0.8'])] }
+    expect(collectSources(tree, TOPN_KPIS[0]).map(s => s.label)).toEqual(['server1 (10.0.0.7)', 'server1 (10.0.0.8)'])
+  })
+
+  it('only treats responseTime child resources as candidates', () => {
+    const tree = { resource: [{ id: 'node[fs:responseTime-x]', label: 'odd', children: { resource: [{ id: 'node[fs:responseTime-x].interfaceSnmp[eth0]', rrdGraphAttributes: { icmp: {}}}] }}] }
+    expect(collectSources(tree, TOPN_KPIS[0])).toEqual([])
+  })
+})
+
+describe('resource tree cache', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    invalidateKpiSources()
+  })
+
+  it('keeps a fetch that is still in flight across a refresh tick', async () => {
+    let resolve: (v: unknown) => void = () => undefined
+    vi.mocked(rest.get).mockReturnValue(new Promise(r => { resolve = r }) as any)
+    const first = listAvailableKpis()
+    invalidateKpiSources()
+    const second = listAvailableKpis()
+    expect(vi.mocked(rest.get)).toHaveBeenCalledTimes(1)
+    resolve(resourceTree)
+    await Promise.all([first, second])
+    // once settled, a tick does clear it
+    invalidateKpiSources()
+    vi.mocked(rest.get).mockResolvedValue(resourceTree)
+    await listAvailableKpis()
+    expect(vi.mocked(rest.get)).toHaveBeenCalledTimes(2)
+  })
 })
 
 describe('clampTopnN', () => {

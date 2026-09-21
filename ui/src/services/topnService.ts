@@ -41,7 +41,7 @@ const responseTimeKpi = (id: string, service: string, label: string): TopnKpiDef
   label,
   unit: 'ms',
   scale: 0.001,
-  match: (resourceId, attrs) => (resourceId.includes('responseTime') && attrs.includes(service) ? service : null)
+  match: (resourceId, attrs) => (/\.responseTime\[/.test(resourceId) && attrs.includes(service) ? service : null)
 })
 
 // SNMP response time is left out: the stock poller-configuration.xml collects no
@@ -122,14 +122,29 @@ export const collectSources = (root: RawResourceTree, kpi: TopnKpiDef): Measurem
       out.push({ resourceId: m.id, attribute: m.attribute, label: key ? `${nodeLabel} (${key})` : nodeLabel })
     }
   }
+  // two nodes with the same label would be indistinguishable rows; qualify those too
+  const seen = new Map<string, number>()
+  for (const s of out) {
+    seen.set(s.label, (seen.get(s.label) ?? 0) + 1)
+  }
+  for (const s of out) {
+    const key = (seen.get(s.label) ?? 0) > 1 ? trailingKey(s.resourceId) : null
+    if (key && !s.label.endsWith(`(${key})`)) {
+      s.label = `${s.label} (${key})`
+    }
+  }
   return out
 }
 
-let treeCache: { at: number; tree: Promise<RawResourceTree> } | null = null
+let treeCache: { at: number; tree: Promise<RawResourceTree>; settled: boolean } | null = null
 
 // Called on every dashboard refresh so newly provisioned nodes show up at once.
+// A fetch still in flight is as fresh as it gets and is kept, so a slow tree
+// never piles up one request per tick.
 export const invalidateKpiSources = () => {
-  treeCache = null
+  if (treeCache?.settled) {
+    treeCache = null
+  }
 }
 
 // Depth 1 is nodes plus their child resources, which already carry the attributes.
@@ -140,7 +155,7 @@ const loadResourceTree = async (): Promise<RawResourceTree> => {
   const tree = rest
     .get('/resources?depth=1', { headers: { Accept: 'application/json' }})
     .then(resp => (resp.data ?? {}) as RawResourceTree)
-  const entry = { at: Date.now(), tree }
+  const entry = { at: Date.now(), tree, settled: false }
   treeCache = entry
   try {
     return await tree
@@ -149,6 +164,8 @@ const loadResourceTree = async (): Promise<RawResourceTree> => {
       treeCache = null
     }
     throw err
+  } finally {
+    entry.settled = true
   }
 }
 
