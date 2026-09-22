@@ -16,11 +16,11 @@
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/alarms/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE','ROLE_FILESYSTEM_EDITOR')"/>
 
-    <!-- ack/unack/escalate/clear alarms -->
-    <intercept-url pattern="/rest/alarms/*\?ack=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
-    <intercept-url pattern="/rest/alarms/*\?ack=false" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
-    <intercept-url pattern="/rest/alarms/*\?escalate=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
-    <intercept-url pattern="/rest/alarms/*\?clear=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <!-- ack/unack/escalate/clear alarms. ack/clear/escalate are PUT form-body params, so these must be
+         scoped by method (the old /rest/alarms/*?ack=true patterns matched on the query string and never
+         fired, leaving PUT unauthorized at the filter layer). SecurityHelper still enforces
+         self-vs-delegate and blocks read-only users in code. NMS-20348 -->
+    <intercept-url pattern="/rest/alarms/**" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')"/>
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/alarms/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
@@ -30,6 +30,10 @@
     <intercept-url pattern="/rest/alarms/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/alarms/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
+    <!-- NMS-20348: fail closed. Deny anything not matched above so a request that matches no
+         method-specific rule (e.g. a non-canonical/lowercase HTTP method) is denied, not permitted. -->
+    <intercept-url pattern="/**" access="denyAll"/>
+
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
@@ -38,104 +42,108 @@
   </http>
 
   <!-- Only use BASIC auth for the RESTful APIs -->
-  <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never" use-expressions="false">
+  <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
-    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE,ROLE_FILESYSTEM_EDITOR"/>
+    <intercept-url pattern="/rest/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE','ROLE_FILESYSTEM_EDITOR')"/>
 
     <!-- Calls to health/overview are always accepted -->
-    <intercept-url pattern="/rest/health/probe" method="GET" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+    <intercept-url pattern="/rest/health/probe" method="GET" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE')"/>
 
     <!-- set/unset maintenance mode on services -->
-    <intercept-url pattern="/rest/nodes/**" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/nodes/**" method="PUT" access="hasAnyRole('ROLE_MOBILE','ROLE_REST','ROLE_ADMIN')" />
     <!-- set/unset maintenance mode on nodes -->
-    <intercept-url pattern="/rest/ifservices" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/ifservices" method="PUT" access="hasAnyRole('ROLE_MOBILE','ROLE_REST','ROLE_ADMIN')" />
 
     <!-- Provisioning-related stuff is all allowed as long as you're in the provision, rest, or admin roles.
          The v1 REST API maps the .xml, .json and .atom suffixes to the same resource, so "/rest/requisitions.xml"
          is the requisitions root. Each "<root>.*" pattern applies the rule of its "<root>/**" pattern to these paths. -->
-    <intercept-url pattern="/rest/foreignSources/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/foreignSources.*" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/foreignSources/**" access="hasAnyRole('ROLE_PROVISION','ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/foreignSources.*" access="hasAnyRole('ROLE_PROVISION','ROLE_REST','ROLE_ADMIN')"/>
     <!-- NMS-20407: requisition reads return asset credentials (password, enable, snmpcommunity).
          Only the provision and admin roles can read them. ROLE_REST can still write requisitions.
          These rules must come before the general requisitions rules (first match wins). -->
-    <intercept-url pattern="/rest/requisitions/**" method="GET" access="ROLE_PROVISION,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/requisitions/**" method="HEAD" access="ROLE_PROVISION,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/requisitions.*" method="GET" access="ROLE_PROVISION,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/requisitions.*" method="HEAD" access="ROLE_PROVISION,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/requisitions/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/requisitions.*" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/requisitions/**" method="GET" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/requisitions/**" method="HEAD" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/requisitions.*" method="GET" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/requisitions.*" method="HEAD" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/requisitions.*" access="hasAnyRole('ROLE_PROVISION','ROLE_REST','ROLE_ADMIN')"/>
 
     <!-- SNMP config is _only_ allowed for the provision or admin roles -->
-    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/snmpConfig/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
 
     <!-- Allow users to POST to the Measurements API, which is read-only -->
-    <intercept-url pattern="/rest/measurements" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/measurements" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')"/>
 
     <!-- Allow Minions to access the configuration endpoints -->
-    <intercept-url pattern="/rest/config/**" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/config/**" method="GET" access="hasAnyRole('ROLE_MINION','ROLE_REST','ROLE_ADMIN')"/>
     <!-- NMS-20382: configuration writes are administrative. Writing NBI/config files can persist
          expressions that are later evaluated and run on the server, so require ROLE_ADMIN. Must
          precede the generic /rest/** write rules below (first-match-wins). -->
-    <intercept-url pattern="/rest/config/**" method="POST"   access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/config/**" method="PUT"    access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/config/**" method="DELETE" access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/config/**" method="PATCH"  access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/config/**" method="POST"   access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/config/**" method="PUT"    access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/config/**" method="PATCH"  access="hasAnyRole('ROLE_ADMIN')"/>
     <!-- Allow Minions to access the server info -->
-    <intercept-url pattern="/rest/info" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+    <intercept-url pattern="/rest/info" method="GET" access="hasAnyRole('ROLE_MINION','ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
 
     <!-- Allow certain actions for the REPORT_DESIGNER role -->
-    <intercept-url pattern="/rest/reports/scheduled/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
-    <intercept-url pattern="/rest/reports/persisted/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
-    <intercept-url pattern="/rest/reports/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER,ROLE_USER"/>
-    <intercept-url pattern="/rest/reports/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
-    <intercept-url pattern="/rest/reports/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
+    <intercept-url pattern="/rest/reports/scheduled/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_REPORT_DESIGNER')"/>
+    <intercept-url pattern="/rest/reports/persisted/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_REPORT_DESIGNER')"/>
+    <intercept-url pattern="/rest/reports/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_REPORT_DESIGNER','ROLE_USER')"/>
+    <intercept-url pattern="/rest/reports/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_REPORT_DESIGNER')"/>
+    <intercept-url pattern="/rest/reports/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_REPORT_DESIGNER')"/>
 
     <!-- Allow certain actions for the ROLE_FLOW_MANAGER role -->
-    <intercept-url pattern="/rest/classifications/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
-    <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
-    <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
+    <intercept-url pattern="/rest/classifications/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_FLOW_MANAGER')" />
+    <intercept-url pattern="/rest/classifications/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_FLOW_MANAGER')" />
+    <intercept-url pattern="/rest/classifications/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_FLOW_MANAGER')" />
 
     <!-- Allow certain actions for the ROLE_DEVICE_CONFIG_BACKUP role -->
-    <intercept-url pattern="/rest/device-config/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
+    <intercept-url pattern="/rest/device-config/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_DEVICE_CONFIG_BACKUP')" />
+    <intercept-url pattern="/rest/device-config/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_DEVICE_CONFIG_BACKUP')" />
+    <intercept-url pattern="/rest/device-config/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_DEVICE_CONFIG_BACKUP')" />
+    <intercept-url pattern="/rest/device-config/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_DEVICE_CONFIG_BACKUP')" />
 
     <!-- Allow access to endpoint configuration only for ROLE_REST and ROLE_ADMIN roles -->
-    <intercept-url pattern="/rest/endpoints/**" method="GET" access="ROLE_REST,ROLE_ADMIN" />
-    <intercept-url pattern="/rest/endpoints/**" method="POST" access="ROLE_REST,ROLE_ADMIN" />
-    <intercept-url pattern="/rest/endpoints/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN" />
-    <intercept-url pattern="/rest/endpoints/**" method="PUT" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/endpoints/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/rest/endpoints/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/rest/endpoints/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/rest/endpoints/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
 
     <!--
       Must have ROLE_FILESYSTEM_EDITOR to view or edit files. Added here, but additional checks are done in code
       to disallow any other role.
     -->
-    <intercept-url pattern="/rest/filesystem/**" method="GET" access="ROLE_FILESYSTEM_EDITOR"/>
-    <intercept-url pattern="/rest/filesystem/**" method="DELETE" access="ROLE_FILESYSTEM_EDITOR"/>
-    <intercept-url pattern="/rest/filesystem/**" method="POST" access="ROLE_FILESYSTEM_EDITOR"/>
-    <intercept-url pattern="/rest/filesystem/**" method="PUT" access="ROLE_FILESYSTEM_EDITOR"/>
+    <intercept-url pattern="/rest/filesystem/**" method="GET" access="hasAnyRole('ROLE_FILESYSTEM_EDITOR')"/>
+    <intercept-url pattern="/rest/filesystem/**" method="DELETE" access="hasAnyRole('ROLE_FILESYSTEM_EDITOR')"/>
+    <intercept-url pattern="/rest/filesystem/**" method="POST" access="hasAnyRole('ROLE_FILESYSTEM_EDITOR')"/>
+    <intercept-url pattern="/rest/filesystem/**" method="PUT" access="hasAnyRole('ROLE_FILESYSTEM_EDITOR')"/>
 
     <!-- SCV should be admin-only -->
-    <intercept-url pattern="/rest/scv/**" method="GET" access="ROLE_ADMIN" />
-    <intercept-url pattern="/rest/scv/**" method="DELETE" access="ROLE_ADMIN" />
-    <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
-    <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/rest/scv/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/rest/scv/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/rest/scv/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/rest/scv/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Allow certain actions for the ROLE_USER role -->
-    <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
+    <intercept-url pattern="/rest/resources/generateId" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')" />
 
     <!-- read-only calls should be allowed for any user -->
-    <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
-    <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
 
     <!-- read-write calls should be allowed for the REST and ADMIN roles -->
-    <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <!-- NMS-20348: fail closed. Deny anything not matched above so a request that matches no
+         method-specific rule (e.g. a non-canonical/lowercase HTTP method) is denied, not permitted. -->
+    <intercept-url pattern="/**" access="denyAll"/>
 
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
@@ -163,37 +171,40 @@
   </http>
 
   <!-- Only use BASIC auth for the RESTful API v2 -->
-  <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never" use-expressions="false">
+  <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
     <!-- Allow users to POST to the Geolocation API, which is read-only -->
-    <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/geolocation" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')"/>
     <!-- Allow users to POST to the Graph API, which is read-only -->
-    <intercept-url pattern="/api/v2/graphs/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/graphs/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')"/>
 
     <!-- Only allow privileged users to access geocoding API -->
-    <intercept-url pattern="/api/v2/geocoding/**" method="GET" access="ROLE_REST,ROLE_ADMIN" />
-    <intercept-url pattern="/api/v2/geocoding/**" method="POST" access="ROLE_REST,ROLE_ADMIN" />
-    <intercept-url pattern="/api/v2/geocoding/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN" />
-    <intercept-url pattern="/api/v2/geocoding/**" method="PUT" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/geocoding/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
 
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
-    <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
-    <intercept-url pattern="/api/v2/discovery/**" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
+    <intercept-url pattern="/api/v2/discovery" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/api/v2/discovery/**" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
-    <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+    <intercept-url pattern="/api/v2/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE')"/>
 
     <!-- read-only calls should be allowed for any user -->
-    <intercept-url pattern="/api/v2/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
-    <intercept-url pattern="/api/v2/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/api/v2/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
 
     <!-- read-write calls should be allowed for the REST and ADMIN roles -->
-    <intercept-url pattern="/api/v2/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/api/v2/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/api/v2/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/api/v2/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/api/v2/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/api/v2/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <!-- NMS-20348: fail closed. Deny anything not matched above (e.g. a non-canonical/lowercase HTTP method). -->
+    <intercept-url pattern="/**" access="denyAll"/>
 
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
