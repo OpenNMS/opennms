@@ -65,11 +65,14 @@ commands:
           name: Collect flaky test evidence
           when: always
           command: |
-            mkdir -p ~/test-results/flaky-evidence
+            mkdir -p ~/flaky-evidence
             if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
               (
                 cd /tmp/flaky-evidence &&
-                find . -type f -exec cp --parents {} ~/test-results/flaky-evidence/ \;
+                # Preserve the real attempt-N/... path (XML and .txt reports alike), so it
+                # stays out of ~/test-results (which store_test_results parses as JUnit
+                # output) while still making it obvious which test case each file belongs to.
+                find . -type f -exec cp --parents {} ~/flaky-evidence/ \;
               )
               echo "#### Flaky tests detected (passed only after retry):"
               find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
@@ -80,7 +83,7 @@ commands:
           path: ~/test-results
       - store_artifacts:
           when: always
-          path: ~/test-results/flaky-evidence
+          path: ~/flaky-evidence
           destination: flaky-evidence
       - run:
           name: Copy artifacts on failure
