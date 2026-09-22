@@ -29,6 +29,8 @@ export JAVA_MAX_MEM=4096M
 systemctl restart minion
 ----
 
+To pass other JVM flags, uncomment and modify `EXTRA_JAVA_OPTS` in the same file.
+On releases where `JAVA_MIN_MEM`/`JAVA_MAX_MEM` are not yet applied automatically, set the heap through `EXTRA_JAVA_OPTS` instead, for example `EXTRA_JAVA_OPTS="-Xms512m -Xmx4096m"`.
 
 [[minion-nofile]]
 == Tuning file descriptor limits
