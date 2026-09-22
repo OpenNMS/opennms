@@ -176,6 +176,8 @@
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <!-- Allow users to POST to the Graph API, which is read-only -->
     <intercept-url pattern="/api/v2/graphs/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <!-- Allow users to POST to the SNMP interface metrics API, which is read-only -->
+    <intercept-url pattern="/api/v2/snmpinterfaces/metrics" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
     <!-- Only allow privileged users to access geocoding API -->
     <intercept-url pattern="/api/v2/geocoding/**" method="GET" access="ROLE_REST,ROLE_ADMIN" />
