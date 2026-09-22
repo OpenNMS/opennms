@@ -344,7 +344,68 @@ describe('NodeAvailabilityGraph.vue', () => {
 
     const [, start, end] = getTimeline.mock.calls[1]
     expect(end - start).toBe(HOUR)
-    expect(wrapper.text()).toContain('last 1 hours')
+  })
+
+  // The heading should name the range the way the picker's own button does, rather than
+  // reconstructing it from unit and amount, which pluralised 'Last hour' as 'last 1 hours'.
+  it('names the selected range the way the picker does', async () => {
+    wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
+    await flushPromises()
+
+    await wrapper.get('[data-test="availability-range"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('last hour')
+    expect(wrapper.text()).not.toContain('last 1 hours')
+  })
+
+  // The panel outlives a node change, so a window resolved once at setup goes stale: navigating to
+  // another node an hour later would ask for the hour-old window.
+  it('re-resolves a relative range against the clock when the node changes', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(NOW)
+
+    wrapper = mountPanel()
+    await flushPromises()
+    const firstEnd = getTimeline.mock.calls[0][2] as number
+
+    vi.setSystemTime(NOW + 2 * HOUR)
+    await wrapper.setProps({ node: { id: '202' } as any })
+    await flushPromises()
+
+    const secondEnd = getTimeline.mock.calls[1][2] as number
+    expect(secondEnd - firstEnd).toBeGreaterThanOrEqual(2 * HOUR - 1000)
+  })
+
+  it('keeps an absolute custom range fixed across a node change', async () => {
+    const AbsoluteStub = {
+      name: 'TimeControls',
+      template: '<button @click="$emit(\'updateTime\', payload)">range</button>',
+      emits: ['updateTime'],
+      computed: {
+        payload() {
+          // No `range`, which is what TimeControls emits for a custom absolute window.
+          return {
+            startTime: Math.floor((NOW - 5 * HOUR) / 1000),
+            endTime: Math.floor((NOW - 4 * HOUR) / 1000),
+            format: 'hours'
+          }
+        }
+      }
+    }
+
+    wrapper = mountPanel('101', { TimeControls: AbsoluteStub })
+    await flushPromises()
+    await wrapper.get('[data-test="availability-range"]').trigger('click')
+    await flushPromises()
+
+    const [, pickedStart, pickedEnd] = getTimeline.mock.calls[1]
+
+    await wrapper.setProps({ node: { id: '202' } as any })
+    await flushPromises()
+
+    expect(getTimeline.mock.calls[2].slice(1)).toEqual([pickedStart, pickedEnd])
+    expect(wrapper.text()).toContain('custom range')
   })
 
   // A slow first request must not overwrite the result of a later one.

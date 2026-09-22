@@ -156,23 +156,29 @@ export const buildTimelineModel = (
     segments.sort((a, b) => a.lost - b.lost)
   }
 
-  const interfaces: TimelineInterfaceGroup[] = (availability.ipinterfaces ?? []).map(iface => ({
-    ipInterfaceId: iface.id,
-    ipAddress: iface.address,
-    availability: iface.availability,
-    // Sorted by name: the availability resource returns services in database order, so without
-    // this the rows shuffle between refreshes of the same node. The legacy page sorts them too.
-    services: (iface.services ?? [])
-      .map(service => ({
-        ifServiceId: service.id,
-        serviceId: service.serviceId,
-        serviceName: service.name,
-        ipAddress: iface.address,
-        availability: service.availability,
-        segments: segmentsByService.get(service.id) ?? []
-      }))
-      .sort((a, b) => a.serviceName.localeCompare(b.serviceName))
-  }))
+  const interfaces: TimelineInterfaceGroup[] = (availability.ipinterfaces ?? [])
+    // An interface with no monitored services has no availability to report. The resource still
+    // gives it a figure -- 100, because the stored procedure divides by a zero total service time
+    // -- so keeping it would put a row claiming a full window of uptime above nothing at all, and
+    // would stop the panel's empty state ever appearing. The previous panel skipped these too.
+    .filter(iface => (iface.services ?? []).length > 0)
+    .map(iface => ({
+      ipInterfaceId: iface.id,
+      ipAddress: iface.address,
+      availability: iface.availability,
+      // Sorted by name: the availability resource returns services in database order, so without
+      // this the rows shuffle between refreshes of the same node. The legacy page sorts them too.
+      services: (iface.services ?? [])
+        .map(service => ({
+          ifServiceId: service.id,
+          serviceId: service.serviceId,
+          serviceName: service.name,
+          ipAddress: iface.address,
+          availability: service.availability,
+          segments: segmentsByService.get(service.id) ?? []
+        }))
+        .sort((a, b) => a.serviceName.localeCompare(b.serviceName))
+    }))
 
   return {
     window,

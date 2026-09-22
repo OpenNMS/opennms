@@ -237,6 +237,41 @@ describe('buildTimelineModel', () => {
   })
 })
 
+describe('buildTimelineModel, interfaces with no monitored services', () => {
+  // The availability resource reports 100 for an interface with no managed services, because the
+  // stored procedure divides by a zero total service time. Rendering that as an interface row
+  // claims a full window of uptime for something with nothing under it, and it also kept the
+  // panel's empty state from ever appearing.
+  const withEmptyInterface: NodeAvailability = {
+    availability: 100,
+    id: 101,
+    'service-count': 1,
+    'service-down-count': 0,
+    ipinterfaces: [
+      {
+        address: '192.168.1.1', availability: 100, id: 1,
+        services: [{ id: 10, name: 'ICMP', serviceId: 1, availability: 100 }]
+      },
+      { address: '192.168.1.9', availability: 100, id: 2, services: [] }
+    ]
+  }
+
+  it('drops an interface that has no services', () => {
+    const model = buildTimelineModel(withEmptyInterface, null, WINDOW)
+
+    expect(model.interfaces.map(i => i.ipAddress)).toEqual(['192.168.1.1'])
+  })
+
+  it('leaves no interfaces at all when none has a service', () => {
+    const model = buildTimelineModel({
+      ...withEmptyInterface,
+      ipinterfaces: [{ address: '192.168.1.9', availability: 100, id: 2, services: [] }]
+    }, null, WINDOW)
+
+    expect(model.interfaces).toEqual([])
+  })
+})
+
 describe('unmonitoredPercent', () => {
   it('is zero when the node predates the window', () => {
     expect(unmonitoredPercent(START - HOUR, WINDOW)).toBe(0)

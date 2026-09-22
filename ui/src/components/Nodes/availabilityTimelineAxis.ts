@@ -39,6 +39,8 @@ interface TickStep {
   /** Nominal length. Used only to choose a step; positions come from real instants. */
   approxMs: number
   floor: FloorUnit
+  /** How many `floor` units the step spans, so the first tick can land on a multiple of it. */
+  amount: number
   label: string
 }
 
@@ -53,19 +55,19 @@ export const MAX_TICKS = 8
  * year; the first one coarse enough to fit within MAX_TICKS wins.
  */
 const TICK_STEPS: TickStep[] = [
-  { step: { minutes: 1 }, approxMs: 60_000, floor: 'minute', label: 'HH:mm' },
-  { step: { minutes: 5 }, approxMs: 300_000, floor: 'minute', label: 'HH:mm' },
-  { step: { minutes: 15 }, approxMs: 900_000, floor: 'minute', label: 'HH:mm' },
-  { step: { minutes: 30 }, approxMs: 1_800_000, floor: 'minute', label: 'HH:mm' },
-  { step: { hours: 1 }, approxMs: 3_600_000, floor: 'hour', label: 'HH:mm' },
-  { step: { hours: 3 }, approxMs: 10_800_000, floor: 'hour', label: 'HH:mm' },
-  { step: { hours: 6 }, approxMs: 21_600_000, floor: 'hour', label: 'HH:mm' },
-  { step: { hours: 12 }, approxMs: 43_200_000, floor: 'hour', label: 'd MMM HH:mm' },
-  { step: { days: 1 }, approxMs: 86_400_000, floor: 'day', label: 'd MMM' },
-  { step: { days: 7 }, approxMs: 604_800_000, floor: 'day', label: 'd MMM' },
-  { step: { months: 1 }, approxMs: 2_592_000_000, floor: 'month', label: 'MMM yyyy' },
-  { step: { months: 3 }, approxMs: 7_862_400_000, floor: 'month', label: 'MMM yyyy' },
-  { step: { years: 1 }, approxMs: 31_536_000_000, floor: 'year', label: 'yyyy' }
+  { step: { minutes: 1 }, approxMs: 60_000, floor: 'minute', amount: 1, label: 'HH:mm' },
+  { step: { minutes: 5 }, approxMs: 300_000, floor: 'minute', amount: 5, label: 'HH:mm' },
+  { step: { minutes: 15 }, approxMs: 900_000, floor: 'minute', amount: 15, label: 'HH:mm' },
+  { step: { minutes: 30 }, approxMs: 1_800_000, floor: 'minute', amount: 30, label: 'HH:mm' },
+  { step: { hours: 1 }, approxMs: 3_600_000, floor: 'hour', amount: 1, label: 'HH:mm' },
+  { step: { hours: 3 }, approxMs: 10_800_000, floor: 'hour', amount: 3, label: 'HH:mm' },
+  { step: { hours: 6 }, approxMs: 21_600_000, floor: 'hour', amount: 6, label: 'HH:mm' },
+  { step: { hours: 12 }, approxMs: 43_200_000, floor: 'hour', amount: 12, label: 'd MMM HH:mm' },
+  { step: { days: 1 }, approxMs: 86_400_000, floor: 'day', amount: 1, label: 'd MMM' },
+  { step: { days: 7 }, approxMs: 604_800_000, floor: 'day', amount: 1, label: 'd MMM' },
+  { step: { months: 1 }, approxMs: 2_592_000_000, floor: 'month', amount: 1, label: 'MMM yyyy' },
+  { step: { months: 3 }, approxMs: 7_862_400_000, floor: 'month', amount: 3, label: 'MMM yyyy' },
+  { step: { years: 1 }, approxMs: 31_536_000_000, floor: 'year', amount: 1, label: 'yyyy' }
 ]
 
 /**
@@ -75,12 +77,40 @@ const TICK_STEPS: TickStep[] = [
 export const chooseTickStep = (spanMs: number): TickStep =>
   TICK_STEPS.find(s => spanMs / s.approxMs <= MAX_TICKS - 1) ?? TICK_STEPS[TICK_STEPS.length - 1]
 
-const floorTo = (date: Date, unit: FloorUnit): Date => {
+/**
+ * Floor to a multiple of the step, not merely to the start of its unit.
+ *
+ * Flooring a 15 minute step only to the minute puts the first tick wherever the window happens to
+ * begin, so a window opening at 10:23:17 labels 10:38, 10:53, 11:08 rather than 10:30, 10:45,
+ * 11:00. The same applies to the multi-hour steps.
+ *
+ * Days are floored to the day and no further: a 7 day step aligned to a multiple of the
+ * day-of-month would restart awkwardly at the end of every month, and aligning to the start of the
+ * week would drag in a locale's first-day-of-week for no benefit.
+ *
+ * The date is the zoned representation, so the local getters and setters here read and write the
+ * wall time in the display zone.
+ */
+const floorTo = (date: Date, unit: FloorUnit, amount: number): Date => {
+  const floorField = (d: Date, get: () => number, set: (v: number) => void) => {
+    set(Math.floor(get() / amount) * amount)
+    return d
+  }
+
   switch (unit) {
-    case 'minute': return startOfMinute(date)
-    case 'hour': return startOfHour(date)
+    case 'minute': {
+      const d = startOfMinute(date)
+      return floorField(d, () => d.getMinutes(), v => d.setMinutes(v))
+    }
+    case 'hour': {
+      const d = startOfHour(date)
+      return floorField(d, () => d.getHours(), v => d.setHours(v))
+    }
     case 'day': return startOfDay(date)
-    case 'month': return startOfMonth(date)
+    case 'month': {
+      const d = startOfMonth(date)
+      return floorField(d, () => d.getMonth(), v => d.setMonth(v))
+    }
     case 'year': return startOfYear(date)
   }
 }
@@ -109,7 +139,7 @@ export const buildTicks = (window: TimelineWindow, zone: string = displayTimeZon
   const spec = chooseTickStep(span)
   const ticks: TimelineTick[] = []
 
-  let zoned = floorTo(toZonedTime(window.start, zone), spec.floor)
+  let zoned = floorTo(toZonedTime(window.start, zone), spec.floor, spec.amount)
 
   // Bounded rather than while(true): a malformed step would otherwise spin forever.
   for (let i = 0; i <= MAX_TICKS * 4; i++) {

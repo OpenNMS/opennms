@@ -131,6 +131,28 @@ describe('buildTicks', () => {
     })
   })
 
+  // A step coarser than a minute has to land on a multiple of itself, not merely on a whole
+  // minute: flooring 10:23:17 to 10:23 and stepping by 15 gives 10:38, 10:53, 11:08.
+  it('puts sub-hour ticks on multiples of the step, not on arbitrary minutes', () => {
+    const start = Date.UTC(2026, 5, 15, 10, 23, 17)
+    const ticks = buildTicks({ start, end: start + HOUR }, UTC)
+
+    expect(ticks.length).toBeGreaterThan(0)
+    ticks.forEach(t => expect(['00', '15', '30', '45']).toContain(t.label.slice(-2)))
+  })
+
+  it('puts multi-hour ticks on multiples of the step', () => {
+    const start = Date.UTC(2026, 5, 15, 10, 23, 17)
+    // 12 hours selects the 3-hour step, which should land on 00/03/06/09/12/...
+    const ticks = buildTicks({ start, end: start + 12 * HOUR }, UTC)
+
+    expect(ticks.length).toBeGreaterThan(0)
+    ticks.forEach((t) => {
+      expect(t.label.slice(-2)).toBe('00')
+      expect(Number(t.label.slice(0, 2)) % 3).toBe(0)
+    })
+  })
+
   it('returns no ticks for an empty window', () => {
     expect(buildTicks({ start: 1000, end: 1000 }, UTC)).toEqual([])
   })

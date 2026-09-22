@@ -56,10 +56,15 @@ import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import AvailabilityTimeline from './AvailabilityTimeline.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TimeControls from '@/components/Common/TimeControls.vue'
-import { DEFAULT_RANGE, resolveRelativeRange } from '@/components/Common/utils/timeRangeOptions'
+import {
+  DEFAULT_RANGE,
+  relativeRangeOf,
+  resolveRelativeRange,
+  TIME_RANGE_OPTIONS
+} from '@/components/Common/utils/timeRangeOptions'
 import { useDelayedLoading } from './hooks/useDelayedLoading'
 import API from '@/services'
-import { Node, NodeAvailability, StartEndTime } from '@/types'
+import { Node, NodeAvailability, RelativeTimeRange, StartEndTime } from '@/types'
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import {
   buildTimelineModel,
@@ -79,14 +84,58 @@ const availability = ref<NodeAvailability | undefined>(undefined)
 const timeline = ref<NodeOutageTimeline | null>(null)
 const loadFailed = ref(false)
 
-// Seeded to the same range TimeControls shows before anything is picked. The two defaults have to
-// agree or the button would name a window the panel is not showing; there is a test for it.
-const startEnd = resolveRelativeRange(DEFAULT_RANGE)
-const window = ref<TimelineWindow>({
-  start: Number(startEnd.startTime) * 1000,
-  end: Number(startEnd.endTime) * 1000
+/**
+ * What the user picked, rather than the window it resolved to at the time.
+ *
+ * A relative range has to be re-resolved against the clock on every fetch. This panel outlives a
+ * node change -- the details page keeps one instance across node ids -- so a window worked out once
+ * at setup would go stale, and moving to another node an hour later would ask for the hour-old
+ * window. A custom absolute range is a fixed window and is kept as one.
+ */
+type RangeSelection =
+  | { kind: 'relative'; range: RelativeTimeRange }
+  | { kind: 'absolute'; start: number; end: number }
+
+const toMillis = (time: StartEndTime): TimelineWindow => ({
+  start: Number(time.startTime) * 1000,
+  end: Number(time.endTime) * 1000
 })
-const rangeLabel = ref('Last day')
+
+const windowFor = (sel: RangeSelection): TimelineWindow =>
+  sel.kind === 'relative' ? toMillis(resolveRelativeRange(sel.range)) : { start: sel.start, end: sel.end }
+
+/**
+ * The picker's own wording for a range, so the heading and the picker's button agree. Building a
+ * label out of unit and amount instead gave 'last 1 hours' for Last hour, and 'last 24 hours' for
+ * Last day while the button said 'LAST DAY'.
+ */
+const labelFor = (range: RelativeTimeRange | undefined): string => {
+  if (!range) {
+    return 'custom range'
+  }
+
+  const option = TIME_RANGE_OPTIONS.find((o) => {
+    const r = relativeRangeOf(o)
+    return r?.unit === range.unit && r?.amount === range.amount
+  })
+
+  if (option) {
+    return option.label
+  }
+
+  // Not one of the offered options, so there is no label to borrow.
+  const unit = range.amount === 1 ? range.unit.replace(/s$/, '') : range.unit
+  return `Last ${range.amount} ${unit}`
+}
+
+// Seeded to the range TimeControls shows before anything is picked, so the heading and the button
+// agree from the first paint.
+const selection = ref<RangeSelection>({ kind: 'relative', range: DEFAULT_RANGE })
+const rangeLabel = ref(labelFor(DEFAULT_RANGE))
+
+// The window the rendered model describes: set from the fetch that produced it, so the axis and the
+// bars cannot disagree.
+const activeWindow = ref<TimelineWindow>(windowFor(selection.value))
 
 const errorContent = {
   title: 'Availability unavailable',
@@ -95,9 +144,9 @@ const errorContent = {
 const emptyContent = { msg: 'No monitored services on this node.' }
 
 const model = computed(() =>
-  availability.value ? buildTimelineModel(availability.value, timeline.value, window.value) : undefined)
+  availability.value ? buildTimelineModel(availability.value, timeline.value, activeWindow.value) : undefined)
 
-const ticks = computed(() => buildTicks(window.value))
+const ticks = computed(() => buildTicks(activeWindow.value))
 
 // Monotonic per fetch, as nodeStore does for its own. Needed twice over here: the details page
 // keeps one instance of this panel across node ids, and the range can change before a request for
@@ -112,7 +161,9 @@ const fetchAll = async () => {
   }
 
   const myRequest = ++requestId
-  const { start, end } = window.value
+  // Resolved here rather than held in state, so a relative range follows the clock.
+  const requested = windowFor(selection.value)
+  const { start, end } = requested
 
   startLoading()
 
@@ -138,6 +189,7 @@ const fetchAll = async () => {
     }
 
     loadFailed.value = false
+    activeWindow.value = requested
     availability.value = avail
     timeline.value = outages
   } finally {
@@ -146,15 +198,12 @@ const fetchAll = async () => {
 }
 
 const onUpdateTime = (time: StartEndTime) => {
-  // Replaced wholesale so the watcher below fires exactly once. TimeControls works in seconds and
-  // everything here is in milliseconds; convert once, at the boundary.
-  window.value = {
-    start: Number(time.startTime) * 1000,
-    end: Number(time.endTime) * 1000
-  }
-  rangeLabel.value = time.range
-    ? `Last ${time.range.amount} ${time.range.unit}`
-    : 'custom range'
+  // Replaced wholesale so the watcher below fires exactly once. TimeControls carries a relative
+  // range when the pick came from the preset list, and only absolute times for a custom window.
+  selection.value = time.range
+    ? { kind: 'relative', range: time.range }
+    : { kind: 'absolute', ...toMillis(time) }
+  rangeLabel.value = labelFor(time.range)
 }
 
 // One watcher drives everything: mount, a node change and a range change each cause exactly one
@@ -165,7 +214,7 @@ const onUpdateTime = (time: StartEndTime) => {
 // return visit to the same node a change-only watch would never fire at all. The very first run
 // has no node id yet -- the node prop is empty until the page's own fetch resolves -- and returns
 // early.
-watch([() => props.node?.id, window], fetchAll, { immediate: true })
+watch([() => props.node?.id, selection], fetchAll, { immediate: true })
 </script>
 
 <style lang="scss" scoped>
