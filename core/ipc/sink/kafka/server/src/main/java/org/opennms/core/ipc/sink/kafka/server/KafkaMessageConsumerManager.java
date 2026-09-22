@@ -199,7 +199,13 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                     continue;
                                 }
                                 ByteString byteString = largeMessageCache.getIfPresent(messageId);
-                                largeMessageCache.put(messageId, byteString == null
+                                if (expectedChunk > 0 && byteString == null) {
+                                    LOG.warn("Buffered content for message {} was evicted after {} chunks, dropping the message.",
+                                            messageId, expectedChunk);
+                                    currentChunkCache.invalidate(messageId);
+                                    continue;
+                                }
+                                largeMessageCache.put(messageId, expectedChunk == 0
                                         ? sinkMessage.getContent()
                                         : byteString.concat(sinkMessage.getContent()));
                                 int receivedChunks = expectedChunk + 1;
