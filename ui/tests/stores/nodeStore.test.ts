@@ -346,18 +346,16 @@ describe('nodeStore getNodeById', () => {
   // Everything this store holds is scoped to the node that failed to load, so none of it
   // should stay on screen under an id that has no node. Events belong to their own store and
   // are cleared by the page.
-  it('clears the outages and availability when the request fails', async () => {
+  it('clears the outages when the request fails', async () => {
     vi.mocked(API.getNodeById).mockResolvedValue(false as never)
     const store = useNodeStore()
     store.outages = [{ id: 1 }] as never
     store.outagesTotalCount = 1
-    store.availability = { availability: 98.7 } as never
 
     await store.getNodeById({ id: '99' } as Node)
 
     expect(store.outages).toEqual([])
     expect(store.outagesTotalCount).toBe(0)
-    expect(store.availability).toEqual({})
   })
 
   it('clears the failure flag when a later fetch succeeds', async () => {
@@ -647,20 +645,5 @@ describe('nodeStore stale panel responses', () => {
 
     expect(store.outages).toEqual([{ id: 2 }])
     expect(store.outagesTotalCount).toBe(1)
-  })
-
-  it('discards superseded availability', async () => {
-    const { first, second } = racePair(vi.mocked(API.getNodeAvailabilityPercentage) as never)
-    const store = useNodeStore()
-
-    const firstCall = store.getNodeAvailabilityPercentage('1')
-    const secondCall = store.getNodeAvailabilityPercentage('2')
-
-    second.resolve({ availability: 22 } as never)
-    await secondCall
-    first.resolve({ availability: 11 } as never)
-    await firstCall
-
-    expect(store.availability).toEqual({ availability: 22 })
   })
 })

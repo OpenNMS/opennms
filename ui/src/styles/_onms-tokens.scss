@@ -41,6 +41,13 @@ $clickable-normal: prefix(clickable-normal);
 $shade-3: prefix(shade-3);
 $state-text-color-on-surface-dark: prefix(state-text-color-on-surface-dark);
 
+// availability timeline fills (theme-independent; see onms-theme.scss)
+$timeline-available: prefix(timeline-available);
+$timeline-outage: prefix(timeline-outage);
+$timeline-unmonitored: prefix(timeline-unmonitored);
+$timeline-gridline: prefix(timeline-gridline);
+$timeline-edge: prefix(timeline-edge);
+
 // status / severity
 $success: prefix(success);
 $error: prefix(error);

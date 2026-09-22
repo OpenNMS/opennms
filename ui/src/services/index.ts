@@ -28,6 +28,7 @@ import {
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
+import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
 import { getServiceTypes } from './serviceTypes'
@@ -144,6 +145,7 @@ export default {
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
+  getNodeOutageTimeline,
   getCategories,
   getMonitoringLocations,
   getLog,

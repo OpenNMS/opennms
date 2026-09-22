@@ -22,7 +22,7 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { IpInterface, Node, NodeAvailability, Outage, QueryParameters, SnmpInterface } from '@/types'
+import { IpInterface, Node, Outage, QueryParameters, SnmpInterface } from '@/types'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
@@ -48,7 +48,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
   const ipInterfacesTotalCount = ref(0)
-  const availability = ref({} as NodeAvailability)
   const outages = ref([] as Outage[])
   const outagesTotalCount = ref(0)
   const nodeQueryParameters = ref({ limit: 50, offset: 0, orderBy: 'label' } as QueryParameters)
@@ -80,7 +79,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
   let nodeSnmpInterfacesRequestId = 0
   let nodeIpInterfacesRequestId = 0
   let outagesRequestId = 0
-  let availabilityRequestId = 0
 
   // Monotonic id sequencing getNodeById requests, mirroring getIpInterfacesForNodes below: the
   // details page fires one per node id as the user moves between nodes, and the responses can
@@ -122,7 +120,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfacesTotalCount.value = 0
     outages.value = []
     outagesTotalCount.value = 0
-    availability.value = {} as NodeAvailability
     snmpPrimaryIpAddress.value = undefined
   }
 
@@ -300,20 +297,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeToSnmpInterfaceMap.value = grouped
   }
 
-  const getNodeAvailabilityPercentage = async (id: string) => {
-    const requestId = ++availabilityRequestId
-
-    const av = await API.getNodeAvailabilityPercentage(id)
-
-    if (requestId !== availabilityRequestId) {
-      return
-    }
-
-    if (av) {
-      availability.value = av
-    }
-  }
-
   const getNodeOutages = async (payload: { id: string; queryParameters?: QueryParameters }) => {
     const requestId = ++outagesRequestId
 
@@ -346,7 +329,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfacesTotalCount,
     ipInterfaces,
     ipInterfacesTotalCount,
-    availability,
     nodeToIpInterfaceMap,
     nodeToSnmpInterfaceMap,
     nodeQueryParameters,
@@ -358,7 +340,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeById,
     getNodeSnmpInterfaces,
     getNodeIpInterfaces,
-    getNodeAvailabilityPercentage,
     getNodeOutages,
     getNodeSnmpPrimaryInterface,
     setNodeQueryParameters
