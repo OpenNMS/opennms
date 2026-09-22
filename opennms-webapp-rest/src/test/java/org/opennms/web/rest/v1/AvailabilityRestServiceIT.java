@@ -127,6 +127,61 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
+    /**
+     * The window parameters are plumbing tests, not arithmetic tests. In the populated database no
+     * interface is managed, so getPercentAvailabilityInWindow matches no row and every figure is
+     * window-independent -- a windowed request cannot show different numbers here. The arithmetic is
+     * covered against real windows by CategoryModelIT.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithWindowMatchesUnwindowed() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long end = System.currentTimeMillis();
+        final long start = end - 86_400_000L;
+
+        MockHttpServletRequest request = createRequest(m_servletContext, GET,
+                "/availability/nodes/" + nodeId, parseParamData("start=" + start + "&end=" + end),
+                getUser(), getUserRoles());
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        final String json = sendRequest(request, 200);
+
+        final JSONObject expectedObject = new JSONObject(
+                IOUtils.toString(new FileInputStream("src/test/resources/v1/availability_node.json")));
+        JSONAssert.assertEquals(expectedObject, new JSONObject(json), true);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithOnlyEndDefaultsStart() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        sendRequest(GET, "/availability/nodes/" + nodeId,
+                parseParamData("end=" + System.currentTimeMillis()), 200);
+    }
+
+    /**
+     * 400 rather than 500 is the point of this test: it is what proves the window is validated
+     * before getNode's catch-all, which rewraps everything as a 500. An empty window would otherwise
+     * reach getPercentAvailabilityInWindow, which divides by the window length.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeRejectsEmptyWindow() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long now = System.currentTimeMillis();
+        sendRequest(GET, "/availability/nodes/" + nodeId,
+                parseParamData("start=" + now + "&end=" + now), 400);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeRejectsInvertedWindow() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long now = System.currentTimeMillis();
+        sendRequest(GET, "/availability/nodes/" + nodeId,
+                parseParamData("start=" + now + "&end=" + (now - 3_600_000L)), 400);
+    }
+
     @Test
     @JUnitTemporaryDatabase
     public void testGetAvailabilityNode() throws Exception {
