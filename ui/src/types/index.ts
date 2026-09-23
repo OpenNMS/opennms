@@ -427,21 +427,27 @@ export interface SortProps extends ISortObject {
   sortOrder: 1 | -1
 }
 
+export interface NodeAvailabilityService {
+  /** The monitored service (ifservices) id, which the outage timeline joins on. */
+  id: number
+  name: string
+  /** The service *type* id, for building a service detail link. */
+  serviceId: number
+  availability: number
+  up?: boolean
+}
+
+export interface NodeAvailabilityInterface {
+  address: string
+  availability: number
+  id: number
+  services: NodeAvailabilityService[]
+}
+
 export interface NodeAvailability {
   availability: number
   id: number
-  ipinterfaces: {
-    address: string
-    availability: number
-    id: number
-    services: [
-      {
-        id: number
-        name: string
-        availability: number
-      }
-    ]
-  }[]
+  ipinterfaces: NodeAvailabilityInterface[]
   'service-count': number
   'service-down-count': number
 }

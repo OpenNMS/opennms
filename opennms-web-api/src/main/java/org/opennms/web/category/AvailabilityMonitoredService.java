@@ -39,6 +39,13 @@ public class AvailabilityMonitoredService {
     @XmlAttribute(name="name")
     private final String m_name;
 
+    /**
+     * Service type id, as distinct from m_id, which is the ifservices row id. Carried so a client
+     * can build a service detail link without a separate lookup of the service type by name.
+     */
+    @XmlAttribute(name="serviceId")
+    private final Integer m_serviceId;
+
     @XmlAttribute(name="availability")
     private final double m_availability;
 
@@ -48,6 +55,7 @@ public class AvailabilityMonitoredService {
     public AvailabilityMonitoredService() {
         m_id = -1;
         m_name = "";
+        m_serviceId = -1;
         m_availability = -1d;
         this.up = false;
     }
@@ -55,6 +63,7 @@ public class AvailabilityMonitoredService {
     public AvailabilityMonitoredService(final OnmsMonitoredService svc, final double availability, final boolean up) {
         m_id = svc.getId();
         m_name = svc.getServiceName();
+        m_serviceId = svc.getServiceId();
         m_availability = availability;
         this.up = up;
     }
@@ -75,6 +84,10 @@ public class AvailabilityMonitoredService {
         return m_name;
     }
 
+    public Integer getServiceId() {
+        return m_serviceId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -82,6 +95,7 @@ public class AvailabilityMonitoredService {
             .append("availability", this.getAvailability())
             .append("up", this.isUp())
             .append("name", this.getName())
+            .append("serviceId", this.getServiceId())
             .toString();
     }
 

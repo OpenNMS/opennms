@@ -17,26 +17,40 @@
         :triggerNodeInfo="onNodeInfo"
       />
     </div>
-    <template v-if="nodeLoaded">
-      <div class="onms-row">
-        <div class="onms-col-12">
-          <NodeDetailsHeader :node="nodeStore.node" />
-        </div>
+    <div
+      v-if="nodeLoaded"
+      class="onms-row"
+    >
+      <div class="onms-col-12">
+        <NodeDetailsHeader :node="nodeStore.node" />
       </div>
-      <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
-        <div class="onms-col-6">
-          <NodeAvailabilityGraph :node="nodeStore.node" :base-href="baseHref" />
-        </div>
-        <div class="onms-col-6">
-          <NodeNotificationsPanel :node="nodeStore.node" :base-href="baseHref" />
-        </div>
-      </div>
-    </template>
-    <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
+    </div>
+
+    <!--
+      One row of two columns, each stacking its own panels, rather than a row per pair of panels.
+      A row is a grid track, so its height is that of its tallest panel: with a row per pair, a
+      short panel left a gap beneath it until the next row could start -- most visibly under
+      Notifications, waiting on the much taller Availability panel beside it.
+
+      The panels need no nested .onms-row of their own. They are block-level and fill the column
+      already, and the cards carry their own bottom margin, so nesting a fresh 12-column grid per
+      panel would add a grid to configure without changing the result.
+    -->
+    <div class="onms-row">
       <div class="onms-col-6">
+        <NodeAvailabilityGraph
+          v-if="nodeLoaded"
+          :node="nodeStore.node"
+          :base-href="baseHref"
+        />
         <InterfacesTabs />
       </div>
       <div class="onms-col-6">
+        <NodeNotificationsPanel
+          v-if="nodeLoaded"
+          :node="nodeStore.node"
+          :base-href="baseHref"
+        />
         <EventsTable />
         <OutagesTable />
       </div>

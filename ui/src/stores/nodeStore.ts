@@ -22,7 +22,8 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { IpInterface, Node, NodeAvailability, Outage, QueryParameters, SnmpInterface } from '@/types'
+import { IpInterface, Node, Outage, QueryParameters, SnmpInterface } from '@/types'
+import { DEFAULT_SELECTION, RangeSelection } from '@/components/Nodes/availabilityRange'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
@@ -48,10 +49,23 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
   const ipInterfacesTotalCount = ref(0)
-  const availability = ref({} as NodeAvailability)
   const outages = ref([] as Outage[])
   const outagesTotalCount = ref(0)
   const nodeQueryParameters = ref({ limit: 50, offset: 0, orderBy: 'label' } as QueryParameters)
+
+  /**
+   * The time range the availability panel is showing.
+   *
+   * Deliberately NOT cleared with the rest when the node changes, and deliberately not held in the
+   * panel: the details page rebuilds that panel for each node, so a range kept there is lost the
+   * moment the user moves on. How someone chose to look at a node is their choice, not that node's
+   * data, so it outlives the node the way a sort order or a column choice would.
+   */
+  const availabilityRange = ref<RangeSelection>(DEFAULT_SELECTION)
+
+  const setAvailabilityRange = (selection: RangeSelection) => {
+    availabilityRange.value = selection
+  }
 
   // map of nodeId to IpInterfaces associated with that node
   const nodeToIpInterfaceMap = ref<Map<string, IpInterface[]>>(new Map<string, IpInterface[]>())
@@ -80,7 +94,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
   let nodeSnmpInterfacesRequestId = 0
   let nodeIpInterfacesRequestId = 0
   let outagesRequestId = 0
-  let availabilityRequestId = 0
 
   // Monotonic id sequencing getNodeById requests, mirroring getIpInterfacesForNodes below: the
   // details page fires one per node id as the user moves between nodes, and the responses can
@@ -122,7 +135,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfacesTotalCount.value = 0
     outages.value = []
     outagesTotalCount.value = 0
-    availability.value = {} as NodeAvailability
     snmpPrimaryIpAddress.value = undefined
   }
 
@@ -300,20 +312,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeToSnmpInterfaceMap.value = grouped
   }
 
-  const getNodeAvailabilityPercentage = async (id: string) => {
-    const requestId = ++availabilityRequestId
-
-    const av = await API.getNodeAvailabilityPercentage(id)
-
-    if (requestId !== availabilityRequestId) {
-      return
-    }
-
-    if (av) {
-      availability.value = av
-    }
-  }
-
   const getNodeOutages = async (payload: { id: string; queryParameters?: QueryParameters }) => {
     const requestId = ++outagesRequestId
 
@@ -346,9 +344,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfacesTotalCount,
     ipInterfaces,
     ipInterfacesTotalCount,
-    availability,
     nodeToIpInterfaceMap,
     nodeToSnmpInterfaceMap,
+    availabilityRange,
+    setAvailabilityRange,
     nodeQueryParameters,
     outages,
     outagesTotalCount,
@@ -358,7 +357,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeById,
     getNodeSnmpInterfaces,
     getNodeIpInterfaces,
-    getNodeAvailabilityPercentage,
     getNodeOutages,
     getNodeSnmpPrimaryInterface,
     setNodeQueryParameters
