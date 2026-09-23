@@ -1742,8 +1742,10 @@
     <stax2ApiVersion>4.2.2</stax2ApiVersion>
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
+    <!-- must match the version Karaf's aries-proxy feature installs; container/aries-proxy-patch patches it -->
+    <ariesProxyVersion>1.1.14</ariesProxyVersion>
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
-    <asmVersion>9.7</asmVersion>
+    <asmVersion>9.10.1</asmVersion>
     <activemqVersion>5.19.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>

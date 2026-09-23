@@ -58,6 +58,30 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <!-- Sentinel assembles its own system/ instead of reusing container/shared's,
+                             so it needs its own copy of the patched Aries Proxy (JDK 22+ support),
+                             see container/aries-proxy-patch -->
+                        <id>replace-aries-proxy</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.aries-proxy-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/aries/proxy/org.apache.aries.proxy/${ariesProxyVersion}</outputDirectory>
+                                    <destFileName>org.apache.aries.proxy-${ariesProxyVersion}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>copy-dependencies</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -242,6 +266,24 @@
                                 <replacement>
                                     <token>log4j2.appender.audit.filePattern = ${karaf.log}/security-%i.log</token>
                                     <value>log4j2.appender.audit.filePattern = ${karaf.data}/security/audit.log.%i</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Subject.getSubject() throws on JDK 23+; only AddSubject=true makes EventAdmin call it -->
+                        <id>org.apache.felix.eventadmin.impl.EventAdmin.cfg</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/assembly/etc/org.apache.felix.eventadmin.impl.EventAdmin.cfg</file>
+                            <regex>true</regex>
+                            <replacements>
+                                <replacement>
+                                    <token>org\.apache\.felix\.eventadmin\.AddSubject *=.*</token>
+                                    <value>org.apache.felix.eventadmin.AddSubject=false</value>
                                 </replacement>
                             </replacements>
                         </configuration>

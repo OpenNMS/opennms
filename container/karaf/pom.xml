@@ -276,6 +276,32 @@
                             </artifactItems>
                         </configuration>
                     </execution>
+                    <execution>
+                        <!-- Aries Proxy 1.1.14 refuses to generate proxies on JDK 22+
+                             ("Invalid Java version 69"), which breaks every blueprint
+                             <reference>. Replace it with the patched jar from
+                             container/aries-proxy-patch, built the same way as the
+                             replacements above. -->
+                        <id>replace-aries-proxy</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.aries-proxy-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/aries/proxy/org.apache.aries.proxy/${ariesProxyVersion}</outputDirectory>
+                                    <destFileName>org.apache.aries.proxy-${ariesProxyVersion}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
