@@ -58,8 +58,8 @@
         <exclude>io/netty/netty-codec-http/4.1.22.Final</exclude>
         <exclude>io/netty/netty-codec-http/4.1.22.Final/*</exclude>
         <!-- NMS-20061: exclude the jline version pinned by Karaf's own feature repo (CVE-2026-56740) -->
-        <exclude>org/jline/jline/3.21.0</exclude>
-        <exclude>org/jline/jline/3.21.0/*</exclude>
+        <exclude>org/jline/jline/3.30.6</exclude>
+        <exclude>org/jline/jline/3.30.6/*</exclude>
       </excludes>
     </fileSet>
 
