@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>37.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Container :: Karaf JAAS Subject Patch</name>
+    <description>
+        Karaf 4.4.x (still true on its main branch) binds the logged-in user's JAAS subject
+        to an AccessControlContext in JaasHelper.doAs() and reads it back with
+        Subject.getSubject(AccessController.getContext()). On JDK 23+ that method always
+        throws UnsupportedOperationException ("getSubject is not supported"), and on JDK 24+
+        there is no Security Manager left to turn it back on, so the local console, SSH
+        sessions, su/sudo/whoami, command ACLs and the JMX guard all fail.
+
+        The replacement API, Subject.callAs()/Subject.current(), keeps the subject in a
+        ScopedValue, which threads started with new Thread() or by a pool do not inherit.
+        The AccessControlContext did, and Karaf relies on it: the console session runs in a
+        thread started inside doAs(). So this patch binds the subject both ways:
+        Subject.callAs() for code that asks Subject.current() (the JDK itself, e.g. JMX),
+        and org.apache.karaf.jaas.boot.principal.InheritableSubject, an
+        InheritableThreadLocal, for everything else. JaasHelper.currentSubject() reads
+        them in that order and replaces every Subject.getSubject() call.
+
+        InheritableSubject is added to jaas.boot: it is exported once, by the system bundle,
+        while each Karaf bundle carries its own private copy of JaasHelper, so this is the
+        only place all of those copies share. The patched jars get classifiers named after
+        the bundle; the assembly modules (container/karaf, container/shared and
+        features/container/sentinel) copy them over the originals in lib/boot/ and system/.
+
+        org.apache.karaf.service.guard embeds JaasHelper as well but is left alone: only
+        opennms-full-assembly adds it to core's repository (feature service-security), and
+        nothing installs that feature. Patch it too before booting service-security on JDK 23+.
+
+        Should Apache Karaf move to Subject.current()/callAs(), delete this module.
+    </description>
+
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+    </properties>
+
+    <!-- compile classpath for the patched classes only, nothing here is shipped -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.boot</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.core</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.command</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.management</groupId>
+            <artifactId>org.apache.karaf.management.server</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- the version Karaf ${karafVersion} builds shell.console against -->
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.runtime</artifactId>
+            <version>1.1.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.cmpn</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4jVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-original-karaf-bundles</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <outputDirectory>${project.build.directory}/original</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.jaas</groupId>
+                                    <artifactId>org.apache.karaf.jaas.boot</artifactId>
+                                    <version>${karafVersion}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.jaas</groupId>
+                                    <artifactId>org.apache.karaf.jaas.command</artifactId>
+                                    <version>${karafVersion}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.shell</groupId>
+                                    <artifactId>org.apache.karaf.shell.core</artifactId>
+                                    <version>${karafVersion}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.shell</groupId>
+                                    <artifactId>org.apache.karaf.shell.console</artifactId>
+                                    <version>${karafVersion}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.shell</groupId>
+                                    <artifactId>org.apache.karaf.shell.ssh</artifactId>
+                                    <version>${karafVersion}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.bundle</groupId>
+                                    <artifactId>org.apache.karaf.bundle.core</artifactId>
+                                    <version>${karafVersion}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.management</groupId>
+                                    <artifactId>org.apache.karaf.management.server</artifactId>
+                                    <version>${karafVersion}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- packaging is "pom" so the default lifecycle does not bind
+                     compilation on its own. Subject.current()/callAs() need Java 18+;
+                     the rest of each bundle keeps its original class file version. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile-patched-classes</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>21</release>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven.antrun.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>patch-karaf-bundles</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <macrodef name="overlay">
+                                    <attribute name="name"/>
+                                    <sequential>
+                                        <unzip src="${project.build.directory}/original/@{name}-${karafVersion}.jar"
+                                               dest="${project.build.directory}/bundle/@{name}"/>
+                                        <!-- overlay the recompiled classes this bundle already
+                                             contains: its embedded JaasHelper copy and, in some,
+                                             the classes that read the subject -->
+                                        <copy overwrite="true" todir="${project.build.directory}/bundle/@{name}">
+                                            <fileset dir="${project.build.directory}/classes">
+                                                <present targetdir="${project.build.directory}/bundle/@{name}"/>
+                                            </fileset>
+                                        </copy>
+                                    </sequential>
+                                </macrodef>
+                                <macrodef name="repack">
+                                    <attribute name="name"/>
+                                    <sequential>
+                                        <!-- passing the original manifest keeps the OSGi headers
+                                             untouched and writes META-INF/MANIFEST.MF as the first
+                                             entry, which Karaf's JarInputStream based manifest
+                                             readers depend on -->
+                                        <jar destfile="${project.build.directory}/@{name}-${karafVersion}.jar"
+                                             basedir="${project.build.directory}/bundle/@{name}"
+                                             manifest="${project.build.directory}/bundle/@{name}/META-INF/MANIFEST.MF"/>
+                                    </sequential>
+                                </macrodef>
+
+                                <overlay name="org.apache.karaf.jaas.boot"/>
+                                <overlay name="org.apache.karaf.jaas.command"/>
+                                <overlay name="org.apache.karaf.shell.core"/>
+                                <overlay name="org.apache.karaf.shell.console"/>
+                                <overlay name="org.apache.karaf.shell.ssh"/>
+                                <overlay name="org.apache.karaf.bundle.core"/>
+                                <overlay name="org.apache.karaf.management.server"/>
+
+                                <!-- the one new class, shared by all JaasHelper copies -->
+                                <copy file="${project.build.directory}/classes/org/apache/karaf/jaas/boot/principal/InheritableSubject.class"
+                                      todir="${project.build.directory}/bundle/org.apache.karaf.jaas.boot/org/apache/karaf/jaas/boot/principal"/>
+
+                                <repack name="org.apache.karaf.jaas.boot"/>
+                                <repack name="org.apache.karaf.jaas.command"/>
+                                <repack name="org.apache.karaf.shell.core"/>
+                                <repack name="org.apache.karaf.shell.console"/>
+                                <repack name="org.apache.karaf.shell.ssh"/>
+                                <repack name="org.apache.karaf.bundle.core"/>
+                                <repack name="org.apache.karaf.management.server"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-patched-karaf-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/org.apache.karaf.jaas.boot-${karafVersion}.jar</file>
+                                    <type>jar</type>
+                                    <classifier>jaas-boot</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/org.apache.karaf.jaas.command-${karafVersion}.jar</file>
+                                    <type>jar</type>
+                                    <classifier>jaas-command</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/org.apache.karaf.shell.core-${karafVersion}.jar</file>
+                                    <type>jar</type>
+                                    <classifier>shell-core</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/org.apache.karaf.shell.console-${karafVersion}.jar</file>
+                                    <type>jar</type>
+                                    <classifier>shell-console</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/org.apache.karaf.shell.ssh-${karafVersion}.jar</file>
+                                    <type>jar</type>
+                                    <classifier>shell-ssh</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/org.apache.karaf.bundle.core-${karafVersion}.jar</file>
+                                    <type>jar</type>
+                                    <classifier>bundle-core</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/org.apache.karaf.management.server-${karafVersion}.jar</file>
+                                    <type>jar</type>
+                                    <classifier>management-server</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
