@@ -178,25 +178,40 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                             kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
                                     continue;
                                 }
-                                // Avoid duplicate chunks. discard if chunk is repeated.
-                                Integer chunkNum = currentChunkCache.getIfPresent(messageId);
-                                if (chunkNum == null) {
-                                    currentChunkCache.put(messageId, 0);
-                                    chunkNum = 0;
+                                // Chunks are numbered from 0 and must arrive in order. Only the chunk we are
+                                // expecting is appended.
+                                Integer expectedChunk = currentChunkCache.getIfPresent(messageId);
+                                if (expectedChunk == null) {
+                                    expectedChunk = 0;
                                 }
-
-                                if(chunkNum == sinkMessage.getCurrentChunkNumber()) {
+                                int currentChunk = sinkMessage.getCurrentChunkNumber();
+                                if (currentChunk < expectedChunk) {
+                                    // Redelivered chunk we already have, nothing to do.
+                                    LOG.debug("Duplicate chunk {} for message {}, expected chunk {}, ignoring.",
+                                            currentChunk, messageId, expectedChunk);
+                                    continue;
+                                }
+                                if (currentChunk > expectedChunk) {
+                                    // A chunk was skipped; this message can no longer be completed and its
+                                    // partial content will be discarded when the cache entry expires.
+                                    LOG.warn("Missing chunk {} for message {}, got chunk {} of {}. Message will be dropped.",
+                                            expectedChunk, messageId, currentChunk, sinkMessage.getTotalChunks());
                                     continue;
                                 }
                                 ByteString byteString = largeMessageCache.getIfPresent(messageId);
-                                if(byteString != null) {
-                                    largeMessageCache.put(messageId, byteString.concat(sinkMessage.getContent()));
-                                } else {
-                                    largeMessageCache.put(messageId, sinkMessage.getContent());
+                                if (expectedChunk > 0 && byteString == null) {
+                                    LOG.warn("Buffered content for message {} was evicted after {} chunks, dropping the message.",
+                                            messageId, expectedChunk);
+                                    currentChunkCache.invalidate(messageId);
+                                    continue;
                                 }
-                                currentChunkCache.put(messageId, ++chunkNum);
+                                largeMessageCache.put(messageId, expectedChunk == 0
+                                        ? sinkMessage.getContent()
+                                        : byteString.concat(sinkMessage.getContent()));
+                                int receivedChunks = expectedChunk + 1;
+                                currentChunkCache.put(messageId, receivedChunks);
                                 // continue till all chunks arrive.
-                                if (sinkMessage.getTotalChunks() != chunkNum) {
+                                if (sinkMessage.getTotalChunks() != receivedChunks) {
                                     continue;
                                 }
                                 byteString = largeMessageCache.getIfPresent(messageId);
