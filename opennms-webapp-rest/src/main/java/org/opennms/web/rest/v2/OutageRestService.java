@@ -222,6 +222,10 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
                     and XML, so the values echo the `start` and `end` that were sent. An outage that is still
                     open reports `ifRegainedService` as null in JSON; in XML the attribute is omitted.
 
+                    `truncated` is true when more outages matched than `limit` allowed, so a caller can say
+                    the strip is incomplete rather than draw a confidently wrong window. The outages returned
+                    are the most recent ones.
+
                     `ifServiceId` and `ipInterfaceId` are the `id` fields of the service and interface objects
                     in `GET /rest/availability/nodes/{nodeId}`, so the two documents join directly.""",
             operationId = "outagesTimelineForNode")
@@ -237,6 +241,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
                                               "end": 1787727543996,
                                               "nodeCreateTime": 1436881400000,
                                               "count": 2,
+                                              "truncated": false,
                                               "outage": [
                                                 { "id": 3543, "ifServiceId": 3, "ipInterfaceId": 1,
                                                   "ipAddress": "192.168.1.1", "serviceId": 3, "serviceName": "SNMP",
@@ -255,7 +260,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
                                                       serviceId="3" serviceName="SNMP" ifLostService="1787700000000"/>
                                             </outage-timeline>"""))
                     }),
-            @ApiResponse(responseCode = "400", description = "`start` is not strictly before `end`.",
+            @ApiResponse(responseCode = "400", description = "`start` is not strictly before `end`, or `limit` is negative.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "start must be strictly before end"))),
@@ -283,6 +288,14 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
                     .entity("start must be strictly before end").build();
         }
 
+        // CriteriaBuilder passes any non-zero limit straight through, so a negative one reaches the
+        // query and fails there as a 500. Zero is the documented way to ask for no cap.
+        if (limit == null || limit < 0) {
+            return Response.status(Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("limit must not be negative; use 0 for no limit").build();
+        }
+
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -305,18 +318,25 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
         builder.le("ifLostService", endDate);
         builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate));
 
-        // CriteriaBuilder maps a limit of 0 to "no limit".
-        builder.limit(limit);
+        // One more row than asked for, so a full page can be told from a page that merely reached
+        // the cap. Without it a caller cannot know the strip is missing outages: it would render a
+        // confidently wrong picture of the window. CriteriaBuilder maps a limit of 0 to "no limit",
+        // so asking for one more in that case would be asking for exactly one.
+        builder.limit(limit == 0 ? 0 : limit + 1);
         // Ordered by time rather than by id: a tripped limit should drop the oldest outages, which
         // are the ones furthest from the right edge of the strip.
         builder.orderBy("ifLostService").desc();
 
-        final List<NodeOutageTimelineEntryDto> rows = getDao().findMatching(builder.toCriteria()).stream()
-                .map(OutageRestService::toTimelineEntry)
-                .collect(Collectors.toList());
+        final List<OnmsOutage> found = getDao().findMatching(builder.toCriteria());
+        final boolean truncated = limit > 0 && found.size() > limit;
+
+        final List<NodeOutageTimelineEntryDto> rows =
+                (truncated ? found.subList(0, limit) : found).stream()
+                        .map(OutageRestService::toTimelineEntry)
+                        .collect(Collectors.toList());
 
         return Response.ok(new NodeOutageTimelineDto(nodeId, startMs, endMs,
-                node.getCreateTime().getTime(), rows)).build();
+                node.getCreateTime().getTime(), rows, truncated)).build();
     }
 
     private static NodeOutageTimelineEntryDto toTimelineEntry(final OnmsOutage outage) {

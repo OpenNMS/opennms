@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { format as fnsFormat, toZonedTime } from 'date-fns-tz'
+import { formatInTimeZone } from 'date-fns-tz'
 import { useInfoStore } from '@/stores/infoStore'
 
 /** What v-date falls back to when the server has no datetime format configured. */
@@ -45,16 +45,15 @@ export const displayDateFormat = (): string =>
  * Format an instant in the display zone. `pattern` defaults to the server's configured format;
  * callers that need a specific shape -- an axis label, say -- pass their own.
  *
- * The toZonedTime call is load-bearing. date-fns-tz's format() reads the Date's *system-local*
- * fields and uses `timeZone` only to resolve zone tokens such as xxx and z; it does not convert.
- * Without the conversion, a configured zone that differs from the browser's renders the browser's
- * wall time stamped with the configured zone's offset -- the wrong time and a misleading offset.
+ * formatInTimeZone rather than format(toZonedTime(...), { timeZone }). The two-step form is the
+ * library's older pattern and its parts are easy to get wrong together: format() on its own reads
+ * the Date's *system-local* fields and uses `timeZone` only to resolve zone tokens such as xxx and
+ * z, so dropping the conversion renders the browser's wall time stamped with another zone's offset
+ * -- the wrong time and an offset that disagrees with it. The single call cannot be assembled
+ * wrongly, and it derives the offset token from the zone it is formatting in.
  */
 export const formatInDisplayZone = (
   value: number | Date,
   pattern?: string,
   zone?: string
-): string => {
-  const tz = zone ?? displayTimeZone()
-  return fnsFormat(toZonedTime(value, tz), pattern ?? displayDateFormat(), { timeZone: tz })
-}
+): string => formatInTimeZone(value, zone ?? displayTimeZone(), pattern ?? displayDateFormat())

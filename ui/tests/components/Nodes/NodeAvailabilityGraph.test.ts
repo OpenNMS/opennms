@@ -239,6 +239,27 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(wrapper.find('[data-test="availability-timeline"]').exists()).toBe(false)
   })
 
+  // A capped result would otherwise be drawn as if it described the whole window.
+  it('says so when the server truncated the outages', async () => {
+    getTimeline.mockResolvedValue(timelineDoc({ truncated: true, count: 1 }))
+
+    wrapper = mountPanel()
+    await flushPromises()
+
+    const notice = wrapper.get('[data-test="availability-truncated"]').text()
+    expect(notice).toContain('1')
+    expect(notice).toContain('most recent')
+    // The strip is still drawn; the notice qualifies it rather than replacing it.
+    expect(wrapper.find('[data-test="availability-timeline"]').exists()).toBe(true)
+  })
+
+  it('shows no truncation notice for a complete result', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="availability-truncated"]').exists()).toBe(false)
+  })
+
   it('shows an empty state when the node has no monitored services', async () => {
     getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaces: [] }))
 
@@ -357,6 +378,32 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(end - start).toBe(HOUR)
   })
 
+  // The summary names the range its figure was fetched for. Naming the new one as soon as it was
+  // picked put that name beside the previous range's percentage until the fetch landed.
+  it('does not name the new range beside the old figure', async () => {
+    let resolveSecond: (v: NodeAvailability) => void = () => {}
+    getAvailability.mockResolvedValueOnce(availabilityDoc())
+    getAvailability.mockReturnValueOnce(new Promise<NodeAvailability>((r) => {
+      resolveSecond = r
+    }) as any)
+
+    wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
+    await flushPromises()
+    expect(wrapper.text()).toContain('last day')
+
+    await wrapper.get('[data-test="availability-range"]').trigger('click')
+    await flushPromises()
+
+    // In flight: still the range the visible figure belongs to.
+    expect(wrapper.text()).toContain('last day')
+    expect(wrapper.text()).not.toContain('last hour')
+
+    resolveSecond(availabilityDoc({ availability: 12.5 }))
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('last hour')
+  })
+
   // The heading should name the range the way the picker's own button does, rather than
   // reconstructing it from unit and amount, which pluralised 'Last hour' as 'last 1 hours'.
   it('names the selected range the way the picker does', async () => {
@@ -370,8 +417,12 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(wrapper.text()).not.toContain('last 1 hours')
   })
 
-  // The panel outlives a node change, so a window resolved once at setup goes stale: navigating to
-  // another node an hour later would ask for the hour-old window.
+  /*
+   * Defensive on this page: NodeDetails rebuilds the panel for each node rather than feeding it a
+   * new id, so it never carries a window across a node change. The behaviour is still what a
+   * relative range means -- resolve it when you ask, not when it was picked -- and it is what makes
+   * the panel correct if it is ever mounted without that gate or given a refresh control.
+   */
   it('re-resolves a relative range against the clock when the node changes', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     vi.setSystemTime(NOW)
@@ -388,6 +439,7 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(secondEnd - firstEnd).toBeGreaterThanOrEqual(2 * HOUR - 1000)
   })
 
+  // The other half of the above, and the guard that re-resolving does not move a fixed window.
   it('keeps an absolute custom range fixed across a node change', async () => {
     const AbsoluteStub = {
       name: 'TimeControls',

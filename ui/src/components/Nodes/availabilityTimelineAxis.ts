@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { add, Duration, startOfMinute, startOfHour, startOfDay, startOfMonth, startOfYear } from 'date-fns'
+import { startOfMinute, startOfHour, startOfDay, startOfMonth, startOfYear } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { displayTimeZone, formatInDisplayZone } from '@/lib/displayTimeZone'
 import { TimelineWindow } from './availabilityTimelineModel'
@@ -35,12 +35,13 @@ export interface TimelineTick {
 type FloorUnit = 'minute' | 'hour' | 'day' | 'month' | 'year'
 
 interface TickStep {
-  step: Duration
   /** Nominal length. Used only to choose a step; positions come from real instants. */
   approxMs: number
-  floor: FloorUnit
-  /** How many `floor` units the step spans, so the first tick can land on a multiple of it. */
-  amount: number
+  unit: FloorUnit
+  /** How many units each step advances. */
+  stepAmount: number
+  /** The first tick is pulled back to a multiple of this many units. */
+  floorAmount: number
   label: string
 }
 
@@ -55,19 +56,22 @@ export const MAX_TICKS = 8
  * year; the first one coarse enough to fit within MAX_TICKS wins.
  */
 const TICK_STEPS: TickStep[] = [
-  { step: { minutes: 1 }, approxMs: 60_000, floor: 'minute', amount: 1, label: 'HH:mm' },
-  { step: { minutes: 5 }, approxMs: 300_000, floor: 'minute', amount: 5, label: 'HH:mm' },
-  { step: { minutes: 15 }, approxMs: 900_000, floor: 'minute', amount: 15, label: 'HH:mm' },
-  { step: { minutes: 30 }, approxMs: 1_800_000, floor: 'minute', amount: 30, label: 'HH:mm' },
-  { step: { hours: 1 }, approxMs: 3_600_000, floor: 'hour', amount: 1, label: 'HH:mm' },
-  { step: { hours: 3 }, approxMs: 10_800_000, floor: 'hour', amount: 3, label: 'HH:mm' },
-  { step: { hours: 6 }, approxMs: 21_600_000, floor: 'hour', amount: 6, label: 'HH:mm' },
-  { step: { hours: 12 }, approxMs: 43_200_000, floor: 'hour', amount: 12, label: 'd MMM HH:mm' },
-  { step: { days: 1 }, approxMs: 86_400_000, floor: 'day', amount: 1, label: 'd MMM' },
-  { step: { days: 7 }, approxMs: 604_800_000, floor: 'day', amount: 1, label: 'd MMM' },
-  { step: { months: 1 }, approxMs: 2_592_000_000, floor: 'month', amount: 1, label: 'MMM yyyy' },
-  { step: { months: 3 }, approxMs: 7_862_400_000, floor: 'month', amount: 3, label: 'MMM yyyy' },
-  { step: { years: 1 }, approxMs: 31_536_000_000, floor: 'year', amount: 1, label: 'yyyy' }
+  { approxMs: 60_000, unit: 'minute', stepAmount: 1, floorAmount: 1, label: 'HH:mm' },
+  { approxMs: 300_000, unit: 'minute', stepAmount: 5, floorAmount: 5, label: 'HH:mm' },
+  { approxMs: 900_000, unit: 'minute', stepAmount: 15, floorAmount: 15, label: 'HH:mm' },
+  { approxMs: 1_800_000, unit: 'minute', stepAmount: 30, floorAmount: 30, label: 'HH:mm' },
+  { approxMs: 3_600_000, unit: 'hour', stepAmount: 1, floorAmount: 1, label: 'HH:mm' },
+  { approxMs: 10_800_000, unit: 'hour', stepAmount: 3, floorAmount: 3, label: 'HH:mm' },
+  { approxMs: 21_600_000, unit: 'hour', stepAmount: 6, floorAmount: 6, label: 'HH:mm' },
+  { approxMs: 43_200_000, unit: 'hour', stepAmount: 12, floorAmount: 12, label: 'd MMM HH:mm' },
+  { approxMs: 86_400_000, unit: 'day', stepAmount: 1, floorAmount: 1, label: 'd MMM' },
+  // Floored to the day rather than to a multiple of seven: a multiple of the day-of-month would
+  // restart awkwardly at the end of every month, and the start of the week would drag in a
+  // locale's first-day-of-week for no benefit.
+  { approxMs: 604_800_000, unit: 'day', stepAmount: 7, floorAmount: 1, label: 'd MMM' },
+  { approxMs: 2_592_000_000, unit: 'month', stepAmount: 1, floorAmount: 1, label: 'MMM yyyy' },
+  { approxMs: 7_862_400_000, unit: 'month', stepAmount: 3, floorAmount: 3, label: 'MMM yyyy' },
+  { approxMs: 31_536_000_000, unit: 'year', stepAmount: 1, floorAmount: 1, label: 'yyyy' }
 ]
 
 /**
@@ -83,10 +87,6 @@ export const chooseTickStep = (spanMs: number): TickStep =>
  * Flooring a 15 minute step only to the minute puts the first tick wherever the window happens to
  * begin, so a window opening at 10:23:17 labels 10:38, 10:53, 11:08 rather than 10:30, 10:45,
  * 11:00. The same applies to the multi-hour steps.
- *
- * Days are floored to the day and no further: a 7 day step aligned to a multiple of the
- * day-of-month would restart awkwardly at the end of every month, and aligning to the start of the
- * week would drag in a locale's first-day-of-week for no benefit.
  *
  * The date is the zoned representation, so the local getters and setters here read and write the
  * wall time in the display zone.
@@ -113,6 +113,31 @@ const floorTo = (date: Date, unit: FloorUnit, amount: number): Date => {
     }
     case 'year': return startOfYear(date)
   }
+}
+
+/**
+ * Advance by whole calendar units rather than by a duration in milliseconds.
+ *
+ * The date is the zoned representation, whose local fields are the display zone's wall time, so a
+ * millisecond addition walks it through the BROWSER's transitions instead. On a browser fall-back
+ * day a six hour step advanced the represented wall time by five hours once, and every label after
+ * it sat off the step: 00:00 05:00 11:00 17:00 rather than 00:00 06:00 12:00 18:00. The epochs
+ * stayed distinct and increasing, so the duplicate guard below could not see it.
+ *
+ * Incrementing the field instead keeps the wall clock on the step whatever either zone does.
+ */
+const stepBy = (date: Date, unit: FloorUnit, amount: number): Date => {
+  const d = new Date(date)
+
+  switch (unit) {
+    case 'minute': d.setMinutes(d.getMinutes() + amount); break
+    case 'hour': d.setHours(d.getHours() + amount); break
+    case 'day': d.setDate(d.getDate() + amount); break
+    case 'month': d.setMonth(d.getMonth() + amount); break
+    case 'year': d.setFullYear(d.getFullYear() + amount); break
+  }
+
+  return d
 }
 
 /**
@@ -146,7 +171,7 @@ export const buildTicks = (window: TimelineWindow, zone: string = displayTimeZon
   const spec = chooseTickStep(span)
   const ticks: TimelineTick[] = []
 
-  let zoned = floorTo(toZonedTime(window.start, zone), spec.floor, spec.amount)
+  let zoned = floorTo(toZonedTime(window.start, zone), spec.unit, spec.floorAmount)
   let previousEpoch = -Infinity
 
   // Bounded rather than while(true): a malformed step would otherwise spin forever.
@@ -166,7 +191,7 @@ export const buildTicks = (window: TimelineWindow, zone: string = displayTimeZon
       })
     }
 
-    zoned = add(zoned, spec.step)
+    zoned = stepBy(zoned, spec.unit, spec.stepAmount)
   }
 
   return ticks

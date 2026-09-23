@@ -71,6 +71,13 @@ public class NodeOutageTimelineDto {
     @Schema(description = "Number of outages in this document.", example = "2")
     private Integer count;
 
+    @XmlAttribute(name = "truncated")
+    @Schema(description = "True when more outages matched than the limit allowed, so these are the "
+            + "most recent ones and the window is not fully described. A caller drawing a timeline "
+            + "should say so rather than present an incomplete strip as complete.",
+            example = "false")
+    private Boolean truncated = Boolean.FALSE;
+
     @XmlElement(name = "outage")
     @Schema(description = "The outages, most recent lost-service time first.")
     private List<NodeOutageTimelineEntryDto> outages = new ArrayList<>();
@@ -80,11 +87,13 @@ public class NodeOutageTimelineDto {
 
     public NodeOutageTimelineDto(final Integer nodeId, final Long start, final Long end,
                                  final Long nodeCreateTime,
-                                 final List<NodeOutageTimelineEntryDto> outages) {
+                                 final List<NodeOutageTimelineEntryDto> outages,
+                                 final boolean truncated) {
         this.nodeId = nodeId;
         this.start = start;
         this.end = end;
         this.nodeCreateTime = nodeCreateTime;
+        this.truncated = truncated;
         this.outages = (outages == null) ? new ArrayList<>() : outages;
         this.count = this.outages.size();
     }
@@ -127,6 +136,14 @@ public class NodeOutageTimelineDto {
 
     public void setCount(final Integer count) {
         this.count = count;
+    }
+
+    public Boolean getTruncated() {
+        return truncated;
+    }
+
+    public void setTruncated(final Boolean truncated) {
+        this.truncated = truncated;
     }
 
     public List<NodeOutageTimelineEntryDto> getOutages() {

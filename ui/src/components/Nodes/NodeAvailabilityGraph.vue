@@ -37,14 +37,22 @@
         :content="emptyContent"
         data-test="availability-empty"
       />
-      <AvailabilityTimeline
-        v-else-if="model && model.interfaces.length > 0"
-        :model="model"
-        :ticks="ticks"
-        :base-href="baseHref"
-        :node-id="node.id"
-        :range-label="rangeLabel"
-      />
+      <template v-else-if="model && model.interfaces.length > 0">
+        <p
+          v-if="timeline?.truncated"
+          class="availability-truncated"
+          data-test="availability-truncated"
+        >
+          Showing the {{ timeline.count }} most recent outages. Some are not drawn.
+        </p>
+        <AvailabilityTimeline
+          :model="model"
+          :ticks="ticks"
+          :base-href="baseHref"
+          :node-id="node.id"
+          :range-label="rangeLabel"
+        />
+      </template>
     </template>
   </NodeDetailsPanel>
 </template>
@@ -90,12 +98,16 @@ const loadFailed = ref(false)
 const hasLoaded = ref(false)
 
 /**
- * What the user picked, rather than the window it resolved to at the time.
+ * What the user picked, rather than the window it resolved to at the time, so a relative range is
+ * re-resolved against the clock on every fetch.
  *
- * A relative range has to be re-resolved against the clock on every fetch. This panel outlives a
- * node change -- the details page keeps one instance across node ids -- so a window worked out once
- * at setup would go stale, and moving to another node an hour later would ask for the hour-old
- * window. A custom absolute range is a fixed window and is kept as one.
+ * On this page that is belt and braces: the details page mounts this panel behind its own
+ * nodeLoaded gate, and the store lowers that flag before raising it again, so the panel is
+ * destroyed and rebuilt on every node change and never carries a window across one. It matters if
+ * the panel is ever mounted without that gate, or refetches for another reason -- a refresh
+ * control, say -- where a window fixed at setup would quietly go stale.
+ *
+ * A custom absolute range is a fixed window and is kept as one.
  */
 type RangeSelection =
   | { kind: 'relative'; range: RelativeTimeRange }
@@ -136,6 +148,15 @@ const labelFor = (range: RelativeTimeRange | undefined): string => {
 // Seeded to the range TimeControls shows before anything is picked, so the heading and the button
 // agree from the first paint.
 const selection = ref<RangeSelection>({ kind: 'relative', range: DEFAULT_RANGE })
+
+/**
+ * The range the summary names, which is the one the displayed figure was fetched for, not the one
+ * just picked. Updated with the data, alongside activeWindow.
+ *
+ * Setting it when the pick happens put the new range's name beside the old range's percentage until
+ * the fetch landed -- 'Availability (last hour) 66.667%' where the figure was still the day's. The
+ * picker's own button changes immediately, so the pick is still acknowledged at once.
+ */
 const rangeLabel = ref(labelFor(DEFAULT_RANGE))
 
 // The window the rendered model describes: set from the fetch that produced it, so the axis and the
@@ -168,6 +189,7 @@ const fetchAll = async () => {
   const myRequest = ++requestId
   // Resolved here rather than held in state, so a relative range follows the clock.
   const requested = windowFor(selection.value)
+  const requestedLabel = labelFor(selection.value.kind === 'relative' ? selection.value.range : undefined)
   const { start, end } = requested
 
   startLoading()
@@ -196,6 +218,7 @@ const fetchAll = async () => {
     loadFailed.value = false
     hasLoaded.value = true
     activeWindow.value = requested
+    rangeLabel.value = requestedLabel
     availability.value = avail
     timeline.value = outages
   } finally {
@@ -209,17 +232,14 @@ const onUpdateTime = (time: StartEndTime) => {
   selection.value = time.range
     ? { kind: 'relative', range: time.range }
     : { kind: 'absolute', ...toMillis(time) }
-  rangeLabel.value = labelFor(time.range)
 }
 
 // One watcher drives everything: mount, a node change and a range change each cause exactly one
 // fetch, and a node and range changing in the same tick are coalesced into one.
 //
-// immediate, for the reason the previous version of this panel documented and which still holds:
-// the details page keeps one instance of this panel across node ids and nothing resets it, so on a
-// return visit to the same node a change-only watch would never fire at all. The very first run
-// has no node id yet -- the node prop is empty until the page's own fetch resolves -- and returns
-// early.
+// immediate is what actually fetches. The page rebuilds this panel for each node rather than
+// feeding a new id to the existing one, so props.node.id never changes during an instance's life
+// and a change-only watch would never fire at all.
 watch([() => props.node?.id, selection], fetchAll, { immediate: true })
 </script>
 
@@ -229,6 +249,12 @@ watch([() => props.node?.id, selection], fetchAll, { immediate: true })
   align-items: baseline;
   justify-content: space-between;
   margin-bottom: 0.75rem;
+}
+
+.availability-truncated {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--onms-secondary-text-on-surface);
 }
 
 .availability-summary__value {

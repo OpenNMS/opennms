@@ -58,5 +58,11 @@ export interface NodeOutageTimeline {
   /** When the node was provisioned. Before this instant the node was not monitored at all. */
   nodeCreateTime: number
   count: number
+  /**
+   * True when more outages matched than the limit allowed, so these are the most recent ones and
+   * the window is not fully described. The panel says so rather than present a partial strip as
+   * complete.
+   */
+  truncated?: boolean
   outage: NodeOutageTimelineEntry[]
 }

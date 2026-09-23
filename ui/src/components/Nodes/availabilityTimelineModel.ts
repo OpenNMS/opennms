@@ -39,6 +39,13 @@ export interface TimelineSegment {
   widthPct: number
   lost: number
   regained: number | null
+  /**
+   * How long the service was down, to its recovery or to the end of the window if it never
+   * recovered. Computed here rather than from the clock at render time: a tooltip built from
+   * Date.now() freezes at whatever the model was built, and on an absolute window the clock is not
+   * the right reference anyway.
+   */
+  durationMs: number
   /** The outage began before the window, so its left edge is a cut rather than a start. */
   startsBeforeWindow: boolean
   /** Still down when the window ends, so its right edge is a cut rather than an end. */
@@ -121,6 +128,7 @@ export const segmentFor = (
     widthPct: ((visibleEnd - visibleStart) / span) * 100,
     lost,
     regained: outage.ifRegainedService,
+    durationMs: regained - lost,
     startsBeforeWindow: lost < window.start,
     openAtWindowEnd: outage.ifRegainedService === null || outage.ifRegainedService > window.end
   }
@@ -304,8 +312,8 @@ export const segmentDescription = (row: TimelineServiceRow, seg: TimelineSegment
     : `Lost ${formatInDisplayZone(seg.lost)}`)
 
   lines.push(seg.regained === null
-    ? `Still down, ${formatCompactDuration(Date.now() - seg.lost)}`
-    : `Regained ${formatInDisplayZone(seg.regained)} (${formatCompactDuration(seg.regained - seg.lost)})`)
+    ? `Still down, ${formatCompactDuration(seg.durationMs)}`
+    : `Regained ${formatInDisplayZone(seg.regained)} (${formatCompactDuration(seg.durationMs)})`)
 
   return lines.join('\n')
 }

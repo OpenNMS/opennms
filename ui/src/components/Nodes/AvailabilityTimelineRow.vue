@@ -161,9 +161,14 @@ const monitored = computed(() => isMonitored(props.row.availability))
     transparent 2px 4px
   );
 
+  // An inset ring rather than an outline. A segment spans the full height of the strip, and the
+  // strip clips its overflow -- it has to, to cut a min-width bar at the right edge and to keep the
+  // corners rounded -- so an outline, which is drawn outside the border box, lost its top and
+  // bottom edges. A shadow drawn inward cannot be clipped. Dark, because all three strip fills are
+  // light in both themes.
   &:focus-visible {
-    outline: 2px solid var(variables.$clickable-normal);
-    outline-offset: 1px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--timeline-focus);
   }
 }
 

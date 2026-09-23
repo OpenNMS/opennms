@@ -60,6 +60,9 @@
   // make out in the light theme. Redundant in the dark theme, where the fills reach 9:1 or better,
   // and invisible there against the dark card.
   --onms-timeline-edge: rgba(0, 0, 0, 0.3);
+  // Keyboard focus on an outage segment. Fixed and dark for the same reason as the edge: it has to
+  // read against three light fills, in either theme.
+  --onms-timeline-focus: #10131f;
 }
 
 .open-light {

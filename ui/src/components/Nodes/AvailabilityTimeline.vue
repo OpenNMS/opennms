@@ -98,11 +98,12 @@ defineProps<{
 }>()
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use '@/styles/onms-tokens' as variables;
 
-// Not scoped: the strip geometry and colour tokens are declared here and consumed by
-// AvailabilityTimelineRow, which is a child <tr> of this table.
+// Scoped, though the strip geometry and colour tokens declared here are consumed by
+// AvailabilityTimelineRow. Scoping narrows the selector to this component's own elements; it does
+// not stop a custom property inheriting, and the row's <tr> is a descendant of this table.
 .availability-timeline {
   width: 100%;
   // Honours the colgroup exactly, so a long IPv6 address cannot squeeze the strip column.
@@ -124,6 +125,7 @@ defineProps<{
   --timeline-unmonitored: var(#{variables.$timeline-unmonitored});
   --timeline-gridline: var(#{variables.$timeline-gridline});
   --timeline-edge: var(#{variables.$timeline-edge});
+  --timeline-focus: var(#{variables.$timeline-focus});
   --timeline-axis-text: var(#{variables.$secondary-text-on-surface});
 
   th,

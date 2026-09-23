@@ -186,6 +186,22 @@ describe('buildTicks', () => {
     expect(new Set(epochs).size).toBe(epochs.length)
   })
 
+  /*
+   * Stepping by milliseconds walks the zoned representation through the BROWSER's transitions, not
+   * the display zone's. On a browser fall-back day a six hour step advances the represented wall
+   * time by five hours once, so the labels drift off the step entirely: 00:00 05:00 11:00 17:00
+   * rather than 00:00 06:00 12:00 18:00. The epochs stay distinct and increasing, so the
+   * duplicate-tick guard cannot see it.
+   *
+   * The test environment runs in America/New_York, whose 2026 fall-back is 2026-11-01.
+   */
+  it('keeps ticks on the step across a transition in the browser zone', () => {
+    const start = Date.UTC(2026, 10, 1, 0, 0, 0)
+    const ticks = buildTicks({ start, end: start + 24 * HOUR }, UTC)
+
+    expect(ticks.map(t => t.label)).toEqual(['00:00', '06:00', '12:00', '18:00', '00:00'])
+  })
+
   it('returns no ticks for an empty window', () => {
     expect(buildTicks({ start: 1000, end: 1000 }, UTC)).toEqual([])
   })
@@ -193,12 +209,12 @@ describe('buildTicks', () => {
 
 describe('chooseTickStep', () => {
   it('picks the first step coarse enough to stay within the label budget', () => {
-    expect(chooseTickStep(HOUR).step).toEqual({ minutes: 15 })
-    expect(chooseTickStep(24 * HOUR).step).toEqual({ hours: 6 })
+    expect(chooseTickStep(HOUR)).toMatchObject({ unit: 'minute', stepAmount: 15 })
+    expect(chooseTickStep(24 * HOUR)).toMatchObject({ unit: 'hour', stepAmount: 6 })
   })
 
   it('falls back to the coarsest step for an absurdly long window', () => {
-    expect(chooseTickStep(500 * 365 * 24 * HOUR).step).toEqual({ years: 1 })
+    expect(chooseTickStep(500 * 365 * 24 * HOUR)).toMatchObject({ unit: 'year', stepAmount: 1 })
   })
 })
 

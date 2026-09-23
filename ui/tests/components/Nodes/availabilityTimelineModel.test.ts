@@ -351,6 +351,18 @@ describe('segmentDescription', () => {
     expect(segmentDescription(row, seg)).toContain('(6h)')
   })
 
+  // Measured to the end of the window, not to the clock: the old form froze at whatever time the
+  // model happened to be built, and on an absolute window the clock is not the right reference.
+  it('measures an open outage to the end of the window', () => {
+    const seg = segmentFor(outage({
+      ifLostService: START + 6 * HOUR,
+      ifRegainedService: null
+    }), WINDOW)!
+
+    expect(seg.durationMs).toBe(18 * HOUR)
+    expect(segmentDescription(row, seg)).toContain('18h')
+  })
+
   it('says an unresolved outage is still down instead of naming a recovery', () => {
     const seg = segmentFor(outage({ ifRegainedService: null }), WINDOW)!
     const lines = segmentDescription(row, seg).split('\n')

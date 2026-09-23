@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -210,6 +211,47 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testTimelineRejectsEmptyWindow() throws Exception {
         sendRequest(GET, "/outages/timeline/" + m_nodeId,
                 parseParamData("start=" + LOST + "&end=" + LOST), 400);
+    }
+
+    @Test
+    public void testTimelineReportsWhenTheLimitTruncatedTheResult() throws Exception {
+        // Three core-poller outages overlap this window. Asking for two must say so, rather than
+        // hand back a page that looks complete.
+        final String json = sendRequest(GET, "/outages/timeline/" + m_nodeId,
+                parseParamData("start=" + (EARLIER_REGAINED - 2000L) + "&end=" + (LOST + 1000L)
+                        + "&limit=2"), 200);
+        final JSONObject doc = new JSONObject(json);
+
+        assertEquals(2, outages(doc).length());
+        assertEquals(2, doc.getInt("count"));
+        assertTrue("expected the document to report that it was truncated", doc.getBoolean("truncated"));
+    }
+
+    @Test
+    public void testTimelineIsNotTruncatedWhenEverythingFits() throws Exception {
+        final JSONObject doc = timeline(EARLIER_REGAINED - 2000L, LOST + 1000L);
+
+        assertEquals(3, outages(doc).length());
+        assertFalse("the whole window fits, so nothing was truncated", doc.getBoolean("truncated"));
+    }
+
+    @Test
+    public void testTimelineUncappedByZeroLimit() throws Exception {
+        final String json = sendRequest(GET, "/outages/timeline/" + m_nodeId,
+                parseParamData("start=" + (EARLIER_REGAINED - 2000L) + "&end=" + (LOST + 1000L)
+                        + "&limit=0"), 200);
+        final JSONObject doc = new JSONObject(json);
+
+        assertEquals(3, outages(doc).length());
+        assertFalse(doc.getBoolean("truncated"));
+    }
+
+    @Test
+    public void testTimelineRejectsNegativeLimit() throws Exception {
+        // CriteriaBuilder passes a non-zero limit straight through, so a negative one reached the
+        // query and failed there as a 500.
+        sendRequest(GET, "/outages/timeline/" + m_nodeId,
+                parseParamData("start=" + (LOST - 1000L) + "&end=" + (LOST + 1000L) + "&limit=-1"), 400);
     }
 
     @Test
