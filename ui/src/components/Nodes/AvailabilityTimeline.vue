@@ -65,7 +65,7 @@
         <!-- No strip: the axis above spans this column for every row beneath it. -->
         <td />
         <td class="col-pct">
-          {{ formatAvailability(group.availability) }}
+          {{ interfaceAvailabilityText(group) }}
         </td>
       </tr>
 
@@ -85,7 +85,7 @@
 <script setup lang="ts">
 import AvailabilityTimelineRow from './AvailabilityTimelineRow.vue'
 import { interfaceLink } from '@/lib/linkUtils'
-import { formatAvailability, TimelineModel } from './availabilityTimelineModel'
+import { interfaceAvailabilityText, TimelineModel } from './availabilityTimelineModel'
 import { tickEdgeClass, TimelineTick } from './availabilityTimelineAxis'
 
 defineProps<{

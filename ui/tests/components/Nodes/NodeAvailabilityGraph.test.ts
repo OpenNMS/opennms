@@ -245,7 +245,18 @@ describe('NodeAvailabilityGraph.vue', () => {
     wrapper = mountPanel()
     await flushPromises()
 
-    expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
+  })
+
+  // The panel is mounted behind the page's nodeLoaded gate, so this is defensive -- but the empty
+  // state is a claim about the node's services, and it must not be made before anything was asked.
+  it('claims nothing before a fetch has completed', async () => {
+    wrapper = mountPanel(NO_NODE)
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="availability-error"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="availability-timeline"]').exists()).toBe(false)
   })
 
   it('does not show a spinner for a fast fetch', async () => {

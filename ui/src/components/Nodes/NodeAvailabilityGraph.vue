@@ -21,7 +21,7 @@
       <span
         class="availability-summary__value"
         data-test="node-availability"
-      >{{ model ? formatAvailability(model.availability) : '—' }}</span>
+      >{{ model ? nodeAvailabilityText(model) : '—' }}</span>
     </div>
 
     <OnmsSpinner v-if="showSpinner" />
@@ -33,12 +33,12 @@
         data-test="availability-error"
       />
       <EmptyList
-        v-else-if="!model || model.interfaces.length === 0"
+        v-else-if="hasLoaded && (!model || model.interfaces.length === 0)"
         :content="emptyContent"
-        data-test="empty-list"
+        data-test="availability-empty"
       />
       <AvailabilityTimeline
-        v-else
+        v-else-if="model && model.interfaces.length > 0"
         :model="model"
         :ticks="ticks"
         :base-href="baseHref"
@@ -68,7 +68,7 @@ import { Node, NodeAvailability, RelativeTimeRange, StartEndTime } from '@/types
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import {
   buildTimelineModel,
-  formatAvailability,
+  nodeAvailabilityText,
   TimelineWindow
 } from './availabilityTimelineModel'
 import { buildTicks } from './availabilityTimelineAxis'
@@ -83,6 +83,11 @@ const { isFetching, showSpinner, start: startLoading, stop: stopLoading } = useD
 const availability = ref<NodeAvailability | undefined>(undefined)
 const timeline = ref<NodeOutageTimeline | null>(null)
 const loadFailed = ref(false)
+
+// A fetch has completed for some node. Without it the panel cannot tell "nothing has been asked
+// for yet" from "asked, and the node has no monitored services", and would answer the first with
+// the empty state's claim about the second.
+const hasLoaded = ref(false)
 
 /**
  * What the user picked, rather than the window it resolved to at the time.
@@ -189,6 +194,7 @@ const fetchAll = async () => {
     }
 
     loadFailed.value = false
+    hasLoaded.value = true
     activeWindow.value = requested
     availability.value = avail
     timeline.value = outages

@@ -128,6 +128,13 @@ const floorTo = (date: Date, unit: FloorUnit, amount: number): Date => {
  * twenty-three real hours, and the tick lands twenty-three twenty-fourths of the way along, which
  * is where the outage data for that moment actually is. Laying ticks out at index/count would put
  * it at a flat fraction and skew every bar after the transition by an hour.
+ *
+ * Ticks are then kept only while the instant strictly advances. The walk is over wall time, and a
+ * wall time skipped by a spring-forward does not exist: it and the hour after it resolve to the
+ * same instant, so without this two ticks would share an epoch -- which is also the row key, so Vue
+ * would warn about a duplicate and the labels would sit on top of each other. Dropping the skipped
+ * one is right on its own terms, too: that wall time never happened. The same guard covers a
+ * fall-back, where an ambiguous wall time could otherwise resolve backwards.
  */
 export const buildTicks = (window: TimelineWindow, zone: string = displayTimeZone()): TimelineTick[] => {
   const span = window.end - window.start
@@ -140,6 +147,7 @@ export const buildTicks = (window: TimelineWindow, zone: string = displayTimeZon
   const ticks: TimelineTick[] = []
 
   let zoned = floorTo(toZonedTime(window.start, zone), spec.floor, spec.amount)
+  let previousEpoch = -Infinity
 
   // Bounded rather than while(true): a malformed step would otherwise spin forever.
   for (let i = 0; i <= MAX_TICKS * 4; i++) {
@@ -149,7 +157,8 @@ export const buildTicks = (window: TimelineWindow, zone: string = displayTimeZon
       break
     }
 
-    if (epoch >= window.start) {
+    if (epoch >= window.start && epoch > previousEpoch) {
+      previousEpoch = epoch
       ticks.push({
         epoch,
         pct: ((epoch - window.start) / span) * 100,

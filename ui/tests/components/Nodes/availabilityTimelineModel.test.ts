@@ -25,7 +25,9 @@ import {
   buildTimelineModel,
   formatAvailability,
   formatCompactDuration,
+  interfaceAvailabilityText,
   isMonitored,
+  nodeAvailabilityText,
   segmentDescription,
   segmentFor,
   unmonitoredPercent,
@@ -375,5 +377,78 @@ describe('isMonitored', () => {
     expect(isMonitored(0)).toBe(true)
     expect(isMonitored(66.67)).toBe(true)
     expect(isMonitored(100)).toBe(true)
+  })
+})
+
+describe('availability text for a level with nothing monitored', () => {
+  /*
+   * The stored procedures return 100 when there is no managed service time -- they divide by a zero
+   * total -- so passing the figure straight through printed '100%' above 'No monitored services on
+   * this node', and above interface rows that all read 'Not Monitored'. The legacy box printed
+   * 'Unmanaged' at node level instead, because the value it reads is -1 in that situation.
+   */
+  const service = (availability: number) => ({
+    ifServiceId: 1, serviceId: 1, serviceName: 'ICMP', ipAddress: '10.0.0.1',
+    availability, segments: []
+  })
+  const group = (...avails: number[]) => ({
+    ipInterfaceId: 1, ipAddress: '10.0.0.1', availability: 100,
+    monitored: avails.some(a => a >= 0),
+    services: avails.map(service)
+  })
+
+  it('calls a node with nothing monitored unmanaged rather than 100%', () => {
+    expect(nodeAvailabilityText({
+      window: WINDOW, availability: 100, unmonitoredPct: 0, monitored: false, interfaces: []
+    })).toBe('Unmanaged')
+  })
+
+  it('reports the real figure for a node that has something monitored', () => {
+    expect(nodeAvailabilityText({
+      window: WINDOW, availability: 66.666, unmonitoredPct: 0, monitored: true,
+      interfaces: [group(100)]
+    })).toBe('66.666%')
+  })
+
+  it('calls an interface whose services are all unmonitored not monitored', () => {
+    expect(interfaceAvailabilityText(group(-1, -1))).toBe('Not Monitored')
+  })
+
+  it('reports the real figure for an interface with at least one monitored service', () => {
+    expect(interfaceAvailabilityText({ ...group(-1, 100), availability: 99.5 })).toBe('99.5%')
+  })
+})
+
+describe('buildTimelineModel monitored flags', () => {
+  const doc = (services: { id: number; name: string; serviceId: number; availability: number }[]): NodeAvailability => ({
+    availability: 100,
+    id: 101,
+    'service-count': services.length,
+    'service-down-count': 0,
+    ipinterfaces: [{ address: '10.0.0.1', availability: 100, id: 1, services }]
+  })
+
+  it('marks a node and interface unmonitored when every service is', () => {
+    const model = buildTimelineModel(doc([
+      { id: 10, name: 'ICMP', serviceId: 1, availability: -1 },
+      { id: 11, name: 'SNMP', serviceId: 2, availability: -1 }
+    ]), null, WINDOW)
+
+    expect(model.monitored).toBe(false)
+    expect(model.interfaces[0].monitored).toBe(false)
+  })
+
+  it('marks them monitored when at least one service has a figure', () => {
+    const model = buildTimelineModel(doc([
+      { id: 10, name: 'ICMP', serviceId: 1, availability: -1 },
+      { id: 11, name: 'SNMP', serviceId: 2, availability: 0 }
+    ]), null, WINDOW)
+
+    expect(model.monitored).toBe(true)
+    expect(model.interfaces[0].monitored).toBe(true)
+  })
+
+  it('marks a node with no interfaces left unmonitored', () => {
+    expect(buildTimelineModel(doc([]), null, WINDOW).monitored).toBe(false)
   })
 })

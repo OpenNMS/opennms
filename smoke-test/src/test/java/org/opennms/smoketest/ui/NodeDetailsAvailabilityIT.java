@@ -96,11 +96,16 @@ public class NodeDetailsAvailabilityIT extends OpenNMSSeleniumIT {
 
         // Either the timeline or the empty state is a successful outcome; both requests having
         // failed is not. A node with no monitored services yet reaches the empty state.
+        //
+        // The empty state's selector is specific to this panel. data-test='empty-list' is shared by
+        // ten components, three of them on this same page -- the IP interface, SNMP interface and
+        // events tables -- so waiting on it would have been satisfied by one of those before the
+        // availability panel had asked for anything.
         wait.until(ExpectedConditions.or(
                 ExpectedConditions.presenceOfElementLocated(
                         By.cssSelector("[data-test='availability-timeline']")),
                 ExpectedConditions.presenceOfElementLocated(
-                        By.cssSelector("[data-test='empty-list']"))));
+                        By.cssSelector("[data-test='availability-empty']"))));
 
         assertEquals("The availability panel reported a load failure.",
                 0, getDriver().findElements(By.cssSelector("[data-test='availability-error']")).size());

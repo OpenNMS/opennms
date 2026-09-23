@@ -153,6 +153,39 @@ describe('buildTicks', () => {
     })
   })
 
+  /*
+   * The hour and minute steps advance the zoned representation by a fixed number of milliseconds,
+   * which walks wall-clock time. Across a spring-forward the skipped wall hour does not exist, and
+   * both it and the hour after it resolve to the same instant -- so two ticks share an epoch, which
+   * is also the row key, and the labels overlap.
+   *
+   * It only bites when the display zone differs from the browser's, which is why the day-step test
+   * above did not catch it: a day step advances by calendar arithmetic, not by milliseconds.
+   *
+   * The test environment runs in America/New_York, so Europe/London gives a differing display zone
+   * with a spring-forward on 2026-03-29, 01:00 GMT -> 02:00 BST.
+   */
+  it('produces no duplicate ticks across a spring-forward in a differing display zone', () => {
+    // Five hours selects the 1 hour step, so the walk lands on the wall hour that does not exist.
+    const start = Date.UTC(2026, 2, 28, 23, 0, 0)
+    const ticks = buildTicks({ start, end: start + 5 * HOUR }, 'Europe/London')
+
+    const epochs = ticks.map(t => t.epoch)
+    expect(new Set(epochs).size).toBe(epochs.length)
+
+    const positions = ticks.map(t => t.pct)
+    expect(positions).toEqual([...positions].sort((a, b) => a - b))
+    expect(new Set(positions).size).toBe(positions.length)
+  })
+
+  it('produces no duplicate ticks across a spring-forward at a sub-hour step', () => {
+    const start = Date.UTC(2026, 2, 29, 0, 30, 0)
+    const ticks = buildTicks({ start, end: start + HOUR }, 'Europe/London')
+
+    const epochs = ticks.map(t => t.epoch)
+    expect(new Set(epochs).size).toBe(epochs.length)
+  })
+
   it('returns no ticks for an empty window', () => {
     expect(buildTicks({ start: 1000, end: 1000 }, UTC)).toEqual([])
   })

@@ -59,12 +59,16 @@ export interface TimelineInterfaceGroup {
   ipInterfaceId: number
   ipAddress: string
   availability: number
+  /** Whether any service on it has an availability figure at all. */
+  monitored: boolean
   services: TimelineServiceRow[]
 }
 
 export interface TimelineModel {
   window: TimelineWindow
   availability: number
+  /** Whether anything on the node is monitored at all. */
+  monitored: boolean
   interfaces: TimelineInterfaceGroup[]
   /**
    * Width of the leading band in which the node did not yet exist, 0-100. Zero whenever the node
@@ -166,6 +170,7 @@ export const buildTimelineModel = (
       ipInterfaceId: iface.id,
       ipAddress: iface.address,
       availability: iface.availability,
+      monitored: (iface.services ?? []).some(service => isMonitored(service.availability)),
       // Sorted by name: the availability resource returns services in database order, so without
       // this the rows shuffle between refreshes of the same node. The legacy page sorts them too.
       services: (iface.services ?? [])
@@ -183,6 +188,7 @@ export const buildTimelineModel = (
   return {
     window,
     availability: availability.availability,
+    monitored: interfaces.some(iface => iface.monitored),
     interfaces,
     unmonitoredPct: unmonitoredPercent(timeline?.nodeCreateTime, window)
   }
@@ -238,6 +244,21 @@ export const formatAvailability = (pct: number): string => {
 
   return `${Number(Math.min(pct, 99.999).toFixed(3))}%`
 }
+
+/*
+ * The figures for a level with nothing monitored are not figures.
+ *
+ * The stored procedures behind the availability resource return 100 when there is no managed
+ * service time, because they divide by a zero total. Rendered as '100%' that reads as a full window
+ * of uptime, sitting above rows that all say Not Monitored, or above the empty state itself. The
+ * legacy box printed 'Unmanaged' at node level, where the value it reads is -1 rather than 100.
+ */
+export const nodeAvailabilityText = (model: TimelineModel): string =>
+  model.monitored ? formatAvailability(model.availability) : 'Unmanaged'
+
+/** As above, one level down. 'Not Monitored' is what the legacy box calls such an interface. */
+export const interfaceAvailabilityText = (group: TimelineInterfaceGroup): string =>
+  group.monitored ? formatAvailability(group.availability) : 'Not Monitored'
 
 /** '2d 4h', '17m', '41s' -- date-fns' formatDuration is far too long for a tooltip. */
 export const formatCompactDuration = (ms: number): string => {
