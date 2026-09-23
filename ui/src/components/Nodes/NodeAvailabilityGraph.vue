@@ -11,6 +11,7 @@
     <template #actions>
       <TimeControls
         label="Range:"
+        :initial-label="initialRangeLabel"
         data-test="availability-range"
         @update-time="onUpdateTime"
       />
@@ -64,15 +65,11 @@ import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import AvailabilityTimeline from './AvailabilityTimeline.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TimeControls from '@/components/Common/TimeControls.vue'
-import {
-  DEFAULT_RANGE,
-  relativeRangeOf,
-  resolveRelativeRange,
-  TIME_RANGE_OPTIONS
-} from '@/components/Common/utils/timeRangeOptions'
+import { useNodeStore } from '@/stores/nodeStore'
+import { selectionFromTime, selectionLabel, windowFor } from './availabilityRange'
 import { useDelayedLoading } from './hooks/useDelayedLoading'
 import API from '@/services'
-import { Node, NodeAvailability, RelativeTimeRange, StartEndTime } from '@/types'
+import { Node, NodeAvailability, StartEndTime } from '@/types'
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import {
   buildTimelineModel,
@@ -97,57 +94,17 @@ const loadFailed = ref(false)
 // the empty state's claim about the second.
 const hasLoaded = ref(false)
 
-/**
- * What the user picked, rather than the window it resolved to at the time, so a relative range is
- * re-resolved against the clock on every fetch.
- *
- * On this page that is belt and braces: the details page mounts this panel behind its own
- * nodeLoaded gate, and the store lowers that flag before raising it again, so the panel is
- * destroyed and rebuilt on every node change and never carries a window across one. It matters if
- * the panel is ever mounted without that gate, or refetches for another reason -- a refresh
- * control, say -- where a window fixed at setup would quietly go stale.
- *
- * A custom absolute range is a fixed window and is kept as one.
- */
-type RangeSelection =
-  | { kind: 'relative'; range: RelativeTimeRange }
-  | { kind: 'absolute'; start: number; end: number }
-
-const toMillis = (time: StartEndTime): TimelineWindow => ({
-  start: Number(time.startTime) * 1000,
-  end: Number(time.endTime) * 1000
-})
-
-const windowFor = (sel: RangeSelection): TimelineWindow =>
-  sel.kind === 'relative' ? toMillis(resolveRelativeRange(sel.range)) : { start: sel.start, end: sel.end }
+const nodeStore = useNodeStore()
 
 /**
- * The picker's own wording for a range, so the heading and the picker's button agree. Building a
- * label out of unit and amount instead gave 'last 1 hours' for Last hour, and 'last 24 hours' for
- * Last day while the button said 'LAST DAY'.
+ * The selection lives in the node store rather than here, so it survives a node change: the page
+ * rebuilds this panel for each node, and a range held locally would be lost every time the user
+ * moved on.
  */
-const labelFor = (range: RelativeTimeRange | undefined): string => {
-  if (!range) {
-    return 'custom range'
-  }
+const selection = computed(() => nodeStore.availabilityRange)
 
-  const option = TIME_RANGE_OPTIONS.find((o) => {
-    const r = relativeRangeOf(o)
-    return r?.unit === range.unit && r?.amount === range.amount
-  })
-
-  if (option) {
-    return option.label
-  }
-
-  // Not one of the offered options, so there is no label to borrow.
-  const unit = range.amount === 1 ? range.unit.replace(/s$/, '') : range.unit
-  return `Last ${range.amount} ${unit}`
-}
-
-// Seeded to the range TimeControls shows before anything is picked, so the heading and the button
-// agree from the first paint.
-const selection = ref<RangeSelection>({ kind: 'relative', range: DEFAULT_RANGE })
+/** Seeds the picker's button, so a restored range is not contradicted by it on a fresh mount. */
+const initialRangeLabel = selectionLabel(selection.value)
 
 /**
  * The range the summary names, which is the one the displayed figure was fetched for, not the one
@@ -157,7 +114,7 @@ const selection = ref<RangeSelection>({ kind: 'relative', range: DEFAULT_RANGE }
  * the fetch landed -- 'Availability (last hour) 66.667%' where the figure was still the day's. The
  * picker's own button changes immediately, so the pick is still acknowledged at once.
  */
-const rangeLabel = ref(labelFor(DEFAULT_RANGE))
+const rangeLabel = ref(initialRangeLabel)
 
 // The window the rendered model describes: set from the fetch that produced it, so the axis and the
 // bars cannot disagree.
@@ -189,7 +146,7 @@ const fetchAll = async () => {
   const myRequest = ++requestId
   // Resolved here rather than held in state, so a relative range follows the clock.
   const requested = windowFor(selection.value)
-  const requestedLabel = labelFor(selection.value.kind === 'relative' ? selection.value.range : undefined)
+  const requestedLabel = selectionLabel(selection.value)
   const { start, end } = requested
 
   startLoading()
@@ -229,9 +186,7 @@ const fetchAll = async () => {
 const onUpdateTime = (time: StartEndTime) => {
   // Replaced wholesale so the watcher below fires exactly once. TimeControls carries a relative
   // range when the pick came from the preset list, and only absolute times for a custom window.
-  selection.value = time.range
-    ? { kind: 'relative', range: time.range }
-    : { kind: 'absolute', ...toMillis(time) }
+  nodeStore.setAvailabilityRange(selectionFromTime(time))
 }
 
 // One watcher drives everything: mount, a node change and a range change each cause exactly one

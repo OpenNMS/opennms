@@ -96,7 +96,7 @@ const timelineDoc = (overrides: Partial<NodeOutageTimeline> = {}): NodeOutageTim
 const TimeControlsStub = {
   name: 'TimeControls',
   template: '<button @click="$emit(\'updateTime\', payload)">range</button>',
-  props: ['label'],
+  props: ['label', 'initialLabel'],
   emits: ['updateTime'],
   computed: {
     payload() {
@@ -469,6 +469,74 @@ describe('NodeAvailabilityGraph.vue', () => {
 
     expect(getTimeline.mock.calls[2].slice(1)).toEqual([pickedStart, pickedEnd])
     expect(wrapper.text()).toContain('custom range')
+  })
+
+  /*
+   * The page rebuilds this panel for each node rather than feeding it a new id, so a range held in
+   * the component is lost the moment the user moves on. It lives in the node store instead. These
+   * mount twice against ONE pinia, which is what a node change actually does.
+   */
+  describe('range persistence across a node change', () => {
+    const mountWith = (pinia: ReturnType<typeof createTestingPinia>, nodeId: string) =>
+      mount(NodeAvailabilityGraph, {
+        props: { baseHref: '/opennms/', node: { id: nodeId } as any },
+        global: {
+          plugins: [pinia, PrimeVue],
+          stubs: { TimeControls: TimeControlsStub },
+          directives: { 'onms-tooltip': {}}
+        }
+      })
+
+    it('reuses the chosen range for the next node', async () => {
+      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+
+      const first = mountWith(pinia, '101')
+      await flushPromises()
+      await first.get('[data-test="availability-range"]').trigger('click')
+      await flushPromises()
+
+      const [, , pickedEnd] = getTimeline.mock.calls[1]
+      const [, pickedStart] = getTimeline.mock.calls[1]
+      expect(pickedEnd - (pickedStart as number)).toBe(HOUR)
+      first.unmount()
+
+      const second = mountWith(pinia, '202')
+      await flushPromises()
+
+      const [nodeId, start, end] = getTimeline.mock.calls[2]
+      expect(nodeId).toBe('202')
+      // The hour range carried over rather than reverting to the default day.
+      expect(end - start).toBe(HOUR)
+      second.unmount()
+    })
+
+    it('seeds the picker with the carried range, so the button does not contradict it', async () => {
+      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+
+      const first = mountWith(pinia, '101')
+      await flushPromises()
+      await first.get('[data-test="availability-range"]').trigger('click')
+      await flushPromises()
+      first.unmount()
+
+      const second = mountWith(pinia, '202')
+      await flushPromises()
+
+      expect(second.findComponent({ name: 'TimeControls' }).props('initialLabel')).toBe('Last hour')
+      second.unmount()
+    })
+
+    it('starts from the default range when nothing has been picked', async () => {
+      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+
+      const w = mountWith(pinia, '101')
+      await flushPromises()
+
+      expect(w.findComponent({ name: 'TimeControls' }).props('initialLabel')).toBe('Last day')
+      const [, start, end] = getTimeline.mock.calls[0]
+      expect(end - start).toBe(24 * HOUR)
+      w.unmount()
+    })
   })
 
   // A slow first request must not overwrite the result of a later one.
