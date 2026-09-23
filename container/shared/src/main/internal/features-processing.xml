@@ -36,6 +36,10 @@
     <bundle originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/[1.4,1.5)"
             replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstreamVersion}_1"
             mode="maven"/>
+    <!-- the Camel feature repository still pins the JAXB 2.2 implementation; use the runtime we already ship -->
+    <bundle originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/[2,3)"
+            replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-runtime/2.3.2_1"
+            mode="maven"/>
   </bundleReplacements>
 
   <featureReplacements>
