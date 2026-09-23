@@ -29,46 +29,58 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** Summaries for a set of interfaces and the window their rates cover. */
+/** Summaries for a set of interfaces at one instant. */
 @XmlRootElement(name = "snmpInterfaceMetricsResponse")
 public class SnmpInterfaceMetricsResponseDTO {
 
-    private int windowSeconds;
-    private long end;
+    private long at;
+    private int lookbackSeconds;
+    private Long stepSeconds;
     private List<SnmpInterfaceMetricsDTO> interfaces = new ArrayList<>();
 
     public SnmpInterfaceMetricsResponseDTO() {
     }
 
-    public SnmpInterfaceMetricsResponseDTO(final int windowSeconds, final long end,
+    public SnmpInterfaceMetricsResponseDTO(final long at, final int lookbackSeconds, final Long stepSeconds,
                                            final List<SnmpInterfaceMetricsDTO> interfaces) {
-        this.windowSeconds = windowSeconds;
-        this.end = end;
+        this.at = at;
+        this.lookbackSeconds = lookbackSeconds;
+        this.stepSeconds = stepSeconds;
         this.interfaces = interfaces;
     }
 
-    @XmlElement(name = "windowSeconds")
-    @Schema(description = "The window every rate in this response is averaged over, ending at 'end'.")
-    public int getWindowSeconds() {
-        return windowSeconds;
+    @XmlElement(name = "at")
+    @Schema(description = "The instant summarized, epoch milliseconds: the request's 'at', or now when it was omitted or lay in the future.")
+    public long getAt() {
+        return at;
     }
 
-    public void setWindowSeconds(final int windowSeconds) {
-        this.windowSeconds = windowSeconds;
+    public void setAt(final long at) {
+        this.at = at;
     }
 
-    @XmlElement(name = "end")
-    @Schema(description = "End of the window, epoch milliseconds.")
-    public long getEnd() {
-        return end;
+    @XmlElement(name = "lookbackSeconds")
+    @Schema(description = "How far before 'at' the latest sample was searched for, after clamping.")
+    public int getLookbackSeconds() {
+        return lookbackSeconds;
     }
 
-    public void setEnd(final long end) {
-        this.end = end;
+    public void setLookbackSeconds(final int lookbackSeconds) {
+        this.lookbackSeconds = lookbackSeconds;
+    }
+
+    @XmlElement(name = "stepSeconds")
+    @Schema(description = "The width of the average each rate represents, as stored: 300 for recent data, coarser once the store has consolidated it. Absent when the store was not queried.")
+    public Long getStepSeconds() {
+        return stepSeconds;
+    }
+
+    public void setStepSeconds(final Long stepSeconds) {
+        this.stepSeconds = stepSeconds;
     }
 
     @XmlElement(name = "interfaces")
-    @Schema(description = "One entry per distinct requested interface, in request order.")
+    @Schema(description = "One entry per distinct requested interface the database knows, in request order.")
     public List<SnmpInterfaceMetricsDTO> getInterfaces() {
         return interfaces;
     }

@@ -34,7 +34,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class SnmpInterfaceMetricsRequestDTO {
 
     private List<SnmpInterfaceRefDTO> interfaces = new ArrayList<>();
-    private Integer windowSeconds;
+    private Long at;
+    private Integer lookbackSeconds;
     private List<String> metrics = new ArrayList<>();
 
     @XmlElement(name = "interfaces")
@@ -47,14 +48,24 @@ public class SnmpInterfaceMetricsRequestDTO {
         this.interfaces = interfaces == null ? new ArrayList<>() : interfaces;
     }
 
-    @XmlElement(name = "windowSeconds")
-    @Schema(description = "How far back to average, in seconds. Clamped to between 300 and 86400; 900 when omitted.")
-    public Integer getWindowSeconds() {
-        return windowSeconds;
+    @XmlElement(name = "at")
+    @Schema(description = "The instant to summarize, epoch milliseconds. Now when omitted or in the future. A past instant answers from history and carries no interface status.")
+    public Long getAt() {
+        return at;
     }
 
-    public void setWindowSeconds(final Integer windowSeconds) {
-        this.windowSeconds = windowSeconds;
+    public void setAt(final Long at) {
+        this.at = at;
+    }
+
+    @XmlElement(name = "lookbackSeconds")
+    @Schema(description = "How far before 'at' to search for the latest sample, in seconds. Clamped to between 300 and 3600; 900 when omitted.")
+    public Integer getLookbackSeconds() {
+        return lookbackSeconds;
+    }
+
+    public void setLookbackSeconds(final Integer lookbackSeconds) {
+        this.lookbackSeconds = lookbackSeconds;
     }
 
     @XmlElement(name = "metrics")

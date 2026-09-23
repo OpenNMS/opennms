@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 /** One interface's state and windowed rates. */
 @XmlRootElement(name = "snmpInterfaceMetrics")
-@Schema(description = "Rates are averages over the response window, not instantaneous readings. "
+@Schema(description = "Rates are the latest stored sample at or before the instant, each an average over the response's step. "
         + "A field is absent rather than zero when it was not collected or cannot be derived.")
 public class SnmpInterfaceMetricsDTO {
 
@@ -36,16 +36,15 @@ public class SnmpInterfaceMetricsDTO {
     private Integer ifIndex;
     private Integer ifAdminStatus;
     private Integer ifOperStatus;
+    private Long sampledAt;
     private Long speedBps;
     private Double inBitsPerSecond;
     private Double outBitsPerSecond;
     private Double inUtilizationPercent;
     private Double outUtilizationPercent;
-    private Double inPacketsPerSecond;
     private Double inUnicastPacketsPerSecond;
     private Double inMulticastPacketsPerSecond;
     private Double inBroadcastPacketsPerSecond;
-    private Double outPacketsPerSecond;
     private Double outUnicastPacketsPerSecond;
     private Double outMulticastPacketsPerSecond;
     private Double outBroadcastPacketsPerSecond;
@@ -73,7 +72,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "ifAdminStatus")
-    @Schema(description = "IF-MIB ifAdminStatus as last provisioned: 1 up, 2 down, 3 testing. Absent when the interface is unknown.")
+    @Schema(description = "IF-MIB ifAdminStatus as the database holds it now: 1 up, 2 down, 3 testing. Absent when the instant is in the past.")
     public Integer getIfAdminStatus() {
         return ifAdminStatus;
     }
@@ -83,7 +82,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "ifOperStatus")
-    @Schema(description = "IF-MIB ifOperStatus as last provisioned: 1 up, 2 down, and so on. Absent when the interface is unknown.")
+    @Schema(description = "IF-MIB ifOperStatus as the database holds it now: 1 up, 2 down, and so on. Absent when the instant is in the past.")
     public Integer getIfOperStatus() {
         return ifOperStatus;
     }
@@ -92,8 +91,18 @@ public class SnmpInterfaceMetricsDTO {
         this.ifOperStatus = ifOperStatus;
     }
 
+    @XmlElement(name = "sampledAt")
+    @Schema(description = "Timestamp of the stored sample the rates come from, epoch milliseconds. Absent when no counter had a sample in the lookback.")
+    public Long getSampledAt() {
+        return sampledAt;
+    }
+
+    public void setSampledAt(final Long sampledAt) {
+        this.sampledAt = sampledAt;
+    }
+
     @XmlElement(name = "speedBps")
-    @Schema(description = "Interface speed in bits per second: the collected ifHighSpeed when present and non-zero, else the provisioned ifSpeed. Absent when neither is known.")
+    @Schema(description = "Interface speed in bits per second: the provisioned ifSpeed, or the collected ifHighSpeed when the row has none usable. Absent when neither is known.")
     public Long getSpeedBps() {
         return speedBps;
     }
@@ -103,7 +112,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "inBitsPerSecond")
-    @Schema(description = "Average inbound bits per second over the window.")
+    @Schema(description = "Average inbound bits per second at the sample.")
     public Double getInBitsPerSecond() {
         return inBitsPerSecond;
     }
@@ -113,7 +122,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "outBitsPerSecond")
-    @Schema(description = "Average outbound bits per second over the window.")
+    @Schema(description = "Average outbound bits per second at the sample.")
     public Double getOutBitsPerSecond() {
         return outBitsPerSecond;
     }
@@ -142,18 +151,8 @@ public class SnmpInterfaceMetricsDTO {
         this.outUtilizationPercent = outUtilizationPercent;
     }
 
-    @XmlElement(name = "inPacketsPerSecond")
-    @Schema(description = "Average inbound packets per second over the window: the sum of the unicast, multicast and broadcast classes that were collected.")
-    public Double getInPacketsPerSecond() {
-        return inPacketsPerSecond;
-    }
-
-    public void setInPacketsPerSecond(final Double inPacketsPerSecond) {
-        this.inPacketsPerSecond = inPacketsPerSecond;
-    }
-
     @XmlElement(name = "inUnicastPacketsPerSecond")
-    @Schema(description = "Average inbound unicast packets per second over the window.")
+    @Schema(description = "Average inbound unicast packets per second at the sample.")
     public Double getInUnicastPacketsPerSecond() {
         return inUnicastPacketsPerSecond;
     }
@@ -163,7 +162,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "inMulticastPacketsPerSecond")
-    @Schema(description = "Average inbound multicast packets per second over the window. Absent when only the 32-bit counters are collected.")
+    @Schema(description = "Average inbound multicast packets per second at the sample. Absent when only the 32-bit counters are collected, so a client summing classes must not read absence as zero.")
     public Double getInMulticastPacketsPerSecond() {
         return inMulticastPacketsPerSecond;
     }
@@ -173,7 +172,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "inBroadcastPacketsPerSecond")
-    @Schema(description = "Average inbound broadcast packets per second over the window. Absent when only the 32-bit counters are collected.")
+    @Schema(description = "Average inbound broadcast packets per second at the sample. Absent when only the 32-bit counters are collected, so a client summing classes must not read absence as zero.")
     public Double getInBroadcastPacketsPerSecond() {
         return inBroadcastPacketsPerSecond;
     }
@@ -182,18 +181,8 @@ public class SnmpInterfaceMetricsDTO {
         this.inBroadcastPacketsPerSecond = inBroadcastPacketsPerSecond;
     }
 
-    @XmlElement(name = "outPacketsPerSecond")
-    @Schema(description = "Average outbound packets per second over the window: the sum of the unicast, multicast and broadcast classes that were collected.")
-    public Double getOutPacketsPerSecond() {
-        return outPacketsPerSecond;
-    }
-
-    public void setOutPacketsPerSecond(final Double outPacketsPerSecond) {
-        this.outPacketsPerSecond = outPacketsPerSecond;
-    }
-
     @XmlElement(name = "outUnicastPacketsPerSecond")
-    @Schema(description = "Average outbound unicast packets per second over the window.")
+    @Schema(description = "Average outbound unicast packets per second at the sample.")
     public Double getOutUnicastPacketsPerSecond() {
         return outUnicastPacketsPerSecond;
     }
@@ -203,7 +192,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "outMulticastPacketsPerSecond")
-    @Schema(description = "Average outbound multicast packets per second over the window. Absent when only the 32-bit counters are collected.")
+    @Schema(description = "Average outbound multicast packets per second at the sample. Absent when only the 32-bit counters are collected, so a client summing classes must not read absence as zero.")
     public Double getOutMulticastPacketsPerSecond() {
         return outMulticastPacketsPerSecond;
     }
@@ -213,7 +202,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "outBroadcastPacketsPerSecond")
-    @Schema(description = "Average outbound broadcast packets per second over the window. Absent when only the 32-bit counters are collected.")
+    @Schema(description = "Average outbound broadcast packets per second at the sample. Absent when only the 32-bit counters are collected, so a client summing classes must not read absence as zero.")
     public Double getOutBroadcastPacketsPerSecond() {
         return outBroadcastPacketsPerSecond;
     }
@@ -223,7 +212,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "inErrorsPerSecond")
-    @Schema(description = "Average inbound errors per second over the window.")
+    @Schema(description = "Average inbound errors per second at the sample.")
     public Double getInErrorsPerSecond() {
         return inErrorsPerSecond;
     }
@@ -233,7 +222,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "outErrorsPerSecond")
-    @Schema(description = "Average outbound errors per second over the window.")
+    @Schema(description = "Average outbound errors per second at the sample.")
     public Double getOutErrorsPerSecond() {
         return outErrorsPerSecond;
     }
@@ -243,7 +232,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "inDiscardsPerSecond")
-    @Schema(description = "Average inbound discards per second over the window.")
+    @Schema(description = "Average inbound discards per second at the sample.")
     public Double getInDiscardsPerSecond() {
         return inDiscardsPerSecond;
     }
@@ -253,7 +242,7 @@ public class SnmpInterfaceMetricsDTO {
     }
 
     @XmlElement(name = "outDiscardsPerSecond")
-    @Schema(description = "Average outbound discards per second over the window.")
+    @Schema(description = "Average outbound discards per second at the sample.")
     public Double getOutDiscardsPerSecond() {
         return outDiscardsPerSecond;
     }
