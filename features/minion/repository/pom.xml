@@ -115,6 +115,10 @@
                                   <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web" />
                                   <dirset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web" />
                                 </delete>
+                                <delete includeemptydirs="true">
+                                  <fileset dir="${project.build.directory}/maven-repo/org/jline/jline"
+                                           excludes="${jlineVersion}/**" erroronmissingdir="false" />
+                                </delete>
                             </target>
                         </configuration>
                     </execution>
