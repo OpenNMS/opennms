@@ -15,6 +15,7 @@
     <module>plexus-utils-relocated</module>
     <module>pax-url-aether-patch</module>
     <module>karaf-features-core-patch</module>
+    <module>aries-proxy-patch</module>
     <module>branding</module>
     <module>features</module>
     <module>karaf</module>

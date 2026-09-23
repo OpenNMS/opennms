@@ -11,7 +11,7 @@ jobs:
             export CCI_MAXCPU=2
             export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             
-            sudo apt install -y openjdk-21-jdk
+            sudo apt install -y openjdk-25-jdk
             
             export DEBEMAIL="opennms@opennms.org"
             export DEBFULLNAME="OpenNMS Build Account"

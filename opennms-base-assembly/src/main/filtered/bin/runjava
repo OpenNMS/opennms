@@ -72,8 +72,8 @@ if [ -e "${opennms_home}/bin/_lib.sh" ]; then
     fi
 fi
 
-minimum_version="21.0"
-maximum_version="21.9999"
+minimum_version="25.0"
+maximum_version="25.9999"
 
 searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")
 
