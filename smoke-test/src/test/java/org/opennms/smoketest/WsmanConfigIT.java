@@ -50,7 +50,9 @@ import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.mock.wsman.FakeWsManAgent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,8 +85,19 @@ public class WsmanConfigIT {
     // one JAX-RS client for every request of the run, closed when the class is done
     private static final Client CLIENT = ClientBuilder.newClient();
 
+    // a dedicated stack (rather than the shared OpenNMSStack.MINIMAL) so the WS-Man collection
+    // interval can be shortened below the shipped 5-minute default (collectd-configuration.xml),
+    // instead of the test having to wait out a real collection cycle; the RRD step in
+    // wsman-datacollection-config.xml is shortened to match, since RRDtool won't produce a
+    // non-unknown sample until a step boundary has passed regardless of how often collectd polls
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withOpenNMS(OpenNMSProfile.newBuilder()
+                    .withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml")
+                    .withFile("wsman/collectd-configuration.xml", "etc/collectd-configuration.xml")
+                    .withFile("wsman/wsman-datacollection-config.xml", "etc/wsman-datacollection-config.xml")
+                    .build())
+            .build());
 
     @Test
     public void configuresPollsAndCollectsAFakeAgentEndToEnd() throws Exception {
@@ -136,8 +149,10 @@ public class WsmanConfigIT {
                     && bucket.get("unpolled").asInt() == 0 && bucket.get("provisioned").asInt() == 1;
         });
 
-        // and the collector stores the Windows OS group from the fake's dataset
-        await().atMost(6, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(this::freePhysicalMemoryCollected, equalTo(true));
+        // and the collector stores the Windows OS group from the fake's dataset; the test-only
+        // collectd-configuration.xml collects WS-Man every 15s (vs. the shipped 5-minute default)
+        // so this doesn't need minutes of margin to clear a real collection cycle
+        await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(this::freePhysicalMemoryCollected, equalTo(true));
     }
 
     private boolean freePhysicalMemoryCollected() {
@@ -145,7 +160,9 @@ public class WsmanConfigIT {
         final long now = System.currentTimeMillis();
         request.setStart(now - TimeUnit.MINUTES.toMillis(15));
         request.setEnd(now);
-        request.setStep(300000);
+        // match the test's shortened 15s WS-Man collection interval/RRD step; a larger step here
+        // makes RRDtool serve from a coarser RRA that takes several minutes to have real data
+        request.setStep(15000);
         final Source source = new Source();
         source.setLabel("freePhysMem");
         source.setResourceId("node[" + REQUISITION + ":" + SERVER + "].nodeSnmp[]");
