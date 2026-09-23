@@ -113,6 +113,8 @@ public class KafkaLargeBufferSinkIT {
             }
         });
         remoteMessageDispatcherFactory.init();
+        // Guard against the config being ignored, which would let these tests pass without chunking.
+        assertThat(remoteMessageDispatcherFactory.getMaxBufferSize(), is(1000));
 
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -144,6 +146,9 @@ public class KafkaLargeBufferSinkIT {
             Event outputEvent = outputEvents.get(0);
             assertThat(outputEvent.getUei(), is(TEST_UEI));
             assertThat(outputEvent.getNodeid(), is(NODE_ID));
+            // The 5 KB fields span several chunks; equality proves they were reassembled in order.
+            assertThat(outputEvent.getDescr(), is(event.getDescr()));
+            assertThat(outputEvent.getLogmsg().getContent(), is(event.getLogmsg().getContent()));
         } finally {
             consumerManager.unregisterConsumer(eventLogMessageConsumer);
         }
@@ -180,6 +185,9 @@ public class KafkaLargeBufferSinkIT {
             Event outputEvent = outputEvents.get(0);
             assertThat(outputEvent.getUei(), is(TEST_UEI));
             assertThat(outputEvent.getNodeid(), is(NODE_ID));
+            // The 5 KB fields span several chunks; equality proves they were reassembled in order.
+            assertThat(outputEvent.getDescr(), is(event.getDescr()));
+            assertThat(outputEvent.getLogmsg().getContent(), is(event.getLogmsg().getContent()));
         } finally {
             consumerManager.unregisterConsumer(eventLogMessageConsumer);
         }
