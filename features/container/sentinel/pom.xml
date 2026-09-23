@@ -82,6 +82,95 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <!-- Karaf's JaasHelper, ShellUtil & co. call Subject.getSubject(), which always
+                             throws on JDK 23+ and kills the shell bundle at startup. Replace them with
+                             the patched jars from container/karaf-jaas-subject-patch; jaas.boot gets
+                             the class those share, so both of its copies are replaced. -->
+                        <id>replace-karaf-jaas-subject</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>jaas-boot</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/lib/boot</outputDirectory>
+                                    <destFileName>org.apache.karaf.jaas.boot-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>jaas-boot</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/jaas/org.apache.karaf.jaas.boot/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.jaas.boot-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>jaas-command</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/jaas/org.apache.karaf.jaas.command/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.jaas.command-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>shell-core</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/shell/org.apache.karaf.shell.core/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.shell.core-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>shell-console</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/shell/org.apache.karaf.shell.console/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.shell.console-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>shell-ssh</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/shell/org.apache.karaf.shell.ssh/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.shell.ssh-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>bundle-core</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/bundle/org.apache.karaf.bundle.core/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.bundle.core-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-jaas-subject-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>management-server</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/management/org.apache.karaf.management.server/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.management.server-${karafVersion}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>copy-dependencies</id>
                         <phase>prepare-package</phase>
                         <goals>
