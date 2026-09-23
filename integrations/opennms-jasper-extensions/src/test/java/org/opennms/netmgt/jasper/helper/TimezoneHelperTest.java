@@ -27,11 +27,16 @@ import static org.junit.Assert.assertEquals;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.Test;
 
 public class TimezoneHelperTest {
     private static final ZoneId LA = ZoneId.of("America/Los_Angeles");
+
+    {{
+        Locale.setDefault(Locale.US);
+    }}
 
     @Test
     public void verifyTimezoneAdjustment() throws Exception {

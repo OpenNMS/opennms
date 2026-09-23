@@ -1,5 +1,5 @@
 # Minion Default Features
-pax-war
+pax-web-war
 # Install specific versions of the spring and spring-jms features to
 # reduce the computations needed by the bundle dependency resolver
 spring/${springVersion}
