@@ -72,7 +72,6 @@
                         <feature>cassandra-driver/${cassandraVersion}</feature>
                         <feature>jetty/${jettyVersion}</feature>
                         <feature>pax-jetty/${jettyVersion}</feature>
-                        <feature>pax-http-whiteboard</feature>
                     </installedFeatures>
                     <startupFeatures>
                         <feature>eventadmin</feature>
