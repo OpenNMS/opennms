@@ -104,14 +104,13 @@ public class BulkingIT {
 
             final long[] persists = new long[2];
 
-            // send full bulk in order to estimate last persist
+            // send full bulk; it is persisted synchronously and starts the flush timeout
             flowRepository.persist(createMockedFlows(1000));
+            persists[0] = System.currentTimeMillis();
 
             with().pollInterval(25, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
                 final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
                 LOG.info("Response: {} {} ", searchResult.isSucceeded() ? "Success" : "Failure", SearchResultUtils.getTotal(searchResult));
-                // record the initial persist
-                persists[0] = System.currentTimeMillis();
                 return SearchResultUtils.getTotal(searchResult) == 1000L;
             });
 
