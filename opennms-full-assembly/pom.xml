@@ -894,6 +894,10 @@
       <classifier>etc</classifier>
     </dependency>
     <dependency>
+      <groupId>com.github.mwiede</groupId>
+      <artifactId>jsch</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.ximpleware</groupId>
       <artifactId>vtd-xml</artifactId>
     </dependency>
