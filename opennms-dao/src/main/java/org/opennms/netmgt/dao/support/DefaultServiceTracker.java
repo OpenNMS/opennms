@@ -36,10 +36,12 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.dao.api.FilterWatcher;
 import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;
+import org.opennms.netmgt.dao.api.ServiceTracker.BatchServiceListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
@@ -98,6 +100,11 @@ public class DefaultServiceTracker implements ServiceTracker {
 
         private void onFilterChanged(FilterWatcher.FilterResults results) {
             Set<ServiceRef> candidateServices = results.getServicesNamed(serviceName);
+            if (listener instanceof BatchServiceListener) {
+                onFilterChangedBatch(candidateServices, (BatchServiceListener) listener);
+                return;
+            }
+
             Set<ServiceRef> servicesToAdd = Sets.difference(candidateServices, activeServices);
             Set<ServiceRef> servicesToRemove = Sets.difference(activeServices, candidateServices);
 
@@ -109,6 +116,19 @@ public class DefaultServiceTracker implements ServiceTracker {
                 activeServices.remove(service);
                 listener.onServiceStoppedMatching(service);
             }
+        }
+
+        private void onFilterChangedBatch(Set<ServiceRef> candidateServices, BatchServiceListener batchListener) {
+            Set<ServiceRef> servicesToAdd = ImmutableSet.copyOf(Sets.difference(candidateServices, activeServices));
+            Set<ServiceRef> servicesToRemove = ImmutableSet.copyOf(Sets.difference(activeServices, candidateServices));
+            if (servicesToAdd.isEmpty() && servicesToRemove.isEmpty()) {
+                return;
+            }
+
+            // Only commit once the listener accepted the batch, so a failed batch is delivered again
+            batchListener.onServicesChanged(servicesToAdd, servicesToRemove);
+            activeServices.addAll(servicesToAdd);
+            activeServices.removeAll(servicesToRemove);
         }
 
         @Override
