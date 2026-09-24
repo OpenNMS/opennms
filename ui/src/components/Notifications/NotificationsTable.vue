@@ -8,11 +8,18 @@
           variant="text"
           :icon="DownloadFileIcon"
           iconSize="1.2rem"
-          title="Download as CSV"
-          aria-label="Download notifications as CSV"
-          data-test="csv-download-button"
+          title="Download"
+          aria-label="Download notifications"
+          aria-haspopup="true"
+          aria-controls="notifications-download-menu"
+          data-test="download-button"
           :disabled="!store.totalCount"
-          @click="downloadCsv"
+          @click="toggleDownloadMenu"
+        />
+        <OnmsMenu
+          id="notifications-download-menu"
+          ref="downloadMenu"
+          :items="downloadItems"
         />
         <OnmsIconButton
           variant="text"
@@ -134,9 +141,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
-import { OnmsIconButton, OnmsButton, OnmsColumn, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsButton, OnmsColumn, OnmsMenu, OnmsTable, OnmsTag, type OnmsMenuItem, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
@@ -209,7 +216,8 @@ const exportColumns = (notification: OnmsNotification): Record<string, string> =
   'ID': String(notification.id),
   'Severity': notification.severity ?? '',
   'Subject': notification.subject ?? '',
-  'Text Message': notification.textMessage ?? '',
+  // Text messages are often multi-line; flatten them so each row stays one CSV line.
+  'Text Message': (notification.textMessage ?? '').replace(/\s+/g, ' ').trim(),
   'Sent Time': formatTime(notification.pageTime),
   'Node': notification.nodeLabel ?? '',
   'Interface': notification.ipAddress ?? '',
@@ -217,6 +225,9 @@ const exportColumns = (notification: OnmsNotification): Record<string, string> =
   'Responder': notification.ackUser ?? '',
   'Respond Time': formatTime(notification.ackTime)
 })
+
+const exportFileName = (extension: string) =>
+  `notifications-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.${extension}`
 
 const downloadCsv = async () => {
   const { notifications } = await fetchAllForExport()
@@ -237,7 +248,27 @@ const downloadCsv = async () => {
     ...rows.map(row => headers.map(h => escapeCell(row[h] === '-' ? '' : row[h])).join(','))
   ].join('\r\n')
   const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' })
-  saveBlobAsFile(blob, `notifications-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.csv`)
+  saveBlobAsFile(blob, exportFileName('csv'))
+}
+
+const downloadJson = async () => {
+  const { notifications } = await fetchAllForExport()
+  if (!notifications.length) {
+    return
+  }
+  const blob = new Blob([JSON.stringify(notifications, null, 2)], { type: 'application/json;charset=utf-8' })
+  saveBlobAsFile(blob, exportFileName('json'))
+}
+
+const downloadMenu = ref<InstanceType<typeof OnmsMenu> | null>(null)
+
+const downloadItems: OnmsMenuItem[] = [
+  { label: 'Download CSV...', command: () => downloadCsv() },
+  { label: 'Download JSON...', command: () => downloadJson() }
+]
+
+const toggleDownloadMenu = (event: Event) => {
+  downloadMenu.value?.toggle(event)
 }
 
 const printNotifications = async () => {

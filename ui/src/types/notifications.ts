@@ -31,6 +31,9 @@ export type NotificationAckType = 'unack' | 'ack' | 'all'
 
 export type NotificationQueryPreset = 'yourOutstanding' | 'teamOutstanding' | 'allOutstanding' | 'allAcknowledged' | 'userSearch'
 
+// AckType enum on the Java model; always NOTIFICATION for these records.
+export type NotificationAckKind = 'UNSPECIFIED' | 'ALARM' | 'NOTIFICATION'
+
 export interface OnmsNotificationDestination {
   id?: number
   userId?: string
@@ -45,11 +48,19 @@ export interface OnmsNotification {
   notificationName?: string | null
   subject?: string | null
   textMessage?: string | null
+  numericMessage?: string | null
   uei?: string | null
   severity?: string | null
   pageTime?: number | string | null
+  // The Java model's Acknowledgeable getters mirror its own fields, so the
+  // serializer emits duplicates: ackTime/ackUser = respondTime/answeredBy and
+  // ackId = id. Nulls are omitted.
+  respondTime?: number | string | null
+  answeredBy?: string | null
   ackTime?: number | string | null
   ackUser?: string | null
+  ackId?: number | null
+  type?: NotificationAckKind | null
   eventId?: number | null
   nodeId?: number | null
   nodeLabel?: string | null
