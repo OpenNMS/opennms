@@ -8,13 +8,13 @@
 
     <changeSet author="cpape" id="register-schema-threshd-config">
         <cm:registerSchema id="threshd-config"/>
-        <cm:importSchemaFromXsd id="threshd-config" xsdFileName="thresholding.xsd" xsdFileHash="48ea9a7350b7b70bde21098fcff84a18ce46a58cb2fae3a4274463ed1331bc24" rootElement="threshd-configuration"/>
+        <cm:importSchemaFromXsd id="threshd-config" xsdFileName="thresholding.xsd" xsdFileHash="646c792b25c8b59246570818555c1de0b28ecbb3745939c3a5e1e3b240cbe49e" rootElement="threshd-configuration"/>
         <cm:importConfig schemaId="threshd-config" filePath="threshd-configuration.xml"/>
     </changeSet>
 
     <changeSet author="cpape" id="register-schema-thresholding-config">
         <cm:registerSchema id="thresholding-config"/>
-        <cm:importSchemaFromXsd id="thresholding-config" xsdFileName="thresholding.xsd" xsdFileHash="48ea9a7350b7b70bde21098fcff84a18ce46a58cb2fae3a4274463ed1331bc24" rootElement="thresholding-config"/>
+        <cm:importSchemaFromXsd id="thresholding-config" xsdFileName="thresholding.xsd" xsdFileHash="646c792b25c8b59246570818555c1de0b28ecbb3745939c3a5e1e3b240cbe49e" rootElement="thresholding-config"/>
         <cm:importConfig schemaId="thresholding-config" filePath="thresholds.xml"/>
     </changeSet>
 
