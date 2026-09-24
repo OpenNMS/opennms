@@ -105,6 +105,18 @@ const getMinionNodeIds = async (minions: Minion[]): Promise<Record<string, numbe
   return map
 }
 
+// The current server row, for a dialog that must not trust a paused list.
+// null when it could not be read, including a 404 for a row that is gone.
+const getMinion = async (id: string): Promise<Minion | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/${encodeURIComponent(id)}`)
+    return resp.status === 204 || !resp.data?.id ? null : (resp.data as Minion)
+  } catch (err) {
+    console.error(`Error loading minion '${id}':`, err)
+    return null
+  }
+}
+
 // Read-before-write: the v2 PUT is a whole-object saveOrUpdate, so we must send
 // the CURRENT server row with only label/location/properties changed — spreading
 // a stale list snapshot would revert the server-maintained status/version/date.
@@ -174,4 +186,4 @@ const getAlarmCountForMinion = async (id: string): Promise<number | null> => {
   }
 }
 
-export { deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }
+export { deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }

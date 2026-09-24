@@ -181,14 +181,12 @@ describe('useMonitoringLocationAdminStore', () => {
     expect(store.nodeCounts).toEqual({ Default: 3 })
   })
 
-  it('getNodeCount answers from the loaded counts, including a null one, and fetches otherwise', async () => {
-    store.nodeCounts = { Raleigh: 3, 'a,b': null }
+  it('getNodeCount always fetches, even when the tab holds a count, and leaves that count alone', async () => {
+    store.nodeCounts = { Raleigh: 3 }
     vi.mocked(API.getNodeCountByLocation).mockResolvedValue(9)
-    expect(await store.getNodeCount('Raleigh')).toBe(3)
-    expect(await store.getNodeCount('a,b')).toBeNull()
-    expect(API.getNodeCountByLocation).not.toHaveBeenCalled()
-    expect(await store.getNodeCount('Zed')).toBe(9)
-    expect(API.getNodeCountByLocation).toHaveBeenCalledWith('Zed')
+    expect(await store.getNodeCount('Raleigh')).toBe(9)
+    expect(API.getNodeCountByLocation).toHaveBeenCalledWith('Raleigh')
+    expect(store.nodeCounts).toEqual({ Raleigh: 3 })
   })
 
   it('passes the perspective lookups through to the service', async () => {

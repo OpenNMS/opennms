@@ -20,7 +20,21 @@
 /// License.
 ///
 
+import { getActivePinia } from 'pinia'
+
+import { useMenuStore } from '@/stores/menuStore'
+
 // The legacy JSP pages live one level up from /ui, e.g. /opennms/admin/...
 const LEGACY_BASE = import.meta.env.BASE_URL.replace(/ui\/?$/, '')
 
-export const legacyUrl = (path: string): string => `${LEGACY_BASE}${path}`
+// the server's baseHref wins once the menu has loaded; before that (or with no
+// store at all) the build-time base is the same path for a default deployment
+const legacyBase = (): string => {
+  if (!getActivePinia()) {
+    return LEGACY_BASE
+  }
+  const baseHref = useMenuStore().mainMenu?.baseHref
+  return typeof baseHref === 'string' && baseHref ? baseHref : LEGACY_BASE
+}
+
+export const legacyUrl = (path: string): string => `${legacyBase()}${path}`

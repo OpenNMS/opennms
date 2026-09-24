@@ -137,7 +137,8 @@ const getNodeCountByLocation = async (name: string): Promise<number | null> => {
 
 // The applications that poll from this location as a perspective, from the
 // JSON rendering of /api/v2/applications (perspectiveLocations carries full
-// location objects there). null when the list could not be read.
+// location objects there). null when the list could not be read, or when the
+// server holds more applications than one page returned.
 const getApplicationsUsingPerspective = async (name: string): Promise<{ id: number; name: string }[] | null> => {
   try {
     const resp = await v2.get(`/applications?limit=${LIST_CAP}`)
@@ -146,6 +147,10 @@ const getApplicationsUsingPerspective = async (name: string): Promise<{ id: numb
     }
     const raw = resp.data?.application ?? []
     const applications: any[] = Array.isArray(raw) ? raw : [raw]
+    const total = Number(resp.data?.totalCount)
+    if (Number.isFinite(total) && total > applications.length) {
+      return null
+    }
     return applications
       .filter(app => (app.perspectiveLocations ?? []).some((location: any) => location?.['location-name'] === name))
       .map(app => ({ id: Number(app.id), name: String(app.name ?? app.id) }))
@@ -162,7 +167,7 @@ const getPerspectiveOutageCount = async (name: string): Promise<number | null> =
     return null
   }
   try {
-    const resp = await v2.get(`/outages?_s=${encodeURIComponent(`perspective.id==${name}`)}&limit=1`)
+    const resp = await v2.get(`/outages?_s=${encodeURIComponent(`perspective.locationName==${name}`)}&limit=1`)
     if (resp.status === 204) {
       return 0
     }

@@ -11,7 +11,6 @@
     <ul v-if="summary" class="summary">
       <li data-test="perspective-line">{{ perspectiveLine }}</li>
       <li data-test="outages-line">{{ outagesLine }}</li>
-      <li data-test="minions-line">Minions that still point at <code>{{ summary.name }}</code> keep the old name until they are re-registered.</li>
     </ul>
     <template #footer>
       <OnmsButton label="Close" data-test="close-button" @click="emit('update:visible', false)" />

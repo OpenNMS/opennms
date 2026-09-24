@@ -5,7 +5,7 @@ import API from '@/services'
 import { Minion } from '@/types/minionAdmin'
 
 vi.mock('@/services', () => ({
-  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn(), getAlarmCountForMinion: vi.fn() }
+  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn(), getAlarmCountForMinion: vi.fn(), getMinion: vi.fn() }
 }))
 
 const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {}})
@@ -96,5 +96,13 @@ describe('useMinionAdminStore', () => {
     vi.mocked(API.getAlarmCountForMinion).mockResolvedValue(7)
     expect(await store.getAlarmCount('m1')).toBe(7)
     expect(API.getAlarmCountForMinion).toHaveBeenCalledWith('m1')
+  })
+
+  it('getMinion passes through to the service without touching the list', async () => {
+    store.minions = [minion('m1')]
+    vi.mocked(API.getMinion).mockResolvedValue({ ...minion('m1'), status: 'DOWN' })
+    expect(await store.getMinion('m1')).toEqual({ ...minion('m1'), status: 'DOWN' })
+    expect(API.getMinion).toHaveBeenCalledWith('m1')
+    expect(store.minions[0].status).toBe('UP')
   })
 })

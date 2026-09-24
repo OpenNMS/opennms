@@ -84,6 +84,8 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
 
   const getAlarmCount = (id: string) => API.getAlarmCountForMinion(id)
 
+  const getMinion = (id: string) => API.getMinion(id)
+
   const deleteMinion = async (id: string): Promise<ValidationResult> => {
     const result = await API.deleteMinion(id)
     if (result.success) {
@@ -105,6 +107,7 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
     getCoreVersion,
     updateMinion,
     getAlarmCount,
+    getMinion,
     deleteMinion
   }
 })

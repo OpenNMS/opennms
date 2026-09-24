@@ -95,9 +95,8 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     return result
   }
 
-  // the count already on the page when the tab has loaded it, otherwise fetched
-  const getNodeCount = async (name: string): Promise<number | null> =>
-    name in nodeCounts.value ? nodeCounts.value[name] : API.getNodeCountByLocation(name)
+  // always fetched: the tab's counts may be a paused refresh old when a dialog asks
+  const getNodeCount = (name: string): Promise<number | null> => API.getNodeCountByLocation(name)
 
   const getApplicationsUsingPerspective = (name: string) => API.getApplicationsUsingPerspective(name)
 

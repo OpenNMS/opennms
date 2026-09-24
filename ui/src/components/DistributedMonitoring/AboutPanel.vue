@@ -75,9 +75,9 @@
             cannot be edited or deleted. <strong>Delete</strong> asks you to type the location's name and is
             only possible once no nodes or Minions are in it (each running Minion's own node counts), so move or
             delete them first. Deleting a location removes it as a perspective from any application that polled
-            from it and deletes the outage history recorded from that perspective; Minions still pointing at a
-            deleted location keep the old name until they are re-registered. The same operations are available to tooling through the
-            <code>/api/v2/minions</code> and <code>/api/v2/monitoringLocations</code> REST APIs.
+            from it and deletes the outage history recorded from that perspective. The same operations are
+            available to tooling through the <code>/api/v2/minions</code> and
+            <code>/api/v2/monitoringLocations</code> REST APIs.
           </p>
         </div>
       </div>

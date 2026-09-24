@@ -21,8 +21,8 @@
       <template v-else>
         <OnmsMessage v-if="blocked" severity="error" data-test="nodes-callout">
           <strong>{{ count(nodeCount ?? 0, 'node') }} and {{ count(minionCount, 'Minion') }} are still here</strong> —
-          a monitoring location with nodes cannot be deleted, and that includes each running Minion's own node.
-          Move or delete them first.
+          a monitoring location with nodes cannot be deleted, and that includes each running Minion's own node;
+          this page also refuses while a Minion is registered here.
         </OnmsMessage>
         <OnmsMessage v-else-if="nodeCount === null" severity="warn" data-test="nodes-callout">
           <strong>The node count could not be checked</strong> — a monitoring location with nodes cannot be
@@ -61,17 +61,27 @@
         </template>
         <OnmsInputText
           id="confirm-name"
-          v-model="confirmText"
-          :disabled="blocked"
+          ref="confirmInput"
+          v-model.trim="confirmText"
+          :disabled="blocked || loading"
+          :autofocus="!blocked || undefined"
           autocomplete="off"
           fluid
           data-test="confirm-input"
+          @keydown.enter="confirmDelete"
         />
       </FormField>
     </div>
 
     <template #footer>
-      <OnmsButton variant="ghost" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+      <OnmsButton
+        ref="cancelButton"
+        variant="ghost"
+        label="Cancel"
+        :autofocus="blocked || undefined"
+        data-test="cancel-button"
+        @click="emit('update:visible', false)"
+      />
       <OnmsButton
         severity="danger"
         label="Delete monitoring location"
@@ -84,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsDialog, OnmsInputText, OnmsMessage, OnmsSpinner } from '@opennms/onms-ui'
 
@@ -117,6 +127,9 @@ const applicationsUrl = legacyUrl('admin/applications.htm')
 
 const name = computed(() => props.location?.['location-name'] ?? '')
 
+const confirmInput = ref<{ $el?: HTMLElement } | null>(null)
+const cancelButton = ref<{ $el?: HTMLElement } | null>(null)
+
 const loading = ref(false)
 const deleting = ref(false)
 const errorText = ref('')
@@ -138,23 +151,28 @@ const canDelete = computed(() =>
 // open cannot describe the wrong location
 let openRequest = 0
 
+// the tab's counts and Minion list may be a paused refresh old, so every open
+// (and every refusal) reads them again
 const load = async () => {
   const request = ++openRequest
   const target = name.value
   loading.value = true
-  minionCount.value = minionStore.byLocation[target]?.length ?? 0
   const [nodes, apps, outages] = await Promise.all([
     store.getNodeCount(target),
     store.getApplicationsUsingPerspective(target),
-    store.getPerspectiveOutageCount(target)
+    store.getPerspectiveOutageCount(target),
+    minionStore.getMinions()
   ])
   if (request !== openRequest) {
     return
   }
+  minionCount.value = minionStore.byLocation[target]?.length ?? 0
   nodeCount.value = nodes
   applications.value = apps
   outageCount.value = outages
   loading.value = false
+  await nextTick()
+  ;(blocked.value ? cancelButton.value : confirmInput.value)?.$el?.focus?.()
 }
 
 watch(() => props.visible, (isVisible) => {
@@ -164,6 +182,7 @@ watch(() => props.visible, (isVisible) => {
   errorText.value = ''
   confirmText.value = ''
   nodeCount.value = null
+  minionCount.value = 0
   applications.value = null
   outageCount.value = null
   load()
@@ -183,6 +202,7 @@ const confirmDelete = async () => {
       emit('deleted', summary)
     } else {
       errorText.value = result.message
+      await load()
     }
   } finally {
     deleting.value = false

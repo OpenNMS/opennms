@@ -22,7 +22,7 @@ describe('LocationDeletedDialog.vue', () => {
     expect(wrapper.find('[data-test="header"]').text()).toBe('Monitoring location Raleigh deleted')
     expect(line(wrapper, 'perspective')).toBe('Removed as a perspective from: Web Shop, VPN')
     expect(line(wrapper, 'outages')).toBe('3 perspective outages deleted.')
-    expect(line(wrapper, 'minions')).toBe('Minions that still point at Raleigh keep the old name until they are re-registered.')
+    expect(wrapper.findAll('li')).toHaveLength(2)
   })
 
   it('says when nothing depended on it', () => {

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
-import { NODE_LOOKUP_CHUNK, deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
+import { NODE_LOOKUP_CHUNK, deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }, rest: { get: vi.fn() }}))
@@ -107,6 +107,24 @@ describe('minionAdminService', () => {
     const result = await updateMinion({ id: 'm1', label: 'One', location: 'Default', properties: {}})
     expect(result.success).toBe(false)
     expect(result.message).toBe('Failed to update minion \'One\'.')
+  })
+
+  it('getMinion reads one row by id', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: minion('a/b') } as any)
+    expect(await getMinion('a/b')).toEqual(minion('a/b'))
+    expect(v2.get).toHaveBeenCalledWith('/minions/a%2Fb')
+  })
+
+  it('getMinion is null for a missing row, an empty body, or a failure', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(v2.get).mockRejectedValueOnce(http(404))
+    expect(await getMinion('m1')).toBeNull()
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 } as any)
+    expect(await getMinion('m1')).toBeNull()
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}} as any)
+    expect(await getMinion('m1')).toBeNull()
+    vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+    expect(await getMinion('m1')).toBeNull()
   })
 
   it('deleteMinion treats a 404 (already deleted) as success', async () => {

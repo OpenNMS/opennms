@@ -163,6 +163,13 @@ describe('monitoringLocationAdminService', () => {
       expect(url).toMatch(/^\/applications\?limit=\d+$/)
     })
 
+    it('is null when the server holds more applications than the page returned', async () => {
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { totalCount: 3, application: [app(1, 'Web Shop', 'Raleigh'), app(2, 'Mail', 'Raleigh')] }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toBeNull()
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { totalCount: 2, application: [app(1, 'Web Shop', 'Raleigh'), app(2, 'Mail', 'Default')] }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([{ id: 1, name: 'Web Shop' }])
+    })
+
     it('is empty on a 204 or a single application that does not use it, and null on failure', async () => {
       vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 })
       expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([])
@@ -180,7 +187,7 @@ describe('monitoringLocationAdminService', () => {
       const url = vi.mocked(v2.get).mock.calls[0][0] as string
       expect(url.startsWith('/outages?')).toBe(true)
       expect(url).toContain('limit=1')
-      expect(decodeURIComponent(url)).toContain('_s=perspective.id==Data Center east')
+      expect(decodeURIComponent(url)).toContain('_s=perspective.locationName==Data Center east')
     })
 
     it('maps a 204 to zero', async () => {

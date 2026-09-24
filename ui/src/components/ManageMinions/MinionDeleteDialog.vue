@@ -24,24 +24,26 @@
 
       <div v-if="loading" class="loading" data-test="loading">
         <OnmsSpinner size="1.5rem" strokeWidth="6" />
-        <span>Counting its alarms…</span>
+        <span>Checking its heartbeat and counting its alarms…</span>
       </div>
       <OnmsMessage v-else-if="alarmCount === null" severity="info" data-test="alarms-callout">
-        Its alarms could not be counted; any alarms raised through this Minion are removed with it.
+        Its alarms could not be counted; any alarms raised through this Minion are removed with it. Its events
+        are kept.
       </OnmsMessage>
       <OnmsMessage v-else-if="alarmCount > 0" severity="error" data-test="alarms-callout">
         <strong>Its alarms are deleted</strong> — {{ alarmCount }} {{ alarmCount === 1 ? 'alarm' : 'alarms' }}
         raised through this Minion, such as traps and syslog it received, {{ alarmCount === 1 ? 'is' : 'are' }}
-        removed with it.
+        removed with it. Its events are kept.
       </OnmsMessage>
       <OnmsMessage v-else severity="info" data-test="alarms-callout">
-        No alarms were raised through this Minion.
+        No alarms were raised through this Minion. Its events are kept.
       </OnmsMessage>
 
       <OnmsMessage severity="info" data-test="requisition-callout">
         <strong>Its node stays until the Minions requisition is synchronized</strong> — the node is removed
-        from the pending Minions requisition only, so it keeps being monitored until that requisition is
-        synchronized.
+        from the pending Minions requisition only (or the one named by
+        <code>opennms.minion.provisioning.foreignSourcePattern</code>), so it keeps being monitored until that
+        requisition is synchronized.
         <a :href="requisitionUrl" target="_self" data-test="requisition-link">Open the Minions requisition</a>
       </OnmsMessage>
     </div>
@@ -60,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsDialog, OnmsMessage, OnmsSpinner, useOnmsToast } from '@opennms/onms-ui'
 
@@ -72,6 +74,8 @@ import { Minion } from '@/types/minionAdmin'
 
 // heartbeats arrive every 30 s, so anything within two minutes is a live Minion
 const RECENT_MS = 2 * 60 * 1000
+// the list's auto-refresh is paused behind this dialog, so it re-reads the row itself
+const RECHECK_MS = 30 * 1000
 
 const props = defineProps<{
   visible: boolean
@@ -92,34 +96,67 @@ const loading = ref(false)
 const deleting = ref(false)
 const errorText = ref('')
 const alarmCount = ref<number | null>(null)
+// the last heartbeat and status actually read for this open, never the paused list
+const lastDate = ref<Minion['date']>(null)
+const lastStatus = ref<Minion['status']>(null)
+// decided only when a row is read, so the ticking clock alone can never unblock
+const recent = ref(false)
 
-const heartbeat = computed(() => relativeTimeSince(props.minion?.date, props.now) ?? 'unknown')
-
-// with no usable heartbeat time, an UP status is the only sign it is still running
-const recent = computed(() => {
-  const ms = toMillis(props.minion?.date)
-  return ms === null ? minionState(props.minion?.status) === 'up' : props.now - ms < RECENT_MS
-})
+const heartbeat = computed(() => relativeTimeSince(lastDate.value, props.now) ?? 'unknown')
 
 const canDelete = computed(() => !loading.value && !deleting.value && !recent.value && !!props.minion)
 
+// an UP status blocks even with an old date, in case the two clocks disagree
+const judge = (date: Minion['date'], status: Minion['status']) => {
+  const ms = toMillis(date)
+  return minionState(status) === 'up' || (ms !== null && props.now - ms < RECENT_MS)
+}
+
 let openRequest = 0
+let recheck: ReturnType<typeof setInterval> | undefined
+
+const stopRecheck = () => {
+  clearInterval(recheck)
+  recheck = undefined
+}
+
+const readMinion = async (id: string, request: number) => {
+  const fresh = await store.getMinion(id)
+  if (request !== openRequest) {
+    return
+  }
+  if (fresh) {
+    lastDate.value = fresh.date ?? null
+    lastStatus.value = fresh.status ?? null
+    recent.value = judge(lastDate.value, lastStatus.value)
+  } else {
+    recent.value = recent.value || judge(null, lastStatus.value)
+  }
+}
 
 watch(() => props.visible, async (isVisible) => {
+  stopRecheck()
   if (!isVisible || !props.minion) {
     return
   }
   const request = ++openRequest
+  const id = props.minion.id
   errorText.value = ''
   alarmCount.value = null
+  lastDate.value = props.minion.date ?? null
+  lastStatus.value = props.minion.status ?? null
+  recent.value = judge(lastDate.value, lastStatus.value)
   loading.value = true
-  const alarms = await store.getAlarmCount(props.minion.id)
+  const [alarms] = await Promise.all([store.getAlarmCount(id), readMinion(id, request)])
   if (request !== openRequest) {
     return
   }
   alarmCount.value = alarms
   loading.value = false
+  recheck = setInterval(() => readMinion(id, request), RECHECK_MS)
 })
+
+onBeforeUnmount(stopRecheck)
 
 const confirmDelete = async () => {
   const minion = props.minion
