@@ -165,7 +165,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         // Setup Threshd Configuration
         File threshdConfig = new File(etc, "threshd-configuration.xml");
         FileUtils.writeStringToFile(threshdConfig, "<?xml version=\"1.0\"?>"
-                + "<threshd-configuration threads=\"5\">"
+                + "<threshd-configuration>"
                 + "<package name=\"example1\">"
                 + "<filter>IPADDR != '0.0.0.0'</filter>"
                 + "<include-range begin=\"1.1.1.1\" end=\"254.254.254.254\"/>"

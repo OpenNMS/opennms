@@ -59,17 +59,27 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
         // No I/O in the constructor — CMS is looked up lazily on first access (matches SnmpPeerFactory).
     }
 
+    /** Test hook: uses the given CMS instead of looking it up in the Spring context. */
+    OnmsThresholdingDao(JsonStore jsonStore, ConfigurationManagerService cms) {
+        this(jsonStore);
+        this.cms = registerWith(cms);
+    }
+
     private ConfigurationManagerService getCms() {
         if (cms == null) {
             synchronized (this) {
                 if (cms == null) {
-                    cms = BeanUtils.getBean("daoContext", "configurationManagerService", ConfigurationManagerService.class);
-                    cms.registerEventHandler(EventType.UPDATE,
-                            new ConfigUpdateInfo(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID),
-                            info -> onConfigChanged());
+                    cms = registerWith(BeanUtils.getBean("daoContext", "configurationManagerService", ConfigurationManagerService.class));
                 }
             }
         }
+        return cms;
+    }
+
+    private ConfigurationManagerService registerWith(ConfigurationManagerService cms) {
+        cms.registerEventHandler(EventType.UPDATE,
+                new ConfigUpdateInfo(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID),
+                info -> onConfigChanged());
         return cms;
     }
 
@@ -90,8 +100,19 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
         if (config == null) {
             throw new IllegalStateException("No thresholding configuration loaded; cannot save");
         }
-        getCms().updateConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
-                new JsonAsString(ConfigConvertUtil.objectToJson(config)), true);
+        try {
+            getCms().updateConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
+                    new JsonAsString(ConfigConvertUtil.objectToJson(config)), true);
+        } catch (RuntimeException e) {
+            // Callers edit dbConfig in place before saving, so a rejected save (e.g. schema validation) would
+            // otherwise leave those edits live. Put back what the database holds.
+            try {
+                reload();
+            } catch (RuntimeException reloadFailure) {
+                e.addSuppressed(reloadFailure);
+            }
+            throw e;
+        }
     }
 
     /**
