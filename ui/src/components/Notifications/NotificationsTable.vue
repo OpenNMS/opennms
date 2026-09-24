@@ -162,7 +162,9 @@ const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 const showAckColumns = computed<boolean>(() => store.preset === 'allAcknowledged')
 
 const emptyListContent = computed(() => ({
-  msg: store.preset === 'allAcknowledged' ? 'No acknowledged notifications found.' : 'No outstanding notifications found.'
+  msg: store.awaitingUser
+    ? 'Enter a user ID to see their outstanding notifications.'
+    : store.preset === 'allAcknowledged' ? 'No acknowledged notifications found.' : 'No outstanding notifications found.'
 }))
 
 const severityMap: Record<string, OnmsTagSeverity> = {

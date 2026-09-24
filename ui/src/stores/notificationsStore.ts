@@ -52,6 +52,10 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     return null
   })
 
+  // User search chosen but no user entered yet (e.g. the search was cleared):
+  // there is nothing to query, which is not the same as a failed whoami.
+  const awaitingUser = computed<boolean>(() => preset.value === 'userSearch' && !userFilter.value)
+
   const effectiveExcludeUser = computed<string | null>(() =>
     preset.value === 'teamOutstanding' ? currentUser.value || null : null)
 
@@ -66,7 +70,7 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
       case 'allAcknowledged':
         return 'All Acknowledged Notifications'
       case 'userSearch':
-        return `Outstanding Notifications for '${userFilter.value}'`
+        return userFilter.value ? `Outstanding Notifications for '${userFilter.value}'` : 'Outstanding Notifications for User'
     }
     return 'Notifications'
   })
@@ -75,6 +79,11 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
 
 
   const load = async () => {
+    if (awaitingUser.value) {
+      notifications.value = []
+      totalCount.value = 0
+      return
+    }
     // a failed whoami leaves no user id; widening a user-scoped query to
     // everyone's notifications would be silently wrong, so refuse instead
     const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
@@ -118,6 +127,9 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   const fetchForExport = async (limit: number): Promise<{ notifications: OnmsNotification[], totalCount: number }> => {
     // Same guard as load(); the teamOutstanding preset is user-scoped via
     // excludeUser, so a failed whoami must block it too rather than widen.
+    if (awaitingUser.value) {
+      return { notifications: [], totalCount: 0 }
+    }
     const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
     if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
       showSnackBar({ msg: 'Cannot determine the current user; nothing to export. Reload the page to retry.', error: true })
@@ -150,6 +162,7 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   return {
     preset,
     userFilter,
+    awaitingUser,
     notifications,
     totalCount,
     rows,

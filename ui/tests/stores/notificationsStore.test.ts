@@ -132,6 +132,22 @@ describe('useNotificationsStore', () => {
       )
       expect(store.title).toBe('Outstanding Notifications for \'operator\'')
     })
+
+    it('userSearch with no user waits for one instead of querying', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      await store.applyPreset('userSearch', 'operator')
+      vi.mocked(API.browseNotifications).mockClear()
+      showSnackBar.mockClear()
+
+      await store.applyPreset('userSearch')
+
+      expect(store.awaitingUser).toBe(true)
+      expect(API.browseNotifications).not.toHaveBeenCalled()
+      expect(showSnackBar).not.toHaveBeenCalled()
+      expect(store.notifications).toEqual([])
+      expect(store.totalCount).toBe(0)
+      expect(store.title).toBe('Outstanding Notifications for User')
+    })
   })
 
   describe('onPage', () => {
@@ -216,6 +232,17 @@ describe('useNotificationsStore', () => {
   })
 
   describe('fetchForExport', () => {
+    it('returns nothing without querying while awaiting a user', async () => {
+      await store.applyPreset('userSearch')
+      showSnackBar.mockClear()
+
+      const result = await store.fetchForExport(100)
+
+      expect(API.browseNotifications).not.toHaveBeenCalled()
+      expect(showSnackBar).not.toHaveBeenCalled()
+      expect(result).toEqual({ notifications: [], totalCount: 0 })
+    })
+
     it('scopes the export to the current user without widening', async () => {
       vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 

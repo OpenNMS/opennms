@@ -1,15 +1,15 @@
 <template>
   <TableCard class="notification-queries-bar">
-    <div class="bar-content">
+    <div class="query-controls">
       <div class="query-presets">
         <OnmsSelectButton
-          :modelValue="store.preset"
+          :modelValue="mode"
           :options="presetOptions"
           optionLabel="label"
           optionValue="value"
           aria-label="Notification query"
           data-test="query-presets"
-          @update:modelValue="onPresetChange"
+          @update:modelValue="onModeChange"
         />
         <OnmsIconButton
           variant="text"
@@ -21,24 +21,49 @@
           @click="store.load()"
         />
       </div>
-      <div class="query-forms">
-        <div class="search-row">
+      <div class="query-searches">
+        <div class="query-search">
+          <OnmsSelectButton
+            :modelValue="mode"
+            :options="userSearchOptions"
+            optionLabel="label"
+            optionValue="value"
+            aria-label="Notifications for user"
+            data-test="query-user-search"
+            @update:modelValue="onModeChange"
+          />
           <OnmsSearchInput
+            ref="userSearchInput"
             v-model="userSearch"
+            class="query-search-input"
             inputId="notification-user-search"
-            placeholder="Check notifications for user"
-            ariaLabel="Check notifications for user"
+            placeholder="User ID"
+            ariaLabel="User ID"
             dataTest="user-search-input"
+            @focusin="selectMode('userSearch')"
             @keyup.enter="searchByUser"
+            @clear="clearUserSearch"
           />
         </div>
-        <div class="search-row">
+        <div class="query-search">
+          <OnmsSelectButton
+            :modelValue="mode"
+            :options="notificationIdOptions"
+            optionLabel="label"
+            optionValue="value"
+            aria-label="View details for ID"
+            data-test="query-notification-id"
+            @update:modelValue="onModeChange"
+          />
           <OnmsSearchInput
+            ref="notificationIdInput"
             v-model="notificationIdSearch"
+            class="query-search-input"
             inputId="notification-id-search"
-            placeholder="Get details for notification"
-            ariaLabel="Get details for notification"
+            placeholder="Notification ID"
+            ariaLabel="Notification ID"
             dataTest="notification-id-search-input"
+            @focusin="selectMode('notificationId')"
             @keyup.enter="goToNotification"
           />
         </div>
@@ -48,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@opennms/onms-ui'
 
@@ -58,30 +83,73 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { NotificationQueryPreset } from '@/types/notifications'
 
+// The three select buttons act as one choice: each is bound to `mode` and only
+// shows a selection when `mode` is one of its own options. 'notificationId' is
+// local to this card: it jumps to a detail page rather than querying the table.
+type QueryMode = NotificationQueryPreset | 'notificationId'
+
+interface QueryModeOption {
+  label: string
+  value: QueryMode
+}
+
 const menuStore = useMenuStore()
 const store = useNotificationsStore()
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
-const presetOptions: { label: string, value: NotificationQueryPreset }[] = [
+const presetOptions: QueryModeOption[] = [
   { label: 'Your outstanding notifications', value: 'yourOutstanding' },
   { label: 'Outstanding for anyone but you', value: 'teamOutstanding' },
   { label: 'All outstanding notifications', value: 'allOutstanding' },
   { label: 'All acknowledged notifications', value: 'allAcknowledged' }
 ]
+const userSearchOptions: QueryModeOption[] = [{ label: 'Notifications for user:', value: 'userSearch' }]
+const notificationIdOptions: QueryModeOption[] = [{ label: 'View details for ID:', value: 'notificationId' }]
 
-const onPresetChange = (value: unknown) => {
-  store.applyPreset(value as NotificationQueryPreset)
+const mode = ref<QueryMode>(store.preset)
+const userSearch = ref(store.preset === 'userSearch' ? store.userFilter ?? '' : '')
+const notificationIdSearch = ref('')
+
+const userSearchInput = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
+const notificationIdInput = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
+
+// Follow preset changes made elsewhere (e.g. the top-bar bell deep link).
+watch(() => store.preset, (preset) => {
+  mode.value = preset
+})
+
+const onModeChange = (value: unknown) => {
+  mode.value = value as QueryMode
+
+  if (mode.value === 'userSearch') {
+    // Re-run a search that was already typed; otherwise wait for Enter.
+    searchByUser()
+    userSearchInput.value?.focus()
+  } else if (mode.value === 'notificationId') {
+    notificationIdInput.value?.focus()
+  } else {
+    store.applyPreset(mode.value)
+  }
 }
 
-const userSearch = ref('')
-const notificationIdSearch = ref('')
+// Clicking or tabbing into a search field selects its button. It only selects:
+// a user search already typed there runs on Enter, not on focus.
+const selectMode = (value: QueryMode) => {
+  mode.value = value
+}
 
 const searchByUser = () => {
   const user = userSearch.value.trim()
   if (user) {
     store.applyPreset('userSearch', user)
   }
+}
+
+// Clearing keeps user search selected and waits for a new ID, rather than
+// leaving the previous user's results on screen.
+const clearUserSearch = () => {
+  store.applyPreset('userSearch')
 }
 
 const goToNotification = () => {
@@ -97,12 +165,14 @@ const goToNotification = () => {
   padding: 12px 25px;
 }
 
-.bar-content {
+// Sized to its widest row (normally the presets); the search row wraps within
+// that width.
+.query-controls {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .query-presets {
@@ -111,20 +181,23 @@ const goToNotification = () => {
   gap: 0.4rem;
 }
 
-.query-forms {
+.query-searches {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.75rem 1.5rem;
+}
+
+.query-search {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.4rem;
 
-  .search-row {
-    display: flex;
-    align-items: stretch;
-    gap: 0.4rem;
-
-    :deep(input) {
-      min-width: 190px;
-    }
+  // User and notification IDs are short; ~20 characters plus the search and
+  // clear glyphs is plenty.
+  .query-search-input {
+    width: calc(20ch + 5.5rem);
+    min-width: 10rem;
   }
 }
 </style>
