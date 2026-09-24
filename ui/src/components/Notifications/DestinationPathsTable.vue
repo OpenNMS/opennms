@@ -36,26 +36,25 @@
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <OnmsButton
-              variant="text"
-              label="Edit"
+            <OnmsIconButton
+              :title="`Edit ${data.name}`"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-destination-path-button"
+              :icon="EditIcon"
               @click="openEditor(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Test"
+            <OnmsIconButton
+              :title="`Send test notification via ${data.name}`"
               :aria-label="`Send test notification via ${data.name}`"
               data-test="test-destination-path-button"
+              :icon="TestIcon"
               @click="askTest(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Delete"
-              severity="danger"
+            <OnmsIconButton
+              :title="`Delete ${data.name}`"
               :aria-label="`Delete ${data.name}`"
               data-test="delete-destination-path-button"
+              :icon="DeleteIcon"
               @click="askDelete(data)"
             />
           </div>
@@ -101,11 +100,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsConfirmationDialog, OnmsButton, OnmsColumn, OnmsTable } from '@opennms/onms-ui'
+import { OnmsConfirmationDialog, OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 
 import DestinationPathEditorDialog from '@/components/Notifications/DestinationPathEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
+// Placeholder until a dedicated "test/send" icon exists.
+import TestIcon from '@opennms/onms-ui/icons/action/CheckCircle.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath } from '@/types/notificationConfig'
 
@@ -191,6 +194,7 @@ const cancelTest = () => {
 
 .action-container {
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 5px;
 }
 </style>

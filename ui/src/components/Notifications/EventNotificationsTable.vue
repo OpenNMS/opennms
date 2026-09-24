@@ -8,7 +8,7 @@
         @click="openEditor(null)"
       >
         <OnmsIcon :icon="AddIcon" />
-        Add New Event Notification
+        Add Event Notification
       </OnmsButton>
     </div>
 

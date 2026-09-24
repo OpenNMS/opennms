@@ -7,6 +7,12 @@
   <div class="notifications-config-container">
     <div class="page-header">
       <h1 class="page-title">Configure Notifications</h1>
+      <OnmsButton
+        variant="outlined"
+        label="View Notifications"
+        data-test="view-notifications-button"
+        @click="router.push('/admin/notifications')"
+      />
     </div>
 
     <NotificationsConfigTabs />
@@ -15,6 +21,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+import { OnmsButton } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NotificationsConfigTabs from '@/components/Notifications/NotificationsConfigTabs.vue'
@@ -22,6 +31,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const menuStore = useMenuStore()
+const router = useRouter()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
