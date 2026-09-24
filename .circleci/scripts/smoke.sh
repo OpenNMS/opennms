@@ -177,6 +177,18 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
         mkdir -p "$DEST"
         cp -r "${LOGDIR}/." "$DEST/"
       done
+
+      # Minion/Sentinel startup failures are captured under target/logs/startup-failures/<alias>-<id>/,
+      # which carries no test name. The capture logs that path, and the class's report files hold
+      # its stdout, so copy only the startup-failure dirs this class's own output refers to.
+      find "$TEST_EVIDENCE_DIR" -maxdepth 1 -type f \( -name '*.xml' -o -name '*.txt' \) \
+        -exec grep -ohE 'startup-failures/[A-Za-z0-9._-]+' {} + 2>/dev/null \
+        | sort -u | while IFS= read -r SFREL; do
+          find . -type d -path "*/target/logs/${SFREL}" | while IFS= read -r SFDIR; do
+            mkdir -p "$TEST_EVIDENCE_DIR/startup-failures"
+            cp -r "$SFDIR" "$TEST_EVIDENCE_DIR/startup-failures/"
+          done
+        done
     done
 
     # Now delete originals so fresh results are written by the retry
