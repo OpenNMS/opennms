@@ -7,5 +7,7 @@ describe('MinionsAbout.vue', () => {
     const wrapper = mount(MinionsAbout)
     expect(wrapper.text()).toContain('What Minions are')
     expect(wrapper.text()).toContain('How to use this page')
+    expect(wrapper.text()).toContain('Editing is not available on this page')
+    expect(wrapper.text()).toContain('Last heartbeat')
   })
 })

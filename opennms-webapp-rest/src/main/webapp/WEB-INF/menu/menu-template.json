@@ -308,9 +308,9 @@
       "roles": null,
       "items": [
         {
-          "id": "manageMinions",
-          "name": "Manage Minions",
-          "url": "ui/index.html#/admin/minions",
+          "id": "distributedMonitoring",
+          "name": "Distributed Monitoring",
+          "url": "ui/index.html#/distributed-monitoring",
           "locationMatch": "",
           "roles": ["ROLE_ADMIN"]
         },
@@ -320,13 +320,6 @@
           "url": "admin/applications.htm",
           "locationMatch": "",
           "roles": null
-        },
-        {
-          "id": "manageMonitoringLocations",
-          "name": "Manage Monitoring Locations",
-          "url": "ui/index.html#/admin/monitoring-locations",
-          "locationMatch": "",
-          "roles": ["ROLE_ADMIN"]
         }
       ]
     },

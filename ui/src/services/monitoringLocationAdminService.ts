@@ -75,7 +75,9 @@ const createMonitoringLocation = async (location: MonitoringLocation): Promise<V
 // read the current server row first and patch only these — otherwise a stale
 // page snapshot would clobber fields this page never edits (e.g. tags) that
 // changed concurrently.
-const EDITABLE_FIELDS = ['location-name', 'monitoring-area', 'geolocation', 'priority', 'latitude', 'longitude'] as const
+// geolocation, priority, latitude and longitude are not exposed by the editor
+// (NMS-20364), so they always round-trip from the fresh read.
+const EDITABLE_FIELDS = ['location-name', 'monitoring-area' /* , 'geolocation', 'priority', 'latitude', 'longitude' */] as const
 
 // the v2 doUpdate requires a JSON body whose location-name matches the path id
 const updateMonitoringLocation = async (location: MonitoringLocation): Promise<ValidationResult> => {
@@ -109,9 +111,33 @@ const deleteMonitoringLocation = async (name: string): Promise<ValidationResult>
   }
 }
 
+// Characters that are meaningful to the FIQL grammar would change the query, so a
+// location with such a name gets no count rather than a wrong one.
+const FIQL_SAFE_NAME = /^[^,;()=!~<>]+$/
+
+// The node count for one location, read from totalCount of a one-row page of
+// /api/v2/nodes. null when the count could not be determined.
+const getNodeCountByLocation = async (name: string): Promise<number | null> => {
+  if (!FIQL_SAFE_NAME.test(name)) {
+    return null
+  }
+  try {
+    const resp = await v2.get(`/nodes?_s=${encodeURIComponent(`location.locationName==${name}`)}&limit=1`)
+    if (resp.status === 204) {
+      return 0
+    }
+    const total = Number(resp.data?.totalCount)
+    return Number.isFinite(total) ? total : null
+  } catch (err) {
+    console.error(`Error counting nodes in location '${name}':`, err)
+    return null
+  }
+}
+
 export {
   createMonitoringLocation,
   deleteMonitoringLocation,
+  getNodeCountByLocation,
   listMonitoringLocations,
   updateMonitoringLocation
 }

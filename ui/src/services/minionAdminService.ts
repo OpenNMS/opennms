@@ -21,7 +21,7 @@
 ///
 import { Minion, MinionEdit } from '@/types/minionAdmin'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
-import { v2 } from './axiosInstances'
+import { rest, v2 } from './axiosInstances'
 
 // Uses the existing v2 AbstractDaoRestService CRUD at /api/v2/minions.
 
@@ -140,4 +140,18 @@ const deleteMinion = async (id: string): Promise<ValidationResult> => {
   }
 }
 
-export { deleteMinion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }
+// The core's own version from /rest/info, compared verbatim to each minion's
+// reported version (both are the same Maven project version, e.g. 34.0.0-SNAPSHOT),
+// so a mismatch means the minion is not built from the same release as the core.
+const getCoreVersion = async (): Promise<string | null> => {
+  try {
+    const resp = await rest.get('/info')
+    const version = resp.data?.version
+    return typeof version === 'string' && version.trim() ? version.trim() : null
+  } catch (err) {
+    console.error('Error loading the core version:', err)
+    return null
+  }
+}
+
+export { deleteMinion, getCoreVersion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }

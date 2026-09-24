@@ -124,17 +124,13 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h2[text()='Custom Performance Graphs']")));
 
         // Distributed Monitoring
-        clickMenuItem("Distributed Monitoring", "Manage Minions");
-        // now a /ui (Vue) page rather than the legacy JSP breadcrumb
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Minions']")));
+        // the Minions and Monitoring Locations tabs share one /ui (Vue) page
+        clickMenuItem("Distributed Monitoring", "Distributed Monitoring");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Distributed Monitoring']")));
 
         clickMenuItem("Distributed Monitoring", "Manage Applications");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Applications')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Applications']")));
-
-        clickMenuItem("Distributed Monitoring", "Manage Monitoring Locations");
-        // now a /ui (Vue) page rather than the legacy JSP breadcrumb
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Monitoring Locations']")));
 
         // Manage Inventory Menu
         clickMenuItem("Manage Inventory", "Provisioning Requisitions");

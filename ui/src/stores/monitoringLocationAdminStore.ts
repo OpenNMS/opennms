@@ -33,6 +33,19 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
   const totalCount = ref(0)
   // true if the server had more rows than we fetched (the safety cap was hit)
   const truncated = computed(() => locations.value.length < totalCount.value)
+  // location name -> node count; null when the count could not be determined
+  const nodeCounts = ref<Record<string, number | null>>({})
+
+  // one bounded request per location, all in flight together
+  const getNodeCounts = async (): Promise<void> => {
+    const names = locations.value.map(location => location['location-name'])
+    const counts = await Promise.all(names.map(name => API.getNodeCountByLocation(name)))
+    const next: Record<string, number | null> = {}
+    names.forEach((name, index) => {
+      next[name] = counts[index]
+    })
+    nodeCounts.value = next
+  }
 
   // false when the load failed; the previous list is kept
   const getLocations = async (): Promise<boolean> => {
@@ -43,6 +56,7 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
       locations.value = result.locations
       totalCount.value = result.totalCount
       loadError.value = false
+      await getNodeCounts()
     } else {
       loadError.value = true
     }
@@ -79,7 +93,9 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     loading,
     totalCount,
     truncated,
+    nodeCounts,
     getLocations,
+    getNodeCounts,
     createLocation,
     updateLocation,
     deleteLocation

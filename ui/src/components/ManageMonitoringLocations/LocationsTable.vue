@@ -34,9 +34,10 @@
     <OnmsTable
       :value="store.locations"
       v-model:filters="filters"
-      :globalFilterFields="['location-name', 'monitoring-area', 'geolocation']"
+      :globalFilterFields="['location-name', 'monitoring-area']"
       :loading="store.loading"
       :paginator="store.locations.length > 0"
+      :rowClass="rowClass"
       dataKey="location-name"
       sortField="location-name"
       :sortOrder="1"
@@ -52,7 +53,8 @@
         />
       </template>
       <OnmsColumn field="location-name" header="Location Name" sortable />
-      <OnmsColumn field="monitoring-area" header="Monitoring Area" sortable />
+      <OnmsColumn field="monitoring-area" header="Description" sortable />
+      <!--
       <OnmsColumn field="geolocation" header="Geolocation" sortable>
         <template #body="{ data }">{{ data.geolocation ?? '-' }}</template>
       </OnmsColumn>
@@ -63,6 +65,38 @@
         <template #body="{ data }">{{ data.longitude ?? '-' }}</template>
       </OnmsColumn>
       <OnmsColumn field="priority" header="Priority" sortable />
+      -->
+      <OnmsColumn header="Minions">
+        <template #body="{ data }">
+          <div v-if="minionSummary(data['location-name']).total" class="minion-summary">
+            <button
+              type="button"
+              class="link-button"
+              :title="`Show the Minions in ${data['location-name']}`"
+              data-test="location-minions-link"
+              @click="emit('showMinions', data['location-name'])"
+            >{{ minionSummary(data['location-name']).total }} {{ minionSummary(data['location-name']).total === 1 ? 'Minion' : 'Minions' }}</button>
+            <OnmsTag
+              v-if="minionSummary(data['location-name']).down"
+              :value="`${minionSummary(data['location-name']).down} down`"
+              severity="danger"
+              data-test="minions-down-tag"
+            />
+            <OnmsTag
+              v-if="minionSummary(data['location-name']).unknown"
+              :value="`${minionSummary(data['location-name']).unknown} unknown`"
+              severity="warn"
+              data-test="minions-unknown-tag"
+            />
+          </div>
+          <span v-else class="muted" data-test="no-minions">None deployed</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Nodes">
+        <template #body="{ data }">
+          <span data-test="node-count">{{ store.nodeCounts[data['location-name']] ?? '—' }}</span>
+        </template>
+      </OnmsColumn>
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <span
@@ -74,7 +108,8 @@
           <div v-else class="action-container">
             <OnmsIconButton
               :icon="Edit"
-              :title="`Edit ${data['location-name']}`"
+              :disabled="data['location-name'] === DEFAULT_LOCATION"
+              :title="data['location-name'] === DEFAULT_LOCATION ? DEFAULT_LOCATION_NOTE : `Edit ${data['location-name']}`"
               :aria-label="`Edit ${data['location-name']}`"
               data-test="edit-location-button"
               @click="openEditor(data)"
@@ -83,7 +118,7 @@
               :icon="Delete"
               severity="danger"
               :disabled="data['location-name'] === DEFAULT_LOCATION"
-              :title="data['location-name'] === DEFAULT_LOCATION ? 'The Default location cannot be deleted' : `Delete ${data['location-name']}`"
+              :title="data['location-name'] === DEFAULT_LOCATION ? DEFAULT_LOCATION_NOTE : `Delete ${data['location-name']}`"
               :aria-label="`Delete ${data['location-name']}`"
               data-test="delete-location-button"
               @click="askDelete(data)"
@@ -120,7 +155,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -130,19 +165,29 @@ import TableCard from '@/components/Common/TableCard.vue'
 import LocationEditorDialog from '@/components/ManageMonitoringLocations/LocationEditorDialog.vue'
 import LocationsAbout from '@/components/ManageMonitoringLocations/LocationsAbout.vue'
 import { isPathAddressable } from '@/lib/adminValidation'
+import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
 import { MonitoringLocation } from '@/types'
 
-// the built-in location nodes fall back to; nothing server-side protects it
+// the built-in location the core itself runs from and nodes fall back to
 const DEFAULT_LOCATION = 'Default'
+const DEFAULT_LOCATION_NOTE = 'Default is the core location'
+
+const emit = defineEmits<{
+  showMinions: [name: string]
+  dialogOpen: [open: boolean]
+}>()
 
 const store = useMonitoringLocationAdminStore()
+const minionStore = useMinionAdminStore()
 const { showToast } = useOnmsToast()
 
 const showEditor = ref(false)
 const locationToEdit = ref<MonitoringLocation | null>(null)
 const showDeleteConfirmation = ref(false)
 const locationToDelete = ref<MonitoringLocation | null>(null)
+
+watch(() => showEditor.value || showDeleteConfirmation.value, open => emit('dialogOpen', open))
 
 const emptyListContent = { msg: 'No monitoring locations found.' }
 const errorListContent = { msg: 'Could not load monitoring locations. Please retry.' }
@@ -152,6 +197,29 @@ const filters = ref({ global: { value: null as string | null, matchMode: 'contai
 watch(search, (value) => {
   filters.value.global.value = value || null
 })
+
+// lets the Minions tab narrow this table to one location by name
+const searchFor = (name: string) => {
+  search.value = name
+}
+defineExpose({ searchFor })
+
+const rowClass = (data: MonitoringLocation) => data['location-name'] === DEFAULT_LOCATION ? 'default-location-row' : undefined
+
+const minionSummary = (name: string) => {
+  const minions = minionStore.byLocation[name] ?? []
+  let down = 0
+  let unknown = 0
+  for (const minion of minions) {
+    const status = (minion.status ?? '').toLowerCase()
+    if (status === 'down') {
+      down++
+    } else if (status !== 'up') {
+      unknown++
+    }
+  }
+  return { total: minions.length, down, unknown }
+}
 
 const openEditor = (location: MonitoringLocation | null) => {
   locationToEdit.value = location
@@ -221,9 +289,31 @@ const cancelDelete = () => {
   color: var(--p-text-muted-color);
 }
 
-.unaddressable {
+.unaddressable,
+.muted {
   color: var(--p-text-muted-color);
   font-style: italic;
+}
+
+.minion-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--p-primary-color);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+:deep(.default-location-row) > td {
+  color: var(--p-text-muted-color);
 }
 
 .action-container {

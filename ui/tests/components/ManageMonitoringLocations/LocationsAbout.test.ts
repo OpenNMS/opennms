@@ -9,5 +9,6 @@ describe('LocationsAbout.vue', () => {
     expect(wrapper.text()).toContain('How to use this page')
     expect(wrapper.text()).toContain('no nodes are assigned')
     expect(wrapper.text()).toContain('re-registered')
+    expect(wrapper.text()).toContain('Default location is the OpenNMS core itself')
   })
 })

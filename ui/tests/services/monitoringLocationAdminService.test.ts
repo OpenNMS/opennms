@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
 import {
-  createMonitoringLocation, deleteMonitoringLocation, listMonitoringLocations, updateMonitoringLocation
+  createMonitoringLocation, deleteMonitoringLocation, getNodeCountByLocation, listMonitoringLocations, updateMonitoringLocation
 } from '@/services/monitoringLocationAdminService'
 import { v2 } from '@/services/axiosInstances'
 
@@ -59,8 +59,8 @@ describe('monitoringLocationAdminService', () => {
   })
 
   describe('updateMonitoringLocation', () => {
-    it('reads the current row and patches only the editable fields', async () => {
-      // the fresh server row carries a tag this page never edits; it must survive
+    it('reads the current row and patches only the name and description', async () => {
+      // the fresh server row carries fields this page never edits; they must survive
       vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'old', priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] }})
       vi.mocked(v2.put).mockResolvedValue({})
 
@@ -70,19 +70,19 @@ describe('monitoringLocationAdminService', () => {
       const [path, body] = vi.mocked(v2.put).mock.calls[0]
       expect(path).toBe('/monitoringLocations/Raleigh')
       expect(body).toMatchObject({
-        'location-name': 'Raleigh', 'monitoring-area': 'new', priority: 100, latitude: 35, longitude: -78,
-        tags: ['keep-me'] // untouched field round-trips from the fresh read
+        'location-name': 'Raleigh', 'monitoring-area': 'new',
+        priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] // hidden fields round-trip from the fresh read
       })
     })
 
-    it('applies an edited geolocation (regression: it was dropped)', async () => {
-      vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'old address', priority: 100, latitude: 1, longitude: 2 }})
+    it('keeps the server geolocation since the editor no longer exposes it', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'server address', priority: 100, latitude: 1, longitude: 2 }})
       vi.mocked(v2.put).mockResolvedValue({})
 
-      await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: '123 New St', priority: 100, latitude: 1, longitude: 2 } as any)
+      await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'stale client address', priority: 100, latitude: 1, longitude: 2 } as any)
 
       const [, body] = vi.mocked(v2.put).mock.calls[0]
-      expect((body as any).geolocation).toBe('123 New St')
+      expect((body as any).geolocation).toBe('server address')
     })
 
     it('returns the scrubbed server message on failure', async () => {
@@ -119,6 +119,31 @@ describe('monitoringLocationAdminService', () => {
       expect(result.success).toBe(false)
       expect(result.message).not.toContain('<html>')
       expect(result.message).toBe('Monitoring location \'Raleigh\' could not be deleted. Make sure no nodes are assigned to it.')
+    })
+  })
+
+  describe('getNodeCountByLocation', () => {
+    it('asks for a one-row page filtered by location and reads totalCount', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { totalCount: 17, node: [{ id: 1 }] }})
+      expect(await getNodeCountByLocation('Data Center east')).toBe(17)
+      const url = vi.mocked(v2.get).mock.calls[0][0] as string
+      expect(url).toContain('limit=1')
+      expect(decodeURIComponent(url)).toContain('_s=location.locationName==Data Center east')
+    })
+
+    it('maps a 204 (no nodes) to zero', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 204 })
+      expect(await getNodeCountByLocation('Empty')).toBe(0)
+    })
+
+    it('is null on failure, a missing total, or a name that would alter the FIQL query', async () => {
+      vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+      expect(await getNodeCountByLocation('Raleigh')).toBeNull()
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}})
+      expect(await getNodeCountByLocation('Raleigh')).toBeNull()
+      expect(await getNodeCountByLocation('a,b')).toBeNull()
+      expect(await getNodeCountByLocation('east (1)')).toBeNull()
+      expect(v2.get).toHaveBeenCalledTimes(2)
     })
   })
 })

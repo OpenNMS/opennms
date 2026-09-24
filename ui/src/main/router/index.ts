@@ -127,13 +127,13 @@ const router = createRouter({
       }
     },
     {
-      path: '/admin/monitoring-locations',
-      name: 'Manage Monitoring Locations',
-      component: () => import('@/containers/ManageMonitoringLocations.vue'),
+      path: '/distributed-monitoring',
+      name: 'Distributed Monitoring',
+      component: () => import('@/containers/DistributedMonitoring.vue'),
       beforeEnter: (to, from) => {
         const checkRoles = () => {
           if (!adminRole.value) {
-            showSnackBar({ msg: 'Must be admin to manage monitoring locations.' })
+            showSnackBar({ msg: 'Must be admin to manage distributed monitoring.' })
             router.push(from.path)
           }
         }
@@ -144,23 +144,14 @@ const router = createRouter({
         }
       }
     },
+    // the former Manage Minions / Manage Monitoring Locations pages (NMS-20364)
     {
       path: '/admin/minions',
-      name: 'Manage Minions',
-      component: () => import('@/containers/ManageMinions.vue'),
-      beforeEnter: (to, from) => {
-        const checkRoles = () => {
-          if (!adminRole.value) {
-            showSnackBar({ msg: 'Must be admin to manage minions.' })
-            router.push(from.path)
-          }
-        }
-        if (rolesAreLoaded.value) {
-          checkRoles()
-        } else {
-          whenever(rolesAreLoaded, () => checkRoles())
-        }
-      }
+      redirect: { path: '/distributed-monitoring', query: { tab: 'minions' }}
+    },
+    {
+      path: '/admin/monitoring-locations',
+      redirect: { path: '/distributed-monitoring', query: { tab: 'locations' }}
     },
     {
       path: '/configuration',

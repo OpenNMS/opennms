@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
-import { NODE_LOOKUP_CHUNK, deleteMinion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
-import { v2 } from '@/services/axiosInstances'
+import { NODE_LOOKUP_CHUNK, deleteMinion, getCoreVersion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
+import { rest, v2 } from '@/services/axiosInstances'
 
-vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }}))
+vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }, rest: { get: vi.fn() }}))
 
 const http = (status: number) => {
   const e = new AxiosError('x')
@@ -119,5 +119,19 @@ describe('minionAdminService', () => {
     const result = await deleteMinion('m1')
     expect(result.success).toBe(false)
     expect(result.message).toBe('Failed to delete minion \'m1\'.')
+  })
+
+  it('getCoreVersion reads the version field of /rest/info verbatim', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ data: { version: '34.0.0-SNAPSHOT', displayVersion: '34.0.0-SNAPSHOT' }} as any)
+    expect(await getCoreVersion()).toBe('34.0.0-SNAPSHOT')
+    expect(vi.mocked(rest.get).mock.calls[0][0]).toBe('/info')
+  })
+
+  it('getCoreVersion is null when the info endpoint fails or has no version', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(rest.get).mockRejectedValueOnce(http(500))
+    expect(await getCoreVersion()).toBeNull()
+    vi.mocked(rest.get).mockResolvedValueOnce({ data: {}} as any)
+    expect(await getCoreVersion()).toBeNull()
   })
 })

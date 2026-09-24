@@ -9,7 +9,8 @@ vi.mock('@/services', () => ({
     listMonitoringLocations: vi.fn(),
     createMonitoringLocation: vi.fn(),
     updateMonitoringLocation: vi.fn(),
-    deleteMonitoringLocation: vi.fn()
+    deleteMonitoringLocation: vi.fn(),
+    getNodeCountByLocation: vi.fn()
   }
 }))
 
@@ -106,5 +107,22 @@ describe('useMonitoringLocationAdminStore', () => {
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
     await store.getLocations()
     expect(store.truncated).toBe(false)
+  })
+
+  it('getLocations counts the nodes of every loaded location, keeping null for a failed count', async () => {
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default'), loc('Raleigh')], totalCount: 2 })
+    vi.mocked(API.getNodeCountByLocation).mockImplementation(async (name: string) => name === 'Default' ? 12 : null)
+    await store.getLocations()
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(2)
+    expect(store.nodeCounts).toEqual({ Default: 12, Raleigh: null })
+  })
+
+  it('getNodeCounts refreshes the counts on its own', async () => {
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default')], totalCount: 1 })
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(1)
+    await store.getLocations()
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(3)
+    await store.getNodeCounts()
+    expect(store.nodeCounts).toEqual({ Default: 3 })
   })
 })
