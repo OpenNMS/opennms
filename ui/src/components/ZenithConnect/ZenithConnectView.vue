@@ -113,7 +113,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useZenithConnectStore } from '@/stores/zenithConnectStore'
 import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration } from '@/types/zenithConnect'
-import ContentCopy from '@/components/icons/action/ContentCopy.vue'
+import ContentCopy from '@opennms/onms-ui/icons/action/ContentCopy.vue'
 
 const menuStore = useMenuStore()
 const zenithConnectStore = useZenithConnectStore()

@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.jaxrs2.Reader;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
@@ -58,6 +59,10 @@ public final class OpenApiDocGenerator {
 
     /** AbstractStaticOpenApiResource substitutes the caller's base URI for this. */
     public static final String BASE_URI_PLACEHOLDER = "__OPENNMS_BASE_URI__";
+
+    static {
+        ModelConverters.getInstance().addConverter(new WireFormatModelResolver());
+    }
 
     public enum Api {
         V1("OpenNMS V1 RESTful API",

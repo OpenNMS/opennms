@@ -91,6 +91,8 @@ RUN rm -rf /opt/opennms/share/rrd \
             /opt/opennms-jetty-webinf-overlay \
             /opt/opennms-overlay \
             /opennms-data \
+            /opt/opennms/tmp \
+            /opt/opennms/var/activemq \
             /var/log && \
     install -d -m 775 -o 10001 -g 0 \
             /opennms-data/rrd \

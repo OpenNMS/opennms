@@ -2,26 +2,23 @@
   <div class="chart-toolbar">
     <div class="toolbar-row">
       <!--
-        A visible label: the range button shows only the current selection ("Last
-        day"), so without this there is nothing saying what it selects. Not wired up
-        with aria-labelledby, because TimeControls' fallthrough target is a plain
-        div and the attribute would be inert there — associating it properly means
-        changing the shared component, which Resource Graphs needs too.
+        The label is TimeControls' own `label` prop, not a span here: the range
+        button shows only the current selection ("Last day"), so something has to
+        say what it selects, and only the component itself can put aria-labelledby
+        on the button rather than on its plain root div.
       -->
-      <div class="time-range">
-        <span class="time-range-label">Time Range:</span>
-        <TimeControls
-          data-test="toolbar-time-range"
-          @updateTime="(value: StartEndTime) => emit('updateTime', value)"
-        />
-      </div>
+      <TimeControls
+        label="Time Range:"
+        data-test="toolbar-time-range"
+        @updateTime="(value: StartEndTime) => emit('updateTime', value)"
+      />
 
       <div class="toolbar-actions">
         <OnmsIconButton
           variant="outlined"
           :icon="RefreshIcon"
           title="Refresh"
-          v-onms-tooltip="'Redraw the graph with the latest data'"
+          tooltip="Redraw the graph with the latest data"
           :disabled="!canQuery || loading"
           data-test="toolbar-refresh"
           @click="emit('refresh')"
@@ -29,8 +26,7 @@
         <OnmsIconButton
           variant="outlined"
           :icon="DownloadFile"
-          title="Download the graph data as CSV"
-          v-onms-tooltip="'Download the graph data as CSV'"
+          tooltip="Download the graph data as CSV"
           :disabled="!hasData"
           data-test="toolbar-csv"
           @click="emit('exportCsv')"
@@ -38,8 +34,7 @@
         <OnmsIconButton
           variant="outlined"
           :icon="PdfIcon"
-          title="Download this graph as a PDF"
-          v-onms-tooltip="'Download this graph as a PDF'"
+          tooltip="Download this graph as a PDF"
           :disabled="!hasData"
           data-test="toolbar-pdf"
           @click="emit('exportPdf')"
@@ -47,8 +42,7 @@
         <OnmsIconButton
           variant="outlined"
           :icon="LinkIcon"
-          title="Copy a link to this graph"
-          v-onms-tooltip="'Copy a link to this graph'"
+          tooltip="Copy a link to this graph"
           :disabled="!canQuery"
           data-test="toolbar-share"
           @click="emit('share')"
@@ -57,8 +51,7 @@
           v-if="!viewOnly"
           variant="outlined"
           :icon="CodeIcon"
-          title="Show this graph as an RRDtool graph definition"
-          v-onms-tooltip="'Show this graph as an RRDtool graph definition'"
+          tooltip="Show this graph as an RRDtool graph definition"
           :disabled="!canQuery"
           data-test="toolbar-definition"
           @click="emit('showDefinition')"
@@ -67,8 +60,7 @@
           v-if="!viewOnly"
           variant="outlined"
           :icon="expanded ? FullscreenExitIcon : FullscreenIcon"
-          :title="expanded ? 'Show the selectors again' : 'Expand the graph, hiding the selectors'"
-          v-onms-tooltip="expanded ? 'Show the selectors again' : 'Expand the graph, hiding the selectors'"
+          :tooltip="expanded ? 'Show the selectors again' : 'Expand the graph, hiding the selectors'"
           data-test="toolbar-expand"
           @click="emit('toggleExpand')"
         />
@@ -76,8 +68,7 @@
           v-if="!viewOnly"
           variant="outlined"
           :icon="PopOutIcon"
-          title="Open this graph on its own, in a new tab"
-          v-onms-tooltip="'Open this graph on its own, in a new tab'"
+          tooltip="Open this graph on its own, in a new tab"
           :disabled="!canQuery"
           data-test="toolbar-popout"
           @click="emit('popOut')"
@@ -87,7 +78,7 @@
           variant="outlined"
           :icon="CancelIcon"
           title="Clear all"
-          v-onms-tooltip="'Clear every selection and start again'"
+          tooltip="Clear every selection and start again"
           data-test="toolbar-clear"
           @click="emit('clear')"
         />
@@ -161,17 +152,17 @@
 <script setup lang="ts">
 import { OnmsIconButton, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 
-import CancelIcon from '@/components/icons/action/Cancel.vue'
-import DownloadFile from '@/components/icons/action/DownloadFile.vue'
-import RefreshIcon from '@/components/icons/navigation/Refresh.vue'
-import CodeIcon from '@/components/icons/action/Code.vue'
-import PopOutIcon from '@/components/icons/action/Expand.vue'
-import FullscreenIcon from '@/components/icons/navigation/Fullscreen.vue'
-import FullscreenExitIcon from '@/components/icons/navigation/FullscreenExit.vue'
-import LinkIcon from '@/components/icons/action/Link.vue'
-import PdfIcon from '@/components/icons/file/Pdf.vue'
+import CancelIcon from '@opennms/onms-ui/icons/action/Cancel.vue'
+import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
+import CodeIcon from '@opennms/onms-ui/icons/action/Code.vue'
+import PopOutIcon from '@opennms/onms-ui/icons/action/Expand.vue'
+import FullscreenIcon from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
+import FullscreenExitIcon from '@opennms/onms-ui/icons/navigation/FullscreenExit.vue'
+import LinkIcon from '@opennms/onms-ui/icons/action/Link.vue'
+import PdfIcon from '@opennms/onms-ui/icons/file/Pdf.vue'
 import FormField from '@/components/Common/FormField.vue'
-import TimeControls from '@/components/Resources/TimeControls.vue'
+import TimeControls from '@/components/Common/TimeControls.vue'
 import { StartEndTime } from '@/types'
 import { AdhocGraphConfig } from '@/types/adhocGraph'
 import { DEFAULT_RESOLUTION, MAX_RESOLUTION } from './utils/adhocQuery'
@@ -222,19 +213,6 @@ const emit = defineEmits<{
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-}
-
-// Every control on this row is now the same height, so the label sits beside the
-// range button rather than above it.
-.time-range {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  .time-range-label {
-    font-weight: 700;
-    white-space: nowrap;
-  }
 }
 
 .toolbar-fields {

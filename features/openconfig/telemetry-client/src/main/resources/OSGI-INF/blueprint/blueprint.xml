@@ -10,8 +10,9 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-  <service interface="org.opennms.features.openconfig.api.OpenConfigClientFactory">
-    <bean class="org.opennms.features.openconfig.telemetry.OpenConfigClientFactoryImpl"/>
-  </service>
+  <bean id="openConfigClientFactory" class="org.opennms.features.openconfig.telemetry.OpenConfigClientFactoryImpl"
+        destroy-method="shutdown"/>
+
+  <service ref="openConfigClientFactory" interface="org.opennms.features.openconfig.api.OpenConfigClientFactory"/>
 
 </blueprint>

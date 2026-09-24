@@ -21,14 +21,18 @@
  */
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="application-edge")
+@Schema(description = "An edge pointing at an application.")
 public class ApplicationEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     private Integer applicationId;
 
+    @Schema(description = "Application id, as returned by `/api/v2/applications`.",
+            example = "1", required = true)
     @XmlElement(name="application-id",required = true)
     public Integer getApplicationId() {
         return applicationId;

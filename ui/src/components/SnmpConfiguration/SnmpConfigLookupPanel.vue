@@ -82,7 +82,7 @@
 import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsIcon, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import useSnackbar from '@/composables/useSnackbar'

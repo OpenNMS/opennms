@@ -31,12 +31,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.rest.v1.model.WhoamiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,6 +60,32 @@ public class WhoamiRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/")
+    @Operation(
+            summary = "Describe the authenticated user",
+            description = """
+        Report the login name of the authenticated principal together with the roles it holds. Roles are
+        filtered against the set OpenNMS knows about, so a role granted by an external authentication
+        source that OpenNMS does not define is not listed.
+
+        `internal` says whether the principal is defined in users.xml. `email` and `fullName` are present
+        only for internal users, and only when the corresponding field is set.""",
+            operationId = "whoami"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Identity of the authenticated principal.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = WhoamiResponse.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": "admin",
+                      "roles": [
+                        "ROLE_USER",
+                        "ROLE_ADMIN"
+                      ],
+                      "internal": true,
+                      "fullName": "Administrator"
+                    }""")))
+    })
     public Response whoami(@Context final SecurityContext securityContext) {
         final String userName = securityContext.getUserPrincipal().getName();
         final JSONArray userRoles = new JSONArray();

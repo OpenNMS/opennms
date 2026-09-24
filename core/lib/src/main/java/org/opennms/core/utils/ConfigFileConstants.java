@@ -358,16 +358,6 @@ public abstract class ConfigFileConstants {
 
     
     /**
-     * The NSClient data collection configuration file
-     */
-    public static final int NSCLIENT_COLLECTION_CONFIG_FILE_NAME;
-
-    /**
-     * The NSClient data collection configuration file
-     */
-    public static final int NSCLIENT_CONFIG_FILE_NAME;
-
-    /**
      * The SNMP Asset Provisioning Adapter configuration file
      */
     public static final int SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME;
@@ -473,10 +463,6 @@ public abstract class ConfigFileConstants {
         
         HTTP_COLLECTION_CONFIG_FILE_NAME = 64;
         
-        NSCLIENT_COLLECTION_CONFIG_FILE_NAME = 65;
-        
-        NSCLIENT_CONFIG_FILE_NAME = 66;
-
         OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 69;
         
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
@@ -565,8 +551,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
         FILE_ID_TO_NAME[HTTP_COLLECTION_CONFIG_FILE_NAME] = "http-datacollection-config.xml";
-        FILE_ID_TO_NAME[NSCLIENT_COLLECTION_CONFIG_FILE_NAME] = "nsclient-datacollection-config.xml";
-        FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";

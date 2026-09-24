@@ -80,7 +80,7 @@ public class MemoryDataBlock<T> implements DataBlock<T> {
             return;
         }
         if (nextDataBlock instanceof OffHeapDataBlock) {
-            OffHeapDataBlock.executorService.submit(() -> {
+            OffHeapDataBlock.prefetchExecutorService.submit(() -> {
                 try {
                     ((OffHeapDataBlock<T>) nextDataBlock).enableQueue();
                 } catch (ReadFailedException | InterruptedException e) {

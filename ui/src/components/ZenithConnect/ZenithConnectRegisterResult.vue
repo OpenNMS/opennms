@@ -83,7 +83,7 @@
 import { computed, markRaw, onMounted, ref } from 'vue'
 
 import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
-import ContentCopy from '@/components/icons/action/ContentCopy.vue'
+import ContentCopy from '@opennms/onms-ui/icons/action/ContentCopy.vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'

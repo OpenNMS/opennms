@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -84,6 +85,11 @@ import io.opentracing.util.GlobalTracer;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
     private static final Duration CONSUMER_POLL_DURATION = Duration.ofMillis(100);
+
+    private static final long SHUTDOWN_TIMEOUT_MS = 30000;
+
+    // Starting a consumer is quick, so this only has to cover a task that is already in flight
+    private static final long STARTUP_SHUTDOWN_TIMEOUT_MS = 5000;
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaMessageConsumerManager.class);
 
@@ -167,25 +173,40 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                             kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
                                     continue;
                                 }
-                                // Avoid duplicate chunks. discard if chunk is repeated.
-                                Integer chunkNum = currentChunkCache.getIfPresent(messageId);
-                                if (chunkNum == null) {
-                                    currentChunkCache.put(messageId, 0);
-                                    chunkNum = 0;
+                                // Chunks are numbered from 0 and must arrive in order. Only the chunk we are
+                                // expecting is appended.
+                                Integer expectedChunk = currentChunkCache.getIfPresent(messageId);
+                                if (expectedChunk == null) {
+                                    expectedChunk = 0;
                                 }
-
-                                if(chunkNum == sinkMessage.getCurrentChunkNumber()) {
+                                int currentChunk = sinkMessage.getCurrentChunkNumber();
+                                if (currentChunk < expectedChunk) {
+                                    // Redelivered chunk we already have, nothing to do.
+                                    LOG.debug("Duplicate chunk {} for message {}, expected chunk {}, ignoring.",
+                                            currentChunk, messageId, expectedChunk);
+                                    continue;
+                                }
+                                if (currentChunk > expectedChunk) {
+                                    // A chunk was skipped; this message can no longer be completed and its
+                                    // partial content will be discarded when the cache entry expires.
+                                    LOG.warn("Missing chunk {} for message {}, got chunk {} of {}. Message will be dropped.",
+                                            expectedChunk, messageId, currentChunk, sinkMessage.getTotalChunks());
                                     continue;
                                 }
                                 ByteString byteString = largeMessageCache.getIfPresent(messageId);
-                                if(byteString != null) {
-                                    largeMessageCache.put(messageId, byteString.concat(sinkMessage.getContent()));
-                                } else {
-                                    largeMessageCache.put(messageId, sinkMessage.getContent());
+                                if (expectedChunk > 0 && byteString == null) {
+                                    LOG.warn("Buffered content for message {} was evicted after {} chunks, dropping the message.",
+                                            messageId, expectedChunk);
+                                    currentChunkCache.invalidate(messageId);
+                                    continue;
                                 }
-                                currentChunkCache.put(messageId, ++chunkNum);
+                                largeMessageCache.put(messageId, expectedChunk == 0
+                                        ? sinkMessage.getContent()
+                                        : byteString.concat(sinkMessage.getContent()));
+                                int receivedChunks = expectedChunk + 1;
+                                currentChunkCache.put(messageId, receivedChunks);
                                 // continue till all chunks arrive.
-                                if (sinkMessage.getTotalChunks() != chunkNum) {
+                                if (sinkMessage.getTotalChunks() != receivedChunks) {
                                     continue;
                                 }
                                 byteString = largeMessageCache.getIfPresent(messageId);
@@ -262,7 +283,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             for (int i = 0; i < numConsumerThreads; i++) {
                 final KafkaConsumerRunner consumerRunner = new KafkaConsumerRunner(module);
                 executor.execute(consumerRunner);
-                consumerRunners.add(new KafkaConsumerRunner(module));
+                consumerRunners.add(consumerRunner);
             }
 
             consumerRunnersByModule.put(module, consumerRunners);
@@ -302,12 +323,40 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     public void shutdown() {
+        // Drain the starter threads first: startConsumingForModule() otherwise races us and can
+        // register consumers that nothing is left to stop.
+        final ExecutorService startupExecutor = getStartupExecutor();
+        if (startupExecutor != null) {
+            startupExecutor.shutdown();
+            awaitTermination(startupExecutor, STARTUP_SHUTDOWN_TIMEOUT_MS, "Sink consumer starters");
+        }
+
+        // The runners only leave their poll loop via shutdown(); executor.shutdown() on its own
+        // does not interrupt them, so wake them before waiting on the executor.
+        for (List<KafkaConsumerRunner> consumerRunners : consumerRunnersByModule.values()) {
+            for (KafkaConsumerRunner consumerRunner : consumerRunners) {
+                consumerRunner.shutdown();
+            }
+        }
+        consumerRunnersByModule.clear();
+
         executor.shutdown();
+        awaitTermination(executor, SHUTDOWN_TIMEOUT_MS, "Sink consumers");
+
         if (jmxReporter != null) {
             jmxReporter.close();
         }
-        if(getStartupExecutor() != null) {
-            getStartupExecutor().shutdown();
+    }
+
+    private static void awaitTermination(ExecutorService executorService, long timeoutMs, String description) {
+        try {
+            if (!executorService.awaitTermination(timeoutMs, TimeUnit.MILLISECONDS)) {
+                LOG.warn("{} did not stop within {}ms. Interrupting them.", description, timeoutMs);
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 
