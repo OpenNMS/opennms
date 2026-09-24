@@ -217,7 +217,7 @@
     <!-- Distributed Monitoring Card -->
     <action>
         <label>Manage Monitoring Locations</label>
-        <url>ui/index.html#/admin/monitoring-locations</url>
+        <url>ui/index.html#/distributed-monitoring?tab=locations</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -231,7 +231,7 @@
     </action>
     <action>
         <label>Manage Minions</label>
-        <url>ui/index.html#/admin/minions</url>
+        <url>ui/index.html#/distributed-monitoring?tab=minions</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

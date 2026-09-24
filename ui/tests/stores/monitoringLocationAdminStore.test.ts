@@ -9,7 +9,10 @@ vi.mock('@/services', () => ({
     listMonitoringLocations: vi.fn(),
     createMonitoringLocation: vi.fn(),
     updateMonitoringLocation: vi.fn(),
-    deleteMonitoringLocation: vi.fn()
+    deleteMonitoringLocation: vi.fn(),
+    getNodeCountByLocation: vi.fn(),
+    getApplicationsUsingPerspective: vi.fn(),
+    getPerspectiveOutageCount: vi.fn()
   }
 }))
 
@@ -106,5 +109,92 @@ describe('useMonitoringLocationAdminStore', () => {
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
     await store.getLocations()
     expect(store.truncated).toBe(false)
+  })
+
+  it('getLocations does not count nodes; getNodeCounts does, keeping null for a failed count', async () => {
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default'), loc('Raleigh')], totalCount: 2 })
+    vi.mocked(API.getNodeCountByLocation).mockImplementation(async (name: string) => name === 'Default' ? 12 : null)
+    await store.getLocations()
+    expect(API.getNodeCountByLocation).not.toHaveBeenCalled()
+    expect(store.nodeCounts).toEqual({})
+
+    await store.getNodeCounts()
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(2)
+    expect(store.nodeCounts).toEqual({ Default: 12, Raleigh: null })
+  })
+
+  it('getNodeCounts lets only the newest batch commit when an older one finishes later', async () => {
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default')], totalCount: 1 })
+    await store.getLocations()
+    const pending: ((count: number) => void)[] = []
+    vi.mocked(API.getNodeCountByLocation).mockImplementation(() => new Promise<number>((resolve) => {
+      pending.push(resolve)
+    }))
+    const first = store.getNodeCounts()
+    const second = store.getNodeCounts()
+    pending[1](5)
+    await second
+    expect(store.nodeCounts).toEqual({ Default: 5 })
+    pending[0](1)
+    await first
+    expect(store.nodeCounts).toEqual({ Default: 5 })
+  })
+
+  it('mutations refresh the counts only while countsEnabled, and a delete drops the name at once', async () => {
+    vi.mocked(API.createMonitoringLocation).mockResolvedValue(ok)
+    vi.mocked(API.updateMonitoringLocation).mockResolvedValue(ok)
+    vi.mocked(API.deleteMonitoringLocation).mockResolvedValue(ok)
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(2)
+
+    await store.createLocation(loc('A'))
+    expect(API.getNodeCountByLocation).not.toHaveBeenCalled()
+
+    store.countsEnabled = true
+    await store.createLocation(loc('A'))
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(1)
+    expect(store.nodeCounts).toEqual({ A: 2 })
+    await store.updateLocation(loc('A'))
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(2)
+
+    store.nodeCounts = { A: 2, B: 7 }
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
+    await store.deleteLocation('B')
+    expect(store.nodeCounts).toEqual({ A: 2 })
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(3)
+
+    store.countsEnabled = false
+    store.nodeCounts = { A: 2, B: 7 }
+    await store.deleteLocation('B')
+    expect(store.nodeCounts).toEqual({ A: 2 })
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(3)
+  })
+
+  it('getNodeCounts replaces the previous counts', async () => {
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default')], totalCount: 1 })
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(1)
+    await store.getLocations()
+    await store.getNodeCounts()
+    expect(store.nodeCounts).toEqual({ Default: 1 })
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(3)
+    await store.getNodeCounts()
+    expect(store.nodeCounts).toEqual({ Default: 3 })
+  })
+
+  it('getNodeCount always fetches, even when the tab holds a count, and leaves that count alone', async () => {
+    store.nodeCounts = { Raleigh: 3 }
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(9)
+    expect(await store.getNodeCount('Raleigh')).toBe(9)
+    expect(API.getNodeCountByLocation).toHaveBeenCalledWith('Raleigh')
+    expect(store.nodeCounts).toEqual({ Raleigh: 3 })
+  })
+
+  it('passes the perspective lookups through to the service', async () => {
+    vi.mocked(API.getApplicationsUsingPerspective).mockResolvedValue([{ id: 1, name: 'Web' }])
+    vi.mocked(API.getPerspectiveOutageCount).mockResolvedValue(4)
+    expect(await store.getApplicationsUsingPerspective('Raleigh')).toEqual([{ id: 1, name: 'Web' }])
+    expect(await store.getPerspectiveOutageCount('Raleigh')).toBe(4)
+    expect(API.getApplicationsUsingPerspective).toHaveBeenCalledWith('Raleigh')
+    expect(API.getPerspectiveOutageCount).toHaveBeenCalledWith('Raleigh')
   })
 })

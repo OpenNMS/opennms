@@ -5,7 +5,7 @@ import API from '@/services'
 import { Minion } from '@/types/minionAdmin'
 
 vi.mock('@/services', () => ({
-  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn() }
+  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn(), getAlarmCountForMinion: vi.fn(), getMinion: vi.fn() }
 }))
 
 const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {}})
@@ -73,5 +73,36 @@ describe('useMinionAdminStore', () => {
     vi.mocked(API.deleteMinion).mockResolvedValue(failed('nope'))
     expect(await store.deleteMinion('m1')).toEqual({ success: false, message: 'nope' })
     expect(API.listMinions).not.toHaveBeenCalled()
+  })
+
+  it('getCoreVersion stores the core version, null when it is unavailable', async () => {
+    vi.mocked(API.getCoreVersion).mockResolvedValue('34.0.0')
+    expect(await store.getCoreVersion()).toBe('34.0.0')
+    expect(store.coreVersion).toBe('34.0.0')
+    vi.mocked(API.getCoreVersion).mockResolvedValue(null)
+    expect(await store.getCoreVersion()).toBeNull()
+    expect(store.coreVersion).toBeNull()
+  })
+
+  it('byLocation groups the loaded minions by location name', async () => {
+    vi.mocked(API.listMinions).mockResolvedValue(listResult([minion('m1'), minion('m2', 'RemoteA'), minion('m3', 'RemoteA'), { ...minion('m4'), location: null }]))
+    await store.getMinions()
+    expect(Object.keys(store.byLocation).sort()).toEqual(['', 'Default', 'RemoteA'])
+    expect(store.byLocation.RemoteA.map(m => m.id)).toEqual(['m2', 'm3'])
+    expect(store.byLocation.Default.map(m => m.id)).toEqual(['m1'])
+  })
+
+  it('getAlarmCount passes through to the service', async () => {
+    vi.mocked(API.getAlarmCountForMinion).mockResolvedValue(7)
+    expect(await store.getAlarmCount('m1')).toBe(7)
+    expect(API.getAlarmCountForMinion).toHaveBeenCalledWith('m1')
+  })
+
+  it('getMinion passes through to the service without touching the list', async () => {
+    store.minions = [minion('m1')]
+    vi.mocked(API.getMinion).mockResolvedValue({ ...minion('m1'), status: 'DOWN' })
+    expect(await store.getMinion('m1')).toEqual({ ...minion('m1'), status: 'DOWN' })
+    expect(API.getMinion).toHaveBeenCalledWith('m1')
+    expect(store.minions[0].status).toBe('UP')
   })
 })

@@ -75,7 +75,9 @@ const createMonitoringLocation = async (location: MonitoringLocation): Promise<V
 // read the current server row first and patch only these — otherwise a stale
 // page snapshot would clobber fields this page never edits (e.g. tags) that
 // changed concurrently.
-const EDITABLE_FIELDS = ['location-name', 'monitoring-area', 'geolocation', 'priority', 'latitude', 'longitude'] as const
+// geolocation, priority, latitude and longitude are not exposed by the editor
+// (NMS-20364), so they always round-trip from the fresh read.
+const EDITABLE_FIELDS = ['location-name', 'monitoring-area' /* , 'geolocation', 'priority', 'latitude', 'longitude' */] as const
 
 // the v2 doUpdate requires a JSON body whose location-name matches the path id
 const updateMonitoringLocation = async (location: MonitoringLocation): Promise<ValidationResult> => {
@@ -109,9 +111,80 @@ const deleteMonitoringLocation = async (name: string): Promise<ValidationResult>
   }
 }
 
+// Characters that are meaningful to the FIQL grammar would change the query, and
+// * becomes a LIKE wildcard server-side, so such a name gets no count rather
+// than a wrong one.
+const FIQL_SAFE_NAME = /^[^,;()=!~<>*]+$/
+
+// The node count for one location, read from totalCount of a one-row page of
+// /api/v2/nodes. null when the count could not be determined.
+const getNodeCountByLocation = async (name: string): Promise<number | null> => {
+  if (!FIQL_SAFE_NAME.test(name)) {
+    return null
+  }
+  try {
+    const resp = await v2.get(`/nodes?_s=${encodeURIComponent(`location.locationName==${name}`)}&limit=1`)
+    if (resp.status === 204) {
+      return 0
+    }
+    const total = Number(resp.data?.totalCount)
+    return Number.isFinite(total) ? total : null
+  } catch (err) {
+    console.error(`Error counting nodes in location '${name}':`, err)
+    return null
+  }
+}
+
+// The applications that poll from this location as a perspective, from the
+// JSON rendering of /api/v2/applications (perspectiveLocations carries full
+// location objects there). null when the list could not be read, or when the
+// server holds more applications than one page returned.
+const getApplicationsUsingPerspective = async (name: string): Promise<{ id: number; name: string }[] | null> => {
+  try {
+    const resp = await v2.get(`/applications?limit=${LIST_CAP}`)
+    if (resp.status === 204) {
+      return []
+    }
+    const raw = resp.data?.application ?? []
+    const applications: any[] = Array.isArray(raw) ? raw : [raw]
+    const total = Number(resp.data?.totalCount)
+    if (Number.isFinite(total) && total > applications.length) {
+      return null
+    }
+    return applications
+      .filter(app => (app.perspectiveLocations ?? []).some((location: any) => location?.['location-name'] === name))
+      .map(app => ({ id: Number(app.id), name: String(app.name ?? app.id) }))
+  } catch (err) {
+    console.error(`Error listing the applications using '${name}' as a perspective:`, err)
+    return null
+  }
+}
+
+// Outages recorded from this location's perspective, read from totalCount of a
+// one-row page of /api/v2/outages. null when the count could not be determined.
+const getPerspectiveOutageCount = async (name: string): Promise<number | null> => {
+  if (!FIQL_SAFE_NAME.test(name)) {
+    return null
+  }
+  try {
+    const resp = await v2.get(`/outages?_s=${encodeURIComponent(`perspective.locationName==${name}`)}&limit=1`)
+    if (resp.status === 204) {
+      return 0
+    }
+    const total = Number(resp.data?.totalCount)
+    return Number.isFinite(total) ? total : null
+  } catch (err) {
+    console.error(`Error counting perspective outages for location '${name}':`, err)
+    return null
+  }
+}
+
 export {
   createMonitoringLocation,
   deleteMonitoringLocation,
+  getApplicationsUsingPerspective,
+  getNodeCountByLocation,
+  getPerspectiveOutageCount,
   listMonitoringLocations,
   updateMonitoringLocation
 }

@@ -34,6 +34,9 @@ import { getMonitoringLocations } from './monitoringLocationService'
 import {
   createMonitoringLocation,
   deleteMonitoringLocation,
+  getApplicationsUsingPerspective,
+  getNodeCountByLocation,
+  getPerspectiveOutageCount,
   listMonitoringLocations,
   updateMonitoringLocation
 } from './monitoringLocationAdminService'
@@ -83,7 +86,7 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
-import { deleteMinion, getMinionNodeIds, listMinions, updateMinion } from './minionAdminService'
+import { deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions, updateMinion } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
@@ -132,9 +135,12 @@ import {
 
 export default {
   getMinionNodeIds,
+  getCoreVersion,
   listMinions,
   updateMinion,
   deleteMinion,
+  getAlarmCountForMinion,
+  getMinion,
   search,
   getSystemReportPlugins,
   getSystemReportFormatters,
@@ -161,6 +167,9 @@ export default {
   getMonitoringLocations,
   createMonitoringLocation,
   deleteMonitoringLocation,
+  getApplicationsUsingPerspective,
+  getNodeCountByLocation,
+  getPerspectiveOutageCount,
   listMonitoringLocations,
   updateMonitoringLocation,
   getLog,

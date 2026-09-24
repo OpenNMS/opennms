@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
 import {
-  createMonitoringLocation, deleteMonitoringLocation, listMonitoringLocations, updateMonitoringLocation
+  createMonitoringLocation, deleteMonitoringLocation, getApplicationsUsingPerspective, getNodeCountByLocation, getPerspectiveOutageCount,
+  listMonitoringLocations, updateMonitoringLocation
 } from '@/services/monitoringLocationAdminService'
 import { v2 } from '@/services/axiosInstances'
 
@@ -59,8 +60,8 @@ describe('monitoringLocationAdminService', () => {
   })
 
   describe('updateMonitoringLocation', () => {
-    it('reads the current row and patches only the editable fields', async () => {
-      // the fresh server row carries a tag this page never edits; it must survive
+    it('reads the current row and patches only the name and description', async () => {
+      // the fresh server row carries fields this page never edits; they must survive
       vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'old', priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] }})
       vi.mocked(v2.put).mockResolvedValue({})
 
@@ -70,19 +71,19 @@ describe('monitoringLocationAdminService', () => {
       const [path, body] = vi.mocked(v2.put).mock.calls[0]
       expect(path).toBe('/monitoringLocations/Raleigh')
       expect(body).toMatchObject({
-        'location-name': 'Raleigh', 'monitoring-area': 'new', priority: 100, latitude: 35, longitude: -78,
-        tags: ['keep-me'] // untouched field round-trips from the fresh read
+        'location-name': 'Raleigh', 'monitoring-area': 'new',
+        priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] // hidden fields round-trip from the fresh read
       })
     })
 
-    it('applies an edited geolocation (regression: it was dropped)', async () => {
-      vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'old address', priority: 100, latitude: 1, longitude: 2 }})
+    it('keeps the server geolocation since the editor no longer exposes it', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'server address', priority: 100, latitude: 1, longitude: 2 }})
       vi.mocked(v2.put).mockResolvedValue({})
 
-      await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: '123 New St', priority: 100, latitude: 1, longitude: 2 } as any)
+      await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'stale client address', priority: 100, latitude: 1, longitude: 2 } as any)
 
       const [, body] = vi.mocked(v2.put).mock.calls[0]
-      expect((body as any).geolocation).toBe('123 New St')
+      expect((body as any).geolocation).toBe('server address')
     })
 
     it('returns the scrubbed server message on failure', async () => {
@@ -119,6 +120,89 @@ describe('monitoringLocationAdminService', () => {
       expect(result.success).toBe(false)
       expect(result.message).not.toContain('<html>')
       expect(result.message).toBe('Monitoring location \'Raleigh\' could not be deleted. Make sure no nodes are assigned to it.')
+    })
+  })
+
+  describe('getNodeCountByLocation', () => {
+    it('asks for a one-row page filtered by location and reads totalCount', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { totalCount: 17, node: [{ id: 1 }] }})
+      expect(await getNodeCountByLocation('Data Center east')).toBe(17)
+      const url = vi.mocked(v2.get).mock.calls[0][0] as string
+      expect(url).toContain('limit=1')
+      expect(decodeURIComponent(url)).toContain('_s=location.locationName==Data Center east')
+    })
+
+    it('maps a 204 (no nodes) to zero', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 204 })
+      expect(await getNodeCountByLocation('Empty')).toBe(0)
+    })
+
+    it('is null on failure, a missing total, or a name that would alter the FIQL query', async () => {
+      vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+      expect(await getNodeCountByLocation('Raleigh')).toBeNull()
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}})
+      expect(await getNodeCountByLocation('Raleigh')).toBeNull()
+      expect(await getNodeCountByLocation('a,b')).toBeNull()
+      expect(await getNodeCountByLocation('east (1)')).toBeNull()
+      // * is a LIKE wildcard server-side, so the count would be wrong rather than fail
+      expect(await getNodeCountByLocation('dc-*')).toBeNull()
+      expect(v2.get).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('getApplicationsUsingPerspective', () => {
+    const app = (id: number, name: string, ...locations: string[]) =>
+      ({ id, name, perspectiveLocations: locations.map(l => ({ 'location-name': l, 'monitoring-area': l })) })
+
+    it('lists the applications whose JSON perspectiveLocations carry the location name', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { application: [
+        app(1, 'Web Shop', 'Default', 'Raleigh'), app(2, 'Mail', 'Default'), app(3, 'VPN', 'Raleigh'), { id: 4, name: 'Bare' }
+      ] }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([{ id: 1, name: 'Web Shop' }, { id: 3, name: 'VPN' }])
+      const url = vi.mocked(v2.get).mock.calls[0][0] as string
+      expect(url).toMatch(/^\/applications\?limit=\d+$/)
+    })
+
+    it('is null when the server holds more applications than the page returned', async () => {
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { totalCount: 3, application: [app(1, 'Web Shop', 'Raleigh'), app(2, 'Mail', 'Raleigh')] }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toBeNull()
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { totalCount: 2, application: [app(1, 'Web Shop', 'Raleigh'), app(2, 'Mail', 'Default')] }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([{ id: 1, name: 'Web Shop' }])
+    })
+
+    it('is empty on a 204 or a single application that does not use it, and null on failure', async () => {
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 })
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([])
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { application: app(2, 'Mail', 'Default') }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([])
+      vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+      expect(await getApplicationsUsingPerspective('Raleigh')).toBeNull()
+    })
+  })
+
+  describe('getPerspectiveOutageCount', () => {
+    it('asks for a one-row page of outages filtered by perspective and reads totalCount', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { totalCount: 5, outage: [{ id: 1 }] }})
+      expect(await getPerspectiveOutageCount('Data Center east')).toBe(5)
+      const url = vi.mocked(v2.get).mock.calls[0][0] as string
+      expect(url.startsWith('/outages?')).toBe(true)
+      expect(url).toContain('limit=1')
+      expect(decodeURIComponent(url)).toContain('_s=perspective.locationName==Data Center east')
+    })
+
+    it('maps a 204 to zero', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 204 })
+      expect(await getPerspectiveOutageCount('Raleigh')).toBe(0)
+    })
+
+    it('is null on failure, a missing total, or a name that would alter the FIQL query', async () => {
+      vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+      expect(await getPerspectiveOutageCount('Raleigh')).toBeNull()
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}})
+      expect(await getPerspectiveOutageCount('Raleigh')).toBeNull()
+      expect(await getPerspectiveOutageCount('a;b')).toBeNull()
+      expect(await getPerspectiveOutageCount('dc-*')).toBeNull()
+      expect(v2.get).toHaveBeenCalledTimes(2)
     })
   })
 })

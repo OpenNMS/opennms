@@ -34,6 +34,18 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
   const truncated = computed(() => minions.value.length < totalCount.value)
   // minion id+location -> its requisition node id, for the ID -> node link
   const nodeIdByMinion = ref<Record<string, number>>({})
+  // the core's version, null until loaded or when /rest/info is unreachable
+  const coreVersion = ref<string | null>(null)
+
+  // minions grouped by location name, for the Monitoring locations tab
+  const byLocation = computed<Record<string, Minion[]>>(() => {
+    const groups: Record<string, Minion[]> = {}
+    for (const minion of minions.value) {
+      const key = minion.location ?? ''
+      ;(groups[key] ??= []).push(minion)
+    }
+    return groups
+  })
 
   // false when the load failed; the previous list is kept
   const getMinions = async (): Promise<boolean> => {
@@ -57,6 +69,11 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
   const nodeIdFor = (minion: Minion): number | undefined =>
     nodeIdByMinion.value[minionNodeKey(minion.id, minion.location)]
 
+  const getCoreVersion = async (): Promise<string | null> => {
+    coreVersion.value = await API.getCoreVersion()
+    return coreVersion.value
+  }
+
   const updateMinion = async (edit: MinionEdit): Promise<ValidationResult> => {
     const result = await API.updateMinion(edit)
     if (result.success) {
@@ -64,6 +81,10 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
     }
     return result
   }
+
+  const getAlarmCount = (id: string) => API.getAlarmCountForMinion(id)
+
+  const getMinion = (id: string) => API.getMinion(id)
 
   const deleteMinion = async (id: string): Promise<ValidationResult> => {
     const result = await API.deleteMinion(id)
@@ -79,9 +100,14 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
     isLoading,
     totalCount,
     truncated,
+    coreVersion,
+    byLocation,
     nodeIdFor,
     getMinions,
+    getCoreVersion,
     updateMinion,
+    getAlarmCount,
+    getMinion,
     deleteMinion
   }
 })
