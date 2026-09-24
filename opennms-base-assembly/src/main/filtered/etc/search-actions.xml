@@ -217,7 +217,7 @@
     <!-- Distributed Monitoring Card -->
     <action>
         <label>Manage Monitoring Locations</label>
-        <url>locations/index.jsp</url>
+        <url>ui/index.html#/admin/monitoring-locations</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
