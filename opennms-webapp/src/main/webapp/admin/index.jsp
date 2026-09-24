@@ -228,7 +228,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
-            <li><a href="minion/index.jsp">Manage Minions</a></li>
+            <li><a href="ui/index.html#/admin/minions">Manage Minions</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
