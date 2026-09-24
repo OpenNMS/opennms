@@ -55,9 +55,9 @@ import { ref, watch } from 'vue'
 
 import { OnmsDialog, OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggleSwitch } from '@opennms/onms-ui'
 
-import DestinationPathsTable from '@/components/AdminNotifications/DestinationPathsTable.vue'
-import EventNotificationsTable from '@/components/AdminNotifications/EventNotificationsTable.vue'
-import PathOutagesTab from '@/components/AdminNotifications/PathOutagesTab.vue'
+import DestinationPathsTable from '@/components/Notifications/DestinationPathsTable.vue'
+import EventNotificationsTable from '@/components/Notifications/EventNotificationsTable.vue'
+import PathOutagesTab from '@/components/Notifications/PathOutagesTab.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
 

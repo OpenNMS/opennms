@@ -165,7 +165,7 @@ import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
-import TargetRowEditor, { MethodOption, TargetRow } from '@/components/AdminNotifications/TargetRowEditor.vue'
+import TargetRowEditor, { MethodOption, TargetRow } from '@/components/Notifications/TargetRowEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import { NOTIFD_DURATION_HINT, UNADDRESSABLE_NAME_HINT, isPathAddressable, isValidNotifdDuration } from '@/lib/adminValidation'

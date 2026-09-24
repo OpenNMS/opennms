@@ -133,7 +133,7 @@ import {
   OnmsTag
 } from '@opennms/onms-ui'
 
-import EventNotificationEditorDialog from '@/components/AdminNotifications/EventNotificationEditorDialog.vue'
+import EventNotificationEditorDialog from '@/components/Notifications/EventNotificationEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import AddIcon from '@opennms/onms-ui/icons/action/Add.vue'

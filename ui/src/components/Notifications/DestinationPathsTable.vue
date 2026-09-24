@@ -103,7 +103,7 @@ import { ref } from 'vue'
 
 import { OnmsConfirmationDialog, OnmsButton, OnmsColumn, OnmsTable } from '@opennms/onms-ui'
 
-import DestinationPathEditorDialog from '@/components/AdminNotifications/DestinationPathEditorDialog.vue'
+import DestinationPathEditorDialog from '@/components/Notifications/DestinationPathEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
