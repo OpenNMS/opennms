@@ -114,9 +114,21 @@ const getNodeIpInterfaces = async (
   }
 }
 
-const getNodeAvailabilityPercentage = async (id: string): Promise<NodeAvailability | false> => {
+/**
+ * Node availability by interface and service. With `startMs`/`endMs` the figures cover that window;
+ * without them they cover the last 24 hours, which is the legacy behaviour and still what every
+ * caller but the availability panel wants.
+ */
+const getNodeAvailabilityPercentage = async (
+  id: string,
+  startMs?: number,
+  endMs?: number
+): Promise<NodeAvailability | false> => {
   try {
-    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`)
+    const params = (startMs !== undefined && endMs !== undefined)
+      ? { params: { start: startMs, end: endMs }}
+      : undefined
+    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`, params)
     resp.data.ipinterfaces = orderBy(resp.data.ipinterfaces, 'address')
 
     return resp.data

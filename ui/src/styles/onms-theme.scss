@@ -44,6 +44,25 @@
   --onms-spacing-xl: 1.5rem;
   --onms-zindex-dropdown: 1000;
   --onms-zindex-fixed: 1030;
+
+  // Availability timeline fills. Deliberately theme-independent: a service's strip should look the
+  // same whichever theme the page is in, so these are the open-dark values of success/error/cleared
+  // rather than aliases that would flip. The strips are read side by side and compared with each
+  // other, not with the surrounding text, which is what makes a fixed palette the right call here.
+  --onms-timeline-available: #83ee7d;
+  --onms-timeline-outage: #ffa3b5;
+  --onms-timeline-unmonitored: #b7b7b7;
+  // The hairline between hours, over those three fills. Fixed for the same reason, and dark
+  // because all three fills are light.
+  --onms-timeline-gridline: rgba(0, 0, 0, 0.35);
+  // Frames the strip. The fills are light enough to sit at 1.5:1 to 2:1 against a white card, well
+  // under the 3:1 WCAG asks of a meaningful graphic, so without this edge a bar's extent is hard to
+  // make out in the light theme. Redundant in the dark theme, where the fills reach 9:1 or better,
+  // and invisible there against the dark card.
+  --onms-timeline-edge: rgba(0, 0, 0, 0.3);
+  // Keyboard focus on an outage segment. Fixed and dark for the same reason as the edge: it has to
+  // read against three light fills, in either theme.
+  --onms-timeline-focus: #10131f;
 }
 
 .open-light {

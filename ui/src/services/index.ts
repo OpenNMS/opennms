@@ -28,6 +28,7 @@ import {
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
+import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
 import {
@@ -82,6 +83,7 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import { deleteMinion, getMinionNodeIds, listMinions, updateMinion } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
@@ -129,6 +131,10 @@ import {
 } from './groupAdminService'
 
 export default {
+  getMinionNodeIds,
+  listMinions,
+  updateMinion,
+  deleteMinion,
   search,
   getSystemReportPlugins,
   getSystemReportFormatters,
@@ -150,6 +156,7 @@ export default {
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
+  getNodeOutageTimeline,
   getCategories,
   getMonitoringLocations,
   createMonitoringLocation,

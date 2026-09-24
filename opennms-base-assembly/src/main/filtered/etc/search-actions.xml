@@ -231,7 +231,7 @@
     </action>
     <action>
         <label>Manage Minions</label>
-        <url>minion/index.jsp</url>
+        <url>ui/index.html#/admin/minions</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
