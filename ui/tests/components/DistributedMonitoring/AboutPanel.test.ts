@@ -13,10 +13,10 @@ describe('AboutPanel.vue', () => {
   it('renders the header and the section titles', () => {
     const wrapper = mountPanel()
     expect(wrapper.text()).toContain('About Minions and Locations')
-    expect(wrapper.text()).toContain('What monitoring locations and Minions are')
-    expect(wrapper.text()).toContain('How to set up a Minion')
-    expect(wrapper.text()).toContain('What this page shows')
-    expect(wrapper.text()).toContain('/api/v2/monitoringLocations')
+    expect(wrapper.text()).toContain('Monitoring locations')
+    expect(wrapper.text()).toContain('Created automatically')
+    expect(wrapper.text()).toContain('Monitoring location and version')
+    expect(wrapper.text()).toContain('org.opennms.minion.controller')
   })
 
   it('is collapsed by default and expands on toggle', async () => {
