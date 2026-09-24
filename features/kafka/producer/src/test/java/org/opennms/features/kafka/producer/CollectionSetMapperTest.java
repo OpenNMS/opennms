@@ -116,4 +116,37 @@ public class CollectionSetMapperTest {
         assertThat(collectionSetResource.getNode().getForeignId(), Matchers.is("foo"));
         assertThat(collectionSetResource.getNode().getForeignSource(), Matchers.is("bar"));
     }
+
+    @Test
+    public void testNodeIsResolvedOncePerCollectionSet() throws UnknownHostException {
+        final NodeDao nodeDao = Mockito.mock(NodeDao.class);
+        final OnmsNode node = new OnmsNode();
+        node.setId(1);
+        node.setLabel("TestNode");
+        when(nodeDao.get("1")).thenReturn(node);
+        final SessionUtils sessionUtils = Mockito.mock(SessionUtils.class);
+        when(sessionUtils.withReadOnlyTransaction(any(Supplier.class)))
+                .thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(0)).get());
+        final CollectionSetMapper mapper = new CollectionSetMapper(nodeDao, sessionUtils, Mockito.mock(ResourceDao.class));
+
+        // One device reporting many interfaces, as a gNMI or large-ifTable SNMP collection does.
+        final CollectionAgent agent = new MockCollectionAgent(1, "TestNode", InetAddress.getLocalHost());
+        final NodeLevelResource nodeResource = new NodeLevelResource(1);
+        final CollectionSetBuilder builder = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withGauge(nodeResource, "group1", "cpu", 1.0);
+        final int interfaces = 144;
+        for (int ifIndex = 1; ifIndex <= interfaces; ifIndex++) {
+            builder.withNumericAttribute(new InterfaceLevelResource(nodeResource, Integer.toString(ifIndex)),
+                    "mib2-interfaces", "ifInOctets", ifIndex, AttributeType.COUNTER);
+        }
+
+        final CollectionSetProtos.CollectionSet proto = mapper.buildCollectionSetProtos(builder.build(),
+                new ServiceParameters(Collections.emptyMap()));
+
+        assertThat(proto.getResourceList(), Matchers.hasSize(interfaces + 1));
+        assertTrue(proto.getResourceList().stream()
+                .allMatch(r -> (r.hasNode() ? r.getNode() : r.getInterface().getNode()).getNodeId() == 1));
+        Mockito.verify(nodeDao, Mockito.times(1)).get("1");
+        Mockito.verify(sessionUtils, Mockito.times(1)).withReadOnlyTransaction(any(Supplier.class));
+    }
 }

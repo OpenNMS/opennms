@@ -24,6 +24,8 @@ package org.opennms.features.kafka.producer.collection;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -76,10 +78,18 @@ public class CollectionSetMapper {
 
     public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet, ServiceParameters params) {
         CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
+        // Resources in one collection set almost always belong to a single node; resolve each
+        // distinct node criteria once per set rather than once per resource.
+        final Map<String, CollectionSetProtos.NodeLevelResource.Builder> nodesInThisSet = new HashMap<>();
 
         collectionSet.visit(new CollectionSetVisitor() {
             CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder;
             String lastGroupName = null;
+
+            private CollectionSetProtos.NodeLevelResource.Builder nodeFor(String nodeCriteria) {
+                return nodesInThisSet.computeIfAbsent(nodeCriteria,
+                        CollectionSetMapper.this::buildNodeLevelResourceForProto);
+            }
 
             @Override
             public void visitCollectionSet(CollectionSet set) {
@@ -95,8 +105,7 @@ public class CollectionSetMapper {
                 }
                 else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
-                    CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                            nodeCriteria);
+                    CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = nodeFor(nodeCriteria);
                     nodeId = nodeResourceBuilder.getNodeId();
                     collectionSetResourceBuilder.setNode(nodeResourceBuilder);
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
@@ -104,8 +113,7 @@ public class CollectionSetMapper {
                             .newBuilder();
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
                     if (!Strings.isNullOrEmpty(nodeCriteria)) {
-                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                                nodeCriteria);
+                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = nodeFor(nodeCriteria);
                         nodeId = nodeResourceBuilder.getNodeId();
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
                         Optional.ofNullable(resource.getInterfaceLabel()).ifPresent(interfaceResourceBuilder::setInstance);
@@ -127,8 +135,7 @@ public class CollectionSetMapper {
                             .newBuilder();
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
                     if (!Strings.isNullOrEmpty(nodeCriteria)) {
-                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                                nodeCriteria);
+                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = nodeFor(nodeCriteria);
                         nodeId = nodeResourceBuilder.getNodeId();
                         genericResourceBuilder.setNode(nodeResourceBuilder);
                     }

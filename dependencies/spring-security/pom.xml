@@ -92,7 +92,7 @@
         </exclusion>
         <exclusion>
           <groupId>org.bouncycastle</groupId>
-          <artifactId>org.bouncycastle:bcpkix-jdk15on</artifactId>
+          <artifactId>bcpkix-jdk15on</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.santuario</groupId>
@@ -223,20 +223,28 @@
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
+    <!--
+      spring-security-saml2-core drags in the end-of-life bcprov-jdk15on/bcpkix-jdk15on
+      artifacts (last release 1.70). They are excluded above and replaced here by the
+      maintained jdk18on artifacts, pinned at depth 1 so that plugin classpaths, which
+      ignore dependencyManagement, pick up the same version as the rest of the build.
+      There is no jdk18on counterpart for bcprov-ext, so it is dropped; the extra
+      algorithms it carried are not used by OpenNMS.
+    -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-ext-jdk15on</artifactId>
-      <version>1.70</version>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncyCastleVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
-      <version>1.70</version>
+      <artifactId>bcutil-jdk18on</artifactId>
+      <version>${bouncyCastleVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-jdk15on</artifactId>
-      <version>1.70</version>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bouncyCastleVersion}</version>
     </dependency>
   </dependencies>
 </project>
