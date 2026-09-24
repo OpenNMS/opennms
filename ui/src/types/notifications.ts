@@ -20,21 +20,18 @@
 /// License.
 ///
 
-// Notices (sent notifications) served by /rest/notifications — DB-backed,
+// Sent notifications served by /rest/notifications — DB-backed, and
 // distinct from the notification *configuration* in types/notificationConfig.ts.
 // Field names follow the wire format of the v1 REST serializer, which differs
 // from the entity/DB names (id, textMessage, ackUser/ackTime, destinations).
 
-export type NoticeAckType = 'unack' | 'ack' | 'all'
+import { ServiceType } from '@/types'
 
-export type NoticeQueryPreset = 'yourOutstanding' | 'teamOutstanding' | 'allOutstanding' | 'allAcknowledged' | 'userSearch'
+export type NotificationAckType = 'unack' | 'ack' | 'all'
 
-export interface OnmsNoticeServiceType {
-  id?: number
-  name?: string
-}
+export type NotificationQueryPreset = 'yourOutstanding' | 'teamOutstanding' | 'allOutstanding' | 'allAcknowledged' | 'userSearch'
 
-export interface OnmsNoticeDestination {
+export interface OnmsNotificationDestination {
   id?: number
   userId?: string
   media?: string | null
@@ -45,6 +42,7 @@ export interface OnmsNoticeDestination {
 
 export interface OnmsNotification {
   id: number
+  notificationName?: string | null
   subject?: string | null
   textMessage?: string | null
   uei?: string | null
@@ -56,17 +54,17 @@ export interface OnmsNotification {
   nodeId?: number | null
   nodeLabel?: string | null
   ipAddress?: string | null
-  serviceType?: OnmsNoticeServiceType | null
+  serviceType?: ServiceType | null
   queueId?: string | null
-  destinations?: OnmsNoticeDestination[]
+  destinations?: OnmsNotificationDestination[]
 }
 
-export interface NoticeBrowseFilter {
-  acktype: NoticeAckType
+export interface NotificationBrowseFilter {
+  acktype: NotificationAckType
   user: string | null
 }
 
-export interface NoticeBrowseResult {
-  notices: OnmsNotification[]
+export interface NotificationBrowseResult {
+  notifications: OnmsNotification[]
   totalCount: number
 }

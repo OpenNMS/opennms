@@ -67,7 +67,7 @@ const loading = ref(true)
 const summary = ref<NotificationSummary | null>(null)
 
 // The controller honors filter=user=<remoteUser> (as the legacy notification-box
-// used); filtertype=user is ignored and would show everyone's notices.
+// used); filtertype=user is ignored and would show everyone's notifications.
 const userLink = computed(() => {
   const user = authStore.whoAmI?.id
   return user
@@ -76,7 +76,7 @@ const userLink = computed(() => {
 })
 const teamLink = '/opennms/notification/browse?acktype=unack'
 
-const phrase = (n: number) => (n === 0 ? 'no outstanding notices' : `${n} outstanding notice${n === 1 ? '' : 's'}`)
+const phrase = (n: number) => (n === 0 ? 'no outstanding notifications' : `${n} outstanding notification${n === 1 ? '' : 's'}`)
 
 const load = async () => {
   loading.value = true

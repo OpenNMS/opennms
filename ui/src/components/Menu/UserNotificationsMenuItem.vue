@@ -69,11 +69,7 @@
             <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
             <div class="full-width-left">
               <div>
-                <span class="font-weight-bold">
-                  {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
-                  Date(item.pageTime).toLocaleTimeString()
-                  }}
-                </span>
+                <span class="font-weight-bold">{{ formatPageTime(item.pageTime) }}</span>
               </div>
               <div class="dropdown-info-bar">
                 <span>{{ item.notificationName }}</span>
@@ -141,9 +137,9 @@ import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
   NoticeStatusDisplay,
-  NotificationSummary,
-  OnmsNotification
+  NotificationSummary
 } from '@/types/mainMenu'
+import { OnmsNotification } from '@/types/notifications'
 
 const menuStore = useMenuStore()
 const maxNotifications = 2
@@ -264,6 +260,14 @@ const computeLink = (url: string) => {
 const onMenuItemClick = (url: string) => {
   const link = computeLink(url)
   window.location.assign(link)
+}
+
+const formatPageTime = (pageTime: OnmsNotification['pageTime']) => {
+  if (pageTime === null || pageTime === undefined) {
+    return ''
+  }
+  const date = new Date(pageTime)
+  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
 }
 
 const onNotificationItemClick = (_item: OnmsNotification) => {

@@ -283,11 +283,11 @@
             <small class="hint">Only notify when the event carries this severity.</small>
           </FormField>
           <FormField
-            label="Notice queue"
+            label="Notification queue"
             for="new-notification-queue"
           >
             <template #label-suffix>
-              <HelpBadge :content="queueHelp" ariaLabel="Notice queue help" />
+              <HelpBadge :content="queueHelp" ariaLabel="Notification queue help" />
             </template>
             <OnmsInputText id="new-notification-queue" v-model="form.noticeQueue" data-test="notice-queue-input" />
           </FormField>
@@ -338,9 +338,9 @@ const store = useNotificationConfigStore()
 const ruleHelp = 'A filter rule, e.g. IPADDR IPLIKE *.*.*.*. Octets accept * (any), ranges (0-3) and lists (0,1,2). '
   + 'Combine with service checks, e.g. (IPADDR IPLIKE *.*.*.*) & (isHTTP). Leave the default to match every node.'
 const numericHelp = 'For numeric-only pager destinations that can display digits (and a few symbols) but not letters. '
-  + 'Typically a callback or PIN number plus the notice id, e.g. 111-%noticeid%. It is a free string, not enforced to be '
+  + 'Typically a callback or PIN number plus the notification id, e.g. 111-%noticeid%. It is a free string, not enforced to be '
   + 'digits, but alphanumeric pagers and SMS should use the Text Message above instead.'
-const replacementHelp = 'Event replacement tokens are substituted when the notice is sent. Common ones: '
+const replacementHelp = 'Event replacement tokens are substituted when the notification is sent. Common ones: '
   + '%noticeid% %eventid% %uei% %nodeid% %nodelabel% %foreignsource% %foreignid% %interface% %interfaceresolve% '
   + '%service% %severity% %time% %shorttime% %descr% %logmsg% %operinstruct% %ifalias% %parm[NAME]% %parm[#N]% '
   + '%parm[all]% %parm[names]%. Any %parm[...]% pulls a named parameter off the triggering event.'
@@ -349,7 +349,7 @@ const paramsHelp = 'Extra name/value pairs passed through to the notification co
   + 'They are available to the command as additional %parm[name]% tokens.'
 const varbindHelp = 'Restricts this notification to events that carry an SNMP varbind (event parameter) with this exact name AND value. '
   + 'Set both or neither; leave blank to match regardless of varbinds.'
-const queueHelp = 'Which notifd queue processes this notice. Leave blank for the default in-memory queue unless you have configured extra queues in notifd-configuration.xml.'
+const queueHelp = 'Which notifd queue processes this notification. Leave blank for the default in-memory queue unless you have configured extra queues in notifd-configuration.xml.'
 
 const severityOptions = ['Indeterminate', 'Cleared', 'Normal', 'Warning', 'Minor', 'Major', 'Critical']
 

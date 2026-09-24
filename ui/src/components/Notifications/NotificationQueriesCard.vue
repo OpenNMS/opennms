@@ -39,12 +39,12 @@
         </div>
         <div class="search-row">
           <OnmsSearchInput
-            v-model="noticeSearch"
-            inputId="notification-notice-search"
+            v-model="notificationIdSearch"
+            inputId="notification-id-search"
             placeholder="Get details for notification"
             ariaLabel="Get details for notification"
-            dataTest="notice-search-input"
-            @keyup.enter="goToNotice"
+            dataTest="notification-id-search-input"
+            @keyup.enter="goToNotification"
           />
         </div>
       </div>
@@ -67,7 +67,7 @@ const store = useNotificationsStore()
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
 const userSearch = ref('')
-const noticeSearch = ref('')
+const notificationIdSearch = ref('')
 
 const searchByUser = () => {
   const user = userSearch.value.trim()
@@ -76,10 +76,10 @@ const searchByUser = () => {
   }
 }
 
-const goToNotice = () => {
-  const notice = noticeSearch.value.trim()
-  if (notice) {
-    window.location.href = `${baseHref.value}notification/detail.jsp?notice=${encodeURIComponent(notice)}`
+const goToNotification = () => {
+  const notification = notificationIdSearch.value.trim()
+  if (notification) {
+    window.location.href = `${baseHref.value}notification/detail.jsp?notice=${encodeURIComponent(notification)}`
   }
 }
 </script>

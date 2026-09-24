@@ -3,12 +3,12 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { useAuthStore } from '@/stores/authStore'
 import API from '@/services'
-import { OnmsNotification } from '@/types/notices'
+import { OnmsNotification } from '@/types/notifications'
 
 vi.mock('@/services', () => ({
   default: {
-    browseNotices: vi.fn(),
-    acknowledgeNotice: vi.fn()
+    browseNotifications: vi.fn(),
+    acknowledgeNotification: vi.fn()
   }
 }))
 
@@ -20,7 +20,7 @@ vi.mock('@/composables/useSnackbar', () => ({
 describe('useNotificationsStore', () => {
   let store: ReturnType<typeof useNotificationsStore>
 
-  const mockNotices: OnmsNotification[] = [
+  const mockNotifications: OnmsNotification[] = [
     {
       id: 1,
       subject: 'Notice #1: node down',
@@ -38,7 +38,7 @@ describe('useNotificationsStore', () => {
     }
   ]
 
-  const mockResult = { notices: mockNotices, totalCount: 5 }
+  const mockResult = { notifications: mockNotifications, totalCount: 5 }
 
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -53,9 +53,9 @@ describe('useNotificationsStore', () => {
   })
 
   describe('Initial State', () => {
-    it('should default to the current user outstanding notices', () => {
+    it('should default to the current user outstanding notifications', () => {
       expect(store.preset).toBe('yourOutstanding')
-      expect(store.notices).toEqual([])
+      expect(store.notifications).toEqual([])
       expect(store.totalCount).toBe(0)
       expect(store.first).toBe(0)
       expect(store.rows).toBe(10)
@@ -64,43 +64,43 @@ describe('useNotificationsStore', () => {
   })
 
   describe('load', () => {
-    it('should query outstanding notices for the current user', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+    it('should query outstanding notifications for the current user', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 
       await store.load()
 
-      expect(API.browseNotices).toHaveBeenCalledWith({
+      expect(API.browseNotifications).toHaveBeenCalledWith({
         acktype: 'unack',
         user: 'admin',
         excludeUser: null,
         limit: 10,
         offset: 0
       })
-      expect(store.notices).toEqual(mockNotices)
+      expect(store.notifications).toEqual(mockNotifications)
       expect(store.totalCount).toBe(5)
     })
   })
 
   describe('applyPreset', () => {
     it('teamOutstanding should exclude the current user', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 
       await store.applyPreset('teamOutstanding')
 
-      expect(API.browseNotices).toHaveBeenCalledWith(
+      expect(API.browseNotifications).toHaveBeenCalledWith(
         expect.objectContaining({ acktype: 'unack', user: null, excludeUser: 'admin' })
       )
     })
 
     it('allOutstanding should drop the user filter and reset paging', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
       store.first = 30
 
       await store.applyPreset('allOutstanding')
 
       expect(store.preset).toBe('allOutstanding')
       expect(store.first).toBe(0)
-      expect(API.browseNotices).toHaveBeenCalledWith({
+      expect(API.browseNotifications).toHaveBeenCalledWith({
         acktype: 'unack',
         user: null,
         excludeUser: null,
@@ -110,24 +110,24 @@ describe('useNotificationsStore', () => {
       expect(store.title).toBe('All Outstanding Notifications')
     })
 
-    it('allAcknowledged should query acknowledged notices', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+    it('allAcknowledged should query acknowledged notifications', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 
       await store.applyPreset('allAcknowledged')
 
-      expect(API.browseNotices).toHaveBeenCalledWith(
+      expect(API.browseNotifications).toHaveBeenCalledWith(
         expect.objectContaining({ acktype: 'ack', user: null })
       )
       expect(store.title).toBe('All Acknowledged Notifications')
     })
 
-    it('userSearch should filter outstanding notices by the given user', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+    it('userSearch should filter outstanding notifications by the given user', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 
       await store.applyPreset('userSearch', 'operator')
 
       expect(store.userFilter).toBe('operator')
-      expect(API.browseNotices).toHaveBeenCalledWith(
+      expect(API.browseNotifications).toHaveBeenCalledWith(
         expect.objectContaining({ acktype: 'unack', user: 'operator' })
       )
       expect(store.title).toBe('Outstanding Notifications for \'operator\'')
@@ -136,13 +136,13 @@ describe('useNotificationsStore', () => {
 
   describe('onPage', () => {
     it('should reload with the new offset and page size', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 
       await store.onPage(20, 20)
 
       expect(store.first).toBe(20)
       expect(store.rows).toBe(20)
-      expect(API.browseNotices).toHaveBeenCalledWith(
+      expect(API.browseNotifications).toHaveBeenCalledWith(
         expect.objectContaining({ limit: 20, offset: 20 })
       )
     })
@@ -150,14 +150,14 @@ describe('useNotificationsStore', () => {
 
   describe('acknowledge', () => {
     it('should acknowledge and reload on success', async () => {
-      vi.mocked(API.acknowledgeNotice).mockResolvedValue(true)
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      vi.mocked(API.acknowledgeNotification).mockResolvedValue(true)
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 
-      const ok = await store.acknowledge(mockNotices[0])
+      const ok = await store.acknowledge(mockNotifications[0])
 
       expect(ok).toBe(true)
-      expect(API.acknowledgeNotice).toHaveBeenCalledWith(1, true)
-      expect(API.browseNotices).toHaveBeenCalledTimes(1)
+      expect(API.acknowledgeNotification).toHaveBeenCalledWith(1, true)
+      expect(API.browseNotifications).toHaveBeenCalledTimes(1)
     })
 
     it('should refuse user-scoped queries without a user id', async () => {
@@ -166,62 +166,62 @@ describe('useNotificationsStore', () => {
 
       await store.load()
 
-      expect(API.browseNotices).not.toHaveBeenCalled()
-      expect(store.notices).toEqual([])
+      expect(API.browseNotifications).not.toHaveBeenCalled()
+      expect(store.notifications).toEqual([])
       expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
 
       await store.applyPreset('teamOutstanding')
-      expect(API.browseNotices).not.toHaveBeenCalled()
+      expect(API.browseNotifications).not.toHaveBeenCalled()
     })
 
     it('should clamp to the last valid page when the ack empties the current page', async () => {
       // land far past the end (offset 40), then ack away the last row there;
       // 25 remaining rows at 10/page puts the last valid page at offset 20
-      vi.mocked(API.browseNotices).mockResolvedValue({ notices: mockNotices, totalCount: 41 })
+      vi.mocked(API.browseNotifications).mockResolvedValue({ notifications: mockNotifications, totalCount: 41 })
       await store.onPage(40, 10)
-      vi.mocked(API.acknowledgeNotice).mockResolvedValue(true)
-      vi.mocked(API.browseNotices)
-        .mockResolvedValueOnce({ notices: [], totalCount: 25 })
-        .mockResolvedValueOnce({ notices: mockNotices, totalCount: 25 })
+      vi.mocked(API.acknowledgeNotification).mockResolvedValue(true)
+      vi.mocked(API.browseNotifications)
+        .mockResolvedValueOnce({ notifications: [], totalCount: 25 })
+        .mockResolvedValueOnce({ notifications: mockNotifications, totalCount: 25 })
 
-      await store.acknowledge(mockNotices[0])
+      await store.acknowledge(mockNotifications[0])
 
       expect(store.first).toBe(20)
-      expect(store.notices).toEqual(mockNotices)
+      expect(store.notifications).toEqual(mockNotifications)
     })
 
     it('should rewind a page when the ack empties the current page', async () => {
       // land on page 2 (offset 10) with one row, then ack it away
-      vi.mocked(API.browseNotices).mockResolvedValue({ notices: mockNotices, totalCount: 11 })
+      vi.mocked(API.browseNotifications).mockResolvedValue({ notifications: mockNotifications, totalCount: 11 })
       await store.onPage(10, 10)
-      vi.mocked(API.acknowledgeNotice).mockResolvedValue(true)
-      vi.mocked(API.browseNotices)
-        .mockResolvedValueOnce({ notices: [], totalCount: 10 })
-        .mockResolvedValueOnce({ notices: mockNotices, totalCount: 10 })
+      vi.mocked(API.acknowledgeNotification).mockResolvedValue(true)
+      vi.mocked(API.browseNotifications)
+        .mockResolvedValueOnce({ notifications: [], totalCount: 10 })
+        .mockResolvedValueOnce({ notifications: mockNotifications, totalCount: 10 })
 
-      await store.acknowledge(mockNotices[0])
+      await store.acknowledge(mockNotifications[0])
 
       expect(store.first).toBe(0)
-      expect(store.notices).toEqual(mockNotices)
+      expect(store.notifications).toEqual(mockNotifications)
     })
 
     it('should not reload when acknowledging fails', async () => {
-      vi.mocked(API.acknowledgeNotice).mockResolvedValue(false)
+      vi.mocked(API.acknowledgeNotification).mockResolvedValue(false)
 
-      const ok = await store.acknowledge(mockNotices[0])
+      const ok = await store.acknowledge(mockNotifications[0])
 
       expect(ok).toBe(false)
-      expect(API.browseNotices).not.toHaveBeenCalled()
+      expect(API.browseNotifications).not.toHaveBeenCalled()
     })
   })
 
   describe('fetchForExport', () => {
     it('scopes the export to the current user without widening', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
 
       const result = await store.fetchForExport(1000)
 
-      expect(API.browseNotices).toHaveBeenCalledWith({
+      expect(API.browseNotifications).toHaveBeenCalledWith({
         acktype: 'unack',
         user: 'admin',
         excludeUser: null,
@@ -232,13 +232,13 @@ describe('useNotificationsStore', () => {
     })
 
     it('carries excludeUser for a teamOutstanding export so it stays scoped', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
       await store.applyPreset('teamOutstanding')
-      vi.mocked(API.browseNotices).mockClear()
+      vi.mocked(API.browseNotifications).mockClear()
 
       await store.fetchForExport(1000)
 
-      expect(API.browseNotices).toHaveBeenCalledWith(
+      expect(API.browseNotifications).toHaveBeenCalledWith(
         expect.objectContaining({ user: null, excludeUser: 'admin', limit: 1000 })
       )
     })
@@ -249,19 +249,19 @@ describe('useNotificationsStore', () => {
 
       const result = await store.fetchForExport(1000)
 
-      expect(API.browseNotices).not.toHaveBeenCalled()
-      expect(result).toEqual({ notices: [], totalCount: 0 })
+      expect(API.browseNotifications).not.toHaveBeenCalled()
+      expect(result).toEqual({ notifications: [], totalCount: 0 })
       expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
     })
 
-    it('exports all outstanding notices with no user filter for a non-scoped preset', async () => {
-      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+    it('exports all outstanding notifications with no user filter for a non-scoped preset', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
       await store.applyPreset('allOutstanding')
       vi.clearAllMocks()
 
       await store.fetchForExport(500)
 
-      expect(API.browseNotices).toHaveBeenCalledWith(
+      expect(API.browseNotifications).toHaveBeenCalledWith(
         expect.objectContaining({ acktype: 'unack', user: null, limit: 500 })
       )
     })

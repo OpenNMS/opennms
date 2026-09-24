@@ -23,16 +23,16 @@
 import API from '@/services'
 import useSnackbar from '@/composables/useSnackbar'
 import { useAuthStore } from '@/stores/authStore'
-import { NoticeQueryPreset, OnmsNotification } from '@/types/notices'
+import { NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useNotificationsStore = defineStore('notificationsStore', () => {
   const authStore = useAuthStore()
 
-  const preset = ref<NoticeQueryPreset>('yourOutstanding')
+  const preset = ref<NotificationQueryPreset>('yourOutstanding')
   const userFilter = ref<string | null>(null)
-  const notices = ref([] as OnmsNotification[])
+  const notifications = ref([] as OnmsNotification[])
   const totalCount = ref(0)
   const rows = ref(10)
   const first = ref(0)
@@ -76,31 +76,31 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
 
   const load = async () => {
     // a failed whoami leaves no user id; widening a user-scoped query to
-    // everyone's notices would be silently wrong, so refuse instead
+    // everyone's notifications would be silently wrong, so refuse instead
     const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
     if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
-      notices.value = []
+      notifications.value = []
       totalCount.value = 0
       showSnackBar({ msg: 'Cannot determine the current user; showing no notifications. Reload the page to retry.', error: true })
       return
     }
     loading.value = true
     try {
-      const result = await API.browseNotices({
+      const result = await API.browseNotifications({
         acktype: acktype.value,
         user: effectiveUser.value,
         excludeUser: effectiveExcludeUser.value,
         limit: rows.value,
         offset: first.value
       })
-      notices.value = result.notices
+      notifications.value = result.notifications
       totalCount.value = result.totalCount
     } finally {
       loading.value = false
     }
   }
 
-  const applyPreset = async (newPreset: NoticeQueryPreset, user?: string) => {
+  const applyPreset = async (newPreset: NotificationQueryPreset, user?: string) => {
     preset.value = newPreset
     userFilter.value = newPreset === 'userSearch' ? (user ?? null) : null
     first.value = 0
@@ -114,32 +114,32 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   }
 
   // Export/print path: same user guard as load() so a failed whoami never
-  // widens a user-scoped export to everyone's notices.
-  const fetchForExport = async (limit: number): Promise<{ notices: OnmsNotification[], totalCount: number }> => {
+  // widens a user-scoped export to everyone's notifications.
+  const fetchForExport = async (limit: number): Promise<{ notifications: OnmsNotification[], totalCount: number }> => {
     // Same guard as load(); the teamOutstanding preset is user-scoped via
     // excludeUser, so a failed whoami must block it too rather than widen.
     const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
     if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
       showSnackBar({ msg: 'Cannot determine the current user; nothing to export. Reload the page to retry.', error: true })
-      return { notices: [], totalCount: 0 }
+      return { notifications: [], totalCount: 0 }
     }
-    const result = await API.browseNotices({
+    const result = await API.browseNotifications({
       acktype: acktype.value,
       user: effectiveUser.value,
       excludeUser: effectiveExcludeUser.value,
       limit,
       offset: 0
     })
-    return { notices: result.notices, totalCount: result.totalCount }
+    return { notifications: result.notifications, totalCount: result.totalCount }
   }
 
-  const acknowledge = async (notice: OnmsNotification) => {
-    const ok = await API.acknowledgeNotice(notice.id, true)
+  const acknowledge = async (notification: OnmsNotification) => {
+    const ok = await API.acknowledgeNotification(notification.id, true)
     if (ok) {
       await load()
       // acknowledging the last row of the last page leaves the offset past
       // the end; clamp to the last valid page instead of stranding the user
-      if (!notices.value.length && first.value > 0) {
+      if (!notifications.value.length && first.value > 0) {
         first.value = totalCount.value > 0 ? Math.floor((totalCount.value - 1) / rows.value) * rows.value : 0
         await load()
       }
@@ -150,7 +150,7 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   return {
     preset,
     userFilter,
-    notices,
+    notifications,
     totalCount,
     rows,
     first,

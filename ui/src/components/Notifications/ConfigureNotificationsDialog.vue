@@ -40,7 +40,7 @@
               <span class="status-label">Notifications are <strong>{{ store.notifdStatus ?? 'unknown' }}</strong></span>
             </div>
             <p class="status-hint">
-              System-wide switch. While off, OpenNMS will not create outgoing notices for any
+              System-wide switch. While off, OpenNMS will not create outgoing notifications for any
               event. The current status is also reflected by the bell icon in the top bar.
             </p>
           </div>

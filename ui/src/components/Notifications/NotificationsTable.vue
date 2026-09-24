@@ -1,9 +1,9 @@
 <template>
-  <TableCard class="notices-table">
+  <TableCard class="notifications-table">
     <div class="header">
-      <div class="card-title" data-test="notices-title">{{ store.title }}</div>
+      <div class="card-title" data-test="notifications-title">{{ store.title }}</div>
       <div class="header-right">
-        <div class="count" data-test="notices-count">{{ store.totalCount }} notification{{ store.totalCount === 1 ? '' : 's' }}</div>
+        <div class="count" data-test="notifications-count">{{ store.totalCount }} notification{{ store.totalCount === 1 ? '' : 's' }}</div>
         <OnmsIconButton
           variant="text"
           :icon="DownloadFileIcon"
@@ -22,15 +22,15 @@
           aria-label="Print notifications"
           data-test="print-button"
           :disabled="!store.totalCount"
-          @click="printNotices"
+          @click="printNotifications"
         />
       </div>
     </div>
 
     <OnmsTable
-      v-if="store.notices.length"
+      v-if="store.notifications.length"
       lazy
-      :value="store.notices"
+      :value="store.notifications"
       :totalRecords="store.totalCount"
       paginator
       dataKey="id"
@@ -38,7 +38,7 @@
       :rows="store.rows"
       :rowsPerPageOptions="[10, 20, 50, 100]"
       class="data-table"
-      data-test="notices-table"
+      data-test="notifications-table"
       @page="onPage"
     >
       <OnmsColumn
@@ -48,7 +48,7 @@
         <template #body="{ data }">
           <a
             :href="`${baseHref}notification/detail.jsp?notice=${data.id}`"
-            :data-test="`notice-link-${data.id}`"
+            :data-test="`notification-link-${data.id}`"
           >{{ data.id }}</a>
         </template>
       </OnmsColumn>
@@ -124,7 +124,7 @@
       </OnmsColumn>
     </OnmsTable>
 
-    <div v-if="!store.notices.length">
+    <div v-if="!store.notifications.length">
       <EmptyList
         :content="emptyListContent"
         data-test="empty-list"
@@ -148,7 +148,7 @@ import { saveBlobAsFile } from '@/services/eventConfigService'
 import { useMenuStore } from '@/stores/menuStore'
 import { MessageSeverity } from '@/types'
 import { useNotificationsStore } from '@/stores/notificationsStore'
-import { OnmsNotification } from '@/types/notices'
+import { OnmsNotification } from '@/types/notifications'
 
 const { showSnackBar } = useSnackbar()
 const { canAcknowledgeNotifications } = useRole()
@@ -191,40 +191,40 @@ const onPage = (event: OnmsTablePageEvent) => {
   store.onPage(event.first, event.rows)
 }
 
-const fetchAllForExport = async (): Promise<{ notices: OnmsNotification[], totalCount: number }> => {
+const fetchAllForExport = async (): Promise<{ notifications: OnmsNotification[], totalCount: number }> => {
   // delegate to the store so the same whoami guard as load() applies
   const result = await store.fetchForExport(EXPORT_LIMIT)
-  if (result.totalCount > result.notices.length) {
+  if (result.totalCount > result.notifications.length) {
     showSnackBar({
-      msg: `Only the first ${result.notices.length} of ${result.totalCount} notifications were exported.`,
+      msg: `Only the first ${result.notifications.length} of ${result.totalCount} notifications were exported.`,
       severity: MessageSeverity.Warn
     })
   }
   return result
 }
 
-const exportColumns = (notice: OnmsNotification): Record<string, string> => ({
-  'ID': String(notice.id),
-  'Severity': notice.severity ?? '',
-  'Subject': notice.subject ?? '',
-  'Text Message': notice.textMessage ?? '',
-  'Sent Time': formatTime(notice.pageTime),
-  'Node': notice.nodeLabel ?? '',
-  'Interface': notice.ipAddress ?? '',
-  'Service': notice.serviceType?.name ?? '',
-  'Responder': notice.ackUser ?? '',
-  'Respond Time': formatTime(notice.ackTime)
+const exportColumns = (notification: OnmsNotification): Record<string, string> => ({
+  'ID': String(notification.id),
+  'Severity': notification.severity ?? '',
+  'Subject': notification.subject ?? '',
+  'Text Message': notification.textMessage ?? '',
+  'Sent Time': formatTime(notification.pageTime),
+  'Node': notification.nodeLabel ?? '',
+  'Interface': notification.ipAddress ?? '',
+  'Service': notification.serviceType?.name ?? '',
+  'Responder': notification.ackUser ?? '',
+  'Respond Time': formatTime(notification.ackTime)
 })
 
 const downloadCsv = async () => {
-  const { notices } = await fetchAllForExport()
-  if (!notices.length) {
+  const { notifications } = await fetchAllForExport()
+  if (!notifications.length) {
     return
   }
-  const rows = notices.map(exportColumns)
+  const rows = notifications.map(exportColumns)
   const headers = Object.keys(rows[0])
   // a leading = + - @ or tab would execute as a formula when the CSV is
-  // opened in a spreadsheet; notice text derives from event data, which can
+  // opened in a spreadsheet; notification text derives from event data, which can
   // be externally influenced (traps), so neutralise it
   const escapeCell = (value: string) => {
     const guarded = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
@@ -235,15 +235,15 @@ const downloadCsv = async () => {
     ...rows.map(row => headers.map(h => escapeCell(row[h] === '-' ? '' : row[h])).join(','))
   ].join('\r\n')
   const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' })
-  saveBlobAsFile(blob, `notices-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.csv`)
+  saveBlobAsFile(blob, `notifications-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.csv`)
 }
 
-const printNotices = async () => {
-  const { notices, totalCount } = await fetchAllForExport()
-  if (!notices.length) {
+const printNotifications = async () => {
+  const { notifications, totalCount } = await fetchAllForExport()
+  if (!notifications.length) {
     return
   }
-  const rows = notices.map(exportColumns)
+  const rows = notifications.map(exportColumns)
   const headers = Object.keys(rows[0])
   const escapeHtml = (value: string) =>
     value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -282,7 +282,7 @@ const printNotices = async () => {
 </script>
 
 <style lang="scss" scoped>
-.notices-table {
+.notifications-table {
   padding: 25px;
 }
 

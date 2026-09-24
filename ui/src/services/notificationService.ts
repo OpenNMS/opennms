@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { NoticeAckType, NoticeBrowseResult, OnmsNotification } from '@/types/notices'
+import { NotificationAckType, NotificationBrowseResult, OnmsNotification } from '@/types/notifications'
 import { rest } from './axiosInstances'
 
 // Mirrors NotificationSummary (v1 NotificationRestService /notifications/summary).
@@ -57,15 +57,15 @@ const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 const endpoint = '/notifications'
 
-interface BrowseNoticesParams {
-  acktype: NoticeAckType
+interface BrowseNotificationsParams {
+  acktype: NotificationAckType
   user?: string | null
   excludeUser?: string | null
   limit: number
   offset: number
 }
 
-const browseNotices = async (params: BrowseNoticesParams): Promise<NoticeBrowseResult> => {
+const browseNotifications = async (params: BrowseNotificationsParams): Promise<NotificationBrowseResult> => {
   try {
     startSpinner()
     const query = new URLSearchParams()
@@ -87,33 +87,33 @@ const browseNotices = async (params: BrowseNoticesParams): Promise<NoticeBrowseR
     const resp = await rest.get(`${endpoint}?${query.toString()}`)
     // 204 No Content when nothing matches
     if (!resp.data || typeof resp.data !== 'object') {
-      return { notices: [], totalCount: 0 }
+      return { notifications: [], totalCount: 0 }
     }
     const raw = resp.data.notification ?? []
-    const notices: OnmsNotification[] = Array.isArray(raw) ? raw : [raw]
-    return { notices, totalCount: Number(resp.data.totalCount ?? notices.length) }
+    const notifications: OnmsNotification[] = Array.isArray(raw) ? raw : [raw]
+    return { notifications, totalCount: Number(resp.data.totalCount ?? notifications.length) }
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load notices.' })
-    return { notices: [], totalCount: 0 }
+    showSnackBar({ msg: 'Failed to load notifications.' })
+    return { notifications: [], totalCount: 0 }
   } finally {
     stopSpinner()
   }
 }
 
-const acknowledgeNotice = async (noticeId: number, ack: boolean): Promise<boolean> => {
+const acknowledgeNotification = async (notificationId: number, ack: boolean): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.put(`${endpoint}/${noticeId}`, new URLSearchParams({ ack: String(ack) }), {
+    await rest.put(`${endpoint}/${notificationId}`, new URLSearchParams({ ack: String(ack) }), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     })
-    showSnackBar({ msg: `Notice ${noticeId} ${ack ? 'acknowledged' : 'unacknowledged'}.` })
+    showSnackBar({ msg: `Notification ${notificationId} ${ack ? 'acknowledged' : 'unacknowledged'}.` })
     return true
   } catch (_err) {
-    showSnackBar({ msg: `Failed to ${ack ? 'acknowledge' : 'unacknowledge'} notice ${noticeId}.` })
+    showSnackBar({ msg: `Failed to ${ack ? 'acknowledge' : 'unacknowledge'} notification ${notificationId}.` })
     return false
   } finally {
     stopSpinner()
   }
 }
 
-export { acknowledgeNotice, browseNotices }
+export { acknowledgeNotification, browseNotifications }

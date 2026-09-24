@@ -84,7 +84,7 @@
           />
         </div>
         <p class="section-hint">
-          If the notice is still unacknowledged after the delay, the escalation's targets are
+          If the notification is still unacknowledged after the delay, the escalation's targets are
           notified next.
         </p>
         <div
@@ -191,8 +191,8 @@ const HIDDEN_METHODS = new Set([
   'ircCat', 'microblogDM', 'microblogReply', 'microblogUpdate', 'xmppMessage', 'xmppGroupMessage'
 ])
 
-const delayHelp = 'How long to wait after the notice is created before the first targets are notified (e.g. 30s, 5m, 1h). 0s notifies immediately.'
-const escalateHelp = 'If the notice is still unacknowledged after this delay, this escalation’s targets are notified next.'
+const delayHelp = 'How long to wait after the notification is created before the first targets are notified (e.g. 30s, 5m, 1h). 0s notifies immediately.'
+const escalateHelp = 'If the notification is still unacknowledged after this delay, this escalation’s targets are notified next.'
 
 const METHOD_LABELS: Record<string, string> = {
   javaEmail: 'Email',

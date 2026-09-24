@@ -59,7 +59,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { BreadCrumb } from '@/types'
-import { NoticeQueryPreset } from '@/types/notices'
+import { NotificationQueryPreset } from '@/types/notifications'
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -81,7 +81,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 
 // The default preset filters by the logged-in user; whoAmI is fetched
 // fire-and-forget at app startup, so wait for it or the first query would
-// silently drop the user filter and show every user's notices.
+// silently drop the user filter and show every user's notifications.
 const authLoaded = computed<boolean>(() => authStore.loaded)
 
 // the top-bar bell deep-links here with a preset (NMS-20124)
@@ -89,7 +89,7 @@ const PRESETS = ['yourOutstanding', 'teamOutstanding', 'allOutstanding', 'allAck
 const initialLoad = () => {
   const preset = route.query.preset as string
   if ((PRESETS as readonly string[]).includes(preset)) {
-    notificationsStore.applyPreset(preset as NoticeQueryPreset)
+    notificationsStore.applyPreset(preset as NotificationQueryPreset)
   } else {
     notificationsStore.load()
   }
