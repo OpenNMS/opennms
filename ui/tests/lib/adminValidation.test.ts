@@ -63,6 +63,12 @@ describe('isPathAddressable', () => {
     expect(isPathAddressable('Some Group')).toBe(true)
   })
 
+  it('rejects the dot segments the browser folds into the collection URL', () => {
+    expect(isPathAddressable('.')).toBe(false)
+    expect(isPathAddressable('..')).toBe(false)
+    expect(isPathAddressable('.hidden')).toBe(true)
+  })
+
   it('flags names the security filter cannot address as path segments', () => {
     expect(isPathAddressable('NOC/Primary')).toBe(false)
     expect(isPathAddressable('a\\b')).toBe(false)

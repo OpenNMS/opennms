@@ -324,9 +324,9 @@
         {
           "id": "manageMonitoringLocations",
           "name": "Manage Monitoring Locations",
-          "url": "locations/index.jsp",
+          "url": "ui/index.html#/admin/monitoring-locations",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },
