@@ -189,6 +189,25 @@ const router = createRouter({
       component: () => import('@/containers/Notifications.vue')
     },
     {
+      path: '/admin/notifications-config',
+      name: 'Notifications Configuration',
+      component: () => import('@/containers/NotificationsConfig.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to configure notifications.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/admin/groups',
       name: 'Manage Groups',
       component: () => import('@/containers/ManageGroups.vue'),

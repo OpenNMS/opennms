@@ -22,9 +22,8 @@
         v-if="adminRole"
         variant="outlined"
         label="Configure Notifications"
-        icon="pi pi-plus"
         data-test="configure-notifications-button"
-        @click="showConfigDialog = true"
+        @click="router.push('/admin/notifications-config')"
       />
     </div>
 
@@ -32,23 +31,17 @@
     <NotificationsTable />
 
     <NotificationsHelpDialog v-model:visible="showAboutDialog" />
-
-    <ConfigureNotificationsDialog
-      v-if="adminRole"
-      v-model:visible="showConfigDialog"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
 import { whenever } from '@vueuse/core'
 
-import ConfigureNotificationsDialog from '@/components/Notifications/ConfigureNotificationsDialog.vue'
 import NotificationsTable from '@/components/Notifications/NotificationsTable.vue'
 import NotificationsHelpDialog from '@/components/Notifications/NotificationsHelpDialog.vue'
 import NotificationQueriesCard from '@/components/Notifications/NotificationQueriesCard.vue'
@@ -63,11 +56,11 @@ import { NotificationQueryPreset } from '@/types/notifications'
 
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 const menuStore = useMenuStore()
 const notificationsStore = useNotificationsStore()
 const { adminRole } = useRole()
 
-const showConfigDialog = ref(false)
 const showAboutDialog = ref(false)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
