@@ -43,7 +43,7 @@
     </action>
     <action>
         <label>Configure On-Call Roles</label>
-        <url>admin/userGroupView/roles</url>
+        <url>ui/index.html#/admin/oncall-roles</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
