@@ -113,7 +113,7 @@ import {
   updateEventNotification,
   validateNotificationRule
 } from './notificationConfigService'
-import { acknowledgeNotice, browseNotices } from './noticesService'
+import { acknowledgeNotice, browseNotices } from './notificationService'
 import {
   createManagedGroup,
   deleteManagedGroup,

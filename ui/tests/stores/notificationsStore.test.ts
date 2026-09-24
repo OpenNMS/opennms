@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useNoticesStore } from '@/stores/noticesStore'
+import { useNotificationsStore } from '@/stores/notificationsStore'
 import { useAuthStore } from '@/stores/authStore'
 import API from '@/services'
-import { OnmsNotice } from '@/types/notices'
+import { OnmsNotification } from '@/types/notices'
 
 vi.mock('@/services', () => ({
   default: {
@@ -17,10 +17,10 @@ vi.mock('@/composables/useSnackbar', () => ({
   default: () => ({ showSnackBar })
 }))
 
-describe('useNoticesStore', () => {
-  let store: ReturnType<typeof useNoticesStore>
+describe('useNotificationsStore', () => {
+  let store: ReturnType<typeof useNotificationsStore>
 
-  const mockNotices: OnmsNotice[] = [
+  const mockNotices: OnmsNotification[] = [
     {
       id: 1,
       subject: 'Notice #1: node down',
@@ -44,7 +44,7 @@ describe('useNoticesStore', () => {
     setActivePinia(createPinia())
     const authStore = useAuthStore()
     authStore.whoAmI = { id: 'admin', fullName: 'Administrator', internal: true, roles: ['ROLE_ADMIN'] }
-    store = useNoticesStore()
+    store = useNotificationsStore()
     vi.clearAllMocks()
   })
 
@@ -59,7 +59,7 @@ describe('useNoticesStore', () => {
       expect(store.totalCount).toBe(0)
       expect(store.first).toBe(0)
       expect(store.rows).toBe(10)
-      expect(store.title).toBe('Your Outstanding Notices')
+      expect(store.title).toBe('Your Outstanding Notifications')
     })
   })
 
@@ -107,7 +107,7 @@ describe('useNoticesStore', () => {
         limit: 10,
         offset: 0
       })
-      expect(store.title).toBe('All Outstanding Notices')
+      expect(store.title).toBe('All Outstanding Notifications')
     })
 
     it('allAcknowledged should query acknowledged notices', async () => {
@@ -118,7 +118,7 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).toHaveBeenCalledWith(
         expect.objectContaining({ acktype: 'ack', user: null })
       )
-      expect(store.title).toBe('All Acknowledged Notices')
+      expect(store.title).toBe('All Acknowledged Notifications')
     })
 
     it('userSearch should filter outstanding notices by the given user', async () => {
@@ -130,7 +130,7 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).toHaveBeenCalledWith(
         expect.objectContaining({ acktype: 'unack', user: 'operator' })
       )
-      expect(store.title).toBe('Outstanding Notices for \'operator\'')
+      expect(store.title).toBe('Outstanding Notifications for \'operator\'')
     })
   })
 

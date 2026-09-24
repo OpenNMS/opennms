@@ -23,16 +23,16 @@
 import API from '@/services'
 import useSnackbar from '@/composables/useSnackbar'
 import { useAuthStore } from '@/stores/authStore'
-import { NoticeQueryPreset, OnmsNotice } from '@/types/notices'
+import { NoticeQueryPreset, OnmsNotification } from '@/types/notices'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-export const useNoticesStore = defineStore('noticesStore', () => {
+export const useNotificationsStore = defineStore('notificationsStore', () => {
   const authStore = useAuthStore()
 
   const preset = ref<NoticeQueryPreset>('yourOutstanding')
   const userFilter = ref<string | null>(null)
-  const notices = ref([] as OnmsNotice[])
+  const notices = ref([] as OnmsNotification[])
   const totalCount = ref(0)
   const rows = ref(10)
   const first = ref(0)
@@ -58,17 +58,17 @@ export const useNoticesStore = defineStore('noticesStore', () => {
   const title = computed<string>(() => {
     switch (preset.value) {
       case 'yourOutstanding':
-        return 'Your Outstanding Notices'
+        return 'Your Outstanding Notifications'
       case 'teamOutstanding':
-        return 'Outstanding Notices Assigned to Anyone but You'
+        return 'Outstanding Notifications Assigned to Anyone but You'
       case 'allOutstanding':
-        return 'All Outstanding Notices'
+        return 'All Outstanding Notifications'
       case 'allAcknowledged':
-        return 'All Acknowledged Notices'
+        return 'All Acknowledged Notifications'
       case 'userSearch':
-        return `Outstanding Notices for '${userFilter.value}'`
+        return `Outstanding Notifications for '${userFilter.value}'`
     }
-    return 'Notices'
+    return 'Notifications'
   })
 
   const { showSnackBar } = useSnackbar()
@@ -81,7 +81,7 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
       notices.value = []
       totalCount.value = 0
-      showSnackBar({ msg: 'Cannot determine the current user; showing no notices. Reload the page to retry.', error: true })
+      showSnackBar({ msg: 'Cannot determine the current user; showing no notifications. Reload the page to retry.', error: true })
       return
     }
     loading.value = true
@@ -115,7 +115,7 @@ export const useNoticesStore = defineStore('noticesStore', () => {
 
   // Export/print path: same user guard as load() so a failed whoami never
   // widens a user-scoped export to everyone's notices.
-  const fetchForExport = async (limit: number): Promise<{ notices: OnmsNotice[], totalCount: number }> => {
+  const fetchForExport = async (limit: number): Promise<{ notices: OnmsNotification[], totalCount: number }> => {
     // Same guard as load(); the teamOutstanding preset is user-scoped via
     // excludeUser, so a failed whoami must block it too rather than widen.
     const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
@@ -133,7 +133,7 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     return { notices: result.notices, totalCount: result.totalCount }
   }
 
-  const acknowledge = async (notice: OnmsNotice) => {
+  const acknowledge = async (notice: OnmsNotification) => {
     const ok = await API.acknowledgeNotice(notice.id, true)
     if (ok) {
       await load()

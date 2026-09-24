@@ -11,8 +11,9 @@
         <OnmsIconButton
           variant="text"
           :icon="InfoIcon"
-          title="About Notices and Escalation"
-          aria-label="About Notices and Escalation"
+          title="About Notifications and Escalation"
+          tooltip="About Notifications and Escalation"
+          aria-label="About Notifications and Escalation"
           data-test="notifications-about-button"
           @click="showAboutDialog = true"
         />
@@ -28,9 +29,9 @@
     </div>
 
     <NotificationQueriesCard />
-    <NoticesTable />
+    <NotificationsTable />
 
-    <NotificationExplanationsCard v-model:visible="showAboutDialog" />
+    <NotificationsHelpDialog v-model:visible="showAboutDialog" />
 
     <ConfigureNotificationsDialog
       v-if="adminRole"
@@ -48,22 +49,22 @@ import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 import { whenever } from '@vueuse/core'
 
 import ConfigureNotificationsDialog from '@/components/Notifications/ConfigureNotificationsDialog.vue'
-import NoticesTable from '@/components/Notifications/NoticesTable.vue'
-import NotificationExplanationsCard from '@/components/Notifications/NotificationExplanationsCard.vue'
+import NotificationsTable from '@/components/Notifications/NotificationsTable.vue'
+import NotificationsHelpDialog from '@/components/Notifications/NotificationsHelpDialog.vue'
 import NotificationQueriesCard from '@/components/Notifications/NotificationQueriesCard.vue'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useRole from '@/composables/useRole'
 import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNoticesStore } from '@/stores/noticesStore'
+import { useNotificationsStore } from '@/stores/notificationsStore'
 import { BreadCrumb } from '@/types'
 import { NoticeQueryPreset } from '@/types/notices'
 
 const authStore = useAuthStore()
 const route = useRoute()
 const menuStore = useMenuStore()
-const noticesStore = useNoticesStore()
+const notificationsStore = useNotificationsStore()
 const { adminRole } = useRole()
 
 const showConfigDialog = ref(false)
@@ -88,9 +89,9 @@ const PRESETS = ['yourOutstanding', 'teamOutstanding', 'allOutstanding', 'allAck
 const initialLoad = () => {
   const preset = route.query.preset as string
   if ((PRESETS as readonly string[]).includes(preset)) {
-    noticesStore.applyPreset(preset as NoticeQueryPreset)
+    notificationsStore.applyPreset(preset as NoticeQueryPreset)
   } else {
-    noticesStore.load()
+    notificationsStore.load()
   }
 }
 

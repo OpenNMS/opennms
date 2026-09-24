@@ -43,7 +43,7 @@ export interface OnmsNoticeDestination {
   autoNotify?: string | null
 }
 
-export interface OnmsNotice {
+export interface OnmsNotification {
   id: number
   subject?: string | null
   textMessage?: string | null
@@ -67,6 +67,6 @@ export interface NoticeBrowseFilter {
 }
 
 export interface NoticeBrowseResult {
-  notices: OnmsNotice[]
+  notices: OnmsNotification[]
   totalCount: number
 }

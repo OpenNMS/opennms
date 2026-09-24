@@ -6,7 +6,7 @@
           :class="{ active: store.preset === 'yourOutstanding' }"
           data-test="query-your-outstanding"
           @click.prevent="store.applyPreset('yourOutstanding')"
-        >Your outstanding notices</a>
+        >Your outstanding notifications</a>
         <span class="separator">|</span>
         <a
           :class="{ active: store.preset === 'teamOutstanding' }"
@@ -18,49 +18,33 @@
           :class="{ active: store.preset === 'allOutstanding' }"
           data-test="query-all-outstanding"
           @click.prevent="store.applyPreset('allOutstanding')"
-        >All outstanding notices</a>
+        >All outstanding notifications</a>
         <span class="separator">|</span>
         <a
           :class="{ active: store.preset === 'allAcknowledged' }"
           data-test="query-all-acknowledged"
           @click.prevent="store.applyPreset('allAcknowledged')"
-        >All acknowledged notices</a>
+        >All acknowledged notifications</a>
       </div>
       <div class="query-forms">
         <div class="search-row">
-          <IftaLabel>
-            <OnmsInputText
-              id="notification-user-search"
-              v-model="userSearch"
-              data-test="user-search-input"
-              @keyup.enter="searchByUser"
-            />
-            <label for="notification-user-search">Check notices for user</label>
-          </IftaLabel>
-          <OnmsIconButton
-            variant="outlined"
-            :icon="Search"
-            aria-label="Show notices for user"
-            data-test="user-search-button"
-            @click="searchByUser"
+          <OnmsSearchInput
+            v-model="userSearch"
+            inputId="notification-user-search"
+            placeholder="Check notifications for user"
+            ariaLabel="Check notifications for user"
+            dataTest="user-search-input"
+            @keyup.enter="searchByUser"
           />
         </div>
         <div class="search-row">
-          <IftaLabel>
-            <OnmsInputText
-              id="notification-notice-search"
-              v-model="noticeSearch"
-              data-test="notice-search-input"
-              @keyup.enter="goToNotice"
-            />
-            <label for="notification-notice-search">Get details for notice</label>
-          </IftaLabel>
-          <OnmsIconButton
-            variant="outlined"
-            :icon="Search"
-            aria-label="Get notice detail"
-            data-test="notice-search-button"
-            @click="goToNotice"
+          <OnmsSearchInput
+            v-model="noticeSearch"
+            inputId="notification-notice-search"
+            placeholder="Get details for notification"
+            ariaLabel="Get details for notification"
+            dataTest="notice-search-input"
+            @keyup.enter="goToNotice"
           />
         </div>
       </div>
@@ -71,16 +55,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsSearchInput } from '@opennms/onms-ui'
 
 import TableCard from '@/components/Common/TableCard.vue'
-import Search from '@opennms/onms-ui/icons/action/Search.vue'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNoticesStore } from '@/stores/noticesStore'
+import { useNotificationsStore } from '@/stores/notificationsStore'
 
 const menuStore = useMenuStore()
-const store = useNoticesStore()
+const store = useNotificationsStore()
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
