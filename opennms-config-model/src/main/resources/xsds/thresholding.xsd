@@ -32,6 +32,12 @@
           </annotation>
         </element>
       </sequence>
+      <attribute name="threads" type="int" use="optional">
+        <annotation>
+          <documentation>Maximum number of threads used for
+            thresholding.</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
 
