@@ -209,6 +209,32 @@ describe('DistributedMonitoring.vue (container)', () => {
     expect(showToast).not.toHaveBeenCalled()
   })
 
+  it('does not reload on becoming visible when the data is younger than 10 s', async () => {
+    const { minionStore } = await mountPage()
+    setHidden(true)
+    await vi.advanceTimersByTimeAsync(5_000)
+    setHidden(false)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await flushPromises()
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(1)
+
+    setHidden(true)
+    await vi.advanceTimersByTimeAsync(5_000)
+    setHidden(false)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await flushPromises()
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(2)
+  })
+
+  it('reloads on becoming visible when nothing has loaded yet', async () => {
+    const { minionStore } = await mountPage({ minionsOk: false })
+    setHidden(true)
+    setHidden(false)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await flushPromises()
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(2)
+  })
+
   it('stops the timers and the visibility listener on unmount', async () => {
     const { wrapper, minionStore } = await mountPage()
     wrapper.unmount()
@@ -254,6 +280,23 @@ describe('DistributedMonitoring.vue (container)', () => {
     it('are skipped when the locations themselves failed to load', async () => {
       const { locationStore } = await mountPage({ tab: 'locations', locationsOk: false })
       expect(locationStore.getNodeCounts).not.toHaveBeenCalled()
+    })
+
+    it('are enabled in the store only while the Locations tab is active', async () => {
+      const { wrapper, locationStore } = await mountPage()
+      expect(locationStore.countsEnabled).toBe(false)
+      await wrapper.find('[data-test="tab-locations"]').trigger('click')
+      await flushPromises()
+      expect(locationStore.countsEnabled).toBe(true)
+      await wrapper.find('[data-test="tab-minions"]').trigger('click')
+      await flushPromises()
+      expect(locationStore.countsEnabled).toBe(false)
+
+      const opened = await mountPage({ tab: 'locations' })
+      expect(opened.locationStore.countsEnabled).toBe(true)
+      opened.wrapper.unmount()
+      mounted.splice(mounted.indexOf(opened.wrapper), 1)
+      expect(opened.locationStore.countsEnabled).toBe(false)
     })
   })
 

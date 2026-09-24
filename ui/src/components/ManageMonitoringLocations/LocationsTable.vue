@@ -31,12 +31,19 @@
       Showing the first {{ store.locations.length }} of {{ store.totalCount }} locations. Use search to narrow the list.
     </p>
 
+    <!-- the chip's own remove icon is not focusable, so a real button clears it -->
     <div v-if="nameFilter" class="filters">
       <OnmsChip
         :label="`Location: ${nameFilter}`"
-        removable
         data-test="name-filter-chip"
-        @remove="nameFilter = null"
+      />
+      <OnmsButton
+        variant="text"
+        size="small"
+        label="Clear"
+        aria-label="Clear name filter"
+        data-test="clear-name-filter"
+        @click="nameFilter = null"
       />
     </div>
 

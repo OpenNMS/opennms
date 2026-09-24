@@ -33,13 +33,30 @@
         aria-label="Quick filter"
         data-test="quick-filters"
       />
-      <OnmsChip
-        v-if="locationFilter"
-        :label="`Location: ${locationFilter}`"
-        removable
-        data-test="location-filter-chip"
-        @remove="emit('update:locationFilter', null)"
+      <OnmsSelect
+        :modelValue="locationFilter"
+        :options="locationOptions"
+        showClear
+        placeholder="All locations"
+        aria-label="Filter by monitoring location"
+        data-test="location-select"
+        @update:modelValue="emit('update:locationFilter', ($event as string | null) || null)"
       />
+      <!-- the chip's own remove icon is not focusable, so a real button clears it -->
+      <template v-if="locationFilter">
+        <OnmsChip
+          :label="`Location: ${locationFilter}`"
+          data-test="location-filter-chip"
+        />
+        <OnmsButton
+          variant="text"
+          size="small"
+          label="Clear"
+          aria-label="Clear location filter"
+          data-test="clear-location-filter"
+          @click="emit('update:locationFilter', null)"
+        />
+      </template>
     </div>
 
     <OnmsTable
@@ -96,7 +113,7 @@
       <OnmsColumn field="version" header="Version" sortable>
         <template #body="{ data }">
           <OnmsTag
-            :value="data.version ?? '-'"
+            :value="versionLabel(data.version)"
             :severity="versionTagSeverity(data.version)"
             :title="versionTitle(data.version)"
             data-test="version-tag"
@@ -171,7 +188,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsSelectButton, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsSelect, OnmsSelectButton, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -267,6 +284,10 @@ const matchers: Record<QuickFilter, (minion: Minion) => boolean> = {
 const locationScoped = computed(() =>
   props.locationFilter ? store.minions.filter(minion => minion.location === props.locationFilter) : store.minions)
 
+const locationOptions = computed(() =>
+  [...new Set(store.minions.map(minion => minion.location).filter((name): name is string => !!name))]
+    .sort((a, b) => a.localeCompare(b)))
+
 const quickFilterOptions = computed(() => {
   const count = (filter: QuickFilter) => locationScoped.value.filter(matchers[filter]).length
   return [
@@ -287,10 +308,14 @@ const versionTagSeverity = (version?: string | null) => {
   return state === 'same' ? 'success' : state === 'differs' ? 'danger' : 'secondary'
 }
 
+// a mismatch is spelled out in the tag text, not only in its colour
+const versionLabel = (version?: string | null) =>
+  versionState(version) === 'differs' ? `${version} · differs from core` : version ?? '-'
+
 const versionTitle = (version?: string | null) => {
   switch (versionState(version)) {
     case 'coreUnknown': return 'The core version could not be determined'
-    case 'unknown': return `This version cannot be compared with the core version ${store.coreVersion}`
+    case 'unknown': return 'Version format not recognised'
     case 'same': return `Matches the core version ${store.coreVersion}`
     default: return `The core runs ${store.coreVersion}`
   }

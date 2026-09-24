@@ -161,14 +161,18 @@ describe('LocationsTable.vue', () => {
       await ctx.wrapper.vm.$nextTick()
     })
 
-    it('narrows the rows to the exact name and shows a dismissible chip', async () => {
+    it('narrows the rows to the exact name and shows a chip with a focusable Clear button', async () => {
       ;(ctx.wrapper.vm as any).searchFor('Zed')
       await ctx.wrapper.vm.$nextTick()
       expect(ctx.wrapper.find('[data-test="name-filter-chip"]').text()).toContain('Location: Zed')
+      expect(ctx.wrapper.find('[data-test="name-filter-chip"] .p-chip-remove-icon').exists()).toBe(false)
       expect(rows(ctx.wrapper)).toHaveLength(1)
       expect(rows(ctx.wrapper)[0].text()).toContain('Zed')
-      await ctx.wrapper.find('[data-test="name-filter-chip"] .p-chip-remove-icon').trigger('click')
+      const clear = ctx.wrapper.find('button[data-test="clear-name-filter"]')
+      expect(clear.attributes('aria-label')).toBe('Clear name filter')
+      await clear.trigger('click')
       expect(ctx.wrapper.find('[data-test="name-filter-chip"]').exists()).toBe(false)
+      expect(ctx.wrapper.find('[data-test="clear-name-filter"]').exists()).toBe(false)
       expect(rows(ctx.wrapper)).toHaveLength(3)
     })
 

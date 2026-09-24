@@ -155,13 +155,14 @@ describe('MinionsTable.vue', () => {
     ] as any
     await ctx.wrapper.vm.$nextTick()
     const tags = ctx.wrapper.findAll('[data-test="version-tag"]')
-    expect(tags.map(t => t.text())).toEqual(['v37.0.0-SNAPSHOT', 'v36.0.2', '1.0'])
+    // a mismatch is spelled out in the text, not only in the colour
+    expect(tags.map(t => t.text())).toEqual(['v37.0.0-SNAPSHOT', 'v36.0.2 · differs from core', '1.0'])
     expect(tags[0].classes()).toContain('p-tag-success')
     expect(tags[0].attributes('title')).toBe('Matches the core version 37.0.0')
     expect(tags[1].classes()).toContain('p-tag-danger')
     expect(tags[1].attributes('title')).toBe('The core runs 37.0.0')
     expect(tags[2].classes()).toContain('p-tag-secondary')
-    expect(tags[2].attributes('title')).toBe('This version cannot be compared with the core version 37.0.0')
+    expect(tags[2].attributes('title')).toBe('Version format not recognised')
     expect(quickFilterLabels(ctx.wrapper)[3]).toBe('Version differs from core (1)')
   })
 
@@ -244,13 +245,63 @@ describe('MinionsTable.vue', () => {
       expect(checked).toEqual(['All (2)'])
     })
 
-    it('dismissing the chip asks the parent to clear the filter', async () => {
+    it('the Clear button next to the chip asks the parent to clear the filter', async () => {
       ctx.store.minions = [minion('m1', { location: 'dc-east' })] as any
       await ctx.wrapper.setProps({ locationFilter: 'dc-east' })
-      await ctx.wrapper.find('[data-test="location-filter-chip"] .p-chip-remove-icon').trigger('click')
+      expect(ctx.wrapper.find('[data-test="location-filter-chip"] .p-chip-remove-icon').exists()).toBe(false)
+      const clear = ctx.wrapper.find('button[data-test="clear-location-filter"]')
+      expect(clear.attributes('aria-label')).toBe('Clear location filter')
+      await clear.trigger('click')
       expect(ctx.wrapper.emitted('update:locationFilter')).toEqual([[null]])
       await ctx.wrapper.setProps({ locationFilter: null })
       expect(ctx.wrapper.find('[data-test="location-filter-chip"]').exists()).toBe(false)
+      expect(ctx.wrapper.find('[data-test="clear-location-filter"]').exists()).toBe(false)
+    })
+
+    describe('location select', () => {
+      const select = () => ctx.wrapper.findComponent({ name: 'Select' })
+
+      beforeEach(async () => {
+        ctx.store.minions = [
+          minion('m1', { location: 'dc-west' }), minion('m2', { location: 'dc-east' }),
+          minion('m3', { location: 'dc-west' }), minion('m4', { location: null })
+        ] as any
+        await ctx.wrapper.vm.$nextTick()
+      })
+
+      it('offers the distinct locations of the loaded minions, sorted, with a clear icon', () => {
+        expect(ctx.wrapper.find('[data-test="location-select"]').exists()).toBe(true)
+        expect(select().props('options')).toEqual(['dc-east', 'dc-west'])
+        expect(select().props('showClear')).toBe(true)
+        expect(select().props('placeholder')).toBe('All locations')
+        expect(select().props('ariaLabel')).toBe('Filter by monitoring location')
+        expect(select().props('modelValue')).toBeNull()
+      })
+
+      it('selecting a location sets the same filter as the chip and shows the chip', async () => {
+        select().vm.$emit('update:modelValue', 'dc-west')
+        expect(ctx.wrapper.emitted('update:locationFilter')).toEqual([['dc-west']])
+        await ctx.wrapper.setProps({ locationFilter: 'dc-west' })
+        expect(select().props('modelValue')).toBe('dc-west')
+        expect(ctx.wrapper.find('[data-test="location-filter-chip"]').text()).toContain('Location: dc-west')
+        expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm3'])
+      })
+
+      it('clearing the select or pressing Clear resets both', async () => {
+        await ctx.wrapper.setProps({ locationFilter: 'dc-west' })
+        select().vm.$emit('update:modelValue', null)
+        expect(ctx.wrapper.emitted('update:locationFilter')?.at(-1)).toEqual([null])
+        await ctx.wrapper.setProps({ locationFilter: null })
+        expect(ctx.wrapper.find('[data-test="location-filter-chip"]').exists()).toBe(false)
+        expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm2', 'm3', 'm4'])
+
+        await ctx.wrapper.setProps({ locationFilter: 'dc-east' })
+        await ctx.wrapper.find('[data-test="clear-location-filter"]').trigger('click')
+        expect(ctx.wrapper.emitted('update:locationFilter')?.at(-1)).toEqual([null])
+        await ctx.wrapper.setProps({ locationFilter: null })
+        expect(select().props('modelValue')).toBeNull()
+        expect(ctx.wrapper.find('[data-test="location-filter-chip"]').exists()).toBe(false)
+      })
     })
   })
 
@@ -281,6 +332,18 @@ describe('MinionsTable.vue', () => {
       expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([false])
       expect(ctx.store.deleteMinion).toHaveBeenCalledWith('m1')
       expect(showToast).toHaveBeenCalledWith({ message: 'Minion \'m1\' deleted.', severity: 'success' })
+    })
+
+    it('toasts the failure message as an error and keeps the row', async () => {
+      vi.mocked(ctx.store.deleteMinion).mockResolvedValue({ success: false, message: 'Minion \'m1\' could not be deleted.' })
+      ctx.store.minions = [minion('m1')] as any
+      await ctx.wrapper.vm.$nextTick()
+      await ctx.wrapper.find('[data-test="delete-minion-button"]').trigger('click')
+      await ctx.wrapper.find('[data-test="confirm-ok"]').trigger('click')
+      await flushPromises()
+      expect(showToast).toHaveBeenCalledWith({ message: 'Minion \'m1\' could not be deleted.', severity: 'error' })
+      expect(ctx.wrapper.find('[data-test="confirm"]').exists()).toBe(false)
+      expect(rowIds(ctx.wrapper)).toEqual(['m1'])
     })
   })
 })

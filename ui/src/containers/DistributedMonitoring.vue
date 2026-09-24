@@ -66,6 +66,8 @@ import { BreadCrumb } from '@/types'
 type Tab = 'minions' | 'locations'
 
 const AUTO_REFRESH_MS = 30_000
+// a tab switch back to the page does not reload data this fresh
+const MIN_VISIBILITY_REFRESH_AGE_MS = 10_000
 
 const menuStore = useMenuStore()
 const minionStore = useMinionAdminStore()
@@ -91,10 +93,12 @@ watch(activeTab, (tab) => {
     router.replace({ query: { ...route.query, tab }})
   }
   // node counts cost one request per location, so they are only kept fresh while shown
+  locationStore.countsEnabled = tab === 'locations'
   if (tab === 'locations') {
     locationStore.getNodeCounts()
   }
 })
+locationStore.countsEnabled = activeTab.value === 'locations'
 watch(() => route.query.tab, (tab) => {
   activeTab.value = tabFromQuery(tab)
 })
@@ -158,7 +162,7 @@ const tick = () => {
 }
 
 const onVisibilityChange = () => {
-  if (!document.hidden) {
+  if (!document.hidden && (lastUpdated.value === null || Date.now() - lastUpdated.value >= MIN_VISIBILITY_REFRESH_AGE_MS)) {
     tick()
   }
 }
@@ -176,6 +180,7 @@ onBeforeUnmount(() => {
   clearInterval(ticker)
   clearInterval(autoRefresh)
   document.removeEventListener('visibilitychange', onVisibilityChange)
+  locationStore.countsEnabled = false
 })
 </script>
 

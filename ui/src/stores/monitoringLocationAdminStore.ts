@@ -35,17 +35,31 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
   const truncated = computed(() => locations.value.length < totalCount.value)
   // location name -> node count; null when the count could not be determined
   const nodeCounts = ref<Record<string, number | null>>({})
+  // set by the page while the counts are shown; mutations refresh them only then
+  const countsEnabled = ref(false)
+  let countsRequest = 0
 
   // one bounded request per location, all in flight together; not part of
-  // getLocations because only the Locations tab shows the counts
+  // getLocations because only the Locations tab shows the counts.
+  // Only the newest batch commits, so a slow older one cannot overwrite it
   const getNodeCounts = async (): Promise<void> => {
+    const request = ++countsRequest
     const names = locations.value.map(location => location['location-name'])
     const counts = await Promise.all(names.map(name => API.getNodeCountByLocation(name)))
+    if (request !== countsRequest) {
+      return
+    }
     const next: Record<string, number | null> = {}
     names.forEach((name, index) => {
       next[name] = counts[index]
     })
     nodeCounts.value = next
+  }
+
+  const refreshNodeCounts = async (): Promise<void> => {
+    if (countsEnabled.value) {
+      await getNodeCounts()
+    }
   }
 
   // false when the load failed; the previous list is kept
@@ -67,6 +81,7 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     const result = await API.createMonitoringLocation(location)
     if (result.success) {
       await getLocations()
+      await refreshNodeCounts()
     }
     return result
   }
@@ -75,6 +90,7 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     const result = await API.updateMonitoringLocation(location)
     if (result.success) {
       await getLocations()
+      await refreshNodeCounts()
     }
     return result
   }
@@ -82,7 +98,9 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
   const deleteLocation = async (name: string): Promise<ValidationResult> => {
     const result = await API.deleteMonitoringLocation(name)
     if (result.success) {
+      delete nodeCounts.value[name]
       await getLocations()
+      await refreshNodeCounts()
     }
     return result
   }
@@ -94,6 +112,7 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     totalCount,
     truncated,
     nodeCounts,
+    countsEnabled,
     getLocations,
     getNodeCounts,
     createLocation,

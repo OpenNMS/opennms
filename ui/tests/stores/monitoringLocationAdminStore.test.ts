@@ -121,6 +121,53 @@ describe('useMonitoringLocationAdminStore', () => {
     expect(store.nodeCounts).toEqual({ Default: 12, Raleigh: null })
   })
 
+  it('getNodeCounts lets only the newest batch commit when an older one finishes later', async () => {
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default')], totalCount: 1 })
+    await store.getLocations()
+    const pending: ((count: number) => void)[] = []
+    vi.mocked(API.getNodeCountByLocation).mockImplementation(() => new Promise<number>((resolve) => {
+      pending.push(resolve)
+    }))
+    const first = store.getNodeCounts()
+    const second = store.getNodeCounts()
+    pending[1](5)
+    await second
+    expect(store.nodeCounts).toEqual({ Default: 5 })
+    pending[0](1)
+    await first
+    expect(store.nodeCounts).toEqual({ Default: 5 })
+  })
+
+  it('mutations refresh the counts only while countsEnabled, and a delete drops the name at once', async () => {
+    vi.mocked(API.createMonitoringLocation).mockResolvedValue(ok)
+    vi.mocked(API.updateMonitoringLocation).mockResolvedValue(ok)
+    vi.mocked(API.deleteMonitoringLocation).mockResolvedValue(ok)
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(2)
+
+    await store.createLocation(loc('A'))
+    expect(API.getNodeCountByLocation).not.toHaveBeenCalled()
+
+    store.countsEnabled = true
+    await store.createLocation(loc('A'))
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(1)
+    expect(store.nodeCounts).toEqual({ A: 2 })
+    await store.updateLocation(loc('A'))
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(2)
+
+    store.nodeCounts = { A: 2, B: 7 }
+    vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('A')], totalCount: 1 })
+    await store.deleteLocation('B')
+    expect(store.nodeCounts).toEqual({ A: 2 })
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(3)
+
+    store.countsEnabled = false
+    store.nodeCounts = { A: 2, B: 7 }
+    await store.deleteLocation('B')
+    expect(store.nodeCounts).toEqual({ A: 2 })
+    expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(3)
+  })
+
   it('getNodeCounts replaces the previous counts', async () => {
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default')], totalCount: 1 })
     vi.mocked(API.getNodeCountByLocation).mockResolvedValue(1)
