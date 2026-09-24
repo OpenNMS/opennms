@@ -154,7 +154,7 @@ angular.module('onms-interfaces-config', [
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
         .then(function() {
-          const action = $scope.isUserSpecified(intf) ? 'enabled' : 'disabled';
+          const action = $scope.isCollectionUserSpecified(intf) ? 'enabled' : 'disabled';
           growl.success('User-specified flag was successfully ' + action + ' for interface ' + intf.ifName);
         }, function() {
           growl.error('Cannot set user-specified flag for interface ' + intf.ifName);
