@@ -26,7 +26,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:deploy-base:ubi10-3.6.8.b379-jre-25"
+ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.6.8.b379-jre-25"
 
 FROM ${BASE_IMAGE} AS minion-base
 

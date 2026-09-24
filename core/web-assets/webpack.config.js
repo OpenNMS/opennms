@@ -105,7 +105,10 @@ const scssUse = [
         // 'slash-div': Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0
         //     This is in font-awesome, check if this warning still exists after updating font-awesome
         //     More info and automated migrator: https://sass-lang.com/d/slash-div
-        silenceDeprecations: ['abs-percent', 'color-functions', 'global-builtin', 'import', 'legacy-js-api', 'slash-div']
+        // 'if-function': The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+        //     This is in font-awesome (_functions.scss), check if this warning still exists after updating font-awesome
+        //     More info: https://sass-lang.com/d/if-function
+        silenceDeprecations: ['abs-percent', 'color-functions', 'global-builtin', 'if-function', 'import', 'legacy-js-api', 'slash-div']
       },
     }
   }
