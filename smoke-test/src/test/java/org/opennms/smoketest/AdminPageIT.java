@@ -86,9 +86,9 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
 
         // Distributed Monitoring
         // both links open the same /ui (Vue) page on different tabs; the xpath requires the title and the selected tab
-        new String[] { "Manage Monitoring Locations", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Distributed Monitoring']]//*[@data-test='tab-locations' and @aria-selected='true']" },
+        new String[] { "Manage Monitoring Locations", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']]//*[@data-test='tab-locations' and @aria-selected='true']" },
         new String[] { "Manage Applications", "//span[text()='Applications']" },
-        new String[] { "Manage Minions", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Distributed Monitoring']]//*[@data-test='tab-minions' and @aria-selected='true']" },
+        new String[] { "Manage Minions", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']]//*[@data-test='tab-minions' and @aria-selected='true']" },
 
         // Additional Tools
         new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },

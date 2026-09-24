@@ -18,9 +18,6 @@
           data-test="add-location-button"
           @click="openEditor(null)"
         />
-        <AboutDialogButton title="Monitoring Locations">
-          <LocationsAbout />
-        </AboutDialogButton>
       </div>
     </div>
 
@@ -173,13 +170,11 @@ import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
-import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import LocationEditorDialog from '@/components/ManageMonitoringLocations/LocationEditorDialog.vue'
-import LocationsAbout from '@/components/ManageMonitoringLocations/LocationsAbout.vue'
 import { isPathAddressable } from '@/lib/adminValidation'
 import { minionState } from '@/lib/minionStatus'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'

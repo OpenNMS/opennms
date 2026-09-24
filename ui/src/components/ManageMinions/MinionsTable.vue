@@ -11,9 +11,6 @@
           dataTest="minion-search"
           class="search"
         />
-        <AboutDialogButton title="Minions">
-          <MinionsAbout />
-        </AboutDialogButton>
       </div>
     </div>
 
@@ -190,13 +187,11 @@ import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsSelect, OnmsSelectButton, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
-import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 // editing is disabled for now (NMS-20364)
 // import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import MinionsAbout from '@/components/ManageMinions/MinionsAbout.vue'
 // import MinionEditorDialog from '@/components/ManageMinions/MinionEditorDialog.vue'
 import { minionState, minionStateSeverity } from '@/lib/minionStatus'
 import { ageSeverity, formatAbsolute, isOlderThan, relativeTimeSince } from '@/lib/relativeTime'

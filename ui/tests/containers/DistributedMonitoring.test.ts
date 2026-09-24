@@ -41,7 +41,7 @@ const setHidden = (value: boolean) => {
 const mountPage = async (opts: { tab?: string, minionsOk?: boolean, locationsOk?: boolean } = {}) => {
   const router = createRouter({
     history: createWebHashHistory(),
-    routes: [{ path: '/distributed-monitoring', name: 'Distributed Monitoring', component: DistributedMonitoring }]
+    routes: [{ path: '/distributed-monitoring', name: 'Manage Minions and Locations', component: DistributedMonitoring }]
   })
   await router.push({ path: '/distributed-monitoring', query: opts.tab ? { tab: opts.tab } : {}})
   await router.isReady()
@@ -86,7 +86,7 @@ describe('DistributedMonitoring.vue (container)', () => {
     expect(minionStore.getMinions).toHaveBeenCalledTimes(1)
     expect(locationStore.getLocations).toHaveBeenCalledTimes(1)
     expect(minionStore.getCoreVersion).toHaveBeenCalledTimes(1)
-    expect(wrapper.find('.page-title').text()).toBe('Distributed Monitoring')
+    expect(wrapper.find('.page-title').text()).toBe('Manage Minions and Locations')
     expect(wrapper.find('.page-subtitle').text()).toBe('Monitoring locations and the Minions that poll and collect from them.')
     expect(showToast).not.toHaveBeenCalled()
   })

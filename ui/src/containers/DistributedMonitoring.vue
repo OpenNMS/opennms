@@ -7,7 +7,7 @@
   <div class="distributed-monitoring-container">
     <div class="page-header">
       <div>
-        <h1 class="page-title">Distributed Monitoring</h1>
+        <h1 class="page-title">Manage Minions and Locations</h1>
         <p class="page-subtitle">Monitoring locations and the Minions that poll and collect from them.</p>
       </div>
       <div class="refresh-controls">
@@ -21,6 +21,8 @@
         />
       </div>
     </div>
+
+    <AboutPanel />
 
     <OnmsTabs v-model:value="activeTab">
       <OnmsTabList>
@@ -55,6 +57,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, useOnmsToast } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import AboutPanel from '@/components/DistributedMonitoring/AboutPanel.vue'
 import MinionsTable from '@/components/ManageMinions/MinionsTable.vue'
 import LocationsTable from '@/components/ManageMonitoringLocations/LocationsTable.vue'
 import { relativeTimeSince } from '@/lib/relativeTime'
@@ -80,7 +83,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-  { label: 'Distributed Monitoring', to: '#', position: 'last' }
+  { label: 'Manage Minions and Locations', to: '#', position: 'last' }
 ])
 
 const tabFromQuery = (value: unknown): Tab => value === 'locations' ? 'locations' : 'minions'
@@ -185,6 +188,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+// the tabs inset their panels by 1.125rem (tabs.tabpanel.padding), so the header
+// and the About panel use the same gutter to line up with the cards below
+$page-gutter: 1.125rem;
+
 .distributed-monitoring-container {
   display: flex;
   flex-direction: column;
@@ -192,7 +199,12 @@ onBeforeUnmount(() => {
   padding: 0 2px 2rem 2px;
 }
 
+.about-panel {
+  margin: 0 $page-gutter;
+}
+
 .page-header {
+  padding: 0 $page-gutter;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -214,7 +226,7 @@ onBeforeUnmount(() => {
 .refresh-controls {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .updated-label {

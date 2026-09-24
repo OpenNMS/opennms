@@ -33,7 +33,7 @@ const mountTable = () => {
     global: {
       plugins: [PrimeVue, pinia],
       stubs: {
-        LocationEditorDialog: true, OnmsConfirmationDialog: ConfirmationStub, AboutDialogButton: true,
+        LocationEditorDialog: true, OnmsConfirmationDialog: ConfirmationStub,
         TableCard: { template: '<div><slot /></div>' }
       }
     }
@@ -140,10 +140,6 @@ describe('LocationsTable.vue', () => {
     ctx.store.locations = [loc('Raleigh')] as any
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.findComponent({ name: 'DataTable' }).props('loading')).toBe(false)
-  })
-
-  it('offers the About dialog from the card header', () => {
-    expect(ctx.wrapper.findComponent({ name: 'AboutDialogButton' }).exists()).toBe(true)
   })
 
   it('shows a search box once there are locations', async () => {

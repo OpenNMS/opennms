@@ -299,7 +299,7 @@
       "items": [
         {
           "id": "distributedMonitoring",
-          "name": "Distributed Monitoring",
+          "name": "Manage Minions and Locations",
           "url": "ui/index.html#/distributed-monitoring",
           "locationMatch": "",
           "roles": ["ROLE_ADMIN"]

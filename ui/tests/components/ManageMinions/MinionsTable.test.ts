@@ -31,7 +31,7 @@ const mountTable = (props: Record<string, unknown> = {}) => {
     props: { now: NOW, ...props },
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-      stubs: { OnmsConfirmationDialog: ConfirmationStub, AboutDialogButton: true, TableCard: { template: '<div><slot /></div>' }}
+      stubs: { OnmsConfirmationDialog: ConfirmationStub, TableCard: { template: '<div><slot /></div>' }}
     }
   })
   return { wrapper, store: useMinionAdminStore() }
@@ -92,10 +92,6 @@ describe('MinionsTable.vue', () => {
     const del = ctx.wrapper.find('[data-test="delete-minion-button"]')
     expect(del.exists()).toBe(true)
     expect(del.attributes('aria-label')).toBe('Delete m1')
-  })
-
-  it('offers the About dialog from the card header', () => {
-    expect(ctx.wrapper.findComponent({ name: 'AboutDialogButton' }).exists()).toBe(true)
   })
 
   it('links the Minion id to its node when a node id is known', async () => {

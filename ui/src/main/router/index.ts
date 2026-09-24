@@ -128,7 +128,7 @@ const router = createRouter({
     },
     {
       path: '/distributed-monitoring',
-      name: 'Distributed Monitoring',
+      name: 'Manage Minions and Locations',
       component: () => import('@/containers/DistributedMonitoring.vue'),
       beforeEnter: (to, from) => {
         const checkRoles = () => {

@@ -125,8 +125,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Distributed Monitoring
         // the Minions and Monitoring Locations tabs share one /ui (Vue) page
-        clickMenuItem("Distributed Monitoring", "Distributed Monitoring");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Distributed Monitoring']")));
+        clickMenuItem("Distributed Monitoring", "Manage Minions and Locations");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']")));
 
         clickMenuItem("Distributed Monitoring", "Manage Applications");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Applications')]")));
