@@ -17,7 +17,7 @@ vi.mock('@opennms/onms-ui', async importOriginal => ({
 const searchFor = vi.fn()
 const MinionsTableStub = {
   name: 'MinionsTable',
-  props: ['locationFilter'],
+  props: ['locationFilter', 'now'],
   emits: ['update:locationFilter', 'showLocation', 'dialogOpen'],
   template: '<div data-test="minions-table-stub">{{ locationFilter }}</div>'
 }
@@ -32,6 +32,12 @@ const LocationsTableStub = {
 
 const mounted: VueWrapper<any>[] = []
 
+// document.hidden is a prototype getter; override it per test and restore afterwards
+let hidden = false
+const setHidden = (value: boolean) => {
+  hidden = value
+}
+
 const mountPage = async (opts: { tab?: string, minionsOk?: boolean, locationsOk?: boolean } = {}) => {
   const router = createRouter({
     history: createWebHashHistory(),
@@ -45,6 +51,7 @@ const mountPage = async (opts: { tab?: string, minionsOk?: boolean, locationsOk?
   const locationStore = useMonitoringLocationAdminStore(pinia)
   vi.mocked(minionStore.getMinions).mockResolvedValue(opts.minionsOk ?? true)
   vi.mocked(locationStore.getLocations).mockResolvedValue(opts.locationsOk ?? true)
+  vi.mocked(locationStore.getNodeCounts).mockResolvedValue(undefined)
   vi.mocked(minionStore.getCoreVersion).mockResolvedValue('34.0.0')
 
   const wrapper = mount(DistributedMonitoring, {
@@ -62,6 +69,8 @@ describe('DistributedMonitoring.vue (container)', () => {
   beforeEach(() => {
     showToast.mockClear()
     searchFor.mockClear()
+    hidden = false
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden })
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] })
     vi.setSystemTime(new Date('2026-09-24T12:00:00Z'))
   })
@@ -69,6 +78,7 @@ describe('DistributedMonitoring.vue (container)', () => {
     mounted.splice(0).forEach(w => w.unmount())
     vi.runOnlyPendingTimers()
     vi.useRealTimers()
+    delete (document as any).hidden
   })
 
   it('loads both stores and the core version on mount and renders the header', async () => {
@@ -95,6 +105,12 @@ describe('DistributedMonitoring.vue (container)', () => {
     expect(first.wrapper.find('[data-test="tab-minions"]').attributes('aria-selected')).toBe('true')
     const second = await mountPage({ tab: 'locations' })
     expect(second.wrapper.find('[data-test="tab-locations"]').attributes('aria-selected')).toBe('true')
+  })
+
+  it('falls back to the Minions tab for an unknown ?tab= value', async () => {
+    const { wrapper } = await mountPage({ tab: 'bogus' })
+    expect(wrapper.find('[data-test="tab-minions"]').attributes('aria-selected')).toBe('true')
+    expect(wrapper.find('[data-test="tab-locations"]').attributes('aria-selected')).toBe('false')
   })
 
   it('writes the active tab to ?tab= and follows a query change', async () => {
@@ -126,11 +142,14 @@ describe('DistributedMonitoring.vue (container)', () => {
     expect(showToast).toHaveBeenCalledWith({ message: 'Failed to load monitoring locations.', severity: 'error' })
   })
 
-  it('ticks the Updated label every second', async () => {
+  it('ticks the Updated label every second and hands the same clock to the Minions table', async () => {
     const { wrapper } = await mountPage()
+    const start = Date.now()
     expect(wrapper.find('[data-test="updated-label"]').text()).toBe('Updated 0 s ago · auto-refresh every 30 s')
+    expect(wrapper.findComponent(MinionsTableStub).props('now')).toBe(start)
     await vi.advanceTimersByTimeAsync(11_000)
     expect(wrapper.find('[data-test="updated-label"]').text()).toBe('Updated 11 s ago · auto-refresh every 30 s')
+    expect(wrapper.findComponent(MinionsTableStub).props('now')).toBe(start + 11_000)
   })
 
   it('does not claim an update when a load failed', async () => {
@@ -149,6 +168,22 @@ describe('DistributedMonitoring.vue (container)', () => {
     expect(minionStore.getMinions).toHaveBeenCalledTimes(3)
   })
 
+  it('does not start another refresh while one is still in flight', async () => {
+    const { minionStore } = await mountPage()
+    let release!: (ok: boolean) => void
+    vi.mocked(minionStore.getMinions).mockReturnValueOnce(new Promise((resolve) => {
+      release = resolve
+    }))
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(2)
+    release(true)
+    await flushPromises()
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(3)
+  })
+
   it('pauses the auto-refresh while a dialog is open and resumes after it closes', async () => {
     const { wrapper, minionStore } = await mountPage()
     wrapper.findComponent(LocationsTableStub).vm.$emit('dialogOpen', true)
@@ -159,12 +194,67 @@ describe('DistributedMonitoring.vue (container)', () => {
     expect(minionStore.getMinions).toHaveBeenCalledTimes(2)
   })
 
-  it('stops the timers on unmount', async () => {
+  it('skips the tick while the page is hidden and refreshes once it is visible again', async () => {
+    const { minionStore } = await mountPage()
+    setHidden(true)
+    await vi.advanceTimersByTimeAsync(90_000)
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(1)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await flushPromises()
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(1)
+    setHidden(false)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await flushPromises()
+    expect(minionStore.getMinions).toHaveBeenCalledTimes(2)
+    expect(showToast).not.toHaveBeenCalled()
+  })
+
+  it('stops the timers and the visibility listener on unmount', async () => {
     const { wrapper, minionStore } = await mountPage()
     wrapper.unmount()
     mounted.splice(0)
     await vi.advanceTimersByTimeAsync(60_000)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await flushPromises()
     expect(minionStore.getMinions).toHaveBeenCalledTimes(1)
+  })
+
+  describe('node counts', () => {
+    it('are not fetched while the Minions tab is active', async () => {
+      const { wrapper, locationStore } = await mountPage()
+      expect(locationStore.getNodeCounts).not.toHaveBeenCalled()
+      await wrapper.find('[data-test="refresh-button"]').trigger('click')
+      await flushPromises()
+      await vi.advanceTimersByTimeAsync(30_000)
+      expect(locationStore.getNodeCounts).not.toHaveBeenCalled()
+    })
+
+    it('are fetched with the initial load when the page opens on the Locations tab', async () => {
+      const { locationStore } = await mountPage({ tab: 'locations' })
+      expect(locationStore.getNodeCounts).toHaveBeenCalledTimes(1)
+    })
+
+    it('are fetched on tab activation, on Refresh and on the tick while the Locations tab is active', async () => {
+      const { wrapper, locationStore } = await mountPage()
+      await wrapper.find('[data-test="tab-locations"]').trigger('click')
+      await flushPromises()
+      expect(locationStore.getNodeCounts).toHaveBeenCalledTimes(1)
+      await wrapper.find('[data-test="refresh-button"]').trigger('click')
+      await flushPromises()
+      expect(locationStore.getNodeCounts).toHaveBeenCalledTimes(2)
+      await vi.advanceTimersByTimeAsync(30_000)
+      expect(locationStore.getNodeCounts).toHaveBeenCalledTimes(3)
+
+      await wrapper.find('[data-test="tab-minions"]').trigger('click')
+      await flushPromises()
+      await vi.advanceTimersByTimeAsync(30_000)
+      expect(locationStore.getNodeCounts).toHaveBeenCalledTimes(3)
+    })
+
+    it('are skipped when the locations themselves failed to load', async () => {
+      const { locationStore } = await mountPage({ tab: 'locations', locationsOk: false })
+      expect(locationStore.getNodeCounts).not.toHaveBeenCalled()
+    })
   })
 
   it('showMinions from the Locations tab switches to Minions filtered by that location', async () => {

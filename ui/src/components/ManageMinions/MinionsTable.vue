@@ -169,7 +169,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsSelectButton, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
@@ -181,11 +181,16 @@ import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import MinionsAbout from '@/components/ManageMinions/MinionsAbout.vue'
 // import MinionEditorDialog from '@/components/ManageMinions/MinionEditorDialog.vue'
+import { minionState, minionStateSeverity } from '@/lib/minionStatus'
 import { ageSeverity, formatAbsolute, isOlderThan, relativeTimeSince } from '@/lib/relativeTime'
+import { normalizeVersion, sameVersion } from '@/lib/version'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { Minion } from '@/types/minionAdmin'
 
+// `now` is the page's shared clock: the container ticks it once a second so every
+// relative heartbeat on the page is computed against the same instant
 const props = withDefaults(defineProps<{
+  now: number
   locationFilter?: string | null
 }>(), {
   locationFilter: null
@@ -224,28 +229,38 @@ watch(search, (value) => {
   filters.value.global.value = value || null
 })
 
-// relative heartbeats are recomputed against this instant once a second
-const now = ref(Date.now())
-let ticker: ReturnType<typeof setInterval> | undefined
-onMounted(() => {
-  ticker = setInterval(() => {
-    now.value = Date.now()
-  }, 1000)
-})
-onBeforeUnmount(() => clearInterval(ticker))
-
 const DAY_MS = 24 * 60 * 60 * 1000
 
 type QuickFilter = 'all' | 'downOrUnknown' | 'notSeen24h' | 'versionDiffers'
 const quickFilter = ref<QuickFilter>('all')
 
-const isUp = (minion: Minion) => (minion.status ?? '').toLowerCase() === 'up'
-const versionDiffers = (minion: Minion) => store.coreVersion !== null && minion.version !== store.coreVersion
+// a location hand-off from the other tab starts from the full list of that location
+watch(() => props.locationFilter, (name) => {
+  if (name) {
+    quickFilter.value = 'all'
+  }
+})
+
+const coreVersion = computed(() => normalizeVersion(store.coreVersion))
+
+type VersionState = 'coreUnknown' | 'unknown' | 'same' | 'differs'
+const versionState = (version?: string | null): VersionState => {
+  if (coreVersion.value === null) {
+    return 'coreUnknown'
+  }
+  if (normalizeVersion(version) === null) {
+    return 'unknown'
+  }
+  return sameVersion(version, coreVersion.value) ? 'same' : 'differs'
+}
+
+const isUp = (minion: Minion) => minionState(minion.status) === 'up'
+const versionDiffers = (minion: Minion) => versionState(minion.version) === 'differs'
 
 const matchers: Record<QuickFilter, (minion: Minion) => boolean> = {
   all: () => true,
   downOrUnknown: minion => !isUp(minion),
-  notSeen24h: minion => isOlderThan(minion.date, DAY_MS, now.value),
+  notSeen24h: minion => isOlderThan(minion.date, DAY_MS, props.now),
   versionDiffers
 }
 
@@ -264,23 +279,21 @@ const quickFilterOptions = computed(() => {
 
 const visibleMinions = computed(() => locationScoped.value.filter(matchers[quickFilter.value]))
 
-// Minion status is a state string (what MinionStatusTracker last observed), not a
-// severity; this maps it onto the tag's colour vocabulary. A missing status is
-// shown as UNKNOWN, so it takes that colour.
-const statusTagSeverity = (status?: string | null) => {
-  const s = (status ?? 'unknown').toLowerCase()
-  return s === 'up' ? 'success' : s === 'down' ? 'danger' : s === 'unknown' ? 'warn' : 'secondary'
+const statusTagSeverity = minionStateSeverity
+
+// secondary while either version is unknown, so nothing is flagged on a guess
+const versionTagSeverity = (version?: string | null) => {
+  const state = versionState(version)
+  return state === 'same' ? 'success' : state === 'differs' ? 'danger' : 'secondary'
 }
 
-// secondary while the core version is unknown, so nothing is flagged on a guess
-const versionTagSeverity = (version?: string | null) =>
-  store.coreVersion === null ? 'secondary' : version === store.coreVersion ? 'success' : 'danger'
-
 const versionTitle = (version?: string | null) => {
-  if (store.coreVersion === null) {
-    return 'The core version could not be determined'
+  switch (versionState(version)) {
+    case 'coreUnknown': return 'The core version could not be determined'
+    case 'unknown': return `This version cannot be compared with the core version ${store.coreVersion}`
+    case 'same': return `Matches the core version ${store.coreVersion}`
+    default: return `The core runs ${store.coreVersion}`
   }
-  return version === store.coreVersion ? `Matches the core version ${store.coreVersion}` : `The core runs ${store.coreVersion}`
 }
 
 // editing is disabled for now (NMS-20364)

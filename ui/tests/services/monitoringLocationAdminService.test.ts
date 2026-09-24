@@ -143,6 +143,8 @@ describe('monitoringLocationAdminService', () => {
       expect(await getNodeCountByLocation('Raleigh')).toBeNull()
       expect(await getNodeCountByLocation('a,b')).toBeNull()
       expect(await getNodeCountByLocation('east (1)')).toBeNull()
+      // * is a LIKE wildcard server-side, so the count would be wrong rather than fail
+      expect(await getNodeCountByLocation('dc-*')).toBeNull()
       expect(v2.get).toHaveBeenCalledTimes(2)
     })
   })

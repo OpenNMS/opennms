@@ -36,7 +36,8 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
   // location name -> node count; null when the count could not be determined
   const nodeCounts = ref<Record<string, number | null>>({})
 
-  // one bounded request per location, all in flight together
+  // one bounded request per location, all in flight together; not part of
+  // getLocations because only the Locations tab shows the counts
   const getNodeCounts = async (): Promise<void> => {
     const names = locations.value.map(location => location['location-name'])
     const counts = await Promise.all(names.map(name => API.getNodeCountByLocation(name)))
@@ -56,7 +57,6 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
       locations.value = result.locations
       totalCount.value = result.totalCount
       loadError.value = false
-      await getNodeCounts()
     } else {
       loadError.value = true
     }

@@ -31,12 +31,21 @@
       Showing the first {{ store.locations.length }} of {{ store.totalCount }} locations. Use search to narrow the list.
     </p>
 
+    <div v-if="nameFilter" class="filters">
+      <OnmsChip
+        :label="`Location: ${nameFilter}`"
+        removable
+        data-test="name-filter-chip"
+        @remove="nameFilter = null"
+      />
+    </div>
+
     <OnmsTable
-      :value="store.locations"
+      :value="visibleLocations"
       v-model:filters="filters"
       :globalFilterFields="['location-name', 'monitoring-area']"
-      :loading="store.loading"
-      :paginator="store.locations.length > 0"
+      :loading="store.loading && !store.locations.length"
+      :paginator="visibleLocations.length > 0"
       :rowClass="rowClass"
       dataKey="location-name"
       sortField="location-name"
@@ -47,14 +56,11 @@
       data-test="locations-table"
     >
       <template #empty>
-        <EmptyList
-          :content="store.loadError ? errorListContent : emptyListContent"
-          data-test="empty-list"
-        />
+        <EmptyList :content="emptyContent" data-test="empty-list" />
       </template>
       <OnmsColumn field="location-name" header="Location Name" sortable />
       <OnmsColumn field="monitoring-area" header="Description" sortable />
-      <!--
+      <!-- geolocation, coordinates and priority are hidden for now (NMS-20364)
       <OnmsColumn field="geolocation" header="Geolocation" sortable>
         <template #body="{ data }">{{ data.geolocation ?? '-' }}</template>
       </OnmsColumn>
@@ -94,7 +100,10 @@
       </OnmsColumn>
       <OnmsColumn header="Nodes">
         <template #body="{ data }">
-          <span data-test="node-count">{{ store.nodeCounts[data['location-name']] ?? '—' }}</span>
+          <span
+            :title="store.nodeCounts[data['location-name']] === null ? 'Node count is not available for this name' : undefined"
+            data-test="node-count"
+          >{{ store.nodeCounts[data['location-name']] ?? '—' }}</span>
         </template>
       </OnmsColumn>
       <OnmsColumn header="Actions">
@@ -153,9 +162,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -165,6 +174,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import LocationEditorDialog from '@/components/ManageMonitoringLocations/LocationEditorDialog.vue'
 import LocationsAbout from '@/components/ManageMonitoringLocations/LocationsAbout.vue'
 import { isPathAddressable } from '@/lib/adminValidation'
+import { minionState } from '@/lib/minionStatus'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
 import { MonitoringLocation } from '@/types'
@@ -190,7 +200,10 @@ const locationToDelete = ref<MonitoringLocation | null>(null)
 watch(() => showEditor.value || showDeleteConfirmation.value, open => emit('dialogOpen', open))
 
 const emptyListContent = { msg: 'No monitoring locations found.' }
+const filteredOutContent = { msg: 'No monitoring locations match the current filter.' }
 const errorListContent = { msg: 'Could not load monitoring locations. Please retry.' }
+const emptyContent = computed(() =>
+  store.loadError ? errorListContent : store.locations.length ? filteredOutContent : emptyListContent)
 
 const search = ref('')
 const filters = ref({ global: { value: null as string | null, matchMode: 'contains' }})
@@ -198,11 +211,17 @@ watch(search, (value) => {
   filters.value.global.value = value || null
 })
 
-// lets the Minions tab narrow this table to one location by name
+// an exact-name filter set by the Minions tab, shown as a dismissible chip;
+// the search box is cleared so its substring cannot hide the requested row
+const nameFilter = ref<string | null>(null)
 const searchFor = (name: string) => {
-  search.value = name
+  search.value = ''
+  nameFilter.value = name
 }
 defineExpose({ searchFor })
+
+const visibleLocations = computed(() =>
+  nameFilter.value ? store.locations.filter(location => location['location-name'] === nameFilter.value) : store.locations)
 
 const rowClass = (data: MonitoringLocation) => data['location-name'] === DEFAULT_LOCATION ? 'default-location-row' : undefined
 
@@ -211,10 +230,10 @@ const minionSummary = (name: string) => {
   let down = 0
   let unknown = 0
   for (const minion of minions) {
-    const status = (minion.status ?? '').toLowerCase()
-    if (status === 'down') {
+    const state = minionState(minion.status)
+    if (state === 'down') {
       down++
-    } else if (status !== 'up') {
+    } else if (state === 'unknown') {
       unknown++
     }
   }
@@ -287,6 +306,14 @@ const cancelDelete = () => {
   margin: 0 0 0.75rem 0;
   font-size: 0.85rem;
   color: var(--p-text-muted-color);
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .unaddressable,

@@ -28,7 +28,7 @@ const ConfirmationStub = {
 
 const mountTable = (props: Record<string, unknown> = {}) => {
   const wrapper = mount(MinionsTable, {
-    props,
+    props: { now: NOW, ...props },
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
       stubs: { OnmsConfirmationDialog: ConfirmationStub, AboutDialogButton: true, TableCard: { template: '<div><slot /></div>' }}
@@ -107,14 +107,18 @@ describe('MinionsTable.vue', () => {
     expect(link.attributes('href')).toContain('element/node.jsp?node=42')
   })
 
-  it('renders the status as an uppercase tag with the matching severity', async () => {
-    ctx.store.minions = [minion('m1', { status: 'up' }), minion('m2', { status: 'DOWN' }), minion('m3', { status: null })] as any
+  it('renders the status as an uppercase tag, unrecognised and missing states in the unknown colour', async () => {
+    ctx.store.minions = [
+      minion('m1', { status: 'up' }), minion('m2', { status: 'DOWN' }), minion('m3', { status: null }), minion('m4', { status: 'degraded' })
+    ] as any
     await ctx.wrapper.vm.$nextTick()
     const tags = ctx.wrapper.findAll('[data-test="status-tag"]')
-    expect(tags.map(t => t.text())).toEqual(['UP', 'DOWN', 'UNKNOWN'])
+    expect(tags.map(t => t.text())).toEqual(['UP', 'DOWN', 'UNKNOWN', 'DEGRADED'])
     expect(tags[0].classes()).toContain('p-tag-success')
     expect(tags[1].classes()).toContain('p-tag-danger')
     expect(tags[2].classes()).toContain('p-tag-warn')
+    expect(tags[3].classes()).toContain('p-tag-warn')
+    expect(quickFilterLabels(ctx.wrapper)[1]).toBe('Down or unknown (3)')
   })
 
   it('colours the heartbeat by age and shows the absolute time as the title', async () => {
@@ -134,32 +138,43 @@ describe('MinionsTable.vue', () => {
     expect(tags[0].attributes('title')).toBe(new Date(NOW - 4 * MIN).toLocaleString())
   })
 
-  it('recomputes the heartbeat on the one-second tick', async () => {
+  it('recomputes the heartbeat from the shared clock prop, not from a clock of its own', async () => {
     ctx.store.minions = [minion('m1', { date: NOW - 10_000 })] as any
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.find('[data-test="heartbeat-tag"]').text()).toBe('10 s ago')
     await vi.advanceTimersByTimeAsync(5_000)
+    expect(ctx.wrapper.find('[data-test="heartbeat-tag"]').text()).toBe('10 s ago')
+    await ctx.wrapper.setProps({ now: NOW + 5_000 })
     expect(ctx.wrapper.find('[data-test="heartbeat-tag"]').text()).toBe('15 s ago')
   })
 
-  it('flags the version against the core version', async () => {
-    ctx.store.coreVersion = '34.0.0'
-    ctx.store.minions = [minion('m1', { version: '34.0.0' }), minion('m2', { version: '33.1.2' })] as any
+  it('compares the Minion VersionBean string with the core version by major.minor.patch', async () => {
+    ctx.store.coreVersion = '37.0.0'
+    ctx.store.minions = [
+      minion('m1', { version: 'v37.0.0-SNAPSHOT' }), minion('m2', { version: 'v36.0.2' }), minion('m3', { version: '1.0' })
+    ] as any
     await ctx.wrapper.vm.$nextTick()
     const tags = ctx.wrapper.findAll('[data-test="version-tag"]')
-    expect(tags.map(t => t.text())).toEqual(['34.0.0', '33.1.2'])
+    expect(tags.map(t => t.text())).toEqual(['v37.0.0-SNAPSHOT', 'v36.0.2', '1.0'])
     expect(tags[0].classes()).toContain('p-tag-success')
+    expect(tags[0].attributes('title')).toBe('Matches the core version 37.0.0')
     expect(tags[1].classes()).toContain('p-tag-danger')
-    expect(tags[1].attributes('title')).toBe('The core runs 34.0.0')
+    expect(tags[1].attributes('title')).toBe('The core runs 37.0.0')
+    expect(tags[2].classes()).toContain('p-tag-secondary')
+    expect(tags[2].attributes('title')).toBe('This version cannot be compared with the core version 37.0.0')
+    expect(quickFilterLabels(ctx.wrapper)[3]).toBe('Version differs from core (1)')
   })
 
-  it('leaves the version neutral while the core version is unknown', async () => {
+  it('leaves the version neutral and counts no difference while the core version is unknown', async () => {
     ctx.store.coreVersion = null
-    ctx.store.minions = [minion('m1', { version: '34.0.0' })] as any
+    ctx.store.minions = [minion('m1', { version: 'v34.0.0' }), minion('m2', { version: 'v33.0.0' })] as any
     await ctx.wrapper.vm.$nextTick()
-    const tag = ctx.wrapper.find('[data-test="version-tag"]')
-    expect(tag.classes()).toContain('p-tag-secondary')
-    expect(tag.classes()).not.toContain('p-tag-danger')
+    const tags = ctx.wrapper.findAll('[data-test="version-tag"]')
+    expect(tags[0].classes()).toContain('p-tag-secondary')
+    expect(tags[1].classes()).toContain('p-tag-secondary')
+    expect(tags[1].classes()).not.toContain('p-tag-danger')
+    expect(tags[0].attributes('title')).toBe('The core version could not be determined')
+    expect(quickFilterLabels(ctx.wrapper)[3]).toBe('Version differs from core (0)')
   })
 
   it('offers a link to the location that emits showLocation', async () => {
@@ -216,6 +231,17 @@ describe('MinionsTable.vue', () => {
       expect(rowIds(ctx.wrapper)).toEqual(['m1'])
       expect(quickFilterLabels(ctx.wrapper)[0]).toBe('All (1)')
       expect(quickFilterLabels(ctx.wrapper)[1]).toBe('Down or unknown (0)')
+    })
+
+    it('resets the quick filter to All when a location filter arrives', async () => {
+      ctx.store.minions = [minion('m1', { location: 'dc-east' }), minion('m2', { location: 'dc-east', status: 'down' })] as any
+      await ctx.wrapper.vm.$nextTick()
+      await clickQuickFilter(ctx.wrapper, 'Down or unknown')
+      expect(rowIds(ctx.wrapper)).toEqual(['m2'])
+      await ctx.wrapper.setProps({ locationFilter: 'dc-east' })
+      expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm2'])
+      const checked = ctx.wrapper.findAll('[data-test="quick-filters"] .p-togglebutton-checked').map(b => b.text())
+      expect(checked).toEqual(['All (2)'])
     })
 
     it('dismissing the chip asks the parent to clear the filter', async () => {

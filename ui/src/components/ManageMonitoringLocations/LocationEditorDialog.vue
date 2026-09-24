@@ -125,6 +125,7 @@
 import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsDialog, OnmsInputText, useOnmsToast } from '@opennms/onms-ui'
+// coordinates and priority inputs are hidden for now (NMS-20364)
 // import { OnmsInputNumber } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'

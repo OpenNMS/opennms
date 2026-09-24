@@ -111,9 +111,10 @@ const deleteMonitoringLocation = async (name: string): Promise<ValidationResult>
   }
 }
 
-// Characters that are meaningful to the FIQL grammar would change the query, so a
-// location with such a name gets no count rather than a wrong one.
-const FIQL_SAFE_NAME = /^[^,;()=!~<>]+$/
+// Characters that are meaningful to the FIQL grammar would change the query, and
+// * becomes a LIKE wildcard server-side, so such a name gets no count rather
+// than a wrong one.
+const FIQL_SAFE_NAME = /^[^,;()=!~<>*]+$/
 
 // The node count for one location, read from totalCount of a one-row page of
 // /api/v2/nodes. null when the count could not be determined.

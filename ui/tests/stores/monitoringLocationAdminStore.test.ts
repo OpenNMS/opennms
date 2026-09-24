@@ -109,18 +109,24 @@ describe('useMonitoringLocationAdminStore', () => {
     expect(store.truncated).toBe(false)
   })
 
-  it('getLocations counts the nodes of every loaded location, keeping null for a failed count', async () => {
+  it('getLocations does not count nodes; getNodeCounts does, keeping null for a failed count', async () => {
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default'), loc('Raleigh')], totalCount: 2 })
     vi.mocked(API.getNodeCountByLocation).mockImplementation(async (name: string) => name === 'Default' ? 12 : null)
     await store.getLocations()
+    expect(API.getNodeCountByLocation).not.toHaveBeenCalled()
+    expect(store.nodeCounts).toEqual({})
+
+    await store.getNodeCounts()
     expect(API.getNodeCountByLocation).toHaveBeenCalledTimes(2)
     expect(store.nodeCounts).toEqual({ Default: 12, Raleigh: null })
   })
 
-  it('getNodeCounts refreshes the counts on its own', async () => {
+  it('getNodeCounts replaces the previous counts', async () => {
     vi.mocked(API.listMonitoringLocations).mockResolvedValue({ locations: [loc('Default')], totalCount: 1 })
     vi.mocked(API.getNodeCountByLocation).mockResolvedValue(1)
     await store.getLocations()
+    await store.getNodeCounts()
+    expect(store.nodeCounts).toEqual({ Default: 1 })
     vi.mocked(API.getNodeCountByLocation).mockResolvedValue(3)
     await store.getNodeCounts()
     expect(store.nodeCounts).toEqual({ Default: 3 })

@@ -140,9 +140,9 @@ const deleteMinion = async (id: string): Promise<ValidationResult> => {
   }
 }
 
-// The core's own version from /rest/info, compared verbatim to each minion's
-// reported version (both are the same Maven project version, e.g. 34.0.0-SNAPSHOT),
-// so a mismatch means the minion is not built from the same release as the core.
+// The core's own version from /rest/info ("37.0.0", no qualifier). Minions report
+// VersionBean.toString() ("v37.0.0-SNAPSHOT"), so callers compare through
+// lib/version rather than verbatim.
 const getCoreVersion = async (): Promise<string | null> => {
   try {
     const resp = await rest.get('/info')

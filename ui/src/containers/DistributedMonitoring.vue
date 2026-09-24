@@ -30,6 +30,7 @@
       <OnmsTabPanels>
         <OnmsTabPanel value="minions">
           <MinionsTable
+            :now="now"
             v-model:locationFilter="minionLocationFilter"
             @showLocation="showLocation"
             @dialogOpen="minionsDialogOpen = $event"
@@ -89,6 +90,10 @@ watch(activeTab, (tab) => {
   if (route.query.tab !== tab) {
     router.replace({ query: { ...route.query, tab }})
   }
+  // node counts cost one request per location, so they are only kept fresh while shown
+  if (tab === 'locations') {
+    locationStore.getNodeCounts()
+  }
 })
 watch(() => route.query.tab, (tab) => {
   activeTab.value = tabFromQuery(tab)
@@ -126,6 +131,9 @@ const load = async (notify: boolean) => {
   refreshing.value = true
   try {
     const [minionsOk, locationsOk] = await Promise.all([minionStore.getMinions(), locationStore.getLocations()])
+    if (locationsOk && activeTab.value === 'locations') {
+      await locationStore.getNodeCounts()
+    }
     if (minionsOk && locationsOk) {
       lastUpdated.value = Date.now()
     } else if (notify) {
@@ -141,21 +149,33 @@ const refresh = () => load(true)
 let ticker: ReturnType<typeof setInterval> | undefined
 let autoRefresh: ReturnType<typeof setInterval> | undefined
 
+// a background tick is skipped while a dialog is open, a refresh is still in
+// flight, or the tab is hidden; the next tick (or the page becoming visible) catches up
+const tick = () => {
+  if (!document.hidden && !dialogOpen.value && !refreshing.value) {
+    load(false)
+  }
+}
+
+const onVisibilityChange = () => {
+  if (!document.hidden) {
+    tick()
+  }
+}
+
 onMounted(async () => {
   ticker = setInterval(() => {
     now.value = Date.now()
   }, 1000)
-  autoRefresh = setInterval(() => {
-    if (!dialogOpen.value && !refreshing.value) {
-      load(false)
-    }
-  }, AUTO_REFRESH_MS)
+  autoRefresh = setInterval(tick, AUTO_REFRESH_MS)
+  document.addEventListener('visibilitychange', onVisibilityChange)
   await Promise.all([load(true), minionStore.getCoreVersion()])
 })
 
 onBeforeUnmount(() => {
   clearInterval(ticker)
   clearInterval(autoRefresh)
+  document.removeEventListener('visibilitychange', onVisibilityChange)
 })
 </script>
 

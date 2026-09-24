@@ -67,20 +67,20 @@ describe('LocationsTable.vue', () => {
     expect(rows(ctx.wrapper)[0].findAll('td')[1].text()).toBe('Raleigh area')
   })
 
-  it('summarizes the Minions of each location with down/unknown tags', async () => {
+  it('summarizes the Minions of each location, counting missing or unrecognised states as unknown', async () => {
     ctx.store.locations = [loc('Default'), loc('East'), loc('West')] as any
     ctx.minionStore.minions = [
-      minion('m1', 'East'), minion('m2', 'East', 'down'), minion('m3', 'East', null), minion('m4', 'West')
+      minion('m1', 'East'), minion('m2', 'East', 'DOWN'), minion('m3', 'East', null), minion('m4', 'West'), minion('m5', 'East', 'degraded')
     ] as any
     await ctx.wrapper.vm.$nextTick()
     // rows sort by name: Default, East, West
     const [defaultRow, eastRow, westRow] = rows(ctx.wrapper)
     expect(defaultRow.find('[data-test="no-minions"]').text()).toBe('None deployed')
     expect(defaultRow.find('[data-test="location-minions-link"]').exists()).toBe(false)
-    expect(eastRow.find('[data-test="location-minions-link"]').text()).toBe('3 Minions')
+    expect(eastRow.find('[data-test="location-minions-link"]').text()).toBe('4 Minions')
     expect(eastRow.find('[data-test="minions-down-tag"]').text()).toBe('1 down')
     expect(eastRow.find('[data-test="minions-down-tag"]').classes()).toContain('p-tag-danger')
-    expect(eastRow.find('[data-test="minions-unknown-tag"]').text()).toBe('1 unknown')
+    expect(eastRow.find('[data-test="minions-unknown-tag"]').text()).toBe('2 unknown')
     expect(eastRow.find('[data-test="minions-unknown-tag"]').classes()).toContain('p-tag-warn')
     expect(westRow.find('[data-test="location-minions-link"]').text()).toBe('1 Minion')
     expect(westRow.find('[data-test="minions-down-tag"]').exists()).toBe(false)
@@ -99,7 +99,12 @@ describe('LocationsTable.vue', () => {
     ctx.store.locations = [loc('Default'), loc('Raleigh'), loc('Zed')] as any
     ctx.store.nodeCounts = { Default: 12, Raleigh: null }
     await ctx.wrapper.vm.$nextTick()
-    expect(rows(ctx.wrapper).map(r => r.find('[data-test="node-count"]').text())).toEqual(['12', '—', '—'])
+    const counts = rows(ctx.wrapper).map(r => r.find('[data-test="node-count"]'))
+    expect(counts.map(c => c.text())).toEqual(['12', '—', '—'])
+    // null means the count could not be determined for that name; not-yet-fetched has no note
+    expect(counts[0].attributes('title')).toBeUndefined()
+    expect(counts[1].attributes('title')).toBe('Node count is not available for this name')
+    expect(counts[2].attributes('title')).toBeUndefined()
   })
 
   it('greys out the Default row and disables both its actions with the core-location note', async () => {
@@ -128,28 +133,59 @@ describe('LocationsTable.vue', () => {
     expect(ctx.wrapper.find('[data-test="delete-location-button"]').exists()).toBe(false)
   })
 
-  it('passes the store loading flag to the table', async () => {
+  it('masks the table only for the initial load, not for a refresh of existing rows', async () => {
     ctx.store.loading = true
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.findComponent({ name: 'DataTable' }).props('loading')).toBe(true)
+    ctx.store.locations = [loc('Raleigh')] as any
+    await ctx.wrapper.vm.$nextTick()
+    expect(ctx.wrapper.findComponent({ name: 'DataTable' }).props('loading')).toBe(false)
   })
 
   it('offers the About dialog from the card header', () => {
     expect(ctx.wrapper.findComponent({ name: 'AboutDialogButton' }).exists()).toBe(true)
   })
 
-  it('shows a search box once there are locations, and searchFor fills it', async () => {
+  it('shows a search box once there are locations', async () => {
     ctx.store.locations = []
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.find('[data-test="location-search"]').exists()).toBe(false)
     ctx.store.locations = [loc('Raleigh'), loc('Zed')] as any
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.find('[data-test="location-search"]').exists()).toBe(true)
-    ;(ctx.wrapper.vm as any).searchFor('Zed')
-    await ctx.wrapper.vm.$nextTick()
-    expect((ctx.wrapper.find('[data-test="location-search"]').element as HTMLInputElement).value).toBe('Zed')
-    expect(rows(ctx.wrapper)).toHaveLength(1)
-    expect(rows(ctx.wrapper)[0].text()).toContain('Zed')
+  })
+
+  describe('searchFor (hand-off from the Minions tab)', () => {
+    beforeEach(async () => {
+      ctx.store.locations = [loc('Raleigh'), loc('Zed'), loc('Zed-2')] as any
+      await ctx.wrapper.vm.$nextTick()
+    })
+
+    it('narrows the rows to the exact name and shows a dismissible chip', async () => {
+      ;(ctx.wrapper.vm as any).searchFor('Zed')
+      await ctx.wrapper.vm.$nextTick()
+      expect(ctx.wrapper.find('[data-test="name-filter-chip"]').text()).toContain('Location: Zed')
+      expect(rows(ctx.wrapper)).toHaveLength(1)
+      expect(rows(ctx.wrapper)[0].text()).toContain('Zed')
+      await ctx.wrapper.find('[data-test="name-filter-chip"] .p-chip-remove-icon').trigger('click')
+      expect(ctx.wrapper.find('[data-test="name-filter-chip"]').exists()).toBe(false)
+      expect(rows(ctx.wrapper)).toHaveLength(3)
+    })
+
+    it('clears a typed search so it cannot hide the requested row', async () => {
+      await ctx.wrapper.find('[data-test="location-search"]').setValue('Ral')
+      expect(rows(ctx.wrapper)).toHaveLength(1)
+      ;(ctx.wrapper.vm as any).searchFor('Zed')
+      await ctx.wrapper.vm.$nextTick()
+      expect((ctx.wrapper.find('[data-test="location-search"]').element as HTMLInputElement).value).toBe('')
+      expect(rows(ctx.wrapper)[0].text()).toContain('Zed')
+    })
+
+    it('says so when the name matches no location', async () => {
+      ;(ctx.wrapper.vm as any).searchFor('nowhere')
+      await ctx.wrapper.vm.$nextTick()
+      expect(ctx.wrapper.find('[data-test="empty-list"]').text()).toContain('No monitoring locations match the current filter')
+    })
   })
 
   it('shows the truncation note when the list was capped', async () => {
