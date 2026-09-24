@@ -10,7 +10,9 @@ vi.mock('@/services', () => ({
     createMonitoringLocation: vi.fn(),
     updateMonitoringLocation: vi.fn(),
     deleteMonitoringLocation: vi.fn(),
-    getNodeCountByLocation: vi.fn()
+    getNodeCountByLocation: vi.fn(),
+    getApplicationsUsingPerspective: vi.fn(),
+    getPerspectiveOutageCount: vi.fn()
   }
 }))
 
@@ -177,5 +179,24 @@ describe('useMonitoringLocationAdminStore', () => {
     vi.mocked(API.getNodeCountByLocation).mockResolvedValue(3)
     await store.getNodeCounts()
     expect(store.nodeCounts).toEqual({ Default: 3 })
+  })
+
+  it('getNodeCount answers from the loaded counts, including a null one, and fetches otherwise', async () => {
+    store.nodeCounts = { Raleigh: 3, 'a,b': null }
+    vi.mocked(API.getNodeCountByLocation).mockResolvedValue(9)
+    expect(await store.getNodeCount('Raleigh')).toBe(3)
+    expect(await store.getNodeCount('a,b')).toBeNull()
+    expect(API.getNodeCountByLocation).not.toHaveBeenCalled()
+    expect(await store.getNodeCount('Zed')).toBe(9)
+    expect(API.getNodeCountByLocation).toHaveBeenCalledWith('Zed')
+  })
+
+  it('passes the perspective lookups through to the service', async () => {
+    vi.mocked(API.getApplicationsUsingPerspective).mockResolvedValue([{ id: 1, name: 'Web' }])
+    vi.mocked(API.getPerspectiveOutageCount).mockResolvedValue(4)
+    expect(await store.getApplicationsUsingPerspective('Raleigh')).toEqual([{ id: 1, name: 'Web' }])
+    expect(await store.getPerspectiveOutageCount('Raleigh')).toBe(4)
+    expect(API.getApplicationsUsingPerspective).toHaveBeenCalledWith('Raleigh')
+    expect(API.getPerspectiveOutageCount).toHaveBeenCalledWith('Raleigh')
   })
 })

@@ -163,29 +163,17 @@
   <!-- editing is disabled for now (NMS-20364)
   <MinionEditorDialog v-model:visible="showEditor" :minion="minionToEdit" />
   -->
-  <OnmsConfirmationDialog
-    :visible="showDeleteConfirmation"
-    title="Delete Minion"
-    actionButtonText="Delete"
-    @ok="confirmDelete"
-    @cancel="cancelDelete"
-  >
-    <template #content>
-      <p>
-        Are you sure you want to delete the minion
-        <strong>{{ minionToDelete?.id }}</strong>? Its
-        auto-created requisition node is removed as well. If the Minion process
-        is still running it will re-register on its next check-in. This action
-        cannot be undone.
-      </p>
-    </template>
-  </OnmsConfirmationDialog>
+  <MinionDeleteDialog
+    v-model:visible="showDeleteDialog"
+    :minion="minionToDelete"
+    :now="now"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsSelect, OnmsSelectButton, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsColumn, OnmsIconButton, OnmsSearchInput, OnmsSelect, OnmsSelectButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -193,6 +181,8 @@ import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 // import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 // import MinionEditorDialog from '@/components/ManageMinions/MinionEditorDialog.vue'
+import MinionDeleteDialog from '@/components/ManageMinions/MinionDeleteDialog.vue'
+import { legacyUrl } from '@/lib/legacyUrl'
 import { minionState, minionStateSeverity } from '@/lib/minionStatus'
 import { ageSeverity, formatAbsolute, isOlderThan, relativeTimeSince } from '@/lib/relativeTime'
 import { normalizeVersion, sameVersion } from '@/lib/version'
@@ -215,19 +205,16 @@ const emit = defineEmits<{
 }>()
 
 const store = useMinionAdminStore()
-const { showToast } = useOnmsToast()
 
-// the minion's node lives on the legacy node page, one level up from /ui
-const NODE_BASE = import.meta.env.BASE_URL.replace(/ui\/?$/, '')
-const nodeUrl = (id?: number) => `${NODE_BASE}element/node.jsp?node=${id}`
+const nodeUrl = (id?: number) => legacyUrl(`element/node.jsp?node=${id}`)
 
 // editing is disabled for now (NMS-20364)
 // const showEditor = ref(false)
 // const minionToEdit = ref<Minion | null>(null)
-const showDeleteConfirmation = ref(false)
+const showDeleteDialog = ref(false)
 const minionToDelete = ref<Minion | null>(null)
 
-watch(showDeleteConfirmation, open => emit('dialogOpen', open))
+watch(showDeleteDialog, open => emit('dialogOpen', open))
 
 const emptyListContent = { msg: 'No minions found.' }
 const filteredOutContent = { msg: 'No minions match the current filter.' }
@@ -324,27 +311,7 @@ const versionTitle = (version?: string | null) => {
 
 const askDelete = (minion: Minion) => {
   minionToDelete.value = minion
-  showDeleteConfirmation.value = true
-}
-
-const confirmDelete = async () => {
-  const minion = minionToDelete.value
-  showDeleteConfirmation.value = false
-  minionToDelete.value = null
-  if (!minion) {
-    return
-  }
-  const result = await store.deleteMinion(minion.id)
-  if (result.success) {
-    showToast({ message: `Minion '${minion.id}' deleted.`, severity: 'success' })
-  } else {
-    showToast({ message: result.message, severity: 'error' })
-  }
-}
-
-const cancelDelete = () => {
-  showDeleteConfirmation.value = false
-  minionToDelete.value = null
+  showDeleteDialog.value = true
 }
 </script>
 

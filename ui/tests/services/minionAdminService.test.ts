@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
-import { NODE_LOOKUP_CHUNK, deleteMinion, getCoreVersion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
+import { NODE_LOOKUP_CHUNK, deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }, rest: { get: vi.fn() }}))
@@ -133,5 +133,27 @@ describe('minionAdminService', () => {
     expect(await getCoreVersion()).toBeNull()
     vi.mocked(rest.get).mockResolvedValueOnce({ data: {}} as any)
     expect(await getCoreVersion()).toBeNull()
+  })
+
+  it('getAlarmCountForMinion asks for a one-row page of alarms filtered by distPoller and reads totalCount', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { totalCount: 12, alarm: [{ id: 1 }] }} as any)
+    expect(await getAlarmCountForMinion('minion-01')).toBe(12)
+    const url = vi.mocked(v2.get).mock.calls[0][0] as string
+    expect(url.startsWith('/alarms?')).toBe(true)
+    expect(url).toContain('limit=1')
+    expect(decodeURIComponent(url)).toContain('_s=distPoller.id==minion-01')
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 } as any)
+    expect(await getAlarmCountForMinion('minion-01')).toBe(0)
+  })
+
+  it('getAlarmCountForMinion is null on failure, a missing total, or an id that would alter the FIQL query', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+    expect(await getAlarmCountForMinion('m1')).toBeNull()
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}} as any)
+    expect(await getAlarmCountForMinion('m1')).toBeNull()
+    expect(await getAlarmCountForMinion('a,b')).toBeNull()
+    expect(await getAlarmCountForMinion('m1 (old)')).toBeNull()
+    expect(v2.get).toHaveBeenCalledTimes(2)
   })
 })

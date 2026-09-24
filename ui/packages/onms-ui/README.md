@@ -47,7 +47,9 @@ OnmsDrawer, OnmsChip, OnmsToggleSwitch, OnmsRadioButton, OnmsInputNumber,
 OnmsSearchInput, OnmsPopover, OnmsPanel, OnmsCard, OnmsListbox,
 OnmsMultiSelect, OnmsDatePicker. This tranche also absorbed the
 pre-existing `OnmsConfirmationDialog` and `OnmsMessageDialog` (built on
-`OnmsDialog`) into the package.
+`OnmsDialog`) into the package. `OnmsMessage` (an inline callout with a
+`success` / `info` / `warn` / `error` severity, never closable) was added for
+the Manage Minions and Locations delete dialogs.
 
 Notable deviations from the underlying PrimeVue defaults — each is an
 intentional seam default, not an oversight, and matches what every existing

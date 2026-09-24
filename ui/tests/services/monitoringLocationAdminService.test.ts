@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
 import {
-  createMonitoringLocation, deleteMonitoringLocation, getNodeCountByLocation, listMonitoringLocations, updateMonitoringLocation
+  createMonitoringLocation, deleteMonitoringLocation, getApplicationsUsingPerspective, getNodeCountByLocation, getPerspectiveOutageCount,
+  listMonitoringLocations, updateMonitoringLocation
 } from '@/services/monitoringLocationAdminService'
 import { v2 } from '@/services/axiosInstances'
 
@@ -145,6 +146,55 @@ describe('monitoringLocationAdminService', () => {
       expect(await getNodeCountByLocation('east (1)')).toBeNull()
       // * is a LIKE wildcard server-side, so the count would be wrong rather than fail
       expect(await getNodeCountByLocation('dc-*')).toBeNull()
+      expect(v2.get).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('getApplicationsUsingPerspective', () => {
+    const app = (id: number, name: string, ...locations: string[]) =>
+      ({ id, name, perspectiveLocations: locations.map(l => ({ 'location-name': l, 'monitoring-area': l })) })
+
+    it('lists the applications whose JSON perspectiveLocations carry the location name', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { application: [
+        app(1, 'Web Shop', 'Default', 'Raleigh'), app(2, 'Mail', 'Default'), app(3, 'VPN', 'Raleigh'), { id: 4, name: 'Bare' }
+      ] }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([{ id: 1, name: 'Web Shop' }, { id: 3, name: 'VPN' }])
+      const url = vi.mocked(v2.get).mock.calls[0][0] as string
+      expect(url).toMatch(/^\/applications\?limit=\d+$/)
+    })
+
+    it('is empty on a 204 or a single application that does not use it, and null on failure', async () => {
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 })
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([])
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { application: app(2, 'Mail', 'Default') }})
+      expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([])
+      vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+      expect(await getApplicationsUsingPerspective('Raleigh')).toBeNull()
+    })
+  })
+
+  describe('getPerspectiveOutageCount', () => {
+    it('asks for a one-row page of outages filtered by perspective and reads totalCount', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { totalCount: 5, outage: [{ id: 1 }] }})
+      expect(await getPerspectiveOutageCount('Data Center east')).toBe(5)
+      const url = vi.mocked(v2.get).mock.calls[0][0] as string
+      expect(url.startsWith('/outages?')).toBe(true)
+      expect(url).toContain('limit=1')
+      expect(decodeURIComponent(url)).toContain('_s=perspective.id==Data Center east')
+    })
+
+    it('maps a 204 to zero', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ status: 204 })
+      expect(await getPerspectiveOutageCount('Raleigh')).toBe(0)
+    })
+
+    it('is null on failure, a missing total, or a name that would alter the FIQL query', async () => {
+      vi.mocked(v2.get).mockRejectedValueOnce(http(500))
+      expect(await getPerspectiveOutageCount('Raleigh')).toBeNull()
+      vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}})
+      expect(await getPerspectiveOutageCount('Raleigh')).toBeNull()
+      expect(await getPerspectiveOutageCount('a;b')).toBeNull()
+      expect(await getPerspectiveOutageCount('dc-*')).toBeNull()
       expect(v2.get).toHaveBeenCalledTimes(2)
     })
   })

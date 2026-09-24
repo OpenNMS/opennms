@@ -5,7 +5,7 @@ import API from '@/services'
 import { Minion } from '@/types/minionAdmin'
 
 vi.mock('@/services', () => ({
-  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn() }
+  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn(), getAlarmCountForMinion: vi.fn() }
 }))
 
 const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {}})
@@ -90,5 +90,11 @@ describe('useMinionAdminStore', () => {
     expect(Object.keys(store.byLocation).sort()).toEqual(['', 'Default', 'RemoteA'])
     expect(store.byLocation.RemoteA.map(m => m.id)).toEqual(['m2', 'm3'])
     expect(store.byLocation.Default.map(m => m.id)).toEqual(['m1'])
+  })
+
+  it('getAlarmCount passes through to the service', async () => {
+    vi.mocked(API.getAlarmCountForMinion).mockResolvedValue(7)
+    expect(await store.getAlarmCount('m1')).toBe(7)
+    expect(API.getAlarmCountForMinion).toHaveBeenCalledWith('m1')
   })
 })

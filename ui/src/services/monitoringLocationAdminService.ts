@@ -135,10 +135,51 @@ const getNodeCountByLocation = async (name: string): Promise<number | null> => {
   }
 }
 
+// The applications that poll from this location as a perspective, from the
+// JSON rendering of /api/v2/applications (perspectiveLocations carries full
+// location objects there). null when the list could not be read.
+const getApplicationsUsingPerspective = async (name: string): Promise<{ id: number; name: string }[] | null> => {
+  try {
+    const resp = await v2.get(`/applications?limit=${LIST_CAP}`)
+    if (resp.status === 204) {
+      return []
+    }
+    const raw = resp.data?.application ?? []
+    const applications: any[] = Array.isArray(raw) ? raw : [raw]
+    return applications
+      .filter(app => (app.perspectiveLocations ?? []).some((location: any) => location?.['location-name'] === name))
+      .map(app => ({ id: Number(app.id), name: String(app.name ?? app.id) }))
+  } catch (err) {
+    console.error(`Error listing the applications using '${name}' as a perspective:`, err)
+    return null
+  }
+}
+
+// Outages recorded from this location's perspective, read from totalCount of a
+// one-row page of /api/v2/outages. null when the count could not be determined.
+const getPerspectiveOutageCount = async (name: string): Promise<number | null> => {
+  if (!FIQL_SAFE_NAME.test(name)) {
+    return null
+  }
+  try {
+    const resp = await v2.get(`/outages?_s=${encodeURIComponent(`perspective.id==${name}`)}&limit=1`)
+    if (resp.status === 204) {
+      return 0
+    }
+    const total = Number(resp.data?.totalCount)
+    return Number.isFinite(total) ? total : null
+  } catch (err) {
+    console.error(`Error counting perspective outages for location '${name}':`, err)
+    return null
+  }
+}
+
 export {
   createMonitoringLocation,
   deleteMonitoringLocation,
+  getApplicationsUsingPerspective,
   getNodeCountByLocation,
+  getPerspectiveOutageCount,
   listMonitoringLocations,
   updateMonitoringLocation
 }

@@ -19,11 +19,12 @@ const minion = (id: string, over: Record<string, any> = {}) => ({
   id, label: id, location: 'Default', type: 'Minion', status: 'up', version: '34.0.0', date: NOW - 30_000, properties: {}, ...over
 })
 
-const ConfirmationStub = {
-  name: 'OnmsConfirmationDialog',
-  props: ['visible', 'title', 'actionButtonText'],
-  emits: ['ok', 'cancel'],
-  template: '<div v-if="visible" data-test="confirm"><slot name="content" /><button data-test="confirm-ok" @click="$emit(\'ok\')">ok</button></div>'
+// the delete dialog is stubbed to its emit surface; its contents are tested on their own
+const DeleteDialogStub = {
+  name: 'MinionDeleteDialog',
+  props: ['visible', 'minion', 'now'],
+  emits: ['update:visible'],
+  template: '<div v-if="visible" data-test="delete-dialog">{{ minion?.id }}</div>'
 }
 
 const mountTable = (props: Record<string, unknown> = {}) => {
@@ -31,7 +32,7 @@ const mountTable = (props: Record<string, unknown> = {}) => {
     props: { now: NOW, ...props },
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-      stubs: { OnmsConfirmationDialog: ConfirmationStub, TableCard: { template: '<div><slot /></div>' }}
+      stubs: { MinionDeleteDialog: DeleteDialogStub, TableCard: { template: '<div><slot /></div>' }}
     }
   })
   return { wrapper, store: useMinionAdminStore() }
@@ -316,30 +317,23 @@ describe('MinionsTable.vue', () => {
   })
 
   describe('delete', () => {
-    it('reports the dialog state and deletes after confirmation', async () => {
-      vi.mocked(ctx.store.deleteMinion).mockResolvedValue({ success: true, message: '' })
+    it('opens the delete dialog for the row with the shared clock and reports the dialog state', async () => {
       ctx.store.minions = [minion('m1')] as any
       await ctx.wrapper.vm.$nextTick()
       await ctx.wrapper.find('[data-test="delete-minion-button"]').trigger('click')
+      await ctx.wrapper.vm.$nextTick()
       expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([true])
-      expect(ctx.wrapper.find('[data-test="confirm"]').text()).toContain('m1')
-      await ctx.wrapper.find('[data-test="confirm-ok"]').trigger('click')
-      await flushPromises()
-      expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([false])
-      expect(ctx.store.deleteMinion).toHaveBeenCalledWith('m1')
-      expect(showToast).toHaveBeenCalledWith({ message: 'Minion \'m1\' deleted.', severity: 'success' })
-    })
-
-    it('toasts the failure message as an error and keeps the row', async () => {
-      vi.mocked(ctx.store.deleteMinion).mockResolvedValue({ success: false, message: 'Minion \'m1\' could not be deleted.' })
-      ctx.store.minions = [minion('m1')] as any
+      const dialog = ctx.wrapper.findComponent({ name: 'MinionDeleteDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('minion').id).toBe('m1')
+      expect(dialog.props('now')).toBe(NOW)
+      expect(ctx.wrapper.find('[data-test="delete-dialog"]').text()).toBe('m1')
+      dialog.vm.$emit('update:visible', false)
       await ctx.wrapper.vm.$nextTick()
-      await ctx.wrapper.find('[data-test="delete-minion-button"]').trigger('click')
-      await ctx.wrapper.find('[data-test="confirm-ok"]').trigger('click')
-      await flushPromises()
-      expect(showToast).toHaveBeenCalledWith({ message: 'Minion \'m1\' could not be deleted.', severity: 'error' })
-      expect(ctx.wrapper.find('[data-test="confirm"]').exists()).toBe(false)
-      expect(rowIds(ctx.wrapper)).toEqual(['m1'])
+      expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([false])
+      expect(ctx.wrapper.find('[data-test="delete-dialog"]').exists()).toBe(false)
+      expect(ctx.store.deleteMinion).not.toHaveBeenCalled()
+      expect(showToast).not.toHaveBeenCalled()
     })
   })
 })

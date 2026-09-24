@@ -60,8 +60,10 @@
             core</strong>) narrow the list to Minions that need attention; the location dropdown scopes it to
             one location, shown as a chip, and the search box matches on any column. Editing Minions is not
             available here; the <code>/api/v2/minions</code> REST API still accepts updates.
-            <strong>Delete</strong> removes the Minion and its requisition node; a Minion whose process is
-            still running re-registers on its next heartbeat.
+            <strong>Delete</strong> is for decommissioned Minions and is only offered once the last heartbeat
+            is older than two minutes, since a Minion that is still running registers again within 30 seconds.
+            The alarms raised through the Minion are deleted with it; its node stays until the
+            <strong>Minions</strong> requisition is synchronized.
           </p>
           <p>
             The Monitoring locations tab shows each location's <strong>Name</strong>,
@@ -70,9 +72,11 @@
             <strong>Add New Location</strong> creates a location with a name and a description; the name is the
             identifier and cannot be changed afterwards, so recreate the location to rename it.
             <strong>Edit</strong> changes the description. <strong>Default</strong> is the core itself and
-            cannot be edited or deleted. <strong>Delete</strong> only succeeds once no nodes are assigned to the
-            location, so reassign them first; Minions still pointing at a deleted location keep the old name
-            until they are re-registered. The same operations are available to tooling through the
+            cannot be edited or deleted. <strong>Delete</strong> asks you to type the location's name and is
+            only possible once no nodes or Minions are in it (each running Minion's own node counts), so move or
+            delete them first. Deleting a location removes it as a perspective from any application that polled
+            from it and deletes the outage history recorded from that perspective; Minions still pointing at a
+            deleted location keep the old name until they are re-registered. The same operations are available to tooling through the
             <code>/api/v2/minions</code> and <code>/api/v2/monitoringLocations</code> REST APIs.
           </p>
         </div>

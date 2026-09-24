@@ -20,11 +20,18 @@ const loc = (name: string) => ({
 const minion = (id: string, location: string, status: string | null = 'up') =>
   ({ id, label: id, location, type: 'Minion', status, version: '34.0.0', date: 0, properties: {}})
 
-const ConfirmationStub = {
-  name: 'OnmsConfirmationDialog',
-  props: ['visible', 'title', 'actionButtonText'],
-  emits: ['ok', 'cancel'],
-  template: '<div v-if="visible" data-test="confirm"><slot name="content" /><button data-test="confirm-ok" @click="$emit(\'ok\')">ok</button></div>'
+// the delete dialogs are stubbed to their emit surface; their contents are tested on their own
+const DeleteDialogStub = {
+  name: 'LocationDeleteDialog',
+  props: ['visible', 'location'],
+  emits: ['update:visible', 'deleted'],
+  template: '<div v-if="visible" data-test="delete-dialog">{{ location?.[\'location-name\'] }}</div>'
+}
+const DeletedDialogStub = {
+  name: 'LocationDeletedDialog',
+  props: ['visible', 'summary'],
+  emits: ['update:visible'],
+  template: '<div v-if="visible" data-test="deleted-dialog">{{ summary?.name }}</div>'
 }
 
 const mountTable = () => {
@@ -33,7 +40,7 @@ const mountTable = () => {
     global: {
       plugins: [PrimeVue, pinia],
       stubs: {
-        LocationEditorDialog: true, OnmsConfirmationDialog: ConfirmationStub,
+        LocationEditorDialog: true, LocationDeleteDialog: DeleteDialogStub, LocationDeletedDialog: DeletedDialogStub,
         TableCard: { template: '<div><slot /></div>' }
       }
     }
@@ -206,29 +213,42 @@ describe('LocationsTable.vue', () => {
   })
 
   describe('delete', () => {
-    const askAndConfirm = async () => {
+    const askDelete = async () => {
       ctx.store.locations = [loc('Raleigh')] as any
       await ctx.wrapper.vm.$nextTick()
       await ctx.wrapper.find('[data-test="delete-location-button"]').trigger('click')
-      expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([true])
-      expect(ctx.wrapper.find('[data-test="confirm"]').text()).toContain('must have no nodes assigned')
-      await ctx.wrapper.find('[data-test="confirm-ok"]').trigger('click')
-      await flushPromises()
+      await ctx.wrapper.vm.$nextTick()
     }
 
-    it('toasts success after the store confirms the delete', async () => {
-      vi.mocked(ctx.store.deleteLocation).mockResolvedValue({ success: true, message: '' })
-      await askAndConfirm()
-      expect(ctx.store.deleteLocation).toHaveBeenCalledWith('Raleigh')
-      expect(showToast).toHaveBeenCalledWith({ message: 'Monitoring location \'Raleigh\' deleted.', severity: 'success' })
-      expect(ctx.wrapper.find('[data-test="confirm"]').exists()).toBe(false)
+    it('opens the delete dialog for the row and reports the dialog state', async () => {
+      await askDelete()
+      expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([true])
+      const dialog = ctx.wrapper.findComponent({ name: 'LocationDeleteDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('location')['location-name']).toBe('Raleigh')
+      expect(ctx.wrapper.find('[data-test="delete-dialog"]').text()).toBe('Raleigh')
+      dialog.vm.$emit('update:visible', false)
+      await ctx.wrapper.vm.$nextTick()
       expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([false])
+      expect(ctx.wrapper.find('[data-test="delete-dialog"]').exists()).toBe(false)
     })
 
-    it('toasts the failure message as an error', async () => {
-      vi.mocked(ctx.store.deleteLocation).mockResolvedValue({ success: false, message: 'Monitoring location \'Raleigh\' could not be deleted. Make sure no nodes are assigned to it.' })
-      await askAndConfirm()
-      expect(showToast).toHaveBeenCalledWith({ message: expect.stringContaining('Make sure no nodes are assigned'), severity: 'error' })
+    it('shows the result dialog with the summary once the delete dialog reports success, without a toast', async () => {
+      await askDelete()
+      const dialog = ctx.wrapper.findComponent({ name: 'LocationDeleteDialog' })
+      const summary = { name: 'Raleigh', applications: [{ id: 1, name: 'Web' }], outageCount: 2 }
+      dialog.vm.$emit('update:visible', false)
+      dialog.vm.$emit('deleted', summary)
+      await flushPromises()
+      // the result dialog keeps the auto-refresh paused
+      expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([true])
+      const deleted = ctx.wrapper.findComponent({ name: 'LocationDeletedDialog' })
+      expect(deleted.props('visible')).toBe(true)
+      expect(deleted.props('summary')).toEqual(summary)
+      expect(showToast).not.toHaveBeenCalled()
+      deleted.vm.$emit('update:visible', false)
+      await ctx.wrapper.vm.$nextTick()
+      expect(ctx.wrapper.emitted('dialogOpen')?.at(-1)).toEqual([false])
     })
   })
 })

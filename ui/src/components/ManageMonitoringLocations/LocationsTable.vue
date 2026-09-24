@@ -146,34 +146,28 @@
     v-model:visible="showEditor"
     :location="locationToEdit"
   />
-  <OnmsConfirmationDialog
-    :visible="showDeleteConfirmation"
-    title="Delete Monitoring Location"
-    actionButtonText="Delete"
-    @ok="confirmDelete"
-    @cancel="cancelDelete"
-  >
-    <template #content>
-      <p>
-        Are you sure you want to delete the monitoring location
-        <strong>{{ locationToDelete?.['location-name'] }}</strong>? The
-        location must have no nodes assigned to it first (reassign them), and
-        Minions still pointing at it keep the old location name until they are
-        re-registered. This action cannot be undone.
-      </p>
-    </template>
-  </OnmsConfirmationDialog>
+  <LocationDeleteDialog
+    v-model:visible="showDeleteDialog"
+    :location="locationToDelete"
+    @deleted="onDeleted"
+  />
+  <LocationDeletedDialog
+    v-model:visible="showDeletedDialog"
+    :summary="deletedSummary"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsChip, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsColumn, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import LocationDeleteDialog, { LocationDeletedSummary } from '@/components/ManageMonitoringLocations/LocationDeleteDialog.vue'
+import LocationDeletedDialog from '@/components/ManageMonitoringLocations/LocationDeletedDialog.vue'
 import LocationEditorDialog from '@/components/ManageMonitoringLocations/LocationEditorDialog.vue'
 import { isPathAddressable } from '@/lib/adminValidation'
 import { minionState } from '@/lib/minionStatus'
@@ -192,14 +186,15 @@ const emit = defineEmits<{
 
 const store = useMonitoringLocationAdminStore()
 const minionStore = useMinionAdminStore()
-const { showToast } = useOnmsToast()
 
 const showEditor = ref(false)
 const locationToEdit = ref<MonitoringLocation | null>(null)
-const showDeleteConfirmation = ref(false)
+const showDeleteDialog = ref(false)
 const locationToDelete = ref<MonitoringLocation | null>(null)
+const showDeletedDialog = ref(false)
+const deletedSummary = ref<LocationDeletedSummary | null>(null)
 
-watch(() => showEditor.value || showDeleteConfirmation.value, open => emit('dialogOpen', open))
+watch(() => showEditor.value || showDeleteDialog.value || showDeletedDialog.value, open => emit('dialogOpen', open))
 
 const emptyListContent = { msg: 'No monitoring locations found.' }
 const filteredOutContent = { msg: 'No monitoring locations match the current filter.' }
@@ -249,29 +244,13 @@ const openEditor = (location: MonitoringLocation | null) => {
 
 const askDelete = (location: MonitoringLocation) => {
   locationToDelete.value = location
-  showDeleteConfirmation.value = true
+  showDeleteDialog.value = true
 }
 
-const confirmDelete = async () => {
-  const location = locationToDelete.value
-  showDeleteConfirmation.value = false
-  if (!location) {
-    return
-  }
-  const name = location['location-name']
-  const result = await store.deleteLocation(name)
-  // cleared after the dialog has closed, so the name does not blank out mid-animation
-  locationToDelete.value = null
-  if (result.success) {
-    showToast({ message: `Monitoring location '${name}' deleted.`, severity: 'success' })
-  } else {
-    showToast({ message: result.message, severity: 'error' })
-  }
-}
-
-const cancelDelete = () => {
-  showDeleteConfirmation.value = false
-  locationToDelete.value = null
+// the result dialog is the confirmation, so there is no toast here
+const onDeleted = (summary: LocationDeletedSummary) => {
+  deletedSummary.value = summary
+  showDeletedDialog.value = true
 }
 </script>
 

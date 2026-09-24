@@ -154,4 +154,24 @@ const getCoreVersion = async (): Promise<string | null> => {
   }
 }
 
-export { deleteMinion, getCoreVersion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }
+// Alarms raised through this minion (distPoller is the reporting monitoring
+// system), read from totalCount of a one-row page of /api/v2/alarms. null when
+// the count could not be determined.
+const getAlarmCountForMinion = async (id: string): Promise<number | null> => {
+  if (!isFiqlSafeId(id)) {
+    return null
+  }
+  try {
+    const resp = await v2.get(`/alarms?_s=${encodeURIComponent(`distPoller.id==${id}`)}&limit=1`)
+    if (resp.status === 204) {
+      return 0
+    }
+    const total = Number(resp.data?.totalCount)
+    return Number.isFinite(total) ? total : null
+  } catch (err) {
+    console.error(`Error counting alarms for minion '${id}':`, err)
+    return null
+  }
+}
+
+export { deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }

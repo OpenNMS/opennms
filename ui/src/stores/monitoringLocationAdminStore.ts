@@ -95,6 +95,14 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     return result
   }
 
+  // the count already on the page when the tab has loaded it, otherwise fetched
+  const getNodeCount = async (name: string): Promise<number | null> =>
+    name in nodeCounts.value ? nodeCounts.value[name] : API.getNodeCountByLocation(name)
+
+  const getApplicationsUsingPerspective = (name: string) => API.getApplicationsUsingPerspective(name)
+
+  const getPerspectiveOutageCount = (name: string) => API.getPerspectiveOutageCount(name)
+
   const deleteLocation = async (name: string): Promise<ValidationResult> => {
     const result = await API.deleteMonitoringLocation(name)
     if (result.success) {
@@ -115,6 +123,9 @@ export const useMonitoringLocationAdminStore = defineStore('monitoringLocationAd
     countsEnabled,
     getLocations,
     getNodeCounts,
+    getNodeCount,
+    getApplicationsUsingPerspective,
+    getPerspectiveOutageCount,
     createLocation,
     updateLocation,
     deleteLocation
