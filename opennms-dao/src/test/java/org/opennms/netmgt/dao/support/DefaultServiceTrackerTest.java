@@ -161,7 +161,7 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
         }
 
         public void addServiceSilently(int nodeId, InetAddress interfaceAddress, String serviceName) {
-            exposedServices.add(new ServiceRef(nodeId, interfaceAddress, serviceName));
+            exposedServices.add(new ServiceRef(nodeId, interfaceAddress, serviceName,DEFAULT_LOCATION));
         }
 
         public void deleteAllAndNotify() {
