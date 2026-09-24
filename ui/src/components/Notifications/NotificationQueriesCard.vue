@@ -1,30 +1,25 @@
 <template>
   <TableCard class="notification-queries-bar">
     <div class="bar-content">
-      <div class="query-links">
-        <a
-          :class="{ active: store.preset === 'yourOutstanding' }"
-          data-test="query-your-outstanding"
-          @click.prevent="store.applyPreset('yourOutstanding')"
-        >Your outstanding notifications</a>
-        <span class="separator">|</span>
-        <a
-          :class="{ active: store.preset === 'teamOutstanding' }"
-          data-test="query-team-outstanding"
-          @click.prevent="store.applyPreset('teamOutstanding')"
-        >Outstanding for anyone but you</a>
-        <span class="separator">|</span>
-        <a
-          :class="{ active: store.preset === 'allOutstanding' }"
-          data-test="query-all-outstanding"
-          @click.prevent="store.applyPreset('allOutstanding')"
-        >All outstanding notifications</a>
-        <span class="separator">|</span>
-        <a
-          :class="{ active: store.preset === 'allAcknowledged' }"
-          data-test="query-all-acknowledged"
-          @click.prevent="store.applyPreset('allAcknowledged')"
-        >All acknowledged notifications</a>
+      <div class="query-presets">
+        <OnmsSelectButton
+          :modelValue="store.preset"
+          :options="presetOptions"
+          optionLabel="label"
+          optionValue="value"
+          aria-label="Notification query"
+          data-test="query-presets"
+          @update:modelValue="onPresetChange"
+        />
+        <OnmsIconButton
+          variant="text"
+          :icon="Refresh"
+          tooltip="Refresh"
+          aria-label="Refresh notifications"
+          :disabled="store.loading"
+          data-test="query-refresh-button"
+          @click="store.load()"
+        />
       </div>
       <div class="query-forms">
         <div class="search-row">
@@ -55,16 +50,29 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { OnmsSearchInput } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@opennms/onms-ui'
 
 import TableCard from '@/components/Common/TableCard.vue'
+import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNotificationsStore } from '@/stores/notificationsStore'
+import { NotificationQueryPreset } from '@/types/notifications'
 
 const menuStore = useMenuStore()
 const store = useNotificationsStore()
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+
+const presetOptions: { label: string, value: NotificationQueryPreset }[] = [
+  { label: 'Your outstanding notifications', value: 'yourOutstanding' },
+  { label: 'Outstanding for anyone but you', value: 'teamOutstanding' },
+  { label: 'All outstanding notifications', value: 'allOutstanding' },
+  { label: 'All acknowledged notifications', value: 'allAcknowledged' }
+]
+
+const onPresetChange = (value: unknown) => {
+  store.applyPreset(value as NotificationQueryPreset)
+}
 
 const userSearch = ref('')
 const notificationIdSearch = ref('')
@@ -97,26 +105,10 @@ const goToNotification = () => {
   gap: 1rem;
 }
 
-.query-links {
+.query-presets {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-
-  .separator {
-    color: var(--p-text-muted-color);
-  }
-
-  a {
-    color: var(--p-primary-color);
-    cursor: pointer;
-    white-space: nowrap;
-
-    &.active {
-      font-weight: 700;
-      text-decoration: underline;
-    }
-  }
+  gap: 0.4rem;
 }
 
 .query-forms {
