@@ -61,6 +61,9 @@
     location (optional): used to "dull out" the item in the menu bar
       that has a link to the location given  (for example, on the
       outage/index.jsp, give the location "outages")
+    nomenuassets (optional): "true" to omit the Vue menu bundle's stylesheet
+      and modulepreload links, for pages that never mount the menu (also
+      settable as the Bootstrap "nomenuassets" flag)
 --%>
 
 <%@page language="java"
@@ -240,20 +243,22 @@
       document.documentElement.classList.add(theme);
     })();
   </script>
-  <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css<%= __menuAssetsVersion %>" media="screen" />
-  <%-- Start fetching/compiling the menu bundle now rather than when the parser
-       reaches its <script type="module"> tag near the end of the body.
+  <%-- Vue menu bundle stylesheet, plus a modulepreload that starts
+       fetching/compiling the bundle now rather than when the parser reaches
+       its <script type="module"> tag near the end of the body.
 
-       These two links are deliberately emitted on 'quiet' pages too, including
-       the unauthenticated login page: preloading there warms the cache while
-       the user types their credentials, so the menu mounts instantly on the
-       first post-login page. This is only safe because the bundle is
-       anonymously accessible (see the /ui-components/assets/** rule in
-       applicationContext-spring-security.xml) — without that rule the preload
-       would cache an auth redirect as text/html under the asset URL and break
-       the menu on every JSP page after login (NMS-20174). Keep the two in
-       sync. --%>
-  <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
+       Omitted on pages that never mount the menu and don't want its assets at
+       all: the 'nomenuassets' include param or Bootstrap flag (login.jsp and
+       the password gate). Other 'quiet' pages still get these links even
+       though they don't run the bundle. The bundle stays anonymously
+       accessible (see the /ui-components/assets/** rule in
+       applicationContext-spring-security.xml) so an unauthenticated request
+       can never cache an auth redirect as text/html under the asset URL and
+       break the menu after login (NMS-20174). Keep the two links in sync. --%>
+  <c:if test='${param.nomenuassets != "true" and not __bs_flags.contains("nomenuassets")}'>
+    <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css<%= __menuAssetsVersion %>" media="screen" />
+    <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
+  </c:if>
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the

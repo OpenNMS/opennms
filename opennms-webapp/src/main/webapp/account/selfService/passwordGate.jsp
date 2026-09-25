@@ -24,6 +24,7 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Password Gate" />
   <jsp:param name="quiet" value="true" />
+  <jsp:param name="nomenuassets" value="true" />
 </jsp:include>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
