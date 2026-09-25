@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -128,7 +129,10 @@ public class KscRestService extends OnmsRestService {
                     })
     })
     public KscReportCollection getReports() throws ParseException {
-        final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), true);
+        // Non-terse: include each report's graphs so the list can show a graph
+        // count and callers can edit a report from the list without a broken,
+        // graph-less copy (a terse list once caused edits to overwrite graphs).
+        final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), false);
         reports.setTotalCount(reports.size());
         return reports;
     }
@@ -335,16 +339,16 @@ public class KscRestService extends OnmsRestService {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Operation(
             summary = "Create a KSC report",
             description = """
-        Create a KSC report and write it to `ksc-performance-reports.xml`. The report id is taken from the
-        body, not assigned by the server, and an id that is already in use is rejected with 409.
+        Create a KSC report and write it to `ksc-performance-reports.xml`. A report id supplied in the body
+        is used as is and rejected with 409 when it is already in use; without an id the server assigns the
+        next available one.
 
-        This operation consumes XML only; a JSON body is rejected by the container with 415. The body maps
-        onto XML attributes rather than elements, and the field names are underscored
-        (`show_timespan_button`, `graphs_per_line`).
+        The body may be XML or JSON. In XML the fields map onto attributes rather than elements, and the
+        field names are underscored (`show_timespan_button`, `graphs_per_line`).
 
         `Location` on the 201 points at `GET /ksc/{reportId}` for the new report. Graphs may be supplied
         inline as `kscGraph` elements, or added afterwards with `PUT /ksc/{kscReportId}`.""",
@@ -373,34 +377,22 @@ public class KscRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid request: Existing KSC report found with ID: 8100."))),
-            @ApiResponse(responseCode = "415", description = "The body was not `application/xml`, or no `Content-Type` was sent. The response has no body.")
+            @ApiResponse(responseCode = "415", description = "The body was neither `application/xml` nor `application/json`, or no `Content-Type` was sent. The response has no body.")
     })
     public Response addKscReport(@Context final UriInfo uriInfo, final KscReport kscReport) {
         writeLock();
         try {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
-            Report report = m_kscReportFactory.getReportByIndex(kscReport.getId());
-            if (report != null) {
+            // A supplied id must not collide with an existing report; a null id
+            // means "assign the next available one" (addReport does that on save).
+            if (kscReport.getId() != null && m_kscReportFactory.getReportByIndex(kscReport.getId()) != null) {
                 throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: {}.", Integer.toString(kscReport.getId()));
             }
-            report = new Report();
-            report.setId(kscReport.getId());
-            report.setTitle(kscReport.getLabel());
-            if (kscReport.getShowGraphtypeButton() != null) {
-                report.setShowGraphtypeButton(kscReport.getShowGraphtypeButton());
+            final Report report = new Report();
+            if (kscReport.getId() != null) {
+                report.setId(kscReport.getId());
             }
-            if (kscReport.getShowTimespanButton() != null) {
-                report.setShowTimespanButton(kscReport.getShowTimespanButton());
-            }
-            if (kscReport.getGraphsPerLine() != null) {
-                report.setGraphsPerLine(kscReport.getGraphsPerLine());
-            }
-            if (kscReport.hasGraphs()) {
-                for (KscGraph kscGraph : kscReport.getGraphs()) {
-                    final Graph graph = kscGraph.buildGraph();
-                    report.addGraph(graph);
-                }
-            }
+            applyReportFields(kscReport, report);
 
             m_kscReportFactory.addReport(report);
             try {
@@ -408,9 +400,72 @@ public class KscRestService extends OnmsRestService {
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            return Response.created(getRedirectUri(uriInfo, kscReport.getId())).build();
+            return Response.created(getRedirectUri(uriInfo, report.getId())).build();
         } finally {
             writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{reportId}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Transactional
+    public Response updateKscReport(@PathParam("reportId") final Integer reportId, final KscReport kscReport) {
+        writeLock();
+        try {
+            if (m_kscReportFactory.getReportByIndex(reportId) == null) {
+                throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
+            }
+            final Report report = new Report();
+            report.setId(reportId);
+            applyReportFields(kscReport, report);
+            m_kscReportFactory.setReport(reportId, report);
+            try {
+                m_kscReportFactory.saveCurrent();
+            } catch (final Exception e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot save report with Id {} : {} ", reportId.toString(), e.getMessage());
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{reportId}")
+    @Transactional
+    public Response deleteKscReport(@PathParam("reportId") final Integer reportId) {
+        writeLock();
+        try {
+            if (m_kscReportFactory.getReportByIndex(reportId) == null) {
+                throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
+            }
+            try {
+                m_kscReportFactory.deleteReportAndSave(reportId);
+            } catch (final Exception e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot delete report with Id {} : {} ", reportId.toString(), e.getMessage());
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    private static void applyReportFields(final KscReport source, final Report target) {
+        target.setTitle(source.getLabel());
+        if (source.getShowGraphtypeButton() != null) {
+            target.setShowGraphtypeButton(source.getShowGraphtypeButton());
+        }
+        if (source.getShowTimespanButton() != null) {
+            target.setShowTimespanButton(source.getShowTimespanButton());
+        }
+        if (source.getGraphsPerLine() != null) {
+            target.setGraphsPerLine(source.getGraphsPerLine());
+        }
+        if (source.hasGraphs()) {
+            for (final KscGraph kscGraph : source.getGraphs()) {
+                target.addGraph(kscGraph.buildGraph());
+            }
         }
     }
 
