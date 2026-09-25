@@ -30,15 +30,21 @@ public class InstalledFeature {
     private String name;
     private String version;
     private String state;
+    private String repository;
     private List<String> dependencies = new ArrayList<>();
 
     public InstalledFeature() {
     }
 
     public InstalledFeature(final String name, final String version, final String state) {
+        this(name, version, state, null);
+    }
+
+    public InstalledFeature(final String name, final String version, final String state, final String repository) {
         this.name = name;
         this.version = version;
         this.state = state;
+        this.repository = repository;
     }
 
     public String getName() { return name; }
@@ -47,6 +53,9 @@ public class InstalledFeature {
     public void setVersion(final String version) { this.version = version; }
     public String getState() { return state; }
     public void setState(final String state) { this.state = state; }
+    /** URL of the features repository the feature was loaded from, e.g. mvn:org.opennms.plugins.alec/alec-karaf-features/3.0.0/xml. */
+    public String getRepository() { return repository; }
+    public void setRepository(final String repository) { this.repository = repository; }
     public List<String> getDependencies() { return dependencies; }
     public void setDependencies(final List<String> dependencies) { this.dependencies = dependencies; }
 

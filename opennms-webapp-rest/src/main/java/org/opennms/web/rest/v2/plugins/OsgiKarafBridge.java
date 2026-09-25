@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2.plugins;
 
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,13 +67,16 @@ public class OsgiKarafBridge implements KarafBridge {
     }
 
     private final Supplier<BundleContext> contextSupplier;
+    private final Supplier<Set<String>> bootRepositories;
 
-    public OsgiKarafBridge() {
-        this(OsgiKarafBridge::defaultContext);
+    /** @param etcDir the container's etc directory, holding org.apache.karaf.features.cfg */
+    public OsgiKarafBridge(final Path etcDir) {
+        this(OsgiKarafBridge::defaultContext, () -> BootRepositories.load(etcDir == null ? null : etcDir.resolve(BootRepositories.CFG_FILE_NAME)));
     }
 
-    OsgiKarafBridge(final Supplier<BundleContext> contextSupplier) {
+    OsgiKarafBridge(final Supplier<BundleContext> contextSupplier, final Supplier<Set<String>> bootRepositories) {
         this.contextSupplier = contextSupplier;
+        this.bootRepositories = bootRepositories;
     }
 
     private static BundleContext defaultContext() {
@@ -180,9 +184,13 @@ public class OsgiKarafBridge implements KarafBridge {
                 dependencyGraph.computeIfAbsent(name, k -> new LinkedHashSet<>()).addAll(dependencyNames(feature));
             }
             final Set<String> oiaDependent = new HashSet<>();
+            final Set<String> coreRepositories = bootRepositories.get();
             final List<InstalledFeature> result = new ArrayList<>();
             for (final Object feature : (Object[]) invoke(service, FEATURES_SERVICE, "listInstalledFeatures")) {
                 final String name = string(invoke(feature, FEATURE, "getName"));
+                if (BootRepositories.isCore(repositoryUrl(feature), coreRepositories)) {
+                    continue;
+                }
                 if (dependsOnOia(name, dependencyGraph, oiaDependent, new HashSet<>(), 0)) {
                     result.add(toInstalledFeature(service, feature));
                 }
@@ -224,9 +232,13 @@ public class OsgiKarafBridge implements KarafBridge {
         final String version = string(invoke(feature, FEATURE, "getVersion"));
         final String id = string(invoke(feature, FEATURE, "getId"));
         final Object state = invoke(featuresService, FEATURES_SERVICE, "getState", new Class<?>[] { String.class }, id);
-        final InstalledFeature installed = new InstalledFeature(name, version, state == null ? null : state.toString());
+        final InstalledFeature installed = new InstalledFeature(name, version, state == null ? null : state.toString(), repositoryUrl(feature));
         installed.getDependencies().addAll(dependencyNames(feature));
         return installed;
+    }
+
+    private static String repositoryUrl(final Object feature) throws Exception {
+        return string(invoke(feature, FEATURE, "getRepositoryUrl"));
     }
 
     private static List<String> dependencyNames(final Object feature) throws Exception {

@@ -47,6 +47,6 @@ public interface KarafBridge {
     /** Bundle version of the OpenNMS Integration API, or null when it is not installed. */
     String oiaVersion();
 
-    /** Installed features whose dependency tree includes opennms-integration-api. */
+    /** Installed features whose dependency tree includes opennms-integration-api and that do not come from a product (boot) features repository. */
     List<InstalledFeature> pluginFeatures();
 }

@@ -99,7 +99,11 @@ public class PluginManagementRestService {
     private final CompatibilityChecker checker;
 
     public PluginManagementRestService() {
-        this(Paths.get(System.getProperty("opennms.home", ".")), new OsgiKarafBridge());
+        this(Paths.get(System.getProperty("opennms.home", ".")));
+    }
+
+    private PluginManagementRestService(final java.nio.file.Path opennmsHome) {
+        this(opennmsHome, new OsgiKarafBridge(opennmsHome.resolve("etc")));
     }
 
     PluginManagementRestService(final java.nio.file.Path opennmsHome, final KarafBridge bridge) {
