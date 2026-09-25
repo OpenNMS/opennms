@@ -72,6 +72,8 @@ final class ApacheHttpFetcher implements HttpFetcher {
         // HttpClientWrapper.execute() re-wraps the request and loses this per-request config.
         get.setConfig(requestConfig);
         get.setHeader("User-Agent", userAgent);
+        // httpclient's transparent gunzip misreads GitHub's gzip+chunked answers; plain bodies also carry a Content-Length
+        get.setHeader("Accept-Encoding", "identity");
         if (headers != null) {
             headers.forEach(get::setHeader);
         }
