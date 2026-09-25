@@ -98,8 +98,9 @@ public class DefaultServiceTracker implements ServiceTracker {
 
         private void onFilterChanged(FilterWatcher.FilterResults results) {
             Set<ServiceRef> candidateServices = results.getServicesNamed(serviceName);
-            Set<ServiceRef> servicesToAdd = Sets.difference(candidateServices, activeServices);
-            Set<ServiceRef> servicesToRemove = Sets.difference(activeServices, candidateServices);
+            // Copies, not views: the loops below modify activeServices.
+            Set<ServiceRef> servicesToAdd = new HashSet<>(Sets.difference(candidateServices, activeServices));
+            Set<ServiceRef> servicesToRemove = new HashSet<>(Sets.difference(activeServices, candidateServices));
 
             for (ServiceRef service : servicesToAdd) {
                 activeServices.add(service);
