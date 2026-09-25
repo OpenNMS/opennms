@@ -55,6 +55,7 @@ License.
       :class="{ 'is-adjusting': store.isBackgroundAdjustMode && store.isEditMode }"
     >
       <img
+        ref="backgroundImageEl"
         class="topology-background-image"
         :src="backgroundSrc"
         :style="backgroundStyle(cameraVersion)"
@@ -219,7 +220,7 @@ import EdgeCurveProgram from '@sigma/edge-curve'
 import { createNodeImageProgram } from '@sigma/node-image'
 import { hasWebGL } from '@/components/Topology/webgl'
 import { drawDiscNodeLabel } from 'sigma/rendering'
-import { downloadAsImage } from '@sigma/export-image'
+import { drawOnCanvas } from '@sigma/export-image'
 import { PALETTE_DRAG_MIME, type PaletteDragPayload } from '@/components/Topology/dragTypes'
 import { useTopologyStore } from '@/stores/topologyStore'
 import { useAppStore } from '@/stores/appStore'
@@ -2067,21 +2068,36 @@ const backgroundSrc = computed<string>(() => {
  * cameraVersion (bumped on each sigma render) keeps it locked to pan/zoom,
  * exactly like the free-standing labels overlay.
  */
-const backgroundStyle = (_cameraVersion: number) => {
-  void _cameraVersion
+/** The background's rect in viewport CSS pixels, or null when there is nothing to place. */
+const backgroundRect = (): { left: number; top: number; width: number; height: number; opacity: number } | null => {
   const bg = store.background
   if (!sigma || !bg || bg.x === undefined || bg.y === undefined || !bg.width || !bg.height) {
-    return { display: 'none' }
+    return null
   }
   // Graph y points up: the rect spans [y - height, y].
   const topLeft = toViewport({ x: bg.x, y: bg.y })
   const bottomRight = toViewport({ x: bg.x + bg.width, y: bg.y - bg.height })
   return {
-    left: topLeft.x + 'px',
-    top: topLeft.y + 'px',
-    width: Math.max(1, bottomRight.x - topLeft.x) + 'px',
-    height: Math.max(1, bottomRight.y - topLeft.y) + 'px',
+    left: topLeft.x,
+    top: topLeft.y,
+    width: Math.max(1, bottomRight.x - topLeft.x),
+    height: Math.max(1, bottomRight.y - topLeft.y),
     opacity: bg.opacity ?? 0.5
+  }
+}
+
+const backgroundStyle = (_cameraVersion: number) => {
+  void _cameraVersion
+  const rect = backgroundRect()
+  if (!rect) {
+    return { display: 'none' }
+  }
+  return {
+    left: rect.left + 'px',
+    top: rect.top + 'px',
+    width: rect.width + 'px',
+    height: rect.height + 'px',
+    opacity: rect.opacity
   }
 }
 
@@ -2655,12 +2671,14 @@ const setNodeIconOverride = (id: string, override: string | undefined) => {
   sigma?.refresh()
 }
 
+const backgroundImageEl = ref<HTMLImageElement>()
+
 /**
- * Export the current map as a raster image. Uses @sigma/export-image, which
- * re-renders the scene into a temporary renderer (so the WebGL layers capture
- * correctly) and downloads it. `fileName` is the base name; the format
- * extension is appended by the library. Note: free-standing text labels are
- * DOM overlays and are not yet included in the export.
+ * Export the current map as a raster image. @sigma/export-image re-renders the
+ * scene into a temporary renderer at the live camera and dimensions, so the
+ * background image, a DOM layer sigma never sees, is drawn onto the same
+ * canvas at its on-screen rect. Free-standing labels and annotation shapes are
+ * DOM overlays too and are not yet included.
  */
 const exportImage = async (fileName: string, format: 'png' | 'jpeg' = 'png'): Promise<void> => {
   if (!sigma) {
@@ -2672,7 +2690,40 @@ const exportImage = async (fileName: string, format: 'png' | 'jpeg' = 'png'): Pr
   const background = getComputedStyle(document.documentElement)
     .getPropertyValue('--onms-background')
     .trim() || '#ffffff'
-  await downloadAsImage(sigma, { format, fileName, backgroundColor: background })
+  const scene = await drawOnCanvas(sigma, { backgroundColor: 'transparent' })
+  const out = document.createElement('canvas')
+  out.width = scene.width
+  out.height = scene.height
+  const ctx = out.getContext('2d')
+  if (!ctx) {
+    return
+  }
+  ctx.fillStyle = background
+  ctx.fillRect(0, 0, out.width, out.height)
+  const image = backgroundImageEl.value
+  const rect = backgroundVisible.value ? backgroundRect() : null
+  if (image && rect && image.complete && image.naturalWidth > 0) {
+    // The scene canvas is the viewport at device pixel ratio; scale the CSS rect the same way.
+    const ratio = out.width / sigma.getDimensions().width
+    ctx.globalAlpha = rect.opacity
+    ctx.drawImage(image, rect.left * ratio, rect.top * ratio, rect.width * ratio, rect.height * ratio)
+    ctx.globalAlpha = 1
+  }
+  ctx.drawImage(scene, 0, 0)
+  const blob = await new Promise<Blob | null>(resolve => out.toBlob(resolve, `image/${format}`))
+  if (!blob) {
+    return
+  }
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = `${fileName}.${format}`
+  // In the document, and revoked later: some browsers ignore a click on a
+  // detached anchor or cancel a download whose URL is revoked in the same task.
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 10_000)
 }
 
 defineExpose({
