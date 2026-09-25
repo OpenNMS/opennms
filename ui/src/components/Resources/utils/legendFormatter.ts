@@ -75,7 +75,21 @@ const getFormattedLegendStatements = (
   for (const statement of printStatements) {
     for (const val of values) {
       if (statement.metric === val.name) {
-        statement.value = val.expression.consolidate(graphMetrics)[1]
+        const value = val.expression.consolidate(graphMetrics)[1]
+        statement.value = value
+
+        // Classify a non-finite result so the legend can show a human-readable
+        // state instead of "NaN": if the source column has no valid samples the
+        // aggregation had nothing to compute ("No Data"); if it has samples but
+        // the result is still non-finite the data itself is unusable ("Invalid Data").
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          statement.dataState = 'ok'
+        } else {
+          const colIndex = (graphMetrics.labels ?? []).indexOf(val.expression.metricName)
+          const colValues = colIndex >= 0 ? (graphMetrics.columns?.[colIndex]?.values ?? []) : []
+          const hasValidSample = colValues.some((v: unknown) => typeof v === 'number' && Number.isFinite(v))
+          statement.dataState = hasValidSample ? 'invalid' : 'nodata'
+        }
 
         const renderer: Renderer = {
           texts: <string[]>[],
@@ -243,10 +257,20 @@ const tokenizeStatement = (value: string) => {
   return tokens
 }
 
+// Shown in place of a numeric stat (and NaN) when it can't be computed.
+const DATA_STATE_LABEL: Record<string, string> = {
+  nodata: 'No Data',
+  invalid: 'Invalid Data'
+}
+
 const formatStatement = (statement: PrintStatement, renderer: Renderer) => {
   // Parse the statement into a series of tokens
   const tokens = tokenizeStatement(statement.format)
-  // Used to store the unit symbol from the last LF statement, we need this in the following UNIT statement
+  // when a value can't be computed we render a state label in place of the
+  // number and drop the trailing unit (e.g. "Min: No Data", not "Min: No Data %")
+  const stateLabel = statement.dataState && statement.dataState !== 'ok'
+    ? DATA_STATE_LABEL[statement.dataState]
+    : undefined
 
   for (const token of tokens) {
     if (token.type === TOKENS.Text) {
@@ -256,8 +280,15 @@ const formatStatement = (statement: PrintStatement, renderer: Renderer) => {
     } else if (token.type === TOKENS.Newline) {
       renderer.drawNewline()
     } else if (token.type === TOKENS.Unit) {
-      renderer.drawText(' ')
+      if (!stateLabel) {
+        renderer.drawText(' ')
+      }
     } else if (token.type === TOKENS.Lf) {
+      if (stateLabel) {
+        renderer.drawText(' ' + stateLabel)
+        continue
+      }
+
       const value = statement.value
       let scaledValue: string | number = value
       let format = ''
@@ -270,7 +301,11 @@ const formatStatement = (statement: PrintStatement, renderer: Renderer) => {
       }
       format += 'f'
 
-      if (!isNaN(value)) {
+      if (value === 0) {
+        // formatPrefix can't derive an SI prefix for 0 (log10(0) = -Infinity)
+        // and returns "NaN"; render a plain fixed-point zero instead.
+        scaledValue = (0).toFixed(token.precision ?? 2)
+      } else if (!isNaN(value)) {
         const f = formatPrefix(format, value)
         scaledValue = f(value)
       }
