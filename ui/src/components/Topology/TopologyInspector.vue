@@ -87,7 +87,9 @@ License.
             is a personal preference.
           </p>
         </div>
-        <div class="ti-field">
+        <!-- Shown while the rail's Background tool is on: that tool is the
+             way in to choosing, placing and sizing the image. -->
+        <div v-if="store.isBackgroundAdjustMode" class="ti-field">
           <label class="ti-label">Background</label>
           <template v-if="store.background?.ref">
             <div class="ti-field">
@@ -102,7 +104,7 @@ License.
               />
             </div>
             <div class="ti-row">
-              <span class="ti-hint">Move and resize it with the rail's Adjust background tool.</span>
+              <span class="ti-hint">Drag it on the canvas to move; drag its corner to resize.</span>
               <OnmsButton label="Remove" size="small" severity="danger" variant="text" @click="removeBackground" />
             </div>
           </template>

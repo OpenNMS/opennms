@@ -83,10 +83,9 @@ export type DeviceIconId =
         @click="store.setLinkHintsEnabled(!store.isLinkHintsEnabled)"
       />
       <OnmsIconButton
-        v-if="hasBackground"
         :icon="Image"
-        title="Adjust background"
-        tooltip="Move and resize the background image"
+        title="Background"
+        tooltip="Choose, place and size the background image"
         tooltip-position="right"
         :variant="store.isBackgroundAdjustMode ? 'filled' : 'text'"
         :aria-pressed="store.isBackgroundAdjustMode"
@@ -136,7 +135,6 @@ const selectTool = () => {
   store.setBackgroundAdjustMode(false)
 }
 
-const hasBackground = computed<boolean>(() => !!store.background?.ref)
 </script>
 
 <style scoped>

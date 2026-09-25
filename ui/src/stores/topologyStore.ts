@@ -203,6 +203,10 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   const setBackgroundAdjustMode = (on: boolean) => {
     isBackgroundAdjustMode.value = on
+    // The background controls live on the Details page; the tool opens it.
+    if (on) {
+      sidePanel.value = 'details'
+    }
   }
 
   /**

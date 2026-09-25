@@ -96,12 +96,13 @@ describe('TopologyToolStrip', () => {
     expect(store.isLinkHintsEnabled).toBe(!hintsBefore)
   })
 
-  it('offers the background tool only when the view has a background', async () => {
+  it('brings the Details page forward when the Background tool goes on', async () => {
     const { wrapper, store } = await mountStrip()
-    expect(wrapper.find('[aria-label="Adjust background"]').exists()).toBe(false)
-    store.newView()
-    store.setBackground({ type: 'image', ref: 'asset:abc', x: 0, y: 0, width: 100, height: 100 })
-    await wrapper.vm.$nextTick()
-    expect(wrapper.find('[aria-label="Adjust background"]').exists()).toBe(true)
+    store.setSidePanel('palette')
+    await buttonNamed(wrapper, 'Background').trigger('click')
+    expect(store.isBackgroundAdjustMode).toBe(true)
+    expect(store.sidePanel).toBe('details')
+    await buttonNamed(wrapper, 'Background').trigger('click')
+    expect(store.isBackgroundAdjustMode).toBe(false)
   })
 })
