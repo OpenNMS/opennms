@@ -488,7 +488,13 @@ const mountSigma = (g: Graph) => {
   if (!webglAvailable.value) {
     return
   }
+  // Sigma paints labels on canvas with its own default, Arial; hand it the
+  // page's font so canvas text matches the DOM text around it.
+  const labelFont = getComputedStyle(document.documentElement)
+    .getPropertyValue('--onms-font-family').trim() || 'sans-serif'
   sigma = new Sigma(g, canvasEl.value, {
+    labelFont,
+    edgeLabelFont: labelFont,
     renderEdgeLabels: true,
     // Sigma v3 disables edge mouse events by default; enable them so an edge
     // can be clicked to select it (and then have its label edited in the
@@ -617,6 +623,9 @@ const mountSigma = (g: Graph) => {
   resizeObserver.observe(canvasEl.value)
   attachInteractionHandlers(sigma, g)
   applyViewStyle()
+  // A webfont that lands after the first frame would leave canvas labels in
+  // the fallback face; sigma does not watch for it, so repaint once it does.
+  document.fonts?.ready.then(() => sigma?.refresh())
 }
 
 /**
@@ -2840,7 +2849,7 @@ defineExpose({
   display: flex;
   gap: 1rem;
   pointer-events: none;
-  font-family: monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 .topology-no-webgl {
