@@ -57,6 +57,8 @@ import type { DeviceIconId } from '@/components/Topology/deviceIcons'
  */
 type CanvasSnapshot = Pick<TopologyView, 'nodes' | 'links' | 'viewport'>
 
+export type SidePanelPage = 'details' | 'palette'
+
 const emptyView = (): TopologyView => ({
   name: 'Untitled view',
   nodes: [],
@@ -181,6 +183,22 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * the canvas: drag to move, corner handle to resize. Off by default so the
    * image never swallows node/stage clicks during normal composing.
    */
+  /**
+   * The one side panel: what it shows, or null when collapsed to the rail.
+   * Entering Edit opens it on the palette when it was collapsed; leaving
+   * Edit moves a palette page to details, since View has no palette.
+   */
+  const sidePanel = ref<SidePanelPage | null>('details')
+
+  const setSidePanel = (page: SidePanelPage | null) => {
+    sidePanel.value = page
+  }
+
+  /** The rail's click: open on a page, or collapse if it is already showing. */
+  const toggleSidePanel = (page: SidePanelPage) => {
+    sidePanel.value = sidePanel.value === page ? null : page
+  }
+
   const isBackgroundAdjustMode = ref<boolean>(false)
 
   const setBackgroundAdjustMode = (on: boolean) => {
@@ -623,7 +641,13 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     if (!value) {
       isBackgroundAdjustMode.value = false
       isShapeDrawMode.value = false
+      if (sidePanel.value === 'palette') {
+        sidePanel.value = 'details'
+      }
     } else if (discoveredGraph.value === null) {
+      if (sidePanel.value === null) {
+        sidePanel.value = 'palette'
+      }
       void refreshNeighbors()
     }
   }
@@ -765,6 +789,9 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setViewStyle,
     isBackgroundAdjustMode,
     setBackgroundAdjustMode,
+    sidePanel,
+    setSidePanel,
+    toggleSidePanel,
     newView,
     refreshCatalog,
     renameCurrent,

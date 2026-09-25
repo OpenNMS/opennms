@@ -160,25 +160,6 @@ License.
             variant="outlined"
             @click="onRefresh"
           />
-          <OnmsButton
-            v-if="store.isEditMode"
-            :label="store.isLinkDrawMode ? 'Link: ON' : 'Draw Link'"
-            :variant="store.isLinkDrawMode ? 'filled' : 'outlined'"
-            @click="store.setLinkDrawMode(!store.isLinkDrawMode)"
-          />
-          <OnmsButton
-            v-if="store.isEditMode"
-            :label="store.isShapeDrawMode ? 'Box: drag to draw' : 'Draw Box'"
-            :variant="store.isShapeDrawMode ? 'filled' : 'outlined'"
-            @click="store.setShapeDrawMode(!store.isShapeDrawMode)"
-          />
-          <OnmsButton
-            v-if="store.isEditMode"
-            :label="store.isLinkHintsEnabled ? 'Link Hints: ON' : 'Link Hints'"
-            :variant="store.isLinkHintsEnabled ? 'filled' : 'outlined'"
-            title="Show discovered adjacencies between placed nodes as ghost links"
-            @click="store.setLinkHintsEnabled(!store.isLinkHintsEnabled)"
-          />
           <!-- Sizes for every node and link live in a popover, not the bar. -->
           <OnmsIconButton
             :icon="Options"
@@ -214,7 +195,9 @@ License.
     <div class="topology-body">
       <!-- Palette is an Edit-mode tool (compose); hidden in View and for
            read-only discovered sources. -->
-      <TopologyPalette v-if="store.isEditMode && !isDiscovered" class="topology-palette-pane" />
+      <!-- One rail and one panel, on the left, in both modes. -->
+      <TopologyToolStrip />
+      <TopologySidePanel :canvas="canvasRef" />
       <div class="topology-canvas-wrap">
         <TopologyCanvas
           ref="canvasRef"
@@ -256,18 +239,6 @@ License.
           </div>
         </div>
       </div>
-      <!-- View: full read-only Inspector on the left (order -1).
-           Edit: slim Properties panel on the right, only when a label/edge
-           is selected (nodes have no editable props here). -->
-      <!-- Always rendered (in both modes) so selecting an edge/label doesn't
-           reflow the canvas -- a reflow shifts the view and staled sigma's
-           hit-detection, which broke selecting a second edge. -->
-      <TopologyInspector
-        :canvas="canvasRef"
-        :variant="store.isEditMode ? 'props' : 'full'"
-        class="topology-inspector-pane"
-        :style="{ order: store.isEditMode ? 0 : -1 }"
-      />
     </div>
 
     <!-- Bottom Explore panel: tables for the view, tied to selection. -->
@@ -324,9 +295,9 @@ import Options from '@opennms/onms-ui/icons/action/Options.vue'
 import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
-import TopologyPalette from '@/components/Topology/TopologyPalette.vue'
+import TopologyToolStrip from '@/components/Topology/TopologyToolStrip.vue'
+import TopologySidePanel from '@/components/Topology/TopologySidePanel.vue'
 import TopologyAppearance from '@/components/Topology/TopologyAppearance.vue'
-import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
 import TopologyExplorePanel from '@/components/Topology/TopologyExplorePanel.vue'
 import ViewNameDialog from '@/components/Topology/ViewNameDialog.vue'
 import { useTopologyStore } from '@/stores/topologyStore'
@@ -911,6 +882,17 @@ watch(
   { deep: true }
 )
 
+// Picking something while the palette is showing lands on its details; a
+// collapsed panel stays collapsed and the rail shows a dot instead.
+watch(
+  () => store.selectedIds.length,
+  count => {
+    if (count > 0 && store.sidePanel === 'palette') {
+      store.setSidePanel('details')
+    }
+  }
+)
+
 const isDirty = computed<boolean>(
   () => !isDiscovered.value && savedSnapshot.value !== null && liveSnapshot.value !== savedSnapshot.value
 )
@@ -1308,10 +1290,6 @@ const confirmDelete = async () => {
   min-height: 0;
 }
 
-.topology-palette-pane {
-  flex: 0 0 auto;
-}
-
 /* Wraps the canvas so the discovered empty-state can overlay it. */
 .topology-canvas-wrap {
   flex: 1 1 auto;
@@ -1373,7 +1351,4 @@ const confirmDelete = async () => {
   background: var(--onms-surface);
 }
 
-.topology-inspector-pane {
-  flex: 0 0 auto;
-}
 </style>
