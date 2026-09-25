@@ -145,7 +145,7 @@ describe('OnmsIconButton tooltip placement', () => {
     const { default: OnmsTooltip } = await import('../../packages/onms-ui/src/directives/OnmsTooltip')
     const wrapper = mount(OnmsIconButton, {
       props: { icon: StubIcon, tooltip: 'Export PNG', tooltipPosition },
-      global: { plugins: [PrimeVue], directives: { 'onms-tooltip': OnmsTooltip } },
+      global: { plugins: [PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }},
       attachTo: document.body
     })
     return wrapper.find('button').element as HTMLElement & { $_ptooltipModifiers?: Record<string, boolean> }

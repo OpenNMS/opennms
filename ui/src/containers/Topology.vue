@@ -821,7 +821,7 @@ const currentViewId = computed<string | null>({
   get: () => store.currentView?.id ?? null,
   set: (id) => {
     if (id && id !== store.currentView?.id) {
-      void confirmDiscard().then(ok => {
+      void confirmDiscard().then((ok) => {
         if (ok) {
           openIntoCanvas(id)
         }
@@ -881,7 +881,7 @@ watch(
 // collapsed panel stays collapsed and the rail shows a dot instead.
 watch(
   () => store.selectedIds.length,
-  count => {
+  (count) => {
     if (count > 0 && store.sidePanel === 'palette') {
       store.setSidePanel('details')
     }

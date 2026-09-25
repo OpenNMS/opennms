@@ -427,7 +427,7 @@ License.
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText } from '@opennms/onms-ui'
 import { useTopologyStore } from '@/stores/topologyStore'
 import { isLabelId, isShapeId, nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
