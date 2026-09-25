@@ -28,6 +28,8 @@
         <exclude>**/*xstream*/1.4.8_1/*</exclude>
         <exclude>**/*xstream*/1.4.17_1</exclude>
         <exclude>**/*xstream*/1.4.17_1/*</exclude>
+        <exclude>**/*jaxb-impl*/2.2.11_1</exclude>
+        <exclude>**/*jaxb-impl*/2.2.11_1/*</exclude>
         <exclude>%regex[.*org\/bouncycastle\/(bcprov|bctls|bcutil|bcpkix)-jdk18on\/1.7[56]\/?.*]</exclude>
         <exclude>**/commons-io/commons-io/2.8.0</exclude>
         <exclude>**/commons-io/commons-io/2.8.0/*</exclude>
@@ -56,8 +58,8 @@
         <exclude>io/netty/netty-codec-http/4.1.22.Final</exclude>
         <exclude>io/netty/netty-codec-http/4.1.22.Final/*</exclude>
         <!-- NMS-20061: exclude the jline version pinned by Karaf's own feature repo (CVE-2026-56740) -->
-        <exclude>org/jline/jline/3.21.0</exclude>
-        <exclude>org/jline/jline/3.21.0/*</exclude>
+        <exclude>org/jline/jline/3.30.6</exclude>
+        <exclude>org/jline/jline/3.30.6/*</exclude>
       </excludes>
     </fileSet>
 
