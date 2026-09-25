@@ -95,17 +95,19 @@ License.
           <!-- Search works in both kinds of view; what picking a result does
                differs (focus a neighborhood vs pan to the node). Focus and the
                Semantic Zoom Level below are discovered-only. -->
-          <OnmsAutoComplete
-            v-model="searchModel"
-            :suggestions="searchSuggestions"
-            option-label="node.label"
-            :complete-on-focus="true"
-            placeholder="Search nodes, IPs, categories"
-            class="topology-search"
-            :aria-label="store.focusNodeId ? 'Focused node; type to search' : 'Search nodes'"
-            @complete="onSearchComplete"
-            @option-select="onSearchSelect"
-          >
+          <span class="topology-search-field">
+            <OnmsIcon :icon="SearchIcon" class="topology-search-icon" />
+            <OnmsAutoComplete
+              v-model="searchModel"
+              :suggestions="searchSuggestions"
+              option-label="node.label"
+              :complete-on-focus="true"
+              placeholder="Nodes, IPs, categories"
+              class="topology-search"
+              :aria-label="store.focusNodeId ? 'Focused node; type to search' : 'Search nodes'"
+              @complete="onSearchComplete"
+              @option-select="onSearchSelect"
+            >
             <!-- A hit on an IP or a provider property is indistinguishable from
                  a label hit unless the matched value is shown. -->
             <template #option="{ option }">
@@ -120,7 +122,8 @@ License.
                 </span>
               </span>
             </template>
-          </OnmsAutoComplete>
+            </OnmsAutoComplete>
+          </span>
           <template v-if="isDiscovered">
             <OnmsButton
               v-if="!store.focusNodeId"
@@ -317,6 +320,7 @@ import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import Fullscreen from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import Options from '@opennms/onms-ui/icons/action/Options.vue'
+import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
 import { useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
 import TopologyPalette from '@/components/Topology/TopologyPalette.vue'
@@ -1159,8 +1163,26 @@ const confirmDelete = async () => {
   min-width: 12rem;
 }
 
+/* The glass sits inside the field's left padding; the placeholder does the
+   rest, so the word "Search" is not spent twice. */
+.topology-search-field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.topology-search-icon {
+  position: absolute;
+  left: 0.6rem;
+  font-size: 1.1rem;
+  color: var(--onms-secondary-text-on-surface);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .topology-search :deep(.p-autocomplete-input) {
   min-width: 11rem;
+  padding-left: 2.2rem;
 }
 
 .discovered-hint {
