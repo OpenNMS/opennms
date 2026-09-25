@@ -56,7 +56,7 @@ const shapeB = { id: 'shape-b', type: 'rect', x: 20, y: 0, w: 10, h: 10, stroke:
 
 const mountInspector = async () => {
   const wrapper = mount(TopologyInspector, {
-    props: { canvas: null, variant: 'props' },
+    props: { canvas: null },
     global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
   })
   const store = useTopologyStore()
@@ -84,7 +84,7 @@ const picker = (wrapper: Awaited<ReturnType<typeof mountInspector>>['wrapper'], 
 describe('TopologyInspector discovered vertices', () => {
   const mountFull = async (nodes: unknown[], selected: string) => {
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: null, variant: 'full' },
+      props: { canvas: null },
       global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
     })
     const store = useTopologyStore()
@@ -203,7 +203,7 @@ describe('TopologyInspector node details', () => {
   const mountWithNode = async (node: Record<string, unknown>) => {
     vi.mocked(getNodeById).mockResolvedValue(node as never)
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: null, variant: 'full' },
+      props: { canvas: null },
       global: {
         plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
         // Leaflet needs real layout, which happy-dom has none of; the props it
@@ -303,7 +303,7 @@ describe('TopologyInspector geographic location', () => {
   const mountWithNode = async (node: Record<string, unknown>) => {
     vi.mocked(getNodeById).mockResolvedValue(node as never)
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: null, variant: 'full' },
+      props: { canvas: null },
       global: {
         plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
         stubs: {
@@ -413,7 +413,7 @@ describe('TopologyInspector link interface state', () => {
       setNodeIconOverride: vi.fn()
     }
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: canvas as never, variant: 'full' },
+      props: { canvas: canvas as never },
       global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
     })
     const store = useTopologyStore()

@@ -1,6 +1,6 @@
 <template>
   <Button
-    v-onms-tooltip="tooltip"
+    v-onms-tooltip:[tooltipModifiers]="tooltip"
     :title="nativeTitle"
     :severity="pSeverity"
     :text="variant === 'text' || variant === 'ghost'"
@@ -47,6 +47,7 @@ const props = withDefaults(defineProps<{
   variant?: 'text' | 'filled' | 'outlined' | 'ghost'
   severity?: 'primary' | 'danger'
   disabled?: boolean
+  tooltipPosition?: 'top' | 'bottom' | 'left' | 'right'
   unsafePt?: unknown
 }>(), {
   iconSize: '1.5rem',
@@ -55,8 +56,15 @@ const props = withDefaults(defineProps<{
   variant: 'text',
   severity: 'primary',
   disabled: false,
+  tooltipPosition: 'right',
   unsafePt: undefined
 })
+
+// The directive takes its placement as a modifier; a dynamic argument object,
+// in the { position } shape PrimeVue reads, is the one way to pick it from a
+// prop. A button at the viewport's edge otherwise gets its tooltip squeezed
+// against that edge and wrapped.
+const tooltipModifiers = computed(() => ({ position: props.tooltipPosition }))
 
 const pSeverity = computed(() => props.severity === 'danger' ? 'danger' : undefined)
 

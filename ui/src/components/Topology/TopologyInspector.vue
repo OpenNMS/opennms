@@ -28,27 +28,113 @@ License.
 -->
 
 <template>
-  <div class="ti-resizable" :style="{ width: panelWidth + 'px' }">
-    <!-- Drag strip on the canvas-facing edge: right of the View-mode (left)
-         panel, left of the Edit-mode (right) panel. Width persists. -->
-    <div
-      class="ti-resize-handle"
-      :class="variant === 'props' ? 'ti-resize-left' : 'ti-resize-right'"
-      title="Drag to resize"
-      @mousedown.prevent="startResize"
-    />
   <OnmsCard class="topology-inspector">
     <template #title>
-      <span class="ti-title">{{ variant === 'props' ? 'Properties' : 'Inspector' }}</span>
+      <span class="ti-title">Details</span>
     </template>
     <template #content>
       <!-- Nothing selected (full/View only) -->
-      <p v-if="kind === 'none' && variant === 'full'" class="ti-empty">
+      <p v-if="kind === 'none' && !editable" class="ti-empty">
         Select a node, link, label, or box to see its properties.
       </p>
+      <!-- Edit-mode Properties panel with nothing selected: the hint, plus
+           the view background controls (pick/upload an image, opacity,
+           adjust placement, remove). The panel is always present (reserves
+           layout) so selecting a link/label never shifts the canvas. -->
+      <div v-else-if="kind === 'none' && editable" class="ti-section">
+        <p class="ti-empty">Select a node, link, label, or box to edit it. These apply to the whole view.</p>
+        <div class="ti-field">
+          <label class="ti-label">Canvas</label>
+          <div class="ti-field">
+            <label class="ti-label">Node label color</label>
+            <div class="ti-row">
+              <OnmsColorPicker
+                :model-value="store.viewStyle?.nodeLabelColor ?? '#000000'"
+                @update:model-value="onNodeLabelColor"
+              />
+              <OnmsButton
+                v-if="store.viewStyle?.nodeLabelColor"
+                label="Auto"
+                size="small"
+                variant="text"
+                title="Follow the light/dark theme"
+                @click="store.setViewStyle({ nodeLabelColor: undefined })"
+              />
+              <span v-else class="ti-inline-hint">automatic (theme)</span>
+            </div>
+          </div>
+          <div class="ti-field">
+            <label class="ti-label">Link label color</label>
+            <div class="ti-row">
+              <OnmsColorPicker
+                :model-value="store.viewStyle?.linkLabelColor ?? '#9aa7b8'"
+                @update:model-value="onLinkLabelColor"
+              />
+              <OnmsButton
+                v-if="store.viewStyle?.linkLabelColor"
+                label="Auto"
+                size="small"
+                variant="text"
+                title="Follow the light/dark theme"
+                @click="store.setViewStyle({ linkLabelColor: undefined })"
+              />
+              <span v-else class="ti-inline-hint">automatic (theme)</span>
+            </div>
+          </div>
+          <p class="ti-hint">
+            Custom label colors save with the view and don't follow the light/dark
+            theme — <strong>Auto</strong> re-derives them from it. The stats overlay
+            is a personal preference.
+          </p>
+        </div>
+        <!-- Shown while the rail's Background tool is on: that tool is the
+             way in to choosing, placing and sizing the image. -->
+        <div v-if="store.isBackgroundAdjustMode" class="ti-field">
+          <label class="ti-label">Background</label>
+          <template v-if="store.background?.ref">
+            <div class="ti-field">
+              <label class="ti-label">Opacity</label>
+              <input
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                :value="store.background?.opacity ?? 0.5"
+                @input="onBackgroundOpacity"
+              />
+            </div>
+            <div class="ti-row">
+              <span class="ti-hint">Drag it on the canvas to move; drag its corner to resize.</span>
+              <OnmsButton label="Remove" size="small" severity="danger" variant="text" @click="removeBackground" />
+            </div>
+          </template>
+          <div class="ti-icon-grid">
+            <button
+              v-for="asset in backgroundAssets"
+              :key="asset.id"
+              type="button"
+              class="ti-icon-option ti-bg-option"
+              :class="{ 'is-selected': store.background?.ref === 'asset:' + asset.id }"
+              :title="asset.name"
+              @click="chooseBackground(asset)"
+            >
+              <img :src="assetUrl(asset.id)" :alt="asset.name" />
+            </button>
+          </div>
+          <OnmsButton label="Upload background…" size="small" variant="text" @click="bgFileInput?.click()" />
+          <input
+            ref="bgFileInput"
+            type="file"
+            accept="image/png,image/jpeg,image/gif,image/webp"
+            class="ti-hidden-input"
+            @change="onBackgroundFileChosen"
+          />
+          <p class="ti-hint"><strong>Save</strong> the view to keep background changes.</p>
+        </div>
+      </div>
 
       <!-- Multiple items (full/View only) -->
-      <p v-else-if="kind === 'multi' && variant === 'full'" class="ti-empty">
+      <p v-else-if="kind === 'multi'" class="ti-empty">
         {{ store.selectedIds.length }} items selected.
       </p>
 
@@ -73,7 +159,75 @@ License.
       </div>
 
       <!-- A placed OpenNMS node (detail is read-only; full/View only) -->
-      <div v-else-if="kind === 'node' && variant === 'full'" class="ti-section">
+      <div v-else-if="kind === 'node'" class="ti-section">
+      <template v-if="editable">
+        <div class="ti-field">
+          <label class="ti-label">Icon</label>
+          <div class="ti-icon-grid">
+            <button
+              type="button"
+              class="ti-icon-option"
+              :class="{ 'is-selected': !iconOverride }"
+              title="Automatic (from SNMP)"
+              @click="applyIconOverride(undefined)"
+            >
+              Auto
+            </button>
+            <button
+              v-for="glyph in builtinIcons"
+              :key="glyph.id"
+              type="button"
+              class="ti-icon-option ti-icon-builtin"
+              :class="{ 'is-selected': iconOverride === glyph.id }"
+              :title="glyph.label"
+              @click="applyIconOverride(glyph.id)"
+            >
+              <img :src="glyph.url" :alt="glyph.label" />
+            </button>
+            <button
+              v-for="asset in iconAssets"
+              :key="asset.id"
+              type="button"
+              class="ti-icon-option"
+              :class="{ 'is-selected': iconOverride === 'asset:' + asset.id }"
+              :title="asset.name"
+              @click="applyIconOverride('asset:' + asset.id)"
+            >
+              <img :src="assetUrl(asset.id)" :alt="asset.name" />
+            </button>
+          </div>
+          <OnmsButton label="Upload icon…" size="small" variant="text" @click="iconFileInput?.click()" />
+          <input
+            ref="iconFileInput"
+            type="file"
+            accept="image/png,image/jpeg,image/gif,image/webp"
+            class="ti-hidden-input"
+            @change="onIconFileChosen"
+          />
+          <p class="ti-hint">Applies immediately — <strong>Save</strong> the view to keep it.</p>
+        </div>
+        <!-- Phase 2 assisted composition: this node's discovered neighbors
+             that aren't on the canvas yet; one click places and links. -->
+        <div v-if="unplacedNeighbors.length > 0" class="ti-field">
+          <label class="ti-label">Discovered neighbors</label>
+          <ul class="ti-neighbors">
+            <li v-for="n in unplacedNeighbors" :key="n.neighborNodeId + n.linkType" class="ti-neighbor-row">
+              <span class="ti-neighbor-label" :title="n.localPort ? `${n.localPort} ↔ ${n.remotePort ?? '?'}` : undefined">
+                {{ n.neighborLabel }}
+                <span class="ti-neighbor-proto">{{ n.linkType.toUpperCase() }}</span>
+              </span>
+              <OnmsButton
+                label="Add"
+                size="small"
+                variant="text"
+                title="Place this neighbor and link it"
+                @click="addNeighbor(n)"
+              />
+            </li>
+          </ul>
+        </div>
+      </template>
+
         <div v-if="nodeLoading" class="ti-empty">Loading node…</div>
         <template v-else-if="nodeDetail">
           <div class="ti-node-header">
@@ -135,7 +289,7 @@ License.
       <!-- A discovered vertex that is not an OnmsNode: an application, a
            business service, a GraphML group. The provider's own properties are
            all the detail there is. -->
-      <div v-else-if="kind === 'vertex' && variant === 'full'" class="ti-section">
+      <div v-else-if="kind === 'vertex'" class="ti-section">
         <div class="ti-node-header">
           <span class="ti-node-label">{{ discoveredVertex?.label }}</span>
         </div>
@@ -263,192 +417,17 @@ License.
         </p>
       </div>
 
-      <p v-else-if="variant === 'full'" class="ti-empty">Link selected.</p>
+      <p v-else-if="kind === 'link'" class="ti-empty">Link selected.</p>
 
       <!-- Edit-mode node: icon picker. Automatic (sysObjectId-derived) /
            built-in glyphs / uploaded icon assets, applied to the canvas
            immediately and persisted with the view on Save. -->
-      <div v-else-if="kind === 'node' && variant === 'props'" class="ti-section">
-        <div class="ti-field">
-          <label class="ti-label">Icon</label>
-          <div class="ti-icon-grid">
-            <button
-              type="button"
-              class="ti-icon-option"
-              :class="{ 'is-selected': !iconOverride }"
-              title="Automatic (from SNMP)"
-              @click="applyIconOverride(undefined)"
-            >
-              Auto
-            </button>
-            <button
-              v-for="glyph in builtinIcons"
-              :key="glyph.id"
-              type="button"
-              class="ti-icon-option ti-icon-builtin"
-              :class="{ 'is-selected': iconOverride === glyph.id }"
-              :title="glyph.label"
-              @click="applyIconOverride(glyph.id)"
-            >
-              <img :src="glyph.url" :alt="glyph.label" />
-            </button>
-            <button
-              v-for="asset in iconAssets"
-              :key="asset.id"
-              type="button"
-              class="ti-icon-option"
-              :class="{ 'is-selected': iconOverride === 'asset:' + asset.id }"
-              :title="asset.name"
-              @click="applyIconOverride('asset:' + asset.id)"
-            >
-              <img :src="assetUrl(asset.id)" :alt="asset.name" />
-            </button>
-          </div>
-          <OnmsButton label="Upload icon…" size="small" variant="text" @click="iconFileInput?.click()" />
-          <input
-            ref="iconFileInput"
-            type="file"
-            accept="image/png,image/jpeg,image/gif,image/webp"
-            class="ti-hidden-input"
-            @change="onIconFileChosen"
-          />
-          <p class="ti-hint">Applies immediately — <strong>Save</strong> the view to keep it.</p>
-        </div>
-        <!-- Phase 2 assisted composition: this node's discovered neighbors
-             that aren't on the canvas yet; one click places and links. -->
-        <div v-if="unplacedNeighbors.length > 0" class="ti-field">
-          <label class="ti-label">Discovered neighbors</label>
-          <ul class="ti-neighbors">
-            <li v-for="n in unplacedNeighbors" :key="n.neighborNodeId + n.linkType" class="ti-neighbor-row">
-              <span class="ti-neighbor-label" :title="n.localPort ? `${n.localPort} ↔ ${n.remotePort ?? '?'}` : undefined">
-                {{ n.neighborLabel }}
-                <span class="ti-neighbor-proto">{{ n.linkType.toUpperCase() }}</span>
-              </span>
-              <OnmsButton
-                label="Add"
-                size="small"
-                variant="text"
-                title="Place this neighbor and link it"
-                @click="addNeighbor(n)"
-              />
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Edit-mode Properties panel with nothing selected: the hint, plus
-           the view background controls (pick/upload an image, opacity,
-           adjust placement, remove). The panel is always present (reserves
-           layout) so selecting a link/label never shifts the canvas. -->
-      <div v-else-if="variant === 'props'" class="ti-section">
-        <p class="ti-empty">Select a node, link, label, or box to edit its properties.</p>
-        <div class="ti-field">
-          <label class="ti-label">Canvas</label>
-          <label class="ti-check">
-            <input
-              type="checkbox"
-              :checked="store.showCanvasStats"
-              @change="store.setShowCanvasStats(($event.target as HTMLInputElement).checked)"
-            />
-            Show stats overlay
-          </label>
-          <div class="ti-field">
-            <label class="ti-label">Node label color</label>
-            <div class="ti-row">
-              <OnmsColorPicker
-                :model-value="store.viewStyle?.nodeLabelColor ?? '#000000'"
-                @update:model-value="onNodeLabelColor"
-              />
-              <OnmsButton
-                v-if="store.viewStyle?.nodeLabelColor"
-                label="Auto"
-                size="small"
-                variant="text"
-                title="Follow the light/dark theme"
-                @click="store.setViewStyle({ nodeLabelColor: undefined })"
-              />
-              <span v-else class="ti-inline-hint">automatic (theme)</span>
-            </div>
-          </div>
-          <div class="ti-field">
-            <label class="ti-label">Link label color</label>
-            <div class="ti-row">
-              <OnmsColorPicker
-                :model-value="store.viewStyle?.linkLabelColor ?? '#9aa7b8'"
-                @update:model-value="onLinkLabelColor"
-              />
-              <OnmsButton
-                v-if="store.viewStyle?.linkLabelColor"
-                label="Auto"
-                size="small"
-                variant="text"
-                title="Follow the light/dark theme"
-                @click="store.setViewStyle({ linkLabelColor: undefined })"
-              />
-              <span v-else class="ti-inline-hint">automatic (theme)</span>
-            </div>
-          </div>
-          <p class="ti-hint">
-            Custom label colors save with the view and don't follow the light/dark
-            theme — <strong>Auto</strong> re-derives them from it. The stats overlay
-            is a personal preference.
-          </p>
-        </div>
-        <div class="ti-field">
-          <label class="ti-label">Background</label>
-          <template v-if="store.background?.ref">
-            <div class="ti-field">
-              <label class="ti-label">Opacity</label>
-              <input
-                type="range"
-                min="0.1"
-                max="1"
-                step="0.05"
-                :value="store.background?.opacity ?? 0.5"
-                @input="onBackgroundOpacity"
-              />
-            </div>
-            <div class="ti-row">
-              <OnmsButton
-                :label="store.isBackgroundAdjustMode ? 'Done adjusting' : 'Adjust position/size'"
-                size="small"
-                :variant="store.isBackgroundAdjustMode ? 'filled' : 'outlined'"
-                @click="store.setBackgroundAdjustMode(!store.isBackgroundAdjustMode)"
-              />
-              <OnmsButton label="Remove" size="small" severity="danger" variant="text" @click="removeBackground" />
-            </div>
-          </template>
-          <div class="ti-icon-grid">
-            <button
-              v-for="asset in backgroundAssets"
-              :key="asset.id"
-              type="button"
-              class="ti-icon-option ti-bg-option"
-              :class="{ 'is-selected': store.background?.ref === 'asset:' + asset.id }"
-              :title="asset.name"
-              @click="chooseBackground(asset)"
-            >
-              <img :src="assetUrl(asset.id)" :alt="asset.name" />
-            </button>
-          </div>
-          <OnmsButton label="Upload background…" size="small" variant="text" @click="bgFileInput?.click()" />
-          <input
-            ref="bgFileInput"
-            type="file"
-            accept="image/png,image/jpeg,image/gif,image/webp"
-            class="ti-hidden-input"
-            @change="onBackgroundFileChosen"
-          />
-          <p class="ti-hint"><strong>Save</strong> the view to keep background changes.</p>
-        </div>
-      </div>
     </template>
   </OnmsCard>
-  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText } from '@opennms/onms-ui'
 import { useTopologyStore } from '@/stores/topologyStore'
 import { isLabelId, isShapeId, nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
@@ -484,7 +463,7 @@ import type { CanvasLinkBinding, DiscoveredNeighbor } from '@/types/topology'
 
 
 /** Minimal read/write surface the canvas exposes (via defineExpose). */
-interface CanvasLinkApi {
+export interface CanvasLinkApi {
   getLink: (id: string) => {
     label: string
     sourceLabel: string
@@ -502,58 +481,8 @@ interface CanvasLinkApi {
 
 const props = defineProps<{
   canvas: CanvasLinkApi | null
-  /**
-   * 'full' (View): node detail + label/link + empty/multi states.
-   * 'props' (Edit): only the editable label/link property fields; the page
-   * mounts this variant solely when a label or link is selected.
-   */
-  variant?: 'full' | 'props'
 }>()
 
-const variant = computed<'full' | 'props'>(() => props.variant ?? 'full')
-
-// --- Panel resize -----------------------------------------------------------
-// Drag the canvas-facing edge to resize; the width persists across sessions.
-// The canvas pane flexes to absorb the change and repaints via its own
-// ResizeObserver (preserving zoom/pan), so no coordination is needed here.
-const WIDTH_STORAGE_KEY = 'opennms.topology.inspectorWidth'
-const WIDTH_MIN = 220
-const WIDTH_MAX = 640
-const WIDTH_DEFAULT = 288 // matches the previous fixed 18rem
-const storedWidth = Number(localStorage.getItem(WIDTH_STORAGE_KEY))
-const panelWidth = ref(
-  Number.isFinite(storedWidth) && storedWidth >= WIDTH_MIN && storedWidth <= WIDTH_MAX
-    ? storedWidth
-    : WIDTH_DEFAULT
-)
-let resizeStart: { x: number; width: number } | null = null
-const onResizeMove = (e: MouseEvent) => {
-  if (!resizeStart) {
-    return
-  }
-  const delta = e.clientX - resizeStart.x
-  // View mode: panel sits left, its right edge drags (+x grows). Edit mode:
-  // panel sits right, its left edge drags (+x shrinks).
-  const next = variant.value === 'props' ? resizeStart.width - delta : resizeStart.width + delta
-  panelWidth.value = Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, next))
-}
-const endResize = () => {
-  if (!resizeStart) {
-    return
-  }
-  resizeStart = null
-  window.removeEventListener('mousemove', onResizeMove)
-  window.removeEventListener('mouseup', endResize)
-  document.body.style.userSelect = ''
-  localStorage.setItem(WIDTH_STORAGE_KEY, String(panelWidth.value))
-}
-const startResize = (e: MouseEvent) => {
-  resizeStart = { x: e.clientX, width: panelWidth.value }
-  document.body.style.userSelect = 'none' // no text selection mid-drag
-  window.addEventListener('mousemove', onResizeMove)
-  window.addEventListener('mouseup', endResize)
-}
-onBeforeUnmount(endResize)
 
 const store = useTopologyStore()
 
@@ -829,7 +758,7 @@ watch(
       return
     }
     iconOverride.value = props.canvas.getNodeIconOverride(id)
-    if (variant.value === 'props' && !iconAssetsLoaded) {
+    if (editable.value && !iconAssetsLoaded) {
       iconAssetsLoaded = true
       iconAssets.value = await listAssets('icon')
     }
@@ -840,7 +769,7 @@ watch(
 /* ---- Neighbor tray (Edit mode, node selected) ---- */
 const unplacedNeighbors = computed<DiscoveredNeighbor[]>(() => {
   const id = selectedId.value
-  if (!id || kind.value !== 'node' || variant.value !== 'props') {
+  if (!id || kind.value !== 'node' || !editable.value) {
     return []
   }
   const nid = nodeIdFromPlacedId(id)
@@ -885,9 +814,9 @@ let backgroundAssetsLoaded = false
 // Lazily load the background catalog the first time the empty Edit panel
 // (which hosts the background controls) is shown.
 watch(
-  [kind, variant],
-  async ([k, v]) => {
-    const showsBackgroundControls = v === 'props' && (k === 'none' || k === 'multi')
+  [kind, editable],
+  async ([k, e]) => {
+    const showsBackgroundControls = e && k === 'none'
     if (showsBackgroundControls && !backgroundAssetsLoaded) {
       backgroundAssetsLoaded = true
       backgroundAssets.value = await listAssets('background')
@@ -1115,17 +1044,6 @@ const linkLabel = computed<string>({
 </script>
 
 <style scoped>
-.ti-resizable {
-  position: relative;
-  /* Flex column rather than percentage heights: the panel must never grow past
-     the space the body gives it, whatever detail arrives asynchronously. A
-     percentage height only holds while every ancestor resolves one, and when it
-     did not the panel pushed the layout instead of scrolling itself. */
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
 
 .topology-inspector {
   width: 100%;
@@ -1139,27 +1057,6 @@ const linkLabel = computed<string>({
 .topology-inspector :deep(.p-card-body),
 .topology-inspector :deep(.p-card-content) {
   min-height: 0;
-}
-
-.ti-resize-handle {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  cursor: col-resize;
-  z-index: 2;
-}
-
-.ti-resize-handle:hover {
-  background: var(--onms-border-on-surface);
-}
-
-.ti-resize-right {
-  right: -3px;
-}
-
-.ti-resize-left {
-  left: -3px;
 }
 
 .ti-title {

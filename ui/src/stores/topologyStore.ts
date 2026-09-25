@@ -31,7 +31,8 @@ import type {
   TopologyView,
   TopologyViewBackground,
   TopologyViewStyle,
-  TopologyViewSummary
+  TopologyViewSummary,
+  LabelPlacement
 } from '@/types/topology'
 import {
   listViews,
@@ -56,6 +57,8 @@ import type { DeviceIconId } from '@/components/Topology/deviceIcons'
  * Labels are not included here -- they already live in the store.
  */
 type CanvasSnapshot = Pick<TopologyView, 'nodes' | 'links' | 'viewport'>
+
+export type SidePanelPage = 'details' | 'palette'
 
 const emptyView = (): TopologyView => ({
   name: 'Untitled view',
@@ -181,10 +184,30 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * the canvas: drag to move, corner handle to resize. Off by default so the
    * image never swallows node/stage clicks during normal composing.
    */
+  /**
+   * The one side panel: what it shows, or null when collapsed to the rail.
+   * Entering Edit opens it on the palette when it was collapsed; leaving
+   * Edit moves a palette page to details, since View has no palette.
+   */
+  const sidePanel = ref<SidePanelPage | null>('details')
+
+  const setSidePanel = (page: SidePanelPage | null) => {
+    sidePanel.value = page
+  }
+
+  /** The rail's click: open on a page, or collapse if it is already showing. */
+  const toggleSidePanel = (page: SidePanelPage) => {
+    sidePanel.value = sidePanel.value === page ? null : page
+  }
+
   const isBackgroundAdjustMode = ref<boolean>(false)
 
   const setBackgroundAdjustMode = (on: boolean) => {
     isBackgroundAdjustMode.value = on
+    // The background controls live on the Details page; the tool opens it.
+    if (on) {
+      sidePanel.value = 'details'
+    }
   }
 
   /**
@@ -388,7 +411,8 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    */
   const NODE_SIZE_MIN = 6
   const NODE_SIZE_MAX = 28
-  const nodeSize = ref<number>(20)
+  const DEFAULT_NODE_SIZE = 20
+  const nodeSize = ref<number>(DEFAULT_NODE_SIZE)
 
   // Density curve: <=10 nodes -> 20, >=100 -> 9, linear between.
   const autoNodeSizeForCount = (count: number): number =>
@@ -396,13 +420,44 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   const setNodeSize = (n: number) => {
     nodeSize.value = Math.max(NODE_SIZE_MIN, Math.min(NODE_SIZE_MAX, Math.round(n)))
+    rememberAppearance()
   }
   const setNodeSizeForCount = (count: number) => {
     nodeSize.value = autoNodeSizeForCount(count)
   }
 
+  const LINK_WIDTH_MIN = 1
+  const LINK_WIDTH_MAX = 8
+  const DEFAULT_LINK_WIDTH = 3
+  const linkWidth = ref<number>(DEFAULT_LINK_WIDTH)
+  const setLinkWidth = (n: number) => {
+    linkWidth.value = Math.max(LINK_WIDTH_MIN, Math.min(LINK_WIDTH_MAX, Math.round(n)))
+    rememberAppearance()
+  }
+
+  // Node size and link width are part of how a custom view reads, so they
+  // save with it; a discovered graph sizes itself and keeps nothing.
+  const DEFAULT_LABEL_PLACEMENT: LabelPlacement = 'right'
+  const labelPlacement = ref<LabelPlacement>(DEFAULT_LABEL_PLACEMENT)
+  const setLabelPlacement = (placement: LabelPlacement) => {
+    labelPlacement.value = placement
+    rememberAppearance()
+  }
+
+  const rememberAppearance = () => {
+    if (currentView.value && discoveredGraph.value === null) {
+      setViewStyle({ nodeSize: nodeSize.value, linkWidth: linkWidth.value, labelPlacement: labelPlacement.value })
+    }
+  }
+  const applyAppearance = (style: TopologyViewStyle | undefined) => {
+    nodeSize.value = style?.nodeSize ?? DEFAULT_NODE_SIZE
+    linkWidth.value = style?.linkWidth ?? DEFAULT_LINK_WIDTH
+    labelPlacement.value = style?.labelPlacement ?? DEFAULT_LABEL_PLACEMENT
+  }
+
   const newView = () => {
     currentView.value = emptyView()
+    applyAppearance(undefined)
     selectedIds.value = []
     labels.value = []
     shapes.value = []
@@ -516,6 +571,44 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * view untouched, rather than detaching it (losing its id) and renaming it
    * to the conflicting name.
    */
+  /**
+   * Keep a discovered graph as a custom view: the nodes and links as they are
+   * laid out right now, under a new name.
+   *
+   * Not saveCurrentViewAs, which spreads the open view. On a discovered source
+   * currentView still names whichever custom view was open last, so spreading
+   * it would carry that view's background and style onto this one.
+   *
+   * The links keep the bindings discovery gave them, which is what lets the
+   * copy still color and report counters; nothing else in a custom view could
+   * have supplied them.
+   */
+  const saveDiscoveredAsView = async (name: string, snapshot: CanvasSnapshot): Promise<boolean> => {
+    isSaving.value = true
+    try {
+      const candidate: TopologyView = {
+        name,
+        nodes: snapshot.nodes,
+        links: snapshot.links,
+        labels: [],
+        viewport: snapshot.viewport,
+        // The copy should open looking as the graph did on screen.
+        style: { nodeSize: nodeSize.value, linkWidth: linkWidth.value }
+      }
+      const saved = await saveView(candidate)
+      if (saved === false) {
+        return false
+      }
+      currentView.value = saved
+      setLabels([])
+      setShapes([])
+      await refreshCatalog()
+      return true
+    } finally {
+      isSaving.value = false
+    }
+  }
+
   const saveCurrentViewAs = async (name: string, snapshot: CanvasSnapshot): Promise<boolean> => {
     if (!currentView.value) {
       return false
@@ -555,6 +648,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       return false
     }
     currentView.value = view
+    applyAppearance(view.style)
     isBackgroundAdjustMode.value = false
     return view
   }
@@ -598,7 +692,13 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     if (!value) {
       isBackgroundAdjustMode.value = false
       isShapeDrawMode.value = false
+      if (sidePanel.value === 'palette') {
+        sidePanel.value = 'details'
+      }
     } else if (discoveredGraph.value === null) {
+      if (sidePanel.value === null) {
+        sidePanel.value = 'palette'
+      }
       void refreshNeighbors()
     }
   }
@@ -740,11 +840,15 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setViewStyle,
     isBackgroundAdjustMode,
     setBackgroundAdjustMode,
+    sidePanel,
+    setSidePanel,
+    toggleSidePanel,
     newView,
     refreshCatalog,
     renameCurrent,
     saveCurrentView,
     saveCurrentViewAs,
+    saveDiscoveredAsView,
     openView,
     removeView,
     renameView,
@@ -772,6 +876,12 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setNodeSizeForCount,
     NODE_SIZE_MIN,
     NODE_SIZE_MAX,
+    linkWidth,
+    setLinkWidth,
+    LINK_WIDTH_MIN,
+    LINK_WIDTH_MAX,
+    labelPlacement,
+    setLabelPlacement,
     setEditMode,
     setLinkDrawMode,
     selectOnly,

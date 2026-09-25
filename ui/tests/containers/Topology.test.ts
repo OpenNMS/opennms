@@ -96,7 +96,15 @@ vi.mock('@/services/topologyService', () => ({
 const stubs = {
   TopologyPalette: { template: '<div />' },
   TopologyInspector: { template: '<div />' },
-  TopologyExplorePanel: { template: '<div />' }
+  TopologyExplorePanel: { template: '<div />' },
+  // The view-actions menu renders its items as plain buttons here, so the
+  // tests keep clicking actions by label without opening a popup.
+  OnmsTieredMenu: {
+    props: ['items'],
+    template: `<div><template v-for="item in items" :key="item.label">
+      <button v-if="!item.separator" :disabled="item.disabled" @click="item.command?.({ originalEvent: $event, item })">{{ item.label }}</button>
+    </template></div>`
+  }
 }
 
 const currentView = { id: 'v1', name: 'Core switches' }
@@ -143,6 +151,17 @@ const click = async (label: string, scope: ParentNode = document) => {
 
 // Once the dialog is open the toolbar's Delete and the dialog's Delete are both
 // on the page, so answering it has to be scoped to the dialog.
+/** Icon buttons carry their name as the icon's aria-label, or a title, not as text. */
+const clickTitled = async (title: string, scope: ParentNode = document) => {
+  const button = Array.from(scope.querySelectorAll('button'))
+    .find(b => b.getAttribute('title') === title || !!b.querySelector(`[aria-label="${title}"]`))
+  expect(button, `no "${title}" button rendered`).toBeTruthy()
+  ;(button as HTMLElement).click()
+  await flushPromises()
+  await nextTick()
+  await flushPromises()
+}
+
 const clickInDialog = async (label: string) => {
   const dialog = document.querySelector('.p-dialog')
   expect(dialog, 'dialog is not open').toBeTruthy()
@@ -287,7 +306,7 @@ describe('Topology discovered refresh', () => {
     expect(store.focusNodeId).toBe('a')
     vi.mocked(service.loadDiscoveredGraph).mockClear()
 
-    await click('Refresh Graph')
+    await clickTitled('Refresh Graph')
 
     expect(vi.mocked(service.loadDiscoveredGraph)).toHaveBeenCalledTimes(1)
     // loadDiscoveredSource clears focus; the URL is what puts it back.
@@ -301,7 +320,7 @@ describe('Topology discovered refresh', () => {
     vi.mocked(service.loadDiscoveredGraph).mockClear()
     const refreshStatus = vi.spyOn(store, 'refreshStatus').mockResolvedValue(undefined as never)
 
-    await click('Refresh status')
+    await clickTitled('Refresh status')
 
     expect(refreshStatus).toHaveBeenCalled()
     expect(vi.mocked(service.loadDiscoveredGraph)).not.toHaveBeenCalled()
@@ -630,5 +649,81 @@ describe('Topology view naming', () => {
     expect(vi.mocked(service.saveView).mock.calls[0][0]).toMatchObject({ name: 'Spine fabric' })
     expect(store.currentView).toMatchObject({ id: 'v9', name: 'Spine fabric' })
     expect(store.isEditMode).toBe(true)
+  })
+})
+
+describe('Topology view actions menu', () => {
+  afterEach(() => {
+    unmountAll()
+  })
+
+  it('offers New, Save As, Rename and Delete, with Delete kept off the Default view', async () => {
+    const { wrapper, store } = await mountPage()
+    const items = () => (wrapper.vm as unknown as { viewMenuModel: { label?: string; disabled?: boolean; separator?: boolean }[] }).viewMenuModel
+    expect(items().filter(i => !i.separator).map(i => i.label)).toEqual(['New', 'Save As', 'Rename', 'Delete'])
+    expect(items().find(i => i.label === 'Delete')?.disabled).toBe(false)
+
+    store.currentView = { id: 'd', name: 'Default' } as never
+    await nextTick()
+    expect(items().find(i => i.label === 'Delete')?.disabled).toBe(true)
+    expect(items().find(i => i.label === 'Rename')?.disabled).toBe(false)
+  })
+})
+
+describe('Topology unsaved changes', () => {
+  afterEach(() => {
+    unmountAll()
+  })
+
+  // The page recomputes its unsaved state a beat after an edit, so the tests
+  // wait for the DOM to say so rather than sleeping past the debounce.
+  const untilDirty = (wrapper: { find: (s: string) => { exists: () => boolean }}, dirty: boolean) =>
+    vi.waitFor(() => expect(wrapper.find('.unsaved-badge').exists()).toBe(dirty), { timeout: 2000 })
+
+  /** The harness assigns currentView directly; a save re-marks the baseline the way a load does. */
+  const settle = async (wrapper: { find: (s: string) => { exists: () => boolean }}, store: ReturnType<typeof useTopologyStore>) => {
+    vi.spyOn(store, 'saveCurrentView').mockResolvedValue(true)
+    await click('Save')
+    await untilDirty(wrapper, false)
+  }
+
+  it('flags a store-side edit until the view is saved, and colors the bar', async () => {
+    const { wrapper, store } = await mountPage()
+    await settle(wrapper, store)
+    expect(wrapper.find('.topology-page').classes()).not.toContain('is-dirty')
+
+    store.addLabel({ id: 'l1', text: 'Core', x: 10, y: 10 } as never)
+    await untilDirty(wrapper, true)
+    expect(wrapper.find('.unsaved-badge').text()).toBe('Unsaved changes')
+    expect(wrapper.find('.topology-page').classes()).toContain('is-dirty')
+
+    await click('Save')
+    await untilDirty(wrapper, false)
+  })
+
+  it('asks before switching to another view while dirty, and stays when declined', async () => {
+    const { wrapper, store } = await mountPage()
+    await settle(wrapper, store)
+    store.addLabel({ id: 'l1', text: 'Core', x: 10, y: 10 } as never)
+    await untilDirty(wrapper, true)
+    const open = vi.spyOn(store, 'openView').mockResolvedValue(false)
+
+    // Drive the chooser's model the way a pick does.
+    ;(wrapper.vm as unknown as { currentViewId: string | null }).currentViewId = 'v2'
+    await flushPromises()
+    await nextTick()
+    const dialog = Array.from(document.querySelectorAll('.p-dialog'))
+      .find(d => d.textContent?.includes('unsaved changes'))
+    expect(dialog, 'discard dialog is not open').toBeTruthy()
+    await click('Keep editing', dialog!)
+    expect(open).not.toHaveBeenCalled()
+
+    ;(wrapper.vm as unknown as { currentViewId: string | null }).currentViewId = 'v2'
+    await flushPromises()
+    await nextTick()
+    const again = Array.from(document.querySelectorAll('.p-dialog'))
+      .find(d => d.textContent?.includes('unsaved changes'))
+    await click('Discard', again!)
+    expect(open).toHaveBeenCalledWith('v2')
   })
 })

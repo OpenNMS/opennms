@@ -309,9 +309,10 @@ The prop mounts the directive on the button itself, with no remount when the
 text arrives late — the wrapper handles that (see above). When `tooltip` is set
 the native `title` attribute is dropped, so the browser's own tooltip doesn't
 duplicate the rich one; `title`, if given, still names the button for assistive
-tech, and a `tooltip`-only button is named from the tooltip text. Positioning
-modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing
-one keeps using the directive.
+tech, and a `tooltip`-only button is named from the tooltip text. Placement is
+the `tooltipPosition` prop (`top`, `bottom`, `left`, `right`; default `right`),
+which the wrapper hands to the directive as its modifier — a button at the
+viewport's edge otherwise gets its tooltip squeezed against that edge.
 
 ## OnmsDatePicker: dates, times, and time-only (NMS-20280)
 
