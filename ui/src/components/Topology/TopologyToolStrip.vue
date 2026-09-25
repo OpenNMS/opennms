@@ -152,13 +152,25 @@ const hasBackground = computed<boolean>(() => !!store.background?.ref)
   align-self: stretch;
 }
 
+/* Every item is the same box whatever its variant: PrimeVue's text, outlined
+   and filled buttons differ by a border and padding, which read as uneven
+   spacing in a column. */
+.topology-rail :deep(.p-button) {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
 .topology-rail__gap {
   height: 0.5rem;
+  flex: 0 0 auto;
 }
 
 .topology-rail__panel-item {
   position: relative;
-  display: inline-flex;
+  display: flex;
 }
 
 .topology-rail__dot {
