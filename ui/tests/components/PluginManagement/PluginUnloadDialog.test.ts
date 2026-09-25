@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { type PluginEntry } from '@/types/pluginManagement'
 import PluginUnloadDialog from '@/components/PluginManagement/PluginUnloadDialog.vue'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
@@ -34,7 +35,7 @@ const DialogStub = {
   template: '<div v-if="visible"><h2 data-test="dialog-header">{{ header }}</h2><slot /><slot name="footer" /></div>'
 }
 
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec', 'alec-ui'], bootFile: 'alec.boot', autoStart: true, status: 'installed' as const, pendingRestart: false }
+const PLUGIN: PluginEntry = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec', 'alec-ui'], bootFile: 'alec.boot', autoStart: true, status: 'installed' as const, pendingRestart: false }
 
 describe('PluginUnloadDialog.vue', () => {
   let wrapper: VueWrapper<any>
