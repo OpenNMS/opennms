@@ -221,12 +221,14 @@ const updateDestinationPath = async (originalName: string, path: DestinationPath
   }
 }
 
-// Users and groups for destination path target pickers (v1 users/groups REST).
+// Users and groups for destination path target pickers. v2 (not v1) because
+// v1 /users also serializes each user's password hash. v2 returns plain arrays
+// of UserDTO/GroupDTO, keyed userId/name (not v1's {user: [{'user-id'}]}).
 const getNotificationUsers = async (): Promise<string[] | null> => {
   try {
     const resp = await v2.get('/users?limit=0')
-    const users = resp.data?.user ?? []
-    return (Array.isArray(users) ? users : [users]).map((u: any) => u['user-id']).filter(Boolean)
+    const users = Array.isArray(resp.data) ? resp.data : []
+    return users.map((u: any) => u.userId).filter(Boolean)
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load users.' })
     return null
@@ -236,8 +238,8 @@ const getNotificationUsers = async (): Promise<string[] | null> => {
 const getNotificationGroups = async (): Promise<string[] | null> => {
   try {
     const resp = await v2.get('/groups?limit=0')
-    const groups = resp.data?.group ?? []
-    return (Array.isArray(groups) ? groups : [groups]).map((g: any) => g.name).filter(Boolean)
+    const groups = Array.isArray(resp.data) ? resp.data : []
+    return groups.map((g: any) => g.name).filter(Boolean)
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load groups.' })
     return null

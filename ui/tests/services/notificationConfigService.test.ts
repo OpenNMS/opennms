@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { testDestinationPath } from '@/services/notificationConfigService'
+import { getNotificationGroups, getNotificationUsers, testDestinationPath } from '@/services/notificationConfigService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -51,6 +51,38 @@ describe('notificationConfigService', () => {
       vi.mocked(rest.post).mockRejectedValue(new Error('boom'))
 
       expect(await testDestinationPath('Email-Admin')).toBe(false)
+    })
+  })
+
+  // v2 /users and /groups return plain arrays of DTOs; the pickers read the
+  // v1 shape ({ user: [{ 'user-id' }] }) by mistake and always came up empty.
+  describe('users and groups for target pickers', () => {
+    it('reads user ids from the v2 users array', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: [{ userId: 'admin', fullName: 'Administrator' }, { userId: 'rtc' }] })
+
+      expect(await getNotificationUsers()).toEqual(['admin', 'rtc'])
+      expect(v2.get).toHaveBeenCalledWith('/users?limit=0')
+    })
+
+    it('reads group names from the v2 groups array', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: [{ name: 'Admin', users: ['admin'] }] })
+
+      expect(await getNotificationGroups()).toEqual(['Admin'])
+      expect(v2.get).toHaveBeenCalledWith('/groups?limit=0')
+    })
+
+    it('returns an empty list when the body is not an array (e.g. 204)', async () => {
+      vi.mocked(v2.get).mockResolvedValue({ data: '' })
+
+      expect(await getNotificationUsers()).toEqual([])
+      expect(await getNotificationGroups()).toEqual([])
+    })
+
+    it('returns null on failure so the tab loader retries', async () => {
+      vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
+
+      expect(await getNotificationUsers()).toBeNull()
+      expect(await getNotificationGroups()).toBeNull()
     })
   })
 })
