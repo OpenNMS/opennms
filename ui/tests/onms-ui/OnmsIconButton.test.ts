@@ -139,3 +139,30 @@ describe('OnmsIconButton.vue', () => {
     expect(ghost.props('outlined')).toBe(true)
   })
 })
+
+describe('OnmsIconButton tooltip placement', () => {
+  const mountWith = async (tooltipPosition?: 'top' | 'bottom' | 'left' | 'right') => {
+    const { default: OnmsTooltip } = await import('../../packages/onms-ui/src/directives/OnmsTooltip')
+    const wrapper = mount(OnmsIconButton, {
+      props: { icon: StubIcon, tooltip: 'Export PNG', tooltipPosition },
+      global: { plugins: [PrimeVue], directives: { 'onms-tooltip': OnmsTooltip } },
+      attachTo: document.body
+    })
+    return wrapper.find('button').element as HTMLElement & { $_ptooltipModifiers?: Record<string, boolean> }
+  }
+
+  // PrimeVue reads a dynamic directive argument of the { position } shape; the
+  // { left: true } shape modifiers take in a template is silently ignored.
+  it('hands the position to the directive as its modifier', async () => {
+    const button = await mountWith('left')
+    expect(button.$_ptooltipModifiers).toEqual({ left: true })
+    button.dispatchEvent(new MouseEvent('mouseenter'))
+    await new Promise(resolve => setTimeout(resolve, 20))
+    expect(document.querySelector('.p-tooltip')?.getAttribute('data-p-position')).toBe('left')
+    document.body.innerHTML = ''
+  })
+
+  it('places to the right by default, as before', async () => {
+    expect((await mountWith()).$_ptooltipModifiers).toEqual({ right: true })
+  })
+})

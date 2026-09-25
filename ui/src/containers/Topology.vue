@@ -57,6 +57,7 @@ License.
               :icon="MoreVert"
               title="View actions"
               tooltip="New, Save As, Rename, Delete"
+              tooltip-position="bottom"
               variant="outlined"
               aria-haspopup="true"
               @click="viewMenuRef?.toggle($event)"
@@ -150,6 +151,7 @@ License.
             :icon="RefreshIcon"
             :title="refreshLabel"
             :tooltip="refreshLabel"
+            tooltip-position="bottom"
             :disabled="store.isDiscoveredLoading"
             variant="outlined"
             @click="onRefresh"
@@ -187,14 +189,16 @@ License.
           <OnmsIconButton
             :icon="Fullscreen"
             title="Fit to view"
-            tooltip="Fit everything in the view"
+            tooltip="Fit to view"
+            tooltip-position="left"
             variant="outlined"
             @click="canvasRef?.fit()"
           />
           <OnmsIconButton
             :icon="DownloadFile"
             title="Export PNG"
-            tooltip="Export the map as a PNG"
+            tooltip="Export PNG"
+            tooltip-position="left"
             variant="outlined"
             @click="onExport"
           />
