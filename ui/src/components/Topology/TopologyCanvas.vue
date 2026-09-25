@@ -767,14 +767,18 @@ const loadView = (view: TopologyView) => {
  * dragging or dropping -- keeping it fixed between frames is exactly what makes
  * node placement land where the cursor is.
  */
+/**
+ * Bound everything the view shows: nodes, free-standing labels, annotation
+ * shapes and the background image. Shapes and the background are rects with
+ * graph y pointing up, so each spans [y - height, y].
+ */
 const setContentBBox = () => {
   if (!sigma || !graph) {
     return
   }
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
   let count = 0
-  graph.forEachNode((_id, a) => {
-    const x = a.x as number, y = a.y as number
+  const extend = (x: number, y: number) => {
     if (x < minX) {
       minX = x
     }
@@ -788,30 +792,33 @@ const setContentBBox = () => {
       maxY = y
     }
     count++
-  })
+  }
+  graph.forEachNode((_id, a) => extend(a.x as number, a.y as number))
   for (const l of store.labels) {
-    if (l.x < minX) {
-      minX = l.x
+    extend(l.x, l.y)
+  }
+  if (store.discoveredGraph === null) {
+    for (const shape of store.shapes) {
+      extend(shape.x, shape.y)
+      extend(shape.x + shape.width, shape.y - shape.height)
     }
-    if (l.x > maxX) {
-      maxX = l.x
+    const bg = store.background
+    if (backgroundVisible.value && bg && bg.x !== undefined && bg.y !== undefined && bg.width && bg.height) {
+      extend(bg.x, bg.y)
+      extend(bg.x + bg.width, bg.y - bg.height)
     }
-    if (l.y < minY) {
-      minY = l.y
-    }
-    if (l.y > maxY) {
-      maxY = l.y
-    }
-    count++
   }
   if (count === 0) {
     sigma.setCustomBBox({ x: [-DEFAULT_BBOX, DEFAULT_BBOX], y: [-DEFAULT_BBOX, DEFAULT_BBOX] })
-    return
+  } else {
+    // Pad ~15% (floored) so edge nodes and their labels aren't clipped.
+    const padX = Math.max((maxX - minX) * 0.15, 120)
+    const padY = Math.max((maxY - minY) * 0.15, 120)
+    sigma.setCustomBBox({ x: [minX - padX, maxX + padX], y: [minY - padY, maxY + padY] })
   }
-  // Pad ~15% (floored) so edge nodes and their labels aren't clipped.
-  const padX = Math.max((maxX - minX) * 0.15, 120)
-  const padY = Math.max((maxY - minY) * 0.15, 120)
-  sigma.setCustomBBox({ x: [minX - padX, maxX + padX], y: [minY - padY, maxY + padY] })
+  // setCustomBBox only schedules a render; the coordinate normalization is
+  // rebuilt in process(), which a bounds change alone never triggers.
+  sigma.refresh()
 }
 
 /**
@@ -839,7 +846,8 @@ const centerOnNode = (id: string) => {
  * false for the instant framing done on load.
  */
 const fitCamera = (animate = true) => {
-  if (!sigma || !graph || graph.order === 0) {
+  // A view can hold a background or shapes and no nodes yet; those still fit.
+  if (!sigma || !graph || (graph.order === 0 && !backgroundVisible.value && store.shapes.length === 0)) {
     return
   }
   setContentBBox()
