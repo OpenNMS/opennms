@@ -471,6 +471,36 @@ const clearHistory = () => {
  * re-wiring interaction handlers. Shared by the mock rebuild and by
  * loadView so the renderer options stay in one place.
  */
+const ZOOMING_RATIO = 1.3
+// Shift+wheel: a quarter of a notch, so four make one plain notch.
+const FINE_ZOOMING_RATIO = Math.pow(ZOOMING_RATIO, 0.25)
+
+/**
+ * Shift+wheel zooms by a fraction of a step. Runs in the capture phase on the
+ * same element sigma listens on, and stops there, because browsers report
+ * Shift+wheel as a horizontal delta that sigma's own handler discards.
+ */
+const onFineZoomWheel = (e: WheelEvent) => {
+  if (!e.shiftKey || !sigma || !canvasEl.value) {
+    return
+  }
+  const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX
+  if (delta === 0) {
+    return
+  }
+  e.preventDefault()
+  e.stopImmediatePropagation()
+  const camera = sigma.getCamera()
+  const ratio = camera.getBoundedRatio(
+    camera.getState().ratio * (delta < 0 ? 1 / FINE_ZOOMING_RATIO : FINE_ZOOMING_RATIO)
+  )
+  const rect = canvasEl.value.getBoundingClientRect()
+  camera.animate(
+    sigma.getViewportZoomedState({ x: e.clientX - rect.left, y: e.clientY - rect.top }, ratio),
+    { easing: 'quadraticOut', duration: 120 }
+  )
+}
+
 const mountSigma = (g: Graph) => {
   if (sigma) {
     sigma.kill()
@@ -503,7 +533,7 @@ const mountSigma = (g: Graph) => {
     // Gentler zoom: sigma's defaults (1.7 per wheel notch, 2.2 per
     // double-click) jump roughly twice as far as feels right here. Using
     // ~the square root halves each step, so two steps cover what one did.
-    zoomingRatio: 1.3,
+    zoomingRatio: ZOOMING_RATIO,
     doubleClickZoomingRatio: 1.5,
     // This is a positioning editor: node x/y are absolute graph coordinates we
     // persist and expect to render consistently. Disable sigma's auto-rescale
@@ -621,6 +651,8 @@ const mountSigma = (g: Graph) => {
     sigma.refresh()
   })
   resizeObserver.observe(canvasEl.value)
+  canvasEl.value.removeEventListener('wheel', onFineZoomWheel, true)
+  canvasEl.value.addEventListener('wheel', onFineZoomWheel, { passive: false, capture: true })
   attachInteractionHandlers(sigma, g)
   applyViewStyle()
   // A webfont that lands after the first frame would leave canvas labels in
@@ -1961,6 +1993,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown)
+  canvasEl.value?.removeEventListener('wheel', onFineZoomWheel, true)
   endBackgroundDrag()
   endShapeDrag()
   window.removeEventListener('mousemove', onShapeDrawMove)
