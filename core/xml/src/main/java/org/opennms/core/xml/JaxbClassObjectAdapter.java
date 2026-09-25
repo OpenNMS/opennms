@@ -21,18 +21,15 @@
  */
 package org.opennms.core.xml;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
@@ -91,10 +88,7 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
         if (from == null) return null;
 
         try {
-            final String s = JaxbUtils.marshal(from);
-            final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            final Document doc = builder.parse(new ByteArrayInputStream(s.getBytes()));
-            final Node node = doc.getDocumentElement();
+            final Node node = marshalToDomElement(from);
             LOG.trace("marshal: node = {}", node);
             return node;
         } catch (final Exception e) {
@@ -102,6 +96,21 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
             LOG.error("Unable to marshal object {}", from, ex);
             throw ex;
         }
+    }
+
+    protected Element marshalToDomElement(final Object from) {
+        return JaxbUtils.marshalToDomElement(from, marshalProfile());
+    }
+
+    /**
+     * Selects marshal-time formatting and XSD validation for embedded JAXB objects.
+     *
+     * <p>Override to return {@link JaxbUtils.MarshallerProfile#WIRE} for RPC/sink payloads.
+     * The default {@link JaxbUtils.MarshallerProfile#CONFIG} validates against XSD when
+     * available and is appropriate for config persisted to disk (e.g. poller parameters).</p>
+     */
+    protected JaxbUtils.MarshallerProfile marshalProfile() {
+        return JaxbUtils.MarshallerProfile.CONFIG;
     }
 
     public Class<?> getClassForElement(String nodeName) {

@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.netmgt.config.poller.PollerClassObjectAdapter;
+import org.opennms.netmgt.config.poller.PollerWireClassObjectAdapter;
 
 @XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -43,7 +43,7 @@ public class PollerAttributeDTO {
     private String value;
 
     @XmlAnyElement(lax=false)
-    @XmlJavaTypeAdapter(PollerClassObjectAdapter.class)
+    @XmlJavaTypeAdapter(PollerWireClassObjectAdapter.class)
     private Object contents;
 
     public PollerAttributeDTO() {
