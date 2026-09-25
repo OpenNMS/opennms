@@ -692,14 +692,23 @@ describe('Topology unsaved changes', () => {
     store.addLabel({ id: 'l1', text: 'Core', x: 10, y: 10 } as never)
     await wait(200)
     const open = vi.spyOn(store, 'openView').mockResolvedValue(false)
-    // jsdom has no confirm(); the page calls it, so give it one that declines.
-    const confirm = vi.fn(() => false)
-    ;(window as unknown as { confirm: () => boolean }).confirm = confirm
 
     // Drive the chooser's model the way a pick does.
     ;(wrapper.vm as unknown as { currentViewId: string | null }).currentViewId = 'v2'
     await flushPromises()
-    expect(confirm).toHaveBeenCalledTimes(1)
+    await nextTick()
+    const dialog = Array.from(document.querySelectorAll('.p-dialog'))
+      .find(d => d.textContent?.includes('unsaved changes'))
+    expect(dialog, 'discard dialog is not open').toBeTruthy()
+    await click('Keep editing', dialog!)
     expect(open).not.toHaveBeenCalled()
+
+    ;(wrapper.vm as unknown as { currentViewId: string | null }).currentViewId = 'v2'
+    await flushPromises()
+    await nextTick()
+    const again = Array.from(document.querySelectorAll('.p-dialog'))
+      .find(d => d.textContent?.includes('unsaved changes'))
+    await click('Discard', again!)
+    expect(open).toHaveBeenCalledWith('v2')
   })
 })

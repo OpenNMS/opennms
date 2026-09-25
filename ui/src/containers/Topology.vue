@@ -255,6 +255,19 @@ License.
     />
 
     <OnmsConfirmationDialog
+      :visible="discardDialogVisible"
+      title="Unsaved changes"
+      :action-button-text="'Discard'"
+      cancel-button-text="Keep editing"
+      @ok="answerDiscard(true)"
+      @cancel="answerDiscard(false)"
+    >
+      <template #content>
+        This view has unsaved changes. Discard them?
+      </template>
+    </OnmsConfirmationDialog>
+
+    <OnmsConfirmationDialog
       :visible="deleteDialogVisible"
       title="Delete view"
       :action-button-text="'Delete'"
@@ -329,8 +342,8 @@ const currentSource = computed(() => sourceForSlug(store.topologySources, source
 
 // Navigate to a source via the route so every source stays bookmarkable.
 // Dropping the query resets the variant to the group's default.
-const goToSource = (slug: string) => {
-  if (slug !== sourceSlug.value && confirmDiscard()) {
+const goToSource = async (slug: string) => {
+  if (slug !== sourceSlug.value && await confirmDiscard()) {
     router.push({ name: 'Topology', params: { source: slug }})
   }
 }
@@ -829,8 +842,12 @@ const canDelete = computed<boolean>(
 const currentViewId = computed<string | null>({
   get: () => store.currentView?.id ?? null,
   set: (id) => {
-    if (id && id !== store.currentView?.id && confirmDiscard()) {
-      openIntoCanvas(id)
+    if (id && id !== store.currentView?.id) {
+      void confirmDiscard().then(ok => {
+        if (ok) {
+          openIntoCanvas(id)
+        }
+      })
     }
   }
 })
@@ -897,9 +914,26 @@ const isDirty = computed<boolean>(
   () => !isDiscovered.value && savedSnapshot.value !== null && liveSnapshot.value !== savedSnapshot.value
 )
 
-/** True when it is fine to drop the open view: nothing unsaved, or the user said so. */
-const confirmDiscard = (): boolean =>
-  !isDirty.value || window.confirm('You have unsaved changes to this view. Discard them?')
+// Resolves true when it is fine to drop the open view: nothing unsaved, or
+// the user chose Discard in the dialog. One question at a time; a second
+// caller while it is open gets the same answer.
+const discardDialogVisible = ref(false)
+let discardResolvers: Array<(ok: boolean) => void> = []
+
+const confirmDiscard = (): Promise<boolean> => {
+  if (!isDirty.value) {
+    return Promise.resolve(true)
+  }
+  discardDialogVisible.value = true
+  return new Promise(resolve => discardResolvers.push(resolve))
+}
+
+const answerDiscard = (ok: boolean) => {
+  discardDialogVisible.value = false
+  const resolvers = discardResolvers
+  discardResolvers = []
+  resolvers.forEach(resolve => resolve(ok))
+}
 
 onBeforeRouteLeave(() => confirmDiscard())
 
@@ -1027,8 +1061,8 @@ const openNameDialog = (mode: NameDialogMode) => {
   nameDialogVisible.value = true
 }
 
-const onNew = () => {
-  if (confirmDiscard()) {
+const onNew = async () => {
+  if (await confirmDiscard()) {
     openNameDialog('new')
   }
 }
