@@ -42,7 +42,10 @@
 
       <div class="section">
         <div class="section-header">
-          <div class="section-title">Initial Targets</div>
+          <div class="section-title">
+            Initial Targets
+            <HelpBadge :content="initialTargetsHelp" ariaLabel="Initial Targets help" />
+          </div>
           <OnmsButton
             variant="outlined"
             size="small"
@@ -52,12 +55,6 @@
             @click="addTarget(targets)"
           />
         </div>
-        <p class="section-hint">
-          Who gets notified first, and how. Each target is notified via the selected methods;
-          Email and Browser (on-screen, for logged-in users) methods are fully supported today —
-          the remaining methods are shown for completeness and will be enabled as their
-          configuration screens land.
-        </p>
         <TargetRowEditor
           v-for="(row, index) in targets"
           :key="row.key"
@@ -73,7 +70,10 @@
 
       <div class="section">
         <div class="section-header">
-          <div class="section-title">Escalations</div>
+          <div class="section-title">
+            Escalations
+            <HelpBadge :content="escalationsHelp" ariaLabel="Escalations help" />
+          </div>
           <OnmsButton
             variant="outlined"
             size="small"
@@ -83,10 +83,6 @@
             @click="addEscalation"
           />
         </div>
-        <p class="section-hint">
-          If the notification is still unacknowledged after the delay, the escalation's targets are
-          notified next.
-        </p>
         <div
           v-for="(escalation, eIndex) in escalations"
           :key="escalation.key"
@@ -98,9 +94,6 @@
               :for="`escalation-delay-${eIndex}`"
               :error="escalationDelayError(escalation.delay)"
             >
-              <template #label-suffix>
-                <HelpBadge :content="escalateHelp" ariaLabel="Escalate After help" />
-              </template>
               <OnmsSelect
                 v-model="escalation.delay"
                 :inputId="`escalation-delay-${eIndex}`"
@@ -192,7 +185,10 @@ const HIDDEN_METHODS = new Set([
 ])
 
 const delayHelp = 'How long to wait after the notification is created before the first targets are notified (e.g. 30s, 5m, 1h). 0s notifies immediately.'
-const escalateHelp = 'If the notification is still unacknowledged after this delay, this escalation’s targets are notified next.'
+const initialTargetsHelp = 'Who gets notified first, and how. Each target is notified via the selected methods; '
+  + 'Email and Browser (on-screen, for logged-in users) methods are fully supported today — the remaining '
+  + 'methods are shown for completeness and will be enabled as their configuration screens land.'
+const escalationsHelp = 'If the notification is still unacknowledged after the delay, the escalation’s targets are notified next.'
 
 const METHOD_LABELS: Record<string, string> = {
   javaEmail: 'Email',
@@ -419,13 +415,6 @@ const save = async () => {
       font-size: 1rem;
       font-weight: 600;
     }
-  }
-
-  .section-hint {
-    margin: 0 0 0.75rem 0;
-    font-size: 0.875rem;
-    color: var(--p-text-muted-color);
-    max-width: 80ch;
   }
 }
 
