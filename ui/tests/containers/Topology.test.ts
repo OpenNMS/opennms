@@ -652,6 +652,24 @@ describe('Topology view naming', () => {
   })
 })
 
+describe('Topology view actions menu', () => {
+  afterEach(() => {
+    unmountAll()
+  })
+
+  it('offers New, Save As, Rename and Delete, with Delete kept off the Default view', async () => {
+    const { wrapper, store } = await mountPage()
+    const items = () => (wrapper.vm as unknown as { viewMenuModel: { label?: string; disabled?: boolean; separator?: boolean }[] }).viewMenuModel
+    expect(items().filter(i => !i.separator).map(i => i.label)).toEqual(['New', 'Save As', 'Rename', 'Delete'])
+    expect(items().find(i => i.label === 'Delete')?.disabled).toBe(false)
+
+    store.currentView = { id: 'd', name: 'Default' } as never
+    await nextTick()
+    expect(items().find(i => i.label === 'Delete')?.disabled).toBe(true)
+    expect(items().find(i => i.label === 'Rename')?.disabled).toBe(false)
+  })
+})
+
 describe('Topology unsaved changes', () => {
   afterEach(() => {
     unmountAll()

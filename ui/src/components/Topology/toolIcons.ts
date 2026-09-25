@@ -1,24 +1,24 @@
-// Device icons for topology nodes — legacy-faithful.
-//
-// OpenNMS's Vaadin map derives a node's icon from its SNMP sysObjectId:
-//   enlinkd Topology.getIconKey(node) -> "linkd.system" (no sysObjectId) or
-//   "linkd.system.snmp.<sysObjectId>", which IconManager resolves to an SVG id
-//   via a longest-prefix match against etc/org.opennms.features.topology.app.icons.linkd.cfg
-//   (default "linkd.system" -> generic). We reproduce that here client-side:
-//   the discovered Graph API already carries the computed iconKey on each
-//   vertex, and for custom-view nodes we compute it from the node's sysObjectId.
-//
-// ROADMAP (overrides, not yet built): the legacy map also lets an operator
-// override a vertex's icon manually (IconSelectionOperation -> per-vertex
-// mapping). We should add, down the road: (1) icon overrides by node *category*
-// (a more human-meaningful signal than raw OID), and (2) a custom per-node icon
-// override persisted on the view. Both layer on top of this sysObjectId default.
-// See topology_redesign/PARITY.md.
-
-/** The recognized device-type icon ids we render a glyph for. */
-export type DeviceIconId =
-  | 'router'
-  | 'switch'
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
 
 import { defineComponent, h } from 'vue'
 

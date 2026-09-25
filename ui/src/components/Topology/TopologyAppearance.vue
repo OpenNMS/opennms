@@ -21,8 +21,8 @@ export type DeviceIconId =
 -->
 <template>
   <div class="topology-appearance" role="group" aria-label="Appearance">
-    <label class="topology-appearance__row">
-      <span class="topology-appearance__label">Node size</span>
+    <div class="topology-appearance__row">
+      <span class="topology-appearance__label" aria-hidden="true">Node size</span>
       <OnmsSlider
         v-model="nodeSize"
         :min="store.NODE_SIZE_MIN"
@@ -31,9 +31,9 @@ export type DeviceIconId =
         aria-label="Node size"
       />
       <span class="topology-appearance__value">{{ store.nodeSize }}</span>
-    </label>
-    <label class="topology-appearance__row">
-      <span class="topology-appearance__label">Link width</span>
+    </div>
+    <div class="topology-appearance__row">
+      <span class="topology-appearance__label" aria-hidden="true">Link width</span>
       <OnmsSlider
         v-model="linkWidth"
         :min="store.LINK_WIDTH_MIN"
@@ -42,7 +42,7 @@ export type DeviceIconId =
         aria-label="Link width"
       />
       <span class="topology-appearance__value">{{ store.linkWidth }}</span>
-    </label>
+    </div>
   </div>
 </template>
 

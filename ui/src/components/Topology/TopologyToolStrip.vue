@@ -181,11 +181,11 @@ const selectTool = () => {
   flex: 0 0 auto;
 }
 
-/* The mode button carries the same amber the bar's accent uses while editing. */
+/* The mode button carries the bar's editing accent, set on .topology-page. */
 .topology-rail__edit:deep(.p-button:not(.p-button-text)) {
-  background: #f59e0b;
-  border-color: #f59e0b;
-  color: #1f1300;
+  background: var(--topology-edit-accent);
+  border-color: var(--topology-edit-accent);
+  color: var(--topology-edit-accent-text);
 }
 
 .topology-rail__panel-item {
