@@ -92,6 +92,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     public static final String KAFKA_ALIAS = "kafka";
     public static final String ELASTIC_ALIAS = "elastic";
     public static final String CASSANDRA_ALIAS = "cassandra";
+    public static final String THANOS_RECEIVE_ALIAS = ThanosReceiveContainer.ALIAS;
+    public static final String THANOS_QUERY_ALIAS = ThanosQueryContainer.ALIAS;
 
     public static final String ADMIN_USER = "admin";
     public static final String ADMIN_PASSWORD = "admin";
@@ -154,7 +156,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         this.overlay = writeOverlay();
 
         String containerCommand = "-s";
-        if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
+        if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())
+                || TimeSeriesStrategy.INTEGRATION.equals(model.getTimeSeriesStrategy())) {
             this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
 
@@ -315,6 +318,24 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
         }
+
+        // Currently assumes Cortex TSS plugin; generalize when additional TSS plugins need smoke testing
+        if (TimeSeriesStrategy.INTEGRATION.equals(model.getTimeSeriesStrategy())) {
+            writeProps(etc.resolve("org.opennms.plugins.tss.cortex.cfg"),
+                    ImmutableMap.<String,String>builder()
+                            .put("writeUrl", "http://" + THANOS_RECEIVE_ALIAS + ":" + ThanosReceiveContainer.REMOTE_WRITE_PORT + "/api/v1/receive")
+                            .put("readUrl", "http://" + THANOS_QUERY_ALIAS + ":" + ThanosQueryContainer.HTTP_PORT + "/api/v1")
+                            .put("maxConcurrentHttpConnections", "100") // generous for smoke test parallelism
+                            .put("writeTimeoutInMs", "5000")
+                            .put("readTimeoutInMs", "30000") // Thanos queries can be slow on first compaction
+                            .put("metricCacheSize", "1000")
+                            .put("externalTagsCacheSize", "1000")
+                            .put("bulkheadMaxWaitDuration", String.valueOf(Long.MAX_VALUE)) // disable timeout — smoke tests should not shed load
+                            .put("maxSeriesLookback", "31536000") // 365 days in seconds — look back far enough to find all test data
+                            .put("useLabelValuesForDiscovery", "true")
+                            .put("discoveryBatchSize", "50") // batch size for label-values two-phase discovery
+                            .build());
+        }
     }
 
     /**
@@ -402,6 +423,11 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             props.put("org.opennms.newts.config.hostname", CASSANDRA_ALIAS);
             props.put("org.opennms.newts.config.port", Integer.toString(CassandraContainer.CQL_PORT));
             props.put("org.opennms.rrd.storeByForeignSource", Boolean.TRUE.toString());
+        } else if (TimeSeriesStrategy.INTEGRATION.equals(model.getTimeSeriesStrategy())) {
+            // Use the Integration API with a TSS plugin (e.g. Cortex/Thanos)
+            props.put("org.opennms.timeseries.strategy", "integration");
+            props.put("org.opennms.timeseries.tin.metatags.tag.node", "${node:label}");
+            props.put("org.opennms.timeseries.tin.metatags.tag.location", "${node:location}");
         }
 
         if (model.isJaegerEnabled()) {
@@ -437,6 +463,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
         if (model.isJaegerEnabled()) {
             featuresOnBoot.add("opennms-core-tracing-jaeger");
+        }
+        if (TimeSeriesStrategy.INTEGRATION.equals(model.getTimeSeriesStrategy())) {
+            featuresOnBoot.add("opennms-timeseries-api");
         }
         return featuresOnBoot;
     }
