@@ -284,20 +284,30 @@ const inferType = (targetName: string): TargetRow['type'] => {
   return 'user'
 }
 
-const toRow = (target: DestinationPathTarget): TargetRow => ({
-  key: rowKey++,
-  type: inferType(target.name),
-  name: target.name,
-  commands: [...(target.command ?? [])],
-  interval: target.interval ?? undefined,
-  autoNotify: target.autoNotify ?? undefined
-})
+// A loaded target's type is inferred from the group/role lists, which the tab
+// fetches alongside the paths and can land after this panel opens. Remember what
+// each loaded row was inferred as so it can be corrected once the lists arrive.
+const inferredRows = new Map<number, { name: string, type: TargetRow['type'] }>()
+
+const toRow = (target: DestinationPathTarget): TargetRow => {
+  const row: TargetRow = {
+    key: rowKey++,
+    type: inferType(target.name),
+    name: target.name,
+    commands: [...(target.command ?? [])],
+    interval: target.interval ?? undefined,
+    autoNotify: target.autoNotify ?? undefined
+  }
+  inferredRows.set(row.key, { name: row.name, type: row.type })
+  return row
+}
 
 // Mounted fresh each time the panel opens, so the form is filled once from
 // `path`; the watch only matters if the caller swaps paths while it is open.
 watch(
   () => props.path,
   () => {
+    inferredRows.clear()
     if (props.path) {
       name.value = props.path.name
       initialDelay.value = props.path['initial-delay'] ?? '0s'
@@ -331,6 +341,21 @@ watch(
   },
   { immediate: true }
 )
+
+// Re-infer loaded rows when the lookups change. A row the user has touched is
+// left alone: changing a row's type clears its name, so an untouched row still
+// has both its loaded name and its inferred type.
+watch([() => store.groups, () => store.roles], () => {
+  const rows = [...targets.value, ...escalations.value.flatMap(esc => esc.targets)]
+  for (const row of rows) {
+    const loaded = inferredRows.get(row.key)
+    if (!loaded || row.name !== loaded.name || row.type !== loaded.type) {
+      continue
+    }
+    row.type = inferType(row.name)
+    loaded.type = row.type
+  }
+})
 
 const rowIsValid = (row: TargetRow) =>
   !!row.name.trim() && row.commands.length > 0 && isValidNotifdDuration(row.interval)
