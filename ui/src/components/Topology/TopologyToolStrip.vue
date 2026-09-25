@@ -93,6 +93,16 @@ export type DeviceIconId =
         @click="store.setBackgroundAdjustMode(!store.isBackgroundAdjustMode)"
       />
     </template>
+    <span class="topology-rail__gap" />
+    <OnmsIconButton
+      :icon="Info"
+      title="Counts"
+      tooltip="Show the node, link, label and selection counts"
+      tooltip-position="right"
+      :variant="store.showCanvasStats ? 'filled' : 'text'"
+      :aria-pressed="store.showCanvasStats"
+      @click="store.setShowCanvasStats(!store.showCanvasStats)"
+    />
   </nav>
 </template>
 
@@ -103,6 +113,7 @@ import Link from '@opennms/onms-ui/icons/action/Link.vue'
 import View from '@opennms/onms-ui/icons/action/View.vue'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import Image from '@opennms/onms-ui/icons/file/Image.vue'
+import Info from '@opennms/onms-ui/icons/action/Info.vue'
 import Nodes from '@opennms/onms-ui/icons/network/Nodes.vue'
 import { BoxToolIcon, SelectToolIcon } from '@/components/Topology/toolIcons'
 import { useTopologyStore } from '@/stores/topologyStore'

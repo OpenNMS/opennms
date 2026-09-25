@@ -45,14 +45,6 @@ License.
         <p class="ti-empty">Select a node, link, label, or box to edit it. These apply to the whole view.</p>
         <div class="ti-field">
           <label class="ti-label">Canvas</label>
-          <label class="ti-check">
-            <input
-              type="checkbox"
-              :checked="store.showCanvasStats"
-              @change="store.setShowCanvasStats(($event.target as HTMLInputElement).checked)"
-            />
-            Show stats overlay
-          </label>
           <div class="ti-field">
             <label class="ti-label">Node label color</label>
             <div class="ti-row">

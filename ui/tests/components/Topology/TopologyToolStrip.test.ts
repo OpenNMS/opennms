@@ -78,6 +78,15 @@ describe('TopologyToolStrip', () => {
     expect(wrapper.find('.topology-rail__dot').exists()).toBe(true)
   })
 
+  it('toggles the counts overlay in any mode', async () => {
+    const { wrapper, store } = await mountStrip()
+    store.setEditMode(false)
+    await wrapper.vm.$nextTick()
+    const before = store.showCanvasStats
+    await buttonNamed(wrapper, 'Counts').trigger('click')
+    expect(store.showCanvasStats).toBe(!before)
+  })
+
   it('toggles the box tool and link hints', async () => {
     const { wrapper, store } = await mountStrip()
     await buttonNamed(wrapper, 'Draw box').trigger('click')
