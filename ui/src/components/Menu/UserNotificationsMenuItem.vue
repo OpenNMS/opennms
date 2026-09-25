@@ -273,7 +273,7 @@ const formatPageTime = (pageTime: OnmsNotification['pageTime']) => {
 const onNotificationItemClick = (_item: OnmsNotification) => {
   // open the new Notifications page filtered to the user's outstanding notices
   // (which include this one) instead of the legacy per-notice detail page
-  onMenuItemClick('ui/index.html#/admin/notifications?preset=yourOutstanding')
+  onMenuItemClick('ui/index.html#/notifications?preset=yourOutstanding')
 }
 </script>
 

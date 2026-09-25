@@ -23,7 +23,7 @@
         variant="outlined"
         label="Configure Notifications"
         data-test="configure-notifications-button"
-        @click="router.push('/admin/notifications-config')"
+        @click="router.push('/notifications-config')"
       />
     </div>
 

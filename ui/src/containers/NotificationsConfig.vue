@@ -11,7 +11,7 @@
         variant="outlined"
         label="View Notifications"
         data-test="view-notifications-button"
-        @click="router.push('/admin/notifications')"
+        @click="router.push('/notifications')"
       />
     </div>
 
@@ -37,7 +37,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-  { label: 'Notifications', to: '/admin/notifications' },
+  { label: 'Notifications', to: '/notifications' },
   { label: 'Configure Notifications', to: '#', position: 'last' }
 ])
 </script>

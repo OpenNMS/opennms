@@ -209,7 +209,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Notification queries']")));
 
         clickMenuItem("Administration", "Notifications (Preview)");
-        // the Vue Notifications page (ui/index.html#/admin/notifications)
+        // the Vue Notifications page (ui/index.html#/notifications)
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Notifications']")));
 
         clickMenuItem("Administration", "Manage Event Configurations");

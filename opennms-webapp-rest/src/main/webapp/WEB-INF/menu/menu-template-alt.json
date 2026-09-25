@@ -155,7 +155,7 @@
         {
           "id": "notificationsPreview",
           "name": "Notifications (Preview)",
-          "url": "ui/index.html#/admin/notifications",
+          "url": "ui/index.html#/notifications",
           "locationMatch": null,
           "roles": null
         },
@@ -641,21 +641,21 @@
       {
         "id": "userNotificationConfiguration",
         "name": null,
-        "url": "ui/index.html#/admin/notifications",
+        "url": "ui/index.html#/notifications",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationUser",
         "name": null,
-        "url": "ui/index.html#/admin/notifications?preset=yourOutstanding",
+        "url": "ui/index.html#/notifications?preset=yourOutstanding",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationTeam",
         "name": null,
-        "url": "ui/index.html#/admin/notifications?preset=teamOutstanding",
+        "url": "ui/index.html#/notifications?preset=teamOutstanding",
         "locationMatch": null,
         "roles": null
       },
