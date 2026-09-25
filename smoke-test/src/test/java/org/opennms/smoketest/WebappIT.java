@@ -32,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.After;
@@ -181,27 +180,28 @@ public class WebappIT {
   }
 
   /**
-   * NMS-20174: the login page references the menu bundle only as preload links
-   * (deliberate cache warming for the first post-login page) and must never
-   * execute it. An unauthenticated menu run fires REST calls that trigger the
-   * browser's native basic-auth popup on the login page and pollute the
-   * post-login saved request (the password gate's Skip button then redirects
-   * to /rest, which browsers download as a file).
+   * NMS-18978: the login page never mounts the Vue menu, so it must not
+   * reference the menu bundle at all (bootstrap.jsp's 'nomenuassets' flag).
+   * In particular it must never execute it (NMS-20174): an unauthenticated
+   * menu run fires REST calls that trigger the browser's native basic-auth
+   * popup on the login page and pollute the post-login saved request (the
+   * password gate's Skip button then redirects to /rest, which browsers
+   * download as a file).
    */
   @Test
-  public void verifyLoginPageDoesNotExecuteMenuBundle() {
+  public void verifyLoginPageDoesNotReferenceMenuBundle() {
     final String body = given()
         .get("login.jsp")
         .then().assertThat()
         .statusCode(200)
         .extract().response().body().asString();
 
-    // Positive control: the page still references the bundle (as a preload) —
-    // this keeps the negative assertion below meaningful if URLs change shape.
-    assertTrue("expected login.jsp to preload the menu bundle. Body: " + body,
-        body.contains("ui-components/assets/index.js"));
-    assertFalse("login.jsp must not contain a script tag executing the menu bundle. Body: " + body,
-        Pattern.compile("<script[^>]+ui-components/assets/index\\.js").matcher(body).find());
+    // Positive control: this really is the rendered login page, so the
+    // negative assertion below can't pass vacuously on an error page.
+    assertTrue("expected login.jsp to render the login form. Body: " + body,
+        body.contains("id=\"loginForm\""));
+    assertFalse("login.jsp must not reference the menu bundle. Body: " + body,
+        body.contains("ui-components/"));
   }
 
   /**

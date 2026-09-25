@@ -23,7 +23,7 @@
 --%>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .flags("quiet")
+          .flags("quiet", "nomenuassets")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
