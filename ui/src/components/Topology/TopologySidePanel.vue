@@ -21,8 +21,10 @@ export type DeviceIconId =
 -->
 <template>
   <div v-if="store.sidePanel" class="topology-side-panel" :style="{ width: panelWidth + 'px' }">
-    <TopologyPalette v-if="store.sidePanel === 'palette'" class="topology-side-panel__page" />
-    <TopologyInspector v-else :canvas="canvas" class="topology-side-panel__page" />
+    <!-- Both pages stay mounted: the Inspector keeps its fetched node detail
+         and assets across a switch, and nothing reflows on the way back. -->
+    <TopologyPalette v-show="store.sidePanel === 'palette'" class="topology-side-panel__page" />
+    <TopologyInspector v-show="store.sidePanel === 'details'" :canvas="canvas" class="topology-side-panel__page" />
     <!-- Drag strip on the canvas-facing edge. Width persists per browser. -->
     <div class="topology-side-panel__handle" title="Drag to resize" @mousedown.prevent="startResize" />
   </div>

@@ -168,9 +168,10 @@ License.
             tooltip-position="bottom"
             variant="outlined"
             aria-haspopup="true"
-            @click="appearanceRef?.toggle($event)"
+            :aria-expanded="appearanceOpen"
+            @click="toggleAppearance($event)"
           />
-          <OnmsPopover ref="appearanceRef">
+          <OnmsPopover ref="appearanceRef" @hide="appearanceOpen = false">
             <TopologyAppearance />
           </OnmsPopover>
           <OnmsIconButton
@@ -298,6 +299,7 @@ import {
 } from '@opennms/onms-ui'
 import type { OnmsMenuItem } from '@opennms/onms-ui'
 import type { SourceGroup } from '@/components/Topology/sources'
+import { PLACED_PREFIX } from '@/components/Topology/nodeIds'
 import ExpandMore from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
 import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
@@ -306,7 +308,7 @@ import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import Options from '@opennms/onms-ui/icons/action/Options.vue'
 import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
 import ContentCopy from '@opennms/onms-ui/icons/action/ContentCopy.vue'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
 import TopologyToolStrip from '@/components/Topology/TopologyToolStrip.vue'
 import TopologySidePanel from '@/components/Topology/TopologySidePanel.vue'
@@ -342,8 +344,9 @@ const currentSource = computed(() => sourceForSlug(store.topologySources, source
 
 // Navigate to a source via the route so every source stays bookmarkable.
 // Dropping the query resets the variant to the group's default.
-const goToSource = async (slug: string) => {
-  if (slug !== sourceSlug.value && await confirmDiscard()) {
+// The route-update guard asks about unsaved changes on the way.
+const goToSource = (slug: string) => {
+  if (slug !== sourceSlug.value) {
     router.push({ name: 'Topology', params: { source: slug }})
   }
 }
@@ -621,6 +624,11 @@ const showAll = () => navFocus(null, store.semanticZoomLevel)
 // (custom) or the source/variant (discovered); the canvas appends ".png".
 // Node-size slider <-> store (clamped in the store setter).
 const appearanceRef = ref<{ toggle: (event: Event) => void } | null>(null)
+const appearanceOpen = ref(false)
+const toggleAppearance = (event: Event) => {
+  appearanceOpen.value = !appearanceOpen.value
+  appearanceRef.value?.toggle(event)
+}
 
 // Explore-panel row -> select that node on the canvas (or clear to "show all").
 const onExploreSelect = (placedId: string | null) => {
@@ -867,6 +875,14 @@ const markSaved = () => {
   liveSnapshot.value = savedSnapshot.value
 }
 
+// A different view in the store is a new baseline: opened, created or saved
+// under a new name. A rename keeps the id and so stays a change. Runs after
+// the synchronous load that follows an open, so the canvas is already there.
+watch(
+  () => [store.currentView?.id ?? null, store.currentView === null] as const,
+  () => markSaved()
+)
+
 let snapshotTimer: ReturnType<typeof setTimeout> | null = null
 watch(
   [
@@ -889,12 +905,14 @@ watch(
   { deep: true }
 )
 
-// Picking something while the palette is showing lands on its details; a
-// collapsed panel stays collapsed and the rail shows a dot instead.
+// Picking a label, link or box while the palette is showing lands on its
+// details, since those are edited there. Picking a node does not: while
+// placing nodes, every nudge of one selects it, and the palette must stay.
+// A collapsed panel stays collapsed and the rail shows a dot instead.
 watch(
-  () => store.selectedIds.length,
-  (count) => {
-    if (count > 0 && store.sidePanel === 'palette') {
+  () => store.selectedIds,
+  (ids) => {
+    if (ids.length > 0 && store.sidePanel === 'palette' && ids.some(id => !id.startsWith(PLACED_PREFIX))) {
       store.setSidePanel('details')
     }
   }
@@ -904,6 +922,11 @@ const isDirty = computed<boolean>(
   () => !isDiscovered.value && savedSnapshot.value !== null && liveSnapshot.value !== savedSnapshot.value
 )
 
+// The guards cannot wait for the debounce: an edit made a moment before a
+// view pick or a tab close must still count.
+const isDirtyNow = (): boolean =>
+  !isDiscovered.value && savedSnapshot.value !== null && snapshotNow() !== savedSnapshot.value
+
 // Resolves true when it is fine to drop the open view: nothing unsaved, or
 // the user chose Discard in the dialog. One question at a time; a second
 // caller while it is open gets the same answer.
@@ -911,7 +934,7 @@ const discardDialogVisible = ref(false)
 let discardResolvers: Array<(ok: boolean) => void> = []
 
 const confirmDiscard = (): Promise<boolean> => {
-  if (!isDirty.value) {
+  if (!isDirtyNow()) {
     return Promise.resolve(true)
   }
   discardDialogVisible.value = true
@@ -926,9 +949,12 @@ const answerDiscard = (ok: boolean) => {
 }
 
 onBeforeRouteLeave(() => confirmDiscard())
+// A source change stays on this route, so the leave guard never sees it;
+// browser back and forward arrive this way.
+onBeforeRouteUpdate((to, from) => (to.params.source === from.params.source ? true : confirmDiscard()))
 
 const onBeforeUnload = (event: BeforeUnloadEvent) => {
-  if (isDirty.value) {
+  if (isDirtyNow()) {
     event.preventDefault()
     event.returnValue = ''
   }
@@ -1123,9 +1149,11 @@ const saveDiscoveredAsCustom = async (name: string) => {
       : { message: 'Could not save the view; the name may already be in use.', severity: 'error', timeout: 5000 }
   )
   if (ok) {
-    // Straight into the copy, in Edit mode: this is only ever pressed by
-    // someone who wants to start moving things.
+    // Straight into the copy, in Edit mode with the palette up: this is only
+    // ever pressed by someone who wants to start moving things. Set here
+    // rather than by setEditMode's rule, which does not run on a discovered source.
     store.setEditMode(true)
+    store.setSidePanel('palette')
     router.push({
       name: 'Topology',
       params: { source: CUSTOM_SOURCE_SLUG },
@@ -1243,12 +1271,19 @@ const confirmDelete = async () => {
   border-top: 3px solid transparent;
 }
 
+.topology-page {
+  /* Mode accents, shared with the rail's Edit item. */
+  --topology-edit-accent: #f59e0b;
+  --topology-edit-accent-text: #1f1300;
+  --topology-view-accent: #00bfcb;
+}
+
 .topology-page.is-edit .topology-toolbar {
-  border-top-color: #f59e0b; /* amber = editing */
+  border-top-color: var(--topology-edit-accent);
 }
 
 .topology-page.is-view .topology-toolbar {
-  border-top-color: #00bfcb; /* teal accent = viewing */
+  border-top-color: var(--topology-view-accent);
 }
 
 /* Unsaved work outranks the mode cue, in either mode. */

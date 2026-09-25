@@ -582,7 +582,9 @@ export const useTopologyStore = defineStore('topologyStore', () => {
         nodes: snapshot.nodes,
         links: snapshot.links,
         labels: [],
-        viewport: snapshot.viewport
+        viewport: snapshot.viewport,
+        // The copy should open looking as the graph did on screen.
+        style: { nodeSize: nodeSize.value, linkWidth: linkWidth.value }
       }
       const saved = await saveView(candidate)
       if (saved === false) {
