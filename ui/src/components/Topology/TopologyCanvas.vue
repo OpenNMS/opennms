@@ -283,6 +283,7 @@ const iconOverrideUrl = (override: string | undefined): string | undefined => {
  */
 const emit = defineEmits<{
   (e: 'node-contextmenu', payload: { event: MouseEvent; nodeId: number | null; nodeKey: string }): void
+  (e: 'clear-focus'): void
 }>()
 
 const canvasEl = ref<HTMLDivElement>()
@@ -1848,6 +1849,60 @@ const deleteSelected = () => {
  * Ctrl+Z (undo), and Ctrl+Shift+Z or Ctrl+Y (redo). Skips when the user
  * is typing in a form field so it doesn't hijack the palette search box.
  */
+/**
+ * One Escape backs out one step, most transient first: a label being typed,
+ * a link or shape half drawn, then the draw or adjust mode itself, a rubber
+ * band mid-drag, the selection, and last a discovered graph's focus. Returns
+ * whether anything was there to back out of. Works in View mode too, where
+ * selection and focus exist.
+ */
+const escapeOneStep = (): boolean => {
+  if (editingLabelId.value !== null) {
+    cancelEdit()
+    return true
+  }
+  if (rubberBand.value) {
+    // The pending mouseup finds nothing to select and unhooks itself.
+    rubberBand.value = null
+    return true
+  }
+  if (store.isEditMode) {
+    if (shapeDraft.value) {
+      shapeDraft.value = null
+      shapeDrawOverlayRect = null
+      window.removeEventListener('mousemove', onShapeDrawMove)
+      window.removeEventListener('mouseup', onShapeDrawEnd)
+      return true
+    }
+    if (store.isLinkDrawMode && linkDrawSource.value !== null) {
+      linkDrawSource.value = null
+      return true
+    }
+    if (store.isLinkDrawMode) {
+      store.setLinkDrawMode(false)
+      return true
+    }
+    if (store.isShapeDrawMode) {
+      store.setShapeDrawMode(false)
+      return true
+    }
+    if (store.isBackgroundAdjustMode) {
+      store.setBackgroundAdjustMode(false)
+      return true
+    }
+  }
+  if (store.selectedIds.length > 0) {
+    store.clearSelection()
+    return true
+  }
+  if (store.focusNodeId !== null) {
+    // The page owns the focus, URL included.
+    emit('clear-focus')
+    return true
+  }
+  return false
+}
+
 const onKeyDown = (e: KeyboardEvent) => {
   const target = e.target as HTMLElement | null
   if (target) {
@@ -1856,7 +1911,13 @@ const onKeyDown = (e: KeyboardEvent) => {
       return
     }
   }
-  // All keyboard editing (undo/redo, delete, edit-mode escapes) is Edit-only.
+  if (e.key === 'Escape') {
+    if (escapeOneStep()) {
+      e.preventDefault()
+    }
+    return
+  }
+  // The remaining keyboard editing (undo/redo, delete) is Edit-only.
   if (!store.isEditMode) {
     return
   }
@@ -1874,23 +1935,6 @@ const onKeyDown = (e: KeyboardEvent) => {
     e.preventDefault()
     redo()
     return
-  }
-  if (e.key === 'Escape') {
-    if (store.isLinkDrawMode) {
-      e.preventDefault()
-      store.setLinkDrawMode(false)
-      return
-    }
-    if (store.isShapeDrawMode) {
-      e.preventDefault()
-      store.setShapeDrawMode(false)
-      return
-    }
-    if (editingLabelId.value !== null) {
-      e.preventDefault()
-      cancelEdit()
-      return
-    }
   }
   if (e.key === 'Delete' || e.key === 'Backspace') {
     if (store.selectedIds.length === 0) {
