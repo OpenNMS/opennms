@@ -675,40 +675,37 @@ describe('Topology unsaved changes', () => {
     unmountAll()
   })
 
-  const wait = async (ms: number) => {
-    await new Promise(resolve => setTimeout(resolve, ms))
-    await flushPromises()
-    await nextTick()
-  }
+  // The page recomputes its unsaved state a beat after an edit, so the tests
+  // wait for the DOM to say so rather than sleeping past the debounce.
+  const untilDirty = (wrapper: { find: (s: string) => { exists: () => boolean }}, dirty: boolean) =>
+    vi.waitFor(() => expect(wrapper.find('.unsaved-badge').exists()).toBe(dirty), { timeout: 2000 })
 
   /** The harness assigns currentView directly; a save re-marks the baseline the way a load does. */
-  const settle = async (store: ReturnType<typeof useTopologyStore>) => {
+  const settle = async (wrapper: { find: (s: string) => { exists: () => boolean }}, store: ReturnType<typeof useTopologyStore>) => {
     vi.spyOn(store, 'saveCurrentView').mockResolvedValue(true)
     await click('Save')
-    await wait(200)
+    await untilDirty(wrapper, false)
   }
 
   it('flags a store-side edit until the view is saved, and colors the bar', async () => {
     const { wrapper, store } = await mountPage()
-    await settle(store)
-    expect(wrapper.find('.unsaved-badge').exists()).toBe(false)
+    await settle(wrapper, store)
     expect(wrapper.find('.topology-page').classes()).not.toContain('is-dirty')
 
     store.addLabel({ id: 'l1', text: 'Core', x: 10, y: 10 } as never)
-    await wait(200)
+    await untilDirty(wrapper, true)
     expect(wrapper.find('.unsaved-badge').text()).toBe('Unsaved changes')
     expect(wrapper.find('.topology-page').classes()).toContain('is-dirty')
 
     await click('Save')
-    await wait(200)
-    expect(wrapper.find('.unsaved-badge').exists()).toBe(false)
+    await untilDirty(wrapper, false)
   })
 
   it('asks before switching to another view while dirty, and stays when declined', async () => {
     const { wrapper, store } = await mountPage()
-    await settle(store)
+    await settle(wrapper, store)
     store.addLabel({ id: 'l1', text: 'Core', x: 10, y: 10 } as never)
-    await wait(200)
+    await untilDirty(wrapper, true)
     const open = vi.spyOn(store, 'openView').mockResolvedValue(false)
 
     // Drive the chooser's model the way a pick does.
