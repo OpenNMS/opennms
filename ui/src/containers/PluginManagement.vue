@@ -22,6 +22,7 @@
     </p>
 
     <PluginLoadCard :disabled="!store.containerAvailable" />
+    <p v-if="tempFiles" class="temp-files" :title="store.state?.tempDir" data-test="temp-files">{{ tempFiles }}</p>
 
     <PluginsTable :plugins="store.plugins" :containerAvailable="store.containerAvailable" @unload="askUnload" />
 
@@ -41,7 +42,7 @@ import PluginActivityLog from '@/components/PluginManagement/PluginActivityLog.v
 import PluginLoadCard from '@/components/PluginManagement/PluginLoadCard.vue'
 import PluginsTable from '@/components/PluginManagement/PluginsTable.vue'
 import PluginUnloadDialog from '@/components/PluginManagement/PluginUnloadDialog.vue'
-import { restartSummary } from '@/components/PluginManagement/pluginDisplay'
+import { formatSize, restartSummary } from '@/components/PluginManagement/pluginDisplay'
 import RestartInstructionsDialog from '@/components/PluginManagement/RestartInstructionsDialog.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
@@ -57,6 +58,14 @@ const showUnloadDialog = ref(false)
 const pluginToUnload = ref<PluginEntry | null>(null)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
+
+const tempFiles = computed(() => {
+  const files = store.state?.tempFiles
+  if (typeof files !== 'number' || files === 0) {
+    return ''
+  }
+  return `Temporary files: ${files} file${files === 1 ? '' : 's'}, ${formatSize(store.state?.tempBytes ?? 0)}`
+})
 
 const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
@@ -118,5 +127,11 @@ const onUnloaded = (plugin: PluginEntry) => {
 .error {
   color: var(--p-red-500, #c62828);
   margin: 0;
+}
+
+.temp-files {
+  margin: -0.5rem 0 0 0;
+  font-size: 0.85rem;
+  color: var(--p-text-muted-color);
 }
 </style>

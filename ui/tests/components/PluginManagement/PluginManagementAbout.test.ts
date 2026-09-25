@@ -34,9 +34,16 @@ describe('PluginManagementAbout.vue', () => {
     })
     expect(wrapper.findAll('.help-section')).toHaveLength(2)
     expect(wrapper.findAll('.section-title').map(t => t.text())).toEqual([
-      'What a plugin is', 'What Load does', 'When a restart is needed', 'What Unload does', 'Restarting OpenNMS', 'Audit log and access'
+      'What a plugin is', 'Two ways to load', 'What Load does', 'When a restart is needed', 'What Unload does', 'Restarting OpenNMS', 'Audit log and access'
     ])
     const text = wrapper.text()
+    expect(text.indexOf('From a repository')).toBeLessThan(text.indexOf('From a file'))
+    expect(text).toContain('catalog of official plugins')
+    expect(text).toContain('GitHub releases')
+    expect(text).toContain('same checks')
+    expect(text).toContain('only accepted from GitHub')
+    expect(text).toContain('GitHub token')
+    expect(text).toContain('cleaned up automatically')
     expect(text).toContain('OpenNMS Integration API')
     expect(text).toContain('featuresBoot.d')
     expect(text).toContain('Karaf-Feature-Start: false')

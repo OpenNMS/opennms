@@ -35,6 +35,8 @@ class FakeKarafBridge implements KarafBridge {
     final List<InstalledFeature> installedFeatures = new ArrayList<>();
     final List<String> installedKars = new ArrayList<>();
     final List<InstalledFeature> pluginFeatures = new ArrayList<>();
+    /** Runs when the compatibility checks query the container, i.e. between inspecting a KAR and writing it. */
+    Runnable beforeExports;
 
     FakeKarafBridge export(final String pkg, final String... versions) {
         exports.put(pkg, Arrays.asList(versions));
@@ -63,6 +65,9 @@ class FakeKarafBridge implements KarafBridge {
 
     @Override
     public Map<String, List<String>> frameworkExports() {
+        if (beforeExports != null) {
+            beforeExports.run();
+        }
         return exports;
     }
 

@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { CHECK_TAG, formatSize, formatUploadedAt, restartCounts, restartSummary, shortSha, statusOf } from '@/components/PluginManagement/pluginDisplay'
+import { CHECK_TAG, defaultRelease, fetchedSourceLine, formatReleaseDate, formatSize, formatUploadedAt, isRepository, karAssets, releaseLabel, restartCounts, restartSummary, shortSha, sortReleases, sourceOf, statusOf, uploadedSourceLine } from '@/components/PluginManagement/pluginDisplay'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -66,5 +66,48 @@ describe('pluginDisplay', () => {
     expect(restartCounts(plugins)).toEqual({ toLoad: 3, toUnload: 1 })
     expect(restartSummary(plugins)).toBe('A restart is required to finish loading or unloading plugins: 3 to load, 1 to unload.')
     expect(restartSummary([])).toBe('A restart is required to finish loading or unloading plugins: 0 to load, 0 to unload.')
+  })
+
+  it('validates owner/repository names', () => {
+    expect(isRepository('OpenNMS-Plugins/alec')).toBe(true)
+    expect(isRepository('a.b_c-d/e.f_g-h')).toBe(true)
+    expect(isRepository('alec')).toBe(false)
+    expect(isRepository('a/b/c')).toBe(false)
+    expect(isRepository('https://github.com/a/b')).toBe(false)
+    expect(isRepository('a b/c')).toBe(false)
+    expect(isRepository('../etc')).toBe(false)
+    expect(isRepository('a/..')).toBe(false)
+    expect(isRepository('a..b/c')).toBe(false)
+    expect(isRepository('')).toBe(false)
+    expect(isRepository(null)).toBe(false)
+  })
+
+  it('orders releases newest first with pre-releases last and picks the default', () => {
+    const release = (tag: string, publishedAt: string, prerelease = false, assets: string[] = ['a.kar']) =>
+      ({ tag, name: tag, publishedAt, prerelease, notes: '', assets: assets.map(name => ({ name, size: 1, url: '' })) })
+    const rc = release('v2-rc1', '2026-09-20T12:00:00Z', true)
+    const old = release('v1', '2026-01-01T12:00:00Z')
+    const latest = release('v1.1', '2026-08-01T12:00:00Z')
+    const undated = release('v0', '')
+    expect(sortReleases([rc, old, latest, undated]).map(r => r.tag)).toEqual(['v1.1', 'v1', 'v0', 'v2-rc1'])
+    expect(defaultRelease([rc, old, latest])?.tag).toBe('v1.1')
+    expect(defaultRelease([rc])?.tag).toBe('v2-rc1')
+    expect(defaultRelease([])).toBeNull()
+    expect(releaseLabel(rc)).toBe('v2-rc1 · 2026-09-20 · pre-release')
+    expect(releaseLabel(latest)).toBe('v1.1 · 2026-08-01')
+    expect(releaseLabel(undated)).toBe('v0 · —')
+    expect(formatReleaseDate('garbage')).toBe('—')
+    expect(karAssets(release('v3', '', false, ['A.KAR', 'notes.md', 'b.kar'])).map(a => a.name)).toEqual(['A.KAR', 'b.kar'])
+    expect(karAssets(null)).toEqual([])
+  })
+
+  it('describes where a KAR came from', () => {
+    expect(sourceOf('github:OpenNMS-Plugins/alec@v3.0.4')).toEqual({ label: 'OpenNMS-Plugins/alec@v3.0.4', title: 'github:OpenNMS-Plugins/alec@v3.0.4' })
+    expect(sourceOf('upload')).toEqual({ label: 'Uploaded file', title: 'upload' })
+    expect(sourceOf(undefined)).toEqual({ label: 'Uploaded file', title: '' })
+    expect(sourceOf('mirror:x')).toEqual({ label: 'mirror:x', title: 'mirror:x' })
+    expect(fetchedSourceLine({ repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'opennms-alec-plugin.kar', url: '' }, 93634560))
+      .toBe('Fetched from OpenNMS-Plugins/alec v3.0.4 (opennms-alec-plugin.kar, 89.3 MB)')
+    expect(uploadedSourceLine('alec.kar', 2048)).toBe('Uploaded alec.kar (2.0 KB)')
   })
 })

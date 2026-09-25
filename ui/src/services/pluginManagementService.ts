@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { KarInspection, PluginEntry, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
+import { KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
 
@@ -47,12 +47,13 @@ const readLog = async (lines: number, reverse: boolean): Promise<string | null> 
   }
 }
 
-// Only surface a server detail from a 4xx that looks like a short, plain
-// message; a 5xx often carries a servlet HTML error page.
-const errorMessage = (err: any, fallback: string): string => {
+// Only surface a server detail that looks like a short, plain message; a 5xx
+// often carries a servlet HTML error page, so those are skipped unless the
+// endpoint is known to answer text/plain (the GitHub-backed ones send a 502).
+const errorMessage = (err: any, fallback: string, serverErrors = false): string => {
   const status = Number(err?.response?.status)
   const detail = err?.response?.data
-  if (status >= 400 && status < 500 && typeof detail === 'string') {
+  if (status >= 400 && (serverErrors || status < 500) && typeof detail === 'string') {
     const trimmed = detail.trim()
     if (trimmed && trimmed.length <= 300 && !/[<>]/.test(trimmed)) {
       return trimmed
@@ -68,7 +69,27 @@ const asState = (data: any): PluginManagementState | null =>
       opennmsHome: String(data.opennmsHome ?? ''),
       deployDir: String(data.deployDir ?? ''),
       restartRequired: data.restartRequired === true,
-      plugins: data.plugins as PluginEntry[]
+      plugins: data.plugins as PluginEntry[],
+      ...(typeof data.tempDir === 'string' ? { tempDir: data.tempDir } : {}),
+      ...(Number.isFinite(Number(data.tempBytes)) && data.tempBytes !== null ? { tempBytes: Number(data.tempBytes) } : {}),
+      ...(Number.isFinite(Number(data.tempFiles)) && data.tempFiles !== null ? { tempFiles: Number(data.tempFiles) } : {})
+    }
+    : null
+
+const asInspection = (data: any, fallbackName: string, fallbackSize: number): KarInspection | null =>
+  data && typeof data.uploadToken === 'string' && Array.isArray(data.checks)
+    ? {
+      karName: String(data.karName ?? fallbackName),
+      size: Number(data.size ?? fallbackSize),
+      sha256: String(data.sha256 ?? ''),
+      uploadToken: data.uploadToken,
+      manifest: data.manifest ?? {},
+      features: Array.isArray(data.features) ? data.features : [],
+      bundles: Array.isArray(data.bundles) ? data.bundles : [],
+      checks: data.checks,
+      ...(data.source && typeof data.source.repository === 'string'
+        ? { source: { repository: data.source.repository, tag: String(data.source.tag ?? ''), assetName: String(data.source.assetName ?? ''), url: String(data.source.url ?? '') }}
+        : {})
     }
     : null
 
@@ -89,22 +110,85 @@ const checkPluginKar = async (file: File): Promise<ValidationResultWithPayload<K
   formData.append('upload', file)
   try {
     const resp = await v2.post(`${endpoint}/check`, formData, jsonAccept)
-    const data = resp.data
-    if (!data || typeof data.uploadToken !== 'string' || !Array.isArray(data.checks)) {
-      return createResultWithPayload<KarInspection>(false, 'The server returned an unexpected answer.')
-    }
-    return createResultWithPayload(true, '', {
-      karName: String(data.karName ?? file.name),
-      size: Number(data.size ?? file.size),
-      sha256: String(data.sha256 ?? ''),
-      uploadToken: data.uploadToken,
-      manifest: data.manifest ?? {},
-      features: Array.isArray(data.features) ? data.features : [],
-      bundles: Array.isArray(data.bundles) ? data.bundles : [],
-      checks: data.checks
-    })
+    const inspection = asInspection(resp.data, file.name, file.size)
+    return inspection
+      ? createResultWithPayload(true, '', inspection)
+      : createResultWithPayload<KarInspection>(false, 'The server returned an unexpected answer.')
   } catch (err: any) {
     return createResultWithPayload<KarInspection>(false, errorMessage(err, `Failed to check ${file.name}.`))
+  }
+}
+
+// null on failure so the repository tab can say the catalog is unavailable
+const getPluginCatalog = async (): Promise<PluginCatalog | null> => {
+  try {
+    const resp = await v2.get(`${endpoint}/catalog`, jsonAccept)
+    const data = resp.data
+    if (!data || !Array.isArray(data.entries)) {
+      return null
+    }
+    return {
+      entries: data.entries
+        .filter((e: any) => e && typeof e.id === 'string' && typeof e.repository === 'string')
+        .map((e: any) => ({
+          id: e.id,
+          name: String(e.name ?? e.id),
+          description: String(e.description ?? ''),
+          repository: e.repository,
+          docsUrl: typeof e.docsUrl === 'string' && e.docsUrl ? e.docsUrl : null
+        })),
+      customAllowed: data.customAllowed === true
+    }
+  } catch (_err) {
+    return null
+  }
+}
+
+// The releases the server read from GitHub for a catalog entry or an
+// arbitrary owner/name; the server's text/plain reason (a 502 for a GitHub
+// rate limit, for instance) is passed on as the message.
+const getPluginReleases = async (query: PluginReleasesQuery): Promise<ValidationResultWithPayload<PluginReleases>> => {
+  const url = 'catalogId' in query
+    ? `${endpoint}/catalog/${encodeURIComponent(query.catalogId)}/releases`
+    : `${endpoint}/releases?repository=${encodeURIComponent(query.repository)}`
+  try {
+    const resp = await v2.get(url, jsonAccept)
+    const data = resp.data
+    if (!data || !Array.isArray(data.releases)) {
+      return createResultWithPayload<PluginReleases>(false, 'The server returned an unexpected answer.')
+    }
+    return createResultWithPayload(true, '', {
+      repository: String(data.repository ?? ('repository' in query ? query.repository : '')),
+      releases: data.releases
+        .filter((r: any) => r && typeof r.tag === 'string')
+        .map((r: any) => ({
+          tag: r.tag,
+          name: String(r.name ?? r.tag),
+          publishedAt: String(r.publishedAt ?? ''),
+          prerelease: r.prerelease === true,
+          notes: String(r.notes ?? ''),
+          assets: Array.isArray(r.assets)
+            ? r.assets.filter((a: any) => a && typeof a.name === 'string').map((a: any) => ({ name: a.name, size: Number(a.size ?? 0), url: String(a.url ?? '') }))
+            : []
+        })),
+      fetchedAt: String(data.fetchedAt ?? ''),
+      cached: data.cached === true
+    })
+  } catch (err: any) {
+    return createResultWithPayload<PluginReleases>(false, errorMessage(err, 'Failed to read the releases from GitHub.', true))
+  }
+}
+
+// Downloads the release asset on the server and inspects it like an upload.
+const fetchPluginFromRepository = async (input: PluginFetchInput): Promise<ValidationResultWithPayload<KarInspection>> => {
+  try {
+    const resp = await v2.post(`${endpoint}/fetch`, input, jsonAccept)
+    const inspection = asInspection(resp.data, input.assetName, 0)
+    return inspection
+      ? createResultWithPayload(true, '', inspection)
+      : createResultWithPayload<KarInspection>(false, 'The server returned an unexpected answer.')
+  } catch (err: any) {
+    return createResultWithPayload<KarInspection>(false, errorMessage(err, `Failed to download ${input.assetName}.`, true))
   }
 }
 
@@ -170,4 +254,4 @@ const getPluginManagementLog = (lines = DEFAULT_LOG_LINES): Promise<string | nul
 // The whole file in its own order, for saving; null when it cannot be read.
 const downloadPluginManagementLog = (): Promise<string | null> => readLog(MAX_LOG_LINES, false)
 
-export { getPluginManagement, checkPluginKar, installPlugin, unloadPlugin, getPluginRestartInstructions, getPluginManagementLog, downloadPluginManagementLog }
+export { getPluginManagement, checkPluginKar, getPluginCatalog, getPluginReleases, fetchPluginFromRepository, installPlugin, unloadPlugin, getPluginRestartInstructions, getPluginManagementLog, downloadPluginManagementLog }

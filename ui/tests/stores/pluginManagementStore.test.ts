@@ -29,6 +29,9 @@ vi.mock('@/services', () => ({
   default: {
     getPluginManagement: vi.fn(),
     checkPluginKar: vi.fn(),
+    getPluginCatalog: vi.fn(),
+    getPluginReleases: vi.fn(),
+    fetchPluginFromRepository: vi.fn(),
     installPlugin: vi.fn(),
     unloadPlugin: vi.fn(),
     getPluginRestartInstructions: vi.fn(),
@@ -37,7 +40,7 @@ vi.mock('@/services', () => ({
   }
 }))
 
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged' as const, pendingRestart: true }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged' as const, pendingRestart: true, source: 'upload' }
 const STATE = { containerAvailable: true, opennmsHome: '/opt/opennms', deployDir: '/opt/opennms/deploy', restartRequired: false, plugins: [PLUGIN] }
 const INSTRUCTIONS = { packages: 'p', container: 'c', healthCheck: 'h', note: 'n' }
 
@@ -128,5 +131,38 @@ describe('pluginManagementStore', () => {
     vi.mocked(API.downloadPluginManagementLog).mockResolvedValueOnce('whole file')
     expect(await store.downloadLog()).toBe('whole file')
     expect(store.log).toBe('more')
+  })
+
+  it('reads the catalog, recording a failure as null', async () => {
+    const store = usePluginManagementStore()
+    expect(store.catalog).toBeUndefined()
+    const catalog = { entries: [{ id: 'alec', name: 'ALEC', description: '', repository: 'OpenNMS-Plugins/alec', docsUrl: null }], customAllowed: false }
+    vi.mocked(API.getPluginCatalog).mockResolvedValueOnce(catalog)
+    expect(await store.loadCatalog()).toEqual(catalog)
+    expect(store.catalog).toEqual(catalog)
+    vi.mocked(API.getPluginCatalog).mockResolvedValueOnce(null)
+    expect(await store.loadCatalog()).toBeNull()
+    expect(store.catalog).toBeNull()
+  })
+
+  it('keeps the releases of the last successful lookup only', async () => {
+    const store = usePluginManagementStore()
+    const releases = { repository: 'OpenNMS-Plugins/alec', releases: [], fetchedAt: '', cached: false }
+    vi.mocked(API.getPluginReleases).mockResolvedValueOnce({ success: true, message: '', payload: releases })
+    expect((await store.loadReleases({ catalogId: 'alec' })).success).toBe(true)
+    expect(API.getPluginReleases).toHaveBeenCalledWith({ catalogId: 'alec' })
+    expect(store.releases).toEqual(releases)
+    vi.mocked(API.getPluginReleases).mockResolvedValueOnce({ success: false, message: 'rate limit' })
+    expect((await store.loadReleases({ repository: 'o/r' })).message).toBe('rate limit')
+    expect(store.releases).toBeNull()
+  })
+
+  it('passes a repository fetch through without re-reading the list', async () => {
+    const store = usePluginManagementStore()
+    const input = { catalogId: 'alec', tag: 'v3.0.4', assetName: 'a.kar' }
+    vi.mocked(API.fetchPluginFromRepository).mockResolvedValueOnce({ success: false, message: 'refused' })
+    expect(await store.fetchFromRepository(input)).toMatchObject({ success: false, message: 'refused' })
+    expect(API.fetchPluginFromRepository).toHaveBeenCalledWith(input)
+    expect(API.getPluginManagement).not.toHaveBeenCalled()
   })
 })

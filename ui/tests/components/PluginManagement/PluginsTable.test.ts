@@ -28,7 +28,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 const OnmsCardStub = { name: 'OnmsCard', template: '<div><slot name="title" /><slot name="content" /></div>' }
 
-const BASE = { fileName: 'x.kar', sha256: 'abc', size: 1536, uploadedBy: 'admin', uploadedAt: Date.UTC(2026, 8, 25, 12, 0, 0), features: ['f1', 'f2'], bootFile: 'x.boot', autoStart: true, pendingRestart: false }
+const BASE = { fileName: 'x.kar', sha256: 'abc', size: 1536, uploadedBy: 'admin', uploadedAt: Date.UTC(2026, 8, 25, 12, 0, 0), features: ['f1', 'f2'], bootFile: 'x.boot', autoStart: true, pendingRestart: false, source: 'upload' }
 
 const mountTable = (plugins: any[], containerAvailable = true) => mount(PluginsTable, {
   props: { plugins, containerAvailable },
@@ -67,6 +67,18 @@ describe('PluginsTable.vue', () => {
     expect(wrapper.text()).toContain('1.5 KB')
     expect(wrapper.find('[data-test="plugin-uploaded"]').text()).toContain('admin')
     expect(wrapper.find('[data-test="plugin-uploaded"]').text()).toContain('2026')
+  })
+
+  it('shows where each plugin came from, with the raw value as the title', () => {
+    const wrapper = mountTable([
+      { ...BASE, karName: 'alpha', status: 'installed', source: 'github:OpenNMS-Plugins/alec@v3.0.4' },
+      { ...BASE, karName: 'beta', status: 'installed', source: 'upload' },
+      { ...BASE, karName: 'gamma', status: 'unmanaged', source: null }
+    ])
+    const cells = wrapper.findAll('[data-test="plugin-source"]')
+    expect(cells.map(c => c.text())).toEqual(['OpenNMS-Plugins/alec@v3.0.4', 'Uploaded file', 'Uploaded file'])
+    expect(cells[0].attributes('title')).toBe('github:OpenNMS-Plugins/alec@v3.0.4')
+    expect(wrapper.findAll('thead th').map(h => h.text())).toContain('Source')
   })
 
   it('shows an unloaded plugin that no longer waits for a restart as Unloaded', () => {

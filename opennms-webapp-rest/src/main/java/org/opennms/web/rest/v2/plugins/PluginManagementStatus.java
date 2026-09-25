@@ -34,6 +34,9 @@ public class PluginManagementStatus {
     private List<PluginEntry> plugins = new ArrayList<>();
     private List<InstalledFeature> pluginFeatures = new ArrayList<>();
     private RestartInstructions restartInstructions;
+    private String tempDir;
+    private long tempBytes;
+    private int tempFiles;
 
     public boolean isContainerAvailable() { return containerAvailable; }
     public void setContainerAvailable(final boolean containerAvailable) { this.containerAvailable = containerAvailable; }
@@ -53,4 +56,10 @@ public class PluginManagementStatus {
     public void setPluginFeatures(final List<InstalledFeature> pluginFeatures) { this.pluginFeatures = pluginFeatures; }
     public RestartInstructions getRestartInstructions() { return restartInstructions; }
     public void setRestartInstructions(final RestartInstructions restartInstructions) { this.restartInstructions = restartInstructions; }
+    public String getTempDir() { return tempDir; }
+    public void setTempDir(final String tempDir) { this.tempDir = tempDir; }
+    public long getTempBytes() { return tempBytes; }
+    public void setTempBytes(final long tempBytes) { this.tempBytes = tempBytes; }
+    public int getTempFiles() { return tempFiles; }
+    public void setTempFiles(final int tempFiles) { this.tempFiles = tempFiles; }
 }

@@ -42,6 +42,7 @@ public class PluginEntry {
     private String fileName;
     private String sha256;
     private long size;
+    private String source;
     private String uploadedBy;
     private String uploadedAt;
     private String unloadedBy;
@@ -64,6 +65,8 @@ public class PluginEntry {
     public void setSha256(final String sha256) { this.sha256 = sha256; }
     public long getSize() { return size; }
     public void setSize(final long size) { this.size = size; }
+    public String getSource() { return source; }
+    public void setSource(final String source) { this.source = source; }
     public String getUploadedBy() { return uploadedBy; }
     public void setUploadedBy(final String uploadedBy) { this.uploadedBy = uploadedBy; }
     public String getUploadedAt() { return uploadedAt; }

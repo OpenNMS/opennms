@@ -31,8 +31,10 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,6 +54,7 @@ public class PluginRegistry {
 
     public static final String FILE_NAME = "plugin-management.json";
     static final String KAR_SUFFIX = ".kar";
+    public static final String SOURCE_UPLOAD = "upload";
 
     /** Persisted shape; only what an operator did, never derived state. */
     public static class Record {
@@ -59,6 +62,7 @@ public class PluginRegistry {
         private String fileName;
         private String sha256;
         private long size;
+        private String source;
         private String uploadedBy;
         private String uploadedAt;
         private String unloadedBy;
@@ -77,6 +81,8 @@ public class PluginRegistry {
         public void setSha256(final String sha256) { this.sha256 = sha256; }
         public long getSize() { return size; }
         public void setSize(final long size) { this.size = size; }
+        public String getSource() { return source; }
+        public void setSource(final String source) { this.source = source; }
         public String getUploadedBy() { return uploadedBy; }
         public void setUploadedBy(final String uploadedBy) { this.uploadedBy = uploadedBy; }
         public String getUploadedAt() { return uploadedAt; }
@@ -170,7 +176,7 @@ public class PluginRegistry {
      * Karaf installs the features as soon as the KAR lands in deploy/ unless the manifest
      * opts out, so only that case waits for a restart.
      */
-    public synchronized PluginEntry recordInstall(final String karName, final String fileName, final String sha256, final long size,
+    public synchronized PluginEntry recordInstall(final String karName, final String fileName, final String sha256, final long size, final String source,
                                                   final String user, final List<String> features, final String bootFile, final boolean autoStart) throws IOException {
         final RegistryFile file = read();
         file.getPlugins().removeIf(r -> karName.equals(r.getKarName()));
@@ -179,6 +185,7 @@ public class PluginRegistry {
         record.setFileName(fileName);
         record.setSha256(sha256);
         record.setSize(size);
+        record.setSource(source == null ? SOURCE_UPLOAD : source);
         record.setUploadedBy(user);
         record.setUploadedAt(Instant.now().toString());
         record.setFeatures(new ArrayList<>(features));
@@ -189,6 +196,26 @@ public class PluginRegistry {
         file.getPlugins().add(record);
         write(file);
         return toEntry(record, new LiveState());
+    }
+
+    /** sha256 of every plugin whose KAR is still in deploy/, mapped to its install time; drives temp-area retention. */
+    public synchronized Map<String, Instant> deployedInstalls() throws IOException {
+        final Map<String, Instant> installs = new HashMap<>();
+        for (final Record record : read().getPlugins()) {
+            if (record.isUnloaded() || record.getSha256() == null || !Files.exists(deployDir.resolve(record.getKarName() + KAR_SUFFIX))) {
+                continue;
+            }
+            Instant installedAt = Instant.EPOCH;
+            try {
+                if (record.getUploadedAt() != null) {
+                    installedAt = Instant.parse(record.getUploadedAt());
+                }
+            } catch (final DateTimeParseException e) {
+                // an unparseable timestamp falls back to the file's own age
+            }
+            installs.merge(record.getSha256(), installedAt, (a, b) -> a.isAfter(b) ? a : b);
+        }
+        return installs;
     }
 
     /** Drops the record written by {@link #recordInstall} and puts back the one it replaced, if any. */
@@ -263,6 +290,7 @@ public class PluginRegistry {
         entry.setFileName(record.getFileName());
         entry.setSha256(record.getSha256());
         entry.setSize(record.getSize());
+        entry.setSource(record.getSource() == null ? SOURCE_UPLOAD : record.getSource());
         entry.setUploadedBy(record.getUploadedBy());
         entry.setUploadedAt(record.getUploadedAt());
         entry.setUnloadedBy(record.getUnloadedBy());

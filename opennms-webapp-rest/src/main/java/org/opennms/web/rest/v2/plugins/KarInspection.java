@@ -147,9 +147,41 @@ public class KarInspection {
         public void setRequiredJavaVersion(final String requiredJavaVersion) { this.requiredJavaVersion = requiredJavaVersion; }
     }
 
+    public static class Source {
+        private String repository;
+        private String tag;
+        private String assetName;
+        private String url;
+
+        public Source() {
+        }
+
+        public Source(final String repository, final String tag, final String assetName, final String url) {
+            this.repository = repository;
+            this.tag = tag;
+            this.assetName = assetName;
+            this.url = url;
+        }
+
+        public String getRepository() { return repository; }
+        public void setRepository(final String repository) { this.repository = repository; }
+        public String getTag() { return tag; }
+        public void setTag(final String tag) { this.tag = tag; }
+        public String getAssetName() { return assetName; }
+        public void setAssetName(final String assetName) { this.assetName = assetName; }
+        public String getUrl() { return url; }
+        public void setUrl(final String url) { this.url = url; }
+
+        /** The registry form, e.g. {@code github:OpenNMS-Plugins/alec@v3.0.4}. */
+        public String toRegistryString() {
+            return "github:" + repository + "@" + tag;
+        }
+    }
+
     private String karName;
     private String fileName;
     private String uploadToken;
+    private Source source;
     private long size;
     private String sha256;
     private String featureStart;
@@ -166,6 +198,8 @@ public class KarInspection {
     public void setFileName(final String fileName) { this.fileName = fileName; }
     public String getUploadToken() { return uploadToken; }
     public void setUploadToken(final String uploadToken) { this.uploadToken = uploadToken; }
+    public Source getSource() { return source; }
+    public void setSource(final Source source) { this.source = source; }
     public long getSize() { return size; }
     public void setSize(final long size) { this.size = size; }
     public String getSha256() { return sha256; }

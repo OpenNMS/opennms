@@ -41,6 +41,8 @@ export interface PluginEntry {
   autoStart: boolean
   status: PluginStatus
   pendingRestart: boolean
+  // "github:<owner>/<repository>@<tag>" or "upload"
+  source: string
 }
 
 export interface PluginManagementState {
@@ -49,6 +51,10 @@ export interface PluginManagementState {
   deployDir: string
   restartRequired: boolean
   plugins: PluginEntry[]
+  // temporary download area, reported when the server has one
+  tempDir?: string
+  tempBytes?: number
+  tempFiles?: number
 }
 
 export interface KarCheck {
@@ -83,6 +89,63 @@ export interface KarInspection {
   features: KarFeature[]
   bundles: KarBundle[]
   checks: KarCheck[]
+  // set when the KAR was downloaded from a repository rather than uploaded
+  source?: PluginFetchSource
+}
+
+export interface PluginCatalogEntry {
+  id: string
+  name: string
+  description: string
+  // "<owner>/<repository>" on GitHub
+  repository: string
+  docsUrl: string | null
+}
+
+export interface PluginCatalog {
+  entries: PluginCatalogEntry[]
+  // whether a repository outside the catalog may be looked up
+  customAllowed: boolean
+}
+
+export interface PluginReleaseAsset {
+  name: string
+  size: number
+  url: string
+}
+
+export interface PluginRelease {
+  tag: string
+  name: string
+  // ISO-8601
+  publishedAt: string
+  prerelease: boolean
+  // release notes as written on GitHub: untrusted markdown, shown as text
+  notes: string
+  assets: PluginReleaseAsset[]
+}
+
+export interface PluginReleases {
+  repository: string
+  releases: PluginRelease[]
+  fetchedAt: string
+  cached: boolean
+}
+
+export type PluginReleasesQuery = { catalogId: string } | { repository: string }
+
+export interface PluginFetchInput {
+  catalogId?: string
+  repository?: string
+  tag: string
+  assetName: string
+}
+
+export interface PluginFetchSource {
+  repository: string
+  tag: string
+  assetName: string
+  url: string
 }
 
 export interface PluginInstallInput {

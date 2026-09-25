@@ -230,6 +230,12 @@
       <artifactId>org.opennms.core.lib</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
+    <!-- Plugin Management: release lookups and KAR downloads go through HttpClientWrapper -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.db</artifactId>

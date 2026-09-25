@@ -72,7 +72,7 @@ public class PluginRegistryTest {
     public void pluginWithoutAutoStartWaitsForARestart() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
 
-        final PluginEntry entry = registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), "etc/featuresBoot.d/example.boot", false);
+        final PluginEntry entry = registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), "etc/featuresBoot.d/example.boot", false);
 
         assertEquals("example", entry.getKarName());
         assertEquals("example-1.0.kar", entry.getFileName());
@@ -109,7 +109,7 @@ public class PluginRegistryTest {
     public void autoStartPluginNeedsNoRestart() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
 
-        final PluginEntry entry = registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature", "example-other"), "etc/featuresBoot.d/example.boot", true);
+        final PluginEntry entry = registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature", "example-other"), "etc/featuresBoot.d/example.boot", true);
 
         assertTrue(entry.isAutoStart());
         assertFalse(entry.isPendingRestart());
@@ -130,7 +130,7 @@ public class PluginRegistryTest {
     @Test
     public void featureNotStartedInTheInstallingJvmIsStillStaged() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         bridge.installedKars.add("example");
         bridge.feature("example-feature", "1.0.0", "Resolved");
 
@@ -142,7 +142,7 @@ public class PluginRegistryTest {
     @Test
     public void featureNotStartedAfterARestartIsFailed() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature", "example-other"), null, false);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature", "example-other"), null, false);
         bridge.installedKars.add("example");
         bridge.feature("example-feature", "1.0.0", "Started").feature("example-other", "1.0.0", "Resolved");
 
@@ -157,7 +157,7 @@ public class PluginRegistryTest {
     @Test
     public void karNotListedAfterARestartIsStaged() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
 
         final PluginRegistry afterRestart = new PluginRegistry(registryFile, deployDir, bridge, System.currentTimeMillis() + 1);
         final PluginEntry entry = afterRestart.find("example").orElseThrow();
@@ -168,7 +168,7 @@ public class PluginRegistryTest {
     @Test
     public void unavailableContainerYieldsUnknownStatus() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         bridge.available = false;
 
         final PluginEntry entry = registry.find("example").orElseThrow();
@@ -179,7 +179,7 @@ public class PluginRegistryTest {
     @Test
     public void unloadKeepsTheRecordAndFlagsRestart() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         Files.delete(deployDir.resolve("example.kar"));
 
         final PluginEntry entry = registry.recordUnload("example", "operator", "example-1.0.kar");
@@ -204,7 +204,7 @@ public class PluginRegistryTest {
     @Test
     public void handRemovedKarShowsAsUnloaded() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         Files.delete(deployDir.resolve("example.kar"));
 
         final PluginEntry entry = registry.find("example").orElseThrow();
@@ -224,10 +224,10 @@ public class PluginRegistryTest {
     @Test
     public void reinstallReplacesTheRecord() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         registry.recordUnload("example", "admin", "example-1.0.kar");
 
-        final PluginEntry entry = registry.recordInstall("example", "example-1.1.kar", "def", 2, "admin", Arrays.asList("example-feature"), null, true);
+        final PluginEntry entry = registry.recordInstall("example", "example-1.1.kar", "def", 2, "upload", "admin", Arrays.asList("example-feature"), null, true);
 
         assertEquals("def", entry.getSha256());
         assertEquals("example-1.1.kar", entry.getFileName());
@@ -238,9 +238,9 @@ public class PluginRegistryTest {
     @Test
     public void revertInstallPutsThePreviousRecordBack() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         final PluginRegistry.Record previous = registry.record("example").orElseThrow();
-        registry.recordInstall("example", "example-1.1.kar", "def", 2, "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordInstall("example", "example-1.1.kar", "def", 2, "upload", "admin", Arrays.asList("example-feature"), null, true);
 
         registry.revertInstall("example", previous);
 

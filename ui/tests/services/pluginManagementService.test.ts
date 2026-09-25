@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { checkPluginKar, DEFAULT_LOG_LINES, downloadPluginManagementLog, getPluginManagement, getPluginManagementLog, getPluginRestartInstructions, installPlugin, LOG_LINE_OPTIONS, MAX_LOG_LINES, unloadPlugin } from '@/services/pluginManagementService'
+import { checkPluginKar, DEFAULT_LOG_LINES, downloadPluginManagementLog, fetchPluginFromRepository, getPluginCatalog, getPluginManagement, getPluginManagementLog, getPluginReleases, getPluginRestartInstructions, installPlugin, LOG_LINE_OPTIONS, MAX_LOG_LINES, unloadPlugin } from '@/services/pluginManagementService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -29,7 +29,7 @@ vi.mock('@/services/axiosInstances', () => ({
   rest: { get: vi.fn() }
 }))
 
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true, source: 'upload' }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait for the health check.' }
 
 describe('pluginManagementService', () => {
@@ -44,6 +44,79 @@ describe('pluginManagementService', () => {
     expect(await getPluginManagement()).toBeNull()
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: '<html>' })
     expect(await getPluginManagement()).toBeNull()
+  })
+
+  it('carries the temporary download area usage when the server reports it', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { containerAvailable: true, plugins: [], tempDir: '/opt/opennms/data/tmp/plugins', tempBytes: 2048, tempFiles: 1 }})
+    expect(await getPluginManagement()).toMatchObject({ tempDir: '/opt/opennms/data/tmp/plugins', tempBytes: 2048, tempFiles: 1 })
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { containerAvailable: true, plugins: [], tempBytes: null }})
+    const state = await getPluginManagement()
+    expect(state).not.toHaveProperty('tempDir')
+    expect(state).not.toHaveProperty('tempBytes')
+    expect(state).not.toHaveProperty('tempFiles')
+  })
+
+  it('reads the catalog, dropping malformed entries, and returns null on failure', async () => {
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { entries: [
+      { id: 'alec', name: 'ALEC', description: 'Correlation', repository: 'OpenNMS-Plugins/alec', docsUrl: 'https://docs' },
+      { id: 'bare', repository: 'o/r', docsUrl: '' },
+      { name: 'no id' }
+    ], customAllowed: true }})
+    expect(await getPluginCatalog()).toEqual({ entries: [
+      { id: 'alec', name: 'ALEC', description: 'Correlation', repository: 'OpenNMS-Plugins/alec', docsUrl: 'https://docs' },
+      { id: 'bare', name: 'bare', description: '', repository: 'o/r', docsUrl: null }
+    ], customAllowed: true })
+    expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/plugin-management/catalog')
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { entries: [] }})
+    expect(await getPluginCatalog()).toEqual({ entries: [], customAllowed: false })
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getPluginCatalog()).toBeNull()
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: 'nope' })
+    expect(await getPluginCatalog()).toBeNull()
+  })
+
+  it('reads the releases of a catalog entry or of any repository, surfacing the 502 text', async () => {
+    const release = { tag: 'v3.0.4', name: 'v3.0.4', publishedAt: '2026-09-01T10:00:00Z', prerelease: false, notes: 'n', assets: [{ name: 'a.kar', size: 5, url: 'https://x' }] }
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { repository: 'OpenNMS-Plugins/alec', releases: [release, { tag: 'v1' }, { nothing: true }], fetchedAt: 't', cached: true }})
+    const result = await getPluginReleases({ catalogId: 'alec' })
+    expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/plugin-management/catalog/alec/releases')
+    expect(result.success).toBe(true)
+    expect(result.payload).toEqual({ repository: 'OpenNMS-Plugins/alec', releases: [
+      release,
+      { tag: 'v1', name: 'v1', publishedAt: '', prerelease: false, notes: '', assets: [] }
+    ], fetchedAt: 't', cached: true })
+
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { releases: [] }})
+    const custom = await getPluginReleases({ repository: 'acme/my plugin' })
+    expect(vi.mocked(v2.get).mock.calls[1][0]).toBe('/plugin-management/releases?repository=acme%2Fmy%20plugin')
+    expect(custom.payload).toEqual({ repository: 'acme/my plugin', releases: [], fetchedAt: '', cached: false })
+
+    vi.mocked(v2.get).mockRejectedValueOnce({ response: { status: 502, data: 'GitHub rate limit reached; try again after 14:30.' }})
+    expect(await getPluginReleases({ catalogId: 'alec' })).toMatchObject({ success: false, message: 'GitHub rate limit reached; try again after 14:30.' })
+    vi.mocked(v2.get).mockRejectedValueOnce({ response: { status: 502, data: '<html>Bad Gateway</html>' }})
+    expect((await getPluginReleases({ catalogId: 'alec' })).message).toBe('Failed to read the releases from GitHub.')
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { repository: 'x' }})
+    expect((await getPluginReleases({ catalogId: 'alec' })).success).toBe(false)
+  })
+
+  it('posts the fetch request and returns the inspection with its source, or the server reason', async () => {
+    const input = { catalogId: 'alec', tag: 'v3.0.4', assetName: 'a.kar' }
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { karName: 'alec', size: 5, sha256: 'abc', uploadToken: 'tok', checks: [], source: { repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'a.kar', url: 'https://x' }}})
+    const result = await fetchPluginFromRepository(input)
+    expect(vi.mocked(v2.post).mock.calls[0][0]).toBe('/plugin-management/fetch')
+    expect(vi.mocked(v2.post).mock.calls[0][1]).toBe(input)
+    expect(result.success).toBe(true)
+    expect(result.payload).toEqual({ karName: 'alec', size: 5, sha256: 'abc', uploadToken: 'tok', manifest: {}, features: [], bundles: [], checks: [], source: { repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'a.kar', url: 'https://x' }})
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { uploadToken: 'tok', checks: [] }})
+    const bare = await fetchPluginFromRepository({ repository: 'o/r', tag: 'v1', assetName: 'b.kar' })
+    expect(bare.payload).toMatchObject({ karName: 'b.kar', size: 0 })
+    expect(bare.payload).not.toHaveProperty('source')
+    vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 502, data: 'Download failed: connection reset.' }})
+    expect(await fetchPluginFromRepository(input)).toMatchObject({ success: false, message: 'Download failed: connection reset.' })
+    vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 500, data: '<html>' }})
+    expect((await fetchPluginFromRepository(input)).message).toBe('Failed to download a.kar.')
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: {}})
+    expect((await fetchPluginFromRepository(input)).success).toBe(false)
   })
 
   it('posts the KAR as the multipart field "upload" to /check and returns the inspection', async () => {

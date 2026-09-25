@@ -22,7 +22,7 @@
 
 import { formatInDisplayZone } from '@/lib/displayTimeZone'
 import { isValid, parseISO } from 'date-fns'
-import { KarCheckLevel, PluginEntry, PluginStatus } from '@/types/pluginManagement'
+import { KarCheckLevel, PluginEntry, PluginFetchSource, PluginRelease, PluginStatus } from '@/types/pluginManagement'
 import { type OnmsTagSeverity } from '@opennms/onms-ui'
 
 export const NOT_SET = '—'
@@ -55,6 +55,61 @@ export const formatUploadedAt = (value: number | string | null | undefined): str
   }
   const date = typeof value === 'number' ? new Date(value) : /^\d+$/.test(value) ? new Date(Number(value)) : parseISO(value)
   return isValid(date) ? formatInDisplayZone(date) : NOT_SET
+}
+
+// "<owner>/<repository>" as GitHub accepts it; ".." is refused as on the server
+export const REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/
+
+export const isRepository = (value: string | null | undefined): boolean =>
+  !!value && REPOSITORY_PATTERN.test(value) && !value.includes('..')
+
+export const formatReleaseDate = (iso: string | null | undefined): string => {
+  if (!iso) {
+    return NOT_SET
+  }
+  const date = parseISO(iso)
+  return isValid(date) ? formatInDisplayZone(date, 'yyyy-MM-dd') : NOT_SET
+}
+
+export const releaseLabel = (release: PluginRelease): string =>
+  `${release.tag} · ${formatReleaseDate(release.publishedAt)}${release.prerelease ? ' · pre-release' : ''}`
+
+const publishedMillis = (release: PluginRelease): number => {
+  const date = parseISO(release.publishedAt ?? '')
+  return isValid(date) ? date.getTime() : 0
+}
+
+// newest first, every pre-release after the last release
+export const sortReleases = (releases: PluginRelease[]): PluginRelease[] =>
+  [...releases].sort((a, b) => Number(a.prerelease) - Number(b.prerelease) || publishedMillis(b) - publishedMillis(a))
+
+export const defaultRelease = (releases: PluginRelease[]): PluginRelease | null => {
+  const sorted = sortReleases(releases)
+  return sorted.find(r => !r.prerelease) ?? sorted[0] ?? null
+}
+
+export const karAssets = (release: PluginRelease | null | undefined) =>
+  (release?.assets ?? []).filter(a => a.name.toLowerCase().endsWith('.kar'))
+
+export const fetchedSourceLine = (source: PluginFetchSource, size: number | null | undefined): string =>
+  `Fetched from ${source.repository} ${source.tag} (${source.assetName}, ${formatSize(size)})`
+
+export const uploadedSourceLine = (fileName: string, size: number | null | undefined): string =>
+  `Uploaded ${fileName} (${formatSize(size)})`
+
+export interface SourcePresentation {
+  label: string
+  title: string
+}
+
+// "github:<owner>/<repository>@<tag>" reads as "<owner>/<repository>@<tag>";
+// anything else that is not "upload" is shown as sent
+export const sourceOf = (source: string | null | undefined): SourcePresentation => {
+  if (!source || source === 'upload') {
+    return { label: 'Uploaded file', title: source ?? '' }
+  }
+  const github = /^github:(.+)$/.exec(source)
+  return { label: github ? github[1] : source, title: source }
 }
 
 export const CHECK_TAG: Record<KarCheckLevel, OnmsTagSeverity> = { PASS: 'success', WARN: 'warn', FAIL: 'danger' }

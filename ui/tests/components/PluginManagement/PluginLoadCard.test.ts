@@ -23,8 +23,10 @@
 import PluginLoadCard from '@/components/PluginManagement/PluginLoadCard.vue'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { reactive } from 'vue'
 
 vi.mock('@/stores/pluginManagementStore')
 
@@ -42,18 +44,44 @@ const INSPECTION = {
   bundles: [{ symbolicName: 'org.opennms.alec', version: '3.0.0' }],
   checks: [{ id: 'structure', level: 'PASS', message: 'ok' }]
 }
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: false }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: false, source: 'upload' }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
+const CATALOG = { entries: [{ id: 'alec', name: 'ALEC', description: 'Correlation', repository: 'OpenNMS-Plugins/alec', docsUrl: null }], customAllowed: false }
+const RELEASES = { repository: 'OpenNMS-Plugins/alec', releases: [{ tag: 'v3.0.4', name: 'v3.0.4', publishedAt: '2026-09-01T10:00:00Z', prerelease: false, notes: '', assets: [{ name: 'opennms-alec-plugin.kar', size: 93634560, url: 'https://github.com/x' }] }], fetchedAt: '', cached: false }
 
 describe('PluginLoadCard.vue', () => {
   let wrapper: VueWrapper<any>
   let store: any
+
+  // PrimeVue's TabList positions its ink bar from a timer it never clears
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    vi.clearAllMocks()
+    // the release dates go through the display time zone store
+    setActivePinia(createPinia())
+    store = reactive({
+      check: vi.fn(), install: vi.fn(), loadCatalog: vi.fn(), loadReleases: vi.fn(), fetchFromRepository: vi.fn(),
+      catalog: CATALOG, releases: null, restartInstructions: INSTRUCTIONS, state: { deployDir: '/opt/opennms/deploy' }
+    })
+    vi.mocked(usePluginManagementStore).mockReturnValue(store)
+  })
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers()
+    wrapper?.unmount()
+    vi.useRealTimers()
+  })
 
   const mountCard = (disabled = false) => {
     wrapper = mount(PluginLoadCard, {
       props: { disabled },
       global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub, OnmsCard: OnmsCardStub }}
     })
+  }
+
+  const openFileTab = async () => {
+    await wrapper.find('[data-test="load-tab-file"]').trigger('click')
+    await flushPromises()
   }
 
   const chooseFile = async (name = 'alec.kar') => {
@@ -70,12 +98,6 @@ describe('PluginLoadCard.vue', () => {
     await flushPromises()
   }
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-    store = { check: vi.fn(), install: vi.fn(), restartInstructions: INSTRUCTIONS, state: { deployDir: '/opt/opennms/deploy' }}
-    vi.mocked(usePluginManagementStore).mockReturnValue(store)
-  })
-
   it('opens the help in a modal from the Info button in the header', async () => {
     mountCard()
     expect(wrapper.find('[data-test="about-dialog"]').exists()).toBe(false)
@@ -90,8 +112,47 @@ describe('PluginLoadCard.vue', () => {
     expect(dialog.find('[data-test="restart-packages"]').text()).toBe(INSTRUCTIONS.packages)
   })
 
+  it('opens on the repository tab, with the file tab second', async () => {
+    mountCard()
+    await flushPromises()
+    const tabs = wrapper.findAll('.p-tab')
+    expect(tabs.map(t => t.text())).toEqual(['From a repository', 'From a file'])
+    expect(wrapper.find('[data-test="load-tab-repository"]').attributes('aria-selected')).toBe('true')
+    expect(wrapper.find('[data-test="load-tab-file"]').attributes('aria-selected')).toBe('false')
+    expect(wrapper.find('[data-test="plugin-repository-load"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(false)
+    await openFileTab()
+    expect(wrapper.find('[data-test="load-tab-file"]').attributes('aria-selected')).toBe('true')
+  })
+
+  it('feeds a repository fetch into the shared result with its source line', async () => {
+    mountCard()
+    await flushPromises()
+    // the mock store cannot set itself, so the result is mirrored by hand
+    store.loadReleases.mockImplementationOnce(async () => {
+      store.releases = RELEASES
+      return { success: true, message: '', payload: RELEASES }
+    })
+    const select = wrapper.findAllComponents({ name: 'OnmsSelect' }).find(s => s.props('inputId') === 'plugin-catalog-entry')
+    await select?.vm.$emit('update:modelValue', 'alec')
+    await flushPromises()
+    store.fetchFromRepository.mockResolvedValueOnce({ success: true, message: '', payload: { ...INSPECTION, size: 93634560, source: { repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'opennms-alec-plugin.kar', url: 'https://github.com/x' }}})
+    await wrapper.find('[data-test="fetch-plugin"]').trigger('click')
+    await flushPromises()
+    expect(store.fetchFromRepository).toHaveBeenCalledWith({ catalogId: 'alec', tag: 'v3.0.4', assetName: 'opennms-alec-plugin.kar' })
+    expect(wrapper.find('[data-test="summary-source"]').text()).toBe('Fetched from OpenNMS-Plugins/alec v3.0.4 (opennms-alec-plugin.kar, 89.3 MB)')
+    expect(wrapper.find('[data-test="load-plugin"]').attributes('disabled')).toBeUndefined()
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
+    await wrapper.find('[data-test="load-plugin"]').trigger('click')
+    await flushPromises()
+    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false })
+    expect(wrapper.find('[data-test="plugin-loaded-dialog"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(false)
+  })
+
   it('needs a .kar file before the checks can run', async () => {
     mountCard()
+    await openFileTab()
     expect(wrapper.find('[data-test="run-checks"]').attributes('disabled')).toBeDefined()
     await chooseFile('notes.txt')
     expect(wrapper.find('[data-test="load-error"]').text()).toContain('.kar extension')
@@ -102,11 +163,13 @@ describe('PluginLoadCard.vue', () => {
     expect(wrapper.find('[data-test="run-checks"]').attributes('disabled')).toBeUndefined()
   })
 
-  it('runs the checks, shows the summary, and enables Load when every check passes', async () => {
+  it('runs the checks, shows the summary with the upload as the source, and enables Load when every check passes', async () => {
     mountCard()
+    await openFileTab()
     const file = await chooseFile()
     await runChecks(INSPECTION.checks)
     expect(store.check).toHaveBeenCalledWith(file)
+    expect(wrapper.find('[data-test="summary-source"]').text()).toBe('Uploaded alec.kar (2.0 KB)')
     expect(wrapper.find('[data-test="summary-kar-name"]').text()).toBe('alec')
     expect(wrapper.find('[data-test="summary-size"]').text()).toBe('2.0 KB')
     expect(wrapper.find('[data-test="summary-sha256"]').text()).toBe('0123456789ab')
@@ -120,6 +183,7 @@ describe('PluginLoadCard.vue', () => {
 
   it('keeps Load disabled when a check fails', async () => {
     mountCard()
+    await openFileTab()
     await chooseFile()
     await runChecks([{ id: 'duplicate', level: 'FAIL', message: 'already loaded' }, { id: 'java', level: 'WARN', message: 'old' }])
     expect(wrapper.find('[data-test="fail-note"]').exists()).toBe(true)
@@ -129,6 +193,7 @@ describe('PluginLoadCard.vue', () => {
 
   it('requires the warnings to be acknowledged and sends the acknowledgement with the install', async () => {
     mountCard()
+    await openFileTab()
     await chooseFile()
     await runChecks([{ id: 'java', level: 'WARN', message: 'Built for Java 17' }])
     expect(wrapper.find('[data-test="load-plugin"]').attributes('disabled')).toBeDefined()
@@ -143,6 +208,7 @@ describe('PluginLoadCard.vue', () => {
 
   it('opens the result dialog on success and clears the selection', async () => {
     mountCard()
+    await openFileTab()
     await chooseFile()
     await runChecks(INSPECTION.checks)
     store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
@@ -161,6 +227,7 @@ describe('PluginLoadCard.vue', () => {
 
   it('shows the server reason inline when the check or the install fails', async () => {
     mountCard()
+    await openFileTab()
     await chooseFile()
     store.check.mockResolvedValueOnce({ success: false, message: 'Not a KAR file.' })
     await wrapper.find('[data-test="run-checks"]').trigger('click')
@@ -178,8 +245,21 @@ describe('PluginLoadCard.vue', () => {
     expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(true)
   })
 
+  it('drops the result when a new file is chosen', async () => {
+    mountCard()
+    await openFileTab()
+    await chooseFile()
+    await runChecks(INSPECTION.checks)
+    expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(true)
+    await chooseFile('other.kar')
+    expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(false)
+  })
+
   it('disables every action while the container is unavailable', async () => {
     mountCard(true)
+    await flushPromises()
+    expect(wrapper.find('[data-test="fetch-plugin"]').attributes('disabled')).toBeDefined()
+    await openFileTab()
     expect(wrapper.find('[data-test="choose-file"]').attributes('disabled')).toBeDefined()
     expect(wrapper.find('[data-test="choose-file"]').attributes('title')).toContain('not available')
     await chooseFile()

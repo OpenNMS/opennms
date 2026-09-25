@@ -7,14 +7,26 @@
       container; the plugin then provides whatever it was built for, such as collectors, pollers,
       alarm consumers or user interface extensions.
     </p>
+    <div class="section-title">Two ways to load</div>
+    <p>
+      <strong>From a repository</strong> offers a catalog of official plugins and reads the versions from the
+      plugin's GitHub releases. The server downloads the chosen KAR itself and runs the same checks as for an
+      uploaded file, so no file needs to pass through the browser. Downloads are only accepted from GitHub
+      unless the server is configured otherwise; a GitHub token can be set as a server property to lift the
+      unauthenticated rate limit, and the temporary downloads are cleaned up automatically.
+    </p>
+    <p>
+      <strong>From a file</strong> uploads a KAR that was obtained elsewhere, for a plugin that is not in the
+      catalog, a build of your own, or a server without access to GitHub.
+    </p>
     <div class="section-title">What Load does</div>
     <ol>
-      <li>Uploads the file and runs the checks: file structure, safe entries, the features file, the
-        bundles, compatibility of the packages the bundles import with the packages this server exports,
+      <li>Runs the checks on the downloaded or uploaded file: file structure, safe entries, the features file,
+        the bundles, compatibility of the packages the bundles import with the packages this server exports,
         the Java version, and whether a plugin with the same name is already loaded. A failing check
         stops the load; a warning has to be acknowledged before loading.</li>
       <li>Writes a boot file under <code>featuresBoot.d</code> naming the features to start, and records
-        the plugin so it appears in the table with its checksum and who loaded it.</li>
+        the plugin so it appears in the table with its checksum, its source and who loaded it.</li>
       <li>Moves the KAR into <code>{{ deployDir || 'deploy/' }}</code>. Unless its manifest sets
         <code>Karaf-Feature-Start: false</code>, the container picks it up within seconds and starts its
         features; the boot file makes them start again on every later boot.</li>

@@ -25,7 +25,7 @@ import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { showToast } = vi.hoisted(() => ({ showToast: vi.fn() }))
 vi.mock('@opennms/onms-ui', async (importOriginal) => {
@@ -39,17 +39,17 @@ const DialogStub = {
   template: '<div v-if="visible"><h2>{{ header }}</h2><slot /><slot name="footer" /></div>'
 }
 
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'installed', pendingRestart: false }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'installed', pendingRestart: false, source: 'upload' }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
 const STATE = { containerAvailable: true, opennmsHome: '/opt/opennms', deployDir: '/opt/opennms/deploy', restartRequired: false, plugins: [PLUGIN] }
 
 const mounted: VueWrapper<any>[] = []
 
-const mountPage = async (state: Record<string, unknown>) => {
+const mountPage = async (state: Record<string, unknown>, stubLoadCard = true) => {
   const wrapper = mount(PluginManagement, {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true, initialState: { pluginManagementStore: state }})],
-      stubs: { BreadCrumbs: true, PluginManagementAbout: true, PluginLoadCard: true, PluginActivityLog: true, Dialog: DialogStub }
+      stubs: { BreadCrumbs: true, PluginManagementAbout: true, PluginLoadCard: stubLoadCard, PluginActivityLog: true, Dialog: DialogStub }
     }
   })
   await flushPromises()
@@ -58,8 +58,12 @@ const mountPage = async (state: Record<string, unknown>) => {
 }
 
 describe('PluginManagement.vue (container)', () => {
+  // PrimeVue's TabList positions its ink bar from a timer it never clears
+  beforeEach(() => vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] }))
   afterEach(() => {
+    vi.runOnlyPendingTimers()
     mounted.splice(0).forEach(w => w.unmount())
+    vi.useRealTimers()
     vi.clearAllMocks()
   })
 
@@ -75,6 +79,25 @@ describe('PluginManagement.vue (container)', () => {
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
     expect(wrapper.findAll('[data-test="unload-plugin"]')).toHaveLength(1)
     expect(wrapper.findComponent({ name: 'PluginManagementAbout' }).exists()).toBe(false)
+    expect(wrapper.find('[data-test="temp-files"]').exists()).toBe(false)
+  })
+
+  it('opens the load card on the repository tab and reads the catalog', async () => {
+    const wrapper = await mountPage({ state: STATE, restartInstructions: INSTRUCTIONS, log: '' }, false)
+    const store = usePluginManagementStore()
+    expect(store.loadCatalog).toHaveBeenCalled()
+    expect(wrapper.find('[data-test="load-tab-repository"]').attributes('aria-selected')).toBe('true')
+    expect(wrapper.find('[data-test="load-tab-file"]').attributes('aria-selected')).toBe('false')
+    expect(wrapper.find('[data-test="catalog-loading"]').exists()).toBe(true)
+  })
+
+  it('reports the temporary download area under the load card', async () => {
+    const wrapper = await mountPage({ state: { ...STATE, tempDir: '/opt/opennms/data/tmp/plugins', tempBytes: 3 * 1024 * 1024, tempFiles: 2 }, restartInstructions: INSTRUCTIONS })
+    const line = wrapper.find('[data-test="temp-files"]')
+    expect(line.text()).toBe('Temporary files: 2 files, 3.0 MB')
+    expect(line.attributes('title')).toBe('/opt/opennms/data/tmp/plugins')
+    expect((await mountPage({ state: { ...STATE, tempBytes: 0, tempFiles: 0 }, restartInstructions: INSTRUCTIONS })).find('[data-test="temp-files"]').exists()).toBe(false)
+    expect((await mountPage({ state: { ...STATE, tempBytes: 10, tempFiles: 1 }, restartInstructions: INSTRUCTIONS })).find('[data-test="temp-files"]').text()).toBe('Temporary files: 1 file, 10 B')
   })
 
   it('shows the restart banner with the counts and opens the instructions dialog', async () => {

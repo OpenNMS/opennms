@@ -14,6 +14,11 @@
             <span :title="data.features.join(', ')" data-test="plugin-features">{{ ellipsify(data.features.join(', '), 60) || NOT_SET }}</span>
           </template>
         </OnmsColumn>
+        <OnmsColumn header="Source">
+          <template #body="{ data }">
+            <span :title="sourceOf(data.source).title" data-test="plugin-source">{{ sourceOf(data.source).label }}</span>
+          </template>
+        </OnmsColumn>
         <OnmsColumn header="Uploaded">
           <template #body="{ data }">
             <div class="uploaded-cell" data-test="plugin-uploaded">
@@ -61,7 +66,7 @@ import { OnmsCard, OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag } from '@openn
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import { ellipsify } from '@/lib/utils'
 import { PluginEntry } from '@/types/pluginManagement'
-import { CONTAINER_UNAVAILABLE, NOT_SET, formatSize, formatUploadedAt, statusOf } from './pluginDisplay'
+import { CONTAINER_UNAVAILABLE, NOT_SET, formatSize, formatUploadedAt, sourceOf, statusOf } from './pluginDisplay'
 
 defineProps<{
   plugins: PluginEntry[]
