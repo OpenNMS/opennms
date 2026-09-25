@@ -488,6 +488,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         m_scheduler = scheduler;
     }
 
+    public LegacyPriorityExecutor getExecutor() {
+        return m_executor;
+    }
+
+    public void setExecutor(LegacyPriorityExecutor executor) {
+        m_executor = executor;
+    }
+
     public EnhancedLinkdConfig getLinkdConfig() {
         return m_linkdConfig;
     }
