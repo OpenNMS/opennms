@@ -66,6 +66,13 @@ public final class HaStatusSchema {
                 active_since    TIMESTAMPTZ,
                 hostname        TEXT
             )""",
+            // v2: config-sync observability and boot-config staleness
+            """
+            ALTER TABLE ha_instance_status
+                ADD COLUMN IF NOT EXISTS last_sync_attempt      TIMESTAMPTZ,
+                ADD COLUMN IF NOT EXISTS last_sync_success      TIMESTAMPTZ,
+                ADD COLUMN IF NOT EXISTS last_sync_error        TEXT,
+                ADD COLUMN IF NOT EXISTS boot_config_changed_at TIMESTAMPTZ""",
     };
 
     private HaStatusSchema() {}
