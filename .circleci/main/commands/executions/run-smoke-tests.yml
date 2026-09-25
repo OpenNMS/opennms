@@ -67,14 +67,18 @@ commands:
           name: Collect flaky test evidence
           when: always
           command: |
-            mkdir -p ~/test-results/flaky-evidence
+            mkdir -p ~/flaky-evidence
             if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
               (
                 cd /tmp/flaky-evidence || exit 1
-                find . -name '*.xml' -type f | while read -r xml; do
-                  xml="${xml#./}"
-                  mkdir -p ~/test-results/flaky-evidence/"$(dirname "$xml")"
-                  cp "$xml" ~/test-results/flaky-evidence/"$xml"
+                # Preserve the real attempt-N/... path (XML, .txt reports, and per-test
+                # container logs alike), so it stays out of ~/test-results (which
+                # store_test_results parses as JUnit output) while still making it obvious
+                # which test case/container each file belongs to.
+                find . -type f | while read -r f; do
+                  f="${f#./}"
+                  mkdir -p ~/flaky-evidence/"$(dirname "$f")"
+                  cp "$f" ~/flaky-evidence/"$f"
                 done
               )
               echo "#### Flaky tests detected (passed only after retry):"
@@ -84,7 +88,7 @@ commands:
           path: ~/test-results
       - store_artifacts:
           when: always
-          path: ~/test-results/flaky-evidence
+          path: ~/flaky-evidence
           destination: flaky-evidence
       - run:
           name: Copy artifacts on failure
