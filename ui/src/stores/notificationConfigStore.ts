@@ -25,6 +25,13 @@ import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+// Destination Paths tab: the table, or the editor panel in place of it.
+export enum DestinationPathEditMode {
+  Table = 'table',
+  Edit = 'edit',
+  Create = 'create'
+}
+
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
   const eventNotifications = ref([] as EventNotification[])
@@ -35,6 +42,20 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
   const groups = ref([] as string[])
   const roles = ref([] as string[])
   const pathOutages = ref([] as PathOutage[])
+  const destinationPathEditMode = ref(DestinationPathEditMode.Table)
+  // the path being edited; null while creating or on the table
+  const currentDestinationPath = ref<DestinationPath | null>(null)
+
+  // null opens the editor on a new path
+  const openDestinationPathEditor = (path: DestinationPath | null) => {
+    currentDestinationPath.value = path
+    destinationPathEditMode.value = path ? DestinationPathEditMode.Edit : DestinationPathEditMode.Create
+  }
+
+  const closeDestinationPathEditor = () => {
+    currentDestinationPath.value = null
+    destinationPathEditMode.value = DestinationPathEditMode.Table
+  }
 
   const getStatus = async (): Promise<boolean> => {
     notifdStatus.value = await API.getNotificationConfigStatus()
@@ -191,6 +212,10 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     groups,
     roles,
     pathOutages,
+    destinationPathEditMode,
+    currentDestinationPath,
+    openDestinationPathEditor,
+    closeDestinationPathEditor,
     getStatus,
     setStatus,
     getEventNotifications,

@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { OnmsButton } from '@opennms/onms-ui'
@@ -28,10 +28,16 @@ import { OnmsButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NotificationsConfigTabs from '@/components/Notifications/NotificationsConfigTabs.vue'
 import { useMenuStore } from '@/stores/menuStore'
+import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { BreadCrumb } from '@/types'
 
 const menuStore = useMenuStore()
 const router = useRouter()
+const notificationConfigStore = useNotificationConfigStore()
+
+// The editor state lives in the store so it survives switching tabs; leaving
+// the page should land back on the table next time.
+onUnmounted(() => notificationConfigStore.closeDestinationPathEditor())
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 

@@ -69,10 +69,6 @@
       />
     </div>
   </TableCard>
-  <DestinationPathEditorDialog
-    v-model:visible="showEditor"
-    :path="pathToEdit"
-  />
   <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Destination Path"
@@ -102,7 +98,6 @@ import { ref } from 'vue'
 
 import { OnmsConfirmationDialog, OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 
-import DestinationPathEditorDialog from '@/components/Notifications/DestinationPathEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
@@ -114,12 +109,8 @@ import { DestinationPath } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
 
-const showEditor = ref(false)
-const pathToEdit = ref<DestinationPath | null>(null)
-
 const openEditor = (path: DestinationPath | null) => {
-  pathToEdit.value = path
-  showEditor.value = true
+  store.openDestinationPathEditor(path)
 }
 
 const showDeleteConfirmation = ref(false)

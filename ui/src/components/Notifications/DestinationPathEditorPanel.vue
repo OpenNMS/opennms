@@ -1,13 +1,20 @@
 <template>
-  <OnmsDialog
-    :visible="visible"
-    modal
-    :header="isEditing ? `Edit Destination Path: ${originalName}` : 'New Destination Path'"
-    class="destination-path-editor-dialog"
-    width="min(900px, 95vw)"
-    data-test="destination-path-editor-dialog"
-    @update:visible="(value: boolean) => emit('update:visible', value)"
+  <TableCard
+    class="destination-path-editor-panel"
+    data-test="destination-path-editor-panel"
   >
+    <div class="panel-header">
+      <OnmsButton
+        variant="text"
+        class="back-button"
+        data-test="back-button"
+        @click="emit('close')"
+      >
+        <OnmsIcon :icon="ArrowBack" />
+        Back
+      </OnmsButton>
+      <h2 class="card-title">{{ isEditing ? `Edit Destination Path: ${originalName}` : 'New Destination Path' }}</h2>
+    </div>
     <div class="editor-body">
       <div class="form-row">
         <FormField
@@ -136,12 +143,12 @@
       </div>
     </div>
 
-    <template #footer>
+    <div class="panel-footer">
       <OnmsButton
         variant="text"
         label="Cancel"
         data-test="cancel-button"
-        @click="emit('update:visible', false)"
+        @click="emit('close')"
       />
       <OnmsButton
         :label="isEditing ? 'Save Path' : 'Add Path'"
@@ -149,28 +156,33 @@
         data-test="save-button"
         @click="save"
       />
-    </template>
-  </OnmsDialog>
+    </div>
+  </TableCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
 import TargetRowEditor, { MethodOption, TargetRow } from '@/components/Notifications/TargetRowEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
+import TableCard from '@/components/Common/TableCard.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import { NOTIFD_DURATION_HINT, UNADDRESSABLE_NAME_HINT, isPathAddressable, isValidNotifdDuration } from '@/lib/adminValidation'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath, DestinationPathTarget } from '@/types/notificationConfig'
 
+// Rendered in place of the Destination Paths table (see DestinationPathsTab);
+// `path` is null when creating. Emits `close` on Back, Cancel, or a successful save.
 const props = defineProps<{
-  visible: boolean
   path: DestinationPath | null
 }>()
 
-const emit = defineEmits(['update:visible'])
+const emit = defineEmits<{
+  close: []
+}>()
 
 const store = useNotificationConfigStore()
 
@@ -281,12 +293,11 @@ const toRow = (target: DestinationPathTarget): TargetRow => ({
   autoNotify: target.autoNotify ?? undefined
 })
 
+// Mounted fresh each time the panel opens, so the form is filled once from
+// `path`; the watch only matters if the caller swaps paths while it is open.
 watch(
-  () => props.visible,
-  (isVisible) => {
-    if (!isVisible) {
-      return
-    }
+  () => props.path,
+  () => {
     if (props.path) {
       name.value = props.path.name
       initialDelay.value = props.path['initial-delay'] ?? '0s'
@@ -317,7 +328,8 @@ watch(
       escalations.value = []
       originalLegacyCommands.value = new Set()
     }
-  }
+  },
+  { immediate: true }
 )
 
 const rowIsValid = (row: TargetRow) =>
@@ -377,7 +389,7 @@ const save = async () => {
       ? await store.updateDestinationPath(originalName.value, path)
       : await store.addDestinationPath(path)
     if (ok) {
-      emit('update:visible', false)
+      emit('close')
     }
   } finally {
     saving.value = false
@@ -386,11 +398,42 @@ const save = async () => {
 </script>
 
 <style lang="scss" scoped>
+.destination-path-editor-panel {
+  padding: 25px;
+}
+
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  .back-button {
+    padding-left: 0;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
 .editor-body {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   padding-top: 0.5rem;
+  max-width: 900px;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  max-width: 900px;
 }
 
 .form-row {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
+import { DestinationPathEditMode, useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import API from '@/services'
 import { DestinationPath, EventNotification, PathOutage } from '@/types/notificationConfig'
 
@@ -225,6 +225,31 @@ describe('useNotificationConfigStore', () => {
       await store.updateDestinationPath('Email-Admin', renamed)
 
       expect(API.updateDestinationPath).toHaveBeenCalledWith('Email-Admin', renamed)
+    })
+  })
+
+  describe('destination path editor mode', () => {
+    it('starts on the table', () => {
+      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Table)
+      expect(store.currentDestinationPath).toBeNull()
+    })
+
+    it('opens in edit mode for an existing path and create mode for null', () => {
+      store.openDestinationPathEditor(mockPath)
+      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Edit)
+      expect(store.currentDestinationPath).toEqual(mockPath)
+
+      store.openDestinationPathEditor(null)
+      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Create)
+      expect(store.currentDestinationPath).toBeNull()
+    })
+
+    it('closes back to the table and clears the current path', () => {
+      store.openDestinationPathEditor(mockPath)
+      store.closeDestinationPathEditor()
+
+      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Table)
+      expect(store.currentDestinationPath).toBeNull()
     })
   })
 
