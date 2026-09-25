@@ -7,8 +7,10 @@ import {
   mapUploadedSourceNamesFromServer
 } from '@/mappers/eventConfig.mapper'
 import {
+  EventConfigEventMoveRequest,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
+  EventConfigMutationResult,
   EventConfigSource,
   EventConfigSourcesResponse,
   UploadedSourceNamesResponse
@@ -392,6 +394,86 @@ export const addEventConfigSource = async (
 
     // For network errors or other unexpected errors, return 500
     return 500
+  }
+}
+
+/**
+ * Makes a GET request to the REST endpoint to fetch all event configuration sources, unpaged,
+ * in evaluation order: the first entry is evaluated first, the catch-all source comes last.
+ *
+ * @returns A promise that resolves to the ordered list of `EventConfigSource` objects.
+ */
+export const getOrderedEventConfigSources = async (): Promise<EventConfigSource[]> => {
+  const endpoint = '/eventconf/sources/ordered'
+  try {
+    const response = await v2.get(endpoint)
+    if (response.status === 200) {
+      return (response.data as any[]).map(source => mapEventConfigSourceFromServer(source))
+    }
+    throw new Error(`Unexpected response status: ${response.status}`)
+  } catch (error) {
+    console.error('Error fetching ordered event config sources:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a PUT request to the REST endpoint to replace the complete evaluation order of the sources.
+ *
+ * @param sourceIds Every non-catch-all source id exactly once, first entry evaluated first.
+ * @returns A promise resolving to the outcome; on a 400/404 `message` carries the server's explanation
+ * (for example which sources are missing from the list).
+ */
+export const updateEventConfigSourcesOrder = async (sourceIds: number[]): Promise<EventConfigMutationResult> => {
+  const endpoint = '/eventconf/sources/order'
+  try {
+    const response = await v2.put(endpoint, { sourceIds })
+    return { ok: response.status === 200, status: response.status, message: '' }
+  } catch (error) {
+    console.error('Error updating event config source order:', error)
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        ok: false,
+        status: error.response.status,
+        message: typeof error.response.data === 'string' ? error.response.data : ''
+      }
+    }
+    return { ok: false, status: 0, message: '' }
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to move one event within its source's evaluation order.
+ *
+ * @param sourceId The ID of the event configuration source owning the event.
+ * @param eventId The ID of the event configuration event to move.
+ * @param request The move to perform (mode top/bottom/up/down/position, plus the 1-based position).
+ * @returns A promise resolving to the outcome; on success `eventOrder` carries the event's new position.
+ */
+export const moveEventConfigEvent = async (
+  sourceId: number,
+  eventId: number,
+  request: EventConfigEventMoveRequest
+): Promise<EventConfigMutationResult & { eventOrder?: number }> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/${eventId}/order`
+  try {
+    const response = await v2.patch(endpoint, request)
+    return {
+      ok: response.status === 200,
+      status: response.status,
+      message: '',
+      eventOrder: response.data?.eventOrder
+    }
+  } catch (error) {
+    console.error('Error moving event config event:', error)
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        ok: false,
+        status: error.response.status,
+        message: typeof error.response.data === 'string' ? error.response.data : ''
+      }
+    }
+    return { ok: false, status: 0, message: '' }
   }
 }
 

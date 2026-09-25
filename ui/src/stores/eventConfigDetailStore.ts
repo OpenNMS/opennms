@@ -3,9 +3,16 @@ import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
   filterEventConfigEvents,
-  getEventConfSourceById
+  getEventConfSourceById,
+  moveEventConfigEvent
 } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import {
+  EventConfigDetailStoreState,
+  EventConfigEvent,
+  EventConfigEventMoveRequest,
+  EventConfigMutationResult,
+  EventConfigSource
+} from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -50,6 +57,11 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       visible: false,
       eventConfigEvent: null
     },
+    moveEventConfigEventDialogState: {
+      visible: false,
+      eventConfigEvent: null
+    },
+    isMovingEvent: false,
     deleteEventConfigSourceDialogState: {
       visible: false,
       eventConfigSource: null
@@ -153,6 +165,33 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     showChangeEventConfigEventStatusDialog(eventConfigEvent: EventConfigEvent) {
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
       this.changeEventConfigEventStatusDialogState.visible = true
+    },
+    showMoveEventConfigEventDialog(eventConfigEvent: EventConfigEvent) {
+      this.moveEventConfigEventDialogState.eventConfigEvent = eventConfigEvent
+      this.moveEventConfigEventDialogState.visible = true
+    },
+    hideMoveEventConfigEventDialog() {
+      this.moveEventConfigEventDialogState.visible = false
+      this.moveEventConfigEventDialogState.eventConfigEvent = null
+    },
+    async moveEventConfigEvent(
+      eventId: number,
+      request: EventConfigEventMoveRequest
+    ): Promise<EventConfigMutationResult & { eventOrder?: number }> {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return { ok: false, status: 0, message: 'No source selected' }
+      }
+      this.isMovingEvent = true
+      try {
+        const result = await moveEventConfigEvent(this.selectedSource.id, eventId, request)
+        if (result.ok) {
+          await this.fetchEventsBySourceId()
+        }
+        return result
+      } finally {
+        this.isMovingEvent = false
+      }
     },
     async hideChangeEventConfigEventStatusDialog() {
       this.changeEventConfigEventStatusDialogState.visible = false

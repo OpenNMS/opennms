@@ -288,6 +288,44 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
+    public int shiftEventOrder(Long sourceId, int from, int to, int delta) {
+        if (from > to) {
+            return 0;
+        }
+        final var session = getSessionFactory().getCurrentSession();
+        EventConfLocks.applyLockTimeout(session);
+        return session.createQuery("update EventConfEvent e set e.eventOrder = e.eventOrder + :delta " +
+                        "where e.source.id = :sourceId and e.eventOrder between :fromOrder and :toOrder")
+                .setParameter("delta", delta)
+                .setParameter("sourceId", sourceId)
+                .setParameter("fromOrder", from)
+                .setParameter("toOrder", to)
+                .executeUpdate();
+    }
+
+    @Override
+    public void updateEventOrder(Long sourceId, Long eventId, int eventOrder) {
+        final var session = getSessionFactory().getCurrentSession();
+        EventConfLocks.applyLockTimeout(session);
+        session.createQuery("update EventConfEvent e set e.eventOrder = :eventOrder, e.lastModified = :now " +
+                        "where e.source.id = :sourceId and e.id = :eventId")
+                .setParameter("eventOrder", eventOrder)
+                .setParameter("now", new java.util.Date())
+                .setParameter("sourceId", sourceId)
+                .setParameter("eventId", eventId)
+                .executeUpdate();
+    }
+
+    @Override
+    public EventConfEvent findNeighbourByOrder(Long sourceId, int eventOrder, boolean previous) {
+        final String hql = previous
+                ? "from EventConfEvent e where e.source.id = ?1 and e.eventOrder < ?2 order by e.eventOrder desc, e.id desc"
+                : "from EventConfEvent e where e.source.id = ?1 and e.eventOrder > ?2 order by e.eventOrder asc, e.id asc";
+        final List<EventConfEvent> neighbours = findWithPagination(hql, new Object[]{sourceId, eventOrder}, 0, 1);
+        return neighbours.isEmpty() ? null : neighbours.get(0);
+    }
+
+    @Override
     public void compactEventOrder(Long sourceId) {
         int updated = getSessionFactory().getCurrentSession()
                 .createNativeQuery("UPDATE eventconf_events e SET event_order = r.rn " +

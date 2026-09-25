@@ -37,9 +37,11 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.netmgt.model.events.EventConfSourceOrderPayload;
 import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
+import org.opennms.web.rest.v2.model.EventConfEventMoveRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.slf4j.Logger;
@@ -62,6 +64,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -619,6 +622,65 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Unexpected error occurred while creating EventConfSource")
                     .build();
+        }
+    }
+
+    @Override
+    public Response getOrderedEventConfSources(SecurityContext securityContext) {
+        try {
+            final List<EventConfSource> sources = new ArrayList<>(eventConfSourceDao.findAllByFileOrder());
+            Collections.reverse(sources); // highest fileOrder = evaluated first; catch-all (1) ends up last
+            return Response.ok(EventConfSourceDto.fromEntity(sources)).build();
+        } catch (Exception e) {
+            LOG.error("Failed to fetch the ordered event-conf sources", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch the ordered EventConf sources: " + e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response updateEventConfSourcesOrder(final EventConfSourceOrderPayload payload, SecurityContext securityContext) throws Exception {
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        if (payload.getSourceIds() == null || payload.getSourceIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one sourceId must be provided.").build();
+        }
+
+        try {
+            final int updated = eventConfPersistenceService.reorderEventConfSources(payload.getSourceIds());
+            eventConfPersistenceService.reloadEventsIntoMemory();
+            return Response.ok(Map.of("updated", updated)).build();
+
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
+        } catch (Exception ex) {
+            LOG.error("Failed to reorder the event-conf sources", ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response moveEventConfSourceEvent(final Long sourceId, final Long eventId, final EventConfEventMoveRequest request,
+                                             SecurityContext securityContext) throws Exception {
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        try {
+            final int eventOrder = eventConfPersistenceService.moveEventConfEvent(sourceId, eventId, request);
+            eventConfPersistenceService.reloadEventsIntoMemory();
+            return Response.ok(Map.of("id", eventId, "eventOrder", eventOrder)).build();
+
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
+        } catch (Exception ex) {
+            LOG.error("Failed to move event {} of source {}", eventId, sourceId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
     }
 

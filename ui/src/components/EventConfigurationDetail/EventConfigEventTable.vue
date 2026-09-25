@@ -142,6 +142,7 @@
     </div>
     <DeleteEventConfigEventDialog />
     <ChangeEventConfigEventStatusDialog />
+    <MoveEventConfigEventDialog />
   </TableCard>
 </template>
 
@@ -171,11 +172,14 @@ import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
+import useSnackbar from '@/composables/useSnackbar'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
+import MoveEventConfigEventDialog from './Dialog/MoveEventConfigEventDialog.vue'
 
 const store = useEventConfigDetailStore()
+const { showSnackBar } = useSnackbar()
 const router = useRouter()
 const searchId = useId()
 const emptyListContent = {
@@ -186,6 +190,23 @@ const expandedRows = ref<Record<string | number, boolean>>({})
 
 const rowMenu = ref()
 const rowMenuTarget = ref<EventConfigEvent | null>(null)
+
+// Moves are offered only while the table shows the server's true neighbours: the evaluation
+// order, unfiltered.
+const movesEnabled = computed(() =>
+  store.eventsSorting.sortKey === 'eventOrder' &&
+  store.eventsSorting.sortOrder === 'asc' &&
+  store.eventsSearchTerm.trim() === '')
+
+const moveEvent = async (target: EventConfigEvent, mode: 'top' | 'bottom' | 'up' | 'down') => {
+  const result = await store.moveEventConfigEvent(target.id, { mode })
+  if (result.ok) {
+    showSnackBar({ msg: `Moved "${target.eventLabel}" to position ${result.eventOrder}` })
+  } else {
+    showSnackBar({ msg: result.message || 'Failed to move the event', error: true })
+  }
+}
+
 const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
@@ -203,6 +224,36 @@ const rowMenuItems = computed<OnmsMenuItem[]>(() => {
       command: () => store.showDeleteEventConfigEventDialog(target)
     })
   }
+  const disabled = !movesEnabled.value
+  const suffix = disabled ? ' (sort by Order, clear search)' : ''
+  items.push(
+    { separator: true },
+    {
+      label: `Move Up${suffix}`,
+      disabled,
+      command: () => moveEvent(target, 'up')
+    },
+    {
+      label: `Move Down${suffix}`,
+      disabled,
+      command: () => moveEvent(target, 'down')
+    },
+    {
+      label: `Move to Top${suffix}`,
+      disabled,
+      command: () => moveEvent(target, 'top')
+    },
+    {
+      label: `Move to Bottom${suffix}`,
+      disabled,
+      command: () => moveEvent(target, 'bottom')
+    },
+    {
+      label: `Move to Position...${suffix}`,
+      disabled,
+      command: () => store.showMoveEventConfigEventDialog(target)
+    }
+  )
   return items
 })
 

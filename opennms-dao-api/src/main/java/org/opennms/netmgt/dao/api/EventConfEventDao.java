@@ -86,4 +86,25 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
      * preserving the current relative order (by eventOrder, then id).
      */
     void compactEventOrder(Long sourceId);
+
+    /**
+     * Adds {@code delta} to the {@code eventOrder} of the source's events whose order lies in
+     * {@code [from, to]} (inclusive). Intermediate duplicates are tolerated by the deferred unique
+     * constraint; the caller is responsible for a consistent end state at commit.
+     *
+     * @return the number of events shifted
+     */
+    int shiftEventOrder(Long sourceId, int from, int to, int delta);
+
+    /**
+     * Sets the {@code eventOrder} of one event of the source (and touches its lastModified).
+     */
+    void updateEventOrder(Long sourceId, Long eventId, int eventOrder);
+
+    /**
+     * @param previous true for the event immediately before the given order within the source
+     *                 (the next-lower {@code eventOrder}), false for the one immediately after
+     * @return the neighbouring event, or null when the given order is already at that edge
+     */
+    EventConfEvent findNeighbourByOrder(Long sourceId, int eventOrder, boolean previous);
 }

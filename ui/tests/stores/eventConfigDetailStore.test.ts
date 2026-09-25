@@ -2,7 +2,8 @@ import { Severity } from '@/components/EventConfigEventCreate/constants'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
-  filterEventConfigEvents
+  filterEventConfigEvents,
+  moveEventConfigEvent
 } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
@@ -12,7 +13,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigEventStatus: vi.fn(),
   changeEventConfigSourceStatus: vi.fn(),
-  filterEventConfigEvents: vi.fn()
+  filterEventConfigEvents: vi.fn(),
+  getEventConfSourceById: vi.fn(),
+  moveEventConfigEvent: vi.fn()
 }))
 
 describe('useEventConfigDetailStore', () => {
@@ -544,6 +547,52 @@ describe('useEventConfigDetailStore', () => {
     expect(store.eventsSorting).toEqual({ sortKey: 'eventOrder', sortOrder: 'asc' })
     expect(store.eventsSearchTerm).toBe('')
     expect(store.eventsPagination).toEqual({ page: 1, pageSize: 10, total: 0 })
+  })
+
+  describe('move event', () => {
+    it('show/hide the move dialog carries the event', () => {
+      const mockEvent = mockEvents[0]
+      store.showMoveEventConfigEventDialog(mockEvent)
+      expect(store.moveEventConfigEventDialogState.visible).toBe(true)
+      expect(store.moveEventConfigEventDialogState.eventConfigEvent).toEqual(mockEvent)
+
+      store.hideMoveEventConfigEventDialog()
+      expect(store.moveEventConfigEventDialogState.visible).toBe(false)
+      expect(store.moveEventConfigEventDialogState.eventConfigEvent).toBeNull()
+    })
+
+    it('moveEventConfigEvent calls the service and refreshes the page on success', async () => {
+      store.selectedSource = mockSource
+      vi.mocked(moveEventConfigEvent).mockResolvedValue({ ok: true, status: 200, message: '', eventOrder: 1 })
+      vi.mocked(filterEventConfigEvents).mockResolvedValue(mockFilterResponse)
+
+      const result = await store.moveEventConfigEvent(7, { mode: 'position', position: 1 })
+
+      expect(moveEventConfigEvent).toHaveBeenCalledWith(mockSource.id, 7, { mode: 'position', position: 1 })
+      expect(result.eventOrder).toBe(1)
+      expect(filterEventConfigEvents).toHaveBeenCalled()
+      expect(store.isMovingEvent).toBe(false)
+    })
+
+    it('moveEventConfigEvent does not refresh on failure and reports the message', async () => {
+      store.selectedSource = mockSource
+      vi.mocked(moveEventConfigEvent).mockResolvedValue({ ok: false, status: 400, message: 'position must be between 1 and 5' })
+
+      const result = await store.moveEventConfigEvent(7, { mode: 'position', position: 9 })
+
+      expect(result.ok).toBe(false)
+      expect(result.message).toContain('between 1 and 5')
+      expect(filterEventConfigEvents).not.toHaveBeenCalled()
+    })
+
+    it('moveEventConfigEvent without a selected source fails fast', async () => {
+      store.selectedSource = null
+
+      const result = await store.moveEventConfigEvent(7, { mode: 'up' })
+
+      expect(result.ok).toBe(false)
+      expect(moveEventConfigEvent).not.toHaveBeenCalled()
+    })
   })
 
 })

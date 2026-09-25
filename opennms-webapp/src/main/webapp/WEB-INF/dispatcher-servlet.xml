@@ -261,7 +261,7 @@
         <property name="webOutageRepository" ref="webOutageRepository"/>
     </bean>
 
-    <bean id="eventConfProgrammaticService" class="org.opennms.web.services.EventConfProgrammaticService" destroy-method="shutdown">
+    <bean id="eventConfProgrammaticService" class="org.opennms.web.services.EventConfProgrammaticService">
         <property name="eventConfSourceDao" ref="eventConfSourceDao"/>
         <property name="eventConfEventDao" ref="eventConfEventDao"/>
         <property name="eventConfGlobalSecurityDao" ref="eventConfGlobalSecurityDao"/>

@@ -57,6 +57,20 @@ export type EventConfigEvent = {
   eventOrder: number
 }
 
+export type EventConfigEventMoveMode = 'top' | 'bottom' | 'up' | 'down' | 'position'
+
+export type EventConfigEventMoveRequest = {
+  mode: EventConfigEventMoveMode
+  /** 1-based target for mode 'position' (1 = evaluated first); ignored otherwise */
+  position?: number
+}
+
+export type EventConfigMutationResult = {
+  ok: boolean
+  status: number
+  message: string
+}
+
 export type EventConfigStoreState = {
   sources: EventConfigSource[]
   sourcesPagination: Pagination
@@ -65,6 +79,14 @@ export type EventConfigStoreState = {
   isLoading: boolean
   activeTab: number
   uploadedSources: Array<UploadedSourceNamesResponse>
+  /** Non-catch-all sources in evaluation order (first evaluated first), for the reorder drawer */
+  orderedSources: EventConfigSource[]
+  /** The pinned catch-all source, shown locked below the reorderable list */
+  catchAllSource: EventConfigSource | null
+  isSavingSourceOrder: boolean
+  reorderSourcesDrawerState: {
+    visible: boolean
+  }
   uploadedEventConfigFilesReportDialogState: {
     visible: boolean
   }
@@ -96,6 +118,11 @@ export type EventConfigDetailStoreState = {
     visible: boolean
     eventConfigEvent: EventConfigEvent | null
   }
+  moveEventConfigEventDialogState: {
+    visible: boolean
+    eventConfigEvent: EventConfigEvent | null
+  }
+  isMovingEvent: boolean
   deleteEventConfigSourceDialogState: {
     visible: boolean
     eventConfigSource: EventConfigSource | null

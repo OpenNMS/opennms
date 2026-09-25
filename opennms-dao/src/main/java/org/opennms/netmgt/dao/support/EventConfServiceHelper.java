@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -97,31 +97,62 @@ public class EventConfServiceHelper {
                 dbEvents.size(), (endTime - startTime), (fetchedAt - startTime), (endTime - fetchedAt));
     }
 
+    /** True while a reload task is queued but has not yet begun reading the database. */
+    private static final AtomicBoolean RELOAD_QUEUED = new AtomicBoolean(false);
+
     /**
-     * Reloads all enabled events from the database into memory asynchronously.
+     * The single lane every reload runs on. Serialized publishes keep the coalescing below correct:
+     * the queued task that justified skipping a request is always also the last to publish.
+     */
+    private static final ExecutorService RELOAD_EXECUTOR = Executors.newSingleThreadExecutor(
+            new ThreadFactoryBuilder().setNameFormat("eventconf-reload-%d").setDaemon(true).build());
+
+    /**
+     * Reloads all enabled events from the database into memory asynchronously, on the shared
+     * serialized reload executor.
+     * <p>
+     * Bursts of mutations (for example several single-event moves in a row) are coalesced: while a
+     * queued reload has not started reading yet, it will observe this mutation's committed state
+     * too, so a second reload would only rebuild the same result. The flag is cleared before the
+     * read begins, so a mutation that commits any later always gets a fresh reload.
      *
      * @param eventConfEventDao The DAO for retrieving EventConfEvent entities
      * @param eventConfDao The DAO for loading events into memory
-     * @param executor The ExecutorService to use for async execution
      */
     public static void reloadEventsFromDBAsync(EventConfEventDao eventConfEventDao,
                                                  EventConfDao eventConfDao,
-                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao,
-                                                 ExecutorService executor) {
-        executor.execute(() -> reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao));
+                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao) {
+        reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, RELOAD_EXECUTOR);
     }
 
     /**
-     * Creates a single-threaded executor with a custom thread factory for EventConf operations.
-     *
-     * @param threadNameFormat The format string for thread names (e.g., "load-eventConf-%d")
-     * @return A configured ExecutorService
+     * Visible for testing. Production callers use the public overload: the coalescing flag is
+     * global, so it is only correct when every reload shares one serialized executor.
      */
-    public static ExecutorService createEventConfExecutor(String threadNameFormat) {
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat(threadNameFormat)
-                .build();
-        return Executors.newSingleThreadExecutor(threadFactory);
+    static void reloadEventsFromDBAsync(EventConfEventDao eventConfEventDao,
+                                                 EventConfDao eventConfDao,
+                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao,
+                                                 ExecutorService executor) {
+        if (!RELOAD_QUEUED.compareAndSet(false, true)) {
+            LOG.debug("An event configuration reload is already queued, coalescing this request");
+            return;
+        }
+        try {
+            executor.execute(() -> {
+                RELOAD_QUEUED.set(false);
+                try {
+                    reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+                } catch (Exception e) {
+                    // not retried; the next mutation queues a fresh reload
+                    LOG.error("Reloading the event configuration from the database failed; "
+                            + "the in-memory configuration is stale until the next change triggers a reload", e);
+                }
+            });
+        } catch (RuntimeException e) {
+            // a rejected execution (e.g. on shutdown) queued nothing, so the flag is released
+            RELOAD_QUEUED.set(false);
+            throw e;
+        }
     }
 
     /**

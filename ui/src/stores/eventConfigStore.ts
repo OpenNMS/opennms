@@ -1,9 +1,12 @@
+import { EVENT_CONF_CATCH_ALL_SOURCE } from '@/lib/utils'
 import {
   changeEventConfigSourceStatus,
   filterEventConfigSources,
-  getAllSourceNames
+  getAllSourceNames,
+  getOrderedEventConfigSources,
+  updateEventConfigSourcesOrder
 } from '@/services/eventConfigService'
-import { EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
+import { EventConfigMutationResult, EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -24,6 +27,12 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     isLoading: false,
     activeTab: 0,
     uploadedSources: [],
+    orderedSources: [],
+    catchAllSource: null,
+    isSavingSourceOrder: false,
+    reorderSourcesDrawerState: {
+      visible: false
+    },
     uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
@@ -145,6 +154,39 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     hideCreateEventConfigSourceDialog() {
       this.createEventConfigSourceDialogState.visible = false
+    },
+    async showReorderSourcesDrawer() {
+      this.reorderSourcesDrawerState.visible = true
+      await this.fetchOrderedSources()
+    },
+    hideReorderSourcesDrawer() {
+      this.reorderSourcesDrawerState.visible = false
+    },
+    async fetchOrderedSources() {
+      this.isLoading = true
+      try {
+        const sources = await getOrderedEventConfigSources()
+        this.orderedSources = sources.filter(source => source.name !== EVENT_CONF_CATCH_ALL_SOURCE)
+        this.catchAllSource = sources.find(source => source.name === EVENT_CONF_CATCH_ALL_SOURCE) ?? null
+      } catch (error) {
+        console.error('Error fetching ordered event configuration sources:', error)
+        this.orderedSources = []
+        this.catchAllSource = null
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async saveSourcesOrder(sourceIds: number[]): Promise<EventConfigMutationResult> {
+      this.isSavingSourceOrder = true
+      try {
+        const result = await updateEventConfigSourcesOrder(sourceIds)
+        if (result.ok) {
+          await this.fetchEventConfigs()
+        }
+        return result
+      } finally {
+        this.isSavingSourceOrder = false
+      }
     }
   }
 })

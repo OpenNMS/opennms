@@ -7,7 +7,6 @@ import { CreateEditMode } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import Button from 'primevue/button'
 import { setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -27,7 +26,9 @@ describe('EventConfiguration.vue (container)', () => {
       stubs: {
         EventConfigTabContainer: true,
         CreateEventConfigurationDialog: true,
-        BreadCrumbs: true
+        ReorderEventConfigSourcesDrawer: true,
+        BreadCrumbs: true,
+        OnmsMenu: { name: 'OnmsMenu', props: ['items'], template: '<div class="menu-stub"></div>' }
       }
     }
   })
@@ -37,6 +38,7 @@ describe('EventConfiguration.vue (container)', () => {
     setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
     store = useEventConfigStore()
     store.showCreateEventConfigSourceDialog = vi.fn()
+    store.showReorderSourcesDrawer = vi.fn()
     useMenuStore().mainMenu = { homeUrl: '/opennms' } as any
     modificationStore = useEventModificationStore()
     modificationStore.openCreateWithoutSource = vi.fn()
@@ -48,21 +50,28 @@ describe('EventConfiguration.vue (container)', () => {
     expect(wrapper.findComponent(EventConfigTabContainer).exists()).toBe(true)
   })
 
-  it('renders the two create buttons', () => {
-    const labels = wrapper.findAllComponents(Button).map(b => b.props('label'))
-    expect(labels).toContain('Create New Event Source')
-    expect(labels).toContain('Create New Event Config')
+  it('renders the Reorder Sources button and the single Create menu button', () => {
+    expect(wrapper.find('[data-test="reorder-sources-button"]').text()).toContain('Reorder Sources')
+    expect(wrapper.find('[data-test="create-menu-button"]').text()).toContain('Create')
   })
 
-  it('opens the create-source dialog from the first button', async () => {
-    const btn = wrapper.findAllComponents(Button).find(b => b.props('label') === 'Create New Event Source')
-    await btn?.trigger('click')
+  it('mounts the reorder drawer', () => {
+    expect(wrapper.findComponent({ name: 'ReorderEventConfigSourcesDrawer' }).exists()).toBe(true)
+  })
+
+  it('opens the reorder drawer from the header button', async () => {
+    await wrapper.find('[data-test="reorder-sources-button"]').trigger('click')
+    expect(store.showReorderSourcesDrawer).toHaveBeenCalled()
+  })
+
+  it('the Create menu opens the create-source dialog and the create-event flow', () => {
+    const items = wrapper.vm.createMenuItems
+    expect(items.map((i: any) => i.label)).toEqual(['New Event Source', 'New Event Config'])
+
+    items[0].command()
     expect(store.showCreateEventConfigSourceDialog).toHaveBeenCalled()
-  })
 
-  it('navigates to the create-event flow from the second button', async () => {
-    const btn = wrapper.findAllComponents(Button).find(b => b.props('label') === 'Create New Event Config')
-    await btn?.trigger('click')
+    items[1].command()
     expect(modificationStore.openCreateWithoutSource).toHaveBeenCalledWith(CreateEditMode.Create, expect.any(Object))
     expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration Create' })
   })

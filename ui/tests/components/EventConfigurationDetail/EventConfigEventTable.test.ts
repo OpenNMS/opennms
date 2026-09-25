@@ -17,7 +17,8 @@ vi.mock('vue-router', () => ({
 
 const stubs = {
   DeleteEventConfigEventDialog: { name: 'DeleteEventConfigEventDialog', template: '<div class="delete-event-dialog-stub"></div>' },
-  ChangeEventConfigEventStatusDialog: { name: 'ChangeEventConfigEventStatusDialog', template: '<div class="change-status-dialog-stub"></div>' }
+  ChangeEventConfigEventStatusDialog: { name: 'ChangeEventConfigEventStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
+  MoveEventConfigEventDialog: { name: 'MoveEventConfigEventDialog', template: '<div class="move-event-dialog-stub"></div>' }
 }
 
 describe('EventConfigEventTable.vue', () => {
@@ -65,6 +66,8 @@ describe('EventConfigEventTable.vue', () => {
     store.onEventsSortChange = vi.fn().mockResolvedValue(undefined)
     store.showChangeEventConfigEventStatusDialog = vi.fn()
     store.showDeleteEventConfigEventDialog = vi.fn()
+    store.showMoveEventConfigEventDialog = vi.fn()
+    store.moveEventConfigEvent = vi.fn().mockResolvedValue({ ok: true, status: 200, message: '', eventOrder: 6 })
 
     modificationStore = useEventModificationStore()
     modificationStore.setSelectedEventConfigSource = vi.fn()
@@ -219,11 +222,19 @@ describe('EventConfigEventTable.vue', () => {
   })
 
   describe('Row action menu', () => {
-    it('builds enable/disable + delete items for a non-OpenNMS source', () => {
+    it('builds enable/disable + delete + move items for a non-OpenNMS source', () => {
       store.selectedSource = { ...mockSource, vendor: 'Cisco' }
       wrapper.vm.rowMenuTarget = mockEvent
-      const labels = wrapper.vm.rowMenuItems.map((i: any) => i.label)
-      expect(labels).toEqual(['Disable Event', 'Delete Event'])
+      const labels = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator).map((i: any) => i.label)
+      expect(labels).toEqual([
+        'Disable Event',
+        'Delete Event',
+        'Move Up',
+        'Move Down',
+        'Move to Top',
+        'Move to Bottom',
+        'Move to Position...'
+      ])
     })
 
     it('shows Enable label when the event is disabled', () => {
@@ -237,6 +248,44 @@ describe('EventConfigEventTable.vue', () => {
       wrapper.vm.rowMenuTarget = mockEvent
       const labels = wrapper.vm.rowMenuItems.map((i: any) => i.label)
       expect(labels).not.toContain('Delete Event')
+    })
+
+    it('enables the move items while sorted by eventOrder ascending with no search', () => {
+      wrapper.vm.rowMenuTarget = mockEvent
+      const moveItems = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator && String(i.label).startsWith('Move'))
+      expect(moveItems).toHaveLength(5)
+      moveItems.forEach((item: any) => {
+        expect(item.disabled).toBe(false)
+      })
+    })
+
+    it('disables the move items with an explanation when the sort or search breaks the order view', () => {
+      store.eventsSorting = { sortKey: 'uei', sortOrder: 'asc' }
+      wrapper.vm.rowMenuTarget = mockEvent
+      let moveItems = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator && String(i.label).startsWith('Move'))
+      moveItems.forEach((item: any) => {
+        expect(item.disabled).toBe(true)
+        expect(item.label).toContain('(sort by Order, clear search)')
+      })
+
+      store.eventsSorting = { sortKey: 'eventOrder', sortOrder: 'asc' }
+      store.eventsSearchTerm = 'link'
+      moveItems = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator && String(i.label).startsWith('Move'))
+      moveItems.forEach((item: any) => {
+        expect(item.disabled).toBe(true)
+      })
+    })
+
+    it('Move Up calls the store with mode up', async () => {
+      wrapper.vm.rowMenuTarget = mockEvent
+      await wrapper.vm.rowMenuItems.find((i: any) => i.label === 'Move Up').command()
+      expect(store.moveEventConfigEvent).toHaveBeenCalledWith(mockEvent.id, { mode: 'up' })
+    })
+
+    it('Move to Position opens the move dialog', () => {
+      wrapper.vm.rowMenuTarget = mockEvent
+      wrapper.vm.rowMenuItems.find((i: any) => i.label === 'Move to Position...').command()
+      expect(store.showMoveEventConfigEventDialog).toHaveBeenCalledWith(mockEvent)
     })
 
     it('change-status command opens the change-status dialog', () => {

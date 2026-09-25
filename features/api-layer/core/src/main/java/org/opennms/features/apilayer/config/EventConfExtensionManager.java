@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import org.opennms.core.xml.JaxbUtils;
@@ -69,7 +68,6 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
     private final EventConfEventDao eventConfEventDao;
     private final EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private final SessionUtils sessionUtils;
-    private final ExecutorService executor;
     private volatile EventConfSource pluginSource;
 
     public EventConfExtensionManager(EventConfDao eventConfDao, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, EventConfGlobalSecurityDao eventConfGlobalSecurityDao, SessionUtils sessionUtils) {
@@ -79,7 +77,6 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         this.eventConfEventDao = Objects.requireNonNull(eventConfEventDao);
         this.eventConfGlobalSecurityDao = Objects.requireNonNull(eventConfGlobalSecurityDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
-        this.executor = EventConfServiceHelper.createEventConfExecutor("integration-api-eventconf-%d");
         LOG.debug("EventConfExtensionManager initialized.");
     }
 
@@ -101,7 +98,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         LOG.debug("Event configuration changed. Syncing to database and triggering reload.");
         boolean changesApplied = syncEventsToDatabase();
         if (changesApplied) {
-            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, executor);
+            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
         } else {
             LOG.debug("No changes to sync, skipping reload.");
         }
@@ -234,11 +231,6 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         return source;
     }
 
-    public void destroy() {
-        if (executor != null) {
-            executor.shutdown();
-        }
-    }
 
     private static Event toEvent(EventDefinition def) {
         final Event event = new Event();

@@ -72,3 +72,6 @@ export const hasNonEmptyProperty = (obj?: any) => {
 }
 
 export const VENDOR_OPENNMS = 'opennms'
+
+/** Pinned event-conf source that is always evaluated last and cannot be reordered. */
+export const EVENT_CONF_CATCH_ALL_SOURCE = 'opennms.catch-all.events'
