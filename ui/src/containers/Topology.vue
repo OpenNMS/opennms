@@ -50,27 +50,18 @@ License.
               class="view-chooser"
               aria-label="Choose a topology view"
             />
-            <OnmsButton label="New" variant="outlined" @click="onNew" />
             <OnmsButton label="Save" :loading="store.isSaving" :disabled="!canSave" @click="onSave" />
-            <OnmsButton
-              label="Save As"
+            <!-- The less frequent view actions sit behind one menu, so the bar
+                 keeps the one button pressed many times a session. -->
+            <OnmsIconButton
+              :icon="MoreVert"
+              title="View actions"
+              tooltip="New, Save As, Rename, Delete"
               variant="outlined"
-              :disabled="store.isSaving"
-              @click="onSaveAs"
+              aria-haspopup="true"
+              @click="viewMenuRef?.toggle($event)"
             />
-            <OnmsButton
-              label="Rename"
-              variant="outlined"
-              :disabled="!store.currentView"
-              @click="onRename"
-            />
-            <OnmsButton
-              label="Delete"
-              severity="danger"
-              variant="outlined"
-              :disabled="!canDelete"
-              @click="onDelete"
-            />
+            <OnmsTieredMenu ref="viewMenuRef" :items="viewMenuModel" />
           </template>
           <template v-else>
             <!-- Variant picker: which representation of this discovered source
@@ -155,8 +146,10 @@ License.
               <OnmsButton label="Show all" variant="outlined" @click="showAll" />
             </span>
           </template>
-          <OnmsButton
-            :label="refreshLabel"
+          <OnmsIconButton
+            :icon="RefreshIcon"
+            :title="refreshLabel"
+            :tooltip="refreshLabel"
             :disabled="store.isDiscoveredLoading"
             variant="outlined"
             @click="onRefresh"
@@ -191,8 +184,20 @@ License.
             />
             <span class="node-size-dot node-size-dot-lg" />
           </span>
-          <OnmsButton label="Fit" variant="outlined" @click="canvasRef?.fit()" />
-          <OnmsButton label="Export PNG" variant="outlined" @click="onExport" />
+          <OnmsIconButton
+            :icon="Fullscreen"
+            title="Fit to view"
+            tooltip="Fit everything in the view"
+            variant="outlined"
+            @click="canvasRef?.fit()"
+          />
+          <OnmsIconButton
+            :icon="DownloadFile"
+            title="Export PNG"
+            tooltip="Export the map as a PNG"
+            variant="outlined"
+            @click="onExport"
+          />
       </div>
     </div>
 
@@ -291,6 +296,7 @@ import {
   OnmsConfirmationDialog,
   OnmsContextMenu,
   OnmsIcon,
+  OnmsIconButton,
   OnmsSelect,
   OnmsSelectButton,
   OnmsSlider,
@@ -300,6 +306,10 @@ import {
 import type { OnmsMenuItem } from '@opennms/onms-ui'
 import type { SourceGroup } from '@/components/Topology/sources'
 import ExpandMore from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
+import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
+import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
+import Fullscreen from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
+import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import { useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
 import TopologyPalette from '@/components/Topology/TopologyPalette.vue'
@@ -368,6 +378,15 @@ const selectedVariant = computed<string>({
 // Grouped source menu: Custom as a leaf, discovered sources under a submenu
 // (new providers slot in as further submenus). Each command navigates the
 // route. The active source is marked.
+const viewMenuRef = ref<{ toggle: (event: Event) => void } | null>(null)
+const viewMenuModel = computed<OnmsMenuItem[]>(() => [
+  { label: 'New', command: onNew },
+  { label: 'Save As', disabled: store.isSaving, command: onSaveAs },
+  { label: 'Rename', disabled: !store.currentView, command: onRename },
+  { separator: true },
+  { label: 'Delete', disabled: !canDelete.value, class: 'view-item-danger', command: onDelete }
+])
+
 const sourceMenuRef = ref<{ toggle: (event: Event) => void } | null>(null)
 const sourceMenuModel = computed<OnmsMenuItem[]>(() => {
   const item = (slug: string, label: string): OnmsMenuItem => ({

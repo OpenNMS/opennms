@@ -96,7 +96,15 @@ vi.mock('@/services/topologyService', () => ({
 const stubs = {
   TopologyPalette: { template: '<div />' },
   TopologyInspector: { template: '<div />' },
-  TopologyExplorePanel: { template: '<div />' }
+  TopologyExplorePanel: { template: '<div />' },
+  // The view-actions menu renders its items as plain buttons here, so the
+  // tests keep clicking actions by label without opening a popup.
+  OnmsTieredMenu: {
+    props: ['items'],
+    template: `<div><template v-for="item in items" :key="item.label">
+      <button v-if="!item.separator" :disabled="item.disabled" @click="item.command?.({ originalEvent: $event, item })">{{ item.label }}</button>
+    </template></div>`
+  }
 }
 
 const currentView = { id: 'v1', name: 'Core switches' }
@@ -143,6 +151,17 @@ const click = async (label: string, scope: ParentNode = document) => {
 
 // Once the dialog is open the toolbar's Delete and the dialog's Delete are both
 // on the page, so answering it has to be scoped to the dialog.
+/** Icon buttons carry their name as the icon's aria-label, or a title, not as text. */
+const clickTitled = async (title: string, scope: ParentNode = document) => {
+  const button = Array.from(scope.querySelectorAll('button'))
+    .find(b => b.getAttribute('title') === title || !!b.querySelector(`[aria-label="${title}"]`))
+  expect(button, `no "${title}" button rendered`).toBeTruthy()
+  ;(button as HTMLElement).click()
+  await flushPromises()
+  await nextTick()
+  await flushPromises()
+}
+
 const clickInDialog = async (label: string) => {
   const dialog = document.querySelector('.p-dialog')
   expect(dialog, 'dialog is not open').toBeTruthy()
@@ -287,7 +306,7 @@ describe('Topology discovered refresh', () => {
     expect(store.focusNodeId).toBe('a')
     vi.mocked(service.loadDiscoveredGraph).mockClear()
 
-    await click('Refresh Graph')
+    await clickTitled('Refresh Graph')
 
     expect(vi.mocked(service.loadDiscoveredGraph)).toHaveBeenCalledTimes(1)
     // loadDiscoveredSource clears focus; the URL is what puts it back.
@@ -301,7 +320,7 @@ describe('Topology discovered refresh', () => {
     vi.mocked(service.loadDiscoveredGraph).mockClear()
     const refreshStatus = vi.spyOn(store, 'refreshStatus').mockResolvedValue(undefined as never)
 
-    await click('Refresh status')
+    await clickTitled('Refresh status')
 
     expect(refreshStatus).toHaveBeenCalled()
     expect(vi.mocked(service.loadDiscoveredGraph)).not.toHaveBeenCalled()
