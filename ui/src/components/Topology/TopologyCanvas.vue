@@ -437,12 +437,17 @@ const MAX_HISTORY = 100
 const undoStack: Command[] = []
 const redoStack: Command[] = []
 
+// Bumped on every command, undo and redo: the page compares its saved and
+// live snapshots when this moves.
+const changeVersion = ref(0)
+
 const pushCommand = (cmd: Command) => {
   undoStack.push(cmd)
   if (undoStack.length > MAX_HISTORY) {
     undoStack.shift()
   }
   redoStack.length = 0
+  changeVersion.value++
 }
 
 const undo = () => {
@@ -452,6 +457,7 @@ const undo = () => {
   }
   cmd.undo()
   redoStack.push(cmd)
+  changeVersion.value++
 }
 
 const redo = () => {
@@ -461,6 +467,7 @@ const redo = () => {
   }
   cmd.do()
   undoStack.push(cmd)
+  changeVersion.value++
 }
 
 const clearHistory = () => {
@@ -2843,7 +2850,8 @@ defineExpose({
   placeNeighbor,
   getNodeIconOverride,
   setNodeIconOverride,
-  exportImage
+  exportImage,
+  changeVersion
 })
 </script>
 

@@ -651,3 +651,55 @@ describe('Topology view naming', () => {
     expect(store.isEditMode).toBe(true)
   })
 })
+
+describe('Topology unsaved changes', () => {
+  afterEach(() => {
+    unmountAll()
+  })
+
+  const wait = async (ms: number) => {
+    await new Promise(resolve => setTimeout(resolve, ms))
+    await flushPromises()
+    await nextTick()
+  }
+
+  /** The harness assigns currentView directly; a save re-marks the baseline the way a load does. */
+  const settle = async (store: ReturnType<typeof useTopologyStore>) => {
+    vi.spyOn(store, 'saveCurrentView').mockResolvedValue(true)
+    await click('Save')
+    await wait(200)
+  }
+
+  it('flags a store-side edit until the view is saved, and colors the bar', async () => {
+    const { wrapper, store } = await mountPage()
+    await settle(store)
+    expect(wrapper.find('.unsaved-badge').exists()).toBe(false)
+    expect(wrapper.find('.topology-page').classes()).not.toContain('is-dirty')
+
+    store.addLabel({ id: 'l1', text: 'Core', x: 10, y: 10 } as never)
+    await wait(200)
+    expect(wrapper.find('.unsaved-badge').text()).toBe('Unsaved changes')
+    expect(wrapper.find('.topology-page').classes()).toContain('is-dirty')
+
+    await click('Save')
+    await wait(200)
+    expect(wrapper.find('.unsaved-badge').exists()).toBe(false)
+  })
+
+  it('asks before switching to another view while dirty, and stays when declined', async () => {
+    const { wrapper, store } = await mountPage()
+    await settle(store)
+    store.addLabel({ id: 'l1', text: 'Core', x: 10, y: 10 } as never)
+    await wait(200)
+    const open = vi.spyOn(store, 'openView').mockResolvedValue(false)
+    // jsdom has no confirm(); the page calls it, so give it one that declines.
+    const confirm = vi.fn(() => false)
+    ;(window as unknown as { confirm: () => boolean }).confirm = confirm
+
+    // Drive the chooser's model the way a pick does.
+    ;(wrapper.vm as unknown as { currentViewId: string | null }).currentViewId = 'v2'
+    await flushPromises()
+    expect(confirm).toHaveBeenCalledTimes(1)
+    expect(open).not.toHaveBeenCalled()
+  })
+})

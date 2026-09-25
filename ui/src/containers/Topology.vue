@@ -21,7 +21,7 @@ License.
 -->
 
 <template>
-  <div class="topology-page" :class="store.isEditMode ? 'is-edit' : 'is-view'">
+  <div class="topology-page" :class="[store.isEditMode ? 'is-edit' : 'is-view', { 'is-dirty': isDirty }]">
     <div class="topology-toolbar">
       <div class="toolbar-start">
           <span class="topology-title">Topology (Preview)</span>
@@ -51,6 +51,7 @@ License.
               aria-label="Choose a topology view"
             />
             <OnmsButton label="Save" :loading="store.isSaving" :disabled="!canSave" @click="onSave" />
+            <span v-if="isDirty" class="unsaved-badge" role="status">Unsaved changes</span>
             <!-- The less frequent view actions sit behind one menu, so the bar
                  keeps the one button pressed many times a session. -->
             <OnmsIconButton
@@ -321,7 +322,7 @@ import Fullscreen from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import Options from '@opennms/onms-ui/icons/action/Options.vue'
 import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
 import TopologyPalette from '@/components/Topology/TopologyPalette.vue'
 import TopologyAppearance from '@/components/Topology/TopologyAppearance.vue'
@@ -358,7 +359,7 @@ const currentSource = computed(() => sourceForSlug(store.topologySources, source
 // Navigate to a source via the route so every source stays bookmarkable.
 // Dropping the query resets the variant to the group's default.
 const goToSource = (slug: string) => {
-  if (slug !== sourceSlug.value) {
+  if (slug !== sourceSlug.value && confirmDiscard()) {
     router.push({ name: 'Topology', params: { source: slug }})
   }
 }
@@ -857,11 +858,77 @@ const canDelete = computed<boolean>(
 const currentViewId = computed<string | null>({
   get: () => store.currentView?.id ?? null,
   set: (id) => {
-    if (id && id !== store.currentView?.id) {
+    if (id && id !== store.currentView?.id && confirmDiscard()) {
       openIntoCanvas(id)
     }
   }
 })
+
+// --- Unsaved changes ---------------------------------------------------------
+// The view as it would be saved, minus the viewport, which is not a change.
+// Compared as a string against what was last loaded or saved, on every
+// canvas command and store-side edit, a beat after the last one.
+const snapshotNow = (): string => {
+  const canvas = canvasRef.value?.serialize()
+  return JSON.stringify({
+    name: store.currentView?.name ?? null,
+    nodes: canvas?.nodes ?? [],
+    links: canvas?.links ?? [],
+    labels: store.labels,
+    shapes: store.shapes,
+    background: store.background ?? null,
+    style: store.viewStyle ?? null
+  })
+}
+
+const savedSnapshot = ref<string | null>(null)
+const liveSnapshot = ref<string | null>(null)
+
+const markSaved = () => {
+  savedSnapshot.value = snapshotNow()
+  liveSnapshot.value = savedSnapshot.value
+}
+
+let snapshotTimer: ReturnType<typeof setTimeout> | null = null
+watch(
+  [
+    () => canvasRef.value?.changeVersion,
+    () => store.labels,
+    () => store.shapes,
+    () => store.background,
+    () => store.viewStyle,
+    () => store.currentView?.name
+  ],
+  () => {
+    if (snapshotTimer) {
+      clearTimeout(snapshotTimer)
+    }
+    snapshotTimer = setTimeout(() => {
+      snapshotTimer = null
+      liveSnapshot.value = snapshotNow()
+    }, 150)
+  },
+  { deep: true }
+)
+
+const isDirty = computed<boolean>(
+  () => !isDiscovered.value && savedSnapshot.value !== null && liveSnapshot.value !== savedSnapshot.value
+)
+
+/** True when it is fine to drop the open view: nothing unsaved, or the user said so. */
+const confirmDiscard = (): boolean =>
+  !isDirty.value || window.confirm('You have unsaved changes to this view. Discard them?')
+
+onBeforeRouteLeave(() => confirmDiscard())
+
+const onBeforeUnload = (event: BeforeUnloadEvent) => {
+  if (isDirty.value) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
+}
+onMounted(() => window.addEventListener('beforeunload', onBeforeUnload))
+onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
 
 const saveCurrent = async (): Promise<boolean> => {
   const snapshot = canvasRef.value?.serialize()
@@ -869,6 +936,9 @@ const saveCurrent = async (): Promise<boolean> => {
     return false
   }
   const ok = await store.saveCurrentView(snapshot)
+  if (ok) {
+    markSaved()
+  }
   showToast(
     ok
       ? { message: `View "${store.currentView?.name}" saved`, severity: 'success', timeout: 3000 }
@@ -917,6 +987,7 @@ const openIntoCanvas = async (id: string): Promise<boolean> => {
     return false
   }
   canvasRef.value?.loadView(view)
+  markSaved()
   syncRouteToView()
   return true
 }
@@ -931,6 +1002,7 @@ const loadDefault = async (): Promise<void> => {
     if (store.currentView) {
       canvasRef.value?.loadView(store.currentView)
     }
+    markSaved()
     syncRouteToView()
   }
 }
@@ -973,7 +1045,11 @@ const openNameDialog = (mode: NameDialogMode) => {
   nameDialogVisible.value = true
 }
 
-const onNew = () => openNameDialog('new')
+const onNew = () => {
+  if (confirmDiscard()) {
+    openNameDialog('new')
+  }
+}
 
 const onSaveAs = () => {
   if (store.currentView) {
@@ -1007,6 +1083,7 @@ const createView = async (name: string) => {
   if (store.currentView) {
     canvasRef.value?.loadView(store.currentView)
   }
+  markSaved()
   await saveCurrent()
   syncRouteToView()
 }
@@ -1025,6 +1102,7 @@ const saveViewAs = async (name: string) => {
       : { message: 'Could not save the view; the name may already be in use.', severity: 'error', timeout: 5000 }
   )
   if (ok) {
+    markSaved()
     syncRouteToView()
   }
 }
@@ -1125,6 +1203,18 @@ const confirmDelete = async () => {
 
 .topology-page.is-view .topology-toolbar {
   border-top-color: #00bfcb; /* teal accent = viewing */
+}
+
+/* Unsaved work outranks the mode cue, in either mode. */
+.topology-page.is-dirty .topology-toolbar {
+  border-top-color: var(--onms-error, #a5021f);
+}
+
+.unsaved-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--onms-error, #a5021f);
+  white-space: nowrap;
 }
 
 .topology-title {
