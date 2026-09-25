@@ -21,6 +21,20 @@ export type DeviceIconId =
 -->
 <template>
   <nav class="topology-rail" aria-label="Panels and tools">
+    <!-- Edit is a mode of the whole page; discovered sources are read-only. -->
+    <template v-if="store.discoveredGraph === null">
+      <OnmsIconButton
+        :icon="EditMode"
+        title="Edit"
+        :tooltip="store.isEditMode ? 'Editing: click to go back to viewing' : 'Edit this view'"
+        tooltip-position="right"
+        :variant="store.isEditMode ? 'filled' : 'text'"
+        :aria-pressed="store.isEditMode"
+        class="topology-rail__edit"
+        @click="store.setEditMode(!store.isEditMode)"
+      />
+      <span class="topology-rail__gap" />
+    </template>
     <span class="topology-rail__panel-item">
       <OnmsIconButton
         :icon="ViewDetails"
@@ -108,6 +122,7 @@ export type DeviceIconId =
 <script setup lang="ts">
 import { computed } from 'vue'
 import { OnmsIconButton } from '@opennms/onms-ui'
+import EditMode from '@opennms/onms-ui/icons/action/EditMode.vue'
 import Link from '@opennms/onms-ui/icons/action/Link.vue'
 import View from '@opennms/onms-ui/icons/action/View.vue'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
@@ -164,6 +179,13 @@ const selectTool = () => {
 .topology-rail__gap {
   height: 0.5rem;
   flex: 0 0 auto;
+}
+
+/* The mode button carries the same amber the bar's accent uses while editing. */
+.topology-rail__edit:deep(.p-button:not(.p-button-text)) {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #1f1300;
 }
 
 .topology-rail__panel-item {

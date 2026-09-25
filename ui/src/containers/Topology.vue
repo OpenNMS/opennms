@@ -82,17 +82,6 @@ License.
           </template>
       </div>
       <div class="toolbar-controls">
-          <!-- Discovered sources are read-only: no Edit mode. -->
-          <OnmsSelectButton
-            v-if="!isDiscovered"
-            v-model="mode"
-            :options="modeOptions"
-            option-label="label"
-            option-value="value"
-            :allow-empty="false"
-            aria-label="View or Edit mode"
-            class="mode-select"
-          />
           <!-- Search works in both kinds of view; what picking a result does
                differs (focus a neighborhood vs pan to the node). Focus and the
                Semantic Zoom Level below are discovered-only. -->
@@ -293,7 +282,6 @@ import {
   OnmsIconButton,
   OnmsPopover,
   OnmsSelect,
-  OnmsSelectButton,
   OnmsTieredMenu,
   useOnmsToast
 } from '@opennms/onms-ui'
@@ -485,16 +473,6 @@ const onNodeContextMenu = (payload: { event: MouseEvent; nodeId: number | null; 
   nodeMenuItems.value = items
   nodeMenuRef.value?.show(event)
 }
-
-// Segmented View/Edit control (clear, always-visible mode indicator).
-const modeOptions = [
-  { label: 'View', value: false },
-  { label: 'Edit', value: true }
-]
-const mode = computed<boolean>({
-  get: () => store.isEditMode,
-  set: value => store.setEditMode(value)
-})
 
 // Load whatever the route's :source points at -- the custom catalog or a
 // discovered topology. Re-runs whenever the source changes.

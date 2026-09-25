@@ -78,6 +78,16 @@ describe('TopologyToolStrip', () => {
     expect(wrapper.find('.topology-rail__dot').exists()).toBe(true)
   })
 
+  it('switches between viewing and editing from the rail', async () => {
+    const { wrapper, store } = await mountStrip()
+    expect(buttonNamed(wrapper, 'Edit').attributes('aria-pressed')).toBe('true')
+    await buttonNamed(wrapper, 'Edit').trigger('click')
+    expect(store.isEditMode).toBe(false)
+    expect(wrapper.find('[aria-label="Draw link"]').exists()).toBe(false)
+    await buttonNamed(wrapper, 'Edit').trigger('click')
+    expect(store.isEditMode).toBe(true)
+  })
+
   it('toggles the counts overlay in any mode', async () => {
     const { wrapper, store } = await mountStrip()
     store.setEditMode(false)
