@@ -143,6 +143,10 @@ This includes more reliable rendering with reduced load times as well as expecte
 === Karaf shell pubkey auth
 Support has been added for configuring Karaf shell authentication using ssh public keys.
 
+=== Plugin Management page
+Administrators can upload a plugin KAR from the web UI, review structural and compatibility checks, stage it into `deploy/` together with a `featuresBoot.d` boot file, list deployed plugins, and unload one again.
+Karaf loads a staged plugin within seconds unless its manifest sets `Karaf-Feature-Start: false`, in which case its features start on the next restart; every action is written to `logs/plugin-management.log`.
+
 == Breaking changes
 
 === Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support
@@ -263,8 +267,4 @@ The deprecated JMS-Northbounder plugin was removed in this release.
 
 === Juniper TCA Collector plugin (plugin-collector-juniper-tca) removed
 The deprecated Juniper TCA Collector plugin was removed in this release.
-
-=== Plugin Management page
-Administrators can upload a plugin KAR from the web UI, review structural and compatibility checks, stage it into `deploy/` together with a `featuresBoot.d` entry, list deployed plugins, and unload one again.
-A restart is still required before staged features load; every action is written to `logs/plugin-management.log`.
 

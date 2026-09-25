@@ -26,23 +26,28 @@
             bundles, compatibility of the packages the bundles import with the packages this server exports,
             the Java version, and whether a plugin with the same name is already loaded. A failing check
             stops the load; a warning has to be acknowledged before loading.</li>
-          <li>Stages the KAR into <code>{{ deployDir || 'deploy/' }}</code>, where the container picks it up.</li>
-          <li>Writes a boot file under <code>featuresBoot.d</code> naming the features to start.</li>
-          <li>Records the plugin, so it appears in the table below with its checksum and who loaded it.</li>
+          <li>Writes a boot file under <code>featuresBoot.d</code> naming the features to start, and records
+            the plugin so it appears in the table below with its checksum and who loaded it.</li>
+          <li>Moves the KAR into <code>{{ deployDir || 'deploy/' }}</code>. Unless its manifest sets
+            <code>Karaf-Feature-Start: false</code>, the container picks it up within seconds and starts its
+            features; the boot file makes them start again on every later boot.</li>
         </ol>
         <p>Nothing is written until the checks have run and Load plugin is pressed.</p>
-        <div class="section-title">Why a restart is still required</div>
+        <div class="section-title">When a restart is needed</div>
         <p>
-          The boot file is read only at startup, so the features it names start on the next restart. Until
-          then the plugin is shown as staged and the banner at the top of the page stays on.
+          A plugin whose manifest sets <code>Karaf-Feature-Start: false</code> is extracted right away but its
+          features start on the next boot only; it is listed as staged and the banner at the top of the page
+          stays on until the server has restarted. An unloaded plugin is likewise removed completely at the next
+          boot. A plugin listed as failed was loaded, but one or more of its features did not start after a
+          restart; <code>karaf.log</code> has the reason.
         </p>
       </div>
       <div class="help-section">
         <div class="section-title">What Unload does</div>
         <p>
-          Removes the KAR from <code>{{ deployDir || 'deploy/' }}</code> and deletes its boot file. The
-          container stops the plugin's features right away; a restart completes the removal, and until
-          then the plugin is shown as unloaded.
+          Removes the KAR from <code>{{ deployDir || 'deploy/' }}</code>, deletes its boot file and drops any
+          other <code>featuresBoot.d</code> line that waits for the KAR. The container stops the plugin's
+          features right away; a restart completes the removal, and until then the plugin is shown as unloaded.
         </p>
         <div class="section-title">Restarting OpenNMS</div>
         <RestartCommands v-if="restartInstructions" :instructions="restartInstructions" />

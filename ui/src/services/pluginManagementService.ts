@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { KarInspection, PluginEntry, PluginInstallInput, PluginInstallResult, PluginManagementState, RestartInstructions } from '@/types/pluginManagement'
+import { KarInspection, PluginEntry, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
 
@@ -111,16 +111,22 @@ const installPlugin = async (input: PluginInstallInput): Promise<ValidationResul
   }
 }
 
-const unloadPlugin = async (karName: string): Promise<ValidationResultWithPayload<PluginEntry>> => {
+// Removes the KAR, its boot file and every featuresBoot.d line waiting for it.
+const unloadPlugin = async (karName: string): Promise<ValidationResultWithPayload<PluginUnloadResult>> => {
   try {
     const resp = await v2.delete(`${endpoint}/${encodeURIComponent(karName)}`, jsonAccept)
     const data = resp.data
-    if (!data || typeof data.karName !== 'string') {
-      return createResultWithPayload<PluginEntry>(false, 'The server returned an unexpected answer.')
+    if (!data || !data.plugin || typeof data.plugin.karName !== 'string') {
+      return createResultWithPayload<PluginUnloadResult>(false, 'The server returned an unexpected answer.')
     }
-    return createResultWithPayload(true, '', data as PluginEntry)
+    return createResultWithPayload(true, '', {
+      plugin: data.plugin as PluginEntry,
+      restartRequired: data.restartRequired === true,
+      bootFilesRemoved: Array.isArray(data.bootFilesRemoved) ? data.bootFilesRemoved.map(String) : [],
+      restartInstructions: data.restartInstructions as RestartInstructions
+    })
   } catch (err: any) {
-    return createResultWithPayload<PluginEntry>(false, errorMessage(err, `Failed to unload ${karName}.`))
+    return createResultWithPayload<PluginUnloadResult>(false, errorMessage(err, `Failed to unload ${karName}.`))
   }
 }
 

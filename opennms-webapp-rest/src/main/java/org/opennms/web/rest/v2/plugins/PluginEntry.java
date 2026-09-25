@@ -33,6 +33,7 @@ import java.util.Map;
 public class PluginEntry {
     public static final String STATUS_INSTALLED = "installed";
     public static final String STATUS_STAGED = "staged";
+    public static final String STATUS_FAILED = "failed";
     public static final String STATUS_UNLOADED = "unloaded";
     public static final String STATUS_UNMANAGED = "unmanaged";
     public static final String STATUS_UNKNOWN = "unknown";

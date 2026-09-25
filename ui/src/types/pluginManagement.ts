@@ -24,7 +24,7 @@
 // into deploy/ with a featuresBoot.d boot file, plus the inspection a
 // candidate KAR goes through before it is written anywhere.
 
-export type PluginStatus = 'installed' | 'staged' | 'unloaded' | 'unmanaged' | 'unknown'
+export type PluginStatus = 'installed' | 'staged' | 'failed' | 'unloaded' | 'unmanaged' | 'unknown'
 
 export type KarCheckLevel = 'PASS' | 'WARN' | 'FAIL'
 
@@ -100,6 +100,15 @@ export interface RestartInstructions {
 
 export interface PluginInstallResult {
   plugin: PluginEntry
+  // true only when the KAR manifest sets Karaf-Feature-Start: false
   restartRequired: boolean
+  restartInstructions: RestartInstructions
+}
+
+export interface PluginUnloadResult {
+  plugin: PluginEntry
+  restartRequired: boolean
+  // featuresBoot.d files, relative to OPENNMS_HOME, edited or deleted with the KAR
+  bootFilesRemoved: string[]
   restartInstructions: RestartInstructions
 }

@@ -22,7 +22,6 @@
 package org.opennms.web.rest.v2.plugins;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import org.opennms.web.rest.v2.plugins.KarInspection.BundleDescriptor;
 import org.opennms.web.rest.v2.plugins.KarInspection.Check;
 import org.opennms.web.rest.v2.plugins.KarInspection.DependencyInfo;
 import org.opennms.web.rest.v2.plugins.KarInspection.FeatureInfo;
+import org.opennms.web.rest.v2.plugins.KarInspection.ImportDescriptor;
 import org.opennms.web.rest.v2.plugins.KarInspection.Level;
 
 public class CompatibilityCheckerTest {
@@ -77,8 +77,27 @@ public class CompatibilityCheckerTest {
         final Check imports = only(CompatibilityChecker.CHECK_IMPORTS_RESOLVABLE);
         assertEquals(Level.PASS, imports.getLevel());
         assertTrue(imports.getMessage(), imports.getMessage().startsWith("2 org.opennms.* package imports"));
-        assertFalse(inspection.hasLevel(Level.FAIL));
-        assertFalse(inspection.hasLevel(Level.WARN));
+        assertTrue(inspection.checksAt(Level.FAIL).isEmpty());
+        assertTrue(inspection.checksAt(Level.WARN).isEmpty());
+        assertTrue(all(CompatibilityChecker.CHECK_IMPORTS_OPTIONAL).isEmpty());
+    }
+
+    @Test
+    public void optionalImportsAreNotCheckedButCounted() {
+        final BundleDescriptor bundle = bundle("org.example.plugin", "17", "org.opennms.integration.api.v1.alarms", "[2.0,3)");
+        bundle.getImports().put("org.opennms.integration.api.v1.alarms.old", new ImportDescriptor("[1.0,2)", true));
+        bundle.getImports().put("org.opennms.netmgt.secret", new ImportDescriptor("", true));
+        bundle.getImports().put("javax.optional", new ImportDescriptor("", true));
+        inspection.getBundles().add(bundle);
+
+        checker.check(inspection);
+
+        assertTrue(inspection.checksAt(Level.FAIL).isEmpty());
+        assertTrue(inspection.checksAt(Level.WARN).isEmpty());
+        assertTrue(only(CompatibilityChecker.CHECK_IMPORTS_RESOLVABLE).getMessage().startsWith("1 org.opennms.* package imports"));
+        final Check optional = only(CompatibilityChecker.CHECK_IMPORTS_OPTIONAL);
+        assertEquals(Level.PASS, optional.getLevel());
+        assertTrue(optional.getMessage(), optional.getMessage().startsWith("2 optional imports not checked"));
     }
 
     @Test
@@ -225,7 +244,7 @@ public class CompatibilityCheckerTest {
         bundle.setVersion("1.0.0");
         bundle.setRequiredJavaVersion(javaVersion);
         for (int i = 0; i + 1 < importsAndRanges.length; i += 2) {
-            bundle.getImports().put(importsAndRanges[i], importsAndRanges[i + 1]);
+            bundle.getImports().put(importsAndRanges[i], new ImportDescriptor(importsAndRanges[i + 1], false));
         }
         return bundle;
     }

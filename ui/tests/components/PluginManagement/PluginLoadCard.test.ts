@@ -42,7 +42,7 @@ const INSPECTION = {
   bundles: [{ symbolicName: 'org.opennms.alec', version: '3.0.0' }],
   checks: [{ id: 'structure', level: 'PASS', message: 'ok' }]
 }
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: false }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
 
 describe('PluginLoadCard.vue', () => {
@@ -121,7 +121,7 @@ describe('PluginLoadCard.vue', () => {
     await wrapper.find('[data-test="ack-warnings"] input[type="checkbox"]').setValue(true)
     expect(wrapper.find('[data-test="load-plugin"]').attributes('disabled')).toBeUndefined()
 
-    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS }})
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
     expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: true })
@@ -131,7 +131,7 @@ describe('PluginLoadCard.vue', () => {
     mountCard()
     await chooseFile()
     await runChecks(INSPECTION.checks)
-    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS }})
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
     expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false })
@@ -139,7 +139,8 @@ describe('PluginLoadCard.vue', () => {
     expect(dialog.exists()).toBe(true)
     expect(dialog.text()).toContain('Plugin alec loaded')
     expect(dialog.find('[data-test="written-list"]').text()).toContain('alec.boot')
-    expect(dialog.find('[data-test="restart-packages"]').text()).toBe('systemctl restart opennms')
+    expect(dialog.find('[data-test="loaded-note-auto"]').exists()).toBe(true)
+    expect(dialog.find('[data-test="restart-packages"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="no-file"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(false)
   })

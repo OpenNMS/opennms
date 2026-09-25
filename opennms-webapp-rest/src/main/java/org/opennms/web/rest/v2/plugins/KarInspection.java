@@ -105,12 +105,31 @@ public class KarInspection {
         public void setBundles(final List<String> bundles) { this.bundles = bundles; }
     }
 
+    public static class ImportDescriptor {
+        /** version range string, "" when the import has no version. */
+        private String version = "";
+        private boolean optional;
+
+        public ImportDescriptor() {
+        }
+
+        public ImportDescriptor(final String version, final boolean optional) {
+            this.version = version == null ? "" : version;
+            this.optional = optional;
+        }
+
+        public String getVersion() { return version; }
+        public void setVersion(final String version) { this.version = version; }
+        public boolean isOptional() { return optional; }
+        public void setOptional(final boolean optional) { this.optional = optional; }
+    }
+
     public static class BundleDescriptor {
         private String path;
         private String symbolicName;
         private String version;
-        /** package name to version range string ("" when the import has no version). */
-        private Map<String, String> imports = new LinkedHashMap<>();
+        /** package name to its version range and resolution directive. */
+        private Map<String, ImportDescriptor> imports = new LinkedHashMap<>();
         private List<String> exports = new ArrayList<>();
         private String requiredJavaVersion;
 
@@ -120,8 +139,8 @@ public class KarInspection {
         public void setSymbolicName(final String symbolicName) { this.symbolicName = symbolicName; }
         public String getVersion() { return version; }
         public void setVersion(final String version) { this.version = version; }
-        public Map<String, String> getImports() { return imports; }
-        public void setImports(final Map<String, String> imports) { this.imports = imports; }
+        public Map<String, ImportDescriptor> getImports() { return imports; }
+        public void setImports(final Map<String, ImportDescriptor> imports) { this.imports = imports; }
         public List<String> getExports() { return exports; }
         public void setExports(final List<String> exports) { this.exports = exports; }
         public String getRequiredJavaVersion() { return requiredJavaVersion; }
@@ -165,10 +184,6 @@ public class KarInspection {
     public void setBundles(final List<BundleDescriptor> bundles) { this.bundles = bundles; }
     public List<Check> getChecks() { return checks; }
     public void setChecks(final List<Check> checks) { this.checks = checks; }
-
-    public boolean hasLevel(final Level level) {
-        return checks.stream().anyMatch(c -> c.getLevel() == level);
-    }
 
     public List<Check> checksAt(final Level level) {
         final List<Check> result = new ArrayList<>();

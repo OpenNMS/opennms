@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { KarInspection, PluginEntry, PluginInstallInput, PluginInstallResult, PluginManagementState, RestartInstructions } from '@/types/pluginManagement'
+import { KarInspection, PluginEntry, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -66,7 +66,7 @@ export const usePluginManagementStore = defineStore('pluginManagementStore', () 
     return result
   }
 
-  const unload = async (karName: string): Promise<ValidationResultWithPayload<PluginEntry>> => {
+  const unload = async (karName: string): Promise<ValidationResultWithPayload<PluginUnloadResult>> => {
     const result = await API.unloadPlugin(karName)
     if (result.success) {
       await Promise.all([load(), refreshLog()])

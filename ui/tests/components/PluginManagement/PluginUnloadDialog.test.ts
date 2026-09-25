@@ -51,7 +51,7 @@ describe('PluginUnloadDialog.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    store = { unload: vi.fn().mockResolvedValue({ success: true, message: '', payload: { ...PLUGIN, status: 'unloaded', pendingRestart: true }}) }
+    store = { unload: vi.fn().mockResolvedValue({ success: true, message: '', payload: { plugin: { ...PLUGIN, status: 'unloaded', pendingRestart: true }, restartRequired: true, bootFilesRemoved: ['etc/featuresBoot.d/alec.boot'], restartInstructions: { packages: 'p', container: 'c', healthCheck: 'h', note: 'n' }}}) }
     vi.mocked(usePluginManagementStore).mockReturnValue(store)
   })
 
@@ -70,13 +70,17 @@ describe('PluginUnloadDialog.vue', () => {
     await wrapper.find('[data-test="unload-button"]').trigger('click')
     await flushPromises()
     expect(store.unload).toHaveBeenCalledWith('alec')
-    expect(wrapper.emitted('unloaded')?.[0][0]).toMatchObject({ karName: 'alec', status: 'unloaded' })
+    expect(wrapper.emitted('unloaded')?.[0][0]).toMatchObject({ karName: 'alec', status: 'unloaded', pendingRestart: true })
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
   })
 
-  it('adds the note for an unmanaged plugin', async () => {
+  it('adds the note for an unmanaged plugin, saying boot files that wait for the KAR are cleaned too', async () => {
     await mountDialog({ ...PLUGIN, status: 'unmanaged', bootFile: null })
-    expect(wrapper.find('[data-test="unmanaged-note"]').exists()).toBe(true)
+    const note = wrapper.find('[data-test="unmanaged-note"]')
+    expect(note.exists()).toBe(true)
+    expect(note.text()).toContain('not loaded through this page')
+    expect(note.text()).toContain('featuresBoot.d')
+    expect(note.text()).toContain('cleaned as well')
     expect(wrapper.find('[data-test="removal-callout"]').text()).not.toContain('Boot file')
   })
 

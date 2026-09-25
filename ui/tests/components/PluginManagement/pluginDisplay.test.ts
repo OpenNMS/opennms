@@ -46,8 +46,9 @@ describe('pluginDisplay', () => {
   it('maps levels and statuses', () => {
     expect(CHECK_TAG).toEqual({ PASS: 'success', WARN: 'warn', FAIL: 'danger' })
     expect(statusOf('installed').severity).toBe('success')
-    expect(statusOf('staged')).toMatchObject({ severity: 'warn', hint: 'restart required' })
-    expect(statusOf('unloaded')).toMatchObject({ severity: 'secondary', hint: 'restart required' })
+    expect(statusOf('staged').severity).toBe('warn')
+    expect(statusOf('failed')).toMatchObject({ severity: 'danger', label: 'failed', title: 'one or more features did not start; see karaf.log' })
+    expect(statusOf('unloaded').severity).toBe('secondary')
     expect(statusOf('unmanaged').title).toContain('not loaded through this page')
     expect(statusOf('weird')).toMatchObject({ severity: 'secondary', label: 'weird' })
   })

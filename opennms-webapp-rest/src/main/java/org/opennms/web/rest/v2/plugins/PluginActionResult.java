@@ -30,6 +30,8 @@ public class PluginActionResult {
     private boolean restartRequired;
     private RestartInstructions restartInstructions;
     private List<KarInspection.Check> checks = new ArrayList<>();
+    /** featuresBoot.d files (relative to OPENNMS_HOME) edited or deleted by an unload. */
+    private List<String> bootFilesRemoved = new ArrayList<>();
 
     public PluginEntry getPlugin() { return plugin; }
     public void setPlugin(final PluginEntry plugin) { this.plugin = plugin; }
@@ -39,4 +41,6 @@ public class PluginActionResult {
     public void setRestartInstructions(final RestartInstructions restartInstructions) { this.restartInstructions = restartInstructions; }
     public List<KarInspection.Check> getChecks() { return checks; }
     public void setChecks(final List<KarInspection.Check> checks) { this.checks = checks; }
+    public List<String> getBootFilesRemoved() { return bootFilesRemoved; }
+    public void setBootFilesRemoved(final List<String> bootFilesRemoved) { this.bootFilesRemoved = bootFilesRemoved; }
 }

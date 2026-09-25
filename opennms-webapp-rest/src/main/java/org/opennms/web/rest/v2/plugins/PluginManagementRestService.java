@@ -23,6 +23,7 @@ package org.opennms.web.rest.v2.plugins;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
@@ -30,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -74,12 +76,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "PluginManagement", description = "Upload, check, stage and unload plugin KARs")
 public class PluginManagementRestService {
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementRestService.class);
+    static final String AUDIT_LOGGER = "org.opennms.web.rest.v2.plugins.audit";
+    private static final Logger AUDIT = LoggerFactory.getLogger(AUDIT_LOGGER);
 
-    static final Pattern KAR_NAME = Pattern.compile("[A-Za-z0-9._-]+");
+    // Karaf's extender skips dot-files, so a name may not start with one.
+    static final Pattern KAR_NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
     static final Pattern UPLOAD_TOKEN = Pattern.compile("[0-9a-f]{64}");
+    private static final Pattern CONTROL_CHARS = Pattern.compile("[\\p{Cntrl}]");
     static final String BOOT_SUFFIX = ".boot";
     static final String UPLOAD_NAME_SUFFIX = ".name";
+    static final String WAIT_FOR_KAR = "wait-for-kar=";
     static final Duration UPLOAD_RETENTION = Duration.ofHours(1);
+    static final String TOO_LARGE = "The file is larger than " + (KarInspector.MAX_SIZE_BYTES / (1024 * 1024)) + " MB";
 
     private final java.nio.file.Path opennmsHome;
     private final java.nio.file.Path deployDir;
@@ -121,7 +129,7 @@ public class PluginManagementRestService {
         try {
             final List<PluginEntry> plugins = registry.list();
             status.setPlugins(plugins);
-            status.setRestartRequired(plugins.stream().anyMatch(p -> p.isPendingRestart() || PluginEntry.STATUS_STAGED.equals(p.getStatus())));
+            status.setRestartRequired(plugins.stream().anyMatch(PluginEntry::isPendingRestart));
         } catch (final IOException e) {
             throw serverError("Cannot read " + registry.getRegistryFile() + ": " + e.getMessage());
         }
@@ -146,6 +154,10 @@ public class PluginManagementRestService {
         requireAdmin(securityContext);
         final String user = user(securityContext);
         final String remote = remote(request);
+        if (request != null && request.getContentLengthLong() > KarInspector.MAX_SIZE_BYTES) {
+            audit("check", user, remote, null, null, "rejected", "content length " + request.getContentLengthLong() + " exceeds the limit");
+            throw badRequest(TOO_LARGE);
+        }
         if (upload == null) {
             audit("check", user, remote, null, null, "rejected", "no upload part");
             throw badRequest("A multipart part named 'upload' carrying the KAR is required.");
@@ -156,8 +168,11 @@ public class PluginManagementRestService {
             pruneUploads();
             Files.createDirectories(uploadDir);
             staging = Files.createTempFile(uploadDir, "upload-", ".part");
-            try (InputStream in = upload.getObject(InputStream.class)) {
-                Files.copy(in, staging, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream in = upload.getObject(InputStream.class); OutputStream out = Files.newOutputStream(staging)) {
+                if (!copyBounded(in, out, KarInspector.MAX_SIZE_BYTES)) {
+                    audit("check", user, remote, null, null, "rejected", "upload exceeds the limit; file=" + fileName);
+                    throw badRequest(TOO_LARGE);
+                }
             }
             final KarInspection inspection = inspector.inspect(staging, fileName);
             checker.check(inspection);
@@ -170,7 +185,7 @@ public class PluginManagementRestService {
                     "fails=" + inspection.checksAt(Level.FAIL).size() + " warns=" + inspection.checksAt(Level.WARN).size());
             return inspection;
         } catch (final IOException e) {
-            audit("check", user, remote, fileName, null, "error", e.toString());
+            audit("check", user, remote, null, null, "error", "file=" + fileName + " " + e);
             throw serverError("Cannot store the upload: " + e.getMessage());
         } finally {
             if (staging != null) {
@@ -200,15 +215,15 @@ public class PluginManagementRestService {
         final String token = installRequest.getUploadToken();
         final java.nio.file.Path stored = uploadDir.resolve(token + PluginRegistry.KAR_SUFFIX);
         if (!Files.isRegularFile(stored)) {
-            audit("install", user, remote, installRequest.getKarName(), token, "rejected", "unknown or expired upload token");
+            audit("install", user, remote, null, token, "rejected", "unknown or expired upload token");
             throw notFound("The upload token is unknown or has expired; run the check again.");
         }
         final String fileName = storedFileName(token);
         final String karName;
         if (installRequest.getKarName() != null && !installRequest.getKarName().isEmpty()) {
             if (!KAR_NAME.matcher(installRequest.getKarName()).matches()) {
-                audit("install", user, remote, installRequest.getKarName(), token, "rejected", "invalid kar name");
-                throw badRequest("The KAR name may only contain letters, digits, '.', '_' and '-'.");
+                audit("install", user, remote, null, token, "rejected", "invalid kar name");
+                throw badRequest("The KAR name must start with a letter or digit and may only contain letters, digits, '.', '_' and '-'.");
             }
             karName = installRequest.getKarName();
         } else {
@@ -216,11 +231,18 @@ public class PluginManagementRestService {
         }
 
         final KarInspection inspection;
+        final Optional<PluginRegistry.Record> previous;
         try {
             inspection = inspector.inspect(stored, fileName, karName);
+            previous = registry.record(karName);
         } catch (final IOException e) {
             audit("install", user, remote, karName, token, "error", e.toString());
             throw serverError("Cannot read the stored upload: " + e.getMessage());
+        }
+        final java.nio.file.Path target = deployDir.resolve(karName + PluginRegistry.KAR_SUFFIX);
+        if (previous.isPresent() && !previous.get().isUnloaded() && inspection.getSha256().equals(previous.get().getSha256()) && Files.exists(target)) {
+            audit("install", user, remote, karName, inspection.getSha256(), "rejected", "already loaded");
+            throw conflict("Plugin '" + karName + "' with this checksum is already loaded.");
         }
         checker.check(inspection);
         final List<Check> fails = inspection.checksAt(Level.FAIL);
@@ -236,28 +258,36 @@ public class PluginManagementRestService {
 
         final List<String> features = inspection.topLevelFeatures().stream().map(FeatureInfo::getName).collect(Collectors.toList());
         final boolean autoStart = inspection.getFeatureStart() == null || !"false".equalsIgnoreCase(inspection.getFeatureStart().trim());
-        final java.nio.file.Path target = deployDir.resolve(karName + PluginRegistry.KAR_SUFFIX);
         final java.nio.file.Path bootFile = bootDir.resolve(karName + BOOT_SUFFIX);
+        // The .part name keeps Felix FileInstall from picking the file up before the move completes.
+        final java.nio.file.Path part = deployDir.resolve("." + karName + PluginRegistry.KAR_SUFFIX + ".part");
+        boolean bootWritten = false;
+        boolean recorded = false;
         try {
             Files.createDirectories(deployDir);
             Files.createDirectories(bootDir);
-            // The .part name keeps Felix FileInstall from picking the file up before the move completes.
-            final java.nio.file.Path part = deployDir.resolve("." + karName + PluginRegistry.KAR_SUFFIX + ".part");
+            // Boot file and record first: once the KAR lands in deploy/ Karaf may start it within seconds.
+            writeBootFile(bootFile, karName, features);
+            bootWritten = true;
+            final PluginEntry recordedEntry = registry.recordInstall(karName, fileName, inspection.getSha256(), inspection.getSize(), user, features, opennmsHome.relativize(bootFile).toString(), autoStart);
+            recorded = true;
             Files.copy(stored, part, StandardCopyOption.REPLACE_EXISTING);
             atomicMove(part, target);
-            // Written even when Karaf auto-starts the features so they survive a data/ wipe.
-            writeBootFile(bootFile, karName, features);
-            final PluginEntry entry = registry.recordInstall(karName, fileName, inspection.getSha256(), inspection.getSize(), user, features, opennmsHome.relativize(bootFile).toString(), autoStart);
-            Files.deleteIfExists(stored);
-            Files.deleteIfExists(uploadDir.resolve(token + UPLOAD_NAME_SUFFIX));
-            audit("install", user, remote, karName, inspection.getSha256(), "ok", "features=" + String.join(",", features) + " warnsAcknowledged=" + warns.size());
+            audit("install", user, remote, karName, inspection.getSha256(), "ok", "features=" + String.join(",", features) + " autoStart=" + autoStart + " warnsAcknowledged=" + warns.size());
             final PluginActionResult result = new PluginActionResult();
-            result.setPlugin(entry);
-            result.setRestartRequired(true);
+            result.setPlugin(registry.find(karName).orElse(recordedEntry));
+            result.setRestartRequired(!autoStart);
             result.setRestartInstructions(RestartInstructions.current());
             result.setChecks(inspection.getChecks());
             return result;
         } catch (final IOException e) {
+            quietly(() -> Files.deleteIfExists(part), part);
+            if (bootWritten) {
+                quietly(() -> Files.deleteIfExists(bootFile), bootFile);
+            }
+            if (recorded) {
+                quietly(() -> registry.revertInstall(karName, previous.orElse(null)), registry.getRegistryFile());
+            }
             audit("install", user, remote, karName, inspection.getSha256(), "error", e.toString());
             throw serverError("Cannot stage the plugin: " + e.getMessage());
         }
@@ -273,8 +303,8 @@ public class PluginManagementRestService {
         final String user = user(securityContext);
         final String remote = remote(request);
         if (karName == null || !KAR_NAME.matcher(karName).matches()) {
-            audit("unload", user, remote, karName, null, "rejected", "invalid kar name");
-            throw badRequest("The KAR name may only contain letters, digits, '.', '_' and '-'.");
+            audit("unload", user, remote, null, null, "rejected", "invalid kar name");
+            throw badRequest("The KAR name must start with a letter or digit and may only contain letters, digits, '.', '_' and '-'.");
         }
         final java.nio.file.Path kar = deployDir.resolve(karName + PluginRegistry.KAR_SUFFIX);
         final java.nio.file.Path bootFile = bootDir.resolve(karName + BOOT_SUFFIX);
@@ -285,14 +315,20 @@ public class PluginManagementRestService {
                 throw notFound("No plugin named '" + karName + "' is deployed or managed.");
             }
             final boolean removedKar = Files.deleteIfExists(kar);
-            final boolean removedBoot = Files.deleteIfExists(bootFile);
+            final List<String> bootFilesRemoved = new ArrayList<>();
+            if (Files.deleteIfExists(bootFile)) {
+                bootFilesRemoved.add(relativeToHome(bootFile));
+            }
+            bootFilesRemoved.addAll(removeBootReferences(karName));
             final String fileName = existing.map(PluginEntry::getFileName).orElse(kar.getFileName().toString());
             final PluginEntry entry = registry.recordUnload(karName, user, fileName);
-            audit("unload", user, remote, karName, existing.map(PluginEntry::getSha256).orElse(null), "ok", "removedKar=" + removedKar + " removedBoot=" + removedBoot);
+            audit("unload", user, remote, karName, existing.map(PluginEntry::getSha256).orElse(null), "ok",
+                    "removedKar=" + removedKar + " bootFilesRemoved=" + String.join(",", bootFilesRemoved));
             final PluginActionResult result = new PluginActionResult();
             result.setPlugin(entry);
             result.setRestartRequired(true);
             result.setRestartInstructions(RestartInstructions.current());
+            result.setBootFilesRemoved(bootFilesRemoved);
             return result;
         } catch (final IOException e) {
             audit("unload", user, remote, karName, null, "error", e.toString());
@@ -306,11 +342,86 @@ public class PluginManagementRestService {
         final StringBuilder content = new StringBuilder();
         content.append("# Managed by the Plugin Management page; remove together with deploy/").append(karName).append(PluginRegistry.KAR_SUFFIX).append('\n');
         for (final String feature : features) {
-            content.append(feature).append(" wait-for-kar=").append(karName).append('\n');
+            content.append(feature).append(' ').append(WAIT_FOR_KAR).append(karName).append('\n');
         }
         final java.nio.file.Path tmp = bootFile.resolveSibling(bootFile.getFileName() + ".tmp");
         Files.write(tmp, content.toString().getBytes(StandardCharsets.UTF_8));
         atomicMove(tmp, bootFile);
+    }
+
+    /**
+     * Drops every line in featuresBoot.d that waits for the KAR, whichever file it
+     * lives in, and deletes files that keep no feature line. Returns the touched
+     * files relative to OPENNMS_HOME.
+     */
+    List<String> removeBootReferences(final String karName) throws IOException {
+        final List<String> touched = new ArrayList<>();
+        if (!Files.isDirectory(bootDir)) {
+            return touched;
+        }
+        final List<java.nio.file.Path> files = new ArrayList<>();
+        try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(bootDir)) {
+            for (final java.nio.file.Path p : stream) {
+                if (Files.isRegularFile(p)) {
+                    files.add(p);
+                }
+            }
+        }
+        files.sort(null);
+        for (final java.nio.file.Path file : files) {
+            final List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+            final List<String> kept = new ArrayList<>();
+            boolean featureLines = false;
+            for (final String line : lines) {
+                if (waitsForKar(line, karName)) {
+                    continue;
+                }
+                kept.add(line);
+                final String trimmed = line.trim();
+                featureLines |= !trimmed.isEmpty() && !trimmed.startsWith("#");
+            }
+            if (kept.size() == lines.size()) {
+                continue;
+            }
+            if (featureLines) {
+                final java.nio.file.Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
+                Files.write(tmp, (String.join("\n", kept) + "\n").getBytes(StandardCharsets.UTF_8));
+                atomicMove(tmp, file);
+            } else {
+                Files.delete(file);
+            }
+            touched.add(relativeToHome(file));
+        }
+        return touched;
+    }
+
+    static boolean waitsForKar(final String line, final String karName) {
+        final String trimmed = line.trim();
+        if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+            return false;
+        }
+        final String wanted = WAIT_FOR_KAR + karName;
+        for (final String token : trimmed.split("\\s+")) {
+            if (wanted.equals(token)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Copies at most {@code limit} bytes; false when the stream holds more. */
+    static boolean copyBounded(final InputStream in, final OutputStream out, final long limit) throws IOException {
+        final byte[] buffer = new byte[64 * 1024];
+        long total = 0;
+        int read;
+        while ((read = in.read(buffer)) >= 0) {
+            total += read;
+            if (total > limit) {
+                return false;
+            }
+            out.write(buffer, 0, read);
+        }
+        return true;
     }
 
     private static void atomicMove(final java.nio.file.Path from, final java.nio.file.Path to) throws IOException {
@@ -318,6 +429,26 @@ public class PluginManagementRestService {
             Files.move(from, to, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
         } catch (final AtomicMoveNotSupportedException e) {
             Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private String relativeToHome(final java.nio.file.Path path) {
+        try {
+            return opennmsHome.relativize(path).toString();
+        } catch (final IllegalArgumentException e) {
+            return path.toString();
+        }
+    }
+
+    private interface IoAction {
+        void run() throws IOException;
+    }
+
+    private static void quietly(final IoAction action, final Object what) {
+        try {
+            action.run();
+        } catch (final IOException e) {
+            LOG.warn("Cannot roll back {}: {}", what, e.toString());
         }
     }
 
@@ -374,10 +505,14 @@ public class PluginManagementRestService {
 
     private static void audit(final String action, final String user, final String remote, final String karName, final String sha256, final String outcome, final String detail) {
         if ("ok".equals(outcome)) {
-            LOG.info("action={} user={} remote={} kar={} sha256={} outcome={} {}", action, user, remote, karName, sha256, outcome, detail);
+            AUDIT.info("action={} user={} remote={} kar={} sha256={} outcome={} {}", action, clean(user), clean(remote), clean(karName), clean(sha256), outcome, clean(detail));
         } else {
-            LOG.warn("action={} user={} remote={} kar={} sha256={} outcome={} {}", action, user, remote, karName, sha256, outcome, detail);
+            AUDIT.warn("action={} user={} remote={} kar={} sha256={} outcome={} {}", action, clean(user), clean(remote), clean(karName), clean(sha256), outcome, clean(detail));
         }
+    }
+
+    static String clean(final String value) {
+        return value == null ? null : CONTROL_CHARS.matcher(value).replaceAll("");
     }
 
     private interface Unsafe<T> {

@@ -31,6 +31,7 @@ import org.opennms.web.rest.v2.plugins.KarInspection.BundleDescriptor;
 import org.opennms.web.rest.v2.plugins.KarInspection.Check;
 import org.opennms.web.rest.v2.plugins.KarInspection.DependencyInfo;
 import org.opennms.web.rest.v2.plugins.KarInspection.FeatureInfo;
+import org.opennms.web.rest.v2.plugins.KarInspection.ImportDescriptor;
 import org.opennms.web.rest.v2.plugins.KarInspection.Level;
 
 /**
@@ -42,6 +43,7 @@ public class CompatibilityChecker {
     public static final String CHECK_IMPORT_VERSION = "import-version";
     public static final String CHECK_IMPORT_MISSING = "import-missing";
     public static final String CHECK_IMPORTS_RESOLVABLE = "imports-resolvable";
+    public static final String CHECK_IMPORTS_OPTIONAL = "imports-optional";
     public static final String CHECK_JAVA_VERSION = "java-version";
     public static final String CHECK_OIA_VERSION = "oia-version";
 
@@ -75,17 +77,22 @@ public class CompatibilityChecker {
             karExports.addAll(bundle.getExports());
         }
         int considered = 0;
+        int optional = 0;
         int problems = 0;
         for (final BundleDescriptor bundle : inspection.getBundles()) {
             final String bundleName = bundle.getSymbolicName() != null ? bundle.getSymbolicName() : bundle.getPath();
-            for (final Map.Entry<String, String> imp : bundle.getImports().entrySet()) {
+            for (final Map.Entry<String, ImportDescriptor> imp : bundle.getImports().entrySet()) {
                 final String pkg = imp.getKey();
                 if (!pkg.startsWith(OPENNMS_PACKAGE_PREFIX) || karExports.contains(pkg)) {
                     continue;
                 }
+                if (imp.getValue().isOptional()) {
+                    optional++;
+                    continue;
+                }
                 considered++;
                 final List<String> exported = exports.get(pkg);
-                final String range = imp.getValue();
+                final String range = imp.getValue().getVersion();
                 if (exported == null || exported.isEmpty()) {
                     problems++;
                     checks.add(new Check(CHECK_IMPORT_MISSING, Level.WARN, String.format("bundle %s imports %s%s but the server does not export that package", bundleName, pkg, describeRange(range))));
@@ -108,6 +115,9 @@ public class CompatibilityChecker {
             checks.add(new Check(CHECK_IMPORTS_RESOLVABLE, Level.PASS, considered == 0
                     ? "No bundle imports org.opennms.* packages from the server"
                     : considered + " org.opennms.* package imports across " + inspection.getBundles().size() + " bundles resolve against the server"));
+        }
+        if (optional > 0) {
+            checks.add(new Check(CHECK_IMPORTS_OPTIONAL, Level.PASS, optional + " optional imports not checked; a missing optional package does not stop the bundle from resolving"));
         }
     }
 

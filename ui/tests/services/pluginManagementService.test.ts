@@ -85,12 +85,19 @@ describe('pluginManagementService', () => {
     expect((await installPlugin(input)).message).toContain('container is not available')
   })
 
-  it('deletes by encoded KAR name and returns the entry or the reason', async () => {
-    vi.mocked(v2.delete).mockResolvedValueOnce({ status: 200, data: { ...PLUGIN, status: 'unloaded' }})
+  it('deletes by encoded KAR name and returns the entry with the touched boot files, or the reason', async () => {
+    vi.mocked(v2.delete).mockResolvedValueOnce({ status: 200, data: { plugin: { ...PLUGIN, status: 'unloaded' }, restartRequired: true, bootFilesRemoved: ['etc/featuresBoot.d/alec.boot', 'etc/featuresBoot.d/shared.boot'], restartInstructions: INSTRUCTIONS }})
     const result = await unloadPlugin('my plugin')
     expect(vi.mocked(v2.delete).mock.calls[0][0]).toBe('/plugin-management/my%20plugin')
     expect(result.success).toBe(true)
-    expect(result.payload?.status).toBe('unloaded')
+    expect(result.payload?.plugin.status).toBe('unloaded')
+    expect(result.payload?.restartRequired).toBe(true)
+    expect(result.payload?.bootFilesRemoved).toEqual(['etc/featuresBoot.d/alec.boot', 'etc/featuresBoot.d/shared.boot'])
+    expect(result.payload?.restartInstructions).toEqual(INSTRUCTIONS)
+    vi.mocked(v2.delete).mockResolvedValueOnce({ status: 200, data: { ...PLUGIN, status: 'unloaded' }})
+    expect((await unloadPlugin('alec')).success).toBe(false)
+    vi.mocked(v2.delete).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN }})
+    expect((await unloadPlugin('alec')).payload?.bootFilesRemoved).toEqual([])
     vi.mocked(v2.delete).mockRejectedValueOnce({ response: { status: 404, data: 'No plugin named nope.' }})
     expect(await unloadPlugin('nope')).toMatchObject({ success: false, message: 'No plugin named nope.' })
   })

@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.web.rest.v2.plugins.KarInspection.ImportDescriptor;
+
 /**
  * Minimal parser for OSGi manifest header clauses and version strings, so the
  * inspector does not need the OSGi framework classes.
@@ -77,13 +79,14 @@ final class OsgiHeaders {
         return clauses;
     }
 
-    /** Import-Package as package name to version range ("" when unversioned). */
-    static Map<String, String> parseImports(final String importPackage) {
-        final Map<String, String> imports = new LinkedHashMap<>();
+    /** Import-Package as package name to version range ("" when unversioned) and resolution directive. */
+    static Map<String, ImportDescriptor> parseImports(final String importPackage) {
+        final Map<String, ImportDescriptor> imports = new LinkedHashMap<>();
         for (final Clause clause : parse(importPackage)) {
             final String version = clause.attributes.getOrDefault("version", "");
+            final boolean optional = "optional".equalsIgnoreCase(clause.directives.getOrDefault("resolution", "").trim());
             for (final String pkg : clause.paths) {
-                imports.put(pkg, version);
+                imports.put(pkg, new ImportDescriptor(version, optional));
             }
         }
         return imports;

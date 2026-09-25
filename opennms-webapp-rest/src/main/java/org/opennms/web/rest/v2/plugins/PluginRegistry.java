@@ -29,10 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -155,16 +155,21 @@ public class PluginRegistry {
         return Optional.empty();
     }
 
-    public synchronized boolean restartRequired() throws IOException {
-        for (final PluginEntry entry : list()) {
-            if (entry.isPendingRestart() || PluginEntry.STATUS_STAGED.equals(entry.getStatus())) {
-                return true;
+    /** The persisted record for a name, so an install can be reverted to it. */
+    public synchronized Optional<Record> record(final String karName) throws IOException {
+        for (final Record r : read().getPlugins()) {
+            if (karName.equals(r.getKarName())) {
+                return Optional.of(r);
             }
         }
-        return false;
+        return Optional.empty();
     }
 
-    /** Replaces any record with the same name; the previous audit trail lives in the log. */
+    /**
+     * Replaces any record with the same name; the previous audit trail lives in the log.
+     * Karaf installs the features as soon as the KAR lands in deploy/ unless the manifest
+     * opts out, so only that case waits for a restart.
+     */
     public synchronized PluginEntry recordInstall(final String karName, final String fileName, final String sha256, final long size,
                                                   final String user, final List<String> features, final String bootFile, final boolean autoStart) throws IOException {
         final RegistryFile file = read();
@@ -180,10 +185,20 @@ public class PluginRegistry {
         record.setBootFile(bootFile);
         record.setAutoStart(autoStart);
         record.setUnloaded(false);
-        record.setPendingRestartSince(System.currentTimeMillis());
+        record.setPendingRestartSince(autoStart ? null : System.currentTimeMillis());
         file.getPlugins().add(record);
         write(file);
         return toEntry(record, new LiveState());
+    }
+
+    /** Drops the record written by {@link #recordInstall} and puts back the one it replaced, if any. */
+    public synchronized void revertInstall(final String karName, final Record previous) throws IOException {
+        final RegistryFile file = read();
+        file.getPlugins().removeIf(r -> karName.equals(r.getKarName()));
+        if (previous != null) {
+            file.getPlugins().add(previous);
+        }
+        write(file);
     }
 
     /** Marks the plugin unloaded, creating a record when the KAR was hand-copied. */
@@ -274,8 +289,26 @@ public class PluginRegistry {
             entry.getFeatureStates().put(feature, state);
             allStarted &= InstalledFeature.STATE_STARTED.equals(state);
         }
-        entry.setStatus(entry.isKarLoaded() && allStarted ? PluginEntry.STATUS_INSTALLED : PluginEntry.STATUS_STAGED);
+        if (entry.isKarLoaded() && allStarted) {
+            entry.setStatus(PluginEntry.STATUS_INSTALLED);
+        } else if (entry.isKarLoaded() && !installedDuringThisJvm(record)) {
+            // The container has had a full boot to start the features from the boot file and did not.
+            entry.setStatus(PluginEntry.STATUS_FAILED);
+        } else {
+            entry.setStatus(PluginEntry.STATUS_STAGED);
+        }
         return entry;
+    }
+
+    private boolean installedDuringThisJvm(final Record record) {
+        if (record.getUploadedAt() == null) {
+            return false;
+        }
+        try {
+            return Instant.parse(record.getUploadedAt()).toEpochMilli() > bootTimeMillis;
+        } catch (final DateTimeParseException e) {
+            return false;
+        }
     }
 
     private PluginEntry unmanagedEntry(final Path kar, final String karName, final LiveState live) {
@@ -301,7 +334,8 @@ public class PluginRegistry {
         }
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(deployDir)) {
             for (final Path p : stream) {
-                if (Files.isRegularFile(p) && p.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(KAR_SUFFIX)) {
+                // Karaf's KarArtifactInstaller only handles the exact ".kar" suffix.
+                if (Files.isRegularFile(p) && p.getFileName().toString().endsWith(KAR_SUFFIX)) {
                     kars.add(p);
                 }
             }

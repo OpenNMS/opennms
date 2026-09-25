@@ -84,8 +84,8 @@ describe('pluginManagementStore', () => {
     expect(await store.install({ uploadToken: 't', acknowledgeWarnings: false })).toMatchObject({ success: false, message: 'nope' })
     expect(API.getPluginManagement).toHaveBeenCalledTimes(1)
 
-    vi.mocked(API.unloadPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { ...PLUGIN, status: 'unloaded' }})
-    expect((await store.unload('alec')).payload?.status).toBe('unloaded')
+    vi.mocked(API.unloadPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { plugin: { ...PLUGIN, status: 'unloaded' }, restartRequired: true, bootFilesRemoved: [], restartInstructions: INSTRUCTIONS }})
+    expect((await store.unload('alec')).payload?.plugin.status).toBe('unloaded')
     expect(API.unloadPlugin).toHaveBeenCalledWith('alec')
     expect(API.getPluginManagement).toHaveBeenCalledTimes(2)
     vi.mocked(API.unloadPlugin).mockResolvedValueOnce({ success: false, message: 'gone' })

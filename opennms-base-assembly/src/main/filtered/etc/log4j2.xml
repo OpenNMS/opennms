@@ -281,7 +281,7 @@
     </logger>
 
     <!-- Plugin management audit log -->
-    <logger name="org.opennms.web.rest.v2.plugins" additivity="false" level="INFO">
+    <logger name="org.opennms.web.rest.v2.plugins.audit" additivity="false" level="INFO">
       <appender-ref ref="PluginManagementFile"/>
     </logger>
 

@@ -2,14 +2,20 @@
   <OnmsDialog
     :visible="visible"
     modal
-    :header="result ? `Plugin ${result.plugin.karName} loaded` : 'Plugin loaded'"
+    :header="result ? `Plugin ${result.plugin.karName} ${result.restartRequired ? 'staged' : 'loaded'}` : 'Plugin loaded'"
     width="min(720px, 95vw)"
     data-test="plugin-loaded-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div v-if="result" class="dialog-body">
-      <p class="dialog-note">
-        The plugin is staged and its features start on the next restart; until then it is listed as staged.
+      <p v-if="result.restartRequired" class="dialog-note" data-test="loaded-note-restart">
+        The manifest sets <code>Karaf-Feature-Start: false</code>, so the container extracts the KAR now but its
+        features start on the next restart; until then the plugin is listed as staged.
+      </p>
+      <p v-else class="dialog-note" data-test="loaded-note-auto">
+        The container picks the KAR up from the deploy directory within seconds and starts its features; the boot
+        file makes them start again on every later boot. No restart is needed; the table shows the plugin as
+        installed once its features report started.
       </p>
       <div class="section-title">What was written</div>
       <ul class="written" data-test="written-list">
@@ -18,8 +24,10 @@
         <li v-else>No boot file: the KAR has no features to start automatically.</li>
         <li v-if="result.plugin.features.length">Features to start: {{ result.plugin.features.join(', ') }}</li>
       </ul>
-      <div class="section-title">Restart OpenNMS</div>
-      <RestartCommands :instructions="result.restartInstructions" />
+      <template v-if="result.restartRequired">
+        <div class="section-title">Restart OpenNMS</div>
+        <RestartCommands :instructions="result.restartInstructions" />
+      </template>
     </div>
     <template #footer>
       <OnmsButton label="Close" data-test="close-button" @click="emit('update:visible', false)" />

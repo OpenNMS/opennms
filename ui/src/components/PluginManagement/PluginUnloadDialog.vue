@@ -24,7 +24,8 @@
       </div>
       <p v-if="plugin.status === 'unmanaged'" class="dialog-note" data-test="unmanaged-note">
         This plugin was found in the deploy directory but was not loaded through this page; unloading
-        removes the file all the same.
+        removes the file all the same, and any <code>featuresBoot.d</code> line that waits for this KAR is
+        cleaned as well.
       </p>
       <FormField label="Type the KAR name to confirm" for="plugin-unload-confirm" required>
         <OnmsInputText id="plugin-unload-confirm" v-model="confirmation" :placeholder="plugin.karName" autocomplete="off" data-test="confirm-input" />
@@ -81,7 +82,7 @@ const unload = async () => {
   try {
     const result = await store.unload(props.plugin.karName)
     if (result.success && result.payload) {
-      emit('unloaded', result.payload)
+      emit('unloaded', result.payload.plugin)
       emit('update:visible', false)
     } else {
       errorText.value = result.message

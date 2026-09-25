@@ -62,16 +62,16 @@ export const CHECK_TAG: Record<KarCheckLevel, OnmsTagSeverity> = { PASS: 'succes
 export interface StatusPresentation {
   severity: OnmsTagSeverity
   label: string
-  hint: string
   title: string
 }
 
 export const STATUS_TAG: Record<PluginStatus, StatusPresentation> = {
-  installed: { severity: 'success', label: 'installed', hint: '', title: 'loaded and running' },
-  staged: { severity: 'warn', label: 'staged', hint: 'restart required', title: 'written to deploy/; its features start on the next restart' },
-  unloaded: { severity: 'secondary', label: 'unloaded', hint: 'restart required', title: 'removed from deploy/; the next restart completes the removal' },
-  unmanaged: { severity: 'info', label: 'unmanaged', hint: '', title: 'found in deploy/ but not loaded through this page' },
-  unknown: { severity: 'secondary', label: 'unknown', hint: '', title: 'the container could not be reached, so the state of this plugin is not known' }
+  installed: { severity: 'success', label: 'installed', title: 'loaded and its features are started' },
+  staged: { severity: 'warn', label: 'staged', title: 'written to deploy/; the container has not loaded it yet, or its features wait for the next restart' },
+  failed: { severity: 'danger', label: 'failed', title: 'one or more features did not start; see karaf.log' },
+  unloaded: { severity: 'secondary', label: 'unloaded', title: 'removed from deploy/; the next restart completes the removal' },
+  unmanaged: { severity: 'info', label: 'unmanaged', title: 'found in deploy/ but not loaded through this page' },
+  unknown: { severity: 'secondary', label: 'unknown', title: 'the container could not be reached, so the state of this plugin is not known' }
 }
 
-export const statusOf = (status: string): StatusPresentation => STATUS_TAG[status as PluginStatus] ?? { severity: 'secondary', label: status, hint: '', title: '' }
+export const statusOf = (status: string): StatusPresentation => STATUS_TAG[status as PluginStatus] ?? { severity: 'secondary', label: status, title: '' }

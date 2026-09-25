@@ -58,15 +58,18 @@ public class PluginRegistryTest {
         registry = new PluginRegistry(registryFile, deployDir, bridge, bootTime);
     }
 
+    private static boolean restartRequired(final List<PluginEntry> entries) {
+        return entries.stream().anyMatch(PluginEntry::isPendingRestart);
+    }
+
     @Test
     public void emptyRegistryListsNothing() throws IOException {
         assertTrue(registry.list().isEmpty());
-        assertFalse(registry.restartRequired());
         assertFalse(Files.exists(registryFile));
     }
 
     @Test
-    public void installedPluginIsStagedUntilKarafLoadsIt() throws IOException {
+    public void pluginWithoutAutoStartWaitsForARestart() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
 
         final PluginEntry entry = registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), "etc/featuresBoot.d/example.boot", false);
@@ -84,36 +87,48 @@ public class PluginRegistryTest {
         assertEquals("Uninstalled", entry.getFeatureStates().get("example-feature"));
         assertEquals(PluginEntry.STATUS_STAGED, entry.getStatus());
         assertTrue(entry.isPendingRestart());
-        assertTrue(registry.restartRequired());
+        assertTrue(restartRequired(registry.list()));
         assertTrue(Files.exists(registryFile));
         final String json = new String(Files.readAllBytes(registryFile), StandardCharsets.UTF_8);
         assertTrue(json, json.contains("\"karName\" : \"example\""));
-        assertTrue(json, json.contains("\"pendingRestartSince\""));
-    }
+        assertTrue(json, json.contains("\"pendingRestartSince\" : 1"));
 
-    @Test
-    public void pluginIsInstalledOnceKarAndFeaturesAreStarted() throws IOException {
-        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
-        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature", "example-other"), null, true);
+        // Karaf extracts the KAR right away but the features wait for the boot file.
         bridge.installedKars.add("example");
-        bridge.feature("example-feature", "1.0.0", "Started").feature("example-other", "1.0.0", "Started");
-
-        PluginEntry entry = registry.find("example").orElseThrow();
-        assertEquals(PluginEntry.STATUS_INSTALLED, entry.getStatus());
-        assertTrue(entry.isKarLoaded());
-        assertEquals("Started", entry.getFeatureStates().get("example-other"));
-        assertTrue("still pending until a restart happens", entry.isPendingRestart());
-        assertTrue(registry.restartRequired());
+        bridge.feature("example-feature", "1.0.0", "Installed");
+        final PluginEntry extracted = registry.find("example").orElseThrow();
+        assertEquals(PluginEntry.STATUS_STAGED, extracted.getStatus());
+        assertTrue(extracted.isPendingRestart());
 
         final PluginRegistry afterRestart = new PluginRegistry(registryFile, deployDir, bridge, System.currentTimeMillis() + 1);
-        entry = afterRestart.find("example").orElseThrow();
-        assertEquals(PluginEntry.STATUS_INSTALLED, entry.getStatus());
-        assertFalse(entry.isPendingRestart());
-        assertFalse(afterRestart.restartRequired());
+        assertFalse(afterRestart.find("example").orElseThrow().isPendingRestart());
+        assertFalse(restartRequired(afterRestart.list()));
     }
 
     @Test
-    public void featureNotStartedKeepsPluginStaged() throws IOException {
+    public void autoStartPluginNeedsNoRestart() throws IOException {
+        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
+
+        final PluginEntry entry = registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature", "example-other"), "etc/featuresBoot.d/example.boot", true);
+
+        assertTrue(entry.isAutoStart());
+        assertFalse(entry.isPendingRestart());
+        assertEquals(PluginEntry.STATUS_STAGED, entry.getStatus());
+        assertFalse(restartRequired(registry.list()));
+        final String json = new String(Files.readAllBytes(registryFile), StandardCharsets.UTF_8);
+        assertTrue(json, json.contains("\"pendingRestartSince\" : null"));
+
+        bridge.installedKars.add("example");
+        bridge.feature("example-feature", "1.0.0", "Started").feature("example-other", "1.0.0", "Started");
+        final PluginEntry started = registry.find("example").orElseThrow();
+        assertEquals(PluginEntry.STATUS_INSTALLED, started.getStatus());
+        assertTrue(started.isKarLoaded());
+        assertEquals("Started", started.getFeatureStates().get("example-other"));
+        assertFalse(started.isPendingRestart());
+    }
+
+    @Test
+    public void featureNotStartedInTheInstallingJvmIsStillStaged() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
         registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
         bridge.installedKars.add("example");
@@ -122,6 +137,32 @@ public class PluginRegistryTest {
         final PluginEntry entry = registry.find("example").orElseThrow();
         assertEquals(PluginEntry.STATUS_STAGED, entry.getStatus());
         assertEquals("Resolved", entry.getFeatureStates().get("example-feature"));
+    }
+
+    @Test
+    public void featureNotStartedAfterARestartIsFailed() throws IOException {
+        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature", "example-other"), null, false);
+        bridge.installedKars.add("example");
+        bridge.feature("example-feature", "1.0.0", "Started").feature("example-other", "1.0.0", "Resolved");
+
+        final PluginRegistry afterRestart = new PluginRegistry(registryFile, deployDir, bridge, System.currentTimeMillis() + 1);
+        final PluginEntry entry = afterRestart.find("example").orElseThrow();
+        assertEquals(PluginEntry.STATUS_FAILED, entry.getStatus());
+        assertEquals("Resolved", entry.getFeatureStates().get("example-other"));
+        assertFalse(entry.isPendingRestart());
+        assertFalse(restartRequired(afterRestart.list()));
+    }
+
+    @Test
+    public void karNotListedAfterARestartIsStaged() throws IOException {
+        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+
+        final PluginRegistry afterRestart = new PluginRegistry(registryFile, deployDir, bridge, System.currentTimeMillis() + 1);
+        final PluginEntry entry = afterRestart.find("example").orElseThrow();
+        assertEquals(PluginEntry.STATUS_STAGED, entry.getStatus());
+        assertFalse(entry.isPendingRestart());
     }
 
     @Test
@@ -149,12 +190,15 @@ public class PluginRegistryTest {
         assertEquals("admin", entry.getUploadedBy());
         assertTrue(entry.isPendingRestart());
         assertFalse(entry.isDeployed());
-        assertTrue(registry.restartRequired());
+        assertTrue(restartRequired(registry.list()));
 
         final PluginRegistry reloaded = new PluginRegistry(registryFile, deployDir, bridge, bootTime);
         final List<PluginEntry> entries = reloaded.list();
         assertEquals(1, entries.size());
         assertEquals(PluginEntry.STATUS_UNLOADED, entries.get(0).getStatus());
+
+        final PluginRegistry afterRestart = new PluginRegistry(registryFile, deployDir, bridge, System.currentTimeMillis() + 1);
+        assertFalse(afterRestart.find("example").orElseThrow().isPendingRestart());
     }
 
     @Test
@@ -192,9 +236,30 @@ public class PluginRegistryTest {
     }
 
     @Test
+    public void revertInstallPutsThePreviousRecordBack() throws IOException {
+        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "admin", Arrays.asList("example-feature"), null, true);
+        final PluginRegistry.Record previous = registry.record("example").orElseThrow();
+        registry.recordInstall("example", "example-1.1.kar", "def", 2, "admin", Arrays.asList("example-feature"), null, true);
+
+        registry.revertInstall("example", previous);
+
+        final PluginEntry entry = registry.find("example").orElseThrow();
+        assertEquals("abc", entry.getSha256());
+        assertEquals("example-1.0.kar", entry.getFileName());
+        assertEquals(1, registry.list().size());
+
+        registry.revertInstall("example", null);
+        assertTrue(registry.record("example").isEmpty());
+        assertTrue(registry.list().stream().noneMatch(PluginEntry::isManaged));
+    }
+
+    @Test
     public void unmanagedKarsInDeployAreListed() throws IOException {
         Files.write(deployDir.resolve("hand-copied.kar"), new byte[] { 1, 2, 3 });
         Files.write(deployDir.resolve("README"), new byte[] { 1 });
+        Files.write(deployDir.resolve("IGNORED.KAR"), new byte[] { 1 });
+        Files.write(deployDir.resolve("also.Kar"), new byte[] { 1 });
         bridge.installedKars.add("hand-copied");
 
         final List<PluginEntry> entries = registry.list();
@@ -209,7 +274,7 @@ public class PluginRegistryTest {
         assertTrue(entry.isKarLoaded());
         assertEquals(PluginEntry.STATUS_UNMANAGED, entry.getStatus());
         assertFalse(entry.isPendingRestart());
-        assertFalse(registry.restartRequired());
+        assertFalse(restartRequired(entries));
     }
 
     @Test

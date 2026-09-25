@@ -49,6 +49,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.web.rest.v2.plugins.KarInspection.BundleDescriptor;
 import org.opennms.web.rest.v2.plugins.KarInspection.Check;
 import org.opennms.web.rest.v2.plugins.KarInspection.FeatureInfo;
+import org.opennms.web.rest.v2.plugins.KarInspection.ImportDescriptor;
 import org.opennms.web.rest.v2.plugins.KarInspection.Level;
 
 public class KarInspectorTest {
@@ -83,7 +84,7 @@ public class KarInspectorTest {
         entries.put("META-INF/MANIFEST.MF", manifest("Karaf-Feature-Start", "false", "Created-By", "unit test"));
         entries.put("repository/org/example/plugin/1.0.0/plugin-1.0.0-features.xml", FEATURES_XML.getBytes(StandardCharsets.UTF_8));
         entries.put("repository/org/example/plugin/1.0.0/plugin-1.0.0.jar", bundle("org.example.plugin", "1.0.0",
-                "org.opennms.integration.api.v1.alarms;org.opennms.integration.api.v1.model;version=\"[1.0,2)\",javax.xml.parsers,org.osgi.framework;version=\"[1.8,2)\"",
+                "org.opennms.integration.api.v1.alarms;org.opennms.integration.api.v1.model;version=\"[1.0,2)\",javax.xml.parsers,org.osgi.framework;version=\"[1.8,2)\",org.opennms.integration.api.v1.extra;version=\"[1.0,2)\";resolution:=optional",
                 "org.example.plugin;version=\"1.0.0\"",
                 "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=17))\""));
         final Path kar = writeKar("plugin-1.0.0.kar", entries);
@@ -96,8 +97,8 @@ public class KarInspectorTest {
         assertEquals(64, inspection.getSha256().length());
         assertEquals("false", inspection.getFeatureStart());
         assertEquals("unit test", inspection.getCreatedBy());
-        assertFalse(inspection.hasLevel(Level.FAIL));
-        assertFalse("unexpected warnings: " + inspection.checksAt(Level.WARN), inspection.hasLevel(Level.WARN));
+        assertTrue(inspection.checksAt(Level.FAIL).isEmpty());
+        assertTrue("unexpected warnings: " + inspection.checksAt(Level.WARN), inspection.checksAt(Level.WARN).isEmpty());
         for (final String id : new String[] { KarInspector.CHECK_SIZE_LIMIT, KarInspector.CHECK_ZIP_READABLE, KarInspector.CHECK_MANIFEST_PRESENT,
                 KarInspector.CHECK_ENTRIES_SAFE, KarInspector.CHECK_FEATURES_XML_PRESENT, KarInspector.CHECK_FEATURES_XML_PARSES,
                 KarInspector.CHECK_BUNDLES_RESOLVABLE_JARS, KarInspector.CHECK_FEATURE_START_FLAG, KarInspector.CHECK_DUPLICATE_KAR }) {
@@ -124,10 +125,13 @@ public class KarInspectorTest {
         final BundleDescriptor bundle = inspection.getBundles().get(0);
         assertEquals("org.example.plugin", bundle.getSymbolicName());
         assertEquals("1.0.0", bundle.getVersion());
-        assertEquals("[1.0,2)", bundle.getImports().get("org.opennms.integration.api.v1.alarms"));
-        assertEquals("[1.0,2)", bundle.getImports().get("org.opennms.integration.api.v1.model"));
-        assertEquals("", bundle.getImports().get("javax.xml.parsers"));
-        assertEquals("[1.8,2)", bundle.getImports().get("org.osgi.framework"));
+        assertEquals("[1.0,2)", bundle.getImports().get("org.opennms.integration.api.v1.alarms").getVersion());
+        assertFalse(bundle.getImports().get("org.opennms.integration.api.v1.alarms").isOptional());
+        assertEquals("[1.0,2)", bundle.getImports().get("org.opennms.integration.api.v1.model").getVersion());
+        assertEquals("", bundle.getImports().get("javax.xml.parsers").getVersion());
+        assertEquals("[1.8,2)", bundle.getImports().get("org.osgi.framework").getVersion());
+        assertEquals("[1.0,2)", bundle.getImports().get("org.opennms.integration.api.v1.extra").getVersion());
+        assertTrue(bundle.getImports().get("org.opennms.integration.api.v1.extra").isOptional());
         assertEquals(List.of("org.example.plugin"), bundle.getExports());
         assertEquals("17", bundle.getRequiredJavaVersion());
     }
@@ -147,7 +151,7 @@ public class KarInspectorTest {
         assertEquals(Level.FAIL, check.getLevel());
         assertTrue(check.getMessage(), check.getMessage().contains("resources/etc/evil.properties"));
         assertTrue(check.getMessage(), check.getMessage().contains("repository/../etc/evil.cfg"));
-        assertTrue(inspection.hasLevel(Level.FAIL));
+        assertFalse(inspection.checksAt(Level.FAIL).isEmpty());
         assertEquals(Level.PASS, check(inspection, KarInspector.CHECK_FEATURE_START_FLAG).getLevel());
     }
 
@@ -295,12 +299,17 @@ public class KarInspectorTest {
 
     @Test
     public void parsesOsgiHeaders() {
-        final Map<String, String> imports = OsgiHeaders.parseImports("a.b;c.d;version=\"[1,2)\",e.f;resolution:=optional,g.h;version=1.5");
-        assertEquals("[1,2)", imports.get("a.b"));
-        assertEquals("[1,2)", imports.get("c.d"));
-        assertEquals("", imports.get("e.f"));
-        assertEquals("1.5", imports.get("g.h"));
-        assertEquals(4, imports.size());
+        final Map<String, ImportDescriptor> imports = OsgiHeaders.parseImports("a.b;c.d;version=\"[1,2)\",e.f;resolution:=optional,g.h;version=1.5;resolution:=mandatory,i.j;version=\"1.0\";resolution:=\"optional\"");
+        assertEquals("[1,2)", imports.get("a.b").getVersion());
+        assertEquals("[1,2)", imports.get("c.d").getVersion());
+        assertFalse(imports.get("c.d").isOptional());
+        assertEquals("", imports.get("e.f").getVersion());
+        assertTrue(imports.get("e.f").isOptional());
+        assertEquals("1.5", imports.get("g.h").getVersion());
+        assertFalse(imports.get("g.h").isOptional());
+        assertEquals("1.0", imports.get("i.j").getVersion());
+        assertTrue(imports.get("i.j").isOptional());
+        assertEquals(5, imports.size());
         assertEquals("org.example", OsgiHeaders.parseSymbolicName("org.example;singleton:=true"));
         assertEquals("11", OsgiHeaders.parseRequiredJavaVersion("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=11))\",osgi.service;filter:=\"(objectClass=x)\""));
         assertEquals("1.8", OsgiHeaders.parseRequiredJavaVersion("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.8))\""));

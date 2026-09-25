@@ -45,17 +45,22 @@ describe('PluginsTable.vue', () => {
       { ...BASE, karName: 'zeta', status: 'unmanaged' },
       { ...BASE, karName: 'alpha', status: 'installed' },
       { ...BASE, karName: 'mid', status: 'staged', pendingRestart: true },
-      { ...BASE, karName: 'beta', status: 'unloaded', pendingRestart: true }
+      { ...BASE, karName: 'omega', status: 'failed' },
+      { ...BASE, karName: 'beta', status: 'unloaded', pendingRestart: true },
+      { ...BASE, karName: 'auto', status: 'staged', pendingRestart: false }
     ])
     const names = wrapper.findAll('tbody tr').map(r => r.find('td').text())
-    expect(names).toEqual(['alpha', 'beta', 'mid', 'zeta'])
+    expect(names).toEqual(['alpha', 'auto', 'beta', 'mid', 'omega', 'zeta'])
     const tags = wrapper.findAll('[data-test="plugin-status"]')
-    expect(tags.map(t => t.attributes('data-status'))).toEqual(['installed', 'unloaded', 'staged', 'unmanaged'])
+    expect(tags.map(t => t.attributes('data-status'))).toEqual(['installed', 'staged', 'unloaded', 'staged', 'failed', 'unmanaged'])
     expect(tags[0].classes()).toContain('p-tag-success')
-    expect(tags[1].classes()).toContain('p-tag-secondary')
-    expect(tags[2].classes()).toContain('p-tag-warn')
-    expect(tags[3].classes()).toContain('p-tag-info')
-    expect(tags[3].attributes('title')).toContain('not loaded through this page')
+    expect(tags[2].classes()).toContain('p-tag-secondary')
+    expect(tags[3].classes()).toContain('p-tag-warn')
+    expect(tags[4].classes()).toContain('p-tag-danger')
+    expect(tags[4].attributes('title')).toContain('see karaf.log')
+    expect(tags[5].classes()).toContain('p-tag-info')
+    expect(tags[5].attributes('title')).toContain('not loaded through this page')
+    // only entries still waiting for a JVM restart carry the hint
     const hints = wrapper.findAll('[data-test="plugin-status-hint"]').map(h => h.text())
     expect(hints).toEqual(['restart required', 'restart required'])
     expect(wrapper.find('[data-test="plugin-features"]').attributes('title')).toBe('f1, f2')

@@ -29,7 +29,7 @@ public class RestartInstructions {
     public static final String PACKAGES = "sudo systemctl restart opennms";
     public static final String CONTAINER = "docker restart <container>, or kubectl rollout restart deployment/<name>";
     public static final String HEALTH_CHECK = "opennms:health-check in the Karaf shell, or GET /opennms/rest/health";
-    public static final String NOTE = "Plugin features are only loaded at startup. The web UI is unavailable while OpenNMS restarts; wait for the health check to report success before using it again.";
+    public static final String NOTE = "A plugin whose manifest sets Karaf-Feature-Start: false starts its features at the next boot only, and an unloaded plugin is removed completely at the next boot. The web UI is unavailable while OpenNMS restarts; wait for the health check to report success before using it again.";
 
     private String packages = PACKAGES;
     private String container = CONTAINER;

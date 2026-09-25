@@ -29,7 +29,7 @@
           <template #body="{ data }">
             <div class="status-cell">
               <OnmsTag :severity="statusOf(data.status).severity" :value="statusOf(data.status).label" :title="statusOf(data.status).title" :data-status="data.status" data-test="plugin-status" />
-              <small v-if="statusOf(data.status).hint || data.pendingRestart" data-test="plugin-status-hint">{{ statusOf(data.status).hint || 'restart required' }}</small>
+              <small v-if="data.pendingRestart" data-test="plugin-status-hint">restart required</small>
             </div>
           </template>
         </OnmsColumn>

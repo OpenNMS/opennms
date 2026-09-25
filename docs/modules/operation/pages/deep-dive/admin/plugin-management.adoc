@@ -10,15 +10,17 @@ The page only performs the file-system steps that an operator would otherwise do
 == What the page does
 
 * Uploading a KAR runs structural checks on the file (readable archive, manifest, no entries outside `repository/` and `META-INF/`, feature repositories parse, bundle jars are readable, size limit) without writing anything permanent.
-* When the embedded Karaf container is reachable, the page also compares the bundle imports of `org.opennms.*` packages, the JavaSE requirement of each bundle, and the `opennms-integration-api` feature dependency with what the running server provides.
-* Installing copies the KAR to `$\{OPENNMS_HOME}/deploy/<name>.kar` and writes `$\{OPENNMS_HOME}/etc/featuresBoot.d/<name>.boot` listing the plugin's top-level features, so the features are loaded at every start.
-* Unloading removes both files; Karaf uninstalls the plugin's features from the running container shortly afterwards.
+* When the embedded Karaf container is reachable, the page also compares the bundle imports of `org.opennms.*` packages, the JavaSE requirement of each bundle, and the `opennms-integration-api` feature dependency with what the running server provides. Imports marked `resolution:=optional` are counted but not checked.
+* Installing writes `$\{OPENNMS_HOME}/etc/featuresBoot.d/<name>.boot` listing the plugin's top-level features, records the plugin, and then moves the KAR to `$\{OPENNMS_HOME}/deploy/<name>.kar`.
+* Unless the KAR manifest sets `Karaf-Feature-Start: false`, Karaf picks the file up within seconds and installs and starts its features; the boot file makes them start again on every later boot. A KAR that sets the header to `false` is extracted right away but its features start on the next restart.
+* Unloading removes the KAR and the boot file, and drops any other line under `featuresBoot.d` that waits for that KAR (`wait-for-kar=<name>`); Karaf uninstalls the plugin's features from the running container shortly afterwards, and the next restart completes the removal.
 * Every upload, install, and unload is recorded in `$\{OPENNMS_HOME}/etc/plugin-management.json` and written to `$\{OPENNMS_HOME}/logs/plugin-management.log` with the user name and remote address.
 
 == Restart requirement
 
-Plugin features listed in `featuresBoot.d` are read once at startup.
-A KAR that was staged from the page may already be extracted by Karaf, but the page reports it as `staged` and flags that a restart is required until the container reports the KAR and its features as started.
+The page flags a restart only for plugins whose manifest sets `Karaf-Feature-Start: false` and for unloaded plugins; the flag clears when the JVM restarts, not when the container reports the features.
+Until then such a plugin is listed as `staged` (or `unloaded`) and the banner at the top of the page stays on.
+A plugin listed as `failed` was loaded and the server has restarted since, but one or more of its features did not start; `$\{OPENNMS_HOME}/logs/karaf.log` has the reason.
 Restart {page-component-title} with the method that matches your installation, for example `sudo systemctl restart opennms` for package installations or a container restart for Docker and Kubernetes deployments, then confirm with `opennms:health-check` in the Karaf shell or `GET /opennms/rest/health`.
 The web UI is unavailable while {page-component-title} restarts.
 
@@ -32,5 +34,5 @@ The web UI is unavailable while {page-component-title} restarts.
 
 * The page and its REST API under `/api/v2/plugin-management` require the `ROLE_ADMIN` role for every request.
 * Uploads are kept for one hour under `$\{OPENNMS_HOME}/data/tmp/plugin-management/` so that a checked file can be installed without uploading it again.
-* KARs copied into `deploy/` by hand appear in the list as `unmanaged`; they can be unloaded from the page, which then starts tracking them.
-* KAR names are restricted to letters, digits, `.`, `_`, and `-`.
+* KARs copied into `deploy/` by hand appear in the list as `unmanaged`; they can be unloaded from the page, which then starts tracking them. Only files whose name ends in exactly `.kar` count, as in Karaf.
+* KAR names start with a letter or digit and are otherwise restricted to letters, digits, `.`, `_`, and `-`.
