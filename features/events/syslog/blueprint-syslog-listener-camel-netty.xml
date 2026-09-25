@@ -21,8 +21,42 @@
 			<cm:property name="syslog.queue.size" value="10000" />
 			<cm:property name="syslog.batch.size" value="1000" />
 			<cm:property name="syslog.batch.interval" value="500" />
+			<cm:property name="syslog.tcp.listen.port" value="0" />
+			<cm:property name="syslog.tcp.listen.interface" value="" />
+			<cm:property name="syslog.tcp.framing" value="auto" />
+			<cm:property name="syslog.tcp.max.message.size" value="65536" />
+			<cm:property name="syslog.tcp.max.connections" value="1024" />
+			<cm:property name="syslog.tcp.idle.timeout" value="0" />
+			<cm:property name="syslog.tcp.ordered" value="false" />
+			<cm:property name="syslog.tcp.dispatch.timeout" value="30" />
+			<cm:property name="syslog.tcp.tls.enabled" value="false" />
+			<cm:property name="syslog.tcp.tls.cert.filepath" value="" />
+			<cm:property name="syslog.tcp.tls.private.key.filepath" value="" />
+			<cm:property name="syslog.tcp.tls.trust.cert.filepath" value="" />
+			<cm:property name="syslog.tcp.tls.client.auth" value="none" />
 		</cm:default-properties>
 	</cm:property-placeholder>
+
+	<!-- A port of 0, the default, leaves this listener UDP only. -->
+	<bean id="syslogTcpConfig" class="org.opennms.netmgt.config.syslogd.SyslogTcpConfig">
+		<property name="port" value="${syslog.tcp.listen.port}" />
+		<property name="listenAddress" value="${syslog.tcp.listen.interface}" />
+		<property name="framing" value="${syslog.tcp.framing}" />
+		<property name="maxMessageSize" value="${syslog.tcp.max.message.size}" />
+		<property name="maxConnections" value="${syslog.tcp.max.connections}" />
+		<property name="idleTimeoutSeconds" value="${syslog.tcp.idle.timeout}" />
+		<property name="ordered" value="${syslog.tcp.ordered}" />
+		<property name="dispatchTimeoutSeconds" value="${syslog.tcp.dispatch.timeout}" />
+		<property name="tls" ref="syslogTcpTlsConfig" />
+	</bean>
+
+	<bean id="syslogTcpTlsConfig" class="org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig">
+		<property name="enabled" value="${syslog.tcp.tls.enabled}" />
+		<property name="certFilePath" value="${syslog.tcp.tls.cert.filepath}" />
+		<property name="privateKeyFilePath" value="${syslog.tcp.tls.private.key.filepath}" />
+		<property name="trustCertFilePath" value="${syslog.tcp.tls.trust.cert.filepath}" />
+		<property name="clientAuth" value="${syslog.tcp.tls.client.auth}" />
+	</bean>
 
 	<bean id="syslogConfig" class="org.opennms.netmgt.syslogd.SyslogConfigBean">
 		<property name="syslogPort" value="${syslog.listen.port}" />
@@ -31,6 +65,7 @@
 		<property name="queueSize" value="${syslog.queue.size}" />
 		<property name="batchSize" value="${syslog.batch.size}" />
 		<property name="batchIntervalMs" value="${syslog.batch.interval}" />
+		<property name="tcpConfig" ref="syslogTcpConfig" />
 	</bean>
 
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>

@@ -17,6 +17,60 @@
             />
 
     <!--
+        SYSLOG OVER TCP
+
+        Syslogd listens on UDP only unless a "tcp" element is present. Adding one starts a TCP
+        listener; the UDP one keeps running on "syslog-port" either way.
+
+            <configuration syslog-port="10514" ...>
+                <tcp port="10601"/>
+            </configuration>
+
+        The registered ports are 601 for TCP and 6514 for TLS, but both are privileged and
+        OpenNMS does not run as root, so reaching them needs a redirect or added capabilities.
+
+        Optional attributes on "tcp":
+
+        * listen-address: defaults to the listen-address of "configuration", then to all
+          addresses.
+        * framing: "auto" (the default), "octet-counting" or "non-transparent". TCP has no
+          message boundaries and RFC 6587 defines two ways to mark them, so "auto" reads the
+          framing from the first message of a connection and keeps it for that connection.
+        * max-message-size: default 65536 bytes. A sender that exceeds it has its connection
+          closed, since the position of the next message is then unknown.
+        * max-connections: default 1024.
+        * idle-timeout: seconds before a silent connection is closed. 0 disables.
+        * ordered: whether one connection's messages are guaranteed to become events in the
+          order they arrived. Off by default, which is what UDP has always offered: the sink
+          aggregates with a thread pool and can invert a pair, and syslog has no sequence
+          number to repair it with. Setting this keeps one message per connection at the sink
+          so the pair is never in that race, which on a test system meant roughly 50 messages
+          a second per connection against roughly 21000 without it. Leave it off unless a
+          sender has to be correlated in sequence, and give that sender its own connection.
+        * dispatch-timeout: only consulted with ordered set. Seconds to wait for the sink to
+          confirm a message. Messages from
+          one connection go to the sink one at a time to keep them in order, with reads paused
+          in between. Past this window the connection keeps delivering but gives up ordering
+          and backpressure, and logs that it has. Default 30, 0 waits indefinitely.
+
+        A nested "tls" element switches on TLS, per RFC 5425. Certificates and keys are PEM
+        encoded and the private key must not be password protected:
+
+            <configuration syslog-port="10514" ...>
+                <tcp port="10601">
+                    <tls enabled="true"
+                         cert-filepath="/opt/opennms/etc/syslog-tls.crt"
+                         private-key-filepath="/opt/opennms/etc/syslog-tls.key"/>
+                </tcp>
+            </configuration>
+
+        * cert-filepath, private-key-filepath: what this listener presents to senders. Both
+          are required when TLS is enabled.
+        * trust-cert-filepath: verifies sender certificates.
+        * client-auth: "none" (default), "optional" or "require".
+    -->
+
+    <!--
         NOTE: This uses the CustomSyslogParser and forwarding-regexp for backwards compatibility.  If your
         syslog sources will always use a particular format, it's better to use one of the more specific parsers
         in the "parser" attribute, above.

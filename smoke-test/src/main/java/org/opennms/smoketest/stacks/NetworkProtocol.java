@@ -41,6 +41,7 @@ public enum NetworkProtocol {
     JDWP(TCP),
 
     SYSLOG(UDP),
+    SYSLOG_TCP(TCP),
     SNMP(UDP),
     JTI(UDP),
     NXOS(UDP),

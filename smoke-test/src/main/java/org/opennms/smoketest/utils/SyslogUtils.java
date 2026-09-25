@@ -22,11 +22,14 @@
 package org.opennms.smoketest.utils;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.StandardProtocolFamily;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -80,5 +83,47 @@ public class SyslogUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Sends the same messages over a single TCP connection, framed per RFC 6587.
+     *
+     * One connection for the whole batch on purpose: that is the case where framing and
+     * ordering actually matter, and where a sender picking TCP expects both to hold.
+     *
+     * @param octetCounted true to prefix each message with its length, false to separate
+     *                     messages with a newline
+     */
+    public static void sendMessageOverTcp(InetSocketAddress syslogAddr, final String host, final int eventCount,
+            final boolean octetCounted) {
+        try (Socket socket = new Socket()) {
+            socket.connect(syslogAddr, 10000);
+            final OutputStream out = socket.getOutputStream();
+
+            for (int i = 0; i < eventCount; i++) {
+                final byte[] payload = tcpPayload(host);
+                if (octetCounted) {
+                    out.write((payload.length + " ").getBytes(StandardCharsets.US_ASCII));
+                    out.write(payload);
+                } else {
+                    out.write(payload);
+                    out.write('\n');
+                }
+            }
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * The same message {@link #sendMessage} builds, without the trailing newline. Under
+     * octet counting a trailer would be counted as message content.
+     */
+    private static byte[] tcpPayload(final String host) {
+        return ("<190>Mar 11 08:35:17 " + host
+                + " 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp "
+                + "192.168.10.100(63923) -> 192.168.11.128(1521), " + ORDINAL.getAndIncrement() + " packet")
+                .getBytes(StandardCharsets.UTF_8);
     }
 }

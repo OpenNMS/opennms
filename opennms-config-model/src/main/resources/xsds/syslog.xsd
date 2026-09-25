@@ -19,6 +19,152 @@
             </documentation>
         </annotation>
         <complexType>
+            <sequence>
+                <element name="tcp" minOccurs="0" maxOccurs="1">
+                    <annotation>
+                        <documentation>Optional TCP listener. Leaving this element out keeps Syslogd
+                                       listening on UDP alone, which is the default.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <sequence>
+                            <element name="tls" minOccurs="0" maxOccurs="1">
+                                <annotation>
+                                    <documentation>TLS for the TCP listener, as described by RFC 5425.
+                                                   Certificates and keys are PEM encoded and the private
+                                                   key must not be password protected.
+                                    </documentation>
+                                </annotation>
+                                <complexType>
+                                    <attribute name="enabled" type="boolean" use="optional" default="false"/>
+                                    <attribute name="cert-filepath" type="string" use="optional">
+                                        <annotation>
+                                            <documentation>Certificate the listener presents to senders.
+                                                           Required when TLS is enabled.
+                                            </documentation>
+                                        </annotation>
+                                    </attribute>
+                                    <attribute name="private-key-filepath" type="string" use="optional">
+                                        <annotation>
+                                            <documentation>Private key matching cert-filepath. Required
+                                                           when TLS is enabled.
+                                            </documentation>
+                                        </annotation>
+                                    </attribute>
+                                    <attribute name="trust-cert-filepath" type="string" use="optional">
+                                        <annotation>
+                                            <documentation>Certificates used to verify sender certificates.
+                                                           Only consulted when client-auth asks for them.
+                                            </documentation>
+                                        </annotation>
+                                    </attribute>
+                                    <attribute name="client-auth" use="optional" default="none">
+                                        <simpleType>
+                                            <restriction base="string">
+                                                <pattern value="none|optional|require"/>
+                                            </restriction>
+                                        </simpleType>
+                                    </attribute>
+                                </complexType>
+                            </element>
+                        </sequence>
+                        <attribute name="port" use="required">
+                            <annotation>
+                                <documentation>Port the TCP listener accepts connections on.</documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="int">
+                                    <minInclusive value="1"/>
+                                    <maxInclusive value="65535"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="listen-address" type="string" use="optional">
+                            <annotation>
+                                <documentation>Interface to accept connections on. Defaults to the
+                                               listen-address of the parent element, then to all addresses.
+                                </documentation>
+                            </annotation>
+                        </attribute>
+                        <attribute name="framing" use="optional" default="auto">
+                            <annotation>
+                                <documentation>The RFC 6587 framing to expect from senders. With
+                                               octet-counting each message is prefixed by its length, and
+                                               with non-transparent framing messages are separated by a
+                                               newline or a NUL. Senders differ in which they use by
+                                               default, so auto detects the framing from the first message
+                                               of each connection and then keeps it for that connection.
+                                </documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="string">
+                                    <pattern value="auto|octet-counting|non-transparent"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="max-message-size" use="optional" default="65536">
+                            <annotation>
+                                <documentation>Largest message accepted, in bytes. A sender that exceeds
+                                               it has its connection closed, since the position of the
+                                               next message is no longer known.
+                                </documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="int">
+                                    <minInclusive value="1"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="max-connections" use="optional" default="1024">
+                            <simpleType>
+                                <restriction base="int">
+                                    <minInclusive value="1"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="ordered" type="boolean" use="optional" default="false">
+                            <annotation>
+                                <documentation>Whether messages from one connection are
+                                               guaranteed to reach the consumer in the order they
+                                               arrived. Off by default, matching what syslog over
+                                               UDP offers. Guaranteeing order holds one message
+                                               per connection in flight and waits for the sink to
+                                               confirm it, which costs roughly two orders of
+                                               magnitude of throughput on that connection.
+                                </documentation>
+                            </annotation>
+                        </attribute>
+                        <attribute name="dispatch-timeout" use="optional" default="30">
+                            <annotation>
+                                <documentation>Only consulted when ordered is set. Seconds to wait
+                                               for the sink to confirm a message before this
+                                               connection stops waiting for confirmation, which costs in-order delivery and
+                                               read backpressure for the rest of its life. Zero
+                                               waits indefinitely.
+                                </documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="int">
+                                    <minInclusive value="0"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="idle-timeout" use="optional" default="0">
+                            <annotation>
+                                <documentation>Seconds before a connection that has sent nothing is
+                                               closed. Zero disables the timeout.
+                                </documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="int">
+                                    <minInclusive value="0"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                    </complexType>
+                </element>
+            </sequence>
+
             <attribute name="listen-address" type="string" use="optional">
                 <annotation>
                     <documentation>The address on which Syslogd listens for SYSLOG Messages. The
@@ -165,6 +311,7 @@
                     </documentation>
                 </annotation>
             </attribute>
+            
         </complexType>
 
     </element>
