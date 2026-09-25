@@ -52,6 +52,28 @@ describe('TimeSpanEditor.vue', () => {
     expect(time.day).toBe('sunday')
   })
 
+  it('refuses to add a span whose end is not after its start', async () => {
+    const wrapper = mountEditor({ type: 'daily', times: [] })
+    const vm = wrapper.vm as any
+    vm.fields.start = new Date(2026, 0, 1, 10, 0, 0)
+    vm.fields.end = new Date(2026, 0, 1, 9, 0, 0)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-test="span-error"]').text()).toContain('end must come after the start')
+    expect(wrapper.find('[data-test="add-time"]').attributes('disabled')).toBeDefined()
+    await wrapper.find('[data-test="add-time"]').trigger('click')
+    expect(wrapper.emitted('add')).toBeUndefined()
+  })
+
+  it('refuses to add a span with a cleared time field instead of throwing', async () => {
+    const wrapper = mountEditor({ type: 'specific', times: [] })
+    const vm = wrapper.vm as any
+    vm.fields.end = null
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-test="span-error"]').text()).toContain('both a start and an end')
+    await wrapper.find('[data-test="add-time"]').trigger('click')
+    expect(wrapper.emitted('add')).toBeUndefined()
+  })
+
   it('lists existing spans with a remove control', async () => {
     const wrapper = mountEditor({ type: 'daily', times: [{ begins: '01:00:00', ends: '02:00:00' }] })
     expect(wrapper.find('[data-test="time-row"]').text()).toContain('01:00:00')
