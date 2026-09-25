@@ -13,11 +13,9 @@
     </div>
 
     <div v-if="store.restartRequired" class="callout warn-callout" role="status" data-test="restart-banner">
-      <span>A restart is required to finish loading or unloading plugins.</span>
+      <span data-test="restart-summary">{{ restartSummary(store.plugins) }}</span>
       <OnmsButton variant="outlined" label="Show restart instructions" data-test="show-restart-instructions" @click="showRestartDialog = true" />
     </div>
-
-    <PluginManagementAbout :restartInstructions="store.restartInstructions" :deployDir="store.state?.deployDir" />
 
     <p v-if="store.loadError" class="error" data-test="load-error">
       Failed to read the plugin list. Check that the server is up and that you are still logged in, then reload the page.
@@ -41,9 +39,9 @@ import { OnmsButton, useOnmsToast } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import PluginActivityLog from '@/components/PluginManagement/PluginActivityLog.vue'
 import PluginLoadCard from '@/components/PluginManagement/PluginLoadCard.vue'
-import PluginManagementAbout from '@/components/PluginManagement/PluginManagementAbout.vue'
 import PluginsTable from '@/components/PluginManagement/PluginsTable.vue'
 import PluginUnloadDialog from '@/components/PluginManagement/PluginUnloadDialog.vue'
+import { restartSummary } from '@/components/PluginManagement/pluginDisplay'
 import RestartInstructionsDialog from '@/components/PluginManagement/RestartInstructionsDialog.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'

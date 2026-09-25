@@ -30,8 +30,22 @@ import { rest, v2 } from './axiosInstances'
 const endpoint = '/plugin-management'
 const jsonAccept = { headers: { Accept: 'application/json' }}
 
-// The log is served newest-first; the page shows this many entries.
-export const LOG_LINES = 200
+// /rest/logs/contents clamps n to this many lines.
+export const MAX_LOG_LINES = 10000
+export const LOG_LINE_OPTIONS = [200, 1000, 5000, 10000]
+export const DEFAULT_LOG_LINES = 1000
+
+const logUrl = (lines: number, reverse: boolean) =>
+  `/logs/contents?f=plugin-management.log&reverse=${reverse}&n=${Math.min(MAX_LOG_LINES, Math.max(1, Math.floor(lines)))}`
+
+const readLog = async (lines: number, reverse: boolean): Promise<string | null> => {
+  try {
+    const resp = await rest.get(logUrl(lines, reverse), { headers: { Accept: 'text/plain' }})
+    return typeof resp.data === 'string' ? resp.data : ''
+  } catch (_err) {
+    return null
+  }
+}
 
 // Only surface a server detail from a 4xx that looks like a short, plain
 // message; a 5xx often carries a servlet HTML error page.
@@ -149,16 +163,11 @@ const getPluginRestartInstructions = async (): Promise<RestartInstructions | nul
   }
 }
 
-// The audit log, newest entry first, trimmed to LOG_LINES; null when it
+// The last `lines` entries of the audit log, newest first; null when it
 // cannot be read (an empty string is a readable, empty log).
-const getPluginManagementLog = async (): Promise<string | null> => {
-  try {
-    const resp = await rest.get('/logs/contents?f=plugin-management.log&reverse=true', { headers: { Accept: 'text/plain' }})
-    const text = typeof resp.data === 'string' ? resp.data : ''
-    return text.split('\n').slice(0, LOG_LINES).join('\n')
-  } catch (_err) {
-    return null
-  }
-}
+const getPluginManagementLog = (lines = DEFAULT_LOG_LINES): Promise<string | null> => readLog(lines, true)
 
-export { getPluginManagement, checkPluginKar, installPlugin, unloadPlugin, getPluginRestartInstructions, getPluginManagementLog }
+// The whole file in its own order, for saving; null when it cannot be read.
+const downloadPluginManagementLog = (): Promise<string | null> => readLog(MAX_LOG_LINES, false)
+
+export { getPluginManagement, checkPluginKar, installPlugin, unloadPlugin, getPluginRestartInstructions, getPluginManagementLog, downloadPluginManagementLog }

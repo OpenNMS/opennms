@@ -142,6 +142,7 @@ public class KarInspector {
         final List<String> jars = new ArrayList<>();
         ZipEntry manifestEntry = null;
         int count = 0;
+        int metadataFiles = 0;
 
         final Enumeration<? extends ZipEntry> entries = zip.entries();
         while (entries.hasMoreElements()) {
@@ -157,7 +158,11 @@ public class KarInspector {
             } else if (name.startsWith("repository/") && !entry.isDirectory()) {
                 final String lower = name.toLowerCase(Locale.ROOT);
                 if (lower.endsWith(".xml")) {
-                    featureXmlCandidates.add(name);
+                    if (isMavenMetadata(lower) || entry.getSize() == 0) {
+                        metadataFiles++;
+                    } else {
+                        featureXmlCandidates.add(name);
+                    }
                 } else if (lower.endsWith(".jar")) {
                     jars.add(name);
                 }
@@ -196,13 +201,14 @@ public class KarInspector {
             }
         }
 
-        inspectFeatureRepositories(zip, featureXmlCandidates, result);
+        inspectFeatureRepositories(zip, featureXmlCandidates, metadataFiles, result);
         inspectBundles(zip, jars, result);
     }
 
-    private void inspectFeatureRepositories(final ZipFile zip, final List<String> candidates, final KarInspection result) {
+    private void inspectFeatureRepositories(final ZipFile zip, final List<String> candidates, final int metadataFiles, final KarInspection result) {
         final List<Check> checks = result.getChecks();
         final List<String> parseFailures = new ArrayList<>();
+        final List<String> otherXmlFailures = new ArrayList<>();
         for (final String name : candidates) {
             try (InputStream in = zip.getInputStream(zip.getEntry(name))) {
                 final Document doc = secureDocumentBuilder().parse(in);
@@ -215,19 +221,24 @@ public class KarInspector {
                     result.getFeatures().add(readFeature(featureEl, name));
                 }
             } catch (final Exception e) {
-                if (name.toLowerCase(Locale.ROOT).contains("features")) {
+                if (isFeaturesFileName(name)) {
                     parseFailures.add(name + " (" + e.getMessage() + ")");
+                } else {
+                    otherXmlFailures.add(name);
                 }
             }
         }
 
+        final String ignored = metadataFiles > 0 ? "; " + metadataFiles + " Maven metadata files ignored" : "";
         if (result.getFeatureRepositories().isEmpty()) {
-            checks.add(new Check(CHECK_FEATURES_XML_PRESENT, Level.FAIL, "No feature repository (a features.xml with a <features> root) was found under repository/"));
+            checks.add(new Check(CHECK_FEATURES_XML_PRESENT, Level.FAIL, "No feature repository (a features.xml with a <features> root) was found under repository/" + ignored));
         } else {
-            checks.add(new Check(CHECK_FEATURES_XML_PRESENT, Level.PASS, "Found " + result.getFeatureRepositories().size() + " feature repositories: " + listSome(result.getFeatureRepositories())));
+            checks.add(new Check(CHECK_FEATURES_XML_PRESENT, Level.PASS, "Found " + result.getFeatureRepositories().size() + " feature repositories: " + listSome(result.getFeatureRepositories()) + ignored));
         }
         if (!parseFailures.isEmpty()) {
             checks.add(new Check(CHECK_FEATURES_XML_PARSES, Level.FAIL, "Feature repositories that do not parse: " + listSome(parseFailures)));
+        } else if (!otherXmlFailures.isEmpty()) {
+            checks.add(new Check(CHECK_FEATURES_XML_PARSES, Level.WARN, "XML files under repository/ that are not feature repositories and do not parse (ignored): " + listSome(otherXmlFailures)));
         } else if (!result.getFeatureRepositories().isEmpty()) {
             final String names = result.getFeatures().stream().map(f -> f.getName() + "/" + f.getVersion()).collect(Collectors.joining(", "));
             checks.add(new Check(CHECK_FEATURES_XML_PARSES, Level.PASS, "All feature repositories parse; " + result.getFeatures().size() + " features declared: " + names));
@@ -298,6 +309,18 @@ public class KarInspector {
             throw new IOException("not a jar");
         }
         return null;
+    }
+
+    private static String baseName(final String lowerCaseName) {
+        return lowerCaseName.substring(lowerCaseName.lastIndexOf('/') + 1);
+    }
+
+    static boolean isMavenMetadata(final String lowerCaseName) {
+        return baseName(lowerCaseName).startsWith("maven-metadata");
+    }
+
+    static boolean isFeaturesFileName(final String name) {
+        return baseName(name.toLowerCase(Locale.ROOT)).endsWith("features.xml");
     }
 
     static boolean isSafeEntry(final String name) {

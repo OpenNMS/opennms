@@ -19,32 +19,33 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-
 import PluginManagementAbout from '@/components/PluginManagement/PluginManagementAbout.vue'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
 
-const TogglePanelStub = { name: 'TogglePanel', props: ['collapsed'], template: '<div :data-collapsed="collapsed"><slot name="header" /><slot /></div>' }
-
 const INSTRUCTIONS = { packages: 'sudo systemctl restart opennms', container: 'docker compose restart horizon', healthCheck: 'sudo /opt/opennms/bin/opennms status', note: 'Wait for the web interface to answer.' }
 
 describe('PluginManagementAbout.vue', () => {
-  it('renders the help content collapsed with the restart commands', () => {
+  it('renders the help sections with the restart commands and the status wording', () => {
     const wrapper = mount(PluginManagementAbout, {
       props: { restartInstructions: INSTRUCTIONS, deployDir: '/opt/opennms/deploy' },
-      global: { plugins: [PrimeVue], stubs: { TogglePanel: TogglePanelStub }}
+      global: { plugins: [PrimeVue] }
     })
-    expect(wrapper.find('[data-collapsed="true"]').exists()).toBe(true)
+    expect(wrapper.findAll('.help-section')).toHaveLength(2)
+    expect(wrapper.findAll('.section-title').map(t => t.text())).toEqual([
+      'What a plugin is', 'What Load does', 'When a restart is needed', 'What Unload does', 'Restarting OpenNMS', 'Audit log and access'
+    ])
     const text = wrapper.text()
-    expect(text).toContain('About plugin management')
     expect(text).toContain('OpenNMS Integration API')
     expect(text).toContain('featuresBoot.d')
     expect(text).toContain('Karaf-Feature-Start: false')
     expect(text).toContain('within seconds')
     expect(text).toContain('every later boot')
-    expect(text).toContain('When a restart is needed')
-    expect(text).toContain('listed as failed')
+    expect(text).toContain('Load pending restart')
+    expect(text).toContain('Unload pending restart')
+    expect(text).toContain('Failed to start')
+    expect(text).toContain('Not managed here')
     expect(text).toContain('karaf.log')
     expect(text).toContain('/opt/opennms/deploy')
     expect(text).toContain('plugin-management.log')
@@ -56,10 +57,7 @@ describe('PluginManagementAbout.vue', () => {
   })
 
   it('falls back when the restart instructions could not be read', () => {
-    const wrapper = mount(PluginManagementAbout, {
-      props: { restartInstructions: null },
-      global: { plugins: [PrimeVue], stubs: { TogglePanel: TogglePanelStub }}
-    })
+    const wrapper = mount(PluginManagementAbout, { props: { restartInstructions: null }, global: { plugins: [PrimeVue] }})
     expect(wrapper.find('[data-test="about-no-instructions"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('deploy/')
   })

@@ -53,20 +53,26 @@ describe('PluginsTable.vue', () => {
     expect(names).toEqual(['alpha', 'auto', 'beta', 'mid', 'omega', 'zeta'])
     const tags = wrapper.findAll('[data-test="plugin-status"]')
     expect(tags.map(t => t.attributes('data-status'))).toEqual(['installed', 'staged', 'unloaded', 'staged', 'failed', 'unmanaged'])
+    expect(tags.map(t => t.text())).toEqual(['Loaded', 'Load pending restart', 'Unload pending restart', 'Load pending restart', 'Failed to start', 'Not managed here'])
     expect(tags[0].classes()).toContain('p-tag-success')
-    expect(tags[2].classes()).toContain('p-tag-secondary')
+    expect(tags[1].classes()).toContain('p-tag-warn')
+    expect(tags[2].classes()).toContain('p-tag-warn')
     expect(tags[3].classes()).toContain('p-tag-warn')
     expect(tags[4].classes()).toContain('p-tag-danger')
     expect(tags[4].attributes('title')).toContain('see karaf.log')
     expect(tags[5].classes()).toContain('p-tag-info')
     expect(tags[5].attributes('title')).toContain('not loaded through this page')
-    // only entries still waiting for a JVM restart carry the hint
-    const hints = wrapper.findAll('[data-test="plugin-status-hint"]').map(h => h.text())
-    expect(hints).toEqual(['restart required', 'restart required'])
+    expect(wrapper.find('[data-test="plugin-status-hint"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="plugin-features"]').attributes('title')).toBe('f1, f2')
     expect(wrapper.text()).toContain('1.5 KB')
     expect(wrapper.find('[data-test="plugin-uploaded"]').text()).toContain('admin')
     expect(wrapper.find('[data-test="plugin-uploaded"]').text()).toContain('2026')
+  })
+
+  it('shows an unloaded plugin that no longer waits for a restart as Unloaded', () => {
+    const tag = mountTable([{ ...BASE, karName: 'beta', status: 'unloaded', pendingRestart: false }]).find('[data-test="plugin-status"]')
+    expect(tag.text()).toBe('Unloaded')
+    expect(tag.classes()).toContain('p-tag-secondary')
   })
 
   it('offers Unload except for unloaded plugins, and emits the entry', async () => {

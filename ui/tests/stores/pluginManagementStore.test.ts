@@ -32,7 +32,8 @@ vi.mock('@/services', () => ({
     installPlugin: vi.fn(),
     unloadPlugin: vi.fn(),
     getPluginRestartInstructions: vi.fn(),
-    getPluginManagementLog: vi.fn()
+    getPluginManagementLog: vi.fn(),
+    downloadPluginManagementLog: vi.fn()
   }
 }))
 
@@ -79,6 +80,7 @@ describe('pluginManagementStore', () => {
     expect(API.getPluginManagement).toHaveBeenCalledTimes(1)
     expect(store.restartRequired).toBe(true)
     expect(store.log).toBe('entry')
+    expect(API.getPluginManagementLog).toHaveBeenCalledWith(1000)
 
     vi.mocked(API.installPlugin).mockResolvedValueOnce({ success: false, message: 'nope' })
     expect(await store.install({ uploadToken: 't', acknowledgeWarnings: false })).toMatchObject({ success: false, message: 'nope' })
@@ -113,5 +115,18 @@ describe('pluginManagementStore', () => {
     vi.mocked(API.getPluginManagementLog).mockResolvedValueOnce(null)
     await store.refreshLog()
     expect(store.log).toBeNull()
+  })
+
+  it('re-reads the log with the new line count and hands the full file to the caller', async () => {
+    const store = usePluginManagementStore()
+    expect(store.logLines).toBe(1000)
+    vi.mocked(API.getPluginManagementLog).mockResolvedValueOnce('more')
+    await store.setLogLines(5000)
+    expect(store.logLines).toBe(5000)
+    expect(API.getPluginManagementLog).toHaveBeenCalledWith(5000)
+    expect(store.log).toBe('more')
+    vi.mocked(API.downloadPluginManagementLog).mockResolvedValueOnce('whole file')
+    expect(await store.downloadLog()).toBe('whole file')
+    expect(store.log).toBe('more')
   })
 })

@@ -233,6 +233,63 @@ public class KarInspectorTest {
     }
 
     @Test
+    public void mavenMetadataAndEmptyXmlAreIgnored() throws IOException {
+        final Map<String, byte[]> entries = new LinkedHashMap<>();
+        entries.put("META-INF/MANIFEST.MF", manifest("Karaf-Feature-Start", "false"));
+        entries.put("repository/org/example/plugin/1.0.0/plugin-1.0.0-features.xml", FEATURES_XML.getBytes(StandardCharsets.UTF_8));
+        entries.put("repository/org/example/plugin-features/1.0.0-SNAPSHOT/maven-metadata-local.xml", new byte[0]);
+        entries.put("repository/org/example/plugin-features/maven-metadata-local.xml", "<metadata><groupId>org.example</groupId></metadata>".getBytes(StandardCharsets.UTF_8));
+        entries.put("repository/org/example/other-features/1.0.0/empty.xml", new byte[0]);
+        final Path kar = writeKar("metadata.kar", entries);
+
+        final KarInspection inspection = inspector.inspect(kar, "metadata.kar");
+
+        assertTrue(inspection.checksAt(Level.FAIL).isEmpty());
+        final Check present = check(inspection, KarInspector.CHECK_FEATURES_XML_PRESENT);
+        assertEquals(Level.PASS, present.getLevel());
+        assertTrue(present.getMessage(), present.getMessage().endsWith("; 3 Maven metadata files ignored"));
+        assertEquals(Level.PASS, check(inspection, KarInspector.CHECK_FEATURES_XML_PARSES).getLevel());
+        assertEquals(1, inspection.getFeatureRepositories().size());
+    }
+
+    @Test
+    public void nonFeaturesXmlIsIgnoredOrWarnsWhenBroken() throws IOException {
+        final Map<String, byte[]> entries = new LinkedHashMap<>();
+        entries.put("META-INF/MANIFEST.MF", manifest("Karaf-Feature-Start", "false"));
+        entries.put("repository/org/example/plugin/1.0.0/plugin-1.0.0-features.xml", FEATURES_XML.getBytes(StandardCharsets.UTF_8));
+        entries.put("repository/org/example/plugin/1.0.0/plugin-1.0.0.pom.xml", "<project><artifactId>plugin</artifactId></project>".getBytes(StandardCharsets.UTF_8));
+        entries.put("repository/org/example/plugin/1.0.0/plugin-1.0.0-config.xml", "<config><unclosed>".getBytes(StandardCharsets.UTF_8));
+        final Path kar = writeKar("otherxml.kar", entries);
+
+        final KarInspection inspection = inspector.inspect(kar, "otherxml.kar");
+
+        assertTrue(inspection.checksAt(Level.FAIL).isEmpty());
+        assertEquals(Level.PASS, check(inspection, KarInspector.CHECK_FEATURES_XML_PRESENT).getLevel());
+        final Check parses = check(inspection, KarInspector.CHECK_FEATURES_XML_PARSES);
+        assertEquals(Level.WARN, parses.getLevel());
+        assertTrue(parses.getMessage(), parses.getMessage().contains("plugin-1.0.0-config.xml"));
+        assertFalse(parses.getMessage(), parses.getMessage().contains("pom.xml"));
+        assertEquals(1, inspection.getFeatureRepositories().size());
+        assertEquals(2, inspection.getFeatures().size());
+    }
+
+    @Test
+    public void brokenFeaturesXmlNextToValidOneStillFails() throws IOException {
+        final Map<String, byte[]> entries = new LinkedHashMap<>();
+        entries.put("META-INF/MANIFEST.MF", manifest("Karaf-Feature-Start", "false"));
+        entries.put("repository/org/example/plugin/1.0.0/plugin-1.0.0-features.xml", FEATURES_XML.getBytes(StandardCharsets.UTF_8));
+        entries.put("repository/org/example/extra/1.0.0/extra-1.0.0-features.xml", "<features><feature name='x'>".getBytes(StandardCharsets.UTF_8));
+        final Path kar = writeKar("brokenfeatures.kar", entries);
+
+        final KarInspection inspection = inspector.inspect(kar, "brokenfeatures.kar");
+
+        final Check parses = check(inspection, KarInspector.CHECK_FEATURES_XML_PARSES);
+        assertEquals(Level.FAIL, parses.getLevel());
+        assertTrue(parses.getMessage(), parses.getMessage().contains("extra-1.0.0-features.xml"));
+        assertEquals(Level.PASS, check(inspection, KarInspector.CHECK_FEATURES_XML_PRESENT).getLevel());
+    }
+
+    @Test
     public void doctypeInFeaturesXmlIsRejected() throws IOException {
         final String xxe = "<?xml version=\"1.0\"?><!DOCTYPE features [<!ENTITY x SYSTEM \"file:///etc/passwd\">]><features name=\"a\"><feature name=\"a\">&x;</feature></features>";
         final Map<String, byte[]> entries = new LinkedHashMap<>();

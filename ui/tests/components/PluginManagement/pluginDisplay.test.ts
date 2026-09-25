@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { CHECK_TAG, formatSize, formatUploadedAt, shortSha, statusOf } from '@/components/PluginManagement/pluginDisplay'
+import { CHECK_TAG, formatSize, formatUploadedAt, restartCounts, restartSummary, shortSha, statusOf } from '@/components/PluginManagement/pluginDisplay'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -43,13 +43,28 @@ describe('pluginDisplay', () => {
     expect(formatUploadedAt('not a date')).toBe('—')
   })
 
-  it('maps levels and statuses', () => {
+  it('maps levels and statuses, telling a pending unload from a finished one', () => {
     expect(CHECK_TAG).toEqual({ PASS: 'success', WARN: 'warn', FAIL: 'danger' })
-    expect(statusOf('installed').severity).toBe('success')
-    expect(statusOf('staged').severity).toBe('warn')
-    expect(statusOf('failed')).toMatchObject({ severity: 'danger', label: 'failed', title: 'one or more features did not start; see karaf.log' })
-    expect(statusOf('unloaded').severity).toBe('secondary')
+    expect(statusOf('installed')).toMatchObject({ severity: 'success', label: 'Loaded' })
+    expect(statusOf('staged')).toMatchObject({ severity: 'warn', label: 'Load pending restart' })
+    expect(statusOf('failed')).toMatchObject({ severity: 'danger', label: 'Failed to start', title: 'one or more features did not start; see karaf.log' })
+    expect(statusOf('unloaded', true)).toMatchObject({ severity: 'warn', label: 'Unload pending restart' })
+    expect(statusOf('unloaded', false)).toMatchObject({ severity: 'secondary', label: 'Unloaded' })
+    expect(statusOf('unloaded')).toMatchObject({ severity: 'secondary', label: 'Unloaded' })
+    expect(statusOf('unmanaged')).toMatchObject({ severity: 'info', label: 'Not managed here' })
     expect(statusOf('unmanaged').title).toContain('not loaded through this page')
+    expect(statusOf('unknown')).toMatchObject({ severity: 'secondary', label: 'Unknown' })
     expect(statusOf('weird')).toMatchObject({ severity: 'secondary', label: 'weird' })
+  })
+
+  it('counts the plugins waiting for a restart', () => {
+    const entry = (status: string, pendingRestart: boolean) => ({ karName: status, status, pendingRestart } as any)
+    const plugins = [
+      entry('staged', true), entry('staged', false), entry('installed', false), entry('installed', true),
+      entry('unloaded', true), entry('unloaded', false), entry('failed', false), entry('unmanaged', false)
+    ]
+    expect(restartCounts(plugins)).toEqual({ toLoad: 3, toUnload: 1 })
+    expect(restartSummary(plugins)).toBe('A restart is required to finish loading or unloading plugins: 3 to load, 1 to unload.')
+    expect(restartSummary([])).toBe('A restart is required to finish loading or unloading plugins: 0 to load, 0 to unload.')
   })
 })

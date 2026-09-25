@@ -21,6 +21,7 @@
 ///
 
 import API from '@/services'
+import { DEFAULT_LOG_LINES } from '@/services/pluginManagementService'
 import { KarInspection, PluginEntry, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
@@ -33,6 +34,7 @@ export const usePluginManagementStore = defineStore('pluginManagementStore', () 
   const restartInstructions = ref<RestartInstructions | null>(null)
   // null once a read has failed; undefined until the first read
   const log = ref<string | null | undefined>(undefined)
+  const logLines = ref(DEFAULT_LOG_LINES)
 
   const plugins = computed<PluginEntry[]>(() => state.value?.plugins ?? [])
   const containerAvailable = computed<boolean>(() => state.value?.containerAvailable ?? true)
@@ -82,8 +84,16 @@ export const usePluginManagementStore = defineStore('pluginManagementStore', () 
   }
 
   const refreshLog = async () => {
-    log.value = await API.getPluginManagementLog()
+    log.value = await API.getPluginManagementLog(logLines.value)
   }
 
-  return { state, loadError, isLoading, restartInstructions, log, plugins, containerAvailable, restartRequired, load, check, install, unload, getRestartInstructions, refreshLog }
+  const setLogLines = async (lines: number) => {
+    logLines.value = lines
+    await refreshLog()
+  }
+
+  // the full file for saving; null when it cannot be read
+  const downloadLog = (): Promise<string | null> => API.downloadPluginManagementLog()
+
+  return { state, loadError, isLoading, restartInstructions, log, logLines, plugins, containerAvailable, restartRequired, load, check, install, unload, getRestartInstructions, refreshLog, setLogLines, downloadLog }
 })

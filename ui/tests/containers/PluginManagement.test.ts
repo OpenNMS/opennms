@@ -74,11 +74,19 @@ describe('PluginManagement.vue (container)', () => {
     expect(wrapper.find('[data-test="container-unavailable"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
     expect(wrapper.findAll('[data-test="unload-plugin"]')).toHaveLength(1)
+    expect(wrapper.findComponent({ name: 'PluginManagementAbout' }).exists()).toBe(false)
   })
 
-  it('shows the restart banner and opens the instructions dialog', async () => {
-    const wrapper = await mountPage({ state: { ...STATE, restartRequired: true }, restartInstructions: INSTRUCTIONS })
-    expect(wrapper.find('[data-test="restart-banner"]').text()).toContain('A restart is required to finish loading or unloading plugins.')
+  it('shows the restart banner with the counts and opens the instructions dialog', async () => {
+    const plugins = [
+      { ...PLUGIN, karName: 'a', status: 'staged', pendingRestart: true },
+      { ...PLUGIN, karName: 'b', status: 'staged', pendingRestart: true },
+      { ...PLUGIN, karName: 'c', status: 'unloaded', pendingRestart: true },
+      { ...PLUGIN, karName: 'd', status: 'unloaded', pendingRestart: false },
+      PLUGIN
+    ]
+    const wrapper = await mountPage({ state: { ...STATE, restartRequired: true, plugins }, restartInstructions: INSTRUCTIONS })
+    expect(wrapper.find('[data-test="restart-summary"]').text()).toBe('A restart is required to finish loading or unloading plugins: 2 to load, 1 to unload.')
     await wrapper.find('[data-test="show-restart-instructions"]').trigger('click')
     const dialog = wrapper.find('[data-test="restart-instructions-dialog"]')
     expect(dialog.exists()).toBe(true)

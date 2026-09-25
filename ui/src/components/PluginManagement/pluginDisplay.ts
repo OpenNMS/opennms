@@ -22,7 +22,7 @@
 
 import { formatInDisplayZone } from '@/lib/displayTimeZone'
 import { isValid, parseISO } from 'date-fns'
-import { KarCheckLevel, PluginStatus } from '@/types/pluginManagement'
+import { KarCheckLevel, PluginEntry, PluginStatus } from '@/types/pluginManagement'
 import { type OnmsTagSeverity } from '@opennms/onms-ui'
 
 export const NOT_SET = '—'
@@ -66,12 +66,34 @@ export interface StatusPresentation {
 }
 
 export const STATUS_TAG: Record<PluginStatus, StatusPresentation> = {
-  installed: { severity: 'success', label: 'installed', title: 'loaded and its features are started' },
-  staged: { severity: 'warn', label: 'staged', title: 'written to deploy/; the container has not loaded it yet, or its features wait for the next restart' },
-  failed: { severity: 'danger', label: 'failed', title: 'one or more features did not start; see karaf.log' },
-  unloaded: { severity: 'secondary', label: 'unloaded', title: 'removed from deploy/; the next restart completes the removal' },
-  unmanaged: { severity: 'info', label: 'unmanaged', title: 'found in deploy/ but not loaded through this page' },
-  unknown: { severity: 'secondary', label: 'unknown', title: 'the container could not be reached, so the state of this plugin is not known' }
+  installed: { severity: 'success', label: 'Loaded', title: 'loaded and its features are started' },
+  staged: { severity: 'warn', label: 'Load pending restart', title: 'written to deploy/; its features start on the next restart' },
+  failed: { severity: 'danger', label: 'Failed to start', title: 'one or more features did not start; see karaf.log' },
+  unloaded: { severity: 'secondary', label: 'Unloaded', title: 'removed from deploy/' },
+  unmanaged: { severity: 'info', label: 'Not managed here', title: 'found in deploy/ but not loaded through this page' },
+  unknown: { severity: 'secondary', label: 'Unknown', title: 'the container could not be reached, so the state of this plugin is not known' }
 }
 
-export const statusOf = (status: string): StatusPresentation => STATUS_TAG[status as PluginStatus] ?? { severity: 'secondary', label: status, title: '' }
+const UNLOAD_PENDING: StatusPresentation = { severity: 'warn', label: 'Unload pending restart', title: 'removed from deploy/; the next restart completes the removal' }
+
+export const statusOf = (status: string, pendingRestart = false): StatusPresentation => {
+  if (status === 'unloaded' && pendingRestart) {
+    return UNLOAD_PENDING
+  }
+  return STATUS_TAG[status as PluginStatus] ?? { severity: 'secondary', label: status, title: '' }
+}
+
+export interface RestartCounts {
+  toLoad: number
+  toUnload: number
+}
+
+export const restartCounts = (plugins: PluginEntry[]): RestartCounts => ({
+  toLoad: plugins.filter(p => p.status === 'staged' || (p.pendingRestart && p.status !== 'unloaded')).length,
+  toUnload: plugins.filter(p => p.status === 'unloaded' && p.pendingRestart).length
+})
+
+export const restartSummary = (plugins: PluginEntry[]): string => {
+  const { toLoad, toUnload } = restartCounts(plugins)
+  return `A restart is required to finish loading or unloading plugins: ${toLoad} to load, ${toUnload} to unload.`
+}

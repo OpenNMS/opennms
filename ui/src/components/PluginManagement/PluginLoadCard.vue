@@ -1,7 +1,12 @@
 <template>
   <OnmsCard class="plugin-load-card" data-test="plugin-load-card">
     <template #title>
-      <span class="card-title">Load a plugin</span>
+      <div class="card-header">
+        <span class="card-title">Load a plugin</span>
+        <AboutDialogButton title="Plugin management">
+          <PluginManagementAbout :restartInstructions="store.restartInstructions ?? null" :deployDir="store.state?.deployDir" />
+        </AboutDialogButton>
+      </div>
     </template>
     <template #content>
       <p class="card-note">
@@ -66,10 +71,12 @@
 import { computed, ref } from 'vue'
 import { OnmsButton, OnmsCard, OnmsCheckbox } from '@opennms/onms-ui'
 
+import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { KarInspection, PluginInstallResult } from '@/types/pluginManagement'
 import PluginChecksTable from './PluginChecksTable.vue'
 import PluginLoadedDialog from './PluginLoadedDialog.vue'
+import PluginManagementAbout from './PluginManagementAbout.vue'
 import { CONTAINER_UNAVAILABLE, NOT_SET, formatSize, shortSha } from './pluginDisplay'
 
 const props = defineProps<{
@@ -180,6 +187,12 @@ const load = async () => {
 <style lang="scss" scoped>
 .plugin-load-card {
   padding: 25px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .card-title {

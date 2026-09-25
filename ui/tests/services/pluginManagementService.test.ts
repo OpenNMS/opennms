@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { checkPluginKar, getPluginManagement, getPluginManagementLog, getPluginRestartInstructions, installPlugin, LOG_LINES, unloadPlugin } from '@/services/pluginManagementService'
+import { checkPluginKar, DEFAULT_LOG_LINES, downloadPluginManagementLog, getPluginManagement, getPluginManagementLog, getPluginRestartInstructions, installPlugin, LOG_LINE_OPTIONS, MAX_LOG_LINES, unloadPlugin } from '@/services/pluginManagementService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -110,16 +110,33 @@ describe('pluginManagementService', () => {
     expect(await getPluginRestartInstructions()).toBeNull()
   })
 
-  it('reads the audit log newest-first, trimmed, and returns null when it cannot be read', async () => {
-    const lines = Array.from({ length: LOG_LINES + 5 }, (_v, i) => `line ${i}`)
-    vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: lines.join('\n') })
-    const log = await getPluginManagementLog()
-    expect(vi.mocked(rest.get).mock.calls[0][0]).toBe('/logs/contents?f=plugin-management.log&reverse=true')
-    expect(log?.split('\n')).toHaveLength(LOG_LINES)
-    expect(log?.startsWith('line 0')).toBe(true)
+  it('reads the audit log newest-first with the requested line count, and returns null when it cannot be read', async () => {
+    expect(DEFAULT_LOG_LINES).toBe(1000)
+    expect(MAX_LOG_LINES).toBe(10000)
+    expect(LOG_LINE_OPTIONS).toEqual([200, 1000, 5000, 10000])
+    vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: 'line 1\nline 0' })
+    expect(await getPluginManagementLog()).toBe('line 1\nline 0')
+    expect(vi.mocked(rest.get).mock.calls[0][0]).toBe('/logs/contents?f=plugin-management.log&reverse=true&n=1000')
+    expect(vi.mocked(rest.get).mock.calls[0][1]).toEqual({ headers: { Accept: 'text/plain' }})
+    vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: 'x' })
+    await getPluginManagementLog(5000)
+    expect(vi.mocked(rest.get).mock.calls[1][0]).toBe('/logs/contents?f=plugin-management.log&reverse=true&n=5000')
+    vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: 'x' })
+    await getPluginManagementLog(99999)
+    expect(vi.mocked(rest.get).mock.calls[2][0]).toContain('&n=10000')
     vi.mocked(rest.get).mockRejectedValueOnce(new Error('404'))
     expect(await getPluginManagementLog()).toBeNull()
     vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: '' })
     expect(await getPluginManagementLog()).toBe('')
+    vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: { not: 'text' }})
+    expect(await getPluginManagementLog()).toBe('')
+  })
+
+  it('downloads the whole log in file order and returns null on failure', async () => {
+    vi.mocked(rest.get).mockResolvedValueOnce({ status: 200, data: 'line 0\nline 1' })
+    expect(await downloadPluginManagementLog()).toBe('line 0\nline 1')
+    expect(vi.mocked(rest.get).mock.calls[0][0]).toBe('/logs/contents?f=plugin-management.log&reverse=false&n=10000')
+    vi.mocked(rest.get).mockRejectedValueOnce(new Error('500'))
+    expect(await downloadPluginManagementLog()).toBeNull()
   })
 })

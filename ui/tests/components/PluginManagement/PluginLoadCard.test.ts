@@ -72,8 +72,22 @@ describe('PluginLoadCard.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    store = { check: vi.fn(), install: vi.fn() }
+    store = { check: vi.fn(), install: vi.fn(), restartInstructions: INSTRUCTIONS, state: { deployDir: '/opt/opennms/deploy' }}
     vi.mocked(usePluginManagementStore).mockReturnValue(store)
+  })
+
+  it('opens the help in a modal from the Info button in the header', async () => {
+    mountCard()
+    expect(wrapper.find('[data-test="about-dialog"]').exists()).toBe(false)
+    const button = wrapper.find('[data-test="about-button"]')
+    expect(button.attributes('aria-label')).toBe('About Plugin management')
+    await button.trigger('click')
+    const dialog = wrapper.find('[data-test="about-dialog"]')
+    expect(dialog.exists()).toBe(true)
+    expect(dialog.find('h2').text()).toBe('About Plugin management')
+    expect(dialog.find('[data-test="plugin-about"]').exists()).toBe(true)
+    expect(dialog.text()).toContain('/opt/opennms/deploy')
+    expect(dialog.find('[data-test="restart-packages"]').text()).toBe(INSTRUCTIONS.packages)
   })
 
   it('needs a .kar file before the checks can run', async () => {

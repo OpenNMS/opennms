@@ -27,10 +27,13 @@
         </OnmsColumn>
         <OnmsColumn header="Status">
           <template #body="{ data }">
-            <div class="status-cell">
-              <OnmsTag :severity="statusOf(data.status).severity" :value="statusOf(data.status).label" :title="statusOf(data.status).title" :data-status="data.status" data-test="plugin-status" />
-              <small v-if="data.pendingRestart" data-test="plugin-status-hint">restart required</small>
-            </div>
+            <OnmsTag
+              :severity="statusOf(data.status, data.pendingRestart).severity"
+              :value="statusOf(data.status, data.pendingRestart).label"
+              :title="statusOf(data.status, data.pendingRestart).title"
+              :data-status="data.status"
+              data-test="plugin-status"
+            />
           </template>
         </OnmsColumn>
         <OnmsColumn header="Actions" style="text-align: right">
@@ -80,8 +83,7 @@ const emit = defineEmits<{
   font-weight: 600;
 }
 
-.uploaded-cell,
-.status-cell {
+.uploaded-cell {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
