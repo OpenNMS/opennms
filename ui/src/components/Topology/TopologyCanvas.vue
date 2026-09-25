@@ -342,9 +342,11 @@ const toViewport = (point: { x: number; y: number }): { x: number; y: number } =
 // fattens further so the click target is generous right when you're aiming
 // at it (the affordance pattern Cytoscape/Grafana use). The edgeReducer is
 // the single place these are applied, so per-link creation sizes don't matter.
-const LINK_SIZE = 3
-const LINK_HOVER_SIZE = 6
-const LINK_SELECTED_SIZE = 4
+// Link thickness comes from the store; emphasis adds to it rather than
+// replacing it, so a thick link stays thicker than its neighbours when hovered.
+const linkSize = () => store.linkWidth
+const linkHoverSize = () => store.linkWidth + 3
+const linkSelectedSize = () => store.linkWidth + 1
 // Transient hovered link id (cleared on leave). Drives the reducer + cursor.
 const hoveredLinkId = ref<string | null>(null)
 
@@ -610,10 +612,10 @@ const mountSigma = (g: Graph) => {
       // color rather than the same color slightly thicker.
       const base = { ...attrs, color: linkBaseColor(attrs.color) }
       if (edge === hoveredLinkId.value) {
-        return { ...base, color: accentColor(), size: LINK_HOVER_SIZE }
+        return { ...base, color: accentColor(), size: linkHoverSize() }
       }
       if ((attrs as { _selected?: boolean })._selected) {
-        return { ...base, color: accentColor(), size: LINK_SELECTED_SIZE }
+        return { ...base, color: accentColor(), size: linkSelectedSize() }
       }
       // A hovered or selected node emphasizes its own links: with many straight
       // lines crossing under nodes (a dual-homed fabric, say) it is otherwise
@@ -622,9 +624,9 @@ const mountSigma = (g: Graph) => {
         hoveredNodeId.value ??
         (store.selectedIds.length === 1 && g.hasNode(store.selectedIds[0]) ? store.selectedIds[0] : null)
       if (emphasisNode && (g.source(edge) === emphasisNode || g.target(edge) === emphasisNode)) {
-        return { ...base, color: accentColor(), size: LINK_SELECTED_SIZE }
+        return { ...base, color: accentColor(), size: linkSelectedSize() }
       }
-      return { ...base, size: LINK_SIZE }
+      return { ...base, size: linkSize() }
     }
   })
   // Pin a fixed coordinate frame. With autoRescale:false sigma still
@@ -1598,6 +1600,11 @@ watch(
 )
 
 // Repaint when the node size changes (slider or density default).
+watch(
+  () => store.linkWidth,
+  () => sigma?.refresh()
+)
+
 watch(
   () => store.nodeSize,
   () => sigma?.refresh()

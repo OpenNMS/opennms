@@ -388,7 +388,8 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    */
   const NODE_SIZE_MIN = 6
   const NODE_SIZE_MAX = 28
-  const nodeSize = ref<number>(20)
+  const DEFAULT_NODE_SIZE = 20
+  const nodeSize = ref<number>(DEFAULT_NODE_SIZE)
 
   // Density curve: <=10 nodes -> 20, >=100 -> 9, linear between.
   const autoNodeSizeForCount = (count: number): number =>
@@ -396,13 +397,36 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   const setNodeSize = (n: number) => {
     nodeSize.value = Math.max(NODE_SIZE_MIN, Math.min(NODE_SIZE_MAX, Math.round(n)))
+    rememberAppearance()
   }
   const setNodeSizeForCount = (count: number) => {
     nodeSize.value = autoNodeSizeForCount(count)
   }
 
+  const LINK_WIDTH_MIN = 1
+  const LINK_WIDTH_MAX = 8
+  const DEFAULT_LINK_WIDTH = 3
+  const linkWidth = ref<number>(DEFAULT_LINK_WIDTH)
+  const setLinkWidth = (n: number) => {
+    linkWidth.value = Math.max(LINK_WIDTH_MIN, Math.min(LINK_WIDTH_MAX, Math.round(n)))
+    rememberAppearance()
+  }
+
+  // Node size and link width are part of how a custom view reads, so they
+  // save with it; a discovered graph sizes itself and keeps nothing.
+  const rememberAppearance = () => {
+    if (currentView.value && discoveredGraph.value === null) {
+      setViewStyle({ nodeSize: nodeSize.value, linkWidth: linkWidth.value })
+    }
+  }
+  const applyAppearance = (style: TopologyViewStyle | undefined) => {
+    nodeSize.value = style?.nodeSize ?? DEFAULT_NODE_SIZE
+    linkWidth.value = style?.linkWidth ?? DEFAULT_LINK_WIDTH
+  }
+
   const newView = () => {
     currentView.value = emptyView()
+    applyAppearance(undefined)
     selectedIds.value = []
     labels.value = []
     shapes.value = []
@@ -555,6 +579,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       return false
     }
     currentView.value = view
+    applyAppearance(view.style)
     isBackgroundAdjustMode.value = false
     return view
   }
@@ -772,6 +797,10 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setNodeSizeForCount,
     NODE_SIZE_MIN,
     NODE_SIZE_MAX,
+    linkWidth,
+    setLinkWidth,
+    LINK_WIDTH_MIN,
+    LINK_WIDTH_MAX,
     setEditMode,
     setLinkDrawMode,
     selectOnly,

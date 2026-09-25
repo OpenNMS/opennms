@@ -149,6 +149,10 @@ export interface TopologyViewBackground {
 export interface TopologyViewStyle {
   nodeLabelColor?: string
   linkLabelColor?: string
+  /** Rendered node radius, px in graph units. */
+  nodeSize?: number
+  /** Rendered link thickness, px. */
+  linkWidth?: number
 }
 
 /**

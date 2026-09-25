@@ -175,17 +175,19 @@ License.
             title="Show discovered adjacencies between placed nodes as ghost links"
             @click="store.setLinkHintsEnabled(!store.isLinkHintsEnabled)"
           />
-          <span class="node-size-control" title="Node size">
-            <span class="node-size-dot node-size-dot-sm" />
-            <OnmsSlider
-              v-model="nodeSizeModel"
-              :min="store.NODE_SIZE_MIN"
-              :max="store.NODE_SIZE_MAX"
-              class="node-size-slider"
-              aria-label="Node size"
-            />
-            <span class="node-size-dot node-size-dot-lg" />
-          </span>
+          <!-- Sizes for every node and link live in a popover, not the bar. -->
+          <OnmsIconButton
+            :icon="Options"
+            title="Appearance"
+            tooltip="Node size and link width"
+            tooltip-position="bottom"
+            variant="outlined"
+            aria-haspopup="true"
+            @click="appearanceRef?.toggle($event)"
+          />
+          <OnmsPopover ref="appearanceRef">
+            <TopologyAppearance />
+          </OnmsPopover>
           <OnmsIconButton
             :icon="Fullscreen"
             title="Fit to view"
@@ -301,9 +303,9 @@ import {
   OnmsContextMenu,
   OnmsIcon,
   OnmsIconButton,
+  OnmsPopover,
   OnmsSelect,
   OnmsSelectButton,
-  OnmsSlider,
   OnmsTieredMenu,
   useOnmsToast
 } from '@opennms/onms-ui'
@@ -314,9 +316,11 @@ import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
 import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import Fullscreen from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import Options from '@opennms/onms-ui/icons/action/Options.vue'
 import { useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
 import TopologyPalette from '@/components/Topology/TopologyPalette.vue'
+import TopologyAppearance from '@/components/Topology/TopologyAppearance.vue'
 import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
 import TopologyExplorePanel from '@/components/Topology/TopologyExplorePanel.vue'
 import ViewNameDialog from '@/components/Topology/ViewNameDialog.vue'
@@ -637,10 +641,7 @@ const showAll = () => navFocus(null, store.semanticZoomLevel)
 // Export the current map as a PNG. The file name reflects the open view
 // (custom) or the source/variant (discovered); the canvas appends ".png".
 // Node-size slider <-> store (clamped in the store setter).
-const nodeSizeModel = computed<number>({
-  get: () => store.nodeSize,
-  set: n => store.setNodeSize(n)
-})
+const appearanceRef = ref<{ toggle: (event: Event) => void } | null>(null)
 
 // Explore-panel row -> select that node on the canvas (or clear to "show all").
 const onExploreSelect = (placedId: string | null) => {
@@ -1160,29 +1161,6 @@ const confirmDelete = async () => {
 
 .topology-search :deep(.p-autocomplete-input) {
   min-width: 11rem;
-}
-
-.node-size-control {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--onms-secondary-text-on-surface);
-}
-.node-size-slider {
-  width: 6rem;
-}
-.node-size-dot {
-  border-radius: 50%;
-  background: currentColor;
-  flex: 0 0 auto;
-}
-.node-size-dot-sm {
-  width: 0.4rem;
-  height: 0.4rem;
-}
-.node-size-dot-lg {
-  width: 0.7rem;
-  height: 0.7rem;
 }
 
 .discovered-hint {
