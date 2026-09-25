@@ -42,13 +42,13 @@ public class ByteArrayComparator implements Comparator<byte[]> {
             return 1;
         } else {
             // Make shorter byte arrays "less than" longer arrays
-            int comparison = Integer.valueOf(a.length).compareTo(Integer.valueOf(b.length));
+            int comparison = Integer.compare(a.length, b.length);
             if (comparison != 0) {
                 return comparison;
             } else {
                 // Compare byte-by-byte
                 for (int i = 0; i < a.length; i++) {
-                    int byteComparison = Integer.valueOf(unsignedByteToInt(a[i])).compareTo(Integer.valueOf(unsignedByteToInt(b[i])));
+                    int byteComparison = Integer.compare(unsignedByteToInt(a[i]), unsignedByteToInt(b[i]));
                     if (byteComparison != 0) {
                         return byteComparison;
                     }

@@ -190,7 +190,7 @@ public abstract class InetAddressUtils {
     public static InetAddress getInetAddress(final int[] octets, final int offset, final int length) {
         final byte[] addressBytes = new byte[length];
         for (int i = 0; i < addressBytes.length; i++) {
-            addressBytes[i] = Integer.valueOf(octets[i + offset]).byteValue();
+            addressBytes[i] = (byte) octets[i + offset];
         }
         return getInetAddress(addressBytes);
     }
@@ -296,12 +296,13 @@ public abstract class InetAddressUtils {
     public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {
         final byte[] addr = InetAddressUtils.toIpAddrBytes(addrString);
         final byte[] begin = InetAddressUtils.toIpAddrBytes(beginString);
-        if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) > 0) {
+        final int beginCmp = s_BYTE_ARRAY_COMPARATOR.compare(addr, begin);
+        if (beginCmp > 0) {
             final byte[] end = InetAddressUtils.toIpAddrBytes(endString);
             return (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0);
-        } else if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) == 0) {
+        } else if (beginCmp == 0) {
             return true;
-        } else { 
+        } else {
             return false;
         }
     }
@@ -318,7 +319,7 @@ public abstract class InetAddressUtils {
                 return false;
             } else {
                 // Compare the IPv6 scope IDs
-                return Integer.valueOf(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId()) == 0;
+                return ((Inet6Address) addr1).getScopeId() == ((Inet6Address) addr2).getScopeId();
             }
         }
     }
@@ -329,7 +330,7 @@ public abstract class InetAddressUtils {
         final byte[] netWork = new byte[4];
 
         for (int i=0;i< 4; i++) {
-            netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
+            netWork[i] = (byte) (ipAddress[i] & netMask[i]);
 
         }
         return InetAddressUtils.getInetAddress(netWork);
@@ -341,7 +342,7 @@ public abstract class InetAddressUtils {
         final byte[] netWork = new byte[16];
 
         for (int i=0;i< 16; i++) {
-            netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
+            netWork[i] = (byte) (ipAddress[i] & netMask[i]);
 
         }
         return InetAddressUtils.getInetAddress(netWork);
@@ -358,16 +359,13 @@ public abstract class InetAddressUtils {
     }
 
     public static boolean inSameIpv4Network(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
-        final byte[] ipAddress1 = addr1.getAddress();
-        final byte[] ipAddress2 = addr2.getAddress();
-        final byte[] netMask = mask.getAddress();
-
-        for (int i=0;i< 4; i++) {
-            if ((ipAddress1[i] & netMask[i]) != (ipAddress2[i] & netMask[i]))
-                return false;
-
+        if (!(addr1 instanceof Inet4Address) || !(addr2 instanceof Inet4Address) || !(mask instanceof Inet4Address)) {
+            throw new IllegalArgumentException("inSameIpv4Network requires IPv4 addresses and mask");
         }
-        return true;
+        // Inet4Address.hashCode() returns the 32-bit address value, which lets us
+        // do network-prefix comparisons without allocating byte[] via getAddress().
+        final int netMask = mask.hashCode();
+        return (addr1.hashCode() & netMask) == (addr2.hashCode() & netMask);
     }
 
     public static boolean inSameIpv6Network(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
