@@ -101,6 +101,13 @@
           "roles": ["ROLE_ADMIN"]
         },
         {
+          "id": "daemonManagement",
+          "name": "Daemon Management",
+          "url": "ui/index.html#/daemon-management",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "zenithConnect",
           "name": "Connect to Zenith",
           "url": "ui/index.html#/zenith-connect",
