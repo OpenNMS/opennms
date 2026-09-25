@@ -54,6 +54,16 @@ describe('TopologyAppearance', () => {
     expect(store.currentView?.style).toMatchObject({ nodeSize: store.NODE_SIZE_MAX, linkWidth: store.LINK_WIDTH_MIN })
   })
 
+  it('offers a label placement and remembers it on the open custom view', () => {
+    const { wrapper, store } = mountAppearance()
+    store.newView()
+    expect(wrapper.find('[aria-label="Node label placement"]').exists()).toBe(true)
+    store.setLabelPlacement('bottom')
+    expect(store.currentView?.style?.labelPlacement).toBe('bottom')
+    store.newView()
+    expect(store.labelPlacement).toBe('right')
+  })
+
   it('starts a new view from the defaults', () => {
     const { store } = mountAppearance()
     store.newView()

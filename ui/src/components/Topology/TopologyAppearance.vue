@@ -43,13 +43,26 @@ export type DeviceIconId =
       />
       <span class="topology-appearance__value">{{ store.linkWidth }}</span>
     </div>
+    <div class="topology-appearance__row">
+      <span class="topology-appearance__label" aria-hidden="true">Labels</span>
+      <OnmsSelectButton
+        v-model="labelPlacement"
+        :options="placements"
+        option-label="label"
+        option-value="value"
+        :allow-empty="false"
+        aria-label="Node label placement"
+        class="topology-appearance__placement"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { OnmsSlider } from '@opennms/onms-ui'
+import { OnmsSelectButton, OnmsSlider } from '@opennms/onms-ui'
 import { useTopologyStore } from '@/stores/topologyStore'
+import type { LabelPlacement } from '@/types/topology'
 
 // How the map reads: sizes that apply to every node and link. They save with
 // a custom view through the store; a discovered graph keeps them for the session.
@@ -63,6 +76,17 @@ const nodeSize = computed<number>({
 const linkWidth = computed<number>({
   get: () => store.linkWidth,
   set: n => store.setLinkWidth(n)
+})
+
+const placements: { label: string; value: LabelPlacement }[] = [
+  { label: 'Right', value: 'right' },
+  { label: 'Below', value: 'bottom' },
+  { label: 'Above', value: 'top' }
+]
+
+const labelPlacement = computed<LabelPlacement>({
+  get: () => store.labelPlacement,
+  set: p => store.setLabelPlacement(p)
 })
 </script>
 
@@ -80,6 +104,10 @@ const linkWidth = computed<number>({
   grid-template-columns: 5.5rem 1fr 2rem;
   align-items: center;
   gap: 0.75rem;
+}
+
+.topology-appearance__placement {
+  grid-column: 2 / span 2;
 }
 
 .topology-appearance__label {

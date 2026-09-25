@@ -153,7 +153,11 @@ export interface TopologyViewStyle {
   nodeSize?: number
   /** Rendered link thickness, px. */
   linkWidth?: number
+  /** Where a node's label sits relative to the node. */
+  labelPlacement?: LabelPlacement
 }
+
+export type LabelPlacement = 'right' | 'bottom' | 'top'
 
 /**
  * A complete custom topology view. This is the unit that the views

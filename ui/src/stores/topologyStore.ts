@@ -31,7 +31,8 @@ import type {
   TopologyView,
   TopologyViewBackground,
   TopologyViewStyle,
-  TopologyViewSummary
+  TopologyViewSummary,
+  LabelPlacement
 } from '@/types/topology'
 import {
   listViews,
@@ -436,14 +437,22 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   // Node size and link width are part of how a custom view reads, so they
   // save with it; a discovered graph sizes itself and keeps nothing.
+  const DEFAULT_LABEL_PLACEMENT: LabelPlacement = 'right'
+  const labelPlacement = ref<LabelPlacement>(DEFAULT_LABEL_PLACEMENT)
+  const setLabelPlacement = (placement: LabelPlacement) => {
+    labelPlacement.value = placement
+    rememberAppearance()
+  }
+
   const rememberAppearance = () => {
     if (currentView.value && discoveredGraph.value === null) {
-      setViewStyle({ nodeSize: nodeSize.value, linkWidth: linkWidth.value })
+      setViewStyle({ nodeSize: nodeSize.value, linkWidth: linkWidth.value, labelPlacement: labelPlacement.value })
     }
   }
   const applyAppearance = (style: TopologyViewStyle | undefined) => {
     nodeSize.value = style?.nodeSize ?? DEFAULT_NODE_SIZE
     linkWidth.value = style?.linkWidth ?? DEFAULT_LINK_WIDTH
+    labelPlacement.value = style?.labelPlacement ?? DEFAULT_LABEL_PLACEMENT
   }
 
   const newView = () => {
@@ -871,6 +880,8 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setLinkWidth,
     LINK_WIDTH_MIN,
     LINK_WIDTH_MAX,
+    labelPlacement,
+    setLabelPlacement,
     setEditMode,
     setLinkDrawMode,
     selectOnly,

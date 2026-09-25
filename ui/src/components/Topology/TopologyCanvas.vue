@@ -219,7 +219,6 @@ import Sigma from 'sigma'
 import EdgeCurveProgram from '@sigma/edge-curve'
 import { createNodeImageProgram } from '@sigma/node-image'
 import { hasWebGL } from '@/components/Topology/webgl'
-import { drawDiscNodeLabel } from 'sigma/rendering'
 import { drawOnCanvas } from '@sigma/export-image'
 import { PALETTE_DRAG_MIME, type PaletteDragPayload } from '@/components/Topology/dragTypes'
 import { useTopologyStore } from '@/stores/topologyStore'
@@ -561,8 +560,10 @@ const mountSigma = (g: Graph) => {
     edgeProgramClasses: {
       curved: EdgeCurveProgram
     },
-    // Theme-aware hover/selection halo (see drawThemedNodeHover).
+    // Theme-aware hover/selection halo (see drawThemedNodeHover), and labels
+    // placed where the view says (see drawPlacedNodeLabel).
     defaultDrawNodeHover: drawThemedNodeHover as never,
+    defaultDrawNodeLabel: drawPlacedNodeLabel as never,
     // Color placed nodes by their node's current alarm severity (held in
     // the store, refreshed on an interval in View mode). Nodes without a
     // known severity -- decorative/mock nodes, or before a status fetch --
@@ -1606,9 +1607,9 @@ watch(
   { deep: true }
 )
 
-// Repaint when the node size changes (slider or density default).
+// Repaint when the link width or label placement changes.
 watch(
-  () => store.linkWidth,
+  [() => store.linkWidth, () => store.labelPlacement],
   () => sigma?.refresh()
 )
 
@@ -2590,10 +2591,46 @@ const HOVER_HALO_DARK = 'rgba(38, 44, 69, 0.85)'
  * a theme-aware halo, then sigma's own label routine on top (which already
  * follows the theme-aware labelColor set in applyViewStyle).
  */
+/**
+ * Where a label's anchor sits for the view's placement. Right is sigma's own
+ * geometry; below and above center the text under or over the node.
+ */
+const labelAnchor = (
+  data: { x: number; y: number; size: number },
+  labelSize: number
+): { x: number; y: number; align: 'left' | 'center' } => {
+  switch (store.labelPlacement) {
+    case 'bottom':
+      return { x: data.x, y: data.y + data.size + labelSize + 2, align: 'center' }
+    case 'top':
+      return { x: data.x, y: data.y - data.size - 4, align: 'center' }
+    default:
+      return { x: data.x + data.size + 3, y: data.y + labelSize / 3, align: 'left' }
+  }
+}
+
+/** Sigma's label drawer, with the anchor moved by the view's placement. */
+const drawPlacedNodeLabel = (
+  context: CanvasRenderingContext2D,
+  data: { x: number; y: number; size: number; label?: string | null },
+  settings: { labelSize: number; labelFont: string; labelWeight: string; labelColor: { color?: string }}
+) => {
+  if (!data.label) {
+    return
+  }
+  const { labelSize: size, labelFont: font, labelWeight: weight } = settings
+  const anchor = labelAnchor(data, size)
+  context.fillStyle = settings.labelColor.color ?? '#000'
+  context.font = `${weight} ${size}px ${font}`
+  context.textAlign = anchor.align
+  context.fillText(data.label, anchor.x, anchor.y)
+  context.textAlign = 'left'
+}
+
 const drawThemedNodeHover = (
   context: CanvasRenderingContext2D,
   data: { x: number; y: number; size: number; label?: string | null },
-  settings: { labelSize: number; labelFont: string; labelWeight: string }
+  settings: { labelSize: number; labelFont: string; labelWeight: string; labelColor: { color?: string }}
 ) => {
   const { labelSize: size, labelFont: font, labelWeight: weight } = settings
   context.font = `${weight} ${size}px ${font}`
@@ -2608,7 +2645,7 @@ const drawThemedNodeHover = (
   context.shadowColor = 'rgba(0, 0, 0, 0.35)'
 
   const PADDING = 2
-  if (typeof data.label === 'string') {
+  if (typeof data.label === 'string' && store.labelPlacement === 'right') {
     const textWidth = context.measureText(data.label).width
     const boxWidth = Math.round(textWidth + 5)
     const boxHeight = Math.round(size + 2 * PADDING)
@@ -2628,16 +2665,21 @@ const drawThemedNodeHover = (
     context.arc(data.x, data.y, data.size + PADDING, 0, Math.PI * 2)
     context.closePath()
     context.fill()
+    if (typeof data.label === 'string') {
+      // Label sits above or below: give it its own box under the text.
+      const textWidth = context.measureText(data.label).width
+      const anchor = labelAnchor(data, size)
+      context.beginPath()
+      context.rect(anchor.x - textWidth / 2 - PADDING - 1, anchor.y - size, textWidth + 2 * PADDING + 2, size + 2 * PADDING)
+      context.closePath()
+      context.fill()
+    }
   }
   context.shadowOffsetX = 0
   context.shadowOffsetY = 0
   context.shadowBlur = 0
 
-  drawDiscNodeLabel(
-    context,
-    data as Parameters<typeof drawDiscNodeLabel>[1],
-    settings as Parameters<typeof drawDiscNodeLabel>[2]
-  )
+  drawPlacedNodeLabel(context, data, settings)
 }
 
 /**
