@@ -1,0 +1,36 @@
+
+[[plugin-management]]
+= Plugin Management
+:description: Upload, check, stage, and unload plugin KAR files from the {page-component-title} web UI, and understand when a restart is still required.
+
+{page-component-title} plugins are packaged as Karaf archive (KAR) files.
+The Plugin Management page (menu:Administration[Plugin Management]) lets an administrator upload a KAR, review a set of checks, stage it for loading, list what is deployed, and unload a plugin again.
+The page only performs the file-system steps that an operator would otherwise do by hand; it does not restart {page-component-title}.
+
+== What the page does
+
+* Uploading a KAR runs structural checks on the file (readable archive, manifest, no entries outside `repository/` and `META-INF/`, feature repositories parse, bundle jars are readable, size limit) without writing anything permanent.
+* When the embedded Karaf container is reachable, the page also compares the bundle imports of `org.opennms.*` packages, the JavaSE requirement of each bundle, and the `opennms-integration-api` feature dependency with what the running server provides.
+* Installing copies the KAR to `$\{OPENNMS_HOME}/deploy/<name>.kar` and writes `$\{OPENNMS_HOME}/etc/featuresBoot.d/<name>.boot` listing the plugin's top-level features, so the features are loaded at every start.
+* Unloading removes both files; Karaf uninstalls the plugin's features from the running container shortly afterwards.
+* Every upload, install, and unload is recorded in `$\{OPENNMS_HOME}/etc/plugin-management.json` and written to `$\{OPENNMS_HOME}/logs/plugin-management.log` with the user name and remote address.
+
+== Restart requirement
+
+Plugin features listed in `featuresBoot.d` are read once at startup.
+A KAR that was staged from the page may already be extracted by Karaf, but the page reports it as `staged` and flags that a restart is required until the container reports the KAR and its features as started.
+Restart {page-component-title} with the method that matches your installation, for example `sudo systemctl restart opennms` for package installations or a container restart for Docker and Kubernetes deployments, then confirm with `opennms:health-check` in the Karaf shell or `GET /opennms/rest/health`.
+The web UI is unavailable while {page-component-title} restarts.
+
+== Checks that block an install
+
+* A check reported as `FAIL` prevents the install; the reason is shown next to the check.
+* A check reported as `WARN` must be acknowledged explicitly before the install proceeds.
+* When the container cannot be reached from the web application, the compatibility checks are skipped and reported as a single warning.
+
+== Files and permissions
+
+* The page and its REST API under `/api/v2/plugin-management` require the `ROLE_ADMIN` role for every request.
+* Uploads are kept for one hour under `$\{OPENNMS_HOME}/data/tmp/plugin-management/` so that a checked file can be installed without uploading it again.
+* KARs copied into `deploy/` by hand appear in the list as `unmanaged`; they can be unloaded from the page, which then starts tracking them.
+* KAR names are restricted to letters, digits, `.`, `_`, and `-`.

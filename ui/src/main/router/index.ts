@@ -227,6 +227,25 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin/plugin-management',
+      name: 'Plugin Management',
+      component: () => import('@/containers/PluginManagement.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage plugins.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
       path: '/scheduled-outages',
       name: 'Scheduled Outages',
       component: () => import('@/containers/ScheduledOutages.vue'),

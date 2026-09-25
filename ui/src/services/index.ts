@@ -79,6 +79,7 @@ import {
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
+import { checkPluginKar, getPluginManagement, getPluginManagementLog, getPluginRestartInstructions, installPlugin, unloadPlugin } from './pluginManagementService'
 import {
   createManagedUser,
   deleteManagedUser,
@@ -239,5 +240,11 @@ export default {
   resetWsmanDataCollection,
   syncWsmanDefinition,
   updateWsmanConfig,
-  updateWsmanDataCollectionFile
+  updateWsmanDataCollectionFile,
+  getPluginManagement,
+  checkPluginKar,
+  installPlugin,
+  unloadPlugin,
+  getPluginRestartInstructions,
+  getPluginManagementLog
 }
