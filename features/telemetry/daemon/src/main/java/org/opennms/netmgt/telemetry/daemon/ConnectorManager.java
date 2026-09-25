@@ -25,11 +25,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.core.mate.api.EntityScopeProvider;
@@ -41,6 +44,7 @@ import org.opennms.netmgt.dao.api.ServiceTracker;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
+import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 import org.opennms.netmgt.telemetry.config.model.PackageConfig;
 import org.opennms.netmgt.telemetry.config.model.Parameter;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
@@ -76,23 +80,71 @@ public class ConnectorManager {
 
     @Autowired
     private OpenConfigTwinPublisher openConfigTwinPublisher;
-    private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
+
+    // Connectors whose configuration was handed to the publisher, whether or not publishing it succeeded yet
+    private final Set<ConnectorKey> activeConnectors = new HashSet<>();
 
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
 
-    private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
-        synchronized (connectorsByKey) {
-            final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-            if (connectorsByKey.containsKey(key)) {
-                LOG.debug("Connector already exists. Ignoring.");
-            }
-            List<Map<String, String>> interpolatedMapList = getGroupedParams(packageConfig, serviceRef);
+    private void updateStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig,
+                                    Set<ServiceRef> matched, Set<ServiceRef> stoppedMatching) {
+        synchronized (activeConnectors) {
+            final Map<String, LocationChanges> changesByLocation = new LinkedHashMap<>();
 
-            try {
-                openConfigTwinPublisher.publishConfig(serviceRef, interpolatedMapList, key.stringKey(), connectorConfig.getQueueName());
-            } catch (IOException e) {
-                LOG.error("Failed to publish config for connector: {}", key, e);
+            for (ServiceRef serviceRef : stoppedMatching) {
+                final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
+                if (activeConnectors.remove(key)) {
+                    LOG.debug("Stopping connector for: {}", key);
+                    changesFor(changesByLocation, serviceRef, connectorConfig).removedKeys.add(key.stringKey());
+                }
             }
+
+            for (ServiceRef serviceRef : matched) {
+                final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
+                if (activeConnectors.contains(key)) {
+                    LOG.debug("Connector already exists for: {}. Ignoring.", key);
+                    continue;
+                }
+                try {
+                    final ConnectorTwinConfig.ConnectorConfig twinConfig = new ConnectorTwinConfig.ConnectorConfig(
+                            serviceRef.getNodeId(), InetAddressUtils.str(serviceRef.getIpAddress()), key.stringKey(),
+                            getGroupedParams(packageConfig, serviceRef));
+                    changesFor(changesByLocation, serviceRef, connectorConfig).addedConfigs.add(twinConfig);
+                    activeConnectors.add(key);
+                    LOG.debug("Starting connector for: {}", key);
+                } catch (RuntimeException e) {
+                    LOG.error("Failed to build config for connector: {}", key, e);
+                }
+            }
+
+            publish(changesByLocation);
+        }
+    }
+
+    private static LocationChanges changesFor(Map<String, LocationChanges> changesByLocation, ServiceRef serviceRef,
+                                              ConnectorConfig connectorConfig) {
+        return changesByLocation.computeIfAbsent(serviceRef.getLocation(),
+                l -> new LocationChanges(connectorConfig.getQueueName()));
+    }
+
+    private void publish(Map<String, LocationChanges> changesByLocation) {
+        // A failed publish keeps its changes in the location's publisher, which sends them with its next publish
+        changesByLocation.forEach((location, changes) -> {
+            try {
+                openConfigTwinPublisher.publishConfigs(location, changes.addedConfigs, changes.removedKeys, changes.queueName);
+            } catch (IOException | RuntimeException e) {
+                LOG.error("Failed to publish connector configs for location: {}", location, e);
+            }
+        });
+    }
+
+    private static class LocationChanges {
+        private final String queueName;
+        private final List<ConnectorTwinConfig.ConnectorConfig> addedConfigs = new ArrayList<>();
+        private final List<String> removedKeys = new ArrayList<>();
+
+        private LocationChanges(String queueName) {
+            this.queueName = queueName;
         }
     }
 
@@ -116,22 +168,12 @@ public class ConnectorManager {
     }
 
     private Map<String, String> getInterpolated(Map<String, String> parameterMap, ServiceRef serviceRef) {
-        return Interpolator.interpolateStrings(parameterMap, new FallbackScope(
+        // Copied so interpolation runs once here, not on every read of the published config
+        return new HashMap<>(Interpolator.interpolateStrings(parameterMap, new FallbackScope(
                 entityScopeProvider.getScopeForNode(serviceRef.getNodeId()),
                 entityScopeProvider.getScopeForInterface(serviceRef.getNodeId(), InetAddressUtils.str(serviceRef.getIpAddress())),
                 entityScopeProvider.getScopeForService(serviceRef.getNodeId(), serviceRef.getIpAddress(), serviceRef.getServiceName())
-        ));
-    }
-
-    private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
-        synchronized (connectorsByKey) {
-            final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-            try {
-                openConfigTwinPublisher.removeConfig(serviceRef, key.stringKey());
-            } catch (IOException e) {
-                LOG.warn("Error closing connector: {}.", key, e);
-            }
-        }
+        )));
     }
 
     public void start(TelemetrydConfig config) {
@@ -146,15 +188,10 @@ public class ConnectorManager {
                     // Watch the services matching the filter rule
                     Closeable session = serviceTracker.trackServiceMatchingFilterRule(
                             connectorConfig.getServiceName(), packageConfig.getFilterRule(),
-                            new ServiceTracker.ServiceListener() {
+                            new ServiceTracker.BatchServiceListener() {
                                 @Override
-                                public void onServiceMatched(ServiceRef serviceRef) {
-                                    startStreamingFor(connectorConfig, packageConfig, serviceRef);
-                                }
-
-                                @Override
-                                public void onServiceStoppedMatching(ServiceRef serviceRef) {
-                                    stopStreamingFor(connectorConfig, packageConfig, serviceRef);
+                                public void onServicesChanged(Set<ServiceRef> matched, Set<ServiceRef> stoppedMatching) {
+                                    updateStreamingFor(connectorConfig, packageConfig, matched, stoppedMatching);
                                 }
                             });
                     serviceTrackerSessions.add(session);
@@ -174,15 +211,19 @@ public class ConnectorManager {
         });
         serviceTrackerSessions.clear();
 
-        try {
-            openConfigTwinPublisher.close();
-        } catch (IOException e) {
-            LOG.error("Stopping Twin Location publishers and configs :", e);
+        synchronized (activeConnectors) {
+            activeConnectors.clear();
+            try {
+                openConfigTwinPublisher.close();
+            } catch (IOException e) {
+                LOG.error("Stopping Twin Location publishers and configs :", e);
+            }
         }
     }
 
     private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
-        return new ConnectorKey(connectorConfig.getName(), packageConfig.getName(), serviceRef.getNodeId(), serviceRef.getIpAddress());
+        return new ConnectorKey(connectorConfig.getName(), packageConfig.getName(), serviceRef.getNodeId(), serviceRef.getIpAddress(),
+                serviceRef.getLocation());
     }
 
     private static class ConnectorKey {
@@ -190,12 +231,14 @@ public class ConnectorManager {
         private final String packageName;
         private final int nodeId;
         private final InetAddress interfaceAddress;
+        private final String location;
 
-        public ConnectorKey(String connectorName, String packageName, int nodeId, InetAddress interfaceAddress) {
+        public ConnectorKey(String connectorName, String packageName, int nodeId, InetAddress interfaceAddress, String location) {
             this.connectorName = connectorName;
             this.packageName = packageName;
             this.nodeId = nodeId;
             this.interfaceAddress = interfaceAddress;
+            this.location = location;
         }
 
         @Override
@@ -206,12 +249,13 @@ public class ConnectorManager {
             return nodeId == that.nodeId &&
                     Objects.equals(connectorName, that.connectorName) &&
                     Objects.equals(packageName, that.packageName) &&
-                    Objects.equals(interfaceAddress, that.interfaceAddress);
+                    Objects.equals(interfaceAddress, that.interfaceAddress) &&
+                    Objects.equals(location, that.location);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(connectorName, packageName, nodeId, interfaceAddress);
+            return Objects.hash(connectorName, packageName, nodeId, interfaceAddress, location);
         }
 
         @Override
@@ -221,6 +265,7 @@ public class ConnectorManager {
                     ", packageName='" + packageName + '\'' +
                     ", nodeId=" + nodeId +
                     ", interfaceAddress=" + interfaceAddress +
+                    ", location='" + location + '\'' +
                     '}';
         }
 
@@ -237,5 +282,15 @@ public class ConnectorManager {
     @VisibleForTesting
     public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
         this.entityScopeProvider = entityScopeProvider;
+    }
+
+    @VisibleForTesting
+    public void setServiceTracker(ServiceTracker serviceTracker) {
+        this.serviceTracker = serviceTracker;
+    }
+
+    @VisibleForTesting
+    public void setOpenConfigTwinPublisher(OpenConfigTwinPublisher openConfigTwinPublisher) {
+        this.openConfigTwinPublisher = openConfigTwinPublisher;
     }
 }

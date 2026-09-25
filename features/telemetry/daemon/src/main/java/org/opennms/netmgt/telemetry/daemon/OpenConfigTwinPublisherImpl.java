@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,15 @@ public class OpenConfigTwinPublisherImpl implements OpenConfigTwinPublisher {
         LocationPublisher locationPublisher = locationPublisherManager.getOrCreate(serviceRef.getLocation());
         locationPublisher.removeConfigAndPublish(nodeConnectorKey);
         locationPublisherManager.removeIfEmpty(serviceRef.getLocation());
+    }
+
+    @Override
+    public void publishConfigs(String location, List<ConnectorTwinConfig.ConnectorConfig> addedConfigs,
+                               Collection<String> removedConnectorKeys, String queueName) throws IOException {
+        LocationPublisher locationPublisher = locationPublisherManager.getOrCreate(location);
+        locationPublisher.setQueueName(queueName);
+        locationPublisher.updateConfigsAndPublish(addedConfigs, removedConnectorKeys);
+        locationPublisherManager.removeIfEmpty(location);
     }
 
     @Override

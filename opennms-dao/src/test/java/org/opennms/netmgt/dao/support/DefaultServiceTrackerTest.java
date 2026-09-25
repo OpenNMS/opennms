@@ -24,10 +24,13 @@ package org.opennms.netmgt.dao.support;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.fail;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -115,6 +118,106 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
     }
 
     @Test
+    public void deliversEachFilterChangeAsOneBatch() throws IOException {
+        final List<Set<ServiceRef>> matchedBatches = new LinkedList<>();
+        final List<Set<ServiceRef>> stoppedBatches = new LinkedList<>();
+        Closeable session = serviceTracker.trackService(OPENCONFIG, (ServiceTracker.BatchServiceListener) (matched, stoppedMatching) -> {
+            matchedBatches.add(matched);
+            stoppedBatches.add(stoppedMatching);
+        });
+
+        mockFilterWatcher.addServices(Arrays.asList(
+                new ServiceRef(1, InetAddressUtils.ONE_TWENTY_SEVEN, OPENCONFIG, DEFAULT_LOCATION),
+                new ServiceRef(2, InetAddressUtils.ONE_TWENTY_SEVEN, OPENCONFIG, DEFAULT_LOCATION),
+                new ServiceRef(3, InetAddressUtils.ONE_TWENTY_SEVEN, ICMP, DEFAULT_LOCATION)));
+
+        assertThat(matchedBatches, hasSize(1));
+        assertThat(matchedBatches.get(0), hasSize(2));
+        assertThat(stoppedBatches.get(0), hasSize(0));
+
+        // Same results again, no callback
+        mockFilterWatcher.refresh();
+        assertThat(matchedBatches, hasSize(1));
+
+        mockFilterWatcher.deleteService(1, InetAddressUtils.ONE_TWENTY_SEVEN, OPENCONFIG);
+
+        assertThat(matchedBatches, hasSize(2));
+        assertThat(matchedBatches.get(1), hasSize(0));
+        assertThat(stoppedBatches.get(1), hasSize(1));
+
+        session.close();
+    }
+
+    @Test
+    public void redeliversBatchAfterListenerFailure() throws IOException {
+        final List<Set<ServiceRef>> matchedBatches = new LinkedList<>();
+        final boolean[] failNext = {true};
+        Closeable session = serviceTracker.trackService(OPENCONFIG, (ServiceTracker.BatchServiceListener) (matched, stoppedMatching) -> {
+            matchedBatches.add(matched);
+            if (failNext[0]) {
+                failNext[0] = false;
+                throw new IllegalStateException("listener failure");
+            }
+        });
+
+        try {
+            mockFilterWatcher.addServices(Arrays.asList(
+                    new ServiceRef(1, InetAddressUtils.ONE_TWENTY_SEVEN, OPENCONFIG, DEFAULT_LOCATION),
+                    new ServiceRef(2, InetAddressUtils.ONE_TWENTY_SEVEN, OPENCONFIG, DEFAULT_LOCATION)));
+            fail("Expected the listener failure to propagate");
+        } catch (IllegalStateException expected) {
+            // the filter watcher logs callback failures
+        }
+
+        mockFilterWatcher.refresh();
+
+        assertThat(matchedBatches, hasSize(2));
+        assertThat(matchedBatches.get(1), hasSize(2));
+
+        // Accepted batch is not delivered again
+        mockFilterWatcher.refresh();
+        assertThat(matchedBatches, hasSize(2));
+
+        session.close();
+    }
+
+    @Test
+    public void deliversRemainingServicesAfterListenerFailure() throws IOException {
+        final List<ServiceRef> matchedServices = new LinkedList<>();
+        final boolean[] failNext = {true};
+        Closeable session = serviceTracker.trackService(OPENCONFIG, new ServiceTracker.ServiceListener() {
+            @Override
+            public void onServiceMatched(ServiceRef serviceRef) {
+                matchedServices.add(serviceRef);
+                if (failNext[0]) {
+                    failNext[0] = false;
+                    throw new IllegalStateException("listener failure");
+                }
+            }
+
+            @Override
+            public void onServiceStoppedMatching(ServiceRef serviceRef) {
+            }
+        });
+
+        try {
+            mockFilterWatcher.addServices(Arrays.asList(
+                    new ServiceRef(1, InetAddressUtils.ONE_TWENTY_SEVEN, OPENCONFIG, DEFAULT_LOCATION),
+                    new ServiceRef(2, InetAddressUtils.ONE_TWENTY_SEVEN, OPENCONFIG, DEFAULT_LOCATION)));
+            fail("Expected the listener failure to propagate");
+        } catch (IllegalStateException expected) {
+            // the filter watcher logs callback failures
+        }
+
+        mockFilterWatcher.refresh();
+
+        assertThat(matchedServices, hasSize(2));
+        assertThat(matchedServices.get(0), not(equalTo(matchedServices.get(1))));
+
+        session.close();
+    }
+
+    @Test
     public void reportsEveryServiceRemovedInOneRefresh() throws IOException {
         // Deleting a requisition removes many nodes between two filter refreshes.
         Closeable session = serviceTracker.trackService(OPENCONFIG, this);
@@ -157,6 +260,15 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
 
         public void addService(int nodeId, InetAddress interfaceAddress, String serviceName) {
             exposedServices.add(new ServiceRef(nodeId, interfaceAddress, serviceName,DEFAULT_LOCATION));
+            rebuildResultsAndNotify();
+        }
+
+        public void addServices(List<ServiceRef> services) {
+            exposedServices.addAll(services);
+            rebuildResultsAndNotify();
+        }
+
+        public void refresh() {
             rebuildResultsAndNotify();
         }
 

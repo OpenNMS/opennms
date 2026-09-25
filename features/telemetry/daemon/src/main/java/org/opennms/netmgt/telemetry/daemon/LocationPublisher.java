@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,6 +42,7 @@ public class LocationPublisher {
     private TwinPublisher.Session<ConnectorTwinConfig> session;
     private final Map<String, ConnectorTwinConfig.ConnectorConfig> configs = new HashMap<>();
     private String queueName;
+    private boolean publishPending;
 
     public LocationPublisher(String location, TwinPublisher twinPublisher) {
         this.location = location;
@@ -58,30 +61,51 @@ public class LocationPublisher {
     }
 
     public void addConfigAndPublish(ConnectorTwinConfig.ConnectorConfig cfg) throws IOException {
-        lock.lock();
-        try {
-            configs.put(cfg.getConnectionKey(), cfg);
-            publishCurrentConfigs();
-        } finally {
-            lock.unlock();
-        }
+        updateConfigsAndPublish(Collections.singletonList(cfg), Collections.emptyList());
     }
 
     public void removeConfigAndPublish(String connectionKey) throws IOException {
+        updateConfigsAndPublish(Collections.emptyList(), Collections.singletonList(connectionKey));
+    }
+
+    /**
+     * Applies all removals and additions, then publishes the resulting configuration once.
+     * Nothing is published when the call changes nothing and no earlier publish is pending.
+     * The changes are kept even when publishing fails, and are published with the next update.
+     */
+    public void updateConfigsAndPublish(Collection<ConnectorTwinConfig.ConnectorConfig> added,
+                                        Collection<String> removedConnectionKeys) throws IOException {
         lock.lock();
         try {
-            if (configs.remove(connectionKey) != null) {
-                publishCurrentConfigs();
-                if (configs.isEmpty()) {
-                    closeSession();
-                }
+            boolean changed = false;
+            for (String connectionKey : removedConnectionKeys) {
+                changed |= configs.remove(connectionKey) != null;
+            }
+            for (ConnectorTwinConfig.ConnectorConfig cfg : added) {
+                configs.put(cfg.getConnectionKey(), cfg);
+                changed = true;
+            }
+            if (changed || publishPending) {
+                publish();
             }
         } finally {
             lock.unlock();
         }
     }
 
+    private void publish() throws IOException {
+        publishPending = true;
+        publishCurrentConfigs();
+        publishPending = false;
+        if (configs.isEmpty()) {
+            closeSession();
+        }
+    }
+
     private void publishCurrentConfigs() throws IOException {
+        if (session == null) {
+            session = twinPublisher.register(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, location);
+        }
         ConnectorTwinConfig confReq = new ConnectorTwinConfig(
                 queueName,
                 new ArrayList<>(configs.values())
@@ -100,6 +124,7 @@ public class LocationPublisher {
         lock.lock();
         try {
             configs.clear();
+            publishPending = false;
             closeSession();
         } catch (IOException e) {
             LOG.error("Failed to close session for {}: {}", location, e.getMessage(), e);
@@ -112,6 +137,15 @@ public class LocationPublisher {
         lock.lock();
         try {
             return !configs.isEmpty();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean isPublishPending() {
+        lock.lock();
+        try {
+            return publishPending;
         } finally {
             lock.unlock();
         }

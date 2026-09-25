@@ -22,14 +22,22 @@
 package org.opennms.netmgt.telemetry.daemon;
 
 import org.opennms.netmgt.dao.api.ServiceRef;
+import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public interface OpenConfigTwinPublisher {
     void publishConfig(ServiceRef serviceRef, List<Map<String, String>> interpolatedMapList, String nodeConnectorKey, String queueName) throws IOException;
     void removeConfig(ServiceRef serviceRef,String nodeConnectorKey) throws IOException;
+
+    /**
+     * Applies all additions and removals for one location and publishes the result once.
+     */
+    void publishConfigs(String location, List<ConnectorTwinConfig.ConnectorConfig> addedConfigs,
+                        Collection<String> removedConnectorKeys, String queueName) throws IOException;
 
     void close() throws IOException;
 }
