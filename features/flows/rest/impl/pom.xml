@@ -16,6 +16,12 @@
       <artifactId>org.opennms.features.flows.rest.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- BundleContext + ServiceTracker, for highest-ranked FlowQueryService selection -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web</artifactId>

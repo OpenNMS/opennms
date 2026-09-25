@@ -48,6 +48,16 @@ public class PipelineImpl implements Pipeline {
 
     public static final String REPOSITORY_ID = "flows.repository.id";
 
+    /** Standard OSGi service property; a higher value overrides lower-ranked primary flow stores. */
+    private static final String SERVICE_RANKING = "service.ranking";
+
+    /**
+     * Service property marking a repository as a forwarder (e.g. Kafka) rather than a primary store
+     * (e.g. Elasticsearch, PostgreSQL). Forwarders always receive flows and are exempt from the
+     * highest-ranked-store override, so they coexist with whichever primary store is active.
+     */
+    private static final String FORWARDER = "flows.repository.forwarder";
+
     private static final Logger LOG = LoggerFactory.getLogger(PipelineImpl.class);
 
     /**
@@ -135,9 +145,28 @@ public class PipelineImpl implements Pipeline {
             throw new FlowException("Failed to threshold one or more flows.", e);
         }
 
-        // Push flows to persistence
-        for (final var persister : this.persisters.entrySet()) {
-            persister.getValue().persist(enrichedFlows);
+        // Push flows to persistence. Forwarders (e.g. Kafka) always receive the flows. Among primary
+        // stores (e.g. Elasticsearch, PostgreSQL) only the highest service-ranked one does, so a
+        // higher-ranked store (the opennms-flows-postgres feature at ranking 100) overrides lower-ranked
+        // stores (the default Elasticsearch repository at ranking 0) entirely — no dual-write, no
+        // operator configuration — while forwarders keep running alongside it. Each persist is isolated
+        // so one repository's failure cannot starve the others.
+        final int maxStoreRanking = this.persisters.values().stream()
+                .filter(p -> !p.forwarder)
+                .mapToInt(p -> p.ranking)
+                .max()
+                .orElse(Integer.MIN_VALUE);
+        for (final var entry : this.persisters.entrySet()) {
+            final Persister persister = entry.getValue();
+            if (!persister.forwarder && persister.ranking != maxStoreRanking) {
+                continue; // a lower-ranked primary store, overridden by a higher-ranked one
+            }
+            try {
+                persister.persist(enrichedFlows);
+            } catch (final Exception e) {
+                LOG.error("Flow repository '{}' failed to persist {} flows; continuing with other repositories.",
+                          entry.getKey(), enrichedFlows.size(), e);
+            }
         }
     }
 
@@ -149,8 +178,34 @@ public class PipelineImpl implements Pipeline {
         }
 
         final String pid = Objects.toString(properties.get(REPOSITORY_ID));
-        this.persisters.put(pid, new Persister(repository,
+        final int ranking = rankingOf(properties);
+        final boolean forwarder = forwarderOf(properties);
+        this.persisters.put(pid, new Persister(repository, ranking, forwarder,
                                                this.metricRegistry.timer(MetricRegistry.name("logPersisting", pid))));
+        LOG.info("Bound flow repository '{}' (ranking {}, forwarder {}).", pid, ranking, forwarder);
+    }
+
+    private static int rankingOf(@SuppressWarnings("rawtypes") final Map properties) {
+        final Object ranking = properties.get(SERVICE_RANKING);
+        if (ranking instanceof Number) {
+            return ((Number) ranking).intValue();
+        }
+        if (ranking != null) {
+            try {
+                return Integer.parseInt(ranking.toString());
+            } catch (final NumberFormatException ignored) {
+                // fall through to default
+            }
+        }
+        return 0;
+    }
+
+    private static boolean forwarderOf(@SuppressWarnings("rawtypes") final Map properties) {
+        final Object forwarder = properties.get(FORWARDER);
+        if (forwarder instanceof Boolean) {
+            return (Boolean) forwarder;
+        }
+        return forwarder != null && Boolean.parseBoolean(forwarder.toString());
     }
 
     @SuppressWarnings("rawtypes")
@@ -166,10 +221,14 @@ public class PipelineImpl implements Pipeline {
 
     private static class Persister {
         public final FlowRepository repository;
+        public final int ranking;
+        public final boolean forwarder;
         public final Timer logTimer;
 
-        public Persister(final FlowRepository repository, final Timer logTimer) {
+        public Persister(final FlowRepository repository, final int ranking, final boolean forwarder, final Timer logTimer) {
             this.repository = Objects.requireNonNull(repository);
+            this.ranking = ranking;
+            this.forwarder = forwarder;
             this.logTimer = Objects.requireNonNull(logTimer);
         }
 

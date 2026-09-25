@@ -14,7 +14,7 @@ NOTE: Unless otherwise specified, all units of time are expressed in millisecond
 | Resource  | Description
 
 | /flows/count
-| Retrieve the number of flows available.
+| Retrieve the number of flows available. With no query parameters, the default filter is the previous four hours.
 
 | /flows/exporters
 | Retrieve basic information for the exporter nodes that have flows available.
