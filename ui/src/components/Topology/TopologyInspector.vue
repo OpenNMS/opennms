@@ -102,12 +102,7 @@ License.
               />
             </div>
             <div class="ti-row">
-              <OnmsButton
-                :label="store.isBackgroundAdjustMode ? 'Done adjusting' : 'Adjust position/size'"
-                size="small"
-                :variant="store.isBackgroundAdjustMode ? 'filled' : 'outlined'"
-                @click="store.setBackgroundAdjustMode(!store.isBackgroundAdjustMode)"
-              />
+              <span class="ti-hint">Move and resize it with the rail's Adjust background tool.</span>
               <OnmsButton label="Remove" size="small" severity="danger" variant="text" @click="removeBackground" />
             </div>
           </template>
