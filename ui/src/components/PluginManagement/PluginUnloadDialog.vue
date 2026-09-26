@@ -28,22 +28,18 @@
         the deploy directory all the same, and any <code>featuresBoot.d</code> line that waits for this KAR
         is cleaned as well.
       </p>
-      <FormField label="Type the KAR name to confirm" for="plugin-unload-confirm" required>
-        <OnmsInputText id="plugin-unload-confirm" v-model="confirmation" :placeholder="plugin.karName" autocomplete="off" data-test="confirm-input" />
-      </FormField>
     </div>
     <template #footer>
       <OnmsButton variant="ghost" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
-      <OnmsButton severity="danger" label="Unload plugin" :disabled="!confirmed || busy" :loading="busy" data-test="unload-button" @click="unload" />
+      <OnmsButton severity="danger" label="Unload plugin" :disabled="!plugin || busy" :loading="busy" data-test="unload-button" @click="unload" />
     </template>
   </OnmsDialog>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
+import { ref, watch } from 'vue'
+import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 
-import FormField from '@/components/Common/FormField.vue'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { PluginEntry } from '@/types/pluginManagement'
 
@@ -59,24 +55,21 @@ const emit = defineEmits<{
 
 const store = usePluginManagementStore()
 
-const confirmation = ref('')
 const busy = ref(false)
 const errorText = ref('')
 
-const confirmed = computed(() => props.plugin !== null && confirmation.value === props.plugin.karName)
 
 watch(
   () => props.visible,
   (isVisible) => {
     if (isVisible) {
-      confirmation.value = ''
       errorText.value = ''
     }
   }
 )
 
 const unload = async () => {
-  if (!props.plugin || !confirmed.value) {
+  if (!props.plugin) {
     return
   }
   busy.value = true
