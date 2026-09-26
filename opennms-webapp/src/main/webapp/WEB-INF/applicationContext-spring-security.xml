@@ -65,6 +65,13 @@
 
     <!-- Allow Minions to access the configuration endpoints -->
     <intercept-url pattern="/rest/config/**" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN"/>
+    <!-- NMS-20382: configuration writes are administrative. Writing NBI/config files can persist
+         expressions that are later evaluated and run on the server, so require ROLE_ADMIN. Must
+         precede the generic /rest/** write rules below (first-match-wins). -->
+    <intercept-url pattern="/rest/config/**" method="POST"   access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/config/**" method="PUT"    access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/config/**" method="DELETE" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/config/**" method="PATCH"  access="ROLE_ADMIN"/>
     <!-- Allow Minions to access the server info -->
     <intercept-url pattern="/rest/info" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
 
