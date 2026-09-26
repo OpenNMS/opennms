@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
  * Configuration for the BSF engine.
@@ -248,12 +248,12 @@ public class BSFEngineHandler implements Destination {
      */
     public boolean accepts(NorthboundAlarm alarm) {
         if (getFilter() != null) {
-            StandardEvaluationContext context = new StandardEvaluationContext(alarm);
+            SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
             ExpressionParser parser = new SpelExpressionParser();
             Expression exp = parser.parseExpression(m_filter);
             boolean passed = false;
             try {
-                passed = (Boolean)exp.getValue(context, Boolean.class);
+                passed = (Boolean)exp.getValue(context, alarm, Boolean.class);
             } catch (Exception e) {
                 LOG.warn("accepts: can't evaluate expression {} for alarm {} because: {}", getFilter(), alarm.getUei(), e.getMessage());
             }

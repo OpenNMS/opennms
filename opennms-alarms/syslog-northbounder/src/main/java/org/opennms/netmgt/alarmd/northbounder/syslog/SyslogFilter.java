@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
  * Configuration for the various filters to change the behavior of the forwarder.
@@ -167,12 +167,12 @@ public class SyslogFilter {
         if (!isEnabled()) {
             return false;
         }
-        StandardEvaluationContext context = new StandardEvaluationContext(alarm);
+        SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(getRule());
         boolean passed = false;
         try {
-            passed = (Boolean)exp.getValue(context, Boolean.class);
+            passed = (Boolean)exp.getValue(context, alarm, Boolean.class);
         } catch (Exception e) {
             LOG.warn("passFilter: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage());
         }

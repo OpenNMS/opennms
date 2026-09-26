@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
  * The Class VarbindMapping.
@@ -244,10 +244,10 @@ public class VarbindMapping {
             return null;
         }
         try {
-            StandardEvaluationContext context = new StandardEvaluationContext(alarm);
+            SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
             ExpressionParser parser = new SpelExpressionParser();
             Expression exp = parser.parseExpression(expression);
-            return (String) exp.getValue(context, String.class);
+            return (String) exp.getValue(context, alarm, String.class);
         } catch (Exception e) {
             LOG.warn("Can't evaluate expression {} for alarm {} because: {}", getValue(), alarm.getUei(), e.getMessage());
         }
