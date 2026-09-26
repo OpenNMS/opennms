@@ -61,6 +61,14 @@ public class PluginManagementRestServiceTest {
             + "  <feature name=\"alec\" version=\"1.0.0\"><bundle>mvn:org.example/alec/1.0.0</bundle></feature>\n"
             + "</features>\n";
 
+    private static final String MULTI_FEATURES_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<features xmlns=\"http://karaf.apache.org/xmlns/features/v1.4.0\" name=\"alec\">\n"
+            + "  <feature name=\"alec-api\" version=\"3.0.5\"><bundle>mvn:org.example/alec-api/3.0.5</bundle></feature>\n"
+            + "  <feature name=\"alec-opennms-standalone\" version=\"3.0.5\" description=\"Everything on the core\"><feature>alec-api</feature></feature>\n"
+            + "  <feature name=\"alec-opennms-distributed\" version=\"3.0.5\" description=\"Core side of a Sentinel deployment\"><feature>alec-api</feature></feature>\n"
+            + "  <feature name=\"alec-sentinel-distributed\" version=\"3.0.5\"><feature>alec-api</feature></feature>\n"
+            + "</features>\n";
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
@@ -230,8 +238,86 @@ public class PluginManagementRestServiceTest {
 
         assertEquals(3, catalog.getEntries().size());
         assertEquals("alec", catalog.getEntries().get(0).getId());
+        assertEquals(Arrays.asList("alec-opennms-standalone"), catalog.getEntries().get(0).getBootFeatures());
         assertTrue(catalog.isCustomAllowed());
         assertTrue(fetcher.requests.isEmpty());
+    }
+
+    @Test
+    public void installWritesOnlyTheChosenTopLevelFeatures() throws IOException {
+        final String token = storeUpload("opennms-alec-plugin.kar", true, MULTI_FEATURES_XML);
+        final InstallRequest request = request(token, "opennms-alec-plugin");
+        request.setFeatures(Arrays.asList(" alec-opennms-standalone ", "alec-opennms-standalone", null, ""));
+
+        final PluginActionResult result = service.install(request, admin(), null);
+
+        assertEquals("# Managed by the Plugin Management page; remove together with deploy/opennms-alec-plugin.kar\nalec-opennms-standalone wait-for-kar=opennms-alec-plugin\n",
+                new String(Files.readAllBytes(bootDir.resolve("opennms-alec-plugin.boot")), StandardCharsets.UTF_8));
+        assertEquals(Arrays.asList("alec-opennms-standalone"), result.getPlugin().getFeatures());
+        assertEquals(Arrays.asList("alec-opennms-standalone"), service.status(admin()).getPlugins().get(0).getFeatures());
+    }
+
+    @Test
+    public void installRejectsFeaturesTheKarDoesNotOfferAtTheTopLevel() throws IOException {
+        final String token = storeUpload("opennms-alec-plugin.kar", true, MULTI_FEATURES_XML);
+        for (final String feature : new String[] { "alec-api", "nope" }) {
+            final InstallRequest request = request(token, "opennms-alec-plugin");
+            request.setFeatures(Arrays.asList("alec-opennms-standalone", feature));
+            final WebApplicationException e = failure(() -> service.install(request, admin(), null));
+            assertEquals(feature, 400, e.getResponse().getStatus());
+            assertEquals("'" + feature + "' is not a top-level feature of this KAR; choose from: alec-opennms-standalone, alec-opennms-distributed, alec-sentinel-distributed", e.getResponse().getEntity());
+        }
+        assertFalse(Files.exists(deployDir.resolve("opennms-alec-plugin.kar")));
+        assertFalse(Files.exists(bootDir.resolve("opennms-alec-plugin.boot")));
+    }
+
+    @Test
+    public void installWithoutAChoiceNeedsASuggestion() throws IOException {
+        final String token = storeUpload("opennms-alec-plugin.kar", true, MULTI_FEATURES_XML);
+
+        final WebApplicationException e = failure(() -> service.install(request(token, "opennms-alec-plugin"), admin(), null));
+
+        assertEquals(400, e.getResponse().getStatus());
+        assertEquals(PluginManagementRestService.CHOOSE_FEATURES, e.getResponse().getEntity());
+        assertFalse(Files.exists(deployDir.resolve("opennms-alec-plugin.kar")));
+        assertTrue(service.status(admin()).getPlugins().isEmpty());
+    }
+
+    @Test
+    public void fetchFromTheCatalogSuggestsItsBootFeaturesAndInstallDefaultsToThem() throws IOException {
+        final byte[] kar = karBytes(true, MULTI_FEATURES_XML);
+        final String url = "https://github.com/OpenNMS-Plugins/alec/releases/download/v3.0.5/opennms-alec-plugin.kar";
+        fetcher.on("https://api.github.com/repos/OpenNMS-Plugins/alec/releases", () -> CannedFetcher.json(200,
+                "[{\"tag_name\":\"v3.0.5\",\"assets\":[{\"name\":\"opennms-alec-plugin.kar\",\"size\":" + kar.length + ",\"browser_download_url\":\"" + url + "\"}]}]", Map.of()));
+        fetcher.on(url, () -> CannedFetcher.bytes(200, kar, Map.of("Content-Length", String.valueOf(kar.length))));
+        final FetchRequest fetch = new FetchRequest();
+        fetch.setCatalogId("alec");
+        fetch.setTag("v3.0.5");
+        fetch.setAssetName("opennms-alec-plugin.kar");
+
+        final KarInspection inspection = service.fetch(fetch, admin(), null);
+
+        assertEquals(Arrays.asList("alec-opennms-standalone"), inspection.getSuggestedFeatures());
+        assertEquals(Arrays.asList("alec-opennms-standalone", "alec-opennms-distributed", "alec-sentinel-distributed"), inspection.topLevelFeatureNames());
+        assertTrue(inspection.getChecks().stream().noneMatch(c -> FeatureSelection.CHECK_BOOT_FEATURES.equals(c.getId())));
+        assertEquals("Everything on the core", inspection.getFeatures().get(1).getDescription());
+        assertFalse(inspection.getFeatures().get(0).isTopLevel());
+        assertTrue(inspection.getFeatures().get(1).isTopLevel());
+
+        final PluginActionResult result = service.install(request(inspection.getUploadToken(), "opennms-alec-plugin"), admin(), null);
+
+        assertEquals(Arrays.asList("alec-opennms-standalone"), result.getPlugin().getFeatures());
+        assertEquals("# Managed by the Plugin Management page; remove together with deploy/opennms-alec-plugin.kar\nalec-opennms-standalone wait-for-kar=opennms-alec-plugin\n",
+                new String(Files.readAllBytes(bootDir.resolve("opennms-alec-plugin.boot")), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void uploadedKarSuggestsTheFeatureNamedAfterIt() throws IOException {
+        final String token = storeUpload("alec-opennms-standalone-3.0.5.kar", true, MULTI_FEATURES_XML);
+
+        final PluginActionResult result = service.install(request(token, "alec-opennms-standalone"), admin(), null);
+
+        assertEquals(Arrays.asList("alec-opennms-standalone"), result.getPlugin().getFeatures());
     }
 
     @Test
@@ -302,6 +388,11 @@ public class PluginManagementRestServiceTest {
         assertEquals("opennms-alec-plugin.kar", inspection.getSource().getAssetName());
         assertEquals(url, inspection.getSource().getUrl());
         assertTrue(inspection.checksAt(KarInspection.Level.FAIL).isEmpty());
+        // the catalog expects alec-opennms-standalone; this KAR only has alec, so the page warns and falls back to the single top-level feature
+        final KarInspection.Check bootFeatures = inspection.getChecks().stream().filter(c -> FeatureSelection.CHECK_BOOT_FEATURES.equals(c.getId())).findFirst().orElseThrow();
+        assertEquals(KarInspection.Level.WARN, bootFeatures.getLevel());
+        assertTrue(bootFeatures.getMessage(), bootFeatures.getMessage().contains("alec-opennms-standalone"));
+        assertEquals(Arrays.asList("alec"), inspection.getSuggestedFeatures());
         assertEquals(token, KarInspector.sha256(uploadDir.resolve(token + ".kar")));
         assertEquals("opennms-alec-plugin.kar", new String(Files.readAllBytes(uploadDir.resolve(token + ".name")), StandardCharsets.UTF_8));
         assertEquals("github:OpenNMS-Plugins/alec@v1.0.0", new String(Files.readAllBytes(uploadDir.resolve(token + ".source")), StandardCharsets.UTF_8));
@@ -399,6 +490,10 @@ public class PluginManagementRestServiceTest {
     // --- fixtures --------------------------------------------------------------
 
     private static byte[] karBytes(final boolean autoStart) throws IOException {
+        return karBytes(autoStart, FEATURES_XML);
+    }
+
+    private static byte[] karBytes(final boolean autoStart, final String featuresXml) throws IOException {
         final Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
         manifest.getMainAttributes().putValue("Karaf-Feature-Start", String.valueOf(autoStart));
@@ -410,15 +505,19 @@ public class PluginManagementRestServiceTest {
             zip.write(manifestBytes.toByteArray());
             zip.closeEntry();
             zip.putNextEntry(new ZipEntry("repository/org/example/alec/1.0.0/alec-1.0.0-features.xml"));
-            zip.write(FEATURES_XML.getBytes(StandardCharsets.UTF_8));
+            zip.write(featuresXml.getBytes(StandardCharsets.UTF_8));
             zip.closeEntry();
         }
         return out.toByteArray();
     }
 
     private String storeUpload(final String fileName, final boolean autoStart) throws IOException {
+        return storeUpload(fileName, autoStart, FEATURES_XML);
+    }
+
+    private String storeUpload(final String fileName, final boolean autoStart, final String featuresXml) throws IOException {
         final Path kar = folder.getRoot().toPath().resolve("upload-" + fileName);
-        Files.write(kar, karBytes(autoStart));
+        Files.write(kar, karBytes(autoStart, featuresXml));
         final String token = KarInspector.sha256(kar);
         Files.createDirectories(uploadDir);
         Files.move(kar, uploadDir.resolve(token + ".kar"));

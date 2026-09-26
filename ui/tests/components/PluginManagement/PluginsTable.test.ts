@@ -28,7 +28,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 const OnmsCardStub = { name: 'OnmsCard', template: '<div><slot name="title" /><slot name="content" /></div>' }
 
-const BASE = { fileName: 'x.kar', sha256: 'abc', size: 1536, uploadedBy: 'admin', uploadedAt: Date.UTC(2026, 8, 25, 12, 0, 0), features: ['f1', 'f2'], bootFile: 'x.boot', autoStart: true, pendingRestart: false, source: 'upload' }
+const BASE = { fileName: 'x.kar', sha256: 'abc', size: 1536, uploadedBy: 'admin', uploadedAt: Date.UTC(2026, 8, 25, 12, 0, 0), features: ['f1', 'f2'], bootFile: 'x.boot', autoStart: true, pendingRestart: false, source: 'upload', managed: true }
 
 const mountTable = (plugins: any[], containerAvailable = true) => mount(PluginsTable, {
   props: { plugins, containerAvailable },
@@ -42,7 +42,7 @@ describe('PluginsTable.vue', () => {
 
   it('sorts by KAR name and maps every status to a tag', () => {
     const wrapper = mountTable([
-      { ...BASE, karName: 'zeta', status: 'unmanaged' },
+      { ...BASE, karName: 'zeta', status: 'unknown' },
       { ...BASE, karName: 'alpha', status: 'installed' },
       { ...BASE, karName: 'mid', status: 'staged', pendingRestart: true },
       { ...BASE, karName: 'omega', status: 'failed' },
@@ -52,16 +52,15 @@ describe('PluginsTable.vue', () => {
     const names = wrapper.findAll('tbody tr').map(r => r.find('td').text())
     expect(names).toEqual(['alpha', 'auto', 'beta', 'mid', 'omega', 'zeta'])
     const tags = wrapper.findAll('[data-test="plugin-status"]')
-    expect(tags.map(t => t.attributes('data-status'))).toEqual(['installed', 'staged', 'unloaded', 'staged', 'failed', 'unmanaged'])
-    expect(tags.map(t => t.text())).toEqual(['Loaded', 'Load pending restart', 'Unload pending restart', 'Load pending restart', 'Failed to start', 'Not managed here'])
+    expect(tags.map(t => t.attributes('data-status'))).toEqual(['installed', 'staged', 'unloaded', 'staged', 'failed', 'unknown'])
+    expect(tags.map(t => t.text())).toEqual(['Loaded', 'Load pending restart', 'Unload pending restart', 'Load pending restart', 'Failed to start', 'Unknown'])
     expect(tags[0].classes()).toContain('p-tag-success')
     expect(tags[1].classes()).toContain('p-tag-warn')
     expect(tags[2].classes()).toContain('p-tag-warn')
     expect(tags[3].classes()).toContain('p-tag-warn')
     expect(tags[4].classes()).toContain('p-tag-danger')
     expect(tags[4].attributes('title')).toContain('see karaf.log')
-    expect(tags[5].classes()).toContain('p-tag-info')
-    expect(tags[5].attributes('title')).toContain('not loaded through this page')
+    expect(tags[5].classes()).toContain('p-tag-secondary')
     expect(wrapper.find('[data-test="plugin-status-hint"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="plugin-features"]').attributes('title')).toBe('f1, f2')
     expect(wrapper.text()).toContain('1.5 KB')
@@ -73,12 +72,28 @@ describe('PluginsTable.vue', () => {
     const wrapper = mountTable([
       { ...BASE, karName: 'alpha', status: 'installed', source: 'github:OpenNMS-Plugins/alec@v3.0.4' },
       { ...BASE, karName: 'beta', status: 'installed', source: 'upload' },
-      { ...BASE, karName: 'gamma', status: 'unmanaged', source: null }
+      { ...BASE, karName: 'gamma', status: 'installed', source: null }
     ])
     const cells = wrapper.findAll('[data-test="plugin-source"]')
     expect(cells.map(c => c.text())).toEqual(['OpenNMS-Plugins/alec@v3.0.4', 'Uploaded file', 'Uploaded file'])
     expect(cells[0].attributes('title')).toBe('github:OpenNMS-Plugins/alec@v3.0.4')
     expect(wrapper.findAll('thead th').map(h => h.text())).toContain('Source')
+  })
+
+  it('shows a plugin loaded by hand with its features, their state and the real status', () => {
+    const wrapper = mountTable([
+      { ...BASE, karName: 'alec', status: 'installed', source: 'manual', managed: false, uploadedBy: null, uploadedAt: null, fileName: null, size: 0,
+        features: ['alec-opennms-standalone'], featureStates: { 'alec-opennms-standalone': 'Started' }, bootFile: 'etc/featuresBoot.d/alec.boot' }
+    ])
+    const source = wrapper.find('[data-test="plugin-source"]')
+    expect(source.text()).toBe('Loaded by hand')
+    expect(source.classes()).toContain('p-tag-info')
+    expect(source.attributes('title')).toBe('installed outside this page; features from its boot file or the KAR itself')
+    expect(wrapper.find('[data-test="plugin-features"]').text()).toBe('alec-opennms-standalone')
+    expect(wrapper.find('[data-test="plugin-features"]').attributes('title')).toBe('alec-opennms-standalone (Started)')
+    expect(wrapper.find('[data-test="plugin-status"]').text()).toBe('Loaded')
+    expect(wrapper.find('[data-test="plugin-uploaded"]').text()).toContain('—')
+    expect(wrapper.findAll('[data-test="unload-plugin"]')).toHaveLength(1)
   })
 
   it('shows an unloaded plugin that no longer waits for a restart as Unloaded', () => {
@@ -91,7 +106,7 @@ describe('PluginsTable.vue', () => {
     const wrapper = mountTable([
       { ...BASE, karName: 'alpha', status: 'installed' },
       { ...BASE, karName: 'beta', status: 'unloaded' },
-      { ...BASE, karName: 'gamma', status: 'unmanaged' }
+      { ...BASE, karName: 'gamma', status: 'installed', source: 'manual', managed: false }
     ])
     const buttons = wrapper.findAll('[data-test="unload-plugin"]')
     expect(buttons).toHaveLength(2)

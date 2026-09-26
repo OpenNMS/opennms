@@ -21,10 +21,15 @@
  */
 package org.opennms.web.rest.v2.plugins;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InstallRequest {
     private String uploadToken;
     private String karName;
     private boolean acknowledgeWarnings;
+    /** Top-level features to list in the boot file; the inspection's suggested features when omitted. */
+    private List<String> features = new ArrayList<>();
 
     public String getUploadToken() { return uploadToken; }
     public void setUploadToken(final String uploadToken) { this.uploadToken = uploadToken; }
@@ -32,4 +37,6 @@ public class InstallRequest {
     public void setKarName(final String karName) { this.karName = karName; }
     public boolean isAcknowledgeWarnings() { return acknowledgeWarnings; }
     public void setAcknowledgeWarnings(final boolean acknowledgeWarnings) { this.acknowledgeWarnings = acknowledgeWarnings; }
+    public List<String> getFeatures() { return features; }
+    public void setFeatures(final List<String> features) { this.features = features == null ? new ArrayList<>() : features; }
 }

@@ -6,17 +6,24 @@
     <template #content>
       <OnmsTable :value="plugins" dataKey="karName" sortField="karName" :sortOrder="1" data-test="plugins-table">
         <template #empty>
-          <span data-test="no-plugins">No plugins have been loaded through this page.</span>
+          <span data-test="no-plugins">No plugins are loaded.</span>
         </template>
         <OnmsColumn field="karName" header="KAR name" sortable />
         <OnmsColumn header="Features">
           <template #body="{ data }">
-            <span :title="data.features.join(', ')" data-test="plugin-features">{{ ellipsify(data.features.join(', '), 60) || NOT_SET }}</span>
+            <span :title="featureTitle(data)" data-test="plugin-features">{{ ellipsify(data.features.join(', '), 60) || NOT_SET }}</span>
           </template>
         </OnmsColumn>
         <OnmsColumn header="Source">
           <template #body="{ data }">
-            <span :title="sourceOf(data.source).title" data-test="plugin-source">{{ sourceOf(data.source).label }}</span>
+            <OnmsTag
+              v-if="sourceOf(data.source).manual"
+              severity="info"
+              :value="sourceOf(data.source).label"
+              :title="sourceOf(data.source).title"
+              data-test="plugin-source"
+            />
+            <span v-else :title="sourceOf(data.source).title" data-test="plugin-source">{{ sourceOf(data.source).label }}</span>
           </template>
         </OnmsColumn>
         <OnmsColumn header="Uploaded">
@@ -76,6 +83,10 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'unload', plugin: PluginEntry): void
 }>()
+
+// the full list with each feature's container state, e.g. "alec (Started)"
+const featureTitle = (plugin: PluginEntry & { featureStates?: Record<string, string> }): string =>
+  plugin.features.map(f => (plugin.featureStates?.[f] ? `${f} (${plugin.featureStates[f]})` : f)).join(', ')
 </script>
 
 <style lang="scss" scoped>

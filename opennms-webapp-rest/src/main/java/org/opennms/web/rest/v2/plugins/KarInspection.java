@@ -87,7 +87,10 @@ public class KarInspection {
         private String name;
         private String version;
         private String repository;
+        private String description;
         private boolean hidden;
+        /** not hidden and not pulled in by another feature of the same KAR; see {@link #topLevelFeatures()}. */
+        private boolean topLevel;
         private List<DependencyInfo> dependencies = new ArrayList<>();
         private List<String> bundles = new ArrayList<>();
 
@@ -97,8 +100,12 @@ public class KarInspection {
         public void setVersion(final String version) { this.version = version; }
         public String getRepository() { return repository; }
         public void setRepository(final String repository) { this.repository = repository; }
+        public String getDescription() { return description; }
+        public void setDescription(final String description) { this.description = description; }
         public boolean isHidden() { return hidden; }
         public void setHidden(final boolean hidden) { this.hidden = hidden; }
+        public boolean isTopLevel() { return topLevel; }
+        public void setTopLevel(final boolean topLevel) { this.topLevel = topLevel; }
         public List<DependencyInfo> getDependencies() { return dependencies; }
         public void setDependencies(final List<DependencyInfo> dependencies) { this.dependencies = dependencies; }
         public List<String> getBundles() { return bundles; }
@@ -191,6 +198,8 @@ public class KarInspection {
     private List<FeatureInfo> features = new ArrayList<>();
     private List<BundleDescriptor> bundles = new ArrayList<>();
     private List<Check> checks = new ArrayList<>();
+    /** Top-level features the page should pre-select; empty when the operator has to choose. */
+    private List<String> suggestedFeatures = new ArrayList<>();
 
     public String getKarName() { return karName; }
     public void setKarName(final String karName) { this.karName = karName; }
@@ -218,6 +227,8 @@ public class KarInspection {
     public void setBundles(final List<BundleDescriptor> bundles) { this.bundles = bundles; }
     public List<Check> getChecks() { return checks; }
     public void setChecks(final List<Check> checks) { this.checks = checks; }
+    public List<String> getSuggestedFeatures() { return suggestedFeatures; }
+    public void setSuggestedFeatures(final List<String> suggestedFeatures) { this.suggestedFeatures = suggestedFeatures; }
 
     public List<Check> checksAt(final Level level) {
         final List<Check> result = new ArrayList<>();
@@ -256,5 +267,21 @@ public class KarInspection {
             }
         }
         return roots.isEmpty() ? new ArrayList<>(features) : roots;
+    }
+
+    /** Stamps {@link FeatureInfo#isTopLevel()} on every feature once all repositories are read. */
+    public void markTopLevelFeatures() {
+        final List<FeatureInfo> roots = topLevelFeatures();
+        for (final FeatureInfo feature : features) {
+            feature.setTopLevel(roots.contains(feature));
+        }
+    }
+
+    public List<String> topLevelFeatureNames() {
+        final List<String> names = new ArrayList<>();
+        for (final FeatureInfo feature : topLevelFeatures()) {
+            names.add(feature.getName());
+        }
+        return names;
     }
 }

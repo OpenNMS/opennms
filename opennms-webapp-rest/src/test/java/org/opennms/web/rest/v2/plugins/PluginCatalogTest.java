@@ -51,6 +51,12 @@ public class PluginCatalogTest {
 
         assertEquals(Arrays.asList("alec", "prometheus-remotewrite", "pagerduty"), ids(entries));
         assertEquals("OpenNMS-Plugins/alec", catalog.find("alec").orElseThrow().getRepository());
+        assertEquals(Arrays.asList("alec-opennms-standalone"), catalog.find("alec").orElseThrow().getBootFeatures());
+        assertEquals(Arrays.asList("opennms-plugins-prometheus-remotewrite"), catalog.find("prometheus-remotewrite").orElseThrow().getBootFeatures());
+        assertEquals(Arrays.asList("opennms-plugins-pagerduty"), catalog.find("pagerduty").orElseThrow().getBootFeatures());
+        assertEquals(Arrays.asList("alec-opennms-standalone"), catalog.bootFeaturesFor("OpenNMS-Plugins/alec"));
+        assertTrue(catalog.bootFeaturesFor("acme/other").isEmpty());
+        assertTrue(catalog.bootFeaturesFor(null).isEmpty());
         assertEquals(PluginCatalog.DEFAULT_ASSET_PATTERN, catalog.find("alec").orElseThrow().getAssetPattern());
         assertTrue(catalog.find("alec").orElseThrow().assetPattern().matcher("opennms-alec-plugin.kar").matches());
         assertFalse(catalog.find("alec").orElseThrow().assetPattern().matcher("checksums.txt").matches());
@@ -72,6 +78,7 @@ public class PluginCatalogTest {
         assertEquals(ids(PluginCatalog.defaults()), ids(entries));
         for (int i = 0; i < entries.size(); i++) {
             assertEquals(PluginCatalog.defaults().get(i).getRepository(), entries.get(i).getRepository());
+            assertEquals(PluginCatalog.defaults().get(i).getBootFeatures(), entries.get(i).getBootFeatures());
         }
     }
 
@@ -79,7 +86,7 @@ public class PluginCatalogTest {
     public void fileEntriesReplaceTheDefaultsAndInvalidOnesAreSkipped() throws IOException {
         final Path file = folder.getRoot().toPath().resolve("plugin-catalog.json");
         Files.write(file, ("{\"entries\":[\n"
-                + "  {\"id\":\"mine\",\"name\":\"Mine\",\"description\":\"d\",\"repository\":\"me/mine\",\"assetPattern\":\"mine-.*\\\\.kar\",\"docsUrl\":\"https://example.org\",\"extra\":1},\n"
+                + "  {\"id\":\"mine\",\"name\":\"Mine\",\"description\":\"d\",\"repository\":\"me/mine\",\"assetPattern\":\"mine-.*\\\\.kar\",\"docsUrl\":\"https://example.org\",\"bootFeatures\":[\" mine-core \",\"\",null,\"mine-core\",\"mine-ui\"],\"extra\":1},\n"
                 + "  {\"id\":\"bad regex\",\"repository\":\"me/x\"},\n"
                 + "  {\"id\":\"badregex\",\"repository\":\"me/x\",\"assetPattern\":\"(\"},\n"
                 + "  {\"id\":\"norepo\",\"repository\":\"just-a-name\"},\n"
@@ -95,6 +102,8 @@ public class PluginCatalogTest {
         assertEquals(PluginCatalog.DEFAULT_ASSET_PATTERN, entries.get(1).getAssetPattern());
         assertEquals("nameless", entries.get(2).getName());
         assertEquals("me/mine", catalog.find("mine").orElseThrow().getRepository());
+        assertEquals(Arrays.asList("mine-core", "mine-ui"), catalog.find("mine").orElseThrow().getBootFeatures());
+        assertTrue(catalog.find("nameless").orElseThrow().getBootFeatures().isEmpty());
     }
 
     @Test

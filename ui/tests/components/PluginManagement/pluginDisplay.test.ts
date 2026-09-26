@@ -51,8 +51,6 @@ describe('pluginDisplay', () => {
     expect(statusOf('unloaded', true)).toMatchObject({ severity: 'warn', label: 'Unload pending restart' })
     expect(statusOf('unloaded', false)).toMatchObject({ severity: 'secondary', label: 'Unloaded' })
     expect(statusOf('unloaded')).toMatchObject({ severity: 'secondary', label: 'Unloaded' })
-    expect(statusOf('unmanaged')).toMatchObject({ severity: 'info', label: 'Not managed here' })
-    expect(statusOf('unmanaged').title).toContain('not loaded through this page')
     expect(statusOf('unknown')).toMatchObject({ severity: 'secondary', label: 'Unknown' })
     expect(statusOf('weird')).toMatchObject({ severity: 'secondary', label: 'weird' })
   })
@@ -61,7 +59,7 @@ describe('pluginDisplay', () => {
     const entry = (status: string, pendingRestart: boolean) => ({ karName: status, status, pendingRestart } as any)
     const plugins = [
       entry('staged', true), entry('staged', false), entry('installed', false), entry('installed', true),
-      entry('unloaded', true), entry('unloaded', false), entry('failed', false), entry('unmanaged', false)
+      entry('unloaded', true), entry('unloaded', false), entry('failed', false), entry('unknown', false)
     ]
     expect(restartCounts(plugins)).toEqual({ toLoad: 3, toUnload: 1 })
     expect(restartSummary(plugins)).toBe('A restart is required to finish loading or unloading plugins: 3 to load, 1 to unload.')
@@ -102,10 +100,11 @@ describe('pluginDisplay', () => {
   })
 
   it('describes where a KAR came from', () => {
-    expect(sourceOf('github:OpenNMS-Plugins/alec@v3.0.4')).toEqual({ label: 'OpenNMS-Plugins/alec@v3.0.4', title: 'github:OpenNMS-Plugins/alec@v3.0.4' })
-    expect(sourceOf('upload')).toEqual({ label: 'Uploaded file', title: 'upload' })
-    expect(sourceOf(undefined)).toEqual({ label: 'Uploaded file', title: '' })
-    expect(sourceOf('mirror:x')).toEqual({ label: 'mirror:x', title: 'mirror:x' })
+    expect(sourceOf('github:OpenNMS-Plugins/alec@v3.0.4')).toEqual({ label: 'OpenNMS-Plugins/alec@v3.0.4', title: 'github:OpenNMS-Plugins/alec@v3.0.4', manual: false })
+    expect(sourceOf('upload')).toEqual({ label: 'Uploaded file', title: 'upload', manual: false })
+    expect(sourceOf(undefined)).toEqual({ label: 'Uploaded file', title: '', manual: false })
+    expect(sourceOf('mirror:x')).toEqual({ label: 'mirror:x', title: 'mirror:x', manual: false })
+    expect(sourceOf('manual')).toEqual({ label: 'Loaded by hand', title: 'installed outside this page; features from its boot file or the KAR itself', manual: true })
     expect(fetchedSourceLine({ repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'opennms-alec-plugin.kar', url: '' }, 93634560))
       .toBe('Fetched from OpenNMS-Plugins/alec v3.0.4 (opennms-alec-plugin.kar, 89.3 MB)')
     expect(uploadedSourceLine('alec.kar', 2048)).toBe('Uploaded alec.kar (2.0 KB)')

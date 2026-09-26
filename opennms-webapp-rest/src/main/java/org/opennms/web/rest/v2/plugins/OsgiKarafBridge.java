@@ -101,6 +101,17 @@ public class OsgiKarafBridge implements KarafBridge {
     }
 
     @Override
+    public List<InstalledFeature> features() {
+        return withService(FEATURES_SERVICE, Collections.emptyList(), service -> {
+            final List<InstalledFeature> result = new ArrayList<>();
+            for (final Object feature : (Object[]) invoke(service, FEATURES_SERVICE, "listFeatures")) {
+                result.add(toInstalledFeature(service, feature));
+            }
+            return result;
+        });
+    }
+
+    @Override
     public List<String> installedKars() {
         return withService(KAR_SERVICE, Collections.emptyList(), service -> {
             final List<String> result = new ArrayList<>();

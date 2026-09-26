@@ -23,6 +23,7 @@ package org.opennms.web.rest.v2.plugins;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -33,10 +34,12 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,9 @@ public class PluginRegistry {
     public static final String FILE_NAME = "plugin-management.json";
     static final String KAR_SUFFIX = ".kar";
     public static final String SOURCE_UPLOAD = "upload";
+    static final String WAIT_FOR_KAR = "wait-for-kar=";
+    /** written by Karaf's KarService next to each extracted KAR; one feature repository URI per line */
+    static final String KAR_FEATURES_CFG = "features.cfg";
 
     /** Persisted shape; only what an operator did, never derived state. */
     public static class Record {
@@ -112,6 +118,10 @@ public class PluginRegistry {
 
     private final Path registryFile;
     private final Path deployDir;
+    /** etc/featuresBoot.d; null when boot files are not consulted. */
+    private final Path bootDir;
+    /** data/kar, where Karaf keeps each installed KAR's list of feature repositories; null when not consulted. */
+    private final Path karStorageDir;
     private final KarafBridge bridge;
     private final long bootTimeMillis;
     private final ObjectMapper mapper = new ObjectMapper()
@@ -119,12 +129,19 @@ public class PluginRegistry {
             .enable(SerializationFeature.INDENT_OUTPUT);
 
     public PluginRegistry(final Path opennmsHome, final KarafBridge bridge) {
-        this(opennmsHome.resolve("etc").resolve(FILE_NAME), opennmsHome.resolve("deploy"), bridge, ManagementFactory.getRuntimeMXBean().getStartTime());
+        this(opennmsHome.resolve("etc").resolve(FILE_NAME), opennmsHome.resolve("deploy"), opennmsHome.resolve("etc").resolve("featuresBoot.d"),
+                opennmsHome.resolve("data").resolve("kar"), bridge, ManagementFactory.getRuntimeMXBean().getStartTime());
     }
 
     PluginRegistry(final Path registryFile, final Path deployDir, final KarafBridge bridge, final long bootTimeMillis) {
+        this(registryFile, deployDir, null, null, bridge, bootTimeMillis);
+    }
+
+    PluginRegistry(final Path registryFile, final Path deployDir, final Path bootDir, final Path karStorageDir, final KarafBridge bridge, final long bootTimeMillis) {
         this.registryFile = registryFile;
         this.deployDir = deployDir;
+        this.bootDir = bootDir;
+        this.karStorageDir = karStorageDir;
         this.bridge = bridge;
         this.bootTimeMillis = bootTimeMillis;
     }
@@ -133,6 +150,10 @@ public class PluginRegistry {
         return registryFile;
     }
 
+    /**
+     * Every recorded plugin, then every KAR in deploy/ or known to the container
+     * that has no record, so hand-installed plugins show up with their features.
+     */
     public synchronized List<PluginEntry> list() throws IOException {
         final RegistryFile file = read();
         final LiveState live = new LiveState();
@@ -142,11 +163,19 @@ public class PluginRegistry {
             managedNames.add(record.getKarName());
             entries.add(toEntry(record, live));
         }
+        final Map<String, Path> unmanaged = new TreeMap<>();
         for (final Path kar : deployedKars()) {
             final String name = kar.getFileName().toString();
-            final String karName = name.substring(0, name.length() - KAR_SUFFIX.length());
-            if (!managedNames.contains(karName)) {
-                entries.add(unmanagedEntry(kar, karName, live));
+            unmanaged.put(name.substring(0, name.length() - KAR_SUFFIX.length()), kar);
+        }
+        if (live.available) {
+            for (final String karName : live.kars()) {
+                unmanaged.putIfAbsent(karName, null);
+            }
+        }
+        for (final Map.Entry<String, Path> e : unmanaged.entrySet()) {
+            if (!managedNames.contains(e.getKey())) {
+                entries.add(manualEntry(e.getKey(), e.getValue(), live));
             }
         }
         return entries;
@@ -259,12 +288,31 @@ public class PluginRegistry {
         private final boolean available = bridge.isAvailable();
         private List<String> kars;
         private List<InstalledFeature> features;
+        private List<InstalledFeature> allFeatures;
 
         List<String> kars() {
             if (kars == null) {
                 kars = available ? bridge.installedKars() : new ArrayList<>();
             }
             return kars;
+        }
+
+        /** Features of the repositories listed in data/kar/&lt;karName&gt;/features.cfg. */
+        List<InstalledFeature> karFeatures(final String karName) {
+            final Set<String> repositories = karRepositories(karName);
+            final List<InstalledFeature> result = new ArrayList<>();
+            if (repositories.isEmpty() || !available) {
+                return result;
+            }
+            if (allFeatures == null) {
+                allFeatures = bridge.features();
+            }
+            for (final InstalledFeature f : allFeatures) {
+                if (f.getRepository() != null && repositories.contains(f.getRepository().trim())) {
+                    result.add(f);
+                }
+            }
+            return result;
         }
 
         String featureState(final String name) {
@@ -295,7 +343,9 @@ public class PluginRegistry {
         entry.setUploadedAt(record.getUploadedAt());
         entry.setUnloadedBy(record.getUnloadedBy());
         entry.setUnloadedAt(record.getUnloadedAt());
-        entry.setFeatures(new ArrayList<>(record.getFeatures()));
+        // The boot file is what actually starts on the next boot, so a hand-edited one wins over the record.
+        final BootReferences boot = bootReferences(record.getKarName());
+        entry.setFeatures(boot.features.isEmpty() ? new ArrayList<>(record.getFeatures()) : boot.features);
         entry.setBootFile(record.getBootFile());
         entry.setAutoStart(record.isAutoStart());
         entry.setManaged(true);
@@ -306,26 +356,30 @@ public class PluginRegistry {
             entry.setStatus(PluginEntry.STATUS_UNLOADED);
             return entry;
         }
+        deriveStatus(entry, live, installedDuringThisJvm(record));
+        return entry;
+    }
+
+    private void deriveStatus(final PluginEntry entry, final LiveState live, final boolean installedDuringThisJvm) {
         if (!live.available) {
             entry.setStatus(PluginEntry.STATUS_UNKNOWN);
-            return entry;
+            return;
         }
-        entry.setKarLoaded(live.kars().contains(record.getKarName()));
+        entry.setKarLoaded(live.kars().contains(entry.getKarName()));
         boolean allStarted = true;
-        for (final String feature : record.getFeatures()) {
+        for (final String feature : entry.getFeatures()) {
             final String state = live.featureState(feature);
             entry.getFeatureStates().put(feature, state);
             allStarted &= InstalledFeature.STATE_STARTED.equals(state);
         }
         if (entry.isKarLoaded() && allStarted) {
             entry.setStatus(PluginEntry.STATUS_INSTALLED);
-        } else if (entry.isKarLoaded() && !installedDuringThisJvm(record)) {
+        } else if (entry.isKarLoaded() && !installedDuringThisJvm) {
             // The container has had a full boot to start the features from the boot file and did not.
             entry.setStatus(PluginEntry.STATUS_FAILED);
         } else {
             entry.setStatus(PluginEntry.STATUS_STAGED);
         }
-        return entry;
     }
 
     private boolean installedDuringThisJvm(final Record record) {
@@ -339,20 +393,157 @@ public class PluginRegistry {
         }
     }
 
-    private PluginEntry unmanagedEntry(final Path kar, final String karName, final LiveState live) {
+    /**
+     * A KAR with no record: copied into deploy/ by hand or installed with kar:install.
+     * Its features are the ones its boot lines name, else the top-level features of
+     * the repositories Karaf recorded for the KAR.
+     *
+     * @param kar the file in deploy/, or null when only the container knows the KAR
+     */
+    private PluginEntry manualEntry(final String karName, final Path kar, final LiveState live) {
         final PluginEntry entry = new PluginEntry();
         entry.setKarName(karName);
-        entry.setFileName(kar.getFileName().toString());
-        try {
-            entry.setSize(Files.size(kar));
-        } catch (final IOException e) {
-            LOG.warn("Cannot stat {}: {}", kar, e.toString());
-        }
+        entry.setSource(PluginEntry.SOURCE_MANUAL);
         entry.setManaged(false);
-        entry.setDeployed(true);
-        entry.setKarLoaded(live.available && live.kars().contains(karName));
-        entry.setStatus(PluginEntry.STATUS_UNMANAGED);
+        entry.setDeployed(kar != null);
+        boolean recentlyDeployed = false;
+        if (kar != null) {
+            entry.setFileName(kar.getFileName().toString());
+            try {
+                entry.setSize(Files.size(kar));
+                recentlyDeployed = Files.getLastModifiedTime(kar).toMillis() > bootTimeMillis;
+            } catch (final IOException e) {
+                LOG.warn("Cannot stat {}: {}", kar, e.toString());
+            }
+        }
+        final BootReferences boot = bootReferences(karName);
+        entry.setBootFile(boot.files.isEmpty() ? null : String.join(", ", boot.files));
+        final List<InstalledFeature> karFeatures = live.karFeatures(karName);
+        final List<String> karFeatureNames = new ArrayList<>();
+        for (final InstalledFeature f : karFeatures) {
+            karFeatureNames.add(f.getName());
+        }
+        final List<String> features = new ArrayList<>();
+        if (!boot.features.isEmpty()) {
+            for (final String name : boot.features) {
+                if (karFeatureNames.isEmpty() || karFeatureNames.contains(name)) {
+                    features.add(name);
+                }
+            }
+            if (features.isEmpty()) {
+                features.addAll(boot.features);
+            }
+        } else {
+            features.addAll(topLevel(karFeatures));
+        }
+        entry.setFeatures(features);
+        deriveStatus(entry, live, recentlyDeployed);
         return entry;
+    }
+
+    /** Features no other feature of the same KAR depends on; all of them when the graph has no roots. */
+    private static List<String> topLevel(final List<InstalledFeature> features) {
+        final Set<String> referenced = new HashSet<>();
+        for (final InstalledFeature f : features) {
+            referenced.addAll(f.getDependencies());
+        }
+        final List<String> roots = new ArrayList<>();
+        final List<String> all = new ArrayList<>();
+        for (final InstalledFeature f : features) {
+            if (!all.contains(f.getName())) {
+                all.add(f.getName());
+            }
+            if (!referenced.contains(f.getName()) && !roots.contains(f.getName())) {
+                roots.add(f.getName());
+            }
+        }
+        return roots.isEmpty() ? all : roots;
+    }
+
+    /** Repository URIs Karaf wrote to data/kar/&lt;karName&gt;/features.cfg when it installed the KAR. */
+    private Set<String> karRepositories(final String karName) {
+        final Set<String> repositories = new LinkedHashSet<>();
+        if (karStorageDir == null) {
+            return repositories;
+        }
+        final Path cfg = karStorageDir.resolve(karName).resolve(KAR_FEATURES_CFG);
+        if (!Files.isRegularFile(cfg)) {
+            return repositories;
+        }
+        try {
+            for (final String line : Files.readAllLines(cfg, StandardCharsets.UTF_8)) {
+                if (!line.isBlank()) {
+                    repositories.add(line.trim());
+                }
+            }
+        } catch (final IOException e) {
+            LOG.warn("Cannot read {}: {}", cfg, e.toString());
+        }
+        return repositories;
+    }
+
+    // --- boot files ------------------------------------------------------------
+
+    /** Boot lines under featuresBoot.d that wait for one KAR: the features they start and the files they live in. */
+    static final class BootReferences {
+        final List<String> features = new ArrayList<>();
+        /** as etc/featuresBoot.d/x.boot, in directory order */
+        final List<String> files = new ArrayList<>();
+    }
+
+    BootReferences bootReferences(final String karName) {
+        final BootReferences references = new BootReferences();
+        if (bootDir == null || !Files.isDirectory(bootDir)) {
+            return references;
+        }
+        final List<Path> files = new ArrayList<>();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(bootDir)) {
+            for (final Path p : stream) {
+                if (Files.isRegularFile(p)) {
+                    files.add(p);
+                }
+            }
+        } catch (final IOException e) {
+            LOG.warn("Cannot list {}: {}", bootDir, e.toString());
+            return references;
+        }
+        files.sort(null);
+        for (final Path file : files) {
+            try {
+                boolean referenced = false;
+                for (final String line : Files.readAllLines(file, StandardCharsets.UTF_8)) {
+                    if (waitsForKar(line, karName)) {
+                        referenced = true;
+                        final String feature = line.trim().split("\\s+")[0];
+                        if (!feature.startsWith(WAIT_FOR_KAR) && !references.features.contains(feature)) {
+                            references.features.add(feature);
+                        }
+                    }
+                }
+                if (referenced) {
+                    final Path etc = bootDir.getParent();
+                    references.files.add((etc == null || etc.getFileName() == null ? "" : etc.getFileName() + "/") + bootDir.getFileName() + "/" + file.getFileName());
+                }
+            } catch (final IOException e) {
+                LOG.warn("Cannot read {}: {}", file, e.toString());
+            }
+        }
+        return references;
+    }
+
+    /** True when a featuresBoot.d line carries the exact token {@code wait-for-kar=<karName>}. */
+    static boolean waitsForKar(final String line, final String karName) {
+        final String trimmed = line.trim();
+        if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+            return false;
+        }
+        final String wanted = WAIT_FOR_KAR + karName;
+        for (final String token : trimmed.split("\\s+")) {
+            if (wanted.equals(token)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<Path> deployedKars() throws IOException {

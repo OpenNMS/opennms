@@ -24,25 +24,29 @@
 // into deploy/ with a featuresBoot.d boot file, plus the inspection a
 // candidate KAR goes through before it is written anywhere.
 
-export type PluginStatus = 'installed' | 'staged' | 'failed' | 'unloaded' | 'unmanaged' | 'unknown'
+export type PluginStatus = 'installed' | 'staged' | 'failed' | 'unloaded' | 'unknown'
 
 export type KarCheckLevel = 'PASS' | 'WARN' | 'FAIL'
 
 export interface PluginEntry {
   karName: string
-  fileName: string
-  sha256: string
+  // null when only the container knows the KAR and nothing sits in deploy/
+  fileName: string | null
+  sha256: string | null
   size: number
   uploadedBy: string | null
   // epoch milliseconds, or an ISO-8601 timestamp
   uploadedAt: number | string | null
+  // what the boot file starts (or, for a plugin loaded by hand without one, the KAR's top-level features)
   features: string[]
   bootFile: string | null
   autoStart: boolean
   status: PluginStatus
   pendingRestart: boolean
-  // "github:<owner>/<repository>@<tag>" or "upload"
+  // "github:<owner>/<repository>@<tag>", "upload", or "manual" for a KAR loaded outside this page
   source: string
+  // false for a KAR found in deploy/ or in the container without a record from this page
+  managed: boolean
 }
 
 export interface PluginManagementState {
@@ -71,6 +75,10 @@ export interface KarFeatureDependency {
 export interface KarFeature {
   name: string
   version: string
+  // the features XML description attribute, when the plugin wrote one
+  description: string | null
+  // not hidden and not pulled in by another feature of the same KAR; only these can go into the boot file
+  topLevel: boolean
   dependencies: KarFeatureDependency[]
 }
 
@@ -89,6 +97,8 @@ export interface KarInspection {
   features: KarFeature[]
   bundles: KarBundle[]
   checks: KarCheck[]
+  // top-level features the page pre-selects; empty when the operator has to choose
+  suggestedFeatures: string[]
   // set when the KAR was downloaded from a repository rather than uploaded
   source?: PluginFetchSource
 }
@@ -152,6 +162,8 @@ export interface PluginInstallInput {
   uploadToken: string
   karName?: string
   acknowledgeWarnings: boolean
+  // top-level features to list in the boot file; at least one
+  features: string[]
 }
 
 export interface RestartInstructions {

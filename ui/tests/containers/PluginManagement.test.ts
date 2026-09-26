@@ -39,7 +39,7 @@ const DialogStub = {
   template: '<div v-if="visible"><h2>{{ header }}</h2><slot /><slot name="footer" /></div>'
 }
 
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'installed', pendingRestart: false, source: 'upload' }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'installed', pendingRestart: false, source: 'upload', managed: true }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
 const STATE = { containerAvailable: true, opennmsHome: '/opt/opennms', deployDir: '/opt/opennms/deploy', restartRequired: false, plugins: [PLUGIN] }
 

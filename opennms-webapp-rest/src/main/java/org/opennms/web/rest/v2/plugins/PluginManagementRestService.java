@@ -65,7 +65,6 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.plugins.KarInspection.Check;
-import org.opennms.web.rest.v2.plugins.KarInspection.FeatureInfo;
 import org.opennms.web.rest.v2.plugins.KarInspection.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +91,8 @@ public class PluginManagementRestService {
     private static final Pattern CONTROL_CHARS = Pattern.compile("[\\p{Cntrl}]");
     private static final Pattern URL_USERINFO = Pattern.compile("(?i)(https?://)[^/\\s@]*@");
     static final String BOOT_SUFFIX = ".boot";
-    static final String WAIT_FOR_KAR = "wait-for-kar=";
+    static final String WAIT_FOR_KAR = PluginRegistry.WAIT_FOR_KAR;
+    static final String CHOOSE_FEATURES = "Choose at least one feature to start";
     static final String TOO_LARGE = "The file is larger than " + (KarInspector.MAX_SIZE_BYTES / (1024 * 1024)) + " MB";
 
     private final java.nio.file.Path opennmsHome;
@@ -256,6 +256,7 @@ public class PluginManagementRestService {
         }
         final String repository;
         final Pattern assetPattern;
+        final List<String> bootFeatures;
         if (!isBlank(fetchRequest.getCatalogId())) {
             final PluginCatalog.Entry entry = catalog.find(fetchRequest.getCatalogId()).orElse(null);
             if (entry == null) {
@@ -264,9 +265,11 @@ public class PluginManagementRestService {
             }
             repository = entry.getRepository();
             assetPattern = entry.assetPattern();
+            bootFeatures = entry.getBootFeatures();
         } else if (GitHubReleases.isValidRepository(fetchRequest.getRepository())) {
             repository = fetchRequest.getRepository();
             assetPattern = Pattern.compile(PluginCatalog.DEFAULT_ASSET_PATTERN);
+            bootFeatures = catalog.bootFeaturesFor(repository);
         } else {
             audit("fetch", user, remote, null, null, "rejected", "neither a catalog id nor an owner/name repository");
             throw badRequest("Either a catalogId or a repository given as owner/name is required.");
@@ -311,11 +314,13 @@ public class PluginManagementRestService {
         try {
             final KarInspection inspection = inspector.inspect(downloaded.getPart(), assetName);
             checker.check(inspection);
+            FeatureSelection.suggest(inspection, bootFeatures);
             tempArea.commit(downloaded.getPart(), inspection.getSha256(), assetName, source.toRegistryString());
             inspection.setUploadToken(inspection.getSha256());
             inspection.setSource(source);
             audit("fetch", user, remote, inspection.getKarName(), inspection.getSha256(), "ok",
-                    where + " url=" + url + " size=" + downloaded.getSize() + " fails=" + inspection.checksAt(Level.FAIL).size() + " warns=" + inspection.checksAt(Level.WARN).size());
+                    where + " url=" + url + " size=" + downloaded.getSize() + " fails=" + inspection.checksAt(Level.FAIL).size() + " warns=" + inspection.checksAt(Level.WARN).size()
+                    + " suggestedFeatures=" + String.join(",", inspection.getSuggestedFeatures()));
             return inspection;
         } catch (final IOException e) {
             tempArea.abort(downloaded.getPart());
@@ -363,6 +368,7 @@ public class PluginManagementRestService {
             }
             final KarInspection inspection = inspector.inspect(staging, fileName);
             checker.check(inspection);
+            FeatureSelection.suggest(inspection, Collections.emptyList());
             tempArea.commit(staging, inspection.getSha256(), fileName, PluginRegistry.SOURCE_UPLOAD);
             staging = null;
             inspection.setUploadToken(inspection.getSha256());
@@ -431,6 +437,7 @@ public class PluginManagementRestService {
             throw conflict("Plugin '" + karName + "' with this checksum is already loaded.");
         }
         checker.check(inspection);
+        FeatureSelection.suggest(inspection, catalog.bootFeaturesFor(repositoryOf(source)));
         final List<Check> fails = inspection.checksAt(Level.FAIL);
         if (!fails.isEmpty()) {
             audit("install", user, remote, karName, token, "refused", "failed checks: " + describe(fails));
@@ -442,7 +449,28 @@ public class PluginManagementRestService {
             throw conflict("These warnings must be acknowledged before installing: " + describe(warns));
         }
 
-        final List<String> features = inspection.topLevelFeatures().stream().map(FeatureInfo::getName).collect(Collectors.toList());
+        final List<String> topLevel = inspection.topLevelFeatureNames();
+        final List<String> features = new ArrayList<>();
+        for (final String requested : installRequest.getFeatures()) {
+            if (requested == null || requested.isBlank()) {
+                continue;
+            }
+            final String name = requested.trim();
+            if (!topLevel.contains(name)) {
+                audit("install", user, remote, karName, token, "rejected", "feature " + name + " is not a top-level feature of the KAR");
+                throw badRequest("'" + clean(name) + "' is not a top-level feature of this KAR; choose from: " + String.join(", ", topLevel));
+            }
+            if (!features.contains(name)) {
+                features.add(name);
+            }
+        }
+        if (features.isEmpty()) {
+            features.addAll(inspection.getSuggestedFeatures());
+        }
+        if (features.isEmpty()) {
+            audit("install", user, remote, karName, token, "rejected", "no feature chosen; top-level features: " + String.join(",", topLevel));
+            throw badRequest(CHOOSE_FEATURES);
+        }
         final boolean autoStart = inspection.getFeatureStart() == null || !"false".equalsIgnoreCase(inspection.getFeatureStart().trim());
         final java.nio.file.Path bootFile = bootDir.resolve(karName + BOOT_SUFFIX);
         // The .part name keeps Felix FileInstall from picking the file up before the move completes.
@@ -586,17 +614,16 @@ public class PluginManagementRestService {
     }
 
     static boolean waitsForKar(final String line, final String karName) {
-        final String trimmed = line.trim();
-        if (trimmed.isEmpty() || trimmed.startsWith("#")) {
-            return false;
+        return PluginRegistry.waitsForKar(line, karName);
+    }
+
+    /** owner/name out of a registry source such as {@code github:owner/name@tag}; null for uploads. */
+    static String repositoryOf(final String source) {
+        if (source == null || !source.startsWith("github:")) {
+            return null;
         }
-        final String wanted = WAIT_FOR_KAR + karName;
-        for (final String token : trimmed.split("\\s+")) {
-            if (wanted.equals(token)) {
-                return true;
-            }
-        }
-        return false;
+        final int at = source.indexOf('@');
+        return at < 0 ? source.substring("github:".length()) : source.substring("github:".length(), at);
     }
 
     /** Copies at most {@code limit} bytes; false when the stream holds more. */

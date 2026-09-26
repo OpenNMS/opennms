@@ -48,7 +48,7 @@ const RELEASES = {
 }
 const INSPECTION = {
   karName: 'alec', size: 93634560, sha256: '0123', uploadToken: 'tok', manifest: {}, features: [], bundles: [],
-  checks: [{ id: 'structure', level: 'PASS', message: 'ok' }],
+  checks: [{ id: 'structure', level: 'PASS', message: 'ok' }], suggestedFeatures: [],
   source: { repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'opennms-alec-plugin.kar', url: KAR.url }
 }
 

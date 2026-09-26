@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
+import { KarFeature, KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
 
@@ -76,6 +76,15 @@ const asState = (data: any): PluginManagementState | null =>
     }
     : null
 
+// a feature without the topLevel flag comes from an older server and is offered as a choice
+const asFeature = (f: any): KarFeature => ({
+  name: String(f?.name ?? ''),
+  version: String(f?.version ?? ''),
+  description: typeof f?.description === 'string' && f.description ? f.description : null,
+  topLevel: f?.topLevel !== false,
+  dependencies: Array.isArray(f?.dependencies) ? f.dependencies : []
+})
+
 const asInspection = (data: any, fallbackName: string, fallbackSize: number): KarInspection | null =>
   data && typeof data.uploadToken === 'string' && Array.isArray(data.checks)
     ? {
@@ -84,9 +93,10 @@ const asInspection = (data: any, fallbackName: string, fallbackSize: number): Ka
       sha256: String(data.sha256 ?? ''),
       uploadToken: data.uploadToken,
       manifest: data.manifest ?? {},
-      features: Array.isArray(data.features) ? data.features : [],
+      features: Array.isArray(data.features) ? data.features.map(asFeature) : [],
       bundles: Array.isArray(data.bundles) ? data.bundles : [],
       checks: data.checks,
+      suggestedFeatures: Array.isArray(data.suggestedFeatures) ? data.suggestedFeatures.map(String) : [],
       ...(data.source && typeof data.source.repository === 'string'
         ? { source: { repository: data.source.repository, tag: String(data.source.tag ?? ''), assetName: String(data.source.assetName ?? ''), url: String(data.source.url ?? '') }}
         : {})

@@ -100,16 +100,23 @@ export const uploadedSourceLine = (fileName: string, size: number | null | undef
 export interface SourcePresentation {
   label: string
   title: string
+  // a KAR loaded outside this page: copied into deploy/ or installed with kar:install
+  manual: boolean
 }
 
+export const MANUAL_SOURCE: SourcePresentation = { label: 'Loaded by hand', title: 'installed outside this page; features from its boot file or the KAR itself', manual: true }
+
 // "github:<owner>/<repository>@<tag>" reads as "<owner>/<repository>@<tag>";
-// anything else that is not "upload" is shown as sent
+// anything else that is not "upload" or "manual" is shown as sent
 export const sourceOf = (source: string | null | undefined): SourcePresentation => {
+  if (source === 'manual') {
+    return MANUAL_SOURCE
+  }
   if (!source || source === 'upload') {
-    return { label: 'Uploaded file', title: source ?? '' }
+    return { label: 'Uploaded file', title: source ?? '', manual: false }
   }
   const github = /^github:(.+)$/.exec(source)
-  return { label: github ? github[1] : source, title: source }
+  return { label: github ? github[1] : source, title: source, manual: false }
 }
 
 export const CHECK_TAG: Record<KarCheckLevel, OnmsTagSeverity> = { PASS: 'success', WARN: 'warn', FAIL: 'danger' }
@@ -125,7 +132,6 @@ export const STATUS_TAG: Record<PluginStatus, StatusPresentation> = {
   staged: { severity: 'warn', label: 'Load pending restart', title: 'written to deploy/; its features start on the next restart' },
   failed: { severity: 'danger', label: 'Failed to start', title: 'one or more features did not start; see karaf.log' },
   unloaded: { severity: 'secondary', label: 'Unloaded', title: 'removed from deploy/' },
-  unmanaged: { severity: 'info', label: 'Not managed here', title: 'found in deploy/ but not loaded through this page' },
   unknown: { severity: 'secondary', label: 'Unknown', title: 'the container could not be reached, so the state of this plugin is not known' }
 }
 

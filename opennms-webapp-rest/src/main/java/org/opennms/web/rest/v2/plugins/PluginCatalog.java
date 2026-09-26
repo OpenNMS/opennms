@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -60,16 +61,19 @@ public class PluginCatalog {
         private String repository;
         private String assetPattern = DEFAULT_ASSET_PATTERN;
         private String docsUrl;
+        /** Exact names of the features the page pre-selects for a KAR of this plugin; empty leaves the choice to the operator. */
+        private List<String> bootFeatures = new ArrayList<>();
 
         public Entry() {
         }
 
-        public Entry(final String id, final String name, final String description, final String repository, final String docsUrl) {
+        public Entry(final String id, final String name, final String description, final String repository, final String docsUrl, final String... bootFeatures) {
             this.id = id;
             this.name = name;
             this.description = description;
             this.repository = repository;
             this.docsUrl = docsUrl;
+            this.bootFeatures = new ArrayList<>(Arrays.asList(bootFeatures));
         }
 
         public String getId() { return id; }
@@ -84,6 +88,17 @@ public class PluginCatalog {
         public void setAssetPattern(final String assetPattern) { this.assetPattern = assetPattern == null || assetPattern.isBlank() ? DEFAULT_ASSET_PATTERN : assetPattern; }
         public String getDocsUrl() { return docsUrl; }
         public void setDocsUrl(final String docsUrl) { this.docsUrl = docsUrl; }
+        public List<String> getBootFeatures() { return bootFeatures; }
+        public void setBootFeatures(final List<String> bootFeatures) {
+            this.bootFeatures = new ArrayList<>();
+            if (bootFeatures != null) {
+                for (final String feature : bootFeatures) {
+                    if (feature != null && !feature.isBlank() && !this.bootFeatures.contains(feature.trim())) {
+                        this.bootFeatures.add(feature.trim());
+                    }
+                }
+            }
+        }
 
         public Pattern assetPattern() {
             return Pattern.compile(assetPattern);
@@ -109,14 +124,22 @@ public class PluginCatalog {
         final List<Entry> entries = new ArrayList<>();
         entries.add(new Entry("alec", "ALEC",
                 "Architecture for Learning Enabled Correlation: groups related alarms into situations using configurable correlation engines.",
-                "OpenNMS-Plugins/alec", "https://docs.opennms.com/alec/latest/"));
+                "OpenNMS-Plugins/alec", "https://docs.opennms.com/alec/latest/", "alec-opennms-standalone"));
         entries.add(new Entry("prometheus-remotewrite", "Prometheus Remote Write",
                 "Receives Prometheus remote-write streams and stores the samples as OpenNMS time-series metrics.",
-                "OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin", "https://github.com/OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin#readme"));
+                "OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin", "https://github.com/OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin#readme", "opennms-plugins-prometheus-remotewrite"));
         entries.add(new Entry("pagerduty", "PagerDuty",
                 "Forwards OpenNMS alarms to PagerDuty as incidents and keeps them in sync as the alarms change.",
-                "OpenNMS-Plugins/opennms-pagerduty-plugin", "https://github.com/OpenNMS-Plugins/opennms-pagerduty-plugin#readme"));
+                "OpenNMS-Plugins/opennms-pagerduty-plugin", "https://github.com/OpenNMS-Plugins/opennms-pagerduty-plugin#readme", "opennms-plugins-pagerduty"));
         return entries;
+    }
+
+    /** The features the catalog pre-selects for a KAR fetched from {@code repository}; empty when the repository is not listed. */
+    public List<String> bootFeaturesFor(final String repository) {
+        if (repository == null) {
+            return Collections.emptyList();
+        }
+        return entries().stream().filter(e -> repository.equals(e.getRepository())).map(Entry::getBootFeatures).findFirst().orElse(Collections.emptyList());
     }
 
     public Path getFile() {

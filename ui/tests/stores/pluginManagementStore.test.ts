@@ -40,7 +40,7 @@ vi.mock('@/services', () => ({
   }
 }))
 
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged' as const, pendingRestart: true, source: 'upload' }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged' as const, pendingRestart: true, source: 'upload', managed: true }
 const STATE = { containerAvailable: true, opennmsHome: '/opt/opennms', deployDir: '/opt/opennms/deploy', restartRequired: false, plugins: [PLUGIN] }
 const INSTRUCTIONS = { packages: 'p', container: 'c', healthCheck: 'h', note: 'n' }
 
@@ -78,7 +78,7 @@ describe('pluginManagementStore', () => {
     vi.mocked(API.getPluginManagement).mockResolvedValue({ ...STATE, restartRequired: true })
     vi.mocked(API.getPluginManagementLog).mockResolvedValue('entry')
     vi.mocked(API.installPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS }})
-    const install = await store.install({ uploadToken: 't', acknowledgeWarnings: false })
+    const install = await store.install({ uploadToken: 't', acknowledgeWarnings: false, features: ['alec'] })
     expect(install.success).toBe(true)
     expect(API.getPluginManagement).toHaveBeenCalledTimes(1)
     expect(store.restartRequired).toBe(true)
@@ -86,7 +86,7 @@ describe('pluginManagementStore', () => {
     expect(API.getPluginManagementLog).toHaveBeenCalledWith(1000)
 
     vi.mocked(API.installPlugin).mockResolvedValueOnce({ success: false, message: 'nope' })
-    expect(await store.install({ uploadToken: 't', acknowledgeWarnings: false })).toMatchObject({ success: false, message: 'nope' })
+    expect(await store.install({ uploadToken: 't', acknowledgeWarnings: false, features: ['alec'] })).toMatchObject({ success: false, message: 'nope' })
     expect(API.getPluginManagement).toHaveBeenCalledTimes(1)
 
     vi.mocked(API.unloadPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { plugin: { ...PLUGIN, status: 'unloaded' }, restartRequired: true, bootFilesRemoved: [], restartInstructions: INSTRUCTIONS }})

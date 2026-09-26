@@ -35,6 +35,9 @@ public interface KarafBridge {
     /** Features Karaf reports as installed, with their state (Started, Resolved, Installed, Uninstalled). */
     List<InstalledFeature> installedFeatures();
 
+    /** Every feature of every repository the FeaturesService knows, installed or not, with its repository URL and state. */
+    List<InstalledFeature> features();
+
     /** KAR names known to the KarService (the name is the file name without the .kar suffix). */
     List<String> installedKars();
 

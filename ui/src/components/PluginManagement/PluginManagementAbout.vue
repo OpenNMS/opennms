@@ -25,8 +25,10 @@
         the bundles, compatibility of the packages the bundles import with the packages this server exports,
         the Java version, and whether a plugin with the same name is already loaded. A failing check
         stops the load; a warning has to be acknowledged before loading.</li>
-      <li>Writes a boot file under <code>featuresBoot.d</code> naming the features to start, and records
-        the plugin so it appears in the table with its checksum, its source and who loaded it.</li>
+      <li>Writes a boot file under <code>featuresBoot.d</code> naming the features you ticked under
+        <em>Features to start</em> (the catalog pre-selects the usual one for the plugins it lists; a KAR
+        with several ways to run, such as standalone and distributed, needs you to pick), and records the
+        plugin so it appears in the table with its checksum, its source and who loaded it.</li>
       <li>Moves the KAR into <code>{{ deployDir || 'deploy/' }}</code>. Unless its manifest sets
         <code>Karaf-Feature-Start: false</code>, the container picks it up within seconds and starts its
         features; the boot file makes them start again on every later boot.</li>
@@ -39,8 +41,10 @@
       the top of the page stays on until the server has restarted. An unloaded plugin is likewise removed
       completely at the next boot and is shown as <em>Unload pending restart</em> until then. A plugin shown
       as <em>Failed to start</em> was loaded, but one or more of its features did not start after a restart;
-      <code>karaf.log</code> has the reason. <em>Not managed here</em> marks a KAR found in the deploy
-      directory that was not loaded through this page.
+      <code>karaf.log</code> has the reason. A source of <em>Loaded by hand</em> marks a KAR installed
+      outside this page (copied into the deploy directory or installed with <code>kar:install</code>); its
+      features are read from the <code>featuresBoot.d</code> line that waits for it, or from the KAR itself
+      when no boot file names it.
     </p>
   </div>
   <div class="help-section">

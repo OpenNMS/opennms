@@ -40,11 +40,12 @@ const OnmsCardStub = { name: 'OnmsCard', template: '<div><slot name="title" /><s
 const INSPECTION = {
   karName: 'alec', size: 2048, sha256: '0123456789abcdef0123', uploadToken: 'tok',
   manifest: { 'Karaf-Feature-Start': 'true' },
-  features: [{ name: 'alec', version: '3.0.0', dependencies: [] }],
+  features: [{ name: 'alec', version: '3.0.0', description: null, topLevel: true, dependencies: [] }],
   bundles: [{ symbolicName: 'org.opennms.alec', version: '3.0.0' }],
-  checks: [{ id: 'structure', level: 'PASS', message: 'ok' }]
+  checks: [{ id: 'structure', level: 'PASS', message: 'ok' }],
+  suggestedFeatures: ['alec']
 }
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: false, source: 'upload' }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: false, source: 'upload', managed: true }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
 const CATALOG = { entries: [{ id: 'alec', name: 'ALEC', description: 'Correlation', repository: 'OpenNMS-Plugins/alec', docsUrl: null }], customAllowed: false }
 const RELEASES = { repository: 'OpenNMS-Plugins/alec', releases: [{ tag: 'v3.0.4', name: 'v3.0.4', publishedAt: '2026-09-01T10:00:00Z', prerelease: false, notes: '', assets: [{ name: 'opennms-alec-plugin.kar', size: 93634560, url: 'https://github.com/x' }] }], fetchedAt: '', cached: false }
@@ -145,7 +146,7 @@ describe('PluginLoadCard.vue', () => {
     store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
-    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false })
+    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec'] })
     expect(wrapper.find('[data-test="plugin-loaded-dialog"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(false)
   })
@@ -203,7 +204,7 @@ describe('PluginLoadCard.vue', () => {
     store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
-    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: true })
+    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: true, features: ['alec'] })
   })
 
   it('opens the result dialog on success and clears the selection', async () => {
@@ -214,7 +215,7 @@ describe('PluginLoadCard.vue', () => {
     store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
-    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false })
+    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec'] })
     const dialog = wrapper.find('[data-test="plugin-loaded-dialog"]')
     expect(dialog.exists()).toBe(true)
     expect(dialog.text()).toContain('Plugin alec loaded')

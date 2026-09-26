@@ -33,6 +33,8 @@ class FakeKarafBridge implements KarafBridge {
     String oiaVersion = "2.0.1";
     final Map<String, List<String>> exports = new TreeMap<>();
     final List<InstalledFeature> installedFeatures = new ArrayList<>();
+    /** every feature the FeaturesService knows; {@link #installedFeatures} are added on top */
+    final List<InstalledFeature> repositoryFeatures = new ArrayList<>();
     final List<String> installedKars = new ArrayList<>();
     final List<InstalledFeature> pluginFeatures = new ArrayList<>();
     /** Runs when the compatibility checks query the container, i.e. between inspecting a KAR and writing it. */
@@ -48,14 +50,36 @@ class FakeKarafBridge implements KarafBridge {
         return this;
     }
 
+    /** A feature of a repository, installed or not; the state is what the FeaturesService would report. */
+    FakeKarafBridge repositoryFeature(final String repository, final String name, final String state, final String... dependencies) {
+        final InstalledFeature feature = new InstalledFeature(name, "1.0.0", state, repository);
+        feature.getDependencies().addAll(Arrays.asList(dependencies));
+        repositoryFeatures.add(feature);
+        return this;
+    }
+
     @Override
     public boolean isAvailable() {
         return available;
     }
 
+    /** As Karaf does, lists every repository feature that is not in the Uninstalled state. */
     @Override
     public List<InstalledFeature> installedFeatures() {
-        return installedFeatures;
+        final List<InstalledFeature> result = new ArrayList<>(installedFeatures);
+        for (final InstalledFeature f : repositoryFeatures) {
+            if (!"Uninstalled".equals(f.getState())) {
+                result.add(f);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<InstalledFeature> features() {
+        final List<InstalledFeature> all = new ArrayList<>(repositoryFeatures);
+        all.addAll(installedFeatures);
+        return all;
     }
 
     @Override

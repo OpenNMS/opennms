@@ -68,6 +68,7 @@ public class KarInspector {
     public static final String CHECK_ENTRIES_SAFE = "entries-safe";
     public static final String CHECK_FEATURES_XML_PRESENT = "features-xml-present";
     public static final String CHECK_FEATURES_XML_PARSES = "features-xml-parses";
+    public static final String CHECK_FEATURES_DECLARED = "features-declared";
     public static final String CHECK_BUNDLES_RESOLVABLE_JARS = "bundles-resolvable-jars";
     public static final String CHECK_FEATURE_START_FLAG = "feature-start-flag";
     public static final String CHECK_DUPLICATE_KAR = "duplicate-kar";
@@ -240,8 +241,16 @@ public class KarInspector {
         } else if (!otherXmlFailures.isEmpty()) {
             checks.add(new Check(CHECK_FEATURES_XML_PARSES, Level.WARN, "XML files under repository/ that are not feature repositories and do not parse (ignored): " + listSome(otherXmlFailures)));
         } else if (!result.getFeatureRepositories().isEmpty()) {
-            final String names = result.getFeatures().stream().map(f -> f.getName() + "/" + f.getVersion()).collect(Collectors.joining(", "));
-            checks.add(new Check(CHECK_FEATURES_XML_PARSES, Level.PASS, "All feature repositories parse; " + result.getFeatures().size() + " features declared: " + names));
+            checks.add(new Check(CHECK_FEATURES_XML_PARSES, Level.PASS, "All " + result.getFeatureRepositories().size() + " feature repositories parse"));
+        }
+        if (!result.getFeatureRepositories().isEmpty()) {
+            if (result.getFeatures().isEmpty()) {
+                checks.add(new Check(CHECK_FEATURES_DECLARED, Level.FAIL, "The KAR declares no features; it is probably a build stub, not a plugin (the real plugin KAR is usually much larger and named after the plugin)"));
+            } else {
+                result.markTopLevelFeatures();
+                final String names = result.getFeatures().stream().map(f -> f.getName() + "/" + f.getVersion() + (f.isTopLevel() ? "" : " (dependency)")).collect(Collectors.joining(", "));
+                checks.add(new Check(CHECK_FEATURES_DECLARED, Level.PASS, result.getFeatures().size() + " features declared, " + result.topLevelFeatures().size() + " of them top-level: " + names));
+            }
         }
     }
 
@@ -250,6 +259,7 @@ public class KarInspector {
         info.setName(featureEl.getAttribute("name"));
         info.setVersion(featureEl.hasAttribute("version") ? featureEl.getAttribute("version") : "0.0.0");
         info.setRepository(repository);
+        info.setDescription(featureEl.hasAttribute("description") ? featureEl.getAttribute("description").trim() : null);
         info.setHidden("true".equalsIgnoreCase(featureEl.getAttribute("hidden")));
         for (final Element dep : childElements(featureEl, "feature")) {
             final String version = dep.hasAttribute("version") ? dep.getAttribute("version") : null;

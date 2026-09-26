@@ -35,8 +35,9 @@ public class PluginEntry {
     public static final String STATUS_STAGED = "staged";
     public static final String STATUS_FAILED = "failed";
     public static final String STATUS_UNLOADED = "unloaded";
-    public static final String STATUS_UNMANAGED = "unmanaged";
     public static final String STATUS_UNKNOWN = "unknown";
+    /** source of a plugin found in deploy/ or in the container without a registry record. */
+    public static final String SOURCE_MANUAL = "manual";
 
     private String karName;
     private String fileName;

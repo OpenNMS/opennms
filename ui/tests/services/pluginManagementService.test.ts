@@ -29,7 +29,7 @@ vi.mock('@/services/axiosInstances', () => ({
   rest: { get: vi.fn() }
 }))
 
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true, source: 'upload' }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true, source: 'upload', managed: true }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait for the health check.' }
 
 describe('pluginManagementService', () => {
@@ -106,7 +106,7 @@ describe('pluginManagementService', () => {
     expect(vi.mocked(v2.post).mock.calls[0][0]).toBe('/plugin-management/fetch')
     expect(vi.mocked(v2.post).mock.calls[0][1]).toBe(input)
     expect(result.success).toBe(true)
-    expect(result.payload).toEqual({ karName: 'alec', size: 5, sha256: 'abc', uploadToken: 'tok', manifest: {}, features: [], bundles: [], checks: [], source: { repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'a.kar', url: 'https://x' }})
+    expect(result.payload).toEqual({ karName: 'alec', size: 5, sha256: 'abc', uploadToken: 'tok', manifest: {}, features: [], bundles: [], checks: [], suggestedFeatures: [], source: { repository: 'OpenNMS-Plugins/alec', tag: 'v3.0.4', assetName: 'a.kar', url: 'https://x' }})
     vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { uploadToken: 'tok', checks: [] }})
     const bare = await fetchPluginFromRepository({ repository: 'o/r', tag: 'v1', assetName: 'b.kar' })
     expect(bare.payload).toMatchObject({ karName: 'b.kar', size: 0 })
@@ -128,7 +128,23 @@ describe('pluginManagementService', () => {
     expect(body).toBeInstanceOf(FormData)
     expect(body.get('upload')).toBe(file)
     expect(result.success).toBe(true)
-    expect(result.payload).toMatchObject({ karName: 'alec', uploadToken: 'tok', checks: [{ id: 'structure', level: 'PASS' }] })
+    expect(result.payload).toMatchObject({ karName: 'alec', uploadToken: 'tok', checks: [{ id: 'structure', level: 'PASS' }], suggestedFeatures: [] })
+  })
+
+  it('normalises the features and the suggestion of an inspection', async () => {
+    const file = new File(['kar'], 'alec.kar')
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { uploadToken: 'tok', checks: [], suggestedFeatures: ['alec-opennms-standalone'], features: [
+      { name: 'alec-opennms-standalone', version: '3.0.5', description: 'Everything on the core', topLevel: true, dependencies: [{ name: 'alec-api', version: '3.0.5' }] },
+      { name: 'alec-api', version: '3.0.5', description: '', topLevel: false },
+      { name: 'legacy', version: '1.0' }
+    ] }})
+    const result = await checkPluginKar(file)
+    expect(result.payload?.suggestedFeatures).toEqual(['alec-opennms-standalone'])
+    expect(result.payload?.features).toEqual([
+      { name: 'alec-opennms-standalone', version: '3.0.5', description: 'Everything on the core', topLevel: true, dependencies: [{ name: 'alec-api', version: '3.0.5' }] },
+      { name: 'alec-api', version: '3.0.5', description: null, topLevel: false, dependencies: [] },
+      { name: 'legacy', version: '1.0', description: null, topLevel: true, dependencies: [] }
+    ])
   })
 
   it('surfaces a short 4xx text body from /check and falls back otherwise', async () => {
@@ -144,7 +160,7 @@ describe('pluginManagementService', () => {
   })
 
   it('posts the install JSON and surfaces the 409 reason or the 503 fallback', async () => {
-    const input = { uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: true }
+    const input = { uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: true, features: ['alec'] }
     vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS }})
     const result = await installPlugin(input)
     expect(vi.mocked(v2.post).mock.calls[0][0]).toBe('/plugin-management/install')

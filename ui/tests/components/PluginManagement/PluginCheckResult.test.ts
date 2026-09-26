@@ -37,11 +37,16 @@ const DialogStub = {
 const INSPECTION = {
   karName: 'alec', size: 2048, sha256: '0123456789abcdef0123', uploadToken: 'tok',
   manifest: {},
-  features: [{ name: 'alec', version: '', dependencies: [] }, { name: 'alec-ui', version: '3.0.0', dependencies: [] }],
+  features: [
+    { name: 'alec', version: '', description: null, topLevel: true, dependencies: [] },
+    { name: 'alec-ui', version: '3.0.0', description: 'The web console', topLevel: true, dependencies: [] },
+    { name: 'alec-api', version: '3.0.0', description: null, topLevel: false, dependencies: [] }
+  ],
   bundles: [],
-  checks: [{ id: 'structure', level: 'PASS', message: 'ok' }]
+  checks: [{ id: 'structure', level: 'PASS', message: 'ok' }],
+  suggestedFeatures: ['alec']
 }
-const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true, source: 'github:OpenNMS-Plugins/alec@v3.0.4' }
+const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true, source: 'github:OpenNMS-Plugins/alec@v3.0.4', managed: true }
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
 
 describe('PluginCheckResult.vue', () => {
@@ -72,7 +77,7 @@ describe('PluginCheckResult.vue', () => {
   it('shows the source line, the summary and the checks, with unset values marked', () => {
     mountResult(INSPECTION)
     expect(wrapper.find('[data-test="summary-source"]').text()).toBe('Uploaded alec.kar (2.0 KB)')
-    expect(wrapper.find('[data-test="summary-features"]').text()).toBe('alec, alec-ui 3.0.0')
+    expect(wrapper.find('[data-test="summary-features"]').text()).toBe('alec, alec-ui 3.0.0, alec-api 3.0.0')
     expect(wrapper.find('[data-test="summary-feature-start"]').text()).toBe('—')
     expect(wrapper.find('[data-test="summary-bundles"]').text()).toBe('0')
     expect(wrapper.findAll('[data-test="check-level"]')).toHaveLength(1)
@@ -99,7 +104,7 @@ describe('PluginCheckResult.vue', () => {
     store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
-    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false })
+    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec'] })
     expect(wrapper.emitted('loaded')?.[0][0]).toMatchObject({ plugin: { karName: 'alec' }, restartRequired: true })
     const dialog = wrapper.find('[data-test="plugin-loaded-dialog"]')
     expect(dialog.text()).toContain('Plugin alec staged')
@@ -118,6 +123,53 @@ describe('PluginCheckResult.vue', () => {
     expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(true)
     await wrapper.setProps({ inspection: { ...INSPECTION, uploadToken: 'tok2' }})
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+  })
+
+  it('offers the top-level features as checkboxes, pre-ticked from the suggestion', () => {
+    mountResult(INSPECTION)
+    const rows = wrapper.findAll('[data-test="feature-row"]')
+    expect(rows.map(r => r.find('[data-test="feature-name"]').text())).toEqual(['alec', 'alec-ui'])
+    expect(rows[1].find('[data-test="feature-description"]').text()).toBe('The web console')
+    expect(rows[0].find('[data-test="feature-description"]').exists()).toBe(false)
+    const boxes = wrapper.findAll('[data-test="feature-checkbox"] input[type="checkbox"]')
+    expect(boxes.map(b => (b.element as HTMLInputElement).checked)).toEqual([true, false])
+    expect(wrapper.find('[data-test="feature-hint"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="feature-hint-suggested"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="load-plugin"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('keeps Load disabled until a feature is ticked when nothing is suggested, then sends the choice in declared order', async () => {
+    mountResult({ ...INSPECTION, suggestedFeatures: [] })
+    const load = () => wrapper.find('[data-test="load-plugin"]')
+    expect(wrapper.find('[data-test="feature-hint"]').text()).toContain('tick the feature that matches this server')
+    expect(load().attributes('disabled')).toBeDefined()
+    expect(load().attributes('title')).toBe('Choose at least one feature to start')
+    const boxes = wrapper.findAll('[data-test="feature-checkbox"] input[type="checkbox"]')
+    await boxes[1].setValue(true)
+    expect(load().attributes('disabled')).toBeUndefined()
+    await boxes[0].setValue(true)
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: { ...PLUGIN, features: ['alec', 'alec-ui'] }, restartRequired: false, restartInstructions: INSTRUCTIONS }})
+    await load().trigger('click')
+    await flushPromises()
+    expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec', 'alec-ui'] })
+    expect(wrapper.find('[data-test="plugin-loaded-dialog"] [data-test="written-list"]').text()).toContain('alec, alec-ui')
+  })
+
+  it('unticking every suggested feature disables Load and a new inspection resets the ticks', async () => {
+    mountResult(INSPECTION)
+    const load = () => wrapper.find('[data-test="load-plugin"]')
+    await wrapper.findAll('[data-test="feature-checkbox"] input[type="checkbox"]')[0].setValue(false)
+    expect(load().attributes('disabled')).toBeDefined()
+    await wrapper.setProps({ inspection: { ...INSPECTION, uploadToken: 'tok2', suggestedFeatures: ['alec-ui'] }})
+    const boxes = wrapper.findAll('[data-test="feature-checkbox"] input[type="checkbox"]')
+    expect(boxes.map(b => (b.element as HTMLInputElement).checked)).toEqual([false, true])
+    expect(load().attributes('disabled')).toBeUndefined()
+  })
+
+  it('hides the feature choice when a check failed', () => {
+    mountResult({ ...INSPECTION, checks: [{ id: 'features-declared', level: 'FAIL', message: 'stub' }] })
+    expect(wrapper.find('[data-test="feature-selection"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="load-plugin"]').attributes('title')).toBe('A check failed')
   })
 
   it('disables Load while the container is unavailable', () => {

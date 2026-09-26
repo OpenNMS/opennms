@@ -100,16 +100,21 @@ public class KarInspectorTest {
         assertTrue(inspection.checksAt(Level.FAIL).isEmpty());
         assertTrue("unexpected warnings: " + inspection.checksAt(Level.WARN), inspection.checksAt(Level.WARN).isEmpty());
         for (final String id : new String[] { KarInspector.CHECK_SIZE_LIMIT, KarInspector.CHECK_ZIP_READABLE, KarInspector.CHECK_MANIFEST_PRESENT,
-                KarInspector.CHECK_ENTRIES_SAFE, KarInspector.CHECK_FEATURES_XML_PRESENT, KarInspector.CHECK_FEATURES_XML_PARSES,
+                KarInspector.CHECK_ENTRIES_SAFE, KarInspector.CHECK_FEATURES_XML_PRESENT, KarInspector.CHECK_FEATURES_XML_PARSES, KarInspector.CHECK_FEATURES_DECLARED,
                 KarInspector.CHECK_BUNDLES_RESOLVABLE_JARS, KarInspector.CHECK_FEATURE_START_FLAG, KarInspector.CHECK_DUPLICATE_KAR }) {
             assertEquals(id, Level.PASS, check(inspection, id).getLevel());
         }
+        assertEquals("2 features declared, 1 of them top-level: example-plugin/1.0.0, example-plugin-libs/1.0.0 (dependency)", check(inspection, KarInspector.CHECK_FEATURES_DECLARED).getMessage());
 
         assertEquals(1, inspection.getFeatureRepositories().size());
         assertEquals(2, inspection.getFeatures().size());
         final FeatureInfo feature = inspection.getFeatures().get(0);
         assertEquals("example-plugin", feature.getName());
         assertEquals("1.0.0", feature.getVersion());
+        assertEquals("Example", feature.getDescription());
+        assertTrue(feature.isTopLevel());
+        assertNull(inspection.getFeatures().get(1).getDescription());
+        assertFalse(inspection.getFeatures().get(1).isTopLevel());
         assertEquals(2, feature.getDependencies().size());
         assertEquals("opennms-integration-api", feature.getDependencies().get(0).getName());
         assertEquals("[1.0,2)", feature.getDependencies().get(0).getVersion());
@@ -230,6 +235,38 @@ public class KarInspectorTest {
         assertEquals(Level.FAIL, check.getLevel());
         assertTrue(check.getMessage(), check.getMessage().contains("plugin-1.0.0-features.xml"));
         assertEquals(Level.FAIL, check(inspection, KarInspector.CHECK_FEATURES_XML_PRESENT).getLevel());
+    }
+
+    @Test
+    public void buildStubDeclaringNoFeaturesFails() throws IOException {
+        final Map<String, byte[]> entries = new LinkedHashMap<>();
+        entries.put("META-INF/MANIFEST.MF", manifest("Karaf-Feature-Start", "false"));
+        entries.put("repository/org/opennms/alec/assembly/kar/3.0.5-SNAPSHOT/kar-3.0.5-SNAPSHOT-features.xml",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<features xmlns=\"http://karaf.apache.org/xmlns/features/v1.4.0\" name=\"kar-3.0.5-SNAPSHOT\"/>\n".getBytes(StandardCharsets.UTF_8));
+        final Path kar = writeKar("org.opennms.alec.assembly.kar-3.0.5-SNAPSHOT.kar", entries);
+
+        final KarInspection inspection = inspector.inspect(kar, "org.opennms.alec.assembly.kar-3.0.5-SNAPSHOT.kar");
+
+        assertEquals(Level.PASS, check(inspection, KarInspector.CHECK_FEATURES_XML_PRESENT).getLevel());
+        assertEquals(Level.PASS, check(inspection, KarInspector.CHECK_FEATURES_XML_PARSES).getLevel());
+        final Check declared = check(inspection, KarInspector.CHECK_FEATURES_DECLARED);
+        assertEquals(Level.FAIL, declared.getLevel());
+        assertEquals("The KAR declares no features; it is probably a build stub, not a plugin (the real plugin KAR is usually much larger and named after the plugin)", declared.getMessage());
+        assertTrue(inspection.getFeatures().isEmpty());
+        assertTrue(inspection.topLevelFeatures().isEmpty());
+        assertEquals(Level.WARN, check(inspection, KarInspector.CHECK_BUNDLES_RESOLVABLE_JARS).getLevel());
+    }
+
+    @Test
+    public void featuresDeclaredIsNotReportedWithoutARepository() throws IOException {
+        final Map<String, byte[]> entries = new LinkedHashMap<>();
+        entries.put("META-INF/MANIFEST.MF", manifest("Karaf-Feature-Start", "false"));
+        final Path kar = writeKar("norepo.kar", entries);
+
+        final KarInspection inspection = inspector.inspect(kar, "norepo.kar");
+
+        assertEquals(Level.FAIL, check(inspection, KarInspector.CHECK_FEATURES_XML_PRESENT).getLevel());
+        assertNull(find(inspection, KarInspector.CHECK_FEATURES_DECLARED));
     }
 
     @Test

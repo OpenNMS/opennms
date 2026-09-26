@@ -12,7 +12,8 @@
       <div class="callout" data-test="removal-callout">
         <strong>What will be removed</strong>
         <ul>
-          <li><code>{{ plugin.fileName }}</code> from the deploy directory</li>
+          <li v-if="plugin.fileName"><code>{{ plugin.fileName }}</code> from the deploy directory</li>
+          <li v-else data-test="container-only">Nothing from the deploy directory: the KAR is installed in the container only</li>
           <li v-if="plugin.bootFile">Boot file <code>{{ plugin.bootFile }}</code></li>
         </ul>
       </div>
@@ -22,10 +23,10 @@
         </span>
         <span v-else>The container stops the plugin now; a restart completes the removal.</span>
       </div>
-      <p v-if="plugin.status === 'unmanaged'" class="dialog-note" data-test="unmanaged-note">
-        This plugin was found in the deploy directory but was not loaded through this page; unloading
-        removes the file all the same, and any <code>featuresBoot.d</code> line that waits for this KAR is
-        cleaned as well.
+      <p v-if="!plugin.managed" class="dialog-note" data-test="unmanaged-note">
+        This plugin was loaded by hand and not loaded through this page; unloading removes its file from
+        the deploy directory all the same, and any <code>featuresBoot.d</code> line that waits for this KAR
+        is cleaned as well.
       </p>
       <FormField label="Type the KAR name to confirm" for="plugin-unload-confirm" required>
         <OnmsInputText id="plugin-unload-confirm" v-model="confirmation" :placeholder="plugin.karName" autocomplete="off" data-test="confirm-input" />
