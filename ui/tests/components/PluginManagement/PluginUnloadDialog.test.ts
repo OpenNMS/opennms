@@ -1,0 +1,108 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+import { type PluginEntry } from '@/types/pluginManagement'
+import PluginUnloadDialog from '@/components/PluginManagement/PluginUnloadDialog.vue'
+import { usePluginManagementStore } from '@/stores/pluginManagementStore'
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/stores/pluginManagementStore')
+
+const DialogStub = {
+  name: 'Dialog',
+  props: ['visible', 'header', 'modal'],
+  template: '<div v-if="visible"><h2 data-test="dialog-header">{{ header }}</h2><slot /><slot name="footer" /></div>'
+}
+
+const PLUGIN: PluginEntry = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 10, uploadedBy: 'admin', uploadedAt: 1, features: ['alec', 'alec-ui'], bootFile: 'alec.boot', autoStart: true, status: 'installed' as const, pendingRestart: false, source: 'upload', managed: true }
+
+describe('PluginUnloadDialog.vue', () => {
+  let wrapper: VueWrapper<any>
+  let store: any
+
+  const mountDialog = async (plugin = PLUGIN) => {
+    wrapper = mount(PluginUnloadDialog, {
+      props: { visible: false, plugin },
+      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub }}
+    })
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store = { unload: vi.fn().mockResolvedValue({ success: true, message: '', payload: { plugin: { ...PLUGIN, status: 'unloaded', pendingRestart: true }, restartRequired: true, bootFilesRemoved: ['etc/featuresBoot.d/alec.boot'], restartInstructions: { packages: 'p', container: 'c', healthCheck: 'h', note: 'n' }}}) }
+    vi.mocked(usePluginManagementStore).mockReturnValue(store)
+  })
+
+  it('names what is removed and unloads only after the exact KAR name is typed', async () => {
+    await mountDialog()
+    expect(wrapper.find('[data-test="dialog-header"]').text()).toBe('Unload alec?')
+    expect(wrapper.find('[data-test="removal-callout"]').text()).toContain('alec.kar')
+    expect(wrapper.find('[data-test="removal-callout"]').text()).toContain('alec.boot')
+    expect(wrapper.find('[data-test="stop-callout"]').text()).toContain('alec, alec-ui')
+    expect(wrapper.find('[data-test="unmanaged-note"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="confirm-input"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="unload-button"]').attributes('disabled')).toBeUndefined()
+    await wrapper.find('[data-test="unload-button"]').trigger('click')
+    await flushPromises()
+    expect(store.unload).toHaveBeenCalledWith('alec')
+    expect(wrapper.emitted('unloaded')?.[0][0]).toMatchObject({ karName: 'alec', status: 'unloaded', pendingRestart: true })
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+  })
+
+  it('adds the note for a plugin loaded by hand, saying boot files that wait for the KAR are cleaned too', async () => {
+    await mountDialog({ ...PLUGIN, source: 'manual', managed: false, bootFile: null })
+    const note = wrapper.find('[data-test="unmanaged-note"]')
+    expect(note.exists()).toBe(true)
+    expect(note.text()).toContain('not loaded through this page')
+    expect(note.text()).toContain('featuresBoot.d')
+    expect(note.text()).toContain('cleaned as well')
+    expect(wrapper.find('[data-test="removal-callout"]').text()).not.toContain('Boot file')
+    expect(wrapper.find('[data-test="container-only"]').exists()).toBe(false)
+  })
+
+  it('says so when the KAR is installed in the container only', async () => {
+    await mountDialog({ ...PLUGIN, source: 'manual', managed: false, fileName: null, size: 0, bootFile: 'etc/featuresBoot.d/alec.boot' })
+    expect(wrapper.find('[data-test="container-only"]').text()).toContain('installed in the container only')
+    expect(wrapper.find('[data-test="removal-callout"]').text()).toContain('etc/featuresBoot.d/alec.boot')
+  })
+
+  it('shows the reason and stays open when the unload fails', async () => {
+    store.unload.mockResolvedValueOnce({ success: false, message: 'The plugin container is not available.' })
+    await mountDialog()
+    await wrapper.find('[data-test="unload-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="dialog-error"]').text()).toContain('not available')
+    expect(wrapper.emitted('unloaded')).toBeUndefined()
+    expect(wrapper.emitted('update:visible')).toBeUndefined()
+  })
+
+  it('cancels without unloading', async () => {
+    await mountDialog()
+    await wrapper.find('[data-test="cancel-button"]').trigger('click')
+    expect(store.unload).not.toHaveBeenCalled()
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+  })
+})

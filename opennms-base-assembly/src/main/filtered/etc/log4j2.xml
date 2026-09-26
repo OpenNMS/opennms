@@ -131,6 +131,16 @@
       <SizeBasedTriggeringPolicy size="100MB" />
       <DefaultRolloverStrategy max="4" fileIndex="min" />
     </RollingFile>
+
+    <!-- Plugin management audit log (uploads, installs, unloads) -->
+    <RollingFile name="PluginManagementFile" fileName="\${logdir}/plugin-management.log"
+                 filePattern="\${logdir}/plugin-management.%i.log.gz">
+      <PatternLayout>
+        <pattern>%d %-5p %m%n</pattern>
+      </PatternLayout>
+      <SizeBasedTriggeringPolicy size="100MB" />
+      <DefaultRolloverStrategy max="4" fileIndex="min" />
+    </RollingFile>
   </appenders>
   <loggers>
     <!-- we always want this at info for the instrumentation log reader -->
@@ -268,6 +278,11 @@
     <!-- Web authentication audit log -->
     <logger name="web-audit" additivity="false" level="INFO">
       <appender-ref ref="WebAuditFile"/>
+    </logger>
+
+    <!-- Plugin management audit log -->
+    <logger name="org.opennms.web.rest.v2.plugins.audit" additivity="false" level="INFO">
+      <appender-ref ref="PluginManagementFile"/>
     </logger>
 
     <!-- Allow any message to pass through the root logger -->

@@ -1,0 +1,116 @@
+<template>
+  <OnmsCard class="plugins-card" data-test="plugins-card">
+    <template #title>
+      <span class="card-title">Installed plugins</span>
+    </template>
+    <template #content>
+      <OnmsTable :value="plugins" dataKey="karName" sortField="karName" :sortOrder="1" data-test="plugins-table">
+        <template #empty>
+          <span data-test="no-plugins">No plugins are loaded.</span>
+        </template>
+        <OnmsColumn field="karName" header="KAR name" sortable />
+        <OnmsColumn header="Features">
+          <template #body="{ data }">
+            <span :title="featureTitle(data)" data-test="plugin-features">{{ ellipsify(data.features.join(', '), 60) || NOT_SET }}</span>
+          </template>
+        </OnmsColumn>
+        <OnmsColumn header="Source">
+          <template #body="{ data }">
+            <OnmsTag
+              v-if="sourceOf(data.source).manual"
+              severity="info"
+              :value="sourceOf(data.source).label"
+              :title="sourceOf(data.source).title"
+              data-test="plugin-source"
+            />
+            <span v-else :title="sourceOf(data.source).title" data-test="plugin-source">{{ sourceOf(data.source).label }}</span>
+          </template>
+        </OnmsColumn>
+        <OnmsColumn header="Uploaded">
+          <template #body="{ data }">
+            <div class="uploaded-cell" data-test="plugin-uploaded">
+              <span>{{ data.uploadedBy || NOT_SET }}</span>
+              <small>{{ formatUploadedAt(data.uploadedAt) }}</small>
+            </div>
+          </template>
+        </OnmsColumn>
+        <OnmsColumn header="Size">
+          <template #body="{ data }">{{ formatSize(data.size) }}</template>
+        </OnmsColumn>
+        <OnmsColumn header="Status">
+          <template #body="{ data }">
+            <OnmsTag
+              :severity="statusOf(data.status, data.pendingRestart).severity"
+              :value="statusOf(data.status, data.pendingRestart).label"
+              :title="statusOf(data.status, data.pendingRestart).title"
+              :data-status="data.status"
+              data-test="plugin-status"
+            />
+          </template>
+        </OnmsColumn>
+        <OnmsColumn header="Actions" style="text-align: right">
+          <template #body="{ data }">
+            <div class="action-container">
+              <OnmsIconButton
+                v-if="data.status !== 'unloaded'"
+                :icon="Delete"
+                severity="danger"
+                :disabled="!containerAvailable"
+                :title="containerAvailable ? `Unload ${data.karName}` : CONTAINER_UNAVAILABLE"
+                data-test="unload-plugin"
+                @click="emit('unload', data)"
+              />
+            </div>
+          </template>
+        </OnmsColumn>
+      </OnmsTable>
+    </template>
+  </OnmsCard>
+</template>
+
+<script setup lang="ts">
+import { OnmsCard, OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import { ellipsify } from '@/lib/utils'
+import { PluginEntry } from '@/types/pluginManagement'
+import { CONTAINER_UNAVAILABLE, NOT_SET, formatSize, formatUploadedAt, sourceOf, statusOf } from './pluginDisplay'
+
+defineProps<{
+  plugins: PluginEntry[]
+  containerAvailable: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'unload', plugin: PluginEntry): void
+}>()
+
+// the full list with each feature's container state, e.g. "alec (Started)"
+const featureTitle = (plugin: PluginEntry & { featureStates?: Record<string, string> }): string =>
+  plugin.features.map(f => (plugin.featureStates?.[f] ? `${f} (${plugin.featureStates[f]})` : f)).join(', ')
+</script>
+
+<style lang="scss" scoped>
+.plugins-card {
+  padding: 25px;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.uploaded-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  small {
+    color: var(--p-text-muted-color);
+  }
+}
+
+.action-container {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

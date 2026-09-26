@@ -1,0 +1,75 @@
+
+[[plugin-management]]
+= Plugin Management
+:description: Load plugin KAR files from their repositories or from a file, check, stage, and unload them from the {page-component-title} web UI, and understand when a restart is still required.
+
+{page-component-title} plugins are packaged as Karaf archive (KAR) files.
+The Plugin Management page (menu:Administration[Plugin Management]) lets an administrator load a KAR from the plugin's release repository or from a file, review a set of checks, stage it for loading, list what is deployed, and unload a plugin again.
+The page only performs the file-system steps that an operator would otherwise do by hand; it does not restart {page-component-title}.
+
+== From a repository
+
+Loading from a repository is the primary way to add a plugin.
+The page offers the plugins listed in `$\{OPENNMS_HOME}/etc/plugin-catalog.json`, lets you enter any other GitHub repository as `owner/name`, and lists the releases of the chosen repository together with the KAR files attached to each release.
+Choosing a release downloads the KAR to the server, which then runs the same checks and the same install step as an uploaded file.
+
+=== Catalog file
+
+`plugin-catalog.json` holds an `entries` array; each entry has an `id`, a `name`, a `description`, the GitHub `repository` (`owner/name`), an optional `assetPattern`, an optional `docsUrl` (an `http` or `https` URL; anything else is dropped with a warning), and an optional `bootFeatures` array.
+`bootFeatures` lists the exact names of the features the page pre-selects for a KAR of that plugin (see <<_features_to_start>>); the shipped file names `alec-opennms-standalone` for ALEC, `opennms-plugins-prometheus-remotewrite` for Prometheus Remote Write, and `opennms-plugins-pagerduty` for PagerDuty, matching each plugin's own installation instructions.
+`assetPattern` is a Java regular expression that release asset names must match, `.*\.kar$` when omitted; it is written by whoever edits the file and is applied to asset names only, so a pattern that is slow to match only slows down that entry's release list.
+The file is read on every request, so edits take effect without a restart; when it is missing, unreadable, or lists no usable entries, the built-in list (ALEC, Prometheus Remote Write, PagerDuty) is used instead.
+Entries whose repository is not of the form `owner/name`, whose id repeats, or whose id contains characters other than letters, digits, `.`, `_` and `-` are skipped with a warning in `webapp.log`.
+
+=== Network access
+
+Release lists come from `https://api.github.com`, and KAR files from `https://github.com`, which redirects to `https://release-assets.githubusercontent.com` or `https://objects.githubusercontent.com`, using the JVM proxy settings (`http.proxyHost`, `https.proxyHost`, `http.nonProxyHosts` and their relatives in `$\{OPENNMS_HOME}/etc/opennms.conf` or the `JAVA_OPTS` of your service unit).
+Connections time out after 10 seconds and reads after 30 seconds; a server that cannot reach GitHub answers each request with a short explanation of what failed instead of an error page, and the catalog itself is served from the local file, so the page still opens when the server is offline.
+GitHub allows 60 unauthenticated API requests per hour and source address; the page caches each release list for 15 minutes and revalidates it with the ETag afterwards. Setting `org.opennms.plugins.github.token=<fine-grained or classic token>` in `$\{OPENNMS_HOME}/etc/opennms.properties` raises the limit and is required for private repositories.
+Downloads are only followed over `https` to `github.com`, `release-assets.githubusercontent.com`, `objects.githubusercontent.com`, or hosts listed in the comma-separated property `org.opennms.plugins.download.hosts`; every redirect is checked against the same list, and the 512 MB size limit applies to downloads as to uploads.
+
+=== Temporary area
+
+Downloaded and uploaded files wait under `$\{OPENNMS_HOME}/data/tmp/plugin-management/` as `<sha256>.kar` with a `.name` and a `.source` file beside them until they are installed or expire.
+A background task runs every 15 minutes and removes stored files older than one hour (one hour after the install for a plugin that is still deployed), partial or empty files older than five minutes, and anything that does not belong there; it also keeps the area under 2 GB by removing the oldest files first.
+Transfers still in progress count against the cap with their announced size (the 512 MB limit when the size is not known); a download or upload that would not fit even after that is refused with `507 Not enough temporary space`; each cleanup that removes something writes one line to `plugin-management.log`, and the page shows the size of the area.
+
+== Features to start
+
+A KAR usually declares several Karaf features, and only some of them are meant to be started directly: the rest are pulled in as dependencies.
+The page lists the top-level features (those not hidden and not required by another feature of the same KAR) under _Features to start_, each with its version and description, and writes exactly the ticked ones to the boot file.
+Which features are pre-ticked depends on where the KAR came from: for a plugin fetched from a catalog entry, the entry's `bootFeatures` (a `boot-features` warning appears when the KAR does not declare one of them); otherwise the single top-level feature, or the one whose name matches the KAR name (with or without a `-plugin` or `-standalone` suffix).
+When nothing can be pre-selected, for example an uploaded ALEC KAR that offers `alec-opennms-standalone`, `alec-opennms-distributed` and `alec-sentinel-distributed`, the page asks you to tick the feature that matches this server, usually the standalone or core one; the plugin's documentation says which.
+The REST call (`POST /api/v2/plugin-management/install`) takes the choice as `features`; a name that is not a top-level feature of the KAR, or an empty choice without a suggestion, is refused with `400`.
+
+== What the page does
+
+* Fetching or uploading a KAR runs structural checks on the file (readable archive, manifest, no entries outside `repository/` and `META-INF/`, feature repositories parse and declare at least one feature, bundle jars are readable, size limit) without writing anything permanent. A KAR whose feature repositories declare no feature at all, such as the small Maven packaging stub some builds leave next to the real plugin KAR, fails the `features-declared` check.
+* When the embedded Karaf container is reachable, the page also compares the bundle imports of `org.opennms.*` packages, the JavaSE requirement of each bundle, and the `opennms-integration-api` feature dependency with what the running server provides. Imports marked `resolution:=optional` are counted but not checked.
+* Installing writes `$\{OPENNMS_HOME}/etc/featuresBoot.d/<name>.boot` listing the chosen features, records the plugin, and then moves the KAR to `$\{OPENNMS_HOME}/deploy/<name>.kar`.
+* Unless the KAR manifest sets `Karaf-Feature-Start: false`, Karaf picks the file up within seconds and installs and starts its features; the boot file makes them start again on every later boot. A KAR that sets the header to `false` is extracted right away but its features start on the next restart.
+* Unloading removes the KAR and the boot file, and drops any other line under `featuresBoot.d` that waits for that KAR (`wait-for-kar=<name>`); Karaf uninstalls the plugin's features from the running container shortly afterwards, and the next restart completes the removal.
+* Every fetch, upload, install, and unload is recorded in `$\{OPENNMS_HOME}/etc/plugin-management.json` and written to `$\{OPENNMS_HOME}/logs/plugin-management.log` with the user name and remote address.
+
+== Restart requirement
+
+The page flags a restart only for plugins whose manifest sets `Karaf-Feature-Start: false` and for unloaded plugins; the flag clears when the JVM restarts, not when the container reports the features.
+Until then such a plugin is listed as `staged` (or `unloaded`) and the banner at the top of the page stays on.
+A plugin listed as `failed` was loaded and the server has restarted since, but one or more of its features did not start; `$\{OPENNMS_HOME}/logs/karaf.log` has the reason.
+Restart {page-component-title} with the method that matches your installation, for example `sudo systemctl restart opennms` for package installations or a container restart for Docker and Kubernetes deployments, then confirm with `opennms:health-check` in the Karaf shell or `GET /opennms/rest/health`.
+The web UI is unavailable while {page-component-title} restarts.
+
+== Checks that block an install
+
+* A check reported as `FAIL` prevents the install; the reason is shown next to the check.
+* A check reported as `WARN` must be acknowledged explicitly before the install proceeds.
+* When the container cannot be reached from the web application, the compatibility checks are skipped and reported as a single warning.
+
+== Files and permissions
+
+* The page and its REST API under `/api/v2/plugin-management` require the `ROLE_ADMIN` role for every request.
+* Downloaded and uploaded files are kept for one hour under `$\{OPENNMS_HOME}/data/tmp/plugin-management/` so that a checked file can be installed without fetching it again; see <<_temporary_area>>.
+* The record of an installed plugin carries its origin: `github:owner/name@tag` for a fetched release or `upload` for a file.
+* KARs installed outside the page, whether copied into `deploy/` by hand or installed with `kar:install`, appear in the list with the source _Loaded by hand_. Their features are the ones named in a `featuresBoot.d` line that waits for the KAR (`wait-for-kar=<name>`) or, when no boot file names it, the top-level features of the repositories Karaf recorded for the KAR in `$\{OPENNMS_HOME}/data/kar/<name>/features.cfg`; their state and status are derived like those of managed plugins. They can be unloaded from the page, which then starts tracking them. Only files whose name ends in exactly `.kar` count, as in Karaf.
+* The feature list shown for a managed plugin comes from the lines under `featuresBoot.d` that wait for its KAR, so a boot file corrected by hand is reflected; the recorded list is used when no such line exists.
+* KAR names start with a letter or digit and are otherwise restricted to letters, digits, `.`, `_`, and `-`.
