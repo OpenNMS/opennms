@@ -28,6 +28,17 @@ export type PluginStatus = 'installed' | 'staged' | 'failed' | 'unloaded' | 'unk
 
 export type KarCheckLevel = 'PASS' | 'WARN' | 'FAIL'
 
+// how the container answered when a KAR was deployed or a plugin restarted:
+// started, or the reason it is not running yet
+export type PluginStartState = 'started' | 'failed' | 'timeout' | 'unavailable' | 'restart-required'
+
+export interface PluginStartOutcome {
+  state: PluginStartState
+  message: string
+  // feature name -> why it did not start; filled for the failed state
+  diagnostics: Record<string, string>
+}
+
 export interface PluginEntry {
   karName: string
   // null when only the container knows the KAR and nothing sits in deploy/
@@ -47,6 +58,12 @@ export interface PluginEntry {
   source: string
   // false for a KAR found in deploy/ or in the container without a record from this page
   managed: boolean
+  // feature name -> container state, e.g. Started
+  featureStates?: Record<string, string>
+  // feature name -> why it did not start; filled for failed plugins
+  diagnostics?: Record<string, string>
+  // the state the last pluginStarted, pluginFailed or pluginStopped event reported
+  lastNotifiedState?: string | null
 }
 
 export interface PluginManagementState {
@@ -175,9 +192,16 @@ export interface RestartInstructions {
 
 export interface PluginInstallResult {
   plugin: PluginEntry
-  // true only when the KAR manifest sets Karaf-Feature-Start: false
+  startOutcome: PluginStartOutcome
+  // true whenever the features are not running after the load
   restartRequired: boolean
   restartInstructions: RestartInstructions
+}
+
+export interface PluginRestartResult {
+  plugin: PluginEntry
+  startOutcome: PluginStartOutcome
+  restartRequired: boolean
 }
 
 export interface PluginUnloadResult {

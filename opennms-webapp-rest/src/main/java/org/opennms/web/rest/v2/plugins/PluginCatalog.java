@@ -63,6 +63,8 @@ public class PluginCatalog {
         private String docsUrl;
         /** Exact names of the features the page pre-selects for a KAR of this plugin; empty leaves the choice to the operator. */
         private List<String> bootFeatures = new ArrayList<>();
+        /** True for a plugin known to need a server restart after loading, so the page does not try a live start. */
+        private boolean restartRequired;
 
         public Entry() {
         }
@@ -99,6 +101,9 @@ public class PluginCatalog {
                 }
             }
         }
+
+        public boolean isRestartRequired() { return restartRequired; }
+        public void setRestartRequired(final boolean restartRequired) { this.restartRequired = restartRequired; }
 
         public Pattern assetPattern() {
             return Pattern.compile(assetPattern);
@@ -140,6 +145,14 @@ public class PluginCatalog {
             return Collections.emptyList();
         }
         return entries().stream().filter(e -> repository.equals(e.getRepository())).map(Entry::getBootFeatures).findFirst().orElse(Collections.emptyList());
+    }
+
+    /** True when the catalog marks the plugin fetched from {@code repository} as needing a restart after loading. */
+    public boolean restartRequiredFor(final String repository) {
+        if (repository == null) {
+            return false;
+        }
+        return entries().stream().filter(e -> repository.equals(e.getRepository())).findFirst().map(Entry::isRestartRequired).orElse(false);
     }
 
     public Path getFile() {

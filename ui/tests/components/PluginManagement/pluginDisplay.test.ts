@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { CHECK_TAG, defaultRelease, fetchedSourceLine, formatReleaseDate, formatSize, formatUploadedAt, isRepository, karAssets, releaseLabel, restartCounts, restartSummary, shortSha, sortReleases, sourceOf, statusOf, uploadedSourceLine } from '@/components/PluginManagement/pluginDisplay'
+import { CHECK_TAG, canRestart, defaultRelease, diagnosticLines, featureTitle, fetchedSourceLine, formatReleaseDate, formatSize, formatUploadedAt, isRepository, karAssets, needsServerRestart, releaseLabel, restartCounts, restartPending, restartSummary, restartTitle, shortSha, sortReleases, sourceOf, startedFeatures, statusOf, statusTitle, uploadedSourceLine } from '@/components/PluginManagement/pluginDisplay'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -64,6 +64,40 @@ describe('pluginDisplay', () => {
     expect(restartCounts(plugins)).toEqual({ toLoad: 3, toUnload: 1 })
     expect(restartSummary(plugins)).toBe('A restart is required to finish loading or unloading plugins: 3 to load, 1 to unload.')
     expect(restartSummary([])).toBe('A restart is required to finish loading or unloading plugins: 0 to load, 0 to unload.')
+  })
+
+  it('titles a failed plugin with its first diagnostic and lists states and diagnostics on the features', () => {
+    const plugin = (over: Record<string, unknown>) => ({ karName: 'alec', features: ['a', 'b'], status: 'failed', pendingRestart: false, ...over } as any)
+    expect(diagnosticLines(undefined)).toEqual([])
+    expect(diagnosticLines({ a: 'first\nsecond', '': 'ignored' })).toEqual(['a: first\nsecond'])
+    expect(statusTitle(plugin({ diagnostics: { b: '  Unable to resolve\n  detail' }}))).toBe('b: Unable to resolve')
+    expect(statusTitle(plugin({ diagnostics: {}}))).toBe('one or more features did not start; see karaf.log')
+    expect(statusTitle(plugin({ status: 'installed', diagnostics: { a: 'stale' }}))).toBe('loaded and its features are started')
+    expect(statusTitle(plugin({ status: 'unloaded', pendingRestart: true }))).toBe('removed from deploy/; the next restart completes the removal')
+    expect(featureTitle(plugin({}))).toBe('a, b')
+    expect(featureTitle(plugin({ featureStates: { a: 'Started' }}))).toBe('a (Started), b')
+    expect(featureTitle(plugin({ featureStates: { a: 'Started', b: 'Installed' }, diagnostics: { b: 'Unable to resolve' }}))).toBe('a (Started), b (Installed)\nb: Unable to resolve')
+    expect(featureTitle(plugin({ features: [], diagnostics: { b: 'x' }}))).toBe('b: x')
+  })
+
+  it('offers Restart for loaded and failed plugins with a container, and knows when the server must restart', () => {
+    const plugin = (status: string, pendingRestart = false) => ({ karName: 'alec', status, pendingRestart, features: [] } as any)
+    expect(canRestart(plugin('installed'), true)).toBe(true)
+    expect(canRestart(plugin('failed'), true)).toBe(true)
+    expect(canRestart(plugin('staged'), true)).toBe(false)
+    expect(canRestart(plugin('unknown'), true)).toBe(false)
+    expect(canRestart(plugin('unloaded'), true)).toBe(false)
+    expect(canRestart(plugin('installed'), false)).toBe(false)
+    expect(restartTitle(plugin('installed'), true)).toBe('Restart alec')
+    expect(restartTitle(plugin('staged'), true)).toBe('Restart is available once the plugin is loaded')
+    expect(restartTitle(plugin('installed'), false)).toContain('not available')
+    expect(restartPending([plugin('installed'), plugin('staged', true)])).toBe(true)
+    expect(restartPending([plugin('installed'), plugin('staged')])).toBe(false)
+    expect(restartPending([])).toBe(false)
+    expect(startedFeatures(['a', 'b'])).toBe('a, b')
+    expect(startedFeatures([])).toBe('none listed')
+    const outcome = (state: string) => ({ state, message: '', diagnostics: {}} as any)
+    expect(['started', 'failed', 'timeout', 'unavailable', 'restart-required'].map(s => needsServerRestart(outcome(s)))).toEqual([false, false, false, true, true])
   })
 
   it('validates owner/repository names', () => {

@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { KarFeature, KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
+import { KarFeature, KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginRestartResult, PluginStartOutcome, PluginStartState, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
 
@@ -102,6 +102,17 @@ const asInspection = (data: any, fallbackName: string, fallbackSize: number): Ka
         : {})
     }
     : null
+
+const START_STATES: PluginStartState[] = ['started', 'failed', 'timeout', 'unavailable', 'restart-required']
+
+// an older server sends no outcome: its restartRequired flag then stands for it
+const asStartOutcome = (data: any, restartRequired: boolean): PluginStartOutcome => {
+  const state: PluginStartState = START_STATES.includes(data?.state) ? data.state : restartRequired ? 'restart-required' : 'started'
+  const diagnostics = data?.diagnostics && typeof data.diagnostics === 'object'
+    ? Object.fromEntries(Object.entries(data.diagnostics).map(([feature, reason]) => [feature, String(reason ?? '')]))
+    : {}
+  return { state, message: String(data?.message ?? ''), diagnostics }
+}
 
 // null on failure (not an empty list) so the page can show an error state
 const getPluginManagement = async (): Promise<PluginManagementState | null> => {
@@ -202,8 +213,8 @@ const fetchPluginFromRepository = async (input: PluginFetchInput): Promise<Valid
   }
 }
 
-// Stages the inspected KAR; 409 carries the failed or unacknowledged check,
-// 503 means the container is unavailable.
+// Deploys the inspected KAR and waits for its features to start; 409 carries
+// the failed or unacknowledged check, 503 means the container is unavailable.
 const installPlugin = async (input: PluginInstallInput): Promise<ValidationResultWithPayload<PluginInstallResult>> => {
   try {
     const resp = await v2.post(`${endpoint}/install`, input, jsonAccept)
@@ -211,7 +222,13 @@ const installPlugin = async (input: PluginInstallInput): Promise<ValidationResul
     if (!data || !data.plugin || !data.restartInstructions) {
       return createResultWithPayload<PluginInstallResult>(false, 'The server returned an unexpected answer.')
     }
-    return createResultWithPayload(true, '', data as PluginInstallResult)
+    const restartRequired = data.restartRequired === true
+    return createResultWithPayload(true, '', {
+      plugin: data.plugin as PluginEntry,
+      startOutcome: asStartOutcome(data.startOutcome, restartRequired),
+      restartRequired,
+      restartInstructions: data.restartInstructions as RestartInstructions
+    })
   } catch (err: any) {
     const status = Number(err?.response?.status)
     const fallback = status === 503 ? 'The plugin container is not available; the plugin was not loaded.' : 'Failed to load the plugin.'
@@ -235,6 +252,28 @@ const unloadPlugin = async (karName: string): Promise<ValidationResultWithPayloa
     })
   } catch (err: any) {
     return createResultWithPayload<PluginUnloadResult>(false, errorMessage(err, `Failed to unload ${karName}.`))
+  }
+}
+
+// Stops and starts the plugin's features in the container; 409 when nothing
+// is deployed under that name, 503 when the container is unavailable.
+const restartPlugin = async (karName: string): Promise<ValidationResultWithPayload<PluginRestartResult>> => {
+  try {
+    const resp = await v2.post(`${endpoint}/${encodeURIComponent(karName)}/restart`, null, jsonAccept)
+    const data = resp.data
+    if (!data || !data.plugin || typeof data.plugin.karName !== 'string') {
+      return createResultWithPayload<PluginRestartResult>(false, 'The server returned an unexpected answer.')
+    }
+    const restartRequired = data.restartRequired === true
+    return createResultWithPayload(true, '', {
+      plugin: data.plugin as PluginEntry,
+      startOutcome: asStartOutcome(data.startOutcome, restartRequired),
+      restartRequired
+    })
+  } catch (err: any) {
+    const status = Number(err?.response?.status)
+    const fallback = status === 503 ? 'The plugin container is not available; the plugin was not restarted.' : `Failed to restart ${karName}.`
+    return createResultWithPayload<PluginRestartResult>(false, errorMessage(err, fallback))
   }
 }
 
@@ -264,4 +303,4 @@ const getPluginManagementLog = (lines = DEFAULT_LOG_LINES): Promise<string | nul
 // The whole file in its own order, for saving; null when it cannot be read.
 const downloadPluginManagementLog = (): Promise<string | null> => readLog(MAX_LOG_LINES, false)
 
-export { getPluginManagement, checkPluginKar, getPluginCatalog, getPluginReleases, fetchPluginFromRepository, installPlugin, unloadPlugin, getPluginRestartInstructions, getPluginManagementLog, downloadPluginManagementLog }
+export { getPluginManagement, checkPluginKar, getPluginCatalog, getPluginReleases, fetchPluginFromRepository, installPlugin, unloadPlugin, restartPlugin, getPluginRestartInstructions, getPluginManagementLog, downloadPluginManagementLog }

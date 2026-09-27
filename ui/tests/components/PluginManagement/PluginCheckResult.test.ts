@@ -47,6 +47,8 @@ const INSPECTION = {
   suggestedFeatures: ['alec']
 }
 const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: true, source: 'github:OpenNMS-Plugins/alec@v3.0.4', managed: true }
+const STARTED = { state: 'started', message: '', diagnostics: {}}
+const STAGED = { state: 'restart-required', message: 'The manifest sets Karaf-Feature-Start: false.', diagnostics: {}}
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
 
 describe('PluginCheckResult.vue', () => {
@@ -101,7 +103,7 @@ describe('PluginCheckResult.vue', () => {
 
   it('installs with the token, opens the dialog and emits loaded', async () => {
     mountResult(INSPECTION)
-    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS }})
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, startOutcome: STAGED, restartRequired: true, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
     expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec'] })
@@ -148,7 +150,7 @@ describe('PluginCheckResult.vue', () => {
     await boxes[1].setValue(true)
     expect(load().attributes('disabled')).toBeUndefined()
     await boxes[0].setValue(true)
-    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: { ...PLUGIN, features: ['alec', 'alec-ui'] }, restartRequired: false, restartInstructions: INSTRUCTIONS }})
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: { ...PLUGIN, features: ['alec', 'alec-ui'] }, startOutcome: STARTED, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await load().trigger('click')
     await flushPromises()
     expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec', 'alec-ui'] })

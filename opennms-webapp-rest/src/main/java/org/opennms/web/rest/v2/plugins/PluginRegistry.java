@@ -24,6 +24,7 @@ package org.opennms.web.rest.v2.plugins;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -34,6 +35,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +63,9 @@ public class PluginRegistry {
     static final String WAIT_FOR_KAR = "wait-for-kar=";
     /** written by Karaf's KarService next to each extracted KAR; one feature repository URI per line */
     static final String KAR_FEATURES_CFG = "features.cfg";
+    public static final String NOTIFIED_STARTED = "started";
+    public static final String NOTIFIED_FAILED = "failed";
+    public static final String NOTIFIED_STOPPED = "stopped";
 
     /** Persisted shape; only what an operator did, never derived state. */
     public static class Record {
@@ -78,6 +83,8 @@ public class PluginRegistry {
         private boolean autoStart;
         private boolean unloaded;
         private Long pendingRestartSince;
+        /** started, failed or stopped: the last state a plugin event announced, so the watchdog reports each change once */
+        private String lastNotifiedState;
 
         public String getKarName() { return karName; }
         public void setKarName(final String karName) { this.karName = karName; }
@@ -107,6 +114,8 @@ public class PluginRegistry {
         public void setUnloaded(final boolean unloaded) { this.unloaded = unloaded; }
         public Long getPendingRestartSince() { return pendingRestartSince; }
         public void setPendingRestartSince(final Long pendingRestartSince) { this.pendingRestartSince = pendingRestartSince; }
+        public String getLastNotifiedState() { return lastNotifiedState; }
+        public void setLastNotifiedState(final String lastNotifiedState) { this.lastNotifiedState = lastNotifiedState; }
     }
 
     public static class RegistryFile {
@@ -120,8 +129,6 @@ public class PluginRegistry {
     private final Path deployDir;
     /** etc/featuresBoot.d; null when boot files are not consulted. */
     private final Path bootDir;
-    /** data/kar, where Karaf keeps each installed KAR's list of feature repositories; null when not consulted. */
-    private final Path karStorageDir;
     private final KarafBridge bridge;
     private final long bootTimeMillis;
     private final ObjectMapper mapper = new ObjectMapper()
@@ -130,18 +137,17 @@ public class PluginRegistry {
 
     public PluginRegistry(final Path opennmsHome, final KarafBridge bridge) {
         this(opennmsHome.resolve("etc").resolve(FILE_NAME), opennmsHome.resolve("deploy"), opennmsHome.resolve("etc").resolve("featuresBoot.d"),
-                opennmsHome.resolve("data").resolve("kar"), bridge, ManagementFactory.getRuntimeMXBean().getStartTime());
+                bridge, ManagementFactory.getRuntimeMXBean().getStartTime());
     }
 
     PluginRegistry(final Path registryFile, final Path deployDir, final KarafBridge bridge, final long bootTimeMillis) {
-        this(registryFile, deployDir, null, null, bridge, bootTimeMillis);
+        this(registryFile, deployDir, null, bridge, bootTimeMillis);
     }
 
-    PluginRegistry(final Path registryFile, final Path deployDir, final Path bootDir, final Path karStorageDir, final KarafBridge bridge, final long bootTimeMillis) {
+    PluginRegistry(final Path registryFile, final Path deployDir, final Path bootDir, final KarafBridge bridge, final long bootTimeMillis) {
         this.registryFile = registryFile;
         this.deployDir = deployDir;
         this.bootDir = bootDir;
-        this.karStorageDir = karStorageDir;
         this.bridge = bridge;
         this.bootTimeMillis = bootTimeMillis;
     }
@@ -222,9 +228,41 @@ public class PluginRegistry {
         record.setAutoStart(autoStart);
         record.setUnloaded(false);
         record.setPendingRestartSince(autoStart ? null : System.currentTimeMillis());
+        record.setLastNotifiedState(null);
         file.getPlugins().add(record);
         write(file);
         return toEntry(record, new LiveState());
+    }
+
+    /**
+     * Stores how a live start went: whether the plugin still waits for a restart, and
+     * the state announced by the event that went out with the outcome (null when none did).
+     */
+    public synchronized Optional<PluginEntry> recordStartOutcome(final String karName, final boolean pendingRestart, final String notified) throws IOException {
+        final RegistryFile file = read();
+        for (final Record record : file.getPlugins()) {
+            if (karName.equals(record.getKarName())) {
+                record.setPendingRestartSince(pendingRestart ? System.currentTimeMillis() : null);
+                if (notified != null) {
+                    record.setLastNotifiedState(notified);
+                }
+                write(file);
+                return Optional.of(toEntry(record, new LiveState()));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** Remembers the state the watchdog last announced for a plugin; a no-op for plugins without a record. */
+    public synchronized void recordNotifiedState(final String karName, final String state) throws IOException {
+        final RegistryFile file = read();
+        for (final Record record : file.getPlugins()) {
+            if (karName.equals(record.getKarName())) {
+                record.setLastNotifiedState(state);
+                write(file);
+                return;
+            }
+        }
     }
 
     /** sha256 of every plugin whose KAR is still in deploy/, mapped to its install time; drives temp-area retention. */
@@ -277,6 +315,7 @@ public class PluginRegistry {
         record.setUnloadedBy(user);
         record.setUnloadedAt(Instant.now().toString());
         record.setPendingRestartSince(System.currentTimeMillis());
+        record.setLastNotifiedState(NOTIFIED_STOPPED);
         write(file);
         return toEntry(record, new LiveState());
     }
@@ -299,9 +338,15 @@ public class PluginRegistry {
 
         /** Features of the repositories listed in data/kar/&lt;karName&gt;/features.cfg. */
         List<InstalledFeature> karFeatures(final String karName) {
-            final Set<String> repositories = karRepositories(karName);
             final List<InstalledFeature> result = new ArrayList<>();
-            if (repositories.isEmpty() || !available) {
+            if (!available) {
+                return result;
+            }
+            final Set<String> repositories = new LinkedHashSet<>();
+            for (final String uri : bridge.karRepositories(karName)) {
+                repositories.add(uri.trim());
+            }
+            if (repositories.isEmpty()) {
                 return result;
             }
             if (allFeatures == null) {
@@ -330,6 +375,13 @@ public class PluginRegistry {
             }
             return state == null ? "Uninstalled" : state;
         }
+
+        Map<String, String> diagnostics(final List<String> featureNames) {
+            if (!available || featureNames.isEmpty()) {
+                return Collections.emptyMap();
+            }
+            return bridge.featureDiagnostics(new LinkedHashSet<>(featureNames));
+        }
     }
 
     private PluginEntry toEntry(final Record record, final LiveState live) {
@@ -350,13 +402,15 @@ public class PluginRegistry {
         entry.setAutoStart(record.isAutoStart());
         entry.setManaged(true);
         entry.setPendingRestart(record.getPendingRestartSince() != null && record.getPendingRestartSince() > bootTimeMillis);
+        entry.setLastNotifiedState(record.getLastNotifiedState());
         entry.setDeployed(Files.exists(deployDir.resolve(record.getKarName() + KAR_SUFFIX)));
 
         if (record.isUnloaded() || !entry.isDeployed()) {
             entry.setStatus(PluginEntry.STATUS_UNLOADED);
             return entry;
         }
-        deriveStatus(entry, live, installedDuringThisJvm(record));
+        // A live start that failed is known to have failed, however young the install is.
+        deriveStatus(entry, live, installedDuringThisJvm(record) && !NOTIFIED_FAILED.equals(record.getLastNotifiedState()));
         return entry;
     }
 
@@ -377,6 +431,7 @@ public class PluginRegistry {
         } else if (entry.isKarLoaded() && !installedDuringThisJvm) {
             // The container has had a full boot to start the features from the boot file and did not.
             entry.setStatus(PluginEntry.STATUS_FAILED);
+            entry.setDiagnostics(new LinkedHashMap<>(live.diagnostics(entry.getFeatures())));
         } else {
             entry.setStatus(PluginEntry.STATUS_STAGED);
         }
@@ -458,28 +513,6 @@ public class PluginRegistry {
             }
         }
         return roots.isEmpty() ? all : roots;
-    }
-
-    /** Repository URIs Karaf wrote to data/kar/&lt;karName&gt;/features.cfg when it installed the KAR. */
-    private Set<String> karRepositories(final String karName) {
-        final Set<String> repositories = new LinkedHashSet<>();
-        if (karStorageDir == null) {
-            return repositories;
-        }
-        final Path cfg = karStorageDir.resolve(karName).resolve(KAR_FEATURES_CFG);
-        if (!Files.isRegularFile(cfg)) {
-            return repositories;
-        }
-        try {
-            for (final String line : Files.readAllLines(cfg, StandardCharsets.UTF_8)) {
-                if (!line.isBlank()) {
-                    repositories.add(line.trim());
-                }
-            }
-        } catch (final IOException e) {
-            LOG.warn("Cannot read {}: {}", cfg, e.toString());
-        }
-        return repositories;
     }
 
     // --- boot files ------------------------------------------------------------

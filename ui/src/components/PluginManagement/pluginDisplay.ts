@@ -22,12 +22,14 @@
 
 import { formatInDisplayZone } from '@/lib/displayTimeZone'
 import { isValid, parseISO } from 'date-fns'
-import { KarCheckLevel, PluginEntry, PluginFetchSource, PluginRelease, PluginStatus } from '@/types/pluginManagement'
+import { KarCheckLevel, PluginEntry, PluginFetchSource, PluginRelease, PluginStartOutcome, PluginStatus } from '@/types/pluginManagement'
 import { type OnmsTagSeverity } from '@opennms/onms-ui'
 
 export const NOT_SET = '—'
 
-export const CONTAINER_UNAVAILABLE = 'The plugin container is not available, so plugins cannot be loaded or unloaded.'
+export const CONTAINER_UNAVAILABLE = 'The plugin container is not available, so plugins cannot be loaded, restarted or unloaded.'
+
+export const RESTART_NOT_LOADED = 'Restart is available once the plugin is loaded'
 
 export const formatSize = (bytes: number | null | undefined): string => {
   if (bytes === null || bytes === undefined || !Number.isFinite(bytes) || bytes < 0) {
@@ -143,6 +145,40 @@ export const statusOf = (status: string, pendingRestart = false): StatusPresenta
   }
   return STATUS_TAG[status as PluginStatus] ?? { severity: 'secondary', label: status, title: '' }
 }
+
+const firstLine = (text: string): string => text.split('\n').map(l => l.trim()).find(l => l !== '') ?? ''
+
+// "<feature>: <reason>" per feature the container reported on, one per line
+export const diagnosticLines = (diagnostics: Record<string, string> | null | undefined): string[] =>
+  Object.entries(diagnostics ?? {}).filter(([feature]) => feature !== '').map(([feature, reason]) => `${feature}: ${reason}`)
+
+// the status tag's title: for a failed plugin the first diagnostic replaces the generic wording
+export const statusTitle = (plugin: PluginEntry): string => {
+  const first = Object.entries(plugin.diagnostics ?? {}).find(([feature, reason]) => feature !== '' && firstLine(reason) !== '')
+  return plugin.status === 'failed' && first ? `${first[0]}: ${firstLine(first[1])}` : statusOf(plugin.status, plugin.pendingRestart).title
+}
+
+// the full feature list with each feature's container state, e.g. "alec (Started)", then the diagnostics
+export const featureTitle = (plugin: PluginEntry): string => {
+  const states = plugin.features.map(f => (plugin.featureStates?.[f] ? `${f} (${plugin.featureStates[f]})` : f)).join(', ')
+  const lines = diagnosticLines(plugin.diagnostics)
+  return lines.length ? [states, ...lines].filter(l => l !== '').join('\n') : states
+}
+
+// Restart acts on the container, so it needs one and a plugin that is deployed there
+export const canRestart = (plugin: PluginEntry, containerAvailable: boolean): boolean =>
+  containerAvailable && (plugin.status === 'installed' || plugin.status === 'failed')
+
+export const restartTitle = (plugin: PluginEntry, containerAvailable: boolean): string =>
+  !containerAvailable ? CONTAINER_UNAVAILABLE : canRestart(plugin, containerAvailable) ? `Restart ${plugin.karName}` : RESTART_NOT_LOADED
+
+export const restartPending = (plugins: PluginEntry[]): boolean => plugins.some(p => p.pendingRestart)
+
+export const startedFeatures = (features: string[]): string => features.length ? features.join(', ') : 'none listed'
+
+// the KAR was extracted but nothing runs yet: only then are the restart commands worth showing
+export const needsServerRestart = (outcome: PluginStartOutcome): boolean =>
+  outcome.state === 'unavailable' || outcome.state === 'restart-required'
 
 export interface RestartCounts {
   toLoad: number

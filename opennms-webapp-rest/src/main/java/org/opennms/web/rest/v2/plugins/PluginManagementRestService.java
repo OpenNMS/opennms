@@ -34,11 +34,15 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -63,23 +67,31 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.plugins.KarInspection.Check;
 import org.opennms.web.rest.v2.plugins.KarInspection.Level;
+import org.opennms.web.rest.v2.plugins.KarafBridge.KarafOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Admin-only management of plugin KARs: fetch one from its repository or check
- * an upload, stage it into the deploy directory, list what is deployed and
- * unload a plugin. Every action is written to the plugin-management log.
+ * an upload, stage it into the deploy directory and start its features in the
+ * running container, list what is deployed, restart or unload a plugin. Every
+ * action is written to the plugin-management log and every state change raises
+ * an event.
  */
 @Component
 @Path("plugin-management")
-@Tag(name = "PluginManagement", description = "Fetch, upload, check, stage and unload plugin KARs")
+@Tag(name = "PluginManagement", description = "Fetch, upload, check, stage, start, restart and unload plugin KARs")
 public class PluginManagementRestService {
     private static final Logger LOG = LoggerFactory.getLogger(PluginManagementRestService.class);
     static final String AUDIT_LOGGER = "org.opennms.web.rest.v2.plugins.audit";
@@ -94,6 +106,10 @@ public class PluginManagementRestService {
     static final String WAIT_FOR_KAR = PluginRegistry.WAIT_FOR_KAR;
     static final String CHOOSE_FEATURES = "Choose at least one feature to start";
     static final String TOO_LARGE = "The file is larger than " + (KarInspector.MAX_SIZE_BYTES / (1024 * 1024)) + " MB";
+    static final String CATALOG_RESTART_MESSAGE = "This plugin is known to need a server restart after loading.";
+    static final String CONTAINER_UNAVAILABLE = "The Karaf container cannot be reached from the web application.";
+    static final Duration START_TIMEOUT = Duration.ofSeconds(30);
+    static final Duration START_POLL = Duration.ofMillis(500);
 
     private final java.nio.file.Path opennmsHome;
     private final java.nio.file.Path deployDir;
@@ -107,20 +123,28 @@ public class PluginManagementRestService {
     private final HttpFetcher fetcher;
     private final GitHubReleases releases;
     private final KarDownloader downloader;
+    private volatile PluginEventSender events;
+    private volatile Duration startTimeout = START_TIMEOUT;
+    private volatile Duration startPoll = START_POLL;
 
     public PluginManagementRestService() {
         this(Paths.get(System.getProperty("opennms.home", ".")));
     }
 
     private PluginManagementRestService(final java.nio.file.Path opennmsHome) {
-        this(opennmsHome, new OsgiKarafBridge(opennmsHome.resolve("etc")));
+        this(opennmsHome, new OsgiKarafBridge(opennmsHome.resolve("etc"), opennmsHome.resolve("data").resolve("kar")));
     }
 
     PluginManagementRestService(final java.nio.file.Path opennmsHome, final KarafBridge bridge) {
-        this(opennmsHome, bridge, new LazyFetcher(), Clock.systemUTC());
+        this(opennmsHome, bridge, new LazyFetcher(), Clock.systemUTC(), PluginEventSender.NONE);
     }
 
     PluginManagementRestService(final java.nio.file.Path opennmsHome, final KarafBridge bridge, final HttpFetcher fetcher, final Clock clock) {
+        this(opennmsHome, bridge, fetcher, clock, PluginEventSender.NONE);
+    }
+
+    PluginManagementRestService(final java.nio.file.Path opennmsHome, final KarafBridge bridge, final HttpFetcher fetcher, final Clock clock, final PluginEventSender events) {
+        this.events = events;
         this.opennmsHome = opennmsHome;
         this.deployDir = opennmsHome.resolve("deploy");
         this.bootDir = opennmsHome.resolve("etc").resolve("featuresBoot.d");
@@ -133,7 +157,25 @@ public class PluginManagementRestService {
         this.fetcher = fetcher;
         this.releases = new GitHubReleases(fetcher, clock, () -> System.getProperty(GitHubReleases.TOKEN_PROPERTY));
         this.downloader = new KarDownloader(fetcher, tempArea);
-        tempArea.ensureScheduled();
+        tempArea.ensureScheduled(this::watchdog);
+    }
+
+    @Autowired
+    @Qualifier("eventProxy")
+    public void setEventProxy(final EventProxy eventProxy) {
+        this.events = event -> {
+            try {
+                eventProxy.send(event);
+            } catch (final EventProxyException e) {
+                LOG.warn("Cannot send {}: {}", event.getUei(), e.toString());
+            }
+        };
+    }
+
+    /** How long a live start waits for the container to report the KAR, and how often it looks. */
+    void setStartWait(final Duration timeout, final Duration poll) {
+        this.startTimeout = timeout;
+        this.startPoll = poll;
     }
 
     @PreDestroy
@@ -477,23 +519,17 @@ public class PluginManagementRestService {
         final java.nio.file.Path part = deployDir.resolve("." + karName + PluginRegistry.KAR_SUFFIX + ".part");
         boolean bootWritten = false;
         boolean recorded = false;
+        PluginEntry recordedEntry;
         try {
             Files.createDirectories(deployDir);
             Files.createDirectories(bootDir);
             // Boot file and record first: once the KAR lands in deploy/ Karaf may start it within seconds.
             writeBootFile(bootFile, karName, features);
             bootWritten = true;
-            final PluginEntry recordedEntry = registry.recordInstall(karName, fileName, inspection.getSha256(), inspection.getSize(), source, user, features, opennmsHome.relativize(bootFile).toString(), autoStart);
+            recordedEntry = registry.recordInstall(karName, fileName, inspection.getSha256(), inspection.getSize(), source, user, features, opennmsHome.relativize(bootFile).toString(), autoStart);
             recorded = true;
             Files.copy(stored, part, StandardCopyOption.REPLACE_EXISTING);
             atomicMove(part, target);
-            audit("install", user, remote, karName, inspection.getSha256(), "ok", "source=" + source + " features=" + String.join(",", features) + " autoStart=" + autoStart + " warnsAcknowledged=" + warns.size());
-            final PluginActionResult result = new PluginActionResult();
-            result.setPlugin(registry.find(karName).orElse(recordedEntry));
-            result.setRestartRequired(!autoStart);
-            result.setRestartInstructions(RestartInstructions.current());
-            result.setChecks(inspection.getChecks());
-            return result;
         } catch (final IOException e) {
             quietly(() -> Files.deleteIfExists(part), part);
             if (bootWritten) {
@@ -508,6 +544,77 @@ public class PluginManagementRestService {
             }
             audit("install", user, remote, karName, inspection.getSha256(), "error", e.toString());
             throw serverError("Cannot stage the plugin: " + e.getMessage());
+        }
+
+        final StartOutcome outcome = catalog.restartRequiredFor(repositoryOf(source))
+                ? new StartOutcome(StartOutcome.RESTART_REQUIRED, CATALOG_RESTART_MESSAGE)
+                : startLive(karName, features, autoStart);
+        // Without a container view nothing is known, so the manifest decides as before.
+        final boolean pendingRestart = StartOutcome.UNAVAILABLE.equals(outcome.getState()) ? !autoStart : !outcome.isStarted();
+        final String notified = announce(karName, features, user, source, outcome);
+        PluginEntry entry = recordedEntry;
+        try {
+            entry = registry.recordStartOutcome(karName, pendingRestart, notified).orElse(recordedEntry);
+        } catch (final IOException e) {
+            LOG.warn("Cannot record the start outcome of {} in {}: {}", karName, registry.getRegistryFile(), e.toString());
+        }
+        audit("install", user, remote, karName, inspection.getSha256(), "ok", "source=" + source + " features=" + String.join(",", features) + " autoStart=" + autoStart
+                + " warnsAcknowledged=" + warns.size() + " start=" + outcome.getState() + (outcome.getMessage() == null ? "" : " startMessage=" + outcome.getMessage()));
+        final PluginActionResult result = new PluginActionResult();
+        result.setPlugin(entry);
+        result.setRestartRequired(pendingRestart);
+        result.setStartOutcome(outcome);
+        result.setRestartInstructions(RestartInstructions.current());
+        result.setChecks(inspection.getChecks());
+        return result;
+    }
+
+    @POST
+    @Path("{karName}/restart")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PluginActionResult restart(@PathParam("karName") final String karName,
+                                      @Context final SecurityContext securityContext,
+                                      @Context final HttpServletRequest request) {
+        requireAdmin(securityContext);
+        final String user = user(securityContext);
+        final String remote = remote(request);
+        if (karName == null || !KAR_NAME.matcher(karName).matches()) {
+            audit("restart", user, remote, null, null, "rejected", "invalid kar name");
+            throw badRequest("The KAR name must start with a letter or digit and may only contain letters, digits, '.', '_' and '-'.");
+        }
+        try {
+            final PluginEntry existing = registry.find(karName).orElse(null);
+            if (existing == null) {
+                audit("restart", user, remote, karName, null, "rejected", "unknown plugin");
+                throw notFound("No plugin named '" + karName + "' is deployed or managed.");
+            }
+            if (!existing.isDeployed() || PluginEntry.STATUS_UNLOADED.equals(existing.getStatus())) {
+                audit("restart", user, remote, karName, existing.getSha256(), "rejected", "not deployed");
+                throw conflict("Plugin '" + karName + "' is not deployed; load it first.");
+            }
+            if (!safely(bridge::isAvailable, false)) {
+                audit("restart", user, remote, karName, existing.getSha256(), "error", "container unavailable");
+                throw unavailable(CONTAINER_UNAVAILABLE + " Restart OpenNMS instead.");
+            }
+            final List<String> features = existing.getFeatures();
+            if (features.isEmpty()) {
+                audit("restart", user, remote, karName, existing.getSha256(), "rejected", "no features known");
+                throw conflict("No features are known for plugin '" + karName + "'; its boot file names none and the container lists none for its KAR.");
+            }
+            final StartOutcome outcome = restartFeatures(karName, features);
+            final String notified = announce(karName, features, user, existing.getSource(), outcome);
+            final PluginEntry entry = registry.recordStartOutcome(karName, !outcome.isStarted(), notified).orElse(existing);
+            audit("restart", user, remote, karName, existing.getSha256(), outcome.isStarted() ? "ok" : "error",
+                    "features=" + String.join(",", features) + " start=" + outcome.getState() + (outcome.getMessage() == null ? "" : " startMessage=" + outcome.getMessage()));
+            final PluginActionResult result = new PluginActionResult();
+            result.setPlugin(entry.isManaged() ? entry : registry.find(karName).orElse(entry));
+            result.setRestartRequired(!outcome.isStarted());
+            result.setStartOutcome(outcome);
+            result.setRestartInstructions(RestartInstructions.current());
+            return result;
+        } catch (final IOException e) {
+            audit("restart", user, remote, karName, null, "error", e.toString());
+            throw serverError("Cannot restart the plugin: " + e.getMessage());
         }
     }
 
@@ -540,6 +647,7 @@ public class PluginManagementRestService {
             bootFilesRemoved.addAll(removeBootReferences(karName));
             final String fileName = existing.map(PluginEntry::getFileName).orElse(kar.getFileName().toString());
             final PluginEntry entry = registry.recordUnload(karName, user, fileName);
+            send(PluginEvents.stopped(karName, existing.map(PluginEntry::getFeatures).orElse(Collections.emptyList()), user, existing.map(PluginEntry::getSource).orElse(PluginEntry.SOURCE_MANUAL)));
             audit("unload", user, remote, karName, existing.map(PluginEntry::getSha256).orElse(null), "ok",
                     "removedKar=" + removedKar + " bootFilesRemoved=" + String.join(",", bootFilesRemoved));
             final PluginActionResult result = new PluginActionResult();
@@ -551,6 +659,162 @@ public class PluginManagementRestService {
         } catch (final IOException e) {
             audit("unload", user, remote, karName, null, "error", e.toString());
             throw serverError("Cannot unload the plugin: " + e.getMessage());
+        }
+    }
+
+    // --- live start --------------------------------------------------------------
+
+    /**
+     * Waits for Karaf to pick the KAR up from deploy/, then starts the chosen
+     * features itself when the manifest told Karaf not to.
+     */
+    StartOutcome startLive(final String karName, final List<String> features, final boolean autoStart) {
+        if (!safely(bridge::isAvailable, false)) {
+            return new StartOutcome(StartOutcome.UNAVAILABLE, CONTAINER_UNAVAILABLE + (autoStart ? " Karaf starts the features on its own." : " The features start at the next restart."));
+        }
+        final Set<String> chosen = new LinkedHashSet<>(features);
+        final long deadline = System.nanoTime() + startTimeout.toNanos();
+        boolean karSeen = false;
+        while (true) {
+            karSeen = safely(bridge::installedKars, Collections.<String>emptyList()).contains(karName)
+                    && !safely(() -> bridge.karRepositories(karName), Collections.<String>emptyList()).isEmpty();
+            if (karSeen && (!autoStart || notStarted(chosen).isEmpty())) {
+                break;
+            }
+            if (System.nanoTime() >= deadline || !pause(startPoll)) {
+                break;
+            }
+        }
+        if (!karSeen) {
+            return new StartOutcome(StartOutcome.TIMEOUT, "The container did not report " + karName + PluginRegistry.KAR_SUFFIX + " within " + startTimeout.toSeconds() + " seconds; check karaf.log, then use Restart.");
+        }
+        if (!autoStart) {
+            try {
+                startFeatures(karName, chosen, false);
+            } catch (final KarafOperationException e) {
+                return StartOutcome.failed("The container could not start " + String.join(", ", chosen) + ": " + e.getMessage(), notStarted(chosen));
+            }
+        }
+        return classify(chosen);
+    }
+
+    StartOutcome restartFeatures(final String karName, final List<String> features) {
+        final Set<String> chosen = new LinkedHashSet<>(features);
+        if (!safely(bridge::installedKars, Collections.<String>emptyList()).contains(karName)) {
+            return StartOutcome.failed("The container has not loaded " + karName + PluginRegistry.KAR_SUFFIX + "; check karaf.log.", notStarted(chosen));
+        }
+        try {
+            startFeatures(karName, chosen, true);
+        } catch (final KarafOperationException e) {
+            return StartOutcome.failed("The container could not restart " + String.join(", ", chosen) + ": " + e.getMessage(), notStarted(chosen));
+        }
+        return classify(chosen);
+    }
+
+    /** Adds the KAR's repositories as the extender does at boot, then (re)installs the features. */
+    private void startFeatures(final String karName, final Set<String> features, final boolean uninstallFirst) throws KarafOperationException {
+        for (final String uri : safely(() -> bridge.karRepositories(karName), Collections.<String>emptyList())) {
+            bridge.addRepository(uri);
+        }
+        if (uninstallFirst) {
+            try {
+                bridge.uninstallFeatures(features);
+            } catch (final KarafOperationException e) {
+                LOG.info("Uninstalling {} before the restart did not succeed, installing anyway: {}", features, e.getMessage());
+            }
+        }
+        bridge.installFeatures(features);
+    }
+
+    private StartOutcome classify(final Set<String> chosen) {
+        final Map<String, String> notStarted = notStarted(chosen);
+        if (notStarted.isEmpty()) {
+            return StartOutcome.started("Started " + String.join(", ", chosen) + ".");
+        }
+        return StartOutcome.failed("Not started: " + summary(notStarted), notStarted);
+    }
+
+    /** Feature to reason for every chosen feature the container does not report as Started. */
+    private Map<String, String> notStarted(final Set<String> chosen) {
+        return new LinkedHashMap<>(safely(() -> bridge.featureDiagnostics(chosen), Collections.<String, String>emptyMap()));
+    }
+
+    private static String summary(final Map<String, String> diagnostics) {
+        return diagnostics.entrySet().stream().map(e -> e.getKey() + " (" + e.getValue() + ")").collect(Collectors.joining("; "));
+    }
+
+    /** Raises the event that matches the outcome and returns the state it announced, null when none went out. */
+    private String announce(final String karName, final List<String> features, final String user, final String source, final StartOutcome outcome) {
+        if (outcome.isStarted()) {
+            send(PluginEvents.started(karName, features, user, source));
+            return PluginRegistry.NOTIFIED_STARTED;
+        }
+        if (StartOutcome.FAILED.equals(outcome.getState()) || StartOutcome.TIMEOUT.equals(outcome.getState())) {
+            send(PluginEvents.failed(karName, features, outcome.getMessage(), user, source));
+            return PluginRegistry.NOTIFIED_FAILED;
+        }
+        return null;
+    }
+
+    private void send(final Event event) {
+        try {
+            events.send(event);
+        } catch (final Throwable t) {
+            LOG.warn("Cannot send {}: {}", event.getUei(), t.toString());
+        }
+    }
+
+    /**
+     * Runs with the cleanup tick: tells the operator once when a plugin that was
+     * started no longer has all its features Started, and once when it recovers.
+     */
+    void watchdog() {
+        if (!safely(bridge::isAvailable, false)) {
+            return;
+        }
+        final List<PluginEntry> entries;
+        try {
+            entries = registry.list();
+        } catch (final IOException e) {
+            LOG.warn("Cannot read {} for the plugin check: {}", registry.getRegistryFile(), e.toString());
+            return;
+        }
+        for (final PluginEntry entry : entries) {
+            if (!entry.isManaged() || !entry.isDeployed() || entry.getFeatures().isEmpty()
+                    || PluginEntry.STATUS_UNLOADED.equals(entry.getStatus()) || PluginEntry.STATUS_UNKNOWN.equals(entry.getStatus())) {
+                continue;
+            }
+            final boolean allStarted = entry.isKarLoaded() && entry.getFeatureStates().values().stream().allMatch(InstalledFeature.STATE_STARTED::equals);
+            final String last = entry.getLastNotifiedState();
+            try {
+                if (allStarted) {
+                    if (PluginRegistry.NOTIFIED_FAILED.equals(last)) {
+                        send(PluginEvents.started(entry.getKarName(), entry.getFeatures(), "watchdog", entry.getSource()));
+                        registry.recordNotifiedState(entry.getKarName(), PluginRegistry.NOTIFIED_STARTED);
+                        audit("watchdog", "system", "local", entry.getKarName(), entry.getSha256(), "ok", "recovered features=" + String.join(",", entry.getFeatures()));
+                    } else if (last == null) {
+                        registry.recordNotifiedState(entry.getKarName(), PluginRegistry.NOTIFIED_STARTED);
+                    }
+                } else if (PluginRegistry.NOTIFIED_STARTED.equals(last) || (last == null && PluginEntry.STATUS_FAILED.equals(entry.getStatus()))) {
+                    final Map<String, String> diagnostics = entry.getDiagnostics().isEmpty() ? notStarted(new LinkedHashSet<>(entry.getFeatures())) : entry.getDiagnostics();
+                    final String reason = diagnostics.isEmpty() ? "The container no longer reports " + entry.getKarName() + PluginRegistry.KAR_SUFFIX : "Not started: " + summary(diagnostics);
+                    send(PluginEvents.failed(entry.getKarName(), entry.getFeatures(), reason, "watchdog", entry.getSource()));
+                    registry.recordNotifiedState(entry.getKarName(), PluginRegistry.NOTIFIED_FAILED);
+                    audit("watchdog", "system", "local", entry.getKarName(), entry.getSha256(), "error", "features=" + String.join(",", entry.getFeatures()) + " reason=" + reason);
+                }
+            } catch (final IOException e) {
+                LOG.warn("Cannot record the state of {} in {}: {}", entry.getKarName(), registry.getRegistryFile(), e.toString());
+            }
+        }
+    }
+
+    private static boolean pause(final Duration d) {
+        try {
+            Thread.sleep(Math.max(1, d.toMillis()));
+            return true;
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
         }
     }
 
@@ -763,6 +1027,10 @@ public class PluginManagementRestService {
 
     private static WebApplicationException serverError(final String message) {
         return new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(message).build());
+    }
+
+    private static WebApplicationException unavailable(final String message) {
+        return new WebApplicationException(Response.status(Status.SERVICE_UNAVAILABLE).type(MediaType.TEXT_PLAIN).entity(message).build());
     }
 
     /** Builds the HTTP client on first use so the REST class loads without it. */

@@ -55,8 +55,12 @@ public class PluginEntry {
     private boolean deployed;
     private boolean karLoaded;
     private Map<String, String> featureStates = new LinkedHashMap<>();
+    /** why each feature of a failed plugin is not Started; empty for other rows */
+    private Map<String, String> diagnostics = new LinkedHashMap<>();
     private String status;
     private boolean pendingRestart;
+    /** the state the last plugin event announced: started, failed or stopped; null when none was sent */
+    private String lastNotifiedState;
 
     public String getKarName() { return karName; }
     public void setKarName(final String karName) { this.karName = karName; }
@@ -94,4 +98,8 @@ public class PluginEntry {
     public void setStatus(final String status) { this.status = status; }
     public boolean isPendingRestart() { return pendingRestart; }
     public void setPendingRestart(final boolean pendingRestart) { this.pendingRestart = pendingRestart; }
+    public Map<String, String> getDiagnostics() { return diagnostics; }
+    public void setDiagnostics(final Map<String, String> diagnostics) { this.diagnostics = diagnostics; }
+    public String getLastNotifiedState() { return lastNotifiedState; }
+    public void setLastNotifiedState(final String lastNotifiedState) { this.lastNotifiedState = lastNotifiedState; }
 }

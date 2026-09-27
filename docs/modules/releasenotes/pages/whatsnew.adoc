@@ -145,7 +145,7 @@ Support has been added for configuring Karaf shell authentication using ssh publ
 
 === Plugin Management page
 Administrators can fetch a plugin KAR from its GitHub releases or upload one from the web UI, review structural and compatibility checks, choose which of its top-level features to start, stage it into `deploy/` together with a `featuresBoot.d` boot file, list deployed plugins (including those installed by hand), and unload one again.
-Karaf loads a staged plugin within seconds unless its manifest sets `Karaf-Feature-Start: false`, in which case its features start on the next restart; every action is written to `logs/plugin-management.log`.
+Karaf loads a staged plugin within seconds; when its manifest sets `Karaf-Feature-Start: false` the page starts the chosen features in the running container itself, reports how the start went, offers a per-plugin _Restart_ as the recovery path, and raises `pluginStarted`, `pluginFailed` (with an alarm), and `pluginStopped` events; every action is written to `logs/plugin-management.log`.
 
 == Breaking changes
 

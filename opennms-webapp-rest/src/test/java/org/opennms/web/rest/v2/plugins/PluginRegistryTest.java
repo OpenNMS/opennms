@@ -47,7 +47,6 @@ public class PluginRegistryTest {
     private Path registryFile;
     private Path deployDir;
     private Path bootDir;
-    private Path karStorageDir;
     private FakeKarafBridge bridge;
     private long bootTime;
     private PluginRegistry registry;
@@ -57,16 +56,15 @@ public class PluginRegistryTest {
         final Path etc = folder.newFolder("etc").toPath();
         registryFile = etc.resolve(PluginRegistry.FILE_NAME);
         bootDir = Files.createDirectories(etc.resolve("featuresBoot.d"));
-        karStorageDir = folder.newFolder("data", "kar").toPath();
         deployDir = folder.newFolder("deploy").toPath();
         bridge = new FakeKarafBridge();
         bootTime = System.currentTimeMillis() - 60_000;
-        registry = new PluginRegistry(registryFile, deployDir, bootDir, karStorageDir, bridge, bootTime);
+        registry = new PluginRegistry(registryFile, deployDir, bootDir, bridge, bootTime);
     }
 
-    private void karRepositories(final String karName, final String... repositories) throws IOException {
-        final Path dir = Files.createDirectories(karStorageDir.resolve(karName));
-        Files.write(dir.resolve(PluginRegistry.KAR_FEATURES_CFG), (String.join("\n", repositories) + "\n").getBytes(StandardCharsets.UTF_8));
+    /** What Karaf would have written to data/kar/&lt;karName&gt;/features.cfg. */
+    private void karRepositories(final String karName, final String... repositories) {
+        bridge.karRepositories.put(karName, Arrays.asList(repositories));
     }
 
     private static boolean restartRequired(final List<PluginEntry> entries) {
@@ -377,6 +375,67 @@ public class PluginRegistryTest {
         assertEquals(PluginEntry.STATUS_INSTALLED, entry.getStatus());
         assertTrue(entry.isManaged());
         assertEquals("etc/featuresBoot.d/example.boot", entry.getBootFile());
+    }
+
+    @Test
+    public void failedLiveStartMarksAFreshInstallFailedWithDiagnostics() throws IOException {
+        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, false);
+        bridge.installedKars.add("example");
+        bridge.feature("example-feature", "1.0.0", "Resolved");
+        bridge.installFailures.put("example-feature", "Feature state: Resolved; bundle x/1.0 is Installed: unresolved");
+        assertEquals("young install, nothing known yet", PluginEntry.STATUS_STAGED, registry.find("example").orElseThrow().getStatus());
+        assertTrue(registry.find("example").orElseThrow().getDiagnostics().isEmpty());
+
+        final PluginEntry failed = registry.recordStartOutcome("example", true, PluginRegistry.NOTIFIED_FAILED).orElseThrow();
+
+        assertEquals(PluginEntry.STATUS_FAILED, failed.getStatus());
+        assertEquals(bridge.installFailures, failed.getDiagnostics());
+        assertTrue(failed.isPendingRestart());
+        assertEquals(PluginRegistry.NOTIFIED_FAILED, failed.getLastNotifiedState());
+        final String json = new String(Files.readAllBytes(registryFile), StandardCharsets.UTF_8);
+        assertTrue(json, json.contains("\"lastNotifiedState\" : \"failed\""));
+
+        bridge.installedFeatures.get(0).setState("Started");
+        final PluginEntry started = registry.recordStartOutcome("example", false, PluginRegistry.NOTIFIED_STARTED).orElseThrow();
+
+        assertEquals(PluginEntry.STATUS_INSTALLED, started.getStatus());
+        assertTrue(started.getDiagnostics().isEmpty());
+        assertFalse(started.isPendingRestart());
+        assertEquals(PluginRegistry.NOTIFIED_STARTED, started.getLastNotifiedState());
+        assertFalse(restartRequired(registry.list()));
+    }
+
+    @Test
+    public void startOutcomeAndNotifiedStateNeedARecord() throws IOException {
+        assertTrue(registry.recordStartOutcome("nope", true, PluginRegistry.NOTIFIED_STARTED).isEmpty());
+        registry.recordNotifiedState("nope", PluginRegistry.NOTIFIED_FAILED);
+        assertFalse(Files.exists(registryFile));
+
+        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
+        registry.recordNotifiedState("example", PluginRegistry.NOTIFIED_FAILED);
+        assertEquals(PluginRegistry.NOTIFIED_FAILED, registry.find("example").orElseThrow().getLastNotifiedState());
+
+        registry.recordInstall("example", "example-1.1.kar", "def", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
+        assertNull("a new install starts over", registry.find("example").orElseThrow().getLastNotifiedState());
+
+        assertEquals(PluginRegistry.NOTIFIED_STOPPED, registry.recordUnload("example", "admin", "example-1.1.kar").getLastNotifiedState());
+    }
+
+    @Test
+    public void failedRowsAfterARestartCarryDiagnostics() throws IOException {
+        Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
+        registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature", "example-other"), null, false);
+        bridge.installedKars.add("example");
+        bridge.feature("example-feature", "1.0.0", "Started").feature("example-other", "1.0.0", "Resolved");
+
+        final PluginRegistry afterRestart = new PluginRegistry(registryFile, deployDir, bridge, System.currentTimeMillis() + 1);
+        final PluginEntry entry = afterRestart.find("example").orElseThrow();
+
+        assertEquals(PluginEntry.STATUS_FAILED, entry.getStatus());
+        assertEquals(java.util.Map.of("example-other", "Feature state: Resolved"), entry.getDiagnostics());
+        assertTrue(afterRestart.list().stream().filter(e -> !PluginEntry.STATUS_FAILED.equals(e.getStatus())).allMatch(e -> e.getDiagnostics().isEmpty()));
     }
 
     @Test

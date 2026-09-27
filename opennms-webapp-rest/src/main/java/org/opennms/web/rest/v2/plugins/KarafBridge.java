@@ -23,12 +23,27 @@ package org.opennms.web.rest.v2.plugins;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Read-only view of the embedded Karaf container. Every method degrades to an
- * empty or null answer when the container cannot be reached.
+ * View of the embedded Karaf container. Every query degrades to an empty or
+ * null answer when the container cannot be reached; the feature operations
+ * report their failure instead, so the caller can tell the operator.
  */
 public interface KarafBridge {
+
+    /** A feature operation the container refused or could not complete. */
+    class KarafOperationException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public KarafOperationException(final String message) {
+            super(message);
+        }
+
+        public KarafOperationException(final String message, final Throwable cause) {
+            super(message, cause);
+        }
+    }
 
     boolean isAvailable();
 
@@ -52,4 +67,21 @@ public interface KarafBridge {
 
     /** Installed features whose dependency tree includes opennms-integration-api and that do not come from a product (boot) features repository. */
     List<InstalledFeature> pluginFeatures();
+
+    /** Feature repository URIs Karaf recorded for a KAR in data/kar/&lt;karName&gt;/features.cfg; empty when the KAR is unknown. */
+    List<String> karRepositories(String karName);
+
+    void addRepository(String uri) throws KarafOperationException;
+
+    /** Installs and starts the named features, as the extender does for boot features. */
+    void installFeatures(Set<String> features) throws KarafOperationException;
+
+    void uninstallFeatures(Set<String> features) throws KarafOperationException;
+
+    /**
+     * For every feature that is not Started: why, as far as the container can tell
+     * (feature state, and for each of its bundles that is not active the resolver's
+     * diagnosis or the bundle state). Started features are absent from the map.
+     */
+    Map<String, String> featureDiagnostics(Set<String> features);
 }

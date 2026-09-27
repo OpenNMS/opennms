@@ -119,10 +119,35 @@ describe('PluginManagement.vue (container)', () => {
     expect(dialog.find('[data-test="restart-note"]').text()).toBe('Wait.')
   })
 
+  it('shows the banner from the entries waiting for a restart, not from the server flag alone', async () => {
+    const stale = await mountPage({ state: { ...STATE, restartRequired: true, plugins: [PLUGIN] }, restartInstructions: INSTRUCTIONS })
+    expect(stale.find('[data-test="restart-banner"]').exists()).toBe(false)
+    const pending = await mountPage({ state: { ...STATE, restartRequired: false, plugins: [{ ...PLUGIN, status: 'staged', pendingRestart: true }] }, restartInstructions: INSTRUCTIONS })
+    expect(pending.find('[data-test="restart-summary"]').text()).toBe('A restart is required to finish loading or unloading plugins: 1 to load, 0 to unload.')
+  })
+
+  it('opens the restart dialog for a plugin and toasts once a loaded plugin is running', async () => {
+    const wrapper = await mountPage({ state: { ...STATE, plugins: [{ ...PLUGIN, status: 'failed', diagnostics: { alec: 'Unable to resolve' }}] }, restartInstructions: INSTRUCTIONS })
+    expect(wrapper.find('[data-test="plugin-status"]').attributes('title')).toBe('alec: Unable to resolve')
+    await wrapper.find('[data-test="restart-plugin"]').trigger('click')
+    const dialog = wrapper.find('[data-test="plugin-restart-dialog"]')
+    expect(dialog.exists()).toBe(true)
+    expect(dialog.text()).toContain('Restart alec?')
+    expect(dialog.find('[data-test="restart-callout"]').text()).toContain('Restarts alec;')
+    const result = { plugin: PLUGIN, startOutcome: { state: 'started', message: '', diagnostics: {}}, restartRequired: false, restartInstructions: INSTRUCTIONS }
+    ;(wrapper.vm as any).onLoaded(result)
+    expect(showToast).toHaveBeenCalledWith({ message: 'Plugin alec is running.', severity: 'success' })
+    showToast.mockClear()
+    ;(wrapper.vm as any).onLoaded({ ...result, startOutcome: { state: 'failed', message: 'nope', diagnostics: {}}, restartRequired: true })
+    ;(wrapper.vm as any).onLoaded({ ...result, startOutcome: { state: 'timeout', message: '', diagnostics: {}}, restartRequired: true })
+    expect(showToast).not.toHaveBeenCalled()
+  })
+
   it('flags an unavailable container and disables unloading', async () => {
     const wrapper = await mountPage({ state: { ...STATE, containerAvailable: false }, restartInstructions: null })
     expect(wrapper.find('[data-test="container-unavailable"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="unload-plugin"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-test="restart-plugin"]').attributes('disabled')).toBeDefined()
     expect(wrapper.findComponent({ name: 'PluginLoadCard' }).props('disabled')).toBe(true)
   })
 

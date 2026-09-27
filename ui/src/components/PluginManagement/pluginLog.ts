@@ -40,7 +40,7 @@ export interface PluginLogEntry {
   detail: string
 }
 
-export const LOG_ACTIONS = ['check', 'install', 'unload']
+export const LOG_ACTIONS = ['check', 'install', 'restart', 'unload']
 export const LOG_OUTCOMES = ['ok', 'rejected', 'refused', 'error']
 
 const LINE = /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:[,.]\d{1,3})?)\s+([A-Z]+)\s+action=(\S+)\s+user=(\S+)\s+remote=(\S+)\s+kar=(\S+)\s+sha256=(\S+)\s+outcome=(\S+)\s*(.*)$/

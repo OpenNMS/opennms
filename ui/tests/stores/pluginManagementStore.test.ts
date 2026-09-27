@@ -34,6 +34,7 @@ vi.mock('@/services', () => ({
     fetchPluginFromRepository: vi.fn(),
     installPlugin: vi.fn(),
     unloadPlugin: vi.fn(),
+    restartPlugin: vi.fn(),
     getPluginRestartInstructions: vi.fn(),
     getPluginManagementLog: vi.fn(),
     downloadPluginManagementLog: vi.fn()
@@ -77,7 +78,7 @@ describe('pluginManagementStore', () => {
     const store = usePluginManagementStore()
     vi.mocked(API.getPluginManagement).mockResolvedValue({ ...STATE, restartRequired: true })
     vi.mocked(API.getPluginManagementLog).mockResolvedValue('entry')
-    vi.mocked(API.installPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS }})
+    vi.mocked(API.installPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, startOutcome: { state: 'restart-required', message: '', diagnostics: {}}, restartRequired: true, restartInstructions: INSTRUCTIONS }})
     const install = await store.install({ uploadToken: 't', acknowledgeWarnings: false, features: ['alec'] })
     expect(install.success).toBe(true)
     expect(API.getPluginManagement).toHaveBeenCalledTimes(1)
@@ -95,6 +96,27 @@ describe('pluginManagementStore', () => {
     expect(API.getPluginManagement).toHaveBeenCalledTimes(2)
     vi.mocked(API.unloadPlugin).mockResolvedValueOnce({ success: false, message: 'gone' })
     expect((await store.unload('alec')).message).toBe('gone')
+    expect(API.getPluginManagement).toHaveBeenCalledTimes(2)
+  })
+
+  it('re-reads the list and the log after a restart the server carried out, whatever the outcome', async () => {
+    const store = usePluginManagementStore()
+    vi.mocked(API.getPluginManagement).mockResolvedValue({ ...STATE, plugins: [{ ...PLUGIN, status: 'installed', pendingRestart: false }] })
+    vi.mocked(API.getPluginManagementLog).mockResolvedValue('restart entry')
+    vi.mocked(API.restartPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { plugin: { ...PLUGIN, status: 'installed' }, startOutcome: { state: 'started', message: '', diagnostics: {}}, restartRequired: false }})
+    const started = await store.restart('alec')
+    expect(API.restartPlugin).toHaveBeenCalledWith('alec')
+    expect(started.payload?.startOutcome.state).toBe('started')
+    expect(API.getPluginManagement).toHaveBeenCalledTimes(1)
+    expect(store.plugins[0].status).toBe('installed')
+    expect(store.log).toBe('restart entry')
+
+    vi.mocked(API.restartPlugin).mockResolvedValueOnce({ success: true, message: '', payload: { plugin: { ...PLUGIN, status: 'failed' }, startOutcome: { state: 'failed', message: 'nope', diagnostics: { alec: 'x' }}, restartRequired: true }})
+    expect((await store.restart('alec')).payload?.startOutcome.state).toBe('failed')
+    expect(API.getPluginManagement).toHaveBeenCalledTimes(2)
+
+    vi.mocked(API.restartPlugin).mockResolvedValueOnce({ success: false, message: 'not deployed' })
+    expect(await store.restart('alec')).toMatchObject({ success: false, message: 'not deployed' })
     expect(API.getPluginManagement).toHaveBeenCalledTimes(2)
   })
 

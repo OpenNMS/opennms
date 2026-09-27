@@ -226,6 +226,11 @@ public class TempArea {
     }
 
     public synchronized void ensureScheduled() {
+        ensureScheduled(null);
+    }
+
+    /** Starts the periodic cleanup once; {@code alsoRun} rides along on every tick. */
+    public synchronized void ensureScheduled(final Runnable alsoRun) {
         if (scheduler != null) {
             return;
         }
@@ -239,6 +244,13 @@ public class TempArea {
                 cleanup();
             } catch (final Throwable t) {
                 LOG.error("Scheduled cleanup of {} failed: {}", dir, t.toString(), t);
+            }
+            if (alsoRun != null) {
+                try {
+                    alsoRun.run();
+                } catch (final Throwable t) {
+                    LOG.error("Scheduled plugin check failed: {}", t.toString(), t);
+                }
             }
         }, CLEANUP_INTERVAL.toMillis(), CLEANUP_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
     }

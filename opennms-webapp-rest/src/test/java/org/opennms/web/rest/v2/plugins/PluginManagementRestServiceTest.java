@@ -36,7 +36,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -52,6 +55,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Authentication;
 
 public class PluginManagementRestServiceTest {
@@ -78,7 +82,9 @@ public class PluginManagementRestServiceTest {
     private Path uploadDir;
     private FakeKarafBridge bridge;
     private CannedFetcher fetcher;
+    private RecordingEventSender events;
     private PluginManagementRestService service;
+    private static final String ALEC_REPO = "mvn:org.example/alec/1.0.0/xml/features";
 
     @Before
     public void setUp() throws IOException {
@@ -89,7 +95,17 @@ public class PluginManagementRestServiceTest {
         Files.createDirectories(bootDir);
         bridge = new FakeKarafBridge();
         fetcher = new CannedFetcher();
-        service = new PluginManagementRestService(home, bridge, fetcher, Clock.systemUTC());
+        events = new RecordingEventSender();
+        service = new PluginManagementRestService(home, bridge, fetcher, Clock.systemUTC(), events);
+        service.setStartWait(Duration.ofMillis(300), Duration.ofMillis(10));
+    }
+
+    /** Karaf has extracted the KAR and, for an auto-start one, started the features. */
+    private void containerHas(final String karName, final boolean started, final String... features) {
+        bridge.kar(karName, ALEC_REPO);
+        for (final String feature : features) {
+            bridge.feature(feature, "1.0.0", started ? "Started" : "Installed");
+        }
     }
 
     @After
@@ -176,6 +192,7 @@ public class PluginManagementRestServiceTest {
     @Test
     public void installWritesBootFileAndRecordBeforeTheKarAndKeepsTheUpload() throws IOException {
         final String token = storeUpload("alec-1.0.kar", true);
+        containerHas("alec", true, "alec");
 
         final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
 
@@ -189,7 +206,9 @@ public class PluginManagementRestServiceTest {
         assertFalse(result.getPlugin().isPendingRestart());
         assertEquals("etc/featuresBoot.d/alec.boot", result.getPlugin().getBootFile());
         assertEquals("alec-1.0.kar", result.getPlugin().getFileName());
-        assertEquals(PluginEntry.STATUS_STAGED, result.getPlugin().getStatus());
+        assertEquals(PluginEntry.STATUS_INSTALLED, result.getPlugin().getStatus());
+        assertEquals(StartOutcome.STARTED, result.getStartOutcome().getState());
+        assertTrue("Karaf started the auto-start KAR itself", bridge.installCalls.isEmpty());
         assertFalse(service.status(admin()).isRestartRequired());
 
         try {
@@ -202,15 +221,372 @@ public class PluginManagementRestServiceTest {
     }
 
     @Test
-    public void installWithoutAutoStartFlagsARestart() throws IOException {
+    public void installWithoutAutoStartFlagsARestartWhenTheContainerIsUnreachable() throws IOException {
         final String token = storeUpload("alec-1.0.kar", false);
+        bridge.available = false;
 
         final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
 
         assertTrue(result.isRestartRequired());
+        assertEquals(StartOutcome.UNAVAILABLE, result.getStartOutcome().getState());
         assertFalse(result.getPlugin().isAutoStart());
         assertTrue(result.getPlugin().isPendingRestart());
         assertTrue(service.status(admin()).isRestartRequired());
+        assertTrue(events.events.isEmpty());
+
+        final String other = storeUpload("other-1.0.kar", true);
+        final PluginActionResult autoStart = service.install(request(other, "other"), admin(), null);
+        assertEquals(StartOutcome.UNAVAILABLE, autoStart.getStartOutcome().getState());
+        assertFalse("without a container view the manifest decides", autoStart.isRestartRequired());
+        assertFalse(autoStart.getPlugin().isPendingRestart());
+    }
+
+    // --- live start ------------------------------------------------------------
+
+    @Test
+    public void liveInstallOfAnOptOutKarStartsItsFeaturesAndNeedsNoRestart() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        assertEquals(StartOutcome.STARTED, result.getStartOutcome().getState());
+        assertEquals("Started alec.", result.getStartOutcome().getMessage());
+        assertTrue(result.getStartOutcome().getDiagnostics().isEmpty());
+        assertFalse(result.isRestartRequired());
+        assertFalse(result.getPlugin().isPendingRestart());
+        assertFalse(result.getPlugin().isAutoStart());
+        assertEquals(PluginEntry.STATUS_INSTALLED, result.getPlugin().getStatus());
+        assertEquals(PluginRegistry.NOTIFIED_STARTED, result.getPlugin().getLastNotifiedState());
+        assertEquals(Arrays.asList(ALEC_REPO), bridge.addedRepositories);
+        assertEquals(Arrays.asList(Collections.singleton("alec")), bridge.installCalls);
+        assertTrue(Files.isRegularFile(bootDir.resolve("alec.boot")));
+        assertFalse(service.status(admin()).isRestartRequired());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_STARTED_UEI), events.ueis());
+        final Event event = events.last();
+        assertEquals(PluginEvents.SOURCE, event.getSource());
+        assertEquals("alec", RecordingEventSender.parm(event, "karName"));
+        assertEquals("alec", RecordingEventSender.parm(event, "features"));
+        assertEquals("admin", RecordingEventSender.parm(event, "user"));
+        assertEquals("upload", RecordingEventSender.parm(event, "source"));
+        assertNull(RecordingEventSender.parm(event, "reason"));
+    }
+
+    @Test
+    public void liveInstallReportsAFeatureThatDoesNotStart() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        bridge.installFailures.put("alec", "Feature state: Resolved; bundle org.example.alec/1.0.0 is Installed: Unable to resolve org.example.alec: missing requirement osgi.wiring.package=org.opennms.gone");
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        assertEquals(StartOutcome.FAILED, result.getStartOutcome().getState());
+        assertEquals("Not started: alec (" + bridge.installFailures.get("alec") + ")", result.getStartOutcome().getMessage());
+        assertEquals(bridge.installFailures, result.getStartOutcome().getDiagnostics());
+        assertTrue(result.isRestartRequired());
+        assertTrue(result.getPlugin().isPendingRestart());
+        assertEquals(PluginEntry.STATUS_FAILED, result.getPlugin().getStatus());
+        assertEquals(bridge.installFailures, result.getPlugin().getDiagnostics());
+        assertEquals(PluginRegistry.NOTIFIED_FAILED, result.getPlugin().getLastNotifiedState());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+        assertEquals(result.getStartOutcome().getMessage(), RecordingEventSender.parm(events.last(), "reason"));
+
+        final PluginEntry listed = service.status(admin()).getPlugins().get(0);
+        assertEquals(PluginEntry.STATUS_FAILED, listed.getStatus());
+        assertEquals(bridge.installFailures, listed.getDiagnostics());
+        assertTrue(service.status(admin()).isRestartRequired());
+    }
+
+    @Test
+    public void liveInstallReportsARefusedInstall() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        bridge.installException = "Unable to resolve root: missing requirement [root] osgi.identity; osgi.identity=alec";
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        assertEquals(StartOutcome.FAILED, result.getStartOutcome().getState());
+        assertEquals("The container could not start alec: " + bridge.installException, result.getStartOutcome().getMessage());
+        assertEquals(Map.of("alec", "Feature state: Uninstalled"), result.getStartOutcome().getDiagnostics());
+        assertTrue(result.isRestartRequired());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+    }
+
+    @Test
+    public void liveInstallTimesOutWhenTheContainerNeverReportsTheKar() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", true);
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        assertEquals(StartOutcome.TIMEOUT, result.getStartOutcome().getState());
+        assertTrue(result.getStartOutcome().getMessage(), result.getStartOutcome().getMessage().contains("did not report alec.kar"));
+        assertTrue(result.isRestartRequired());
+        assertTrue(result.getPlugin().isPendingRestart());
+        assertEquals(PluginEntry.STATUS_STAGED, result.getPlugin().getStatus());
+        assertTrue(bridge.installCalls.isEmpty());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+        assertEquals(result.getStartOutcome().getMessage(), RecordingEventSender.parm(events.last(), "reason"));
+    }
+
+    @Test
+    public void liveInstallOfAnAutoStartKarWaitsForKarafToStartIt() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", true);
+        final int[] polls = { 0 };
+        bridge.beforeKarList = () -> {
+            if (++polls[0] == 3) {
+                bridge.beforeKarList = null;
+                containerHas("alec", true, "alec");
+            }
+        };
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        assertEquals(StartOutcome.STARTED, result.getStartOutcome().getState());
+        assertEquals(3, polls[0]);
+        assertTrue(bridge.installCalls.isEmpty());
+        assertTrue(bridge.addedRepositories.isEmpty());
+        assertFalse(result.isRestartRequired());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_STARTED_UEI), events.ueis());
+    }
+
+    @Test
+    public void liveInstallOfAnAutoStartKarWhoseFeatureStaysDownIsFailed() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", true);
+        containerHas("alec", false, "alec");
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        assertEquals(StartOutcome.FAILED, result.getStartOutcome().getState());
+        assertEquals(Map.of("alec", "Feature state: Installed"), result.getStartOutcome().getDiagnostics());
+        assertEquals(PluginEntry.STATUS_FAILED, result.getPlugin().getStatus());
+        assertTrue(bridge.installCalls.isEmpty());
+    }
+
+    @Test
+    public void catalogRestartHintSkipsTheLiveStart() throws IOException {
+        Files.write(home.resolve("etc").resolve(PluginCatalog.FILE_NAME), ("{\"entries\":[{\"id\":\"alec\",\"name\":\"ALEC\",\"repository\":\"OpenNMS-Plugins/alec\","
+                + "\"bootFeatures\":[\"alec\"],\"restartRequired\":true}]}").getBytes(StandardCharsets.UTF_8));
+        final byte[] kar = karBytes(false);
+        final String url = "https://github.com/OpenNMS-Plugins/alec/releases/download/v1.0.0/opennms-alec-plugin.kar";
+        fetcher.on("https://api.github.com/repos/OpenNMS-Plugins/alec/releases", () -> CannedFetcher.json(200,
+                "[{\"tag_name\":\"v1.0.0\",\"assets\":[{\"name\":\"opennms-alec-plugin.kar\",\"size\":" + kar.length + ",\"browser_download_url\":\"" + url + "\"}]}]", Map.of()));
+        fetcher.on(url, () -> CannedFetcher.bytes(200, kar, Map.of("Content-Length", String.valueOf(kar.length))));
+        final FetchRequest fetch = new FetchRequest();
+        fetch.setCatalogId("alec");
+        fetch.setTag("v1.0.0");
+        fetch.setAssetName("opennms-alec-plugin.kar");
+        final KarInspection inspection = service.fetch(fetch, admin(), null);
+        bridge.kar("alec", ALEC_REPO);
+
+        final PluginActionResult result = service.install(request(inspection.getUploadToken(), "alec"), admin(), null);
+
+        assertEquals(StartOutcome.RESTART_REQUIRED, result.getStartOutcome().getState());
+        assertEquals(PluginManagementRestService.CATALOG_RESTART_MESSAGE, result.getStartOutcome().getMessage());
+        assertTrue(result.isRestartRequired());
+        assertTrue(result.getPlugin().isPendingRestart());
+        assertTrue(bridge.installCalls.isEmpty());
+        assertTrue(bridge.addedRepositories.isEmpty());
+        assertTrue(events.events.isEmpty());
+        assertTrue(service.status(admin()).isRestartRequired());
+    }
+
+    // --- restart ---------------------------------------------------------------
+
+    @Test
+    public void restartReinstallsTheFeaturesAndReportsEachOutcome() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        events.events.clear();
+
+        PluginActionResult result = service.restart("alec", admin(), null);
+
+        assertEquals(StartOutcome.STARTED, result.getStartOutcome().getState());
+        assertFalse(result.isRestartRequired());
+        assertEquals(PluginEntry.STATUS_INSTALLED, result.getPlugin().getStatus());
+        assertEquals(Arrays.asList(Collections.singleton("alec")), bridge.uninstallCalls);
+        assertEquals(2, bridge.installCalls.size());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_STARTED_UEI), events.ueis());
+        assertEquals("upload", RecordingEventSender.parm(events.last(), "source"));
+
+        bridge.installFailures.put("alec", "Feature state: Resolved; bundle org.example.alec/1.0.0 is Installed: no exporter for org.opennms.gone");
+        result = service.restart("alec", admin(), null);
+
+        assertEquals(StartOutcome.FAILED, result.getStartOutcome().getState());
+        assertEquals(bridge.installFailures, result.getStartOutcome().getDiagnostics());
+        assertTrue(result.isRestartRequired());
+        assertEquals(PluginEntry.STATUS_FAILED, result.getPlugin().getStatus());
+        assertEquals(bridge.installFailures, result.getPlugin().getDiagnostics());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_STARTED_UEI, PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+        assertEquals(result.getStartOutcome().getMessage(), RecordingEventSender.parm(events.last(), "reason"));
+        assertTrue(service.status(admin()).isRestartRequired());
+
+        bridge.installFailures.clear();
+        result = service.restart("alec", admin(), null);
+
+        assertEquals(StartOutcome.STARTED, result.getStartOutcome().getState());
+        assertFalse(result.isRestartRequired());
+        assertEquals(PluginEntry.STATUS_INSTALLED, result.getPlugin().getStatus());
+        assertTrue(result.getPlugin().getDiagnostics().isEmpty());
+        assertEquals(PluginEvents.PLUGIN_STARTED_UEI, events.last().getUei());
+        assertFalse(service.status(admin()).isRestartRequired());
+    }
+
+    @Test
+    public void restartWhenTheContainerRefusesTheInstallIsFailed() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        bridge.installException = "Resolution failed";
+
+        final PluginActionResult result = service.restart("alec", admin(), null);
+
+        assertEquals(StartOutcome.FAILED, result.getStartOutcome().getState());
+        assertEquals("The container could not restart alec: Resolution failed", result.getStartOutcome().getMessage());
+        assertEquals(Map.of("alec", "Feature state: Uninstalled"), result.getStartOutcome().getDiagnostics());
+        assertEquals(PluginEvents.PLUGIN_FAILED_UEI, events.last().getUei());
+    }
+
+    @Test
+    public void restartOfAHandInstalledKarUsesItsBootLines() throws IOException {
+        Files.createDirectories(deployDir);
+        Files.write(deployDir.resolve("hand.kar"), new byte[] { 1 });
+        Files.write(bootDir.resolve("hand.boot"), "hand-feature wait-for-kar=hand\n".getBytes(StandardCharsets.UTF_8));
+        bridge.kar("hand", "mvn:org.example/hand/1.0/xml/features");
+        bridge.repositoryFeature("mvn:org.example/hand/1.0/xml/features", "hand-feature", "Resolved");
+
+        final PluginActionResult result = service.restart("hand", admin(), null);
+
+        assertEquals(StartOutcome.STARTED, result.getStartOutcome().getState());
+        assertEquals(Arrays.asList("mvn:org.example/hand/1.0/xml/features"), bridge.addedRepositories);
+        assertEquals(Arrays.asList(Collections.singleton("hand-feature")), bridge.uninstallCalls);
+        assertEquals(Arrays.asList(Collections.singleton("hand-feature")), bridge.installCalls);
+        assertFalse(result.getPlugin().isManaged());
+        assertEquals(PluginEntry.STATUS_INSTALLED, result.getPlugin().getStatus());
+        assertEquals("manual", RecordingEventSender.parm(events.last(), "source"));
+        assertEquals("hand-feature", RecordingEventSender.parm(events.last(), "features"));
+    }
+
+    @Test
+    public void restartRefusesUnknownUndeployedAndUnreachableCases() throws IOException {
+        assertEquals(400, failure(() -> service.restart(".alec", admin(), null)).getResponse().getStatus());
+        assertEquals(404, failure(() -> service.restart("nope", admin(), null)).getResponse().getStatus());
+
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        service.unload("alec", admin(), null);
+        final WebApplicationException undeployed = failure(() -> service.restart("alec", admin(), null));
+        assertEquals(409, undeployed.getResponse().getStatus());
+        assertEquals("Plugin 'alec' is not deployed; load it first.", undeployed.getResponse().getEntity());
+
+        final String again = storeUpload("alec-1.1.kar", false, MULTI_FEATURES_XML);
+        final InstallRequest request = request(again, "alec");
+        request.setFeatures(Arrays.asList("alec-opennms-standalone"));
+        service.install(request, admin(), null);
+        bridge.available = false;
+        final WebApplicationException unavailable = failure(() -> service.restart("alec", admin(), null));
+        assertEquals(503, unavailable.getResponse().getStatus());
+        assertTrue(String.valueOf(unavailable.getResponse().getEntity()), String.valueOf(unavailable.getResponse().getEntity()).startsWith(PluginManagementRestService.CONTAINER_UNAVAILABLE));
+        assertEquals("the two installs started features, no restart did", 2, bridge.installCalls.size());
+        assertTrue(bridge.uninstallCalls.isEmpty());
+    }
+
+    // --- events and watchdog ---------------------------------------------------
+
+    @Test
+    public void unloadRaisesAStoppedEvent() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+
+        final PluginActionResult result = service.unload("alec", admin(), null);
+
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_STARTED_UEI, PluginEvents.PLUGIN_STOPPED_UEI), events.ueis());
+        assertEquals("alec", RecordingEventSender.parm(events.last(), "karName"));
+        assertEquals("alec", RecordingEventSender.parm(events.last(), "features"));
+        assertEquals("admin", RecordingEventSender.parm(events.last(), "user"));
+        assertEquals("upload", RecordingEventSender.parm(events.last(), "source"));
+        assertEquals(PluginRegistry.NOTIFIED_STOPPED, result.getPlugin().getLastNotifiedState());
+    }
+
+    @Test
+    public void watchdogReportsALostPluginOnceAndItsRecoveryOnce() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        events.events.clear();
+
+        service.watchdog();
+        assertTrue("a started plugin that is still started is quiet", events.events.isEmpty());
+
+        setFeatureState("alec", "Resolved");
+        service.watchdog();
+        service.watchdog();
+
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+        assertEquals("Not started: alec (Feature state: Resolved)", RecordingEventSender.parm(events.last(), "reason"));
+        assertEquals("watchdog", RecordingEventSender.parm(events.last(), "user"));
+        final PluginEntry down = service.status(admin()).getPlugins().get(0);
+        assertEquals(PluginRegistry.NOTIFIED_FAILED, down.getLastNotifiedState());
+        assertEquals(PluginEntry.STATUS_FAILED, down.getStatus());
+        assertEquals(Map.of("alec", "Feature state: Resolved"), down.getDiagnostics());
+
+        setFeatureState("alec", "Started");
+        service.watchdog();
+        service.watchdog();
+
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI, PluginEvents.PLUGIN_STARTED_UEI), events.ueis());
+        assertEquals(PluginRegistry.NOTIFIED_STARTED, service.status(admin()).getPlugins().get(0).getLastNotifiedState());
+        assertEquals(PluginEntry.STATUS_INSTALLED, service.status(admin()).getPlugins().get(0).getStatus());
+    }
+
+    @Test
+    public void watchdogAdoptsAPluginItNeverAnnouncedWithoutAnEvent() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.available = false;
+        service.install(request(token, "alec"), admin(), null);
+        assertNull(service.status(admin()).getPlugins().get(0).getLastNotifiedState());
+
+        service.watchdog();
+        assertTrue("no container, nothing to say", events.events.isEmpty());
+
+        bridge.available = true;
+        containerHas("alec", true, "alec");
+        service.watchdog();
+
+        assertTrue(events.events.isEmpty());
+        assertEquals(PluginRegistry.NOTIFIED_STARTED, service.status(admin()).getPlugins().get(0).getLastNotifiedState());
+
+        setFeatureState("alec", "Resolved");
+        service.watchdog();
+
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+    }
+
+    @Test
+    public void watchdogIgnoresUnloadedAndHandInstalledPlugins() throws IOException {
+        Files.createDirectories(deployDir);
+        Files.write(deployDir.resolve("hand.kar"), new byte[] { 1 });
+        bridge.kar("hand", "mvn:org.example/hand/1.0/xml/features");
+        bridge.repositoryFeature("mvn:org.example/hand/1.0/xml/features", "hand-feature", "Resolved");
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        service.unload("alec", admin(), null);
+        events.events.clear();
+
+        service.watchdog();
+
+        assertTrue(events.events.isEmpty());
+    }
+
+    private void setFeatureState(final String name, final String state) {
+        for (final InstalledFeature f : bridge.installedFeatures) {
+            if (name.equals(f.getName())) {
+                f.setState(state);
+            }
+        }
     }
 
     @Test

@@ -1,11 +1,11 @@
 
 [[plugin-management]]
 = Plugin Management
-:description: Load plugin KAR files from their repositories or from a file, check, stage, and unload them from the {page-component-title} web UI, and understand when a restart is still required.
+:description: Load plugin KAR files from their repositories or from a file, check, stage, start, restart, and unload them from the {page-component-title} web UI, and understand when a restart is still required.
 
 {page-component-title} plugins are packaged as Karaf archive (KAR) files.
-The Plugin Management page (menu:Administration[Plugin Management]) lets an administrator load a KAR from the plugin's release repository or from a file, review a set of checks, stage it for loading, list what is deployed, and unload a plugin again.
-The page only performs the file-system steps that an operator would otherwise do by hand; it does not restart {page-component-title}.
+The Plugin Management page (menu:Administration[Plugin Management]) lets an administrator load a KAR from the plugin's release repository or from a file, review a set of checks, stage it for loading and start its features in the running container, list what is deployed, restart a plugin whose features did not start, and unload a plugin again.
+The page performs the file-system steps that an operator would otherwise do by hand and drives the container's feature service for the start; it does not restart {page-component-title}.
 
 == From a repository
 
@@ -15,7 +15,8 @@ Choosing a release downloads the KAR to the server, which then runs the same che
 
 === Catalog file
 
-`plugin-catalog.json` holds an `entries` array; each entry has an `id`, a `name`, a `description`, the GitHub `repository` (`owner/name`), an optional `assetPattern`, an optional `docsUrl` (an `http` or `https` URL; anything else is dropped with a warning), and an optional `bootFeatures` array.
+`plugin-catalog.json` holds an `entries` array; each entry has an `id`, a `name`, a `description`, the GitHub `repository` (`owner/name`), an optional `assetPattern`, an optional `docsUrl` (an `http` or `https` URL; anything else is dropped with a warning), an optional `bootFeatures` array, and an optional `restartRequired` flag.
+`restartRequired` (default `false`) marks a plugin that is known to need a server restart after loading, for example one that registers Spring beans the web application picks up only at boot; for such an entry the page skips the live start described in <<_starting_the_features>>, flags the restart, and answers the install with the start outcome `restart-required`. None of the shipped entries sets it.
 `bootFeatures` lists the exact names of the features the page pre-selects for a KAR of that plugin (see <<_features_to_start>>); the shipped file names `alec-opennms-standalone` for ALEC, `opennms-plugins-prometheus-remotewrite` for Prometheus Remote Write, and `opennms-plugins-pagerduty` for PagerDuty, matching each plugin's own installation instructions.
 `assetPattern` is a Java regular expression that release asset names must match, `.*\.kar$` when omitted; it is written by whoever edits the file and is applied to asset names only, so a pattern that is slow to match only slows down that entry's release list.
 The file is read on every request, so edits take effect without a restart; when it is missing, unreadable, or lists no usable entries, the built-in list (ALEC, Prometheus Remote Write, PagerDuty) is used instead.
@@ -46,17 +47,60 @@ The REST call (`POST /api/v2/plugin-management/install`) takes the choice as `fe
 
 * Fetching or uploading a KAR runs structural checks on the file (readable archive, manifest, no entries outside `repository/` and `META-INF/`, feature repositories parse and declare at least one feature, bundle jars are readable, size limit) without writing anything permanent. A KAR whose feature repositories declare no feature at all, such as the small Maven packaging stub some builds leave next to the real plugin KAR, fails the `features-declared` check.
 * When the embedded Karaf container is reachable, the page also compares the bundle imports of `org.opennms.*` packages, the JavaSE requirement of each bundle, and the `opennms-integration-api` feature dependency with what the running server provides. Imports marked `resolution:=optional` are counted but not checked.
-* Installing writes `$\{OPENNMS_HOME}/etc/featuresBoot.d/<name>.boot` listing the chosen features, records the plugin, and then moves the KAR to `$\{OPENNMS_HOME}/deploy/<name>.kar`.
-* Unless the KAR manifest sets `Karaf-Feature-Start: false`, Karaf picks the file up within seconds and installs and starts its features; the boot file makes them start again on every later boot. A KAR that sets the header to `false` is extracted right away but its features start on the next restart.
+* Installing writes `$\{OPENNMS_HOME}/etc/featuresBoot.d/<name>.boot` listing the chosen features, records the plugin, moves the KAR to `$\{OPENNMS_HOME}/deploy/<name>.kar`, and then waits for the container to load it and starts the chosen features when Karaf does not do so itself (see <<_starting_the_features>>).
 * Unloading removes the KAR and the boot file, and drops any other line under `featuresBoot.d` that waits for that KAR (`wait-for-kar=<name>`); Karaf uninstalls the plugin's features from the running container shortly afterwards, and the next restart completes the removal.
-* Every fetch, upload, install, and unload is recorded in `$\{OPENNMS_HOME}/etc/plugin-management.json` and written to `$\{OPENNMS_HOME}/logs/plugin-management.log` with the user name and remote address.
+* Restarting a plugin uninstalls and installs its features again in the running container, which is the recovery path when a live start failed (see <<_restarting_a_plugin>>).
+* Every fetch, upload, install, restart, and unload is recorded in `$\{OPENNMS_HOME}/etc/plugin-management.json` and written to `$\{OPENNMS_HOME}/logs/plugin-management.log` with the user name and remote address; install and restart lines carry the start outcome as `start=<state>`.
+
+== Starting the features
+
+Karaf picks a KAR up from `deploy/` within seconds and extracts it.
+Unless the KAR manifest sets `Karaf-Feature-Start: false`, Karaf also installs and starts the KAR's features on its own; the boot file makes the chosen features start again on every later boot.
+For a KAR that sets the header to `false`, Karaf only extracts the archive, so the page does what the boot file would do at the next boot: it adds the feature repositories Karaf recorded for the KAR (`$\{OPENNMS_HOME}/data/kar/<name>/features.cfg`) to the feature service and installs the chosen features.
+In both cases the install waits up to 30 seconds for the container to report the KAR and, for an auto-start KAR, for the chosen features to reach the `Started` state.
+
+The install response carries the result as `startOutcome`, and the page shows it in the install dialog:
+
+[options="header"]
+|===
+| `state` | Meaning | Restart flag
+
+| `started` | Every chosen feature is `Started`. The plugin is listed as `installed`, with no restart banner, whatever its manifest says. | cleared
+| `failed` | The feature service refused the install, or a feature did not reach `Started`. `message` carries the container's explanation and `diagnostics` maps each feature that is not started to the reason the container can give: the feature state and, for each of its bundles that is not active, the resolver's diagnosis or the bundle state. The plugin is listed as `failed` with the same diagnostics. | set
+| `timeout` | The container never reported the KAR within 30 seconds. The plugin stays `staged`; `$\{OPENNMS_HOME}/logs/karaf.log` has the reason. | set
+| `unavailable` | The container cannot be reached from the web application, so nothing is known. The manifest decides as before: only a KAR with `Karaf-Feature-Start: false` is flagged. | manifest
+| `restart-required` | The catalog entry sets `restartRequired`; no live start was attempted. | set
+|===
+
+The restart flag clears when the JVM restarts, or when a later <<_restarting_a_plugin,Restart>> of the plugin succeeds.
+An unloaded plugin is always flagged until the next restart, which completes the removal.
+
+== Restarting a plugin
+
+Each deployed plugin offers a _Restart_ action (`POST /api/v2/plugin-management/<name>/restart`).
+It uninstalls the plugin's features and installs them again in the running container, after adding the KAR's repositories to the feature service, and answers with the same `startOutcome` shape as the install.
+The features are those the page shows for the plugin: the lines under `featuresBoot.d` that wait for its KAR, else the recorded list, and for a plugin loaded by hand the top-level features of the repositories Karaf recorded for the KAR.
+A restart is the way to recover from a `failed` or `timeout` start once the cause is fixed, for example after installing a missing dependency feature or correcting a configuration file the plugin reads at start, and after a plugin's bundle stopped for a reason the log explains.
+The request is refused with `404` for an unknown plugin, `409` for a plugin that is not deployed (unloaded, or its KAR removed), and `503` when the container cannot be reached; a restart that leaves a feature down answers `200` with `startOutcome.state` = `failed` and the diagnostics.
+
+== Events and alarms
+
+The page raises an event for every state change, so notifications and alarm workflows see plugin problems like any other:
+
+* `uei.opennms.org/internal/plugins/pluginStarted` (severity Normal) when a live start or a restart leaves every chosen feature `Started`, and when the periodic check finds a plugin recovered. It clears the `pluginFailed` alarm of the same plugin.
+* `uei.opennms.org/internal/plugins/pluginFailed` (severity Major) when a live start or a restart fails or times out, and when the periodic check finds that a plugin whose features were started no longer has all of them `Started`. It raises one alarm per plugin (reduction key `%uei%:%dpname%:%parm[karName]%`) whose description follows the latest reason.
+* `uei.opennms.org/internal/plugins/pluginStopped` (severity Normal, no alarm) when a plugin is unloaded.
+
+Every event carries the parameters `karName`, `features` (comma-separated), `user` (`watchdog` for the periodic check), and `source` (the plugin's registry source, `manual` for a plugin loaded by hand); `pluginFailed` adds `reason`.
+The periodic check runs with the temporary-area cleanup every 15 minutes, only for plugins the page manages, and announces each transition once: a plugin is reported failed when it was last reported started (or was found `failed` after a boot without ever having been reported), and reported started again only after it was reported failed.
+The event definitions ship in the `opennms.plugin-management.events` source and can be tuned like any other event definition.
 
 == Restart requirement
 
-The page flags a restart only for plugins whose manifest sets `Karaf-Feature-Start: false` and for unloaded plugins; the flag clears when the JVM restarts, not when the container reports the features.
-Until then such a plugin is listed as `staged` (or `unloaded`) and the banner at the top of the page stays on.
-A plugin listed as `failed` was loaded and the server has restarted since, but one or more of its features did not start; `$\{OPENNMS_HOME}/logs/karaf.log` has the reason.
-Restart {page-component-title} with the method that matches your installation, for example `sudo systemctl restart opennms` for package installations or a container restart for Docker and Kubernetes deployments, then confirm with `opennms:health-check` in the Karaf shell or `GET /opennms/rest/health`.
+The page flags a restart for a plugin whose live start did not end in `started` (see <<_starting_the_features>>), for a plugin whose catalog entry sets `restartRequired`, for a plugin with `Karaf-Feature-Start: false` that was loaded while the container was unreachable, and for unloaded plugins; the flag clears when the JVM restarts or when a restart of the plugin succeeds.
+While it is set the banner at the top of the page stays on.
+A plugin listed as `failed` has its KAR loaded but one or more of its features are not `Started`: either its live start or restart failed, or the server has restarted since it was loaded and the boot did not start them; the row shows the diagnostics the container can give, and `$\{OPENNMS_HOME}/logs/karaf.log` has the details.
+Try the plugin's _Restart_ action first; if the features still do not start, restart {page-component-title} with the method that matches your installation, for example `sudo systemctl restart opennms` for package installations or a container restart for Docker and Kubernetes deployments, then confirm with `opennms:health-check` in the Karaf shell or `GET /opennms/rest/health`.
 The web UI is unavailable while {page-component-title} restarts.
 
 == Checks that block an install

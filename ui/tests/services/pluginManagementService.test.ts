@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { checkPluginKar, DEFAULT_LOG_LINES, downloadPluginManagementLog, fetchPluginFromRepository, getPluginCatalog, getPluginManagement, getPluginManagementLog, getPluginReleases, getPluginRestartInstructions, installPlugin, LOG_LINE_OPTIONS, MAX_LOG_LINES, unloadPlugin } from '@/services/pluginManagementService'
+import { checkPluginKar, DEFAULT_LOG_LINES, downloadPluginManagementLog, fetchPluginFromRepository, getPluginCatalog, getPluginManagement, getPluginManagementLog, getPluginReleases, getPluginRestartInstructions, installPlugin, LOG_LINE_OPTIONS, MAX_LOG_LINES, restartPlugin, unloadPlugin } from '@/services/pluginManagementService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -167,6 +167,18 @@ describe('pluginManagementService', () => {
     expect(vi.mocked(v2.post).mock.calls[0][1]).toBe(input)
     expect(result.success).toBe(true)
     expect(result.payload?.plugin.karName).toBe('alec')
+    expect(result.payload?.startOutcome).toEqual({ state: 'restart-required', message: '', diagnostics: {}})
+    expect(result.payload?.restartInstructions).toEqual(INSTRUCTIONS)
+
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
+    expect((await installPlugin(input)).payload?.startOutcome).toEqual({ state: 'started', message: '', diagnostics: {}})
+
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS,
+      startOutcome: { state: 'failed', message: 'Feature alec did not start.', diagnostics: { alec: 'Unable to resolve', other: null }}}})
+    expect((await installPlugin(input)).payload?.startOutcome).toEqual({ state: 'failed', message: 'Feature alec did not start.', diagnostics: { alec: 'Unable to resolve', other: '' }})
+
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS, startOutcome: { state: 'exploded' }}})
+    expect((await installPlugin(input)).payload?.startOutcome.state).toBe('restart-required')
 
     vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 409, data: 'Check compatibility failed: package org.foo is not exported.' }})
     expect(await installPlugin(input)).toMatchObject({ success: false, message: 'Check compatibility failed: package org.foo is not exported.' })
@@ -189,6 +201,32 @@ describe('pluginManagementService', () => {
     expect((await unloadPlugin('alec')).payload?.bootFilesRemoved).toEqual([])
     vi.mocked(v2.delete).mockRejectedValueOnce({ response: { status: 404, data: 'No plugin named nope.' }})
     expect(await unloadPlugin('nope')).toMatchObject({ success: false, message: 'No plugin named nope.' })
+  })
+
+  it('posts the restart by encoded KAR name and returns the outcome, or the reason', async () => {
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: { ...PLUGIN, status: 'installed', pendingRestart: false }, startOutcome: { state: 'started', message: '', diagnostics: {}}, restartRequired: false }})
+    const result = await restartPlugin('my plugin')
+    expect(vi.mocked(v2.post).mock.calls[0][0]).toBe('/plugin-management/my%20plugin/restart')
+    expect(vi.mocked(v2.post).mock.calls[0][2]).toEqual({ headers: { Accept: 'application/json' }})
+    expect(result.success).toBe(true)
+    expect(result.payload).toEqual({ plugin: { ...PLUGIN, status: 'installed', pendingRestart: false }, startOutcome: { state: 'started', message: '', diagnostics: {}}, restartRequired: false })
+
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: { ...PLUGIN, status: 'failed' }, startOutcome: { state: 'failed', message: 'nope', diagnostics: { alec: 'Unable to resolve' }}, restartRequired: true }})
+    const failed = await restartPlugin('alec')
+    expect(failed.success).toBe(true)
+    expect(failed.payload?.startOutcome).toEqual({ state: 'failed', message: 'nope', diagnostics: { alec: 'Unable to resolve' }})
+    expect(failed.payload?.restartRequired).toBe(true)
+
+    vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { ok: true }})
+    expect((await restartPlugin('alec')).success).toBe(false)
+    vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 404, data: 'No plugin named nope.' }})
+    expect(await restartPlugin('nope')).toMatchObject({ success: false, message: 'No plugin named nope.' })
+    vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 409, data: 'Plugin alec is not deployed.' }})
+    expect((await restartPlugin('alec')).message).toBe('Plugin alec is not deployed.')
+    vi.mocked(v2.post).mockRejectedValueOnce({ response: { status: 503, data: '<html>unavailable</html>' }})
+    expect((await restartPlugin('alec')).message).toBe('The plugin container is not available; the plugin was not restarted.')
+    vi.mocked(v2.post).mockRejectedValueOnce(new Error('network'))
+    expect((await restartPlugin('alec')).message).toBe('Failed to restart alec.')
   })
 
   it('reads the restart instructions and returns null on failure', async () => {

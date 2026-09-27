@@ -29,22 +29,38 @@
         <em>Features to start</em> (the catalog pre-selects the usual one for the plugins it lists; a KAR
         with several ways to run, such as standalone and distributed, needs you to pick), and records the
         plugin so it appears in the table with its checksum, its source and who loaded it.</li>
-      <li>Moves the KAR into <code>{{ deployDir || 'deploy/' }}</code>. Unless its manifest sets
-        <code>Karaf-Feature-Start: false</code>, the container picks it up within seconds and starts its
-        features; the boot file makes them start again on every later boot.</li>
+      <li>Moves the KAR into <code>{{ deployDir || 'deploy/' }}</code> and waits for the container to pick it up
+        and start the features, for up to 30 seconds. The result dialog says whether they started; the boot file
+        makes them start again on every later boot.</li>
     </ol>
     <p>Nothing is written until the checks have run and Load plugin is pressed.</p>
+    <div class="section-title">When a plugin does not start</div>
+    <p>
+      A plugin shown as <em>Failed to start</em> was loaded, but one or more of its features did not start; the
+      reason the container gave is in the status tag's tooltip and in the result dialog, and <code>karaf.log</code>
+      has the details. Fix the cause, then use <em>Restart</em> on the plugin row, or unload the plugin.
+      <em>Restart</em> stops and starts the plugin's features in the container: the plugin is unavailable for a few
+      seconds and comes back in the same mode, and the dialog shows whether it started. No server restart is
+      involved.
+    </p>
+    <div class="section-title">Events</div>
+    <p>
+      Every change of a plugin's state raises an OpenNMS event: <code>pluginStarted</code> when its features are
+      running, <code>pluginFailed</code> when they did not start (this one raises an alarm that clears when the
+      plugin starts), and <code>pluginStopped</code> when it is stopped or unloaded. Notifications and alarm
+      handling apply to them as to any other event.
+    </p>
     <div class="section-title">When a restart is needed</div>
     <p>
-      A plugin whose manifest sets <code>Karaf-Feature-Start: false</code> is extracted right away but its
-      features start on the next boot only; it is shown as <em>Load pending restart</em> and the banner at
-      the top of the page stays on until the server has restarted. An unloaded plugin is likewise removed
-      completely at the next boot and is shown as <em>Unload pending restart</em> until then. A plugin shown
-      as <em>Failed to start</em> was loaded, but one or more of its features did not start after a restart;
-      <code>karaf.log</code> has the reason. A source of <em>Loaded by hand</em> marks a KAR installed
-      outside this page (copied into the deploy directory or installed with <code>kar:install</code>); its
-      features are read from the <code>featuresBoot.d</code> line that waits for it, or from the KAR itself
-      when no boot file names it.
+      A restart of OpenNMS is only needed when the container cannot start the plugin itself. A plugin whose
+      manifest sets <code>Karaf-Feature-Start: false</code> is extracted right away but its features start on
+      the next boot only; the same goes for a KAR loaded while the container was unavailable, or one the
+      container did not pick up within 30 seconds. Such a plugin is shown as <em>Load pending restart</em> and the
+      banner at the top of the page stays on until the server has restarted. An unloaded plugin is likewise
+      removed completely at the next boot and is shown as <em>Unload pending restart</em> until then. A source of
+      <em>Loaded by hand</em> marks a KAR installed outside this page (copied into the deploy directory or
+      installed with <code>kar:install</code>); its features are read from the <code>featuresBoot.d</code> line
+      that waits for it, or from the KAR itself when no boot file names it.
     </p>
   </div>
   <div class="help-section">
@@ -63,7 +79,7 @@
     </p>
     <div class="section-title">Audit log and access</div>
     <p>
-      Every check, load and unload is written to <code>plugin-management.log</code> with the user who
+      Every check, load, restart and unload is written to <code>plugin-management.log</code> with the user who
       requested it and the outcome; the Activity log card shows the most recent entries and can save the
       whole file. Only administrators can open this page and use its actions.
     </p>

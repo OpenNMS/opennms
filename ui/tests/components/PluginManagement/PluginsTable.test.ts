@@ -114,10 +114,47 @@ describe('PluginsTable.vue', () => {
     expect(wrapper.emitted('unload')?.[0][0]).toMatchObject({ karName: 'gamma' })
   })
 
-  it('disables Unload while the container is unavailable', () => {
+  it('disables Unload and Restart while the container is unavailable', () => {
     const wrapper = mountTable([{ ...BASE, karName: 'alpha', status: 'installed' }], false)
     const button = wrapper.find('[data-test="unload-plugin"]')
     expect(button.attributes('disabled')).toBeDefined()
     expect(button.attributes('title')).toContain('not available')
+    const restart = wrapper.find('[data-test="restart-plugin"]')
+    expect(restart.attributes('disabled')).toBeDefined()
+    expect(restart.attributes('title')).toContain('not available')
+  })
+
+  it('offers Restart for loaded and failed plugins only, and emits the entry', async () => {
+    const wrapper = mountTable([
+      { ...BASE, karName: 'alpha', status: 'installed' },
+      { ...BASE, karName: 'beta', status: 'failed' },
+      { ...BASE, karName: 'gamma', status: 'staged', pendingRestart: true },
+      { ...BASE, karName: 'delta', status: 'unknown' },
+      { ...BASE, karName: 'omega', status: 'unloaded', pendingRestart: true }
+    ])
+    const buttons = wrapper.findAll('[data-test="restart-plugin"]')
+    expect(buttons).toHaveLength(4)
+    expect(buttons.map(b => b.attributes('disabled') !== undefined)).toEqual([false, false, true, true])
+    expect(buttons[0].attributes('title')).toBe('Restart alpha')
+    expect(buttons[1].attributes('title')).toBe('Restart beta')
+    expect(buttons[2].attributes('title')).toBe('Restart is available once the plugin is loaded')
+    expect(buttons[0].classes()).not.toContain('p-button-danger')
+    await buttons[1].trigger('click')
+    expect(wrapper.emitted('restart')?.[0][0]).toMatchObject({ karName: 'beta' })
+    expect(wrapper.emitted('unload')).toBeUndefined()
+  })
+
+  it('puts the first diagnostic on the Failed to start tag and every diagnostic on the features title', () => {
+    const wrapper = mountTable([
+      { ...BASE, karName: 'alec', status: 'failed', featureStates: { f1: 'Started', f2: 'Installed' },
+        diagnostics: { f2: 'Unable to resolve org.foo\n  missing requirement osgi.wiring.package', f1: '' }}
+    ])
+    expect(wrapper.find('[data-test="plugin-status"]').attributes('title')).toBe('f2: Unable to resolve org.foo')
+    const features = wrapper.find('[data-test="plugin-features"]')
+    expect(features.attributes('title')).toBe('f1 (Started), f2 (Installed)\nf2: Unable to resolve org.foo\n  missing requirement osgi.wiring.package\nf1: ')
+    expect(features.attributes('data-diagnostics')).toBe('2')
+    const plain = mountTable([{ ...BASE, karName: 'x', status: 'failed', diagnostics: {}}])
+    expect(plain.find('[data-test="plugin-status"]').attributes('title')).toContain('see karaf.log')
+    expect(plain.find('[data-test="plugin-features"]').attributes('data-diagnostics')).toBeUndefined()
   })
 })

@@ -11,7 +11,7 @@
         <OnmsColumn field="karName" header="KAR name" sortable />
         <OnmsColumn header="Features">
           <template #body="{ data }">
-            <span :title="featureTitle(data)" data-test="plugin-features">{{ ellipsify(data.features.join(', '), 60) || NOT_SET }}</span>
+            <span :title="featureTitle(data)" :data-diagnostics="Object.keys(data.diagnostics ?? {}).length || undefined" data-test="plugin-features">{{ ellipsify(data.features.join(', '), 60) || NOT_SET }}</span>
           </template>
         </OnmsColumn>
         <OnmsColumn header="Source">
@@ -42,7 +42,7 @@
             <OnmsTag
               :severity="statusOf(data.status, data.pendingRestart).severity"
               :value="statusOf(data.status, data.pendingRestart).label"
-              :title="statusOf(data.status, data.pendingRestart).title"
+              :title="statusTitle(data)"
               :data-status="data.status"
               data-test="plugin-status"
             />
@@ -51,6 +51,14 @@
         <OnmsColumn header="Actions" style="text-align: right">
           <template #body="{ data }">
             <div class="action-container">
+              <OnmsIconButton
+                v-if="data.status !== 'unloaded'"
+                :icon="Refresh"
+                :disabled="!canRestart(data, containerAvailable)"
+                :title="restartTitle(data, containerAvailable)"
+                data-test="restart-plugin"
+                @click="emit('restart', data)"
+              />
               <OnmsIconButton
                 v-if="data.status !== 'unloaded'"
                 :icon="Delete"
@@ -71,9 +79,10 @@
 <script setup lang="ts">
 import { OnmsCard, OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import { ellipsify } from '@/lib/utils'
 import { PluginEntry } from '@/types/pluginManagement'
-import { CONTAINER_UNAVAILABLE, NOT_SET, formatSize, formatUploadedAt, sourceOf, statusOf } from './pluginDisplay'
+import { CONTAINER_UNAVAILABLE, NOT_SET, canRestart, featureTitle, formatSize, formatUploadedAt, restartTitle, sourceOf, statusOf, statusTitle } from './pluginDisplay'
 
 defineProps<{
   plugins: PluginEntry[]
@@ -82,11 +91,8 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: 'unload', plugin: PluginEntry): void
+  (e: 'restart', plugin: PluginEntry): void
 }>()
-
-// the full list with each feature's container state, e.g. "alec (Started)"
-const featureTitle = (plugin: PluginEntry & { featureStates?: Record<string, string> }): string =>
-  plugin.features.map(f => (plugin.featureStates?.[f] ? `${f} (${plugin.featureStates[f]})` : f)).join(', ')
 </script>
 
 <style lang="scss" scoped>
@@ -112,5 +118,6 @@ const featureTitle = (plugin: PluginEntry & { featureStates?: Record<string, str
 .action-container {
   display: flex;
   justify-content: flex-end;
+  gap: 0.25rem;
 }
 </style>

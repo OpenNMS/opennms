@@ -2,21 +2,30 @@
   <OnmsDialog
     :visible="visible"
     modal
-    :header="result ? `Plugin ${result.plugin.karName} ${result.restartRequired ? 'staged' : 'loaded'}` : 'Plugin loaded'"
+    :header="header"
     width="min(720px, 95vw)"
     data-test="plugin-loaded-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
-    <div v-if="result" class="dialog-body">
-      <p v-if="result.restartRequired" class="dialog-note" data-test="loaded-note-restart">
-        The manifest sets <code>Karaf-Feature-Start: false</code>, so the container extracts the KAR now but its
-        features start on the next restart; until then the plugin is listed as staged.
-      </p>
-      <p v-else class="dialog-note" data-test="loaded-note-auto">
-        The container picks the KAR up from the deploy directory within seconds and starts its features; the boot
-        file makes them start again on every later boot. No restart is needed; the table shows the plugin as
-        installed once its features report started.
-      </p>
+    <div v-if="result" class="dialog-body" :data-outcome="result.startOutcome.state">
+      <div v-if="result.startOutcome.state === 'started'" class="callout success-callout" role="status" data-test="outcome-started">
+        Its features started: {{ startedFeatures(result.plugin.features) }}.
+      </div>
+      <PluginStartFailure v-else-if="result.startOutcome.state === 'failed'" :outcome="result.startOutcome" data-test="outcome-failed">
+        You can fix the cause and use Restart on the plugin row, or unload it.
+      </PluginStartFailure>
+      <div v-else-if="result.startOutcome.state === 'timeout'" class="callout warn-callout" role="status" data-test="outcome-timeout">
+        The container did not pick the KAR up within 30 seconds; it is staged and will start on the next restart
+        or when you use Restart.
+      </div>
+      <div v-else-if="result.startOutcome.state === 'unavailable'" class="callout warn-callout" role="status" data-test="outcome-unavailable">
+        {{ result.startOutcome.message || 'The plugin container is not available, so the KAR was staged only.' }}
+        Its features start on the next restart; until then the plugin is listed as staged.
+      </div>
+      <div v-else class="callout info-callout" role="status" data-test="outcome-restart-required">
+        {{ result.startOutcome.message || 'The manifest sets Karaf-Feature-Start: false, so the container extracts the KAR now but its features start on the next restart.' }}
+        Until then the plugin is listed as staged.
+      </div>
       <div class="section-title">What was written</div>
       <ul class="written" data-test="written-list">
         <li>Deploy file <code>{{ result.plugin.fileName }}</code></li>
@@ -24,7 +33,7 @@
         <li v-else>No boot file: the KAR has no features to start automatically.</li>
         <li v-if="result.plugin.features.length">Features to start: {{ result.plugin.features.join(', ') }}</li>
       </ul>
-      <template v-if="result.restartRequired">
+      <template v-if="needsServerRestart(result.startOutcome)">
         <div class="section-title">Restart OpenNMS</div>
         <RestartCommands :instructions="result.restartInstructions" />
       </template>
@@ -36,11 +45,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 import { PluginInstallResult } from '@/types/pluginManagement'
+import { needsServerRestart, startedFeatures } from './pluginDisplay'
+import PluginStartFailure from './PluginStartFailure.vue'
 import RestartCommands from './RestartCommands.vue'
 
-defineProps<{
+const props = defineProps<{
   visible: boolean
   result: PluginInstallResult | null
 }>()
@@ -48,6 +60,18 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void
 }>()
+
+const header = computed(() => {
+  if (!props.result) {
+    return 'Plugin loaded'
+  }
+  const name = props.result.plugin.karName
+  switch (props.result.startOutcome.state) {
+    case 'started': return `Plugin ${name} loaded`
+    case 'failed': return `Plugin ${name} loaded, but it did not start`
+    default: return `Plugin ${name} staged`
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -58,10 +82,25 @@ const emit = defineEmits<{
   padding-top: 0.5rem;
 }
 
-.dialog-note {
-  margin: 0;
+.callout {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
   font-size: 0.9rem;
-  color: var(--p-text-muted-color);
+}
+
+.success-callout {
+  border-left: 4px solid var(--p-green-500, #2e7d32);
+  background: color-mix(in srgb, var(--p-green-500, #2e7d32) 10%, transparent);
+}
+
+.warn-callout {
+  border-left: 4px solid var(--p-orange-500, #ef6c00);
+  background: color-mix(in srgb, var(--p-orange-500, #ef6c00) 12%, transparent);
+}
+
+.info-callout {
+  border-left: 4px solid var(--p-blue-500, #1565c0);
+  background: color-mix(in srgb, var(--p-blue-500, #1565c0) 10%, transparent);
 }
 
 .section-title {

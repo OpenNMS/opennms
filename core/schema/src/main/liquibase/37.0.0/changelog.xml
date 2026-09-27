@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Events raised by the Plugin Management page when a plugin's features start, fail to start or are unloaded.
+         They get their own source so operators can find and tune them as one group. -->
+    <changeSet author="janes" id="37.0.0-plugin-management-event-source">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_sources"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.plugin-management.events'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_sources
+            (id, name, description, vendor, file_order, enabled, event_count, created_time, last_modified, uploaded_by)
+            VALUES (nextval('eventconf_sources_id_seq'),
+                    'opennms.plugin-management.events',
+                    'Plugin Management: plugin started, failed and stopped events',
+                    'opennms',
+                    nextval('eventconf_sources_file_order_seq'),
+                    TRUE,
+                    3,
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP,
+                    'system-migration');
+        </sql>
+        <rollback>
+            DELETE FROM eventconf_sources WHERE name = 'opennms.plugin-management.events';
+        </rollback>
+    </changeSet>
+
+    <changeSet author="janes" id="37.0.0-plugin-management-pluginStarted-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.plugin-management.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/plugins/pluginStarted'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events
+            (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.plugin-management.events'),
+                    'uei.opennms.org/internal/plugins/pluginStarted',
+                    'OpenNMS-defined internal event: plugin started',
+                    '&lt;p>Plugin %parm[karName]% started its features %parm[features]% (source %parm[source]%, requested by %parm[user]%).&lt;/p>',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/internal/plugins/pluginStarted&lt;/uei>
+&lt;event-label>OpenNMS-defined internal event: plugin started&lt;/event-label>
+&lt;descr>&amp;lt;p>Plugin %parm[karName]% started its features %parm[features]% (source %parm[source]%, requested by %parm[user]%).&amp;lt;/p>&lt;/descr>
+&lt;logmsg dest="logndisplay">Plugin %parm[karName]% started: %parm[features]%&lt;/logmsg>
+&lt;severity>Normal&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%parm[karName]%" alarm-type="2" clear-key="uei.opennms.org/internal/plugins/pluginFailed:%dpname%:%parm[karName]%" auto-clean="false"/>
+&lt;/event>',
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP,
+                    'system-migration',
+                    'Normal',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e
+                     WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.plugin-management.events')));
+        </sql>
+        <rollback>
+            DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/plugins/pluginStarted';
+        </rollback>
+    </changeSet>
+
+    <changeSet author="janes" id="37.0.0-plugin-management-pluginFailed-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.plugin-management.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/plugins/pluginFailed'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events
+            (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.plugin-management.events'),
+                    'uei.opennms.org/internal/plugins/pluginFailed',
+                    'OpenNMS-defined internal event: plugin failed to start',
+                    '&lt;p>Plugin %parm[karName]% did not start its features %parm[features]% (source %parm[source]%, requested by %parm[user]%). Reason: %parm[reason]%&lt;/p>',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/internal/plugins/pluginFailed&lt;/uei>
+&lt;event-label>OpenNMS-defined internal event: plugin failed to start&lt;/event-label>
+&lt;descr>&amp;lt;p>Plugin %parm[karName]% did not start its features %parm[features]% (source %parm[source]%, requested by %parm[user]%). Reason: %parm[reason]%&amp;lt;/p>&amp;lt;p>Use Restart on the Plugin Management page after fixing the cause, or restart OpenNMS.&amp;lt;/p>&lt;/descr>
+&lt;logmsg dest="logndisplay">Plugin %parm[karName]% failed to start: %parm[reason]%&lt;/logmsg>
+&lt;severity>Major&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%parm[karName]%" alarm-type="1" auto-clean="false">&lt;update-field field-name="descr" update-on-reduction="true"/>&lt;update-field field-name="logmsg" update-on-reduction="true"/>&lt;/alarm-data>
+&lt;/event>',
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP,
+                    'system-migration',
+                    'Major',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e
+                     WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.plugin-management.events')));
+        </sql>
+        <rollback>
+            DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/plugins/pluginFailed';
+        </rollback>
+    </changeSet>
+
+    <changeSet author="janes" id="37.0.0-plugin-management-pluginStopped-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.plugin-management.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/plugins/pluginStopped'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events
+            (id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by, severity, event_order)
+            VALUES (nextval('eventconf_events_id_seq'),
+                    (SELECT id FROM eventconf_sources WHERE name = 'opennms.plugin-management.events'),
+                    'uei.opennms.org/internal/plugins/pluginStopped',
+                    'OpenNMS-defined internal event: plugin unloaded',
+                    '&lt;p>Plugin %parm[karName]% was unloaded (features %parm[features]%, source %parm[source]%, requested by %parm[user]%).&lt;/p>',
+                    TRUE,
+                    '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/internal/plugins/pluginStopped&lt;/uei>
+&lt;event-label>OpenNMS-defined internal event: plugin unloaded&lt;/event-label>
+&lt;descr>&amp;lt;p>Plugin %parm[karName]% was unloaded (features %parm[features]%, source %parm[source]%, requested by %parm[user]%).&amp;lt;/p>&lt;/descr>
+&lt;logmsg dest="logndisplay">Plugin %parm[karName]% unloaded by %parm[user]%&lt;/logmsg>
+&lt;severity>Normal&lt;/severity>
+&lt;/event>',
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP,
+                    'system-migration',
+                    'Normal',
+                    (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e
+                     WHERE e.source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.plugin-management.events')));
+        </sql>
+        <rollback>
+            DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/plugins/pluginStopped';
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -12,7 +12,7 @@
       <span>Plugins cannot be loaded or unloaded until the Karaf container is running; check that OpenNMS has started completely, then reload the page.</span>
     </div>
 
-    <div v-if="store.restartRequired" class="callout warn-callout" role="status" data-test="restart-banner">
+    <div v-if="restartPending(store.plugins)" class="callout warn-callout" role="status" data-test="restart-banner">
       <span data-test="restart-summary">{{ restartSummary(store.plugins) }}</span>
       <OnmsButton variant="outlined" label="Show restart instructions" data-test="show-restart-instructions" @click="showRestartDialog = true" />
     </div>
@@ -21,15 +21,16 @@
       Failed to read the plugin list. Check that the server is up and that you are still logged in, then reload the page.
     </p>
 
-    <PluginLoadCard :disabled="!store.containerAvailable" />
+    <PluginLoadCard :disabled="!store.containerAvailable" @loaded="onLoaded" />
     <p v-if="tempFiles" class="temp-files" :title="store.state?.tempDir" data-test="temp-files">{{ tempFiles }}</p>
 
-    <PluginsTable :plugins="store.plugins" :containerAvailable="store.containerAvailable" @unload="askUnload" />
+    <PluginsTable :plugins="store.plugins" :containerAvailable="store.containerAvailable" @unload="askUnload" @restart="askRestart" />
 
     <PluginActivityLog />
 
     <RestartInstructionsDialog v-model:visible="showRestartDialog" :instructions="store.restartInstructions" />
     <PluginUnloadDialog v-model:visible="showUnloadDialog" :plugin="pluginToUnload" @unloaded="onUnloaded" />
+    <PluginRestartDialog v-model:visible="showRestartPluginDialog" :plugin="pluginToRestart" />
   </div>
 </template>
 
@@ -40,14 +41,15 @@ import { OnmsButton, useOnmsToast } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import PluginActivityLog from '@/components/PluginManagement/PluginActivityLog.vue'
 import PluginLoadCard from '@/components/PluginManagement/PluginLoadCard.vue'
+import PluginRestartDialog from '@/components/PluginManagement/PluginRestartDialog.vue'
 import PluginsTable from '@/components/PluginManagement/PluginsTable.vue'
 import PluginUnloadDialog from '@/components/PluginManagement/PluginUnloadDialog.vue'
-import { formatSize, restartSummary } from '@/components/PluginManagement/pluginDisplay'
+import { formatSize, restartPending, restartSummary } from '@/components/PluginManagement/pluginDisplay'
 import RestartInstructionsDialog from '@/components/PluginManagement/RestartInstructionsDialog.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { BreadCrumb } from '@/types'
-import { PluginEntry } from '@/types/pluginManagement'
+import { PluginEntry, PluginInstallResult } from '@/types/pluginManagement'
 
 const menuStore = useMenuStore()
 const store = usePluginManagementStore()
@@ -56,6 +58,8 @@ const { showToast } = useOnmsToast()
 const showRestartDialog = ref(false)
 const showUnloadDialog = ref(false)
 const pluginToUnload = ref<PluginEntry | null>(null)
+const showRestartPluginDialog = ref(false)
+const pluginToRestart = ref<PluginEntry | null>(null)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -79,6 +83,17 @@ onMounted(async () => {
 const askUnload = (plugin: PluginEntry) => {
   pluginToUnload.value = plugin
   showUnloadDialog.value = true
+}
+
+const askRestart = (plugin: PluginEntry) => {
+  pluginToRestart.value = plugin
+  showRestartPluginDialog.value = true
+}
+
+const onLoaded = (result: PluginInstallResult) => {
+  if (result.startOutcome.state === 'started') {
+    showToast({ message: `Plugin ${result.plugin.karName} is running.`, severity: 'success' })
+  }
 }
 
 const onUnloaded = (plugin: PluginEntry) => {

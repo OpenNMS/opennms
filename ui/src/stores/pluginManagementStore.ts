@@ -22,7 +22,7 @@
 
 import API from '@/services'
 import { DEFAULT_LOG_LINES } from '@/services/pluginManagementService'
-import { KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
+import { KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginRestartResult, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -93,6 +93,15 @@ export const usePluginManagementStore = defineStore('pluginManagementStore', () 
     return result
   }
 
+  // a start that failed is still a completed restart: the list shows the new state
+  const restart = async (karName: string): Promise<ValidationResultWithPayload<PluginRestartResult>> => {
+    const result = await API.restartPlugin(karName)
+    if (result.success) {
+      await Promise.all([load(), refreshLog()])
+    }
+    return result
+  }
+
   const getRestartInstructions = async (): Promise<RestartInstructions | null> => {
     if (restartInstructions.value === null) {
       restartInstructions.value = await API.getPluginRestartInstructions()
@@ -112,5 +121,5 @@ export const usePluginManagementStore = defineStore('pluginManagementStore', () 
   // the full file for saving; null when it cannot be read
   const downloadLog = (): Promise<string | null> => API.downloadPluginManagementLog()
 
-  return { state, loadError, isLoading, restartInstructions, log, logLines, catalog, releases, plugins, containerAvailable, restartRequired, load, check, loadCatalog, loadReleases, fetchFromRepository, install, unload, getRestartInstructions, refreshLog, setLogLines, downloadLog }
+  return { state, loadError, isLoading, restartInstructions, log, logLines, catalog, releases, plugins, containerAvailable, restartRequired, load, check, loadCatalog, loadReleases, fetchFromRepository, install, unload, restart, getRestartInstructions, refreshLog, setLogLines, downloadLog }
 })

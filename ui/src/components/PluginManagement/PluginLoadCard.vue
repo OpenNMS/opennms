@@ -34,7 +34,7 @@ import { OnmsCard, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs }
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
-import { KarInspection } from '@/types/pluginManagement'
+import { KarInspection, PluginInstallResult } from '@/types/pluginManagement'
 import PluginCheckResult from './PluginCheckResult.vue'
 import PluginFileLoad from './PluginFileLoad.vue'
 import PluginManagementAbout from './PluginManagementAbout.vue'
@@ -43,6 +43,10 @@ import PluginRepositoryLoad from './PluginRepositoryLoad.vue'
 defineProps<{
   // the container is unavailable: nothing can be checked or loaded
   disabled: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'loaded', result: PluginInstallResult): void
 }>()
 
 const store = usePluginManagementStore()
@@ -63,9 +67,10 @@ const onChecked = (checked: KarInspection, sourceLine: string) => {
   source.value = sourceLine
 }
 
-const onLoaded = () => {
+const onLoaded = (result: PluginInstallResult) => {
   clearResult()
   fileLoad.value?.clear()
+  emit('loaded', result)
 }
 </script>
 

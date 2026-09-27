@@ -146,6 +146,28 @@ public class PluginCatalogTest {
         assertNull(catalog.find("f").orElseThrow().getDocsUrl());
     }
 
+    @Test
+    public void restartRequiredHintDefaultsToFalse() throws IOException {
+        for (final PluginCatalog.Entry entry : PluginCatalog.defaults()) {
+            assertFalse(entry.getId(), entry.isRestartRequired());
+        }
+        final Path file = folder.getRoot().toPath().resolve("plugin-catalog.json");
+        Files.write(file, ("{\"entries\":[\n"
+                + "  {\"id\":\"a\",\"repository\":\"me/a\",\"restartRequired\":true},\n"
+                + "  {\"id\":\"b\",\"repository\":\"me/b\",\"restartRequired\":false},\n"
+                + "  {\"id\":\"c\",\"repository\":\"me/c\"}\n"
+                + "]}").getBytes(StandardCharsets.UTF_8));
+        final PluginCatalog catalog = new PluginCatalog(file);
+
+        assertTrue(catalog.find("a").orElseThrow().isRestartRequired());
+        assertFalse(catalog.find("b").orElseThrow().isRestartRequired());
+        assertFalse(catalog.find("c").orElseThrow().isRestartRequired());
+        assertTrue(catalog.restartRequiredFor("me/a"));
+        assertFalse(catalog.restartRequiredFor("me/c"));
+        assertFalse(catalog.restartRequiredFor("acme/other"));
+        assertFalse(catalog.restartRequiredFor(null));
+    }
+
     private static List<String> ids(final List<PluginCatalog.Entry> entries) {
         return entries.stream().map(PluginCatalog.Entry::getId).collect(Collectors.toList());
     }

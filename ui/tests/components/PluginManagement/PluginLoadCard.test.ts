@@ -46,6 +46,7 @@ const INSPECTION = {
   suggestedFeatures: ['alec']
 }
 const PLUGIN = { karName: 'alec', fileName: 'alec.kar', sha256: '0123', size: 2048, uploadedBy: 'admin', uploadedAt: 1, features: ['alec'], bootFile: 'alec.boot', autoStart: true, status: 'staged', pendingRestart: false, source: 'upload', managed: true }
+const STARTED = { state: 'started', message: '', diagnostics: {}}
 const INSTRUCTIONS = { packages: 'systemctl restart opennms', container: 'docker restart horizon', healthCheck: 'opennms status', note: 'Wait.' }
 const CATALOG = { entries: [{ id: 'alec', name: 'ALEC', description: 'Correlation', repository: 'OpenNMS-Plugins/alec', docsUrl: null }], customAllowed: false }
 const RELEASES = { repository: 'OpenNMS-Plugins/alec', releases: [{ tag: 'v3.0.4', name: 'v3.0.4', publishedAt: '2026-09-01T10:00:00Z', prerelease: false, notes: '', assets: [{ name: 'opennms-alec-plugin.kar', size: 93634560, url: 'https://github.com/x' }] }], fetchedAt: '', cached: false }
@@ -143,7 +144,7 @@ describe('PluginLoadCard.vue', () => {
     expect(store.fetchFromRepository).toHaveBeenCalledWith({ catalogId: 'alec', tag: 'v3.0.4', assetName: 'opennms-alec-plugin.kar' })
     expect(wrapper.find('[data-test="summary-source"]').text()).toBe('Fetched from OpenNMS-Plugins/alec v3.0.4 (opennms-alec-plugin.kar, 89.3 MB)')
     expect(wrapper.find('[data-test="load-plugin"]').attributes('disabled')).toBeUndefined()
-    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, startOutcome: STARTED, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
     expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec'] })
@@ -201,7 +202,7 @@ describe('PluginLoadCard.vue', () => {
     await wrapper.find('[data-test="ack-warnings"] input[type="checkbox"]').setValue(true)
     expect(wrapper.find('[data-test="load-plugin"]').attributes('disabled')).toBeUndefined()
 
-    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, startOutcome: STARTED, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
     expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: true, features: ['alec'] })
@@ -212,7 +213,7 @@ describe('PluginLoadCard.vue', () => {
     await openFileTab()
     await chooseFile()
     await runChecks(INSPECTION.checks)
-    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
+    store.install.mockResolvedValueOnce({ success: true, message: '', payload: { plugin: PLUGIN, startOutcome: STARTED, restartRequired: false, restartInstructions: INSTRUCTIONS }})
     await wrapper.find('[data-test="load-plugin"]').trigger('click')
     await flushPromises()
     expect(store.install).toHaveBeenCalledWith({ uploadToken: 'tok', karName: 'alec', acknowledgeWarnings: false, features: ['alec'] })
@@ -220,7 +221,7 @@ describe('PluginLoadCard.vue', () => {
     expect(dialog.exists()).toBe(true)
     expect(dialog.text()).toContain('Plugin alec loaded')
     expect(dialog.find('[data-test="written-list"]').text()).toContain('alec.boot')
-    expect(dialog.find('[data-test="loaded-note-auto"]').exists()).toBe(true)
+    expect(dialog.find('[data-test="outcome-started"]').exists()).toBe(true)
     expect(dialog.find('[data-test="restart-packages"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="no-file"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="inspection-summary"]').exists()).toBe(false)

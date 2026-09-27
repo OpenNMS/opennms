@@ -24,10 +24,12 @@ package org.opennms.web.rest.v2.plugins;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Response of install and unload: the affected plugin plus what to do next. */
+/** Response of install, restart and unload: the affected plugin plus what to do next. */
 public class PluginActionResult {
     private PluginEntry plugin;
     private boolean restartRequired;
+    /** how the live start went; null for an unload */
+    private StartOutcome startOutcome;
     private RestartInstructions restartInstructions;
     private List<KarInspection.Check> checks = new ArrayList<>();
     /** featuresBoot.d files (relative to OPENNMS_HOME) edited or deleted by an unload. */
@@ -37,6 +39,8 @@ public class PluginActionResult {
     public void setPlugin(final PluginEntry plugin) { this.plugin = plugin; }
     public boolean isRestartRequired() { return restartRequired; }
     public void setRestartRequired(final boolean restartRequired) { this.restartRequired = restartRequired; }
+    public StartOutcome getStartOutcome() { return startOutcome; }
+    public void setStartOutcome(final StartOutcome startOutcome) { this.startOutcome = startOutcome; }
     public RestartInstructions getRestartInstructions() { return restartInstructions; }
     public void setRestartInstructions(final RestartInstructions restartInstructions) { this.restartInstructions = restartInstructions; }
     public List<KarInspection.Check> getChecks() { return checks; }
