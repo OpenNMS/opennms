@@ -267,11 +267,11 @@ describe('MinionsTable.vue', () => {
         await ctx.wrapper.vm.$nextTick()
       })
 
-      it('sits on the filter row, with no location dropdown, and says Minions', () => {
+      it('sits on the filter row, with no location dropdown, and says Minions, Locations', () => {
         expect(ctx.wrapper.find('[data-test="location-select"]').exists()).toBe(false)
         expect(ctx.wrapper.find('.toolbar [data-test="quick-filters"]').exists()).toBe(true)
         expect(ctx.wrapper.find('.toolbar [data-test="minion-search-box"]').exists()).toBe(true)
-        expect(input().attributes('placeholder')).toBe('Minions')
+        expect(input().attributes('placeholder')).toBe('Minions, Locations')
         expect(input().attributes('aria-label')).toBe('Search minions, or choose a location to filter by')
         expect(auto().props('showEmptyMessage')).toBe(false)
       })

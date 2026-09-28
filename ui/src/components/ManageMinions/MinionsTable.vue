@@ -42,7 +42,7 @@
         :modelValue="search"
         :suggestions="locationSuggestions"
         optionLabel="label"
-        placeholder="Minions"
+        placeholder="Minions, Locations"
         :showEmptyMessage="false"
         :unsafePt="{ pcInputText: { root: { 'aria-label': 'Search minions, or choose a location to filter by', 'data-test': 'minion-search' }}}"
         class="search"
