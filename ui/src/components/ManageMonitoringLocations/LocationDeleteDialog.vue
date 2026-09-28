@@ -54,23 +54,6 @@
           from this monitoring location's perspective {{ outageCount === 1 ? 'is' : 'are' }} removed with it.
         </OnmsMessage>
       </template>
-
-      <FormField for="confirm-name" hint="The name is case-sensitive.">
-        <template #label-suffix>
-          <label for="confirm-name" class="confirm-label">Type <code>{{ name }}</code> to confirm</label>
-        </template>
-        <OnmsInputText
-          id="confirm-name"
-          ref="confirmInput"
-          v-model.trim="confirmText"
-          :disabled="blocked || loading"
-          :autofocus="!blocked || undefined"
-          autocomplete="off"
-          fluid
-          data-test="confirm-input"
-          @keydown.enter="confirmDelete"
-        />
-      </FormField>
     </div>
 
     <template #footer>
@@ -78,7 +61,7 @@
         ref="cancelButton"
         variant="ghost"
         label="Cancel"
-        :autofocus="blocked || undefined"
+        autofocus
         data-test="cancel-button"
         @click="emit('update:visible', false)"
       />
@@ -96,9 +79,8 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsInputText, OnmsMessage, OnmsSpinner } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsMessage, OnmsSpinner } from '@opennms/onms-ui'
 
-import FormField from '@/components/Common/FormField.vue'
 import { legacyUrl } from '@/lib/legacyUrl'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
@@ -127,13 +109,11 @@ const applicationsUrl = legacyUrl('admin/applications.htm')
 
 const name = computed(() => props.location?.['location-name'] ?? '')
 
-const confirmInput = ref<{ $el?: HTMLElement } | null>(null)
 const cancelButton = ref<{ $el?: HTMLElement } | null>(null)
 
 const loading = ref(false)
 const deleting = ref(false)
 const errorText = ref('')
-const confirmText = ref('')
 const nodeCount = ref<number | null>(null)
 const minionCount = ref(0)
 const applications = ref<{ id: number; name: string }[] | null>(null)
@@ -144,8 +124,7 @@ const applicationNames = computed(() => (applications.value ?? []).map(app => ap
 
 // a running Minion's own node is a node, so either count blocks the delete
 const blocked = computed(() => (nodeCount.value ?? 0) > 0 || minionCount.value > 0)
-const canDelete = computed(() =>
-  !loading.value && !deleting.value && !blocked.value && confirmText.value === name.value && name.value !== '')
+const canDelete = computed(() => !loading.value && !deleting.value && !blocked.value && name.value !== '')
 
 // only the newest open commits its results, so a slow lookup from an earlier
 // open cannot describe the wrong location
@@ -171,8 +150,9 @@ const load = async () => {
   applications.value = apps
   outageCount.value = outages
   loading.value = false
+  // Cancel keeps the focus so Enter never lands on the destructive button
   await nextTick()
-  ;(blocked.value ? cancelButton.value : confirmInput.value)?.$el?.focus?.()
+  cancelButton.value?.$el?.focus?.()
 }
 
 watch(() => props.visible, (isVisible) => {
@@ -180,7 +160,6 @@ watch(() => props.visible, (isVisible) => {
     return
   }
   errorText.value = ''
-  confirmText.value = ''
   nodeCount.value = null
   minionCount.value = 0
   applications.value = null
@@ -228,13 +207,6 @@ const confirmDelete = async () => {
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0;
-}
-
-.confirm-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--p-text-color);
 }
 
 .dialog-error {

@@ -7,7 +7,10 @@
   <div class="distributed-monitoring-container">
     <div class="page-header">
       <div>
-        <h1 class="page-title">Manage Minions and Locations</h1>
+        <div class="title-row">
+          <h1 class="page-title">Manage Minions and Locations</h1>
+          <AboutDialog />
+        </div>
         <p class="page-subtitle">Monitoring locations and the Minions that poll and collect from them.</p>
       </div>
       <div class="refresh-controls">
@@ -21,8 +24,6 @@
         />
       </div>
     </div>
-
-    <AboutPanel />
 
     <OnmsTabs v-model:value="activeTab">
       <OnmsTabList>
@@ -57,7 +58,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, useOnmsToast } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import AboutPanel from '@/components/DistributedMonitoring/AboutPanel.vue'
+import AboutDialog from '@/components/DistributedMonitoring/AboutDialog.vue'
 import MinionsTable from '@/components/ManageMinions/MinionsTable.vue'
 import LocationsTable from '@/components/ManageMonitoringLocations/LocationsTable.vue'
 import { relativeTimeSince } from '@/lib/relativeTime'
@@ -189,7 +190,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 // the tabs inset their panels by 1.125rem (tabs.tabpanel.padding), so the header
-// and the About panel use the same gutter to line up with the cards below
+// uses the same gutter to line up with the cards below
 $page-gutter: 1.125rem;
 
 .distributed-monitoring-container {
@@ -199,10 +200,6 @@ $page-gutter: 1.125rem;
   padding: 0 2px 2rem 2px;
 }
 
-.about-panel {
-  margin: 0 $page-gutter;
-}
-
 .page-header {
   padding: 0 $page-gutter;
   display: flex;
@@ -210,6 +207,12 @@ $page-gutter: 1.125rem;
   align-items: flex-start;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .page-title {

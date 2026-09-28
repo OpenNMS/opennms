@@ -1,19 +1,5 @@
 <template>
   <TableCard class="minions-table">
-    <div class="header">
-      <div class="card-title">Minions</div>
-      <div class="header-right">
-        <OnmsSearchInput
-          v-if="store.minions.length"
-          v-model="search"
-          placeholder="Search minions"
-          ariaLabel="Search minions"
-          dataTest="minion-search"
-          class="search"
-        />
-      </div>
-    </div>
-
     <p v-if="store.loadError && store.minions.length" class="stale-note" data-test="stale-note">
       Showing the last loaded data — the most recent refresh failed.
     </p>
@@ -21,39 +7,49 @@
       Showing the first {{ store.minions.length }} of {{ store.totalCount }} minions. Use search to narrow the list.
     </p>
 
-    <div v-if="store.minions.length" class="filters">
-      <OnmsSelectButton
-        v-model="quickFilter"
-        :options="quickFilterOptions"
-        optionLabel="label"
-        optionValue="value"
-        aria-label="Quick filter"
-        data-test="quick-filters"
-      />
-      <OnmsSelect
-        :modelValue="locationFilter"
-        :options="locationOptions"
-        showClear
-        placeholder="All locations"
-        aria-label="Filter by monitoring location"
-        data-test="location-select"
-        @update:modelValue="emit('update:locationFilter', ($event as string | null) || null)"
-      />
-      <!-- the chip's own remove icon is not focusable, so a real button clears it -->
-      <template v-if="locationFilter">
-        <OnmsChip
-          :label="`Location: ${locationFilter}`"
-          data-test="location-filter-chip"
+    <!-- the quick filters, the location filter and the search narrow the same list together -->
+    <div v-if="store.minions.length" class="toolbar">
+      <div class="filters">
+        <OnmsSelectButton
+          v-model="quickFilter"
+          :options="quickFilterOptions"
+          optionLabel="label"
+          optionValue="value"
+          aria-label="Quick filter"
+          data-test="quick-filters"
         />
-        <OnmsButton
-          variant="text"
-          size="small"
-          label="Clear"
-          aria-label="Clear location filter"
-          data-test="clear-location-filter"
-          @click="emit('update:locationFilter', null)"
+        <OnmsSelect
+          :modelValue="locationFilter"
+          :options="locationOptions"
+          showClear
+          placeholder="All locations"
+          aria-label="Filter by monitoring location"
+          data-test="location-select"
+          @update:modelValue="emit('update:locationFilter', ($event as string | null) || null)"
         />
-      </template>
+        <!-- the chip's own remove icon is not focusable, so a real button clears it -->
+        <template v-if="locationFilter">
+          <OnmsChip
+            :label="`Location: ${locationFilter}`"
+            data-test="location-filter-chip"
+          />
+          <OnmsButton
+            variant="text"
+            size="small"
+            label="Clear"
+            aria-label="Clear location filter"
+            data-test="clear-location-filter"
+            @click="emit('update:locationFilter', null)"
+          />
+        </template>
+      </div>
+      <OnmsSearchInput
+        v-model="search"
+        placeholder="Minions"
+        ariaLabel="Search minions"
+        dataTest="minion-search"
+        class="search"
+      />
     </div>
 
     <OnmsTable
@@ -320,22 +316,13 @@ const askDelete = (minion: Minion) => {
   padding: 25px;
 }
 
-.header {
+.toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1rem;
-}
-
-.card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .filters {
@@ -343,7 +330,6 @@ const askDelete = (minion: Minion) => {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-bottom: 1rem;
 }
 
 .truncation-note {

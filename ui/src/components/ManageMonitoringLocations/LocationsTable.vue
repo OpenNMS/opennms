@@ -1,12 +1,28 @@
 <template>
   <TableCard class="locations-table">
-    <div class="header">
-      <div class="card-title">Monitoring Locations</div>
-      <div class="header-right">
+    <div class="toolbar">
+      <!-- the chip's own remove icon is not focusable, so a real button clears it -->
+      <div class="filters">
+        <template v-if="nameFilter">
+          <OnmsChip
+            :label="`Location: ${nameFilter}`"
+            data-test="name-filter-chip"
+          />
+          <OnmsButton
+            variant="text"
+            size="small"
+            label="Clear"
+            aria-label="Clear name filter"
+            data-test="clear-name-filter"
+            @click="nameFilter = null"
+          />
+        </template>
+      </div>
+      <div class="toolbar-right">
         <OnmsSearchInput
           v-if="store.locations.length"
           v-model="search"
-          placeholder="Search locations"
+          placeholder="Locations"
           ariaLabel="Search locations"
           dataTest="location-search"
           class="search"
@@ -27,22 +43,6 @@
     <p v-if="store.truncated" class="truncation-note" data-test="truncation-note">
       Showing the first {{ store.locations.length }} of {{ store.totalCount }} locations. Use search to narrow the list.
     </p>
-
-    <!-- the chip's own remove icon is not focusable, so a real button clears it -->
-    <div v-if="nameFilter" class="filters">
-      <OnmsChip
-        :label="`Location: ${nameFilter}`"
-        data-test="name-filter-chip"
-      />
-      <OnmsButton
-        variant="text"
-        size="small"
-        label="Clear"
-        aria-label="Clear name filter"
-        data-test="clear-name-filter"
-        @click="nameFilter = null"
-      />
-    </div>
 
     <OnmsTable
       :value="visibleLocations"
@@ -259,22 +259,20 @@ const onDeleted = (summary: LocationDeletedSummary) => {
   padding: 25px;
 }
 
-.header {
+.toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.header-right {
+.toolbar-right {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-left: auto;
 }
 
 .reload-error {
@@ -294,7 +292,6 @@ const onDeleted = (summary: LocationDeletedSummary) => {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-bottom: 1rem;
 }
 
 .unaddressable,

@@ -9,47 +9,38 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="body">
-      <p class="subtitle">Use this for Minions you have decommissioned.</p>
+      <p class="subtitle">Use this for Minions you have decommissioned. It cannot be undone.</p>
 
       <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
 
-      <OnmsMessage v-if="recent" severity="error" data-test="heartbeat-callout">
-        <strong>Last heartbeat {{ heartbeat }}</strong> — this Minion is still running. Stop the Minion process
-        first, then delete it here; otherwise it registers again within 30 seconds.
-      </OnmsMessage>
-      <OnmsMessage v-else severity="success" data-test="heartbeat-callout">
-        <strong>Last heartbeat {{ heartbeat }}</strong> — it looks stopped. A Minion that is still running
-        registers again within 30 seconds, with its label and properties cleared.
-      </OnmsMessage>
-
       <div v-if="loading" class="loading" data-test="loading">
         <OnmsSpinner size="1.5rem" strokeWidth="6" />
-        <span>Checking its heartbeat and counting its alarms…</span>
+        <span>Checking the status of <code>{{ minion?.id }}</code>…</span>
       </div>
-      <OnmsMessage v-else-if="alarmCount === null" severity="info" data-test="alarms-callout">
-        Its alarms could not be counted; any alarms raised through this Minion are removed with it. Its events
-        are kept.
-      </OnmsMessage>
-      <OnmsMessage v-else-if="alarmCount > 0" severity="error" data-test="alarms-callout">
-        <strong>Its alarms are deleted</strong> — {{ alarmCount }} {{ alarmCount === 1 ? 'alarm' : 'alarms' }}
-        raised through this Minion, such as traps and syslog it received, {{ alarmCount === 1 ? 'is' : 'are' }}
-        removed with it. Its events are kept.
-      </OnmsMessage>
-      <OnmsMessage v-else severity="info" data-test="alarms-callout">
-        No alarms were raised through this Minion. Its events are kept.
-      </OnmsMessage>
 
-      <OnmsMessage severity="info" data-test="requisition-callout">
-        <strong>Its node stays until the Minions requisition is synchronized</strong> — the node is removed
-        from the pending Minions requisition only (or the one named by
-        <code>opennms.minion.provisioning.foreignSourcePattern</code>), so it keeps being monitored until that
+      <OnmsMessage v-else-if="state === 'up'" severity="error" data-test="status-callout">
+        <strong>{{ minion?.id }} is <OnmsTag value="UP" severity="success" class="status-tag" /></strong>
+        — its last heartbeat arrived {{ heartbeat }}. A running Minion cannot be deleted: stop the Minion
+        process, wait for its status here to turn DOWN, then delete it. Deleting it while it runs would only
+        clear its label and properties, because it registers again within 30 seconds.
+      </OnmsMessage>
+      <OnmsMessage v-else-if="state === 'down'" severity="success" data-test="status-callout">
+        <strong>{{ minion?.id }} is <OnmsTag value="DOWN" severity="danger" class="status-tag" /></strong>
+        — its heartbeats stopped; the last one arrived {{ heartbeat }}. It can be deleted: the Minion and the
+        alarms raised through it are removed, its events are kept, and its node stays until the Minions
         requisition is synchronized.
-        <a :href="requisitionUrl" target="_self" data-test="requisition-link">Open the Minions requisition</a>
+      </OnmsMessage>
+      <OnmsMessage v-else severity="warn" data-test="status-callout">
+        <strong>{{ minion?.id }} is <OnmsTag value="UNKNOWN" severity="warn" class="status-tag" /></strong>
+        — it has not been heard from since the core started; its last recorded heartbeat arrived
+        {{ heartbeat }}. It can be deleted: the Minion and the alarms raised through it are removed, its events
+        are kept, and its node stays until the Minions requisition is synchronized. A Minion that is in fact
+        still running registers again within 30 seconds.
       </OnmsMessage>
     </div>
 
     <template #footer>
-      <OnmsButton variant="ghost" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+      <OnmsButton variant="ghost" label="Cancel" autofocus data-test="cancel-button" @click="emit('update:visible', false)" />
       <OnmsButton
         severity="danger"
         label="Delete Minion"
@@ -64,16 +55,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsMessage, OnmsSpinner, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsMessage, OnmsSpinner, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
-import { legacyUrl } from '@/lib/legacyUrl'
-import { minionState } from '@/lib/minionStatus'
-import { relativeTimeSince, toMillis } from '@/lib/relativeTime'
+import { MinionState, minionState } from '@/lib/minionStatus'
+import { relativeTimeSince } from '@/lib/relativeTime'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { Minion } from '@/types/minionAdmin'
 
-// heartbeats arrive every 30 s, so anything within two minutes is a live Minion
-const RECENT_MS = 2 * 60 * 1000
 // the list's auto-refresh is paused behind this dialog, so it re-reads the row itself
 const RECHECK_MS = 30 * 1000
 
@@ -90,27 +78,19 @@ const emit = defineEmits<{
 const store = useMinionAdminStore()
 const { showToast } = useOnmsToast()
 
-const requisitionUrl = legacyUrl('admin/ng-requisitions/index.jsp#/requisitions/Minions')
-
 const loading = ref(false)
 const deleting = ref(false)
 const errorText = ref('')
-const alarmCount = ref<number | null>(null)
-// the last heartbeat and status actually read for this open, never the paused list
+// the heartbeat and status actually read for this open, never the paused list
 const lastDate = ref<Minion['date']>(null)
 const lastStatus = ref<Minion['status']>(null)
-// decided only when a row is read, so the ticking clock alone can never unblock
-const recent = ref(false)
 
-const heartbeat = computed(() => relativeTimeSince(lastDate.value, props.now) ?? 'unknown')
+// the same up / down / unknown the table shows; only UP refuses, since a Minion
+// not heard from since the core started is exactly the decommissioned case
+const state = computed<MinionState>(() => minionState(lastStatus.value))
+const heartbeat = computed(() => relativeTimeSince(lastDate.value, props.now) ?? 'at an unknown time')
 
-const canDelete = computed(() => !loading.value && !deleting.value && !recent.value && !!props.minion)
-
-// an UP status blocks even with an old date, in case the two clocks disagree
-const judge = (date: Minion['date'], status: Minion['status']) => {
-  const ms = toMillis(date)
-  return minionState(status) === 'up' || (ms !== null && props.now - ms < RECENT_MS)
-}
+const canDelete = computed(() => !loading.value && !deleting.value && state.value !== 'up' && !!props.minion)
 
 let openRequest = 0
 let recheck: ReturnType<typeof setInterval> | undefined
@@ -120,18 +100,14 @@ const stopRecheck = () => {
   recheck = undefined
 }
 
+// a read that fails keeps the last decision, so a network blip never unblocks a running Minion
 const readMinion = async (id: string, request: number) => {
   const fresh = await store.getMinion(id)
-  if (request !== openRequest) {
+  if (request !== openRequest || !fresh) {
     return
   }
-  if (fresh) {
-    lastDate.value = fresh.date ?? null
-    lastStatus.value = fresh.status ?? null
-    recent.value = judge(lastDate.value, lastStatus.value)
-  } else {
-    recent.value = recent.value || judge(null, lastStatus.value)
-  }
+  lastDate.value = fresh.date ?? null
+  lastStatus.value = fresh.status ?? null
 }
 
 watch(() => props.visible, async (isVisible) => {
@@ -142,16 +118,13 @@ watch(() => props.visible, async (isVisible) => {
   const request = ++openRequest
   const id = props.minion.id
   errorText.value = ''
-  alarmCount.value = null
   lastDate.value = props.minion.date ?? null
   lastStatus.value = props.minion.status ?? null
-  recent.value = judge(lastDate.value, lastStatus.value)
   loading.value = true
-  const [alarms] = await Promise.all([store.getAlarmCount(id), readMinion(id, request)])
+  await readMinion(id, request)
   if (request !== openRequest) {
     return
   }
-  alarmCount.value = alarms
   loading.value = false
   recheck = setInterval(() => readMinion(id, request), RECHECK_MS)
 })
@@ -199,6 +172,11 @@ const confirmDelete = async () => {
   padding: 0.5rem 0;
 }
 
+.status-tag {
+  vertical-align: middle;
+  margin: 0 0.15rem;
+}
+
 .dialog-error {
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
@@ -206,10 +184,5 @@ const confirmDelete = async () => {
   background: var(--p-red-50, #fef2f2);
   color: var(--p-red-700, #b91c1c);
   font-size: 0.9rem;
-}
-
-a {
-  color: var(--p-primary-color);
-  text-decoration: underline;
 }
 </style>

@@ -67,8 +67,6 @@ const mountDialog = async ({ nodes = 0, minions = [], apps = [], outages = 0 }: 
 
 const deleteDisabled = (wrapper: VueWrapper<any>) => wrapper.find('[data-test="delete-button"]').attributes('disabled') !== undefined
 const callout = (wrapper: VueWrapper<any>, name: string) => wrapper.find(`[data-test="${name}-callout"]`)
-const input = (wrapper: VueWrapper<any>) => wrapper.find('[data-test="confirm-input"]')
-const typeName = (wrapper: VueWrapper<any>, text: string) => input(wrapper).setValue(text)
 
 describe('LocationDeleteDialog.vue', () => {
   beforeEach(() => {
@@ -107,7 +105,7 @@ describe('LocationDeleteDialog.vue', () => {
     expect(callout(wrapper, 'nodes').text()).toContain('4 nodes and 0 Minions are still here')
   })
 
-  it('shows a loading state, with the input and Delete disabled, until the lookups finish', async () => {
+  it('shows a loading state, with Delete disabled, until the lookups finish', async () => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: true })
     const store = useMonitoringLocationAdminStore()
     const minionStore = useMinionAdminStore()
@@ -126,23 +124,19 @@ describe('LocationDeleteDialog.vue', () => {
     await flushPromises()
     expect(wrapper.find('[data-test="loading"]').exists()).toBe(true)
     expect(callout(wrapper, 'nodes').exists()).toBe(false)
-    expect(input(wrapper).attributes('disabled')).toBeDefined()
     expect(deleteDisabled(wrapper)).toBe(true)
     resolveNodes(0)
     await flushPromises()
     expect(wrapper.find('[data-test="loading"]').exists()).toBe(false)
     expect(callout(wrapper, 'nodes').classes()).toContain('p-message-success')
-    expect(input(wrapper).attributes('disabled')).toBeUndefined()
-    await typeName(wrapper, 'Raleigh')
     expect(deleteDisabled(wrapper)).toBe(false)
   })
 
-  it('is blocked while nodes are still in the location, even with the name typed', async () => {
+  it('is blocked while nodes are still in the location', async () => {
     const { wrapper } = await mountDialog({ nodes: 3 })
     const nodes = callout(wrapper, 'nodes')
     expect(nodes.classes()).toContain('p-message-error')
     expect(nodes.text()).toContain('3 nodes and 0 Minions are still here — a monitoring location with nodes cannot be deleted, and that includes each running Minion\'s own node; this page also refuses while a Minion is registered here.')
-    expect(input(wrapper).attributes('disabled')).toBeDefined()
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
@@ -152,16 +146,15 @@ describe('LocationDeleteDialog.vue', () => {
     expect(nodes.classes()).toContain('p-message-error')
     expect(nodes.text()).toContain('1 node and 1 Minion are still here')
     expect(deleteDisabled(wrapper)).toBe(true)
-    expect(input(wrapper).attributes('disabled')).toBeDefined()
   })
 
-  it('offers focus to the input when open, and to Cancel when blocked', async () => {
+  it('asks for no typed confirmation and offers focus to Cancel, never to Delete', async () => {
     const { wrapper } = await mountDialog()
-    expect(input(wrapper).attributes('autofocus')).toBeDefined()
-    expect(wrapper.find('[data-test="cancel-button"]').attributes('autofocus')).toBeUndefined()
-    const blocked = (await mountDialog({ nodes: 2 })).wrapper
-    expect(input(blocked).attributes('autofocus')).toBeUndefined()
-    expect(blocked.find('[data-test="cancel-button"]').attributes('autofocus')).toBeDefined()
+    expect(wrapper.find('[data-test="confirm-input"]').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('to confirm')
+    expect(wrapper.find('[data-test="cancel-button"]').attributes('autofocus')).toBeDefined()
+    expect(wrapper.find('[data-test="delete-button"]').attributes('autofocus')).toBeUndefined()
+    expect(deleteDisabled(wrapper)).toBe(false)
   })
 
   it('confirms an empty location in green', async () => {
@@ -176,7 +169,6 @@ describe('LocationDeleteDialog.vue', () => {
     const nodes = callout(wrapper, 'nodes')
     expect(nodes.classes()).toContain('p-message-warn')
     expect(nodes.text()).toContain('The node count could not be checked')
-    await typeName(wrapper, 'Raleigh')
     expect(deleteDisabled(wrapper)).toBe(false)
   })
 
@@ -210,34 +202,8 @@ describe('LocationDeleteDialog.vue', () => {
     expect(unknown.text()).toContain('Perspective outage history could not be counted; any outages recorded from this perspective are removed with the location.')
   })
 
-  it('enables Delete only when the typed name matches, ignoring surrounding whitespace', async () => {
-    const { wrapper } = await mountDialog()
-    expect(wrapper.text()).toContain('Type Raleigh to confirm')
-    expect(deleteDisabled(wrapper)).toBe(true)
-    await typeName(wrapper, 'raleigh')
-    expect(deleteDisabled(wrapper)).toBe(true)
-    await typeName(wrapper, ' Raleigh ')
-    expect(deleteDisabled(wrapper)).toBe(false)
-    await typeName(wrapper, 'Raleigh')
-    expect(deleteDisabled(wrapper)).toBe(false)
-    await typeName(wrapper, 'Raleig')
-    expect(deleteDisabled(wrapper)).toBe(true)
-  })
-
-  it('Enter in the input deletes once enabled and does nothing before', async () => {
-    const { wrapper, store } = await mountDialog()
-    await input(wrapper).trigger('keydown', { key: 'Enter' })
-    await flushPromises()
-    expect(store.deleteLocation).not.toHaveBeenCalled()
-    await typeName(wrapper, 'Raleigh')
-    await input(wrapper).trigger('keydown', { key: 'Enter' })
-    await flushPromises()
-    expect(store.deleteLocation).toHaveBeenCalledWith('Raleigh')
-  })
-
   it('deletes, closes and reports what went with it, without a toast', async () => {
     const { wrapper, store } = await mountDialog({ apps: [{ id: 1, name: 'Web Shop' }], outages: 2 })
-    await typeName(wrapper, 'Raleigh')
     await wrapper.find('[data-test="delete-button"]').trigger('click')
     await flushPromises()
     expect(store.deleteLocation).toHaveBeenCalledWith('Raleigh')
@@ -250,7 +216,6 @@ describe('LocationDeleteDialog.vue', () => {
     const { wrapper, store, minionStore } = await mountDialog()
     vi.mocked(store.deleteLocation).mockResolvedValue({ success: false, message: 'Monitoring location \'Raleigh\' could not be deleted. Make sure no nodes are assigned to it.' })
     vi.mocked(store.getNodeCount).mockResolvedValue(2)
-    await typeName(wrapper, 'Raleigh')
     await wrapper.find('[data-test="delete-button"]').trigger('click')
     await flushPromises()
     expect(wrapper.find('[data-test="dialog-error"]').text()).toContain('Make sure no nodes are assigned')
@@ -282,6 +247,6 @@ describe('LocationDeleteDialog.vue', () => {
     await wrapper.setProps({ visible: true })
     await flushPromises()
     expect(callout(wrapper, 'nodes').classes()).toContain('p-message-success')
-    expect((input(wrapper).element as HTMLInputElement).value).toBe('')
+    expect(deleteDisabled(wrapper)).toBe(false)
   })
 })
