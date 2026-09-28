@@ -163,7 +163,6 @@
   <MinionDeleteDialog
     v-model:visible="showDeleteDialog"
     :minion="minionToDelete"
-    :now="now"
   />
 </template>
 

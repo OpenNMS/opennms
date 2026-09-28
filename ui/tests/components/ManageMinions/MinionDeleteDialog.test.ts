@@ -36,7 +36,7 @@ const mountDialog = async (over: Record<string, any> = {}, { fresh = minion(over
   vi.mocked(store.getMinion).mockResolvedValue(fresh as any)
   vi.mocked(store.deleteMinion).mockResolvedValue({ success: true, message: '' })
   const wrapper = mount(MinionDeleteDialog, {
-    props: { visible: false, minion: minion(over) as any, now: NOW },
+    props: { visible: false, minion: minion(over) as any },
     global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false }}
   })
   await wrapper.setProps({ visible: true })
@@ -65,41 +65,39 @@ describe('MinionDeleteDialog.vue', () => {
     expect(wrapper.find('[data-test="cancel-button"]').attributes('autofocus')).toBeDefined()
   })
 
-  it('refuses a Minion that is UP, with its heartbeat, and says to stop it first', async () => {
+  it('refuses a Minion that is UP in one short line', async () => {
     const { wrapper } = await mountDialog({ status: 'up', date: NOW - 36_000 })
     expect(status(wrapper).classes()).toContain('p-message-error')
-    expect(status(wrapper).text()).toContain('m1 is UP — its last heartbeat arrived 36 s ago. A running Minion cannot be deleted: stop the Minion process, wait for its status here to turn DOWN, then delete it.')
-    expect(status(wrapper).text()).toContain('registers again within 30 seconds')
+    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
-  it('refuses an UP Minion even with an old heartbeat, as the table does', async () => {
+  it('refuses an UP Minion whatever its heartbeat age, as the table does', async () => {
     const { wrapper } = await mountDialog({ status: 'up', date: NOW - 10 * MIN })
-    expect(status(wrapper).text()).toContain('m1 is UP — its last heartbeat arrived 10 min ago.')
+    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
-  it('allows a Minion that is DOWN and says what goes with it', async () => {
+  it('allows a Minion that is DOWN', async () => {
     const { wrapper } = await mountDialog({ status: 'down', date: NOW - 10 * MIN })
     expect(status(wrapper).classes()).toContain('p-message-success')
-    expect(status(wrapper).text()).toContain('m1 is DOWN — its heartbeats stopped; the last one arrived 10 min ago. It can be deleted: the Minion and the alarms raised through it are removed, its events are kept, and its node stays until the Minions requisition is synchronized.')
+    expect(status(wrapper).text()).toBe('m1 is DOWN — it can be deleted.')
     expect(deleteDisabled(wrapper)).toBe(false)
   })
 
   it('allows a Minion whose status is unknown, since it has not been heard from since the core started', async () => {
     const { wrapper } = await mountDialog({ status: 'unknown', date: NOW - 30_000 })
     expect(status(wrapper).classes()).toContain('p-message-warn')
-    expect(status(wrapper).text()).toContain('m1 is UNKNOWN — it has not been heard from since the core started; its last recorded heartbeat arrived 30 s ago. It can be deleted:')
+    expect(status(wrapper).text()).toBe('m1 is UNKNOWN — it can be deleted.')
     expect(deleteDisabled(wrapper)).toBe(false)
     const missing = (await mountDialog({ status: null, date: null })).wrapper
-    expect(status(missing).text()).toContain('m1 is UNKNOWN')
-    expect(status(missing).text()).toContain('arrived at an unknown time')
+    expect(status(missing).text()).toBe('m1 is UNKNOWN — it can be deleted.')
     expect(deleteDisabled(missing)).toBe(false)
   })
 
   it('gates on the freshly read row, not on the row the paused list passed in', async () => {
     const { wrapper } = await mountDialog({ status: 'down' }, { fresh: minion({ status: 'up', date: NOW - 20_000 }) })
-    expect(status(wrapper).text()).toContain('m1 is UP — its last heartbeat arrived 20 s ago.')
+    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
@@ -119,13 +117,12 @@ describe('MinionDeleteDialog.vue', () => {
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
-  it('keeps the last decision when a re-read fails, and the clock alone never changes it', async () => {
+  it('keeps the last decision when a re-read fails', async () => {
     const { wrapper, store } = await mountDialog({ status: 'up', date: NOW - 30_000 })
     vi.mocked(store.getMinion).mockResolvedValue(null)
-    await wrapper.setProps({ now: NOW + 10 * MIN })
     vi.advanceTimersByTime(RECHECK)
     await flushPromises()
-    expect(status(wrapper).text()).toContain('m1 is UP — its last heartbeat arrived 10 min ago.')
+    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
@@ -145,7 +142,7 @@ describe('MinionDeleteDialog.vue', () => {
       resolveRow = resolve
     }))
     const wrapper = mount(MinionDeleteDialog, {
-      props: { visible: false, minion: minion() as any, now: NOW },
+      props: { visible: false, minion: minion() as any },
       global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false }}
     })
     await wrapper.setProps({ visible: true })

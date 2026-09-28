@@ -351,7 +351,7 @@ describe('MinionsTable.vue', () => {
   })
 
   describe('delete', () => {
-    it('opens the delete dialog for the row with the shared clock and reports the dialog state', async () => {
+    it('opens the delete dialog for the row and reports the dialog state', async () => {
       ctx.store.minions = [minion('m1')] as any
       await ctx.wrapper.vm.$nextTick()
       await ctx.wrapper.find('[data-test="delete-minion-button"]').trigger('click')
@@ -360,7 +360,6 @@ describe('MinionsTable.vue', () => {
       const dialog = ctx.wrapper.findComponent({ name: 'MinionDeleteDialog' })
       expect(dialog.props('visible')).toBe(true)
       expect(dialog.props('minion').id).toBe('m1')
-      expect(dialog.props('now')).toBe(NOW)
       expect(ctx.wrapper.find('[data-test="delete-dialog"]').text()).toBe('m1')
       dialog.vm.$emit('update:visible', false)
       await ctx.wrapper.vm.$nextTick()
