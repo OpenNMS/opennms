@@ -66,9 +66,11 @@ import org.opennms.netmgt.topologies.service.api.TopologyVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
@@ -83,6 +85,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
+    // Restricted context so a configured filter expression cannot execute arbitrary code.
+    private static final EvaluationContext SPEL_CONTEXT = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
     private final ThreadFactory nodeUpdateThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("kafka-producer-node-update-%d")
             .build();
@@ -211,7 +215,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Filtering
         if (eventFilterExpression != null) {
             try {
-                shouldForwardEvent = eventFilterExpression.getValue(event, Boolean.class);
+                shouldForwardEvent = eventFilterExpression.getValue(SPEL_CONTEXT, event, Boolean.class);
             } catch (Exception e) {
                 LOG.error("Event filter '{}' failed to return a result for event: {}. The event will be forwarded anyways, instanceId={}, eventId={}",
                         eventFilterExpression.getExpressionString(), event.toStringSimple(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
@@ -247,7 +251,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             // The expression is not necessarily thread safe
             synchronized (this) {
                 try {
-                    final boolean shouldForwardAlarm = alarmFilterExpression.getValue(alarm, Boolean.class);
+                    final boolean shouldForwardAlarm = alarmFilterExpression.getValue(SPEL_CONTEXT, alarm, Boolean.class);
                     if (LOG.isTraceEnabled()) {
                         LOG.trace("Alarm {} not forwarded due to event filter: {}",
                                 alarm, alarmFilterExpression.getExpressionString());

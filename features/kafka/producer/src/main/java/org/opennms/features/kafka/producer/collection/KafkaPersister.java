@@ -37,9 +37,11 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -54,6 +56,8 @@ public class KafkaPersister implements Persister {
     private static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
 
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
+    // Restricted context so a configured filter expression cannot execute arbitrary code.
+    private static final EvaluationContext SPEL_CONTEXT = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
 
     // NumericAttribute.type must always print: GAUGE is the zero enum value, which the
     // printer would otherwise omit, leaving gauges without a type key while counters keep theirs
@@ -407,7 +411,7 @@ public class KafkaPersister implements Persister {
         try {
             // Create a context object with accessible properties for SpEL evaluation
             final ResourceFilterContext context = new ResourceFilterContext(resource);
-            final Boolean result = metricFilterExpression.getValue(context, Boolean.class);
+            final Boolean result = metricFilterExpression.getValue(SPEL_CONTEXT, context, Boolean.class);
             return result != null && result;
         } catch (Exception e) {
             LOG.error("Metric filter '{}' failed to evaluate for resource. The resource will be forwarded anyways.", metricFilterExpression.getExpressionString(), e);
