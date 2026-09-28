@@ -241,6 +241,14 @@
     <intercept-url pattern="/api/v2/wsman-config/**" method="PUT" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/wsman-config/**" method="PATCH" access="ROLE_ADMIN" />
 
+    <!-- Plugin management writes into deploy/ and etc/featuresBoot.d: admin-only for every method -->
+    <intercept-url pattern="/api/v2/plugin-management/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/plugin-management/**" method="HEAD" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/plugin-management/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/plugin-management/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/plugin-management/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/plugin-management/**" method="PATCH" access="ROLE_ADMIN" />
+
     <!-- Trapd Config exposes SNMPv3 credentials; restrict to admin or provision -->
     <intercept-url pattern="/api/v2/trapd/**" method="GET" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/trapd/**" method="DELETE" access="ROLE_ADMIN,ROLE_PROVISION" />

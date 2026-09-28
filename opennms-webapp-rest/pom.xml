@@ -230,6 +230,12 @@
       <artifactId>org.opennms.core.lib</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
+    <!-- Plugin Management: release lookups and KAR downloads go through HttpClientWrapper -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.db</artifactId>
@@ -667,6 +673,18 @@
     <dependency>
       <groupId>org.opennms.features.config.dao</groupId>
       <artifactId>org.opennms.features.config.dao.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <!-- Plugin management reaches the embedded Karaf framework through KarafContext; both jars ship in lib/ -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>org.opennms.container.daemon</artifactId>
       <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>

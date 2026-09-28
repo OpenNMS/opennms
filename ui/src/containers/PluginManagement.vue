@@ -1,0 +1,166 @@
+<template>
+  <div class="onms-row">
+    <div class="onms-col-12">
+      <BreadCrumbs :items="breadcrumbs" />
+    </div>
+  </div>
+  <div class="plugin-management-container">
+    <h1 class="page-title">Plugin Management</h1>
+
+    <div v-if="store.state && !store.containerAvailable" class="callout error-callout" role="alert" data-test="container-unavailable">
+      <strong>The plugin container is not available.</strong>
+      <span>Plugins cannot be loaded or unloaded until the Karaf container is running; check that OpenNMS has started completely, then reload the page.</span>
+    </div>
+
+    <div v-if="store.state?.containerBusy" class="callout error-callout" role="alert" data-test="container-busy">
+      <strong>The plugin container is not accepting changes.</strong>
+      <span>The {{ store.state.containerBusy }} has not finished; plugins cannot be loaded, restarted or unloaded until OpenNMS is restarted.</span>
+      <OnmsButton variant="outlined" label="Show restart instructions" data-test="show-restart-instructions-busy" @click="showRestartDialog = true" />
+    </div>
+
+    <div v-if="restartPending(store.plugins)" class="callout warn-callout" role="status" data-test="restart-banner">
+      <span data-test="restart-summary">{{ restartSummary(store.plugins) }}</span>
+      <OnmsButton variant="outlined" label="Show restart instructions" data-test="show-restart-instructions" @click="showRestartDialog = true" />
+    </div>
+
+    <p v-if="store.loadError" class="error" data-test="load-error">
+      Failed to read the plugin list. Check that the server is up and that you are still logged in, then reload the page.
+    </p>
+
+    <PluginLoadCard :disabled="!store.containerAvailable" @loaded="onLoaded" />
+    <p v-if="tempFiles" class="temp-files" :title="store.state?.tempDir" data-test="temp-files">{{ tempFiles }}</p>
+
+    <PluginsTable :plugins="store.plugins" :containerAvailable="store.containerAvailable" @unload="askUnload" @restart="askRestart" />
+
+    <PluginActivityLog />
+
+    <RestartInstructionsDialog v-model:visible="showRestartDialog" :instructions="store.restartInstructions" />
+    <PluginUnloadDialog v-model:visible="showUnloadDialog" :plugin="pluginToUnload" @unloaded="onUnloaded" />
+    <PluginRestartDialog v-model:visible="showRestartPluginDialog" :plugin="pluginToRestart" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+import { OnmsButton, useOnmsToast } from '@opennms/onms-ui'
+
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import PluginActivityLog from '@/components/PluginManagement/PluginActivityLog.vue'
+import PluginLoadCard from '@/components/PluginManagement/PluginLoadCard.vue'
+import PluginRestartDialog from '@/components/PluginManagement/PluginRestartDialog.vue'
+import PluginsTable from '@/components/PluginManagement/PluginsTable.vue'
+import PluginUnloadDialog from '@/components/PluginManagement/PluginUnloadDialog.vue'
+import { formatSize, restartPending, restartSummary, startedUnhealthy } from '@/components/PluginManagement/pluginDisplay'
+import RestartInstructionsDialog from '@/components/PluginManagement/RestartInstructionsDialog.vue'
+import { useMenuStore } from '@/stores/menuStore'
+import { usePluginManagementStore } from '@/stores/pluginManagementStore'
+import { BreadCrumb } from '@/types'
+import { PluginEntry, PluginInstallResult, PluginUnloadResult } from '@/types/pluginManagement'
+
+const menuStore = useMenuStore()
+const store = usePluginManagementStore()
+const { showToast } = useOnmsToast()
+
+const showRestartDialog = ref(false)
+const showUnloadDialog = ref(false)
+const pluginToUnload = ref<PluginEntry | null>(null)
+const showRestartPluginDialog = ref(false)
+const pluginToRestart = ref<PluginEntry | null>(null)
+
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
+
+const tempFiles = computed(() => {
+  const files = store.state?.tempFiles
+  if (typeof files !== 'number' || files === 0) {
+    return ''
+  }
+  return `Temporary files: ${files} file${files === 1 ? '' : 's'}, ${formatSize(store.state?.tempBytes ?? 0)}`
+})
+
+const breadcrumbs = computed<BreadCrumb[]>(() => [
+  { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+  { label: 'Plugin Management', to: '#', position: 'last' }
+])
+
+onMounted(async () => {
+  await Promise.all([store.load(), store.getRestartInstructions(), store.refreshLog()])
+})
+
+const askUnload = (plugin: PluginEntry) => {
+  pluginToUnload.value = plugin
+  showUnloadDialog.value = true
+}
+
+const askRestart = (plugin: PluginEntry) => {
+  pluginToRestart.value = plugin
+  showRestartPluginDialog.value = true
+}
+
+const onLoaded = (result: PluginInstallResult) => {
+  if (startedUnhealthy(result.startOutcome)) {
+    showToast({ message: `Plugin ${result.plugin.karName} started, but its health checks are not passing.`, severity: 'warn' })
+  } else if (result.startOutcome.state === 'started') {
+    showToast({ message: `Plugin ${result.plugin.karName} is running.`, severity: 'success' })
+  }
+}
+
+const onUnloaded = (result: PluginUnloadResult) => {
+  if (result.note) {
+    showToast({ message: `Plugin ${result.plugin.karName} unloaded. ${result.note}`, severity: 'warn' })
+  } else if (result.restartRequired) {
+    showToast({ message: `Plugin ${result.plugin.karName} unloaded. Restart OpenNMS to finish removing it.`, severity: 'success' })
+  } else {
+    showToast({ message: `Plugin ${result.plugin.karName} unloaded and stopped.`, severity: 'success' })
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.plugin-management-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 2px 2rem 2px;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.warn-callout {
+  border-left: 4px solid var(--p-orange-500, #ef6c00);
+  background: color-mix(in srgb, var(--p-orange-500, #ef6c00) 12%, transparent);
+}
+
+.error-callout {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  border-left: 4px solid var(--p-red-500, #c62828);
+  background: color-mix(in srgb, var(--p-red-500, #c62828) 10%, transparent);
+}
+
+.error {
+  color: var(--p-red-500, #c62828);
+  margin: 0;
+}
+
+.temp-files {
+  margin: -0.5rem 0 0 0;
+  font-size: 0.85rem;
+  color: var(--p-text-muted-color);
+}
+</style>
