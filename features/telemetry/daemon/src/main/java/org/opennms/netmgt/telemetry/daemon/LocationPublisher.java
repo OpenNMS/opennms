@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,7 +39,8 @@ public class LocationPublisher {
     private final TwinPublisher twinPublisher;
     private final ReentrantLock lock = new ReentrantLock();
     private TwinPublisher.Session<ConnectorTwinConfig> session;
-    private final Map<String, ConnectorTwinConfig.ConnectorConfig> configs = new HashMap<>();
+    // Insertion-ordered so consecutive publications differ only where configs changed, keeping twin patches small
+    private final Map<String, ConnectorTwinConfig.ConnectorConfig> configs = new LinkedHashMap<>();
     private String queueName;
     private boolean publishPending;
 
@@ -58,14 +58,6 @@ public class LocationPublisher {
                 LOG.error("Failed to create  session for {}: {}", location, e.getMessage(), e);
             }
         }
-    }
-
-    public void addConfigAndPublish(ConnectorTwinConfig.ConnectorConfig cfg) throws IOException {
-        updateConfigsAndPublish(Collections.singletonList(cfg), Collections.emptyList());
-    }
-
-    public void removeConfigAndPublish(String connectionKey) throws IOException {
-        updateConfigsAndPublish(Collections.emptyList(), Collections.singletonList(connectionKey));
     }
 
     /**

@@ -22,8 +22,6 @@
 package org.opennms.netmgt.telemetry.daemon;
 
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +31,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class OpenConfigTwinPublisherImpl implements OpenConfigTwinPublisher {
@@ -48,21 +45,6 @@ public class OpenConfigTwinPublisherImpl implements OpenConfigTwinPublisher {
     }
 
     @Override
-    public void publishConfig(ServiceRef serviceRef, List<Map<String, String>> interpolatedMapList, String nodeConnectorKey, String queueName) throws IOException {
-        ConnectorTwinConfig.ConnectorConfig twinConfig = createTwinConfig(serviceRef,interpolatedMapList,nodeConnectorKey);
-        LocationPublisher locationPublisher = locationPublisherManager.getOrCreate(serviceRef.getLocation());
-        locationPublisher.setQueueName(queueName);
-        locationPublisher.addConfigAndPublish(twinConfig);
-    }
-
-    @Override
-    public void removeConfig(ServiceRef serviceRef,String nodeConnectorKey) throws IOException {
-        LocationPublisher locationPublisher = locationPublisherManager.getOrCreate(serviceRef.getLocation());
-        locationPublisher.removeConfigAndPublish(nodeConnectorKey);
-        locationPublisherManager.removeIfEmpty(serviceRef.getLocation());
-    }
-
-    @Override
     public void publishConfigs(String location, List<ConnectorTwinConfig.ConnectorConfig> addedConfigs,
                                Collection<String> removedConnectorKeys, String queueName) throws IOException {
         LocationPublisher locationPublisher = locationPublisherManager.getOrCreate(location);
@@ -74,13 +56,5 @@ public class OpenConfigTwinPublisherImpl implements OpenConfigTwinPublisher {
     @Override
     public void close() throws IOException {
         locationPublisherManager.forceCloseAll();
-    }
-
-    private ConnectorTwinConfig.ConnectorConfig createTwinConfig(ServiceRef serviceRef,List<Map<String, String>> parameters,String nodeConnectotrKey) {
-        return new ConnectorTwinConfig.ConnectorConfig(
-            serviceRef.getNodeId(),
-            InetAddressUtils.str(serviceRef.getIpAddress()), nodeConnectotrKey,
-            parameters
-        );
     }
 }

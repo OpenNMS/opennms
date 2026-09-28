@@ -84,6 +84,9 @@ public class ConnectorManager {
     // Connectors whose configuration was handed to the publisher, whether or not publishing it succeeded yet
     private final Set<ConnectorKey> activeConnectors = new HashSet<>();
 
+    // Services whose connector configuration failed to build; retried with the next update of their package
+    private final Map<ConnectorKey, ServiceRef> failedBuilds = new LinkedHashMap<>();
+
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
 
     private void updateStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig,
@@ -93,18 +96,30 @@ public class ConnectorManager {
 
             for (ServiceRef serviceRef : stoppedMatching) {
                 final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-                if (activeConnectors.remove(key)) {
+                if (failedBuilds.remove(key) == null && activeConnectors.remove(key)) {
                     LOG.debug("Stopping connector for: {}", key);
                     changesFor(changesByLocation, serviceRef, connectorConfig).removedKeys.add(key.stringKey());
                 }
             }
 
+            final Map<ConnectorKey, ServiceRef> toBuild = new LinkedHashMap<>();
+            failedBuilds.entrySet().removeIf(entry -> {
+                if (entry.getKey().isFor(connectorConfig, packageConfig)) {
+                    toBuild.put(entry.getKey(), entry.getValue());
+                    return true;
+                }
+                return false;
+            });
             for (ServiceRef serviceRef : matched) {
                 final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
                 if (activeConnectors.contains(key)) {
                     LOG.debug("Connector already exists for: {}. Ignoring.", key);
                     continue;
                 }
+                toBuild.put(key, serviceRef);
+            }
+
+            toBuild.forEach((key, serviceRef) -> {
                 try {
                     final ConnectorTwinConfig.ConnectorConfig twinConfig = new ConnectorTwinConfig.ConnectorConfig(
                             serviceRef.getNodeId(), InetAddressUtils.str(serviceRef.getIpAddress()), key.stringKey(),
@@ -113,9 +128,10 @@ public class ConnectorManager {
                     activeConnectors.add(key);
                     LOG.debug("Starting connector for: {}", key);
                 } catch (RuntimeException e) {
-                    LOG.error("Failed to build config for connector: {}", key, e);
+                    LOG.error("Failed to build config for connector: {}. Will retry with the next update.", key, e);
+                    failedBuilds.put(key, serviceRef);
                 }
-            }
+            });
 
             publish(changesByLocation);
         }
@@ -213,6 +229,7 @@ public class ConnectorManager {
 
         synchronized (activeConnectors) {
             activeConnectors.clear();
+            failedBuilds.clear();
             try {
                 openConfigTwinPublisher.close();
             } catch (IOException e) {
@@ -267,6 +284,11 @@ public class ConnectorManager {
                     ", interfaceAddress=" + interfaceAddress +
                     ", location='" + location + '\'' +
                     '}';
+        }
+
+        public boolean isFor(ConnectorConfig connectorConfig, PackageConfig packageConfig) {
+            return Objects.equals(connectorName, connectorConfig.getName())
+                    && Objects.equals(packageName, packageConfig.getName());
         }
 
         public String stringKey() {

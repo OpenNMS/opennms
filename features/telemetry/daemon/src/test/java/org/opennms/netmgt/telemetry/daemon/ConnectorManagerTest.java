@@ -190,6 +190,50 @@ public class ConnectorManagerTest {
     }
 
     @Test
+    public void failedConfigBuildIsRetriedWithNextUpdate() {
+        connectorManager.setEntityScopeProvider(scopeProviderFailingOnce());
+        serviceTracker.initialServices.addAll(services(LOCATION_A, 0, 3));
+        connectorManager.start(telemetrydConfig);
+
+        serviceTracker.listener.onServicesChanged(new LinkedHashSet<>(services(LOCATION_A, 3, 1)), Collections.emptySet());
+
+        Assert.assertEquals(2, twinPublisher.published(LOCATION_A).size());
+        Assert.assertEquals(4, twinPublisher.last(LOCATION_A).getConfigurations().size());
+    }
+
+    @Test
+    public void failedConfigBuildIsDroppedWhenServiceStopsMatching() {
+        connectorManager.setEntityScopeProvider(scopeProviderFailingOnce());
+        final ServiceRef failed = services(LOCATION_A, 0, 1).get(0);
+        serviceTracker.initialServices.add(failed);
+        connectorManager.start(telemetrydConfig);
+
+        serviceTracker.listener.onServicesChanged(Collections.emptySet(), Collections.singleton(failed));
+        serviceTracker.listener.onServicesChanged(new LinkedHashSet<>(services(LOCATION_A, 1, 1)), Collections.emptySet());
+
+        Assert.assertEquals(1, twinPublisher.published(LOCATION_A).size());
+        Assert.assertEquals(1, twinPublisher.last(LOCATION_A).getConfigurations().size());
+        Assert.assertEquals(1, twinPublisher.last(LOCATION_A).getConfigurations().get(0).getNodeId());
+    }
+
+    @Test
+    public void publishedConfigsKeepTheirOrder() {
+        serviceTracker.initialServices.addAll(services(LOCATION_A, 0, 200));
+        connectorManager.start(telemetrydConfig);
+        final List<String> firstKeys = connectionKeys(twinPublisher.last(LOCATION_A));
+
+        serviceTracker.listener.onServicesChanged(new LinkedHashSet<>(services(LOCATION_A, 200, 3)), Collections.emptySet());
+
+        Assert.assertEquals(firstKeys, connectionKeys(twinPublisher.last(LOCATION_A)).subList(0, 200));
+    }
+
+    private static List<String> connectionKeys(ConnectorTwinConfig twinConfig) {
+        final List<String> keys = new ArrayList<>();
+        twinConfig.getConfigurations().forEach(c -> keys.add(c.getConnectionKey()));
+        return keys;
+    }
+
+    @Test
     public void serviceMovedToAnotherLocationIsPublishedToBoth() {
         final ServiceRef atA = services(LOCATION_A, 0, 1).get(0);
         final ServiceRef atB = new ServiceRef(atA.getNodeId(), atA.getIpAddress(), SERVICE_NAME, LOCATION_B);
