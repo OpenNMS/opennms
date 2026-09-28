@@ -49,6 +49,13 @@ class FakeKarafBridge implements KarafBridge {
     final Map<String, String> installFailures = new LinkedHashMap<>();
     /** when set, installFeatures throws with this message */
     String installException;
+    /** when set, installFeatures blocks on it (the caller's deadline test releases it) */
+    java.util.concurrent.CountDownLatch installBlock;
+    int refreshCalls;
+    final Set<String> refreshedBundles = new LinkedHashSet<>();
+    /** what health(features) answers, in order; the last entry repeats */
+    final List<List<PluginHealth>> healthAnswers = new ArrayList<>();
+    int healthCalls;
     /** Runs when the compatibility checks query the container, i.e. between inspecting a KAR and writing it. */
     Runnable beforeExports;
     /** Runs before every KarService.list() answer, so a test can make a KAR appear after a few polls. */
@@ -157,6 +164,13 @@ class FakeKarafBridge implements KarafBridge {
     @Override
     public void installFeatures(final Set<String> features) throws KarafOperationException {
         installCalls.add(new LinkedHashSet<>(features));
+        if (installBlock != null) {
+            try {
+                installBlock.await();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
         if (installException != null) {
             throw new KarafOperationException(installException);
         }
@@ -179,6 +193,31 @@ class FakeKarafBridge implements KarafBridge {
                 }
             }
         }
+    }
+
+    @Override
+    public Set<String> bundleNames(final Set<String> features) {
+        final Set<String> names = new LinkedHashSet<>();
+        for (final String feature : features) {
+            names.add("org.example." + feature);
+        }
+        return names;
+    }
+
+    @Override
+    public boolean refreshBundles(final Set<String> symbolicNames, final java.time.Duration timeout) {
+        refreshCalls++;
+        refreshedBundles.addAll(symbolicNames);
+        return true;
+    }
+
+    @Override
+    public List<PluginHealth> health(final Set<String> features) {
+        healthCalls++;
+        if (healthAnswers.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(healthAnswers.get(Math.min(healthCalls, healthAnswers.size()) - 1));
     }
 
     @Override

@@ -19,9 +19,10 @@
       </div>
       <div class="callout" data-test="stop-callout">
         <span v-if="plugin.features.length">
-          Its features ({{ plugin.features.join(', ') }}) stop now; a restart completes the removal.
+          Its features ({{ plugin.features.join(', ') }}) stop now and the KAR leaves the container. A server restart
+          is only needed if the container cannot stop them; the page tells you when that happens.
         </span>
-        <span v-else>The container stops the plugin now; a restart completes the removal.</span>
+        <span v-else>The container stops the plugin now; a server restart is only needed if it cannot.</span>
       </div>
       <p v-if="!plugin.managed" class="dialog-note" data-test="unmanaged-note">
         This plugin was loaded by hand and not loaded through this page; unloading removes its file from
@@ -41,7 +42,7 @@ import { ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
-import { PluginEntry } from '@/types/pluginManagement'
+import { PluginEntry, PluginUnloadResult } from '@/types/pluginManagement'
 
 const props = defineProps<{
   visible: boolean
@@ -50,7 +51,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void
-  (e: 'unloaded', plugin: PluginEntry): void
+  (e: 'unloaded', result: PluginUnloadResult): void
 }>()
 
 const store = usePluginManagementStore()
@@ -76,7 +77,7 @@ const unload = async () => {
   try {
     const result = await store.unload(props.plugin.karName)
     if (result.success && result.payload) {
-      emit('unloaded', result.payload.plugin)
+      emit('unloaded', result.payload)
       emit('update:visible', false)
     } else {
       errorText.value = result.message

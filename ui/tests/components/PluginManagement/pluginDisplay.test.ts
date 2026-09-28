@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { CHECK_TAG, canRestart, defaultRelease, diagnosticLines, featureTitle, fetchedSourceLine, formatReleaseDate, formatSize, formatUploadedAt, isRepository, karAssets, needsServerRestart, releaseLabel, restartCounts, restartPending, restartSummary, restartTitle, shortSha, sortReleases, sourceOf, startedFeatures, statusOf, statusTitle, uploadedSourceLine } from '@/components/PluginManagement/pluginDisplay'
+import { CHECK_TAG, canRestart, defaultRelease, diagnosticLines, failingHealthLines, featureTitle, fetchedSourceLine, formatReleaseDate, formatSize, formatUploadedAt, isRepository, karAssets, needsServerRestart, releaseLabel, restartCounts, restartPending, restartSummary, restartTitle, shortSha, sortReleases, sourceOf, startedFeatures, startedUnhealthy, statusOf, statusTitle, uploadedSourceLine } from '@/components/PluginManagement/pluginDisplay'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -53,6 +53,27 @@ describe('pluginDisplay', () => {
     expect(statusOf('unloaded')).toMatchObject({ severity: 'secondary', label: 'Unloaded' })
     expect(statusOf('unknown')).toMatchObject({ severity: 'secondary', label: 'Unknown' })
     expect(statusOf('weird')).toMatchObject({ severity: 'secondary', label: 'weird' })
+    expect(statusOf('installed', false, 'unhealthy')).toMatchObject({ severity: 'warn', label: 'Loaded, health failing' })
+    expect(statusOf('installed', false, 'healthy')).toMatchObject({ severity: 'success', label: 'Loaded' })
+    expect(statusOf('failed', false, 'unhealthy')).toMatchObject({ severity: 'danger', label: 'Failed to start' })
+  })
+
+  it('lists the failing health signals of a started outcome and titles an unhealthy plugin with the first one', () => {
+    const health = [
+      { description: 'ALEC :: Engine', status: 'Success', message: null },
+      { description: 'ALEC :: Driver', status: 'Failure', message: 'Driver is WAITING_FOR_DATASOURCES' },
+      { description: 'Bundle org.opennms.alec.features.ui', status: 'Starting', message: null }
+    ]
+    expect(failingHealthLines(health)).toEqual(['ALEC :: Driver: Failure (Driver is WAITING_FOR_DATASOURCES)', 'Bundle org.opennms.alec.features.ui: Starting'])
+    expect(failingHealthLines(undefined)).toEqual([])
+    expect(startedUnhealthy({ state: 'started', message: '', diagnostics: {}, healthy: false, health })).toBe(true)
+    expect(startedUnhealthy({ state: 'started', message: '', diagnostics: {}, healthy: true, health: [] })).toBe(false)
+    expect(startedUnhealthy({ state: 'failed', message: '', diagnostics: {}, healthy: false, health })).toBe(false)
+    expect(startedUnhealthy(null)).toBe(false)
+    const plugin = { karName: 'alec', fileName: 'alec.kar', sha256: 'abc', size: 1, uploadedBy: 'admin', uploadedAt: 1, features: ['f1', 'f2'], bootFile: 'alec.boot', autoStart: true, pendingRestart: false, source: 'upload', managed: true, status: 'installed' as const, health: 'unhealthy' as const, healthMessages: ['ALEC :: Driver: Failure (no datasource)'] }
+    expect(statusTitle(plugin)).toBe('ALEC :: Driver: Failure (no datasource)')
+    expect(featureTitle(plugin)).toBe('f1, f2\nALEC :: Driver: Failure (no datasource)')
+    expect(statusTitle({ ...plugin, health: 'healthy', healthMessages: [] })).toBe('loaded and its features are started')
   })
 
   it('counts the plugins waiting for a restart', () => {

@@ -12,6 +12,12 @@
       <span>Plugins cannot be loaded or unloaded until the Karaf container is running; check that OpenNMS has started completely, then reload the page.</span>
     </div>
 
+    <div v-if="store.state?.containerBusy" class="callout error-callout" role="alert" data-test="container-busy">
+      <strong>The plugin container is not accepting changes.</strong>
+      <span>The {{ store.state.containerBusy }} has not finished; plugins cannot be loaded, restarted or unloaded until OpenNMS is restarted.</span>
+      <OnmsButton variant="outlined" label="Show restart instructions" data-test="show-restart-instructions-busy" @click="showRestartDialog = true" />
+    </div>
+
     <div v-if="restartPending(store.plugins)" class="callout warn-callout" role="status" data-test="restart-banner">
       <span data-test="restart-summary">{{ restartSummary(store.plugins) }}</span>
       <OnmsButton variant="outlined" label="Show restart instructions" data-test="show-restart-instructions" @click="showRestartDialog = true" />
@@ -44,12 +50,12 @@ import PluginLoadCard from '@/components/PluginManagement/PluginLoadCard.vue'
 import PluginRestartDialog from '@/components/PluginManagement/PluginRestartDialog.vue'
 import PluginsTable from '@/components/PluginManagement/PluginsTable.vue'
 import PluginUnloadDialog from '@/components/PluginManagement/PluginUnloadDialog.vue'
-import { formatSize, restartPending, restartSummary } from '@/components/PluginManagement/pluginDisplay'
+import { formatSize, restartPending, restartSummary, startedUnhealthy } from '@/components/PluginManagement/pluginDisplay'
 import RestartInstructionsDialog from '@/components/PluginManagement/RestartInstructionsDialog.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { BreadCrumb } from '@/types'
-import { PluginEntry, PluginInstallResult } from '@/types/pluginManagement'
+import { PluginEntry, PluginInstallResult, PluginUnloadResult } from '@/types/pluginManagement'
 
 const menuStore = useMenuStore()
 const store = usePluginManagementStore()
@@ -91,13 +97,21 @@ const askRestart = (plugin: PluginEntry) => {
 }
 
 const onLoaded = (result: PluginInstallResult) => {
-  if (result.startOutcome.state === 'started') {
+  if (startedUnhealthy(result.startOutcome)) {
+    showToast({ message: `Plugin ${result.plugin.karName} started, but its health checks are not passing.`, severity: 'warn' })
+  } else if (result.startOutcome.state === 'started') {
     showToast({ message: `Plugin ${result.plugin.karName} is running.`, severity: 'success' })
   }
 }
 
-const onUnloaded = (plugin: PluginEntry) => {
-  showToast({ message: `Plugin ${plugin.karName} unloaded. Restart OpenNMS to finish removing it.`, severity: 'success' })
+const onUnloaded = (result: PluginUnloadResult) => {
+  if (result.note) {
+    showToast({ message: `Plugin ${result.plugin.karName} unloaded. ${result.note}`, severity: 'warn' })
+  } else if (result.restartRequired) {
+    showToast({ message: `Plugin ${result.plugin.karName} unloaded. Restart OpenNMS to finish removing it.`, severity: 'success' })
+  } else {
+    showToast({ message: `Plugin ${result.plugin.karName} unloaded and stopped.`, severity: 'success' })
+  }
 }
 </script>
 

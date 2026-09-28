@@ -157,4 +157,19 @@ describe('PluginsTable.vue', () => {
     expect(plain.find('[data-test="plugin-status"]').attributes('title')).toContain('see karaf.log')
     expect(plain.find('[data-test="plugin-features"]').attributes('data-diagnostics')).toBeUndefined()
   })
+
+  it('shows a loaded plugin whose health checks fail as Loaded, health failing with the first message as title', () => {
+    const wrapper = mountTable([
+      { ...BASE, karName: 'alec', status: 'installed', health: 'unhealthy', healthMessages: ['ALEC :: Driver: Failure (no datasource)', 'Bundle x: Starting'] },
+      { ...BASE, karName: 'fine', status: 'installed', health: 'healthy', healthMessages: [] }
+    ])
+    const tags = wrapper.findAll('[data-test="plugin-status"]')
+    expect(tags.map(t => t.text())).toEqual(['Loaded, health failing', 'Loaded'])
+    expect(tags[0].classes()).toContain('p-tag-warn')
+    expect(tags[0].attributes('title')).toBe('ALEC :: Driver: Failure (no datasource)')
+    expect(tags[0].attributes('data-health')).toBe('unhealthy')
+    expect(tags[1].classes()).toContain('p-tag-success')
+    expect(wrapper.findAll('[data-test="plugin-features"]')[0].attributes('title')).toContain('Bundle x: Starting')
+    expect(wrapper.findAll('[data-test="restart-plugin"]')[0].attributes('disabled')).toBeUndefined()
+  })
 })

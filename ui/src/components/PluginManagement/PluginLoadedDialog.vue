@@ -26,6 +26,13 @@
         {{ result.startOutcome.message || 'The manifest sets Karaf-Feature-Start: false, so the container extracts the KAR now but its features start on the next restart.' }}
         Until then the plugin is listed as staged.
       </div>
+      <div v-if="startedUnhealthy(result.startOutcome)" class="callout warn-callout" role="alert" data-test="outcome-unhealthy">
+        <strong>Its health checks are not passing yet.</strong>
+        <ul class="health-list" data-test="health-list">
+          <li v-for="(line, index) in failingHealthLines(result.startOutcome.health)" :key="index">{{ line }}</li>
+        </ul>
+        <span>The plugin may still be initialising; the table shows it as "Loaded, health failing" until the checks pass. If it does not recover, check karaf.log and use Restart on its row.</span>
+      </div>
       <div class="section-title">What was written</div>
       <ul class="written" data-test="written-list">
         <li>Deploy file <code>{{ result.plugin.fileName }}</code></li>
@@ -48,7 +55,7 @@
 import { computed } from 'vue'
 import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 import { PluginInstallResult } from '@/types/pluginManagement'
-import { needsServerRestart, startedFeatures } from './pluginDisplay'
+import { failingHealthLines, needsServerRestart, startedFeatures, startedUnhealthy } from './pluginDisplay'
 import PluginStartFailure from './PluginStartFailure.vue'
 import RestartCommands from './RestartCommands.vue'
 
@@ -67,7 +74,7 @@ const header = computed(() => {
   }
   const name = props.result.plugin.karName
   switch (props.result.startOutcome.state) {
-    case 'started': return `Plugin ${name} loaded`
+    case 'started': return startedUnhealthy(props.result.startOutcome) ? `Plugin ${name} loaded, but its health checks are not passing` : `Plugin ${name} loaded`
     case 'failed': return `Plugin ${name} loaded, but it did not start`
     default: return `Plugin ${name} staged`
   }
@@ -106,6 +113,19 @@ const header = computed(() => {
 .section-title {
   font-size: 1rem;
   font-weight: 600;
+}
+
+.warn-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.health-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-family: monospace;
+  font-size: 0.85rem;
 }
 
 .written {

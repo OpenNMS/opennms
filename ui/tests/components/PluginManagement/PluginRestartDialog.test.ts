@@ -67,6 +67,8 @@ describe('PluginRestartDialog.vue', () => {
     expect(store.restart).toHaveBeenCalledWith('alec')
     expect(wrapper.find('[data-test="restart-started"]').text()).toContain('Started')
     expect(wrapper.find('[data-test="restart-started"]').text()).toContain('alec, alec-ui')
+    expect(wrapper.find('[data-test="restart-not-started"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="restart-unhealthy"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="restart-callout"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="restart-button"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="cancel-button"]').exists()).toBe(false)
@@ -116,5 +118,21 @@ describe('PluginRestartDialog.vue', () => {
     await wrapper.find('[data-test="cancel-button"]').trigger('click')
     expect(store.restart).toHaveBeenCalledTimes(1)
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+  })
+
+  it('shows Started together with the health checks that are not passing yet', async () => {
+    store.restart.mockResolvedValueOnce({ success: true, message: '', payload: {
+      plugin: { ...PLUGIN, status: 'installed', health: 'unhealthy', healthMessages: ['ALEC :: Driver: Failure (no datasource)'] },
+      startOutcome: { state: 'started', message: 'Started alec.', diagnostics: {}, healthy: false, health: [{ description: 'ALEC :: Driver', status: 'Failure', message: 'no datasource' }] },
+      restartRequired: false
+    }})
+    await mountDialog()
+    await wrapper.find('[data-test="restart-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="restart-started"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="restart-unhealthy"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-test="health-list"] li').map(li => li.text())).toEqual(['ALEC :: Driver: Failure (no datasource)'])
+    expect(wrapper.find('[data-test="restart-failed"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="restart-not-started"]').exists()).toBe(false)
   })
 })

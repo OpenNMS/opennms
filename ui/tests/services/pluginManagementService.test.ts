@@ -39,7 +39,7 @@ describe('pluginManagementService', () => {
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { containerAvailable: true, opennmsHome: '/opt/opennms', deployDir: '/opt/opennms/deploy', restartRequired: true, plugins: [PLUGIN] }})
     const state = await getPluginManagement()
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/plugin-management')
-    expect(state).toEqual({ containerAvailable: true, opennmsHome: '/opt/opennms', deployDir: '/opt/opennms/deploy', restartRequired: true, plugins: [PLUGIN] })
+    expect(state).toEqual({ containerAvailable: true, opennmsHome: '/opt/opennms', deployDir: '/opt/opennms/deploy', restartRequired: true, plugins: [PLUGIN], containerBusy: null })
     vi.mocked(v2.get).mockRejectedValueOnce(new Error('403'))
     expect(await getPluginManagement()).toBeNull()
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: '<html>' })
@@ -167,15 +167,15 @@ describe('pluginManagementService', () => {
     expect(vi.mocked(v2.post).mock.calls[0][1]).toBe(input)
     expect(result.success).toBe(true)
     expect(result.payload?.plugin.karName).toBe('alec')
-    expect(result.payload?.startOutcome).toEqual({ state: 'restart-required', message: '', diagnostics: {}})
+    expect(result.payload?.startOutcome).toEqual({ state: 'restart-required', message: '', diagnostics: {}, healthy: true, health: [] })
     expect(result.payload?.restartInstructions).toEqual(INSTRUCTIONS)
 
     vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN, restartRequired: false, restartInstructions: INSTRUCTIONS }})
-    expect((await installPlugin(input)).payload?.startOutcome).toEqual({ state: 'started', message: '', diagnostics: {}})
+    expect((await installPlugin(input)).payload?.startOutcome).toEqual({ state: 'started', message: '', diagnostics: {}, healthy: true, health: [] })
 
     vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS,
       startOutcome: { state: 'failed', message: 'Feature alec did not start.', diagnostics: { alec: 'Unable to resolve', other: null }}}})
-    expect((await installPlugin(input)).payload?.startOutcome).toEqual({ state: 'failed', message: 'Feature alec did not start.', diagnostics: { alec: 'Unable to resolve', other: '' }})
+    expect((await installPlugin(input)).payload?.startOutcome).toEqual({ state: 'failed', message: 'Feature alec did not start.', diagnostics: { alec: 'Unable to resolve', other: '' }, healthy: true, health: [] })
 
     vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: PLUGIN, restartRequired: true, restartInstructions: INSTRUCTIONS, startOutcome: { state: 'exploded' }}})
     expect((await installPlugin(input)).payload?.startOutcome.state).toBe('restart-required')
@@ -209,12 +209,12 @@ describe('pluginManagementService', () => {
     expect(vi.mocked(v2.post).mock.calls[0][0]).toBe('/plugin-management/my%20plugin/restart')
     expect(vi.mocked(v2.post).mock.calls[0][2]).toEqual({ headers: { Accept: 'application/json' }})
     expect(result.success).toBe(true)
-    expect(result.payload).toEqual({ plugin: { ...PLUGIN, status: 'installed', pendingRestart: false }, startOutcome: { state: 'started', message: '', diagnostics: {}}, restartRequired: false })
+    expect(result.payload).toEqual({ plugin: { ...PLUGIN, status: 'installed', pendingRestart: false }, startOutcome: { state: 'started', message: '', diagnostics: {}, healthy: true, health: [] }, restartRequired: false })
 
     vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { plugin: { ...PLUGIN, status: 'failed' }, startOutcome: { state: 'failed', message: 'nope', diagnostics: { alec: 'Unable to resolve' }}, restartRequired: true }})
     const failed = await restartPlugin('alec')
     expect(failed.success).toBe(true)
-    expect(failed.payload?.startOutcome).toEqual({ state: 'failed', message: 'nope', diagnostics: { alec: 'Unable to resolve' }})
+    expect(failed.payload?.startOutcome).toEqual({ state: 'failed', message: 'nope', diagnostics: { alec: 'Unable to resolve' }, healthy: true, health: [] })
     expect(failed.payload?.restartRequired).toBe(true)
 
     vi.mocked(v2.post).mockResolvedValueOnce({ status: 200, data: { ok: true }})

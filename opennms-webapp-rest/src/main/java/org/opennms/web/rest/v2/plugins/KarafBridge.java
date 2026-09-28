@@ -84,4 +84,25 @@ public interface KarafBridge {
      * diagnosis or the bundle state). Started features are absent from the map.
      */
     Map<String, String> featureDiagnostics(Set<String> features);
+
+    /**
+     * Symbolic names of the installed bundles the features and their non-core
+     * dependency features list; what {@link #refreshBundles} and {@link #health} act on.
+     */
+    Set<String> bundleNames(Set<String> features);
+
+    /**
+     * Refreshes the removal-pending revisions of the named bundles so they stop
+     * serving classes; without it a reinstalled bundle can wire to a stale revision
+     * of a sibling. Returns false when the refresh did not complete within the timeout.
+     */
+    boolean refreshBundles(Set<String> symbolicNames, java.time.Duration timeout);
+
+    /**
+     * Health of the features' bundles: every OpenNMS HealthCheck one of them
+     * registered, run now, plus every bundle whose blueprint or declarative
+     * container is still waiting or has failed. Empty when all is well and the
+     * plugin registers no checks.
+     */
+    List<PluginHealth> health(Set<String> features);
 }

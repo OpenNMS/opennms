@@ -32,11 +32,24 @@ export type KarCheckLevel = 'PASS' | 'WARN' | 'FAIL'
 // started, or the reason it is not running yet
 export type PluginStartState = 'started' | 'failed' | 'timeout' | 'unavailable' | 'restart-required'
 
+// one health signal of a running plugin: a health check its bundles registered, or a bundle whose container is not up
+export interface PluginHealthCheck {
+  description: string
+  // Success, Starting, Failure, Timeout or Unknown, as org.opennms.core.health.api.Status names them
+  status: string
+  message: string | null
+}
+
+export type PluginHealthState = 'healthy' | 'unhealthy' | 'unknown'
+
 export interface PluginStartOutcome {
   state: PluginStartState
   message: string
   // feature name -> why it did not start; filled for the failed state
   diagnostics: Record<string, string>
+  // false when the features are Started but a health signal is not passing
+  healthy: boolean
+  health: PluginHealthCheck[]
 }
 
 export interface PluginEntry {
@@ -64,6 +77,9 @@ export interface PluginEntry {
   diagnostics?: Record<string, string>
   // the state the last pluginStarted, pluginFailed or pluginStopped event reported
   lastNotifiedState?: string | null
+  // what the last live start, restart or watchdog pass saw in the plugin's health checks
+  health?: PluginHealthState
+  healthMessages?: string[]
 }
 
 export interface PluginManagementState {
@@ -72,6 +88,8 @@ export interface PluginManagementState {
   deployDir: string
   restartRequired: boolean
   plugins: PluginEntry[]
+  // set while a container operation that overran its time limit is still running; the container accepts no changes
+  containerBusy?: string | null
   // temporary download area, reported when the server has one
   tempDir?: string
   tempBytes?: number
@@ -207,6 +225,8 @@ export interface PluginRestartResult {
 export interface PluginUnloadResult {
   plugin: PluginEntry
   restartRequired: boolean
+  // set when the container did not drop the KAR in time
+  note?: string | null
   // featuresBoot.d files, relative to OPENNMS_HOME, edited or deleted with the KAR
   bootFilesRemoved: string[]
   restartInstructions: RestartInstructions

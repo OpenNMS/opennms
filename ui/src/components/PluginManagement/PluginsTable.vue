@@ -40,8 +40,9 @@
         <OnmsColumn header="Status">
           <template #body="{ data }">
             <OnmsTag
-              :severity="statusOf(data.status, data.pendingRestart).severity"
-              :value="statusOf(data.status, data.pendingRestart).label"
+              :severity="statusOf(data.status, data.pendingRestart, data.health).severity"
+              :value="statusOf(data.status, data.pendingRestart, data.health).label"
+              :data-health="data.health"
               :title="statusTitle(data)"
               :data-status="data.status"
               data-test="plugin-status"

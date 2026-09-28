@@ -98,6 +98,8 @@ public class PluginManagementRestServiceTest {
         events = new RecordingEventSender();
         service = new PluginManagementRestService(home, bridge, fetcher, Clock.systemUTC(), events);
         service.setStartWait(Duration.ofMillis(300), Duration.ofMillis(10));
+        service.setHealthWait(Duration.ofMillis(300), Duration.ofMillis(10));
+        service.setContainerWait(Duration.ofMillis(500), Duration.ofMillis(100));
     }
 
     /** Karaf has extracted the KAR and, for an auto-start one, started the features. */
@@ -158,10 +160,11 @@ public class PluginManagementRestServiceTest {
         assertFalse(Files.exists(bootDir.resolve("only.boot")));
         assertEquals("# two plugins\nopennms-other wait-for-kar=other\n", new String(Files.readAllBytes(bootDir.resolve("shared.boot")), StandardCharsets.UTF_8));
         assertEquals("opennms-other wait-for-kar=other\n", new String(Files.readAllBytes(bootDir.resolve("untouched.boot")), StandardCharsets.UTF_8));
-        assertTrue(result.isRestartRequired());
+        assertFalse("the container never had the KAR, so nothing waits for a restart", result.isRestartRequired());
+        assertNull(result.getNote());
         assertEquals(PluginEntry.STATUS_UNLOADED, result.getPlugin().getStatus());
         assertEquals("alec.kar", result.getPlugin().getFileName());
-        assertTrue(result.getPlugin().isPendingRestart());
+        assertFalse(result.getPlugin().isPendingRestart());
     }
 
     @Test
@@ -941,5 +944,179 @@ public class PluginManagementRestServiceTest {
                 return BASIC_AUTH;
             }
         };
+    }
+
+    @Test
+    public void restartRefreshesTheFrameworkBetweenUninstallAndInstall() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        assertEquals(0, bridge.refreshCalls);
+
+        service.restart("alec", admin(), null);
+
+        assertEquals(1, bridge.refreshCalls);
+        assertEquals(Collections.singleton("org.example.alec"), bridge.refreshedBundles);
+        assertEquals(1, bridge.uninstallCalls.size());
+        assertEquals(2, bridge.installCalls.size());
+    }
+
+    @Test
+    public void liveStartWithFailingHealthChecksIsStartedButReportedAsFailed() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        bridge.healthAnswers.add(Arrays.asList(new PluginHealth("ALEC :: Driver", PluginHealth.FAILURE, "Driver is WAITING_FOR_DATASOURCES"), new PluginHealth("ALEC :: Engine", PluginHealth.SUCCESS, null)));
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        final StartOutcome outcome = result.getStartOutcome();
+        assertEquals(StartOutcome.STARTED, outcome.getState());
+        assertFalse(outcome.isHealthy());
+        assertEquals(2, outcome.getHealth().size());
+        assertTrue(outcome.getMessage(), outcome.getMessage().endsWith("Health checks not passing: ALEC :: Driver: Failure (Driver is WAITING_FOR_DATASOURCES)"));
+        assertFalse("the features run, so no server restart is needed", result.isRestartRequired());
+        assertEquals(PluginEntry.STATUS_INSTALLED, result.getPlugin().getStatus());
+        assertEquals(PluginEntry.HEALTH_UNHEALTHY, result.getPlugin().getHealth());
+        assertEquals(Arrays.asList("ALEC :: Driver: Failure (Driver is WAITING_FOR_DATASOURCES)"), result.getPlugin().getHealthMessages());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+        assertEquals("Health checks not passing: ALEC :: Driver: Failure (Driver is WAITING_FOR_DATASOURCES)", RecordingEventSender.parm(events.last(), "reason"));
+        assertEquals(PluginRegistry.NOTIFIED_FAILED, result.getPlugin().getLastNotifiedState());
+        assertTrue("the health deadline was spent polling", bridge.healthCalls > 1);
+    }
+
+    @Test
+    public void healthChecksGetTimeToPass() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        bridge.healthAnswers.add(Arrays.asList(new PluginHealth("ALEC :: Driver", PluginHealth.STARTING, null)));
+        bridge.healthAnswers.add(Arrays.asList(new PluginHealth("ALEC :: Driver", PluginHealth.STARTING, null)));
+        bridge.healthAnswers.add(Arrays.asList(new PluginHealth("ALEC :: Driver", PluginHealth.SUCCESS, null)));
+
+        final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+        assertTrue(result.getStartOutcome().isHealthy());
+        assertEquals("Started alec.", result.getStartOutcome().getMessage());
+        assertEquals(3, bridge.healthCalls);
+        assertEquals(PluginEntry.HEALTH_HEALTHY, result.getPlugin().getHealth());
+        assertTrue(result.getPlugin().getHealthMessages().isEmpty());
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_STARTED_UEI), events.ueis());
+    }
+
+    @Test
+    public void watchdogReportsFailingHealthOnceAndRecoveryOnce() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        events.events.clear();
+
+        bridge.healthAnswers.add(Arrays.asList(new PluginHealth("ALEC :: Driver", PluginHealth.FAILURE, "no datasource")));
+        service.watchdog();
+        service.watchdog();
+
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+        assertEquals("Health checks not passing: ALEC :: Driver: Failure (no datasource)", RecordingEventSender.parm(events.last(), "reason"));
+        PluginEntry entry = service.status(admin()).getPlugins().get(0);
+        assertEquals(PluginEntry.STATUS_INSTALLED, entry.getStatus());
+        assertEquals(PluginEntry.HEALTH_UNHEALTHY, entry.getHealth());
+        assertEquals(Arrays.asList("ALEC :: Driver: Failure (no datasource)"), entry.getHealthMessages());
+
+        bridge.healthAnswers.clear();
+        service.watchdog();
+        service.watchdog();
+
+        assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI, PluginEvents.PLUGIN_STARTED_UEI), events.ueis());
+        entry = service.status(admin()).getPlugins().get(0);
+        assertEquals(PluginEntry.HEALTH_HEALTHY, entry.getHealth());
+        assertTrue(entry.getHealthMessages().isEmpty());
+    }
+
+    @Test
+    public void unloadWaitsForTheContainerToDropTheKar() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+        final int[] polls = { 0 };
+        bridge.beforeKarList = () -> {
+            if (++polls[0] == 3) {
+                bridge.installedKars.remove("alec");
+            }
+        };
+
+        final PluginActionResult result = service.unload("alec", admin(), null);
+
+        assertNull(result.getNote());
+        assertFalse(result.isRestartRequired());
+        assertFalse(result.getPlugin().isPendingRestart());
+        assertEquals(PluginEntry.STATUS_UNLOADED, result.getPlugin().getStatus());
+        assertTrue(polls[0] >= 3);
+    }
+
+    @Test
+    public void unloadReportsAContainerThatKeepsTheKar() throws IOException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        service.install(request(token, "alec"), admin(), null);
+
+        final PluginActionResult result = service.unload("alec", admin(), null);
+
+        assertTrue(result.getNote(), result.getNote().startsWith("The container has not finished unloading alec.kar"));
+        assertTrue(result.isRestartRequired());
+        assertTrue(result.getPlugin().isPendingRestart());
+        assertEquals(PluginEntry.STATUS_UNLOADED, result.getPlugin().getStatus());
+    }
+
+    @Test
+    public void unloadWithoutAContainerLeavesTheRemovalToTheNextRestart() throws IOException {
+        Files.createDirectories(deployDir);
+        Files.write(deployDir.resolve("alec.kar"), new byte[] { 1 });
+        bridge.available = false;
+
+        final PluginActionResult result = service.unload("alec", admin(), null);
+
+        assertNull(result.getNote());
+        assertTrue(result.isRestartRequired());
+        assertTrue(result.getPlugin().isPendingRestart());
+    }
+
+    @Test
+    public void anInstallThatOverrunsTheContainerDeadlineIsFailedAndBlocksLaterChanges() throws IOException, InterruptedException {
+        final String token = storeUpload("alec-1.0.kar", false);
+        bridge.kar("alec", ALEC_REPO);
+        bridge.installBlock = new java.util.concurrent.CountDownLatch(1);
+        service.setContainerWait(Duration.ofMillis(200), Duration.ofMillis(100));
+        try {
+            final PluginActionResult result = service.install(request(token, "alec"), admin(), null);
+
+            assertEquals(StartOutcome.FAILED, result.getStartOutcome().getState());
+            assertTrue(result.getStartOutcome().getMessage(), result.getStartOutcome().getMessage().contains("install of alec did not finish within 0 seconds"));
+            assertTrue(result.isRestartRequired());
+            assertEquals(Arrays.asList(PluginEvents.PLUGIN_FAILED_UEI), events.ueis());
+
+            final PluginManagementStatus status = service.status(admin());
+            assertTrue(status.getContainerBusy(), status.getContainerBusy().startsWith("install of alec (running since "));
+            assertTrue(status.isRestartRequired());
+
+            final String otherToken = storeUpload("other-1.0.kar", false, FEATURES_XML.replace("name=\"alec\"", "name=\"other\""));
+            for (final Runnable change : Arrays.<Runnable>asList(
+                    () -> service.restart("alec", admin(), null),
+                    () -> service.unload("alec", admin(), null),
+                    () -> service.install(request(otherToken, "other"), admin(), null))) {
+                try {
+                    change.run();
+                    fail("a change while the container is busy must be refused");
+                } catch (final WebApplicationException e) {
+                    assertEquals(409, e.getResponse().getStatus());
+                    assertTrue(String.valueOf(e.getResponse().getEntity()), String.valueOf(e.getResponse().getEntity()).contains("still busy with install of alec"));
+                }
+            }
+            assertEquals(1, bridge.installCalls.size());
+            assertTrue("the KAR stays deployed while the container is busy", Files.exists(deployDir.resolve("alec.kar")));
+        } finally {
+            bridge.installBlock.countDown();
+        }
+        for (int i = 0; i < 50 && service.status(admin()).getContainerBusy() != null; i++) {
+            Thread.sleep(20);
+        }
+        assertNull("the gate opens again once the stuck operation finishes", service.status(admin()).getContainerBusy());
     }
 }

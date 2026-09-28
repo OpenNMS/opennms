@@ -20,7 +20,10 @@
  * License.
  */
 package org.opennms.web.rest.v2.plugins;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Map;
 
 /** What happened to a plugin's features when the page tried to start them in the running container. */
@@ -39,6 +42,9 @@ public class StartOutcome {
     private String state;
     private String message;
     private Map<String, String> diagnostics = new LinkedHashMap<>();
+    /** false when a feature is Started but a health check of its bundles is not passing */
+    private boolean healthy = true;
+    private List<PluginHealth> health = new ArrayList<>();
 
     public StartOutcome() {
     }
@@ -63,6 +69,30 @@ public class StartOutcome {
     public boolean isStarted() {
         return STARTED.equals(state);
     }
+
+    /** Started and every health signal passing. */
+    public boolean isRunningWell() {
+        return isStarted() && healthy;
+    }
+
+    /** Records the health signals; unhealthy ones extend the message so logs and events carry them. */
+    public void recordHealth(final List<PluginHealth> signals) {
+        health = new ArrayList<>(signals);
+        healthy = signals.stream().allMatch(PluginHealth::isSuccess);
+        if (!healthy) {
+            message = (message == null ? "" : message + " ") + "Health checks not passing: " + healthSummary();
+        }
+    }
+
+    /** The failing signals, "; "-joined; empty when healthy. */
+    public String healthSummary() {
+        return health.stream().filter(h -> !h.isSuccess()).map(PluginHealth::summary).collect(Collectors.joining("; "));
+    }
+
+    public boolean isHealthy() { return healthy; }
+    public void setHealthy(final boolean healthy) { this.healthy = healthy; }
+    public List<PluginHealth> getHealth() { return health; }
+    public void setHealth(final List<PluginHealth> health) { this.health = health; }
 
     public String getState() { return state; }
     public void setState(final String state) { this.state = state; }

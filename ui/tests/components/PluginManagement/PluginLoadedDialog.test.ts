@@ -109,4 +109,24 @@ describe('PluginLoadedDialog.vue', () => {
     await wrapper.find('[data-test="close-button"]').trigger('click')
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
   })
+
+  it('warns about failing health checks on a started plugin and lists them', () => {
+    const health = [
+      { description: 'ALEC :: Engine', status: 'Success', message: null },
+      { description: 'ALEC :: Driver', status: 'Failure', message: 'Driver is WAITING_FOR_DATASOURCES' }
+    ]
+    const wrapper = mountDialog({ plugin: PLUGIN, startOutcome: { ...outcome('started', 'Started alec. Health checks not passing: ALEC :: Driver: Failure'), healthy: false, health }, restartRequired: false, restartInstructions: INSTRUCTIONS })
+    expect(wrapper.find('[data-test="dialog-header"]').text()).toBe('Plugin alec loaded, but its health checks are not passing')
+    onlyCallout(wrapper, 'outcome-started')
+    const items = wrapper.findAll('[data-test="health-list"] li').map(li => li.text())
+    expect(items).toEqual(['ALEC :: Driver: Failure (Driver is WAITING_FOR_DATASOURCES)'])
+    expect(wrapper.find('[data-test="outcome-unhealthy"]').text()).toContain('Loaded, health failing')
+    expect(wrapper.find('[data-test="restart-packages"]').exists()).toBe(false)
+  })
+
+  it('shows no health warning when the started plugin is healthy', () => {
+    const wrapper = mountDialog({ plugin: PLUGIN, startOutcome: { ...outcome('started'), healthy: true, health: [{ description: 'ALEC :: Engine', status: 'Success', message: null }] }, restartRequired: false, restartInstructions: INSTRUCTIONS })
+    expect(wrapper.find('[data-test="dialog-header"]').text()).toBe('Plugin alec loaded')
+    expect(wrapper.find('[data-test="outcome-unhealthy"]').exists()).toBe(false)
+  })
 })

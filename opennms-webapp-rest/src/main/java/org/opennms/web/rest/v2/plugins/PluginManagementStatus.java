@@ -31,6 +31,8 @@ public class PluginManagementStatus {
     private String javaVersion;
     private String oiaVersion;
     private boolean restartRequired;
+    /** set while a container operation that overran its time limit is still running; the container accepts no further changes */
+    private String containerBusy;
     private List<PluginEntry> plugins = new ArrayList<>();
     private List<InstalledFeature> pluginFeatures = new ArrayList<>();
     private RestartInstructions restartInstructions;
@@ -50,6 +52,8 @@ public class PluginManagementStatus {
     public void setOiaVersion(final String oiaVersion) { this.oiaVersion = oiaVersion; }
     public boolean isRestartRequired() { return restartRequired; }
     public void setRestartRequired(final boolean restartRequired) { this.restartRequired = restartRequired; }
+    public String getContainerBusy() { return containerBusy; }
+    public void setContainerBusy(final String containerBusy) { this.containerBusy = containerBusy; }
     public List<PluginEntry> getPlugins() { return plugins; }
     public void setPlugins(final List<PluginEntry> plugins) { this.plugins = plugins; }
     public List<InstalledFeature> getPluginFeatures() { return pluginFeatures; }

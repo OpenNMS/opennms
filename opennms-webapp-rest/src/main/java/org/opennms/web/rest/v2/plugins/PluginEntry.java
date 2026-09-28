@@ -39,6 +39,10 @@ public class PluginEntry {
     /** source of a plugin found in deploy/ or in the container without a registry record. */
     public static final String SOURCE_MANUAL = "manual";
 
+    public static final String HEALTH_HEALTHY = "healthy";
+    public static final String HEALTH_UNHEALTHY = "unhealthy";
+    public static final String HEALTH_UNKNOWN = "unknown";
+
     private String karName;
     private String fileName;
     private String sha256;
@@ -61,6 +65,9 @@ public class PluginEntry {
     private boolean pendingRestart;
     /** the state the last plugin event announced: started, failed or stopped; null when none was sent */
     private String lastNotifiedState;
+    /** healthy, unhealthy or unknown: what the last live start, restart or watchdog pass saw in the plugin's health checks */
+    private String health = HEALTH_UNKNOWN;
+    private List<String> healthMessages = new ArrayList<>();
 
     public String getKarName() { return karName; }
     public void setKarName(final String karName) { this.karName = karName; }
@@ -102,4 +109,8 @@ public class PluginEntry {
     public void setDiagnostics(final Map<String, String> diagnostics) { this.diagnostics = diagnostics; }
     public String getLastNotifiedState() { return lastNotifiedState; }
     public void setLastNotifiedState(final String lastNotifiedState) { this.lastNotifiedState = lastNotifiedState; }
+    public String getHealth() { return health; }
+    public void setHealth(final String health) { this.health = health; }
+    public List<String> getHealthMessages() { return healthMessages; }
+    public void setHealthMessages(final List<String> healthMessages) { this.healthMessages = healthMessages; }
 }

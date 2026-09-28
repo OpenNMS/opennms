@@ -85,6 +85,9 @@ public class PluginRegistry {
         private Long pendingRestartSince;
         /** started, failed or stopped: the last state a plugin event announced, so the watchdog reports each change once */
         private String lastNotifiedState;
+        /** healthy or unhealthy after the last live start, restart or watchdog pass; null before any */
+        private String health;
+        private List<String> healthMessages = new ArrayList<>();
 
         public String getKarName() { return karName; }
         public void setKarName(final String karName) { this.karName = karName; }
@@ -116,6 +119,10 @@ public class PluginRegistry {
         public void setPendingRestartSince(final Long pendingRestartSince) { this.pendingRestartSince = pendingRestartSince; }
         public String getLastNotifiedState() { return lastNotifiedState; }
         public void setLastNotifiedState(final String lastNotifiedState) { this.lastNotifiedState = lastNotifiedState; }
+        public String getHealth() { return health; }
+        public void setHealth(final String health) { this.health = health; }
+        public List<String> getHealthMessages() { return healthMessages; }
+        public void setHealthMessages(final List<String> healthMessages) { this.healthMessages = healthMessages == null ? new ArrayList<>() : healthMessages; }
     }
 
     public static class RegistryFile {
@@ -229,6 +236,8 @@ public class PluginRegistry {
         record.setUnloaded(false);
         record.setPendingRestartSince(autoStart ? null : System.currentTimeMillis());
         record.setLastNotifiedState(null);
+        record.setHealth(null);
+        record.setHealthMessages(new ArrayList<>());
         file.getPlugins().add(record);
         write(file);
         return toEntry(record, new LiveState());
@@ -239,6 +248,11 @@ public class PluginRegistry {
      * the state announced by the event that went out with the outcome (null when none did).
      */
     public synchronized Optional<PluginEntry> recordStartOutcome(final String karName, final boolean pendingRestart, final String notified) throws IOException {
+        return recordStartOutcome(karName, pendingRestart, notified, null);
+    }
+
+    /** As above, and when the outcome ran health checks, remembers whether they passed and what the failing ones said. */
+    public synchronized Optional<PluginEntry> recordStartOutcome(final String karName, final boolean pendingRestart, final String notified, final StartOutcome outcome) throws IOException {
         final RegistryFile file = read();
         for (final Record record : file.getPlugins()) {
             if (karName.equals(record.getKarName())) {
@@ -246,11 +260,48 @@ public class PluginRegistry {
                 if (notified != null) {
                     record.setLastNotifiedState(notified);
                 }
+                if (outcome != null && outcome.isStarted()) {
+                    applyHealth(record, outcome.isHealthy(), failingHealth(outcome.getHealth()));
+                } else if (outcome != null) {
+                    record.setHealth(null);
+                    record.setHealthMessages(new ArrayList<>());
+                }
                 write(file);
                 return Optional.of(toEntry(record, new LiveState()));
             }
         }
         return Optional.empty();
+    }
+
+    /** Remembers what the watchdog saw in a plugin's health checks; a no-op for plugins without a record. */
+    public synchronized void recordHealth(final String karName, final boolean healthy, final List<String> messages) throws IOException {
+        final RegistryFile file = read();
+        for (final Record record : file.getPlugins()) {
+            if (karName.equals(record.getKarName())) {
+                final String before = record.getHealth();
+                final List<String> beforeMessages = new ArrayList<>(record.getHealthMessages());
+                applyHealth(record, healthy, messages);
+                if (!java.util.Objects.equals(before, record.getHealth()) || !beforeMessages.equals(record.getHealthMessages())) {
+                    write(file);
+                }
+                return;
+            }
+        }
+    }
+
+    static List<String> failingHealth(final List<PluginHealth> health) {
+        final List<String> messages = new ArrayList<>();
+        for (final PluginHealth h : health) {
+            if (!h.isSuccess()) {
+                messages.add(h.summary());
+            }
+        }
+        return messages;
+    }
+
+    private static void applyHealth(final Record record, final boolean healthy, final List<String> messages) {
+        record.setHealth(healthy ? PluginEntry.HEALTH_HEALTHY : PluginEntry.HEALTH_UNHEALTHY);
+        record.setHealthMessages(healthy ? new ArrayList<>() : new ArrayList<>(messages));
     }
 
     /** Remembers the state the watchdog last announced for a plugin; a no-op for plugins without a record. */
@@ -296,7 +347,8 @@ public class PluginRegistry {
     }
 
     /** Marks the plugin unloaded, creating a record when the KAR was hand-copied. */
-    public synchronized PluginEntry recordUnload(final String karName, final String user, final String fileName) throws IOException {
+    /** pendingRestart is false when the container dropped the KAR live, so nothing is left for the next boot to do. */
+    public synchronized PluginEntry recordUnload(final String karName, final String user, final String fileName, final boolean pendingRestart) throws IOException {
         final RegistryFile file = read();
         Record record = null;
         for (final Record r : file.getPlugins()) {
@@ -314,8 +366,10 @@ public class PluginRegistry {
         record.setUnloaded(true);
         record.setUnloadedBy(user);
         record.setUnloadedAt(Instant.now().toString());
-        record.setPendingRestartSince(System.currentTimeMillis());
+        record.setPendingRestartSince(pendingRestart ? System.currentTimeMillis() : null);
         record.setLastNotifiedState(NOTIFIED_STOPPED);
+        record.setHealth(null);
+        record.setHealthMessages(new ArrayList<>());
         write(file);
         return toEntry(record, new LiveState());
     }
@@ -403,6 +457,8 @@ public class PluginRegistry {
         entry.setManaged(true);
         entry.setPendingRestart(record.getPendingRestartSince() != null && record.getPendingRestartSince() > bootTimeMillis);
         entry.setLastNotifiedState(record.getLastNotifiedState());
+        entry.setHealth(record.getHealth() == null ? PluginEntry.HEALTH_UNKNOWN : record.getHealth());
+        entry.setHealthMessages(new ArrayList<>(record.getHealthMessages()));
         entry.setDeployed(Files.exists(deployDir.resolve(record.getKarName() + KAR_SUFFIX)));
 
         if (record.isUnloaded() || !entry.isDeployed()) {

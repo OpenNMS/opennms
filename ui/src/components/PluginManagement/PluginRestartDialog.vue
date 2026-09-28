@@ -14,10 +14,17 @@
           <strong>Started</strong>
           <span>{{ startedFeatures(outcome.plugin.features) }}</span>
         </div>
+        <div v-if="startedUnhealthy(outcome)" class="callout warn-callout" role="alert" data-test="restart-unhealthy">
+          <strong>Its health checks are not passing yet.</strong>
+          <ul class="health-list" data-test="health-list">
+            <li v-for="(line, index) in failingHealthLines(outcome.health)" :key="index">{{ line }}</li>
+          </ul>
+          <span>The plugin may still be initialising. If it does not recover, check karaf.log; a plugin that cannot restart in place needs a server restart.</span>
+        </div>
         <PluginStartFailure v-else-if="outcome.state === 'failed'" :outcome="outcome" data-test="restart-failed">
           You can fix the cause and try Restart again, or unload the plugin.
         </PluginStartFailure>
-        <div v-else class="callout warn-callout" role="status" data-test="restart-not-started">
+        <div v-else-if="outcome.state !== 'started'" class="callout warn-callout" role="status" data-test="restart-not-started">
           {{ outcome.message || 'The plugin is not running yet; the table shows its state.' }}
         </div>
       </template>
@@ -44,7 +51,7 @@ import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 
 import { usePluginManagementStore } from '@/stores/pluginManagementStore'
 import { PluginEntry, PluginStartOutcome } from '@/types/pluginManagement'
-import { startedFeatures } from './pluginDisplay'
+import { failingHealthLines, startedFeatures, startedUnhealthy } from './pluginDisplay'
 import PluginStartFailure from './PluginStartFailure.vue'
 
 const props = defineProps<{
@@ -130,5 +137,11 @@ const restart = async () => {
   border-left: 4px solid var(--p-red-500, #c62828);
   background: color-mix(in srgb, var(--p-red-500, #c62828) 10%, transparent);
   color: var(--p-red-600, #dc2626);
+}
+.health-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-family: monospace;
+  font-size: 0.85rem;
 }
 </style>

@@ -22,7 +22,7 @@
 
 import { formatInDisplayZone } from '@/lib/displayTimeZone'
 import { isValid, parseISO } from 'date-fns'
-import { KarCheckLevel, PluginEntry, PluginFetchSource, PluginRelease, PluginStartOutcome, PluginStatus } from '@/types/pluginManagement'
+import { KarCheckLevel, PluginEntry, PluginFetchSource, PluginHealthCheck, PluginHealthState, PluginRelease, PluginStartOutcome, PluginStatus } from '@/types/pluginManagement'
 import { type OnmsTagSeverity } from '@opennms/onms-ui'
 
 export const NOT_SET = '—'
@@ -139,12 +139,25 @@ export const STATUS_TAG: Record<PluginStatus, StatusPresentation> = {
 
 const UNLOAD_PENDING: StatusPresentation = { severity: 'warn', label: 'Unload pending restart', title: 'removed from deploy/; the next restart completes the removal' }
 
-export const statusOf = (status: string, pendingRestart = false): StatusPresentation => {
+const HEALTH_FAILING: StatusPresentation = { severity: 'warn', label: 'Loaded, health failing', title: 'its features are started, but a health check of the plugin is not passing' }
+
+export const statusOf = (status: string, pendingRestart = false, health: PluginHealthState | null | undefined = undefined): StatusPresentation => {
   if (status === 'unloaded' && pendingRestart) {
     return UNLOAD_PENDING
   }
+  if (status === 'installed' && health === 'unhealthy') {
+    return HEALTH_FAILING
+  }
   return STATUS_TAG[status as PluginStatus] ?? { severity: 'secondary', label: status, title: '' }
 }
+
+// "<description>: <status> (<message>)" per health signal that is not passing
+export const failingHealthLines = (health: PluginHealthCheck[] | null | undefined): string[] =>
+  (health ?? []).filter(h => h.status !== 'Success').map(h => `${h.description}: ${h.status}${h.message?.trim() ? ` (${h.message.trim()})` : ''}`)
+
+// a started outcome whose health checks are not all passing
+export const startedUnhealthy = (outcome: PluginStartOutcome | null | undefined): boolean =>
+  !!outcome && outcome.state === 'started' && outcome.healthy === false
 
 const firstLine = (text: string): string => text.split('\n').map(l => l.trim()).find(l => l !== '') ?? ''
 
@@ -155,13 +168,20 @@ export const diagnosticLines = (diagnostics: Record<string, string> | null | und
 // the status tag's title: for a failed plugin the first diagnostic replaces the generic wording
 export const statusTitle = (plugin: PluginEntry): string => {
   const first = Object.entries(plugin.diagnostics ?? {}).find(([feature, reason]) => feature !== '' && firstLine(reason) !== '')
-  return plugin.status === 'failed' && first ? `${first[0]}: ${firstLine(first[1])}` : statusOf(plugin.status, plugin.pendingRestart).title
+  if (plugin.status === 'failed' && first) {
+    return `${first[0]}: ${firstLine(first[1])}`
+  }
+  const firstHealth = (plugin.healthMessages ?? []).find(m => m.trim() !== '')
+  if (plugin.status === 'installed' && plugin.health === 'unhealthy' && firstHealth) {
+    return firstHealth
+  }
+  return statusOf(plugin.status, plugin.pendingRestart, plugin.health).title
 }
 
 // the full feature list with each feature's container state, e.g. "alec (Started)", then the diagnostics
 export const featureTitle = (plugin: PluginEntry): string => {
   const states = plugin.features.map(f => (plugin.featureStates?.[f] ? `${f} (${plugin.featureStates[f]})` : f)).join(', ')
-  const lines = diagnosticLines(plugin.diagnostics)
+  const lines = [...diagnosticLines(plugin.diagnostics), ...(plugin.health === 'unhealthy' ? plugin.healthMessages ?? [] : [])]
   return lines.length ? [states, ...lines].filter(l => l !== '').join('\n') : states
 }
 

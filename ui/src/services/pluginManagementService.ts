@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { KarFeature, KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginRestartResult, PluginStartOutcome, PluginStartState, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
+import { KarFeature, KarInspection, PluginCatalog, PluginEntry, PluginFetchInput, PluginHealthCheck, PluginInstallInput, PluginInstallResult, PluginManagementState, PluginReleases, PluginReleasesQuery, PluginRestartResult, PluginStartOutcome, PluginStartState, PluginUnloadResult, RestartInstructions } from '@/types/pluginManagement'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
 
@@ -70,6 +70,7 @@ const asState = (data: any): PluginManagementState | null =>
       deployDir: String(data.deployDir ?? ''),
       restartRequired: data.restartRequired === true,
       plugins: data.plugins as PluginEntry[],
+      containerBusy: typeof data.containerBusy === 'string' && data.containerBusy !== '' ? data.containerBusy : null,
       ...(typeof data.tempDir === 'string' ? { tempDir: data.tempDir } : {}),
       ...(Number.isFinite(Number(data.tempBytes)) && data.tempBytes !== null ? { tempBytes: Number(data.tempBytes) } : {}),
       ...(Number.isFinite(Number(data.tempFiles)) && data.tempFiles !== null ? { tempFiles: Number(data.tempFiles) } : {})
@@ -111,7 +112,10 @@ const asStartOutcome = (data: any, restartRequired: boolean): PluginStartOutcome
   const diagnostics = data?.diagnostics && typeof data.diagnostics === 'object'
     ? Object.fromEntries(Object.entries(data.diagnostics).map(([feature, reason]) => [feature, String(reason ?? '')]))
     : {}
-  return { state, message: String(data?.message ?? ''), diagnostics }
+  const health: PluginHealthCheck[] = Array.isArray(data?.health)
+    ? data.health.map((h: any) => ({ description: String(h?.description ?? ''), status: String(h?.status ?? 'Unknown'), message: h?.message == null ? null : String(h.message) }))
+    : []
+  return { state, message: String(data?.message ?? ''), diagnostics, healthy: data?.healthy !== false, health }
 }
 
 // null on failure (not an empty list) so the page can show an error state
@@ -247,6 +251,7 @@ const unloadPlugin = async (karName: string): Promise<ValidationResultWithPayloa
     return createResultWithPayload(true, '', {
       plugin: data.plugin as PluginEntry,
       restartRequired: data.restartRequired === true,
+      note: typeof data.note === 'string' && data.note !== '' ? data.note : null,
       bootFilesRemoved: Array.isArray(data.bootFilesRemoved) ? data.bootFilesRemoved.map(String) : [],
       restartInstructions: data.restartInstructions as RestartInstructions
     })

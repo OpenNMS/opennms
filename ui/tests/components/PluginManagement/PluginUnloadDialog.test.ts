@@ -68,7 +68,7 @@ describe('PluginUnloadDialog.vue', () => {
     await wrapper.find('[data-test="unload-button"]').trigger('click')
     await flushPromises()
     expect(store.unload).toHaveBeenCalledWith('alec')
-    expect(wrapper.emitted('unloaded')?.[0][0]).toMatchObject({ karName: 'alec', status: 'unloaded', pendingRestart: true })
+    expect(wrapper.emitted('unloaded')?.[0][0]).toMatchObject({ plugin: { karName: 'alec', status: 'unloaded', pendingRestart: true }, restartRequired: true })
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
   })
 

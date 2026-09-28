@@ -39,14 +39,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.opennms.container.daemon.KarafContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +72,22 @@ public class OsgiKarafBridge implements KarafBridge {
     static final String REPOSITORY = "org.apache.karaf.features.Repository";
     static final String FEATURES_OPTION = "org.apache.karaf.features.FeaturesService$Option";
     static final String BUNDLE_SERVICE = "org.apache.karaf.bundle.core.BundleService";
+    static final String HEALTH_CHECK = "org.opennms.core.health.api.HealthCheck";
+    static final String HEALTH_CONTEXT = "org.opennms.core.health.api.Context";
+    static final String HEALTH_RESPONSE = "org.opennms.core.health.api.Response";
+    /** plugins built on the Integration API register this one; the API layer's core wrapper belongs to another bundle */
+    static final String OIA_HEALTH_CHECK = "org.opennms.integration.api.v1.health.HealthCheck";
+    static final String OIA_HEALTH_CONTEXT = "org.opennms.integration.api.v1.health.Context";
+    static final String OIA_HEALTH_RESPONSE = "org.opennms.integration.api.v1.health.Response";
+    static final String KARAF_BUNDLE_INFO = "org.apache.karaf.bundle.core.BundleInfo";
+    /** per health check; the checks themselves usually answer in milliseconds */
+    static final long HEALTH_CHECK_TIMEOUT_MS = 5_000L;
+    /** runs plugin health checks so a check that blocks cannot pin the request or watchdog thread */
+    private static final java.util.concurrent.ExecutorService HEALTH_EXECUTOR = java.util.concurrent.Executors.newCachedThreadPool(r -> {
+        final Thread thread = new Thread(r, "plugin-management-health");
+        thread.setDaemon(true);
+        return thread;
+    });
     static final String PACKAGE_NAMESPACE = "osgi.wiring.package";
     static final String OIA_BUNDLE_SYMBOLIC_NAME = "org.opennms.integration.api";
     static final String OIA_FEATURE_NAME = "opennms-integration-api";
@@ -303,11 +324,8 @@ public class OsgiKarafBridge implements KarafBridge {
                     continue;
                 }
                 final StringBuilder reason = new StringBuilder("Feature state: ").append(stateName);
-                final Object bundles = invoke(feature, FEATURE, "getBundles");
-                if (bundles instanceof List) {
-                    for (final Object info : (List<?>) bundles) {
-                        describeBundle(ctx, byLocation, info, reason);
-                    }
+                for (final Bundle bundle : featureBundles(ctx, service, Collections.singleton(name))) {
+                    describeBundle(ctx, bundle, reason);
                 }
                 result.put(name, reason.toString());
             }
@@ -315,17 +333,240 @@ public class OsgiKarafBridge implements KarafBridge {
         });
     }
 
-    private void describeBundle(final BundleContext ctx, final Map<String, Bundle> byLocation, final Object info, final StringBuilder reason) throws Exception {
-        final String location = string(invoke(info, BUNDLE_INFO, "getLocation"));
-        Bundle bundle = location == null ? null : byLocation.get(location);
-        if (bundle == null) {
-            final String original = string(invokeIfPresent(info, BUNDLE_INFO, "getOriginalLocation"));
-            bundle = original == null ? null : byLocation.get(original);
+    @Override
+    public Set<String> bundleNames(final Set<String> features) {
+        return withService(FEATURES_SERVICE, Collections.<String>emptySet(), service -> {
+            final Set<String> names = new LinkedHashSet<>();
+            for (final Bundle bundle : featureBundles(context(), service, features)) {
+                names.add(bundle.getSymbolicName());
+            }
+            return names;
+        });
+    }
+
+    @Override
+    public boolean refreshBundles(final Set<String> symbolicNames, final java.time.Duration timeout) {
+        final BundleContext ctx = context();
+        if (ctx == null || symbolicNames.isEmpty()) {
+            return false;
         }
-        if (bundle == null) {
-            reason.append("; bundle ").append(location).append(" is not installed");
+        try {
+            final FrameworkWiring wiring = ctx.getBundle(0).adapt(FrameworkWiring.class);
+            if (wiring == null) {
+                return false;
+            }
+            final List<Bundle> pending = new ArrayList<>();
+            for (final Bundle bundle : wiring.getRemovalPendingBundles()) {
+                if (symbolicNames.contains(bundle.getSymbolicName())) {
+                    pending.add(bundle);
+                }
+            }
+            if (pending.isEmpty()) {
+                return true;
+            }
+            LOG.info("Refreshing {} removal-pending bundle(s) of the plugin: {}", pending.size(), pending.stream().map(Bundle::getSymbolicName).collect(Collectors.joining(", ")));
+            final CountDownLatch done = new CountDownLatch(1);
+            wiring.refreshBundles(pending, (FrameworkEvent event) -> done.countDown());
+            return done.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        } catch (final Throwable t) {
+            LOG.warn("Refreshing the plugin's bundles after an uninstall failed: {}", t.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public List<PluginHealth> health(final Set<String> features) {
+        return withService(FEATURES_SERVICE, Collections.<PluginHealth>emptyList(), service -> {
+            final BundleContext ctx = context();
+            final Set<Bundle> bundles = featureBundles(ctx, service, features);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Health of {}: bundles {}", features, bundles.stream().map(b -> b.getSymbolicName() + "#" + b.getBundleId()).collect(Collectors.joining(", ")));
+            }
+            final List<PluginHealth> result = new ArrayList<>();
+            for (final Bundle bundle : bundles) {
+                final PluginHealth container = containerState(ctx, bundle);
+                if (container != null) {
+                    result.add(container);
+                }
+            }
+            for (final String[] api : new String[][] { { HEALTH_CHECK, HEALTH_CONTEXT, HEALTH_RESPONSE }, { OIA_HEALTH_CHECK, OIA_HEALTH_CONTEXT, OIA_HEALTH_RESPONSE } }) {
+                // the system bundle cannot load the plugin-facing interfaces, so the class-space check would hide every reference
+                final ServiceReference<?>[] references = ctx.getAllServiceReferences(api[0], null);
+                if (references == null) {
+                    continue;
+                }
+                for (final ServiceReference<?> reference : references) {
+                    LOG.debug("Health check {} registered by bundle {}", reference, reference.getBundle() == null ? null : reference.getBundle().getSymbolicName() + "#" + reference.getBundle().getBundleId());
+                    if (reference.getBundle() == null || !bundles.contains(reference.getBundle())) {
+                        continue;
+                    }
+                    result.add(runHealthCheck(ctx, reference, api[0], api[1], api[2]));
+                }
+            }
+            result.sort((a, b) -> String.valueOf(a.getDescription()).compareTo(String.valueOf(b.getDescription())));
+            return result;
+        });
+    }
+
+    /**
+     * The installed bundles of the features and, recursively, of the non-core features
+     * they depend on, matched by (original) location as the extender records them. A
+     * plugin's boot feature often lists only sub-features and no bundle of its own.
+     */
+    private Set<Bundle> featureBundles(final BundleContext ctx, final Object service, final Set<String> features) throws Exception {
+        final Map<String, Bundle> byLocation = new HashMap<>();
+        for (final Bundle bundle : ctx.getBundles()) {
+            if (bundle.getLocation() != null) {
+                byLocation.put(bundle.getLocation(), bundle);
+            }
+        }
+        final Set<String> coreRepositories = bootRepositories.get();
+        final Set<Bundle> bundles = new LinkedHashSet<>();
+        final Set<String> visited = new HashSet<>();
+        for (final String name : features) {
+            collectBundles(service, invoke(service, FEATURES_SERVICE, "getFeature", new Class<?>[] { String.class }, name), byLocation, coreRepositories, visited, bundles);
+        }
+        return bundles;
+    }
+
+    private void collectBundles(final Object service, final Object feature, final Map<String, Bundle> byLocation, final Set<String> coreRepositories,
+                                final Set<String> visited, final Set<Bundle> bundles) throws Exception {
+        if (feature == null || !visited.add(string(invoke(feature, FEATURE, "getId"))) || BootRepositories.isCore(repositoryUrl(feature), coreRepositories)) {
             return;
         }
+        final Object infos = invoke(feature, FEATURE, "getBundles");
+        if (infos instanceof List) {
+            for (final Object info : (List<?>) infos) {
+                final String location = string(invoke(info, BUNDLE_INFO, "getLocation"));
+                Bundle bundle = byLocation.get(location);
+                if (bundle == null) {
+                    final String original = string(invokeIfPresent(info, BUNDLE_INFO, "getOriginalLocation"));
+                    bundle = original == null ? null : byLocation.get(original);
+                }
+                if (bundle != null) {
+                    bundles.add(bundle);
+                } else {
+                    LOG.debug("No installed bundle at {} for feature {}", location, string(invoke(feature, FEATURE, "getName")));
+                }
+            }
+        }
+        final Object dependencies = invoke(feature, FEATURE, "getDependencies");
+        if (dependencies instanceof List) {
+            for (final Object dependency : (List<?>) dependencies) {
+                final String name = string(invoke(dependency, DEPENDENCY, "getName"));
+                final String version = string(invokeIfPresent(dependency, DEPENDENCY, "getVersion"));
+                final Object child = version == null || version.isBlank() || "0.0.0".equals(version)
+                        ? invoke(service, FEATURES_SERVICE, "getFeature", new Class<?>[] { String.class }, name)
+                        : invoke(service, FEATURES_SERVICE, "getFeature", new Class<?>[] { String.class, String.class }, name, version);
+                collectBundles(service, child == null && version != null ? invoke(service, FEATURES_SERVICE, "getFeature", new Class<?>[] { String.class }, name) : child,
+                        byLocation, coreRepositories, visited, bundles);
+            }
+        }
+    }
+
+    /**
+     * Karaf's view of a bundle's blueprint or declarative container: GracePeriod,
+     * Waiting and Failure mean an Active bundle whose services never came up, which
+     * the framework state alone does not show. Null when the bundle is fine.
+     */
+    private static PluginHealth containerState(final BundleContext ctx, final Bundle bundle) {
+        if (bundle.getState() != Bundle.ACTIVE || bundle.getHeaders().get("Fragment-Host") != null) {
+            return null;
+        }
+        ServiceReference<?> reference = null;
+        try {
+            reference = ctx.getServiceReference(BUNDLE_SERVICE);
+            if (reference == null) {
+                return null;
+            }
+            final Object bundleService = ctx.getService(reference);
+            if (bundleService == null) {
+                return null;
+            }
+            final Object info = invoke(bundleService, BUNDLE_SERVICE, "getInfo", new Class<?>[] { Bundle.class }, bundle);
+            final String state = info == null ? null : string(invoke(info, KARAF_BUNDLE_INFO, "getState"));
+            if (state == null || "Active".equals(state) || "Starting".equals(state) || "Resolved".equals(state) || "Unknown".equals(state)) {
+                return null;
+            }
+            final String diag = bundleDiag(ctx, bundle);
+            final String status = "Failure".equals(state) ? PluginHealth.FAILURE : PluginHealth.STARTING;
+            return new PluginHealth("Bundle " + bundle.getSymbolicName(), status, state + (diag == null || diag.isBlank() ? "" : ": " + diag.trim().replaceAll("\\s+", " ")));
+        } catch (final Throwable t) {
+            LOG.debug("Container state of {} is not available: {}", bundle, t.toString());
+            return null;
+        } finally {
+            if (reference != null) {
+                try {
+                    ctx.ungetService(reference);
+                } catch (final Throwable ignored) {
+                    // the service may already be gone
+                }
+            }
+        }
+    }
+
+    /** Runs one health check, core or Integration API flavour; the two share method names and status names. */
+    private static PluginHealth runHealthCheck(final BundleContext ctx, final ServiceReference<?> reference, final String checkInterface, final String contextInterface, final String responseInterface) {
+        Object check = null;
+        String description = String.valueOf(reference.getProperty("service.id"));
+        try {
+            check = ctx.getService(reference);
+            if (check == null) {
+                return new PluginHealth(description, PluginHealth.UNKNOWN, "the health check service is gone");
+            }
+            description = String.valueOf(invoke(check, checkInterface, "getDescription"));
+            final ClassLoader loader = loaderOf(check);
+            final Class<?> contextClass = loader.loadClass(contextInterface);
+            final Object context = healthContext(contextClass);
+            final Object target = check;
+            final Object response;
+            try {
+                response = HEALTH_EXECUTOR.submit(() -> invoke(target, checkInterface, "perform", new Class<?>[] { contextClass }, context))
+                        .get(HEALTH_CHECK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            } catch (final java.util.concurrent.TimeoutException e) {
+                return new PluginHealth(description, PluginHealth.TIMEOUT, "no answer within " + (HEALTH_CHECK_TIMEOUT_MS / 1000) + " seconds");
+            } catch (final java.util.concurrent.ExecutionException e) {
+                throw e.getCause() == null ? e : e.getCause();
+            }
+            if (response == null) {
+                return new PluginHealth(description, PluginHealth.UNKNOWN, "the health check returned nothing");
+            }
+            final String status = string(invoke(response, responseInterface, "getStatus"));
+            final String message = string(invoke(response, responseInterface, "getMessage"));
+            return new PluginHealth(description, status == null ? PluginHealth.UNKNOWN : status, message);
+        } catch (final Throwable t) {
+            final Throwable cause = t instanceof InvocationTargetException && t.getCause() != null ? t.getCause() : t;
+            return new PluginHealth(description, PluginHealth.FAILURE, cause.toString());
+        } finally {
+            if (check != null) {
+                try {
+                    ctx.ungetService(reference);
+                } catch (final Throwable ignored) {
+                    // the service may already be gone
+                }
+            }
+        }
+    }
+
+    /** The core Context is a bean with setTimeout; the Integration API one is an interface with getTimeout, answered by a proxy. */
+    private static Object healthContext(final Class<?> contextClass) throws Exception {
+        if (contextClass.isInterface()) {
+            return java.lang.reflect.Proxy.newProxyInstance(contextClass.getClassLoader(), new Class<?>[] { contextClass }, (proxy, method, args) -> {
+                switch (method.getName()) {
+                    case "getTimeout": return HEALTH_CHECK_TIMEOUT_MS;
+                    case "toString": return "PluginManagement health context";
+                    case "hashCode": return System.identityHashCode(proxy);
+                    case "equals": return proxy == args[0];
+                    default: return null;
+                }
+            });
+        }
+        final Object context = contextClass.getDeclaredConstructor().newInstance();
+        contextClass.getMethod("setTimeout", long.class).invoke(context, HEALTH_CHECK_TIMEOUT_MS);
+        return context;
+    }
+
+    private void describeBundle(final BundleContext ctx, final Bundle bundle, final StringBuilder reason) throws Exception {
         if (bundle.getState() == Bundle.ACTIVE || bundle.getHeaders().get("Fragment-Host") != null) {
             return;
         }

@@ -110,6 +110,14 @@ public class PluginManagementRestService {
     static final String CONTAINER_UNAVAILABLE = "The Karaf container cannot be reached from the web application.";
     static final Duration START_TIMEOUT = Duration.ofSeconds(30);
     static final Duration START_POLL = Duration.ofMillis(500);
+    /** how long a feature install or uninstall may take before the container is declared stuck */
+    static final Duration PROVISION_TIMEOUT = Duration.ofSeconds(120);
+    static final Duration REFRESH_TIMEOUT = Duration.ofSeconds(30);
+    /** how long a started plugin gets to pass its health checks before they are reported as failing */
+    static final Duration HEALTH_TIMEOUT = Duration.ofSeconds(30);
+    static final Duration HEALTH_POLL = Duration.ofSeconds(2);
+    /** how long an unload waits for the container to drop the KAR before reporting that it has not */
+    static final Duration UNLOAD_TIMEOUT = Duration.ofSeconds(20);
 
     private final java.nio.file.Path opennmsHome;
     private final java.nio.file.Path deployDir;
@@ -123,9 +131,14 @@ public class PluginManagementRestService {
     private final HttpFetcher fetcher;
     private final GitHubReleases releases;
     private final KarDownloader downloader;
+    private final ContainerGate gate;
     private volatile PluginEventSender events;
     private volatile Duration startTimeout = START_TIMEOUT;
     private volatile Duration startPoll = START_POLL;
+    private volatile Duration provisionTimeout = PROVISION_TIMEOUT;
+    private volatile Duration healthTimeout = HEALTH_TIMEOUT;
+    private volatile Duration healthPoll = HEALTH_POLL;
+    private volatile Duration unloadTimeout = UNLOAD_TIMEOUT;
 
     public PluginManagementRestService() {
         this(Paths.get(System.getProperty("opennms.home", ".")));
@@ -157,6 +170,7 @@ public class PluginManagementRestService {
         this.fetcher = fetcher;
         this.releases = new GitHubReleases(fetcher, clock, () -> System.getProperty(GitHubReleases.TOKEN_PROPERTY));
         this.downloader = new KarDownloader(fetcher, tempArea);
+        this.gate = new ContainerGate(clock);
         tempArea.ensureScheduled(this::watchdog);
     }
 
@@ -178,8 +192,21 @@ public class PluginManagementRestService {
         this.startPoll = poll;
     }
 
+    /** How long a started plugin gets to pass its health checks, and how often they run meanwhile. */
+    void setHealthWait(final Duration timeout, final Duration poll) {
+        this.healthTimeout = timeout;
+        this.healthPoll = poll;
+    }
+
+    /** Deadline for one feature install or uninstall, and for the container to drop an unloaded KAR. */
+    void setContainerWait(final Duration provision, final Duration unload) {
+        this.provisionTimeout = provision;
+        this.unloadTimeout = unload;
+    }
+
     @PreDestroy
     public void shutdown() {
+        gate.shutdown();
         tempArea.shutdown();
         try {
             fetcher.close();
@@ -206,9 +233,14 @@ public class PluginManagementRestService {
         status.setTempBytes(usage.getBytes());
         status.setTempFiles(usage.getFiles());
         try {
-            final List<PluginEntry> plugins = registry.list();
+            List<PluginEntry> plugins = registry.list();
+            if (refreshUnhealthy(plugins)) {
+                plugins = registry.list();
+            }
             status.setPlugins(plugins);
-            status.setRestartRequired(plugins.stream().anyMatch(PluginEntry::isPendingRestart));
+            final String busy = gate.busy();
+            status.setContainerBusy(busy);
+            status.setRestartRequired(busy != null || plugins.stream().anyMatch(PluginEntry::isPendingRestart));
         } catch (final IOException e) {
             throw serverError("Cannot read " + registry.getRegistryFile() + ": " + e.getMessage());
         }
@@ -437,6 +469,7 @@ public class PluginManagementRestService {
         requireAdmin(securityContext);
         final String user = user(securityContext);
         final String remote = remote(request);
+        requireContainerIdle("install", user, remote, installRequest == null ? null : installRequest.getKarName());
         if (installRequest == null || installRequest.getUploadToken() == null || !UPLOAD_TOKEN.matcher(installRequest.getUploadToken()).matches()) {
             audit("install", user, remote, null, null, "rejected", "missing or malformed upload token");
             throw badRequest("An uploadToken from a previous check is required.");
@@ -554,7 +587,7 @@ public class PluginManagementRestService {
         final String notified = announce(karName, features, user, source, outcome);
         PluginEntry entry = recordedEntry;
         try {
-            entry = registry.recordStartOutcome(karName, pendingRestart, notified).orElse(recordedEntry);
+            entry = registry.recordStartOutcome(karName, pendingRestart, notified, outcome).orElse(recordedEntry);
         } catch (final IOException e) {
             LOG.warn("Cannot record the start outcome of {} in {}: {}", karName, registry.getRegistryFile(), e.toString());
         }
@@ -596,6 +629,7 @@ public class PluginManagementRestService {
                 audit("restart", user, remote, karName, existing.getSha256(), "error", "container unavailable");
                 throw unavailable(CONTAINER_UNAVAILABLE + " Restart OpenNMS instead.");
             }
+            requireContainerIdle("restart", user, remote, karName);
             final List<String> features = existing.getFeatures();
             if (features.isEmpty()) {
                 audit("restart", user, remote, karName, existing.getSha256(), "rejected", "no features known");
@@ -603,8 +637,8 @@ public class PluginManagementRestService {
             }
             final StartOutcome outcome = restartFeatures(karName, features);
             final String notified = announce(karName, features, user, existing.getSource(), outcome);
-            final PluginEntry entry = registry.recordStartOutcome(karName, !outcome.isStarted(), notified).orElse(existing);
-            audit("restart", user, remote, karName, existing.getSha256(), outcome.isStarted() ? "ok" : "error",
+            final PluginEntry entry = registry.recordStartOutcome(karName, !outcome.isStarted(), notified, outcome).orElse(existing);
+            audit("restart", user, remote, karName, existing.getSha256(), outcome.isRunningWell() ? "ok" : "error",
                     "features=" + String.join(",", features) + " start=" + outcome.getState() + (outcome.getMessage() == null ? "" : " startMessage=" + outcome.getMessage()));
             final PluginActionResult result = new PluginActionResult();
             result.setPlugin(entry.isManaged() ? entry : registry.find(karName).orElse(entry));
@@ -639,6 +673,7 @@ public class PluginManagementRestService {
                 audit("unload", user, remote, karName, null, "rejected", "unknown plugin");
                 throw notFound("No plugin named '" + karName + "' is deployed or managed.");
             }
+            requireContainerIdle("unload", user, remote, karName);
             final boolean removedKar = Files.deleteIfExists(kar);
             final List<String> bootFilesRemoved = new ArrayList<>();
             if (Files.deleteIfExists(bootFile)) {
@@ -646,19 +681,50 @@ public class PluginManagementRestService {
             }
             bootFilesRemoved.addAll(removeBootReferences(karName));
             final String fileName = existing.map(PluginEntry::getFileName).orElse(kar.getFileName().toString());
-            final PluginEntry entry = registry.recordUnload(karName, user, fileName);
+            final String note = removedKar || safely(bridge::installedKars, Collections.<String>emptyList()).contains(karName) ? awaitUnload(karName) : null;
+            final boolean pendingRestart = note != null || !safely(bridge::isAvailable, false);
+            final PluginEntry entry = registry.recordUnload(karName, user, fileName, pendingRestart);
             send(PluginEvents.stopped(karName, existing.map(PluginEntry::getFeatures).orElse(Collections.emptyList()), user, existing.map(PluginEntry::getSource).orElse(PluginEntry.SOURCE_MANUAL)));
             audit("unload", user, remote, karName, existing.map(PluginEntry::getSha256).orElse(null), "ok",
-                    "removedKar=" + removedKar + " bootFilesRemoved=" + String.join(",", bootFilesRemoved));
+                    "removedKar=" + removedKar + " bootFilesRemoved=" + String.join(",", bootFilesRemoved) + (note == null ? " containerDropped=true" : " containerDropped=false"));
             final PluginActionResult result = new PluginActionResult();
             result.setPlugin(entry);
-            result.setRestartRequired(true);
+            result.setRestartRequired(pendingRestart);
+            result.setNote(note);
             result.setRestartInstructions(RestartInstructions.current());
             result.setBootFilesRemoved(bootFilesRemoved);
             return result;
         } catch (final IOException e) {
             audit("unload", user, remote, karName, null, "error", e.toString());
             throw serverError("Cannot unload the plugin: " + e.getMessage());
+        }
+    }
+
+    /** Re-runs the health checks of plugins last seen unhealthy, so the page does not wait for the periodic check to show a recovery. */
+    private boolean refreshUnhealthy(final List<PluginEntry> plugins) {
+        boolean changed = false;
+        for (final PluginEntry entry : plugins) {
+            if (!PluginEntry.HEALTH_UNHEALTHY.equals(entry.getHealth()) || !PluginEntry.STATUS_INSTALLED.equals(entry.getStatus())) {
+                continue;
+            }
+            final List<PluginHealth> signals = safely(() -> bridge.health(new LinkedHashSet<>(entry.getFeatures())), Collections.<PluginHealth>emptyList());
+            final boolean healthy = signals.stream().allMatch(PluginHealth::isSuccess);
+            try {
+                registry.recordHealth(entry.getKarName(), healthy, PluginRegistry.failingHealth(signals));
+                changed = true;
+            } catch (final IOException e) {
+                LOG.warn("Cannot record the health of {}: {}", entry.getKarName(), e.toString());
+            }
+        }
+        return changed;
+    }
+
+    /** Refuses a change while a container operation that overran its deadline is still running. */
+    private void requireContainerIdle(final String action, final String user, final String remote, final String karName) {
+        final String busy = gate.busy();
+        if (busy != null) {
+            audit(action, user, remote, karName, null, "rejected", "container busy: " + busy);
+            throw conflict("The container is still busy with " + busy + "; that operation did not finish within its time limit, so no plugin can be loaded, restarted or unloaded until OpenNMS is restarted.");
         }
     }
 
@@ -711,27 +777,68 @@ public class PluginManagementRestService {
         return classify(chosen);
     }
 
-    /** Adds the KAR's repositories as the extender does at boot, then (re)installs the features. */
+    /**
+     * Adds the KAR's repositories as the extender does at boot, then (re)installs the
+     * features. Each container call runs under a deadline, and a restart refreshes
+     * the framework between the uninstall and the install so the new bundles cannot
+     * wire to revisions the uninstall left behind.
+     */
     private void startFeatures(final String karName, final Set<String> features, final boolean uninstallFirst) throws KarafOperationException {
         for (final String uri : safely(() -> bridge.karRepositories(karName), Collections.<String>emptyList())) {
             bridge.addRepository(uri);
         }
+        final String joined = String.join(", ", features);
         if (uninstallFirst) {
+            final Set<String> bundles = safely(() -> bridge.bundleNames(features), Collections.<String>emptySet());
             try {
-                bridge.uninstallFeatures(features);
+                gate.run("uninstall of " + joined, provisionTimeout, () -> bridge.uninstallFeatures(features));
             } catch (final KarafOperationException e) {
+                if (gate.busy() != null) {
+                    throw e;
+                }
                 LOG.info("Uninstalling {} before the restart did not succeed, installing anyway: {}", features, e.getMessage());
             }
+            if (!bundles.isEmpty() && !safely(() -> bridge.refreshBundles(bundles, REFRESH_TIMEOUT), false)) {
+                LOG.warn("The refresh of the plugin's bundles after uninstalling {} did not complete; installing anyway", features);
+            }
         }
-        bridge.installFeatures(features);
+        gate.run("install of " + joined, provisionTimeout, () -> bridge.installFeatures(features));
     }
 
+    /** Started when every feature is Started; then the plugin's health checks get {@link #healthTimeout} to pass. */
     private StartOutcome classify(final Set<String> chosen) {
         final Map<String, String> notStarted = notStarted(chosen);
-        if (notStarted.isEmpty()) {
-            return StartOutcome.started("Started " + String.join(", ", chosen) + ".");
+        if (!notStarted.isEmpty()) {
+            return StartOutcome.failed("Not started: " + summary(notStarted), notStarted);
         }
-        return StartOutcome.failed("Not started: " + summary(notStarted), notStarted);
+        final StartOutcome outcome = StartOutcome.started("Started " + String.join(", ", chosen) + ".");
+        outcome.recordHealth(awaitHealth(chosen));
+        return outcome;
+    }
+
+    /** Polls the plugin's health signals until all pass or the health deadline is reached; the last reading wins. */
+    List<PluginHealth> awaitHealth(final Set<String> features) {
+        final long deadline = System.nanoTime() + healthTimeout.toNanos();
+        List<PluginHealth> signals = safely(() -> bridge.health(features), Collections.<PluginHealth>emptyList());
+        while (!signals.stream().allMatch(PluginHealth::isSuccess) && System.nanoTime() < deadline && pause(healthPoll)) {
+            signals = safely(() -> bridge.health(features), Collections.<PluginHealth>emptyList());
+        }
+        return signals;
+    }
+
+    /** Waits for the container to drop the KAR after its file left deploy/; null when it did, else what to tell the operator. */
+    private String awaitUnload(final String karName) {
+        if (!safely(bridge::isAvailable, false)) {
+            return null;
+        }
+        final long deadline = System.nanoTime() + unloadTimeout.toNanos();
+        while (safely(bridge::installedKars, Collections.<String>emptyList()).contains(karName)) {
+            if (System.nanoTime() >= deadline || !pause(startPoll)) {
+                return "The container has not finished unloading " + karName + PluginRegistry.KAR_SUFFIX + " after " + unloadTimeout.toSeconds()
+                        + " seconds; its features may still be running. Check karaf.log, and restart OpenNMS if they do not stop.";
+            }
+        }
+        return null;
     }
 
     /** Feature to reason for every chosen feature the container does not report as Started. */
@@ -745,9 +852,13 @@ public class PluginManagementRestService {
 
     /** Raises the event that matches the outcome and returns the state it announced, null when none went out. */
     private String announce(final String karName, final List<String> features, final String user, final String source, final StartOutcome outcome) {
-        if (outcome.isStarted()) {
+        if (outcome.isRunningWell()) {
             send(PluginEvents.started(karName, features, user, source));
             return PluginRegistry.NOTIFIED_STARTED;
+        }
+        if (outcome.isStarted()) {
+            send(PluginEvents.failed(karName, features, "Health checks not passing: " + outcome.healthSummary(), user, source));
+            return PluginRegistry.NOTIFIED_FAILED;
         }
         if (StartOutcome.FAILED.equals(outcome.getState()) || StartOutcome.TIMEOUT.equals(outcome.getState())) {
             send(PluginEvents.failed(karName, features, outcome.getMessage(), user, source));
@@ -785,15 +896,27 @@ public class PluginManagementRestService {
                 continue;
             }
             final boolean allStarted = entry.isKarLoaded() && entry.getFeatureStates().values().stream().allMatch(InstalledFeature.STATE_STARTED::equals);
+            final List<PluginHealth> signals = allStarted ? safely(() -> bridge.health(new LinkedHashSet<>(entry.getFeatures())), Collections.<PluginHealth>emptyList()) : Collections.emptyList();
+            final boolean healthy = signals.stream().allMatch(PluginHealth::isSuccess);
             final String last = entry.getLastNotifiedState();
             try {
                 if (allStarted) {
+                    registry.recordHealth(entry.getKarName(), healthy, PluginRegistry.failingHealth(signals));
+                }
+                if (allStarted && healthy) {
                     if (PluginRegistry.NOTIFIED_FAILED.equals(last)) {
                         send(PluginEvents.started(entry.getKarName(), entry.getFeatures(), "watchdog", entry.getSource()));
                         registry.recordNotifiedState(entry.getKarName(), PluginRegistry.NOTIFIED_STARTED);
                         audit("watchdog", "system", "local", entry.getKarName(), entry.getSha256(), "ok", "recovered features=" + String.join(",", entry.getFeatures()));
                     } else if (last == null) {
                         registry.recordNotifiedState(entry.getKarName(), PluginRegistry.NOTIFIED_STARTED);
+                    }
+                } else if (allStarted) {
+                    if (!PluginRegistry.NOTIFIED_FAILED.equals(last)) {
+                        final String reason = "Health checks not passing: " + String.join("; ", PluginRegistry.failingHealth(signals));
+                        send(PluginEvents.failed(entry.getKarName(), entry.getFeatures(), reason, "watchdog", entry.getSource()));
+                        registry.recordNotifiedState(entry.getKarName(), PluginRegistry.NOTIFIED_FAILED);
+                        audit("watchdog", "system", "local", entry.getKarName(), entry.getSha256(), "error", "features=" + String.join(",", entry.getFeatures()) + " reason=" + reason);
                     }
                 } else if (PluginRegistry.NOTIFIED_STARTED.equals(last) || (last == null && PluginEntry.STATUS_FAILED.equals(entry.getStatus()))) {
                     final Map<String, String> diagnostics = entry.getDiagnostics().isEmpty() ? notStarted(new LinkedHashSet<>(entry.getFeatures())) : entry.getDiagnostics();

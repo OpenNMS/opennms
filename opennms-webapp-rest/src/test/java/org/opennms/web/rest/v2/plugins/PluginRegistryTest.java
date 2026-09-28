@@ -191,7 +191,7 @@ public class PluginRegistryTest {
         registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         Files.delete(deployDir.resolve("example.kar"));
 
-        final PluginEntry entry = registry.recordUnload("example", "operator", "example-1.0.kar");
+        final PluginEntry entry = registry.recordUnload("example", "operator", "example-1.0.kar", true);
 
         assertEquals(PluginEntry.STATUS_UNLOADED, entry.getStatus());
         assertEquals("operator", entry.getUnloadedBy());
@@ -222,7 +222,7 @@ public class PluginRegistryTest {
 
     @Test
     public void unloadOfUnmanagedKarCreatesARecord() throws IOException {
-        final PluginEntry entry = registry.recordUnload("hand-copied", "operator", "hand-copied.kar");
+        final PluginEntry entry = registry.recordUnload("hand-copied", "operator", "hand-copied.kar", true);
 
         assertEquals(PluginEntry.STATUS_UNLOADED, entry.getStatus());
         assertEquals("hand-copied.kar", entry.getFileName());
@@ -234,7 +234,7 @@ public class PluginRegistryTest {
     public void reinstallReplacesTheRecord() throws IOException {
         Files.write(deployDir.resolve("example.kar"), new byte[] { 1 });
         registry.recordInstall("example", "example-1.0.kar", "abc", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
-        registry.recordUnload("example", "admin", "example-1.0.kar");
+        registry.recordUnload("example", "admin", "example-1.0.kar", true);
 
         final PluginEntry entry = registry.recordInstall("example", "example-1.1.kar", "def", 2, "upload", "admin", Arrays.asList("example-feature"), null, true);
 
@@ -420,7 +420,7 @@ public class PluginRegistryTest {
         registry.recordInstall("example", "example-1.1.kar", "def", 1, "upload", "admin", Arrays.asList("example-feature"), null, true);
         assertNull("a new install starts over", registry.find("example").orElseThrow().getLastNotifiedState());
 
-        assertEquals(PluginRegistry.NOTIFIED_STOPPED, registry.recordUnload("example", "admin", "example-1.1.kar").getLastNotifiedState());
+        assertEquals(PluginRegistry.NOTIFIED_STOPPED, registry.recordUnload("example", "admin", "example-1.1.kar", true).getLastNotifiedState());
     }
 
     @Test

@@ -28,6 +28,8 @@ import java.util.List;
 public class PluginActionResult {
     private PluginEntry plugin;
     private boolean restartRequired;
+    /** what the container did or did not do after an unload, when that is worth telling the operator */
+    private String note;
     /** how the live start went; null for an unload */
     private StartOutcome startOutcome;
     private RestartInstructions restartInstructions;
@@ -39,6 +41,8 @@ public class PluginActionResult {
     public void setPlugin(final PluginEntry plugin) { this.plugin = plugin; }
     public boolean isRestartRequired() { return restartRequired; }
     public void setRestartRequired(final boolean restartRequired) { this.restartRequired = restartRequired; }
+    public String getNote() { return note; }
+    public void setNote(final String note) { this.note = note; }
     public StartOutcome getStartOutcome() { return startOutcome; }
     public void setStartOutcome(final StartOutcome startOutcome) { this.startOutcome = startOutcome; }
     public RestartInstructions getRestartInstructions() { return restartInstructions; }
