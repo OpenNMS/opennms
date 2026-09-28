@@ -275,6 +275,10 @@ const onDeleted = (summary: LocationDeletedSummary) => {
   margin-left: auto;
 }
 
+.search {
+  width: 18rem;
+}
+
 .reload-error {
   margin: 0 0 0.75rem 0;
   color: var(--p-red-700, #b91c1c);

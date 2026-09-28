@@ -255,8 +255,9 @@ describe('MinionsTable.vue', () => {
       expect(ctx.wrapper.find('[data-test="clear-location-filter"]').exists()).toBe(false)
     })
 
-    describe('location select', () => {
-      const select = () => ctx.wrapper.findComponent({ name: 'Select' })
+    describe('search box', () => {
+      const auto = () => ctx.wrapper.findComponent({ name: 'AutoComplete' })
+      const input = () => ctx.wrapper.find('[data-test="minion-search"]')
 
       beforeEach(async () => {
         ctx.store.minions = [
@@ -266,38 +267,57 @@ describe('MinionsTable.vue', () => {
         await ctx.wrapper.vm.$nextTick()
       })
 
-      it('offers the distinct locations of the loaded minions, sorted, with a clear icon', () => {
-        expect(ctx.wrapper.find('[data-test="location-select"]').exists()).toBe(true)
-        expect(select().props('options')).toEqual(['dc-east', 'dc-west'])
-        expect(select().props('showClear')).toBe(true)
-        expect(select().props('placeholder')).toBe('All locations')
-        expect(select().props('ariaLabel')).toBe('Filter by monitoring location')
-        expect(select().props('modelValue')).toBeNull()
+      it('sits on the filter row, with no location dropdown, and says Minions', () => {
+        expect(ctx.wrapper.find('[data-test="location-select"]').exists()).toBe(false)
+        expect(ctx.wrapper.find('.toolbar [data-test="quick-filters"]').exists()).toBe(true)
+        expect(ctx.wrapper.find('.toolbar [data-test="minion-search-box"]').exists()).toBe(true)
+        expect(input().attributes('placeholder')).toBe('Minions')
+        expect(input().attributes('aria-label')).toBe('Search minions, or choose a location to filter by')
+        expect(auto().props('showEmptyMessage')).toBe(false)
       })
 
-      it('selecting a location sets the same filter as the chip and shows the chip', async () => {
-        select().vm.$emit('update:modelValue', 'dc-west')
+      it('narrows the rows as text is typed, across id, location, status and version', async () => {
+        await input().setValue('m1')
+        expect(rowIds(ctx.wrapper)).toEqual(['m1'])
+        await input().setValue('east')
+        expect(rowIds(ctx.wrapper)).toEqual(['m2'])
+        await input().setValue('')
+        expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm2', 'm3', 'm4'])
+      })
+
+      it('offers the locations that match the text as "Location: name", sorted, and none for empty text', async () => {
+        auto().vm.$emit('complete', { query: 'dc' })
+        await ctx.wrapper.vm.$nextTick()
+        expect(auto().props('suggestions')).toEqual([
+          { name: 'dc-east', label: 'Location: dc-east' }, { name: 'dc-west', label: 'Location: dc-west' }
+        ])
+        auto().vm.$emit('complete', { query: 'WEST' })
+        await ctx.wrapper.vm.$nextTick()
+        expect(auto().props('suggestions')).toEqual([{ name: 'dc-west', label: 'Location: dc-west' }])
+        auto().vm.$emit('complete', { query: '  ' })
+        await ctx.wrapper.vm.$nextTick()
+        expect(auto().props('suggestions')).toEqual([])
+      })
+
+      it('choosing a location sets the same filter as the chip and empties the box', async () => {
+        await input().setValue('dc-w')
+        auto().vm.$emit('option-select', { value: { name: 'dc-west', label: 'Location: dc-west' }})
+        await flushPromises()
         expect(ctx.wrapper.emitted('update:locationFilter')).toEqual([['dc-west']])
+        expect((input().element as HTMLInputElement).value).toBe('')
         await ctx.wrapper.setProps({ locationFilter: 'dc-west' })
-        expect(select().props('modelValue')).toBe('dc-west')
         expect(ctx.wrapper.find('[data-test="location-filter-chip"]').text()).toContain('Location: dc-west')
         expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm3'])
       })
 
-      it('clearing the select or pressing Clear resets both', async () => {
-        await ctx.wrapper.setProps({ locationFilter: 'dc-west' })
-        select().vm.$emit('update:modelValue', null)
+      it('pressing Clear next to the chip resets the location filter and shows every row again', async () => {
+        await ctx.wrapper.setProps({ locationFilter: 'dc-east' })
+        expect(rowIds(ctx.wrapper)).toEqual(['m2'])
+        await ctx.wrapper.find('[data-test="clear-location-filter"]').trigger('click')
         expect(ctx.wrapper.emitted('update:locationFilter')?.at(-1)).toEqual([null])
         await ctx.wrapper.setProps({ locationFilter: null })
         expect(ctx.wrapper.find('[data-test="location-filter-chip"]').exists()).toBe(false)
         expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm2', 'm3', 'm4'])
-
-        await ctx.wrapper.setProps({ locationFilter: 'dc-east' })
-        await ctx.wrapper.find('[data-test="clear-location-filter"]').trigger('click')
-        expect(ctx.wrapper.emitted('update:locationFilter')?.at(-1)).toEqual([null])
-        await ctx.wrapper.setProps({ locationFilter: null })
-        expect(select().props('modelValue')).toBeNull()
-        expect(ctx.wrapper.find('[data-test="location-filter-chip"]').exists()).toBe(false)
       })
     })
   })

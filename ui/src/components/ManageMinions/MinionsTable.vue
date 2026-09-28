@@ -7,7 +7,7 @@
       Showing the first {{ store.minions.length }} of {{ store.totalCount }} minions. Use search to narrow the list.
     </p>
 
-    <!-- the quick filters, the location filter and the search narrow the same list together -->
+    <!-- the quick filters, the location chip and the search box narrow the same list together -->
     <div v-if="store.minions.length" class="toolbar">
       <div class="filters">
         <OnmsSelectButton
@@ -17,15 +17,6 @@
           optionValue="value"
           aria-label="Quick filter"
           data-test="quick-filters"
-        />
-        <OnmsSelect
-          :modelValue="locationFilter"
-          :options="locationOptions"
-          showClear
-          placeholder="All locations"
-          aria-label="Filter by monitoring location"
-          data-test="location-select"
-          @update:modelValue="emit('update:locationFilter', ($event as string | null) || null)"
         />
         <!-- the chip's own remove icon is not focusable, so a real button clears it -->
         <template v-if="locationFilter">
@@ -43,12 +34,22 @@
           />
         </template>
       </div>
-      <OnmsSearchInput
-        v-model="search"
+      <!-- one box does both: the text narrows the rows as it is typed, and a
+           location it matches is offered as "Location: name" to filter by it exactly;
+           showEmptyMessage falls through to the PrimeVue root so no overlay opens for plain text -->
+      <OnmsAutoComplete
+        ref="searchBox"
+        :modelValue="search"
+        :suggestions="locationSuggestions"
+        optionLabel="label"
         placeholder="Minions"
-        ariaLabel="Search minions"
-        dataTest="minion-search"
+        :showEmptyMessage="false"
+        :unsafePt="{ pcInputText: { root: { 'aria-label': 'Search minions, or choose a location to filter by', 'data-test': 'minion-search' }}}"
         class="search"
+        data-test="minion-search-box"
+        @update:modelValue="onSearchInput"
+        @complete="suggestLocations"
+        @optionSelect="chooseLocation"
       />
     </div>
 
@@ -167,9 +168,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsChip, OnmsColumn, OnmsIconButton, OnmsSearchInput, OnmsSelect, OnmsSelectButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsChip, OnmsColumn, OnmsIconButton, OnmsSelectButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -223,6 +224,40 @@ const filters = ref({ global: { value: null as string | null, matchMode: 'contai
 watch(search, (value) => {
   filters.value.global.value = value || null
 })
+
+interface LocationSuggestion {
+  name: string
+  label: string
+}
+
+const searchBox = ref<InstanceType<typeof OnmsAutoComplete> | null>(null)
+const locationSuggestions = ref<LocationSuggestion[]>([])
+
+// a chosen suggestion arrives as the object; only typed text is a search
+const onSearchInput = (value: unknown) => {
+  if (typeof value === 'string') {
+    search.value = value
+  }
+}
+
+const suggestLocations = (query: string) => {
+  const needle = query.trim().toLowerCase()
+  locationSuggestions.value = needle === ''
+    ? []
+    : locationOptions.value.filter(name => name.toLowerCase().includes(needle)).map(name => ({ name, label: `Location: ${name}` }))
+}
+
+const chooseLocation = async (value: unknown) => {
+  const suggestion = value as LocationSuggestion
+  if (!suggestion?.name) {
+    return
+  }
+  emit('update:locationFilter', suggestion.name)
+  search.value = ''
+  locationSuggestions.value = []
+  await nextTick()
+  searchBox.value?.clearInput()
+}
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -330,6 +365,14 @@ const askDelete = (minion: Minion) => {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.search {
+  width: 18rem;
+
+  :deep(input) {
+    width: 100%;
+  }
 }
 
 .truncation-note {
