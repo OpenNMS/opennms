@@ -34,8 +34,8 @@
           />
         </template>
       </div>
-      <!-- one box does both: the text narrows the rows as it is typed, and a
-           location it matches is offered as "Location: name" to filter by it exactly;
+      <!-- one box does both: the text narrows the rows as it is typed, and the Minions
+           and locations it matches are offered as "Minion: id" / "Location: name" to pick one exactly;
            showEmptyMessage falls through to the PrimeVue root so no overlay opens for plain text -->
       <OnmsAutoComplete
         ref="searchBox"
@@ -225,13 +225,14 @@ watch(search, (value) => {
   filters.value.global.value = value || null
 })
 
-interface LocationSuggestion {
+interface SearchSuggestion {
+  kind: 'minion' | 'location'
   name: string
   label: string
 }
 
 const searchBox = ref<InstanceType<typeof OnmsAutoComplete> | null>(null)
-const locationSuggestions = ref<LocationSuggestion[]>([])
+const locationSuggestions = ref<SearchSuggestion[]>([])
 
 // a chosen suggestion arrives as the object; only typed text is a search
 const onSearchInput = (value: unknown) => {
@@ -240,21 +241,40 @@ const onSearchInput = (value: unknown) => {
   }
 }
 
+// Minions first, then locations, as the tabs are ordered
 const suggestLocations = (query: string) => {
   const needle = query.trim().toLowerCase()
-  locationSuggestions.value = needle === ''
-    ? []
-    : locationOptions.value.filter(name => name.toLowerCase().includes(needle)).map(name => ({ name, label: `Location: ${name}` }))
+  if (needle === '') {
+    locationSuggestions.value = []
+    return
+  }
+  const minions = [...new Set(store.minions.map(minion => minion.id))]
+    .filter(id => id.toLowerCase().includes(needle))
+    .sort((a, b) => a.localeCompare(b))
+    .map(name => ({ kind: 'minion' as const, name, label: `Minion: ${name}` }))
+  const locations = locationOptions.value
+    .filter(name => name.toLowerCase().includes(needle))
+    .map(name => ({ kind: 'location' as const, name, label: `Location: ${name}` }))
+  locationSuggestions.value = [...minions, ...locations]
 }
 
+// a Minion becomes the search text, so the table shows that row; a location
+// becomes the exact filter the chip shows, and the box is emptied
 const chooseLocation = async (value: unknown) => {
-  const suggestion = value as LocationSuggestion
+  const suggestion = value as SearchSuggestion
   if (!suggestion?.name) {
+    return
+  }
+  locationSuggestions.value = []
+  if (suggestion.kind === 'minion') {
+    search.value = suggestion.name
+    await nextTick()
+    searchBox.value?.clearInput()
+    search.value = suggestion.name
     return
   }
   emit('update:locationFilter', suggestion.name)
   search.value = ''
-  locationSuggestions.value = []
   await nextTick()
   searchBox.value?.clearInput()
 }

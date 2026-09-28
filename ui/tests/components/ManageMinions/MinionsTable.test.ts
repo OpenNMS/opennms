@@ -285,23 +285,37 @@ describe('MinionsTable.vue', () => {
         expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm2', 'm3', 'm4'])
       })
 
-      it('offers the locations that match the text as "Location: name", sorted, and none for empty text', async () => {
+      it('offers the Minions and then the locations that match the text, sorted, and none for empty text', async () => {
         auto().vm.$emit('complete', { query: 'dc' })
         await ctx.wrapper.vm.$nextTick()
         expect(auto().props('suggestions')).toEqual([
-          { name: 'dc-east', label: 'Location: dc-east' }, { name: 'dc-west', label: 'Location: dc-west' }
+          { kind: 'location', name: 'dc-east', label: 'Location: dc-east' }, { kind: 'location', name: 'dc-west', label: 'Location: dc-west' }
+        ])
+        auto().vm.$emit('complete', { query: 'M' })
+        await ctx.wrapper.vm.$nextTick()
+        expect(auto().props('suggestions')).toEqual([
+          { kind: 'minion', name: 'm1', label: 'Minion: m1' }, { kind: 'minion', name: 'm2', label: 'Minion: m2' },
+          { kind: 'minion', name: 'm3', label: 'Minion: m3' }, { kind: 'minion', name: 'm4', label: 'Minion: m4' }
         ])
         auto().vm.$emit('complete', { query: 'WEST' })
         await ctx.wrapper.vm.$nextTick()
-        expect(auto().props('suggestions')).toEqual([{ name: 'dc-west', label: 'Location: dc-west' }])
+        expect(auto().props('suggestions')).toEqual([{ kind: 'location', name: 'dc-west', label: 'Location: dc-west' }])
         auto().vm.$emit('complete', { query: '  ' })
         await ctx.wrapper.vm.$nextTick()
         expect(auto().props('suggestions')).toEqual([])
       })
 
+      it('choosing a Minion puts its id in the box and shows that row', async () => {
+        await input().setValue('m')
+        auto().vm.$emit('option-select', { value: { kind: 'minion', name: 'm3', label: 'Minion: m3' }})
+        await flushPromises()
+        expect(ctx.wrapper.emitted('update:locationFilter')).toBeUndefined()
+        expect(rowIds(ctx.wrapper)).toEqual(['m3'])
+      })
+
       it('choosing a location sets the same filter as the chip and empties the box', async () => {
         await input().setValue('dc-w')
-        auto().vm.$emit('option-select', { value: { name: 'dc-west', label: 'Location: dc-west' }})
+        auto().vm.$emit('option-select', { value: { kind: 'location', name: 'dc-west', label: 'Location: dc-west' }})
         await flushPromises()
         expect(ctx.wrapper.emitted('update:locationFilter')).toEqual([['dc-west']])
         expect((input().element as HTMLInputElement).value).toBe('')
