@@ -30,9 +30,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     orderedSources: [],
     catchAllSource: null,
     isSavingSourceOrder: false,
-    reorderSourcesDrawerState: {
-      visible: false
-    },
+    sourcesReorderMode: false,
     uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
@@ -155,12 +153,12 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     hideCreateEventConfigSourceDialog() {
       this.createEventConfigSourceDialogState.visible = false
     },
-    async showReorderSourcesDrawer() {
-      this.reorderSourcesDrawerState.visible = true
+    async startSourcesReorder() {
+      this.sourcesReorderMode = true
       await this.fetchOrderedSources()
     },
-    hideReorderSourcesDrawer() {
-      this.reorderSourcesDrawerState.visible = false
+    stopSourcesReorder() {
+      this.sourcesReorderMode = false
     },
     async fetchOrderedSources() {
       this.isLoading = true

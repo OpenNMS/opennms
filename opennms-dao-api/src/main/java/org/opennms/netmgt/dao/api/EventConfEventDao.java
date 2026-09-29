@@ -107,4 +107,10 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
      * @return the neighbouring event, or null when the given order is already at that edge
      */
     EventConfEvent findNeighbourByOrder(Long sourceId, int eventOrder, boolean previous);
+
+    /**
+     * The source's events in evaluation order, without their XML payloads: one row per event as
+     * {@code [id, uei, eventLabel, severity, enabled, eventOrder]}.
+     */
+    List<Object[]> findEventOrderSummaries(Long sourceId);
 }

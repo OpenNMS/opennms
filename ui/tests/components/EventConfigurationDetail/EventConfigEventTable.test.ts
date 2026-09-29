@@ -4,6 +4,7 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -18,7 +19,7 @@ vi.mock('vue-router', () => ({
 const stubs = {
   DeleteEventConfigEventDialog: { name: 'DeleteEventConfigEventDialog', template: '<div class="delete-event-dialog-stub"></div>' },
   ChangeEventConfigEventStatusDialog: { name: 'ChangeEventConfigEventStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
-  MoveEventConfigEventDialog: { name: 'MoveEventConfigEventDialog', template: '<div class="move-event-dialog-stub"></div>' }
+  StagedReorderList: { name: 'StagedReorderList', props: ['items', 'itemNoun', 'saving'], template: '<div class="staged-reorder-stub"></div>' }
 }
 
 describe('EventConfigEventTable.vue', () => {
@@ -32,6 +33,7 @@ describe('EventConfigEventTable.vue', () => {
   const mountTable = () => mount(EventConfigEventTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
+      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })
@@ -66,8 +68,8 @@ describe('EventConfigEventTable.vue', () => {
     store.onEventsSortChange = vi.fn().mockResolvedValue(undefined)
     store.showChangeEventConfigEventStatusDialog = vi.fn()
     store.showDeleteEventConfigEventDialog = vi.fn()
-    store.showMoveEventConfigEventDialog = vi.fn()
-    store.moveEventConfigEvent = vi.fn().mockResolvedValue({ ok: true, status: 200, message: '', eventOrder: 6 })
+    store.startEventsReorder = vi.fn()
+    store.stopEventsReorder = vi.fn()
 
     modificationStore = useEventModificationStore()
     modificationStore.setSelectedEventConfigSource = vi.fn()
@@ -86,11 +88,39 @@ describe('EventConfigEventTable.vue', () => {
       expect(wrapper.find('.event-config-event-table').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="reorder-events-button"]').exists()).toBe(true)
     })
 
     it('renders the child dialogs', () => {
       expect(wrapper.findComponent({ name: 'DeleteEventConfigEventDialog' }).exists()).toBe(true)
       expect(wrapper.findComponent({ name: 'ChangeEventConfigEventStatusDialog' }).exists()).toBe(true)
+    })
+  })
+
+  describe('Reorder mode', () => {
+    it('offers the evaluation-order explanation on the Order header', async () => {
+      store.events = [mockEvent]
+      await nextTick()
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(true)
+    })
+
+    it('the header button enters the events reorder mode', async () => {
+      await wrapper.find('[data-test="reorder-events-button"]').trigger('click')
+      expect(store.startEventsReorder).toHaveBeenCalled()
+    })
+
+    it('replaces the table with the staged reorder list and hides search/refresh', async () => {
+      store.events = [mockEvent]
+      store.eventsReorderMode = true
+      await nextTick()
+
+      expect(wrapper.find('.staged-reorder-stub').exists()).toBe(true)
+      expect(wrapper.find('[data-test="event-config-event-table"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="reorder-events-button"]').exists()).toBe(false)
+      // the reorder list carries its own intro
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(false)
     })
   })
 
@@ -126,7 +156,7 @@ describe('EventConfigEventTable.vue', () => {
       const header = wrapper.find('[data-test="order-header"]')
       expect(header.exists()).toBe(true)
       expect(header.text()).toBe('Order')
-      expect(header.attributes('title')).toContain('evaluated first')
+      expect(header.find('[data-test="order-info"]').exists()).toBe(true)
       expect(wrapper.findAll('tbody tr')[0].text()).toContain('7')
     })
 
@@ -222,19 +252,11 @@ describe('EventConfigEventTable.vue', () => {
   })
 
   describe('Row action menu', () => {
-    it('builds enable/disable + delete + move items for a non-OpenNMS source', () => {
+    it('builds enable/disable + delete items for a non-OpenNMS source', () => {
       store.selectedSource = { ...mockSource, vendor: 'Cisco' }
       wrapper.vm.rowMenuTarget = mockEvent
-      const labels = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator).map((i: any) => i.label)
-      expect(labels).toEqual([
-        'Disable Event',
-        'Delete Event',
-        'Move Up',
-        'Move Down',
-        'Move to Top',
-        'Move to Bottom',
-        'Move to Position...'
-      ])
+      const labels = wrapper.vm.rowMenuItems.map((i: any) => i.label)
+      expect(labels).toEqual(['Disable Event', 'Delete Event'])
     })
 
     it('shows Enable label when the event is disabled', () => {
@@ -248,44 +270,6 @@ describe('EventConfigEventTable.vue', () => {
       wrapper.vm.rowMenuTarget = mockEvent
       const labels = wrapper.vm.rowMenuItems.map((i: any) => i.label)
       expect(labels).not.toContain('Delete Event')
-    })
-
-    it('enables the move items while sorted by eventOrder ascending with no search', () => {
-      wrapper.vm.rowMenuTarget = mockEvent
-      const moveItems = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator && String(i.label).startsWith('Move'))
-      expect(moveItems).toHaveLength(5)
-      moveItems.forEach((item: any) => {
-        expect(item.disabled).toBe(false)
-      })
-    })
-
-    it('disables the move items with an explanation when the sort or search breaks the order view', () => {
-      store.eventsSorting = { sortKey: 'uei', sortOrder: 'asc' }
-      wrapper.vm.rowMenuTarget = mockEvent
-      let moveItems = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator && String(i.label).startsWith('Move'))
-      moveItems.forEach((item: any) => {
-        expect(item.disabled).toBe(true)
-        expect(item.label).toContain('(sort by Order, clear search)')
-      })
-
-      store.eventsSorting = { sortKey: 'eventOrder', sortOrder: 'asc' }
-      store.eventsSearchTerm = 'link'
-      moveItems = wrapper.vm.rowMenuItems.filter((i: any) => !i.separator && String(i.label).startsWith('Move'))
-      moveItems.forEach((item: any) => {
-        expect(item.disabled).toBe(true)
-      })
-    })
-
-    it('Move Up calls the store with mode up', async () => {
-      wrapper.vm.rowMenuTarget = mockEvent
-      await wrapper.vm.rowMenuItems.find((i: any) => i.label === 'Move Up').command()
-      expect(store.moveEventConfigEvent).toHaveBeenCalledWith(mockEvent.id, { mode: 'up' })
-    })
-
-    it('Move to Position opens the move dialog', () => {
-      wrapper.vm.rowMenuTarget = mockEvent
-      wrapper.vm.rowMenuItems.find((i: any) => i.label === 'Move to Position...').command()
-      expect(store.showMoveEventConfigEventDialog).toHaveBeenCalledWith(mockEvent)
     })
 
     it('change-status command opens the change-status dialog', () => {

@@ -13,7 +13,8 @@
         <OnmsButton
           variant="outlined"
           data-test="reorder-sources-button"
-          @click="store.showReorderSourcesDrawer()"
+          :disabled="store.sourcesReorderMode"
+          @click="store.startSourcesReorder()"
         >
           <OnmsIcon
             :icon="SortIcon"
@@ -47,7 +48,6 @@
     </div>
   </div>
   <CreateEventConfigurationDialog />
-  <ReorderEventConfigSourcesDrawer />
 </template>
 
 <script lang="ts" setup>
@@ -56,7 +56,6 @@ import { useRouter } from 'vue-router'
 
 import CreateEventConfigurationDialog from '@/components/EventConfiguration/Dialog/CreateEventConfigurationDialog.vue'
 import EventConfigTabContainer from '@/components/EventConfiguration/EventConfigTabContainer.vue'
-import ReorderEventConfigSourcesDrawer from '@/components/EventConfiguration/ReorderEventConfigSourcesDrawer.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { getDefaultEventConfigEvent } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'

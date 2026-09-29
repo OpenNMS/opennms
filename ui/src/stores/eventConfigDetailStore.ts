@@ -4,12 +4,12 @@ import {
   changeEventConfigSourceStatus,
   filterEventConfigEvents,
   getEventConfSourceById,
-  moveEventConfigEvent
+  getOrderedEventConfigEvents,
+  updateEventConfigEventsOrder
 } from '@/services/eventConfigService'
 import {
   EventConfigDetailStoreState,
   EventConfigEvent,
-  EventConfigEventMoveRequest,
   EventConfigMutationResult,
   EventConfigSource
 } from '@/types/eventConfig'
@@ -57,11 +57,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       visible: false,
       eventConfigEvent: null
     },
-    moveEventConfigEventDialogState: {
-      visible: false,
-      eventConfigEvent: null
-    },
-    isMovingEvent: false,
+    eventsReorderMode: false,
+    orderedEvents: [],
+    isSavingEventsOrder: false,
     deleteEventConfigSourceDialogState: {
       visible: false,
       eventConfigSource: null
@@ -166,31 +164,46 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
       this.changeEventConfigEventStatusDialogState.visible = true
     },
-    showMoveEventConfigEventDialog(eventConfigEvent: EventConfigEvent) {
-      this.moveEventConfigEventDialogState.eventConfigEvent = eventConfigEvent
-      this.moveEventConfigEventDialogState.visible = true
+    async startEventsReorder() {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return
+      }
+      this.eventsReorderMode = true
+      await this.fetchOrderedEvents()
     },
-    hideMoveEventConfigEventDialog() {
-      this.moveEventConfigEventDialogState.visible = false
-      this.moveEventConfigEventDialogState.eventConfigEvent = null
+    stopEventsReorder() {
+      this.eventsReorderMode = false
     },
-    async moveEventConfigEvent(
-      eventId: number,
-      request: EventConfigEventMoveRequest
-    ): Promise<EventConfigMutationResult & { eventOrder?: number }> {
+    async fetchOrderedEvents() {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return
+      }
+      this.isLoading = true
+      try {
+        this.orderedEvents = await getOrderedEventConfigEvents(this.selectedSource.id)
+      } catch (error) {
+        console.error('Error fetching ordered event configuration events:', error)
+        this.orderedEvents = []
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async saveEventsOrder(eventIds: number[]): Promise<EventConfigMutationResult> {
       if (!this.selectedSource) {
         console.error('No source selected')
         return { ok: false, status: 0, message: 'No source selected' }
       }
-      this.isMovingEvent = true
+      this.isSavingEventsOrder = true
       try {
-        const result = await moveEventConfigEvent(this.selectedSource.id, eventId, request)
+        const result = await updateEventConfigEventsOrder(this.selectedSource.id, eventIds)
         if (result.ok) {
           await this.fetchEventsBySourceId()
         }
         return result
       } finally {
-        this.isMovingEvent = false
+        this.isSavingEventsOrder = false
       }
     },
     async hideChangeEventConfigEventStatusDialog() {

@@ -490,14 +490,17 @@ describe('useEventConfigStore', () => {
       evaluationOrder: 3
     }
 
-    it('showReorderSourcesDrawer opens the drawer and fetches the ordered list', async () => {
+    it('startSourcesReorder enters the mode and fetches the ordered list', async () => {
       vi.mocked(getOrderedEventConfigSources).mockResolvedValue([...mockSources, catchAll])
 
-      await store.showReorderSourcesDrawer()
+      await store.startSourcesReorder()
 
-      expect(store.reorderSourcesDrawerState.visible).toBe(true)
+      expect(store.sourcesReorderMode).toBe(true)
       expect(store.orderedSources.map(s => s.id)).toEqual(mockSources.map(s => s.id))
       expect(store.catchAllSource?.id).toBe(99)
+
+      store.stopSourcesReorder()
+      expect(store.sourcesReorderMode).toBe(false)
     })
 
     it('fetchOrderedSources clears the lists on failure', async () => {

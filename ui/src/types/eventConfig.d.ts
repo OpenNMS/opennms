@@ -57,12 +57,15 @@ export type EventConfigEvent = {
   eventOrder: number
 }
 
-export type EventConfigEventMoveMode = 'top' | 'bottom' | 'up' | 'down' | 'position'
-
-export type EventConfigEventMoveRequest = {
-  mode: EventConfigEventMoveMode
-  /** 1-based target for mode 'position' (1 = evaluated first); ignored otherwise */
-  position?: number
+/** One event of a source, reduced to what the reorder view needs - no XML payload */
+export type EventConfigEventSummary = {
+  id: number
+  uei: string
+  eventLabel: string
+  severity: string
+  enabled: boolean
+  /** Evaluation position within the source: 1 = evaluated first */
+  eventOrder: number
 }
 
 export type EventConfigMutationResult = {
@@ -79,14 +82,13 @@ export type EventConfigStoreState = {
   isLoading: boolean
   activeTab: number
   uploadedSources: Array<UploadedSourceNamesResponse>
-  /** Non-catch-all sources in evaluation order (first evaluated first), for the reorder drawer */
+  /** Non-catch-all sources in evaluation order (first evaluated first), for the reorder mode */
   orderedSources: EventConfigSource[]
   /** The pinned catch-all source, shown locked below the reorderable list */
   catchAllSource: EventConfigSource | null
   isSavingSourceOrder: boolean
-  reorderSourcesDrawerState: {
-    visible: boolean
-  }
+  /** True while the sources table is in its in-place reorder mode */
+  sourcesReorderMode: boolean
   uploadedEventConfigFilesReportDialogState: {
     visible: boolean
   }
@@ -118,11 +120,11 @@ export type EventConfigDetailStoreState = {
     visible: boolean
     eventConfigEvent: EventConfigEvent | null
   }
-  moveEventConfigEventDialogState: {
-    visible: boolean
-    eventConfigEvent: EventConfigEvent | null
-  }
-  isMovingEvent: boolean
+  /** True while the events table is in its in-place reorder mode */
+  eventsReorderMode: boolean
+  /** The source's events in evaluation order (first evaluated first), for the reorder mode */
+  orderedEvents: EventConfigEventSummary[]
+  isSavingEventsOrder: boolean
   deleteEventConfigSourceDialogState: {
     visible: boolean
     eventConfigSource: EventConfigSource | null

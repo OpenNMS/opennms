@@ -333,6 +333,67 @@ public class EventConfPersistenceService {
         }
     }
 
+    /** The source's events in evaluation order, without their XML payloads (see the DAO method). */
+    public List<Object[]> findEventOrderSummaries(final Long sourceId) {
+        return eventConfEventDao.findEventOrderSummaries(sourceId);
+    }
+
+    /**
+     * Rewrites the complete evaluation order of one source's events from an explicit id list: the
+     * first id becomes {@code eventOrder} 1. The list must name every event of the source exactly
+     * once; an event added concurrently surfaces as a missing-event error. Runs under the source's
+     * row lock.
+     *
+     * @return the number of events whose position actually changed
+     * @throws IllegalArgumentException on duplicates or missing events
+     * @throws EntityNotFoundException  on an unknown source or an id that matches no event of it
+     */
+    @Transactional
+    public int reorderEventConfEvents(final Long sourceId, final List<Long> orderedEventIds) {
+        if (orderedEventIds == null || orderedEventIds.isEmpty()) {
+            throw new IllegalArgumentException("eventIds must not be empty");
+        }
+        final Set<Long> unique = new HashSet<>(orderedEventIds);
+        if (unique.size() != orderedEventIds.size()) {
+            throw new IllegalArgumentException("eventIds must not contain duplicates");
+        }
+
+        eventConfSourceDao.lockForUpdate(sourceId);
+        final Map<Long, Integer> orderById = new LinkedHashMap<>();
+        final Map<Long, String> labelById = new LinkedHashMap<>();
+        for (final Object[] summary : eventConfEventDao.findEventOrderSummaries(sourceId)) {
+            orderById.put((Long) summary[0], (Integer) summary[5]);
+            labelById.put((Long) summary[0], (String) summary[2]);
+        }
+
+        for (final Long id : orderedEventIds) {
+            if (!orderById.containsKey(id)) {
+                throw new EntityNotFoundException(String.format("EventConfEvent not found for sourceId=%d, eventId=%d", sourceId, id));
+            }
+        }
+        final List<String> missing = orderById.keySet().stream()
+                .filter(id -> !unique.contains(id))
+                .map(labelById::get)
+                .collect(Collectors.toList());
+        if (!missing.isEmpty()) {
+            final String shown = missing.stream().limit(10).collect(Collectors.joining(", "));
+            throw new IllegalArgumentException("The order must list every event of the source exactly once; missing: "
+                    + shown + (missing.size() > 10 ? " (+" + (missing.size() - 10) + " more)" : ""));
+        }
+
+        int updated = 0;
+        for (int i = 0; i < orderedEventIds.size(); i++) {
+            final Long id = orderedEventIds.get(i);
+            final int target = i + 1;
+            if (orderById.get(id) == null || orderById.get(id) != target) {
+                eventConfEventDao.updateEventOrder(sourceId, id, target);
+                updated++;
+            }
+        }
+        LOG.info("Reordered the {} events of source {} ({} positions changed)", orderedEventIds.size(), sourceId, updated);
+        return updated;
+    }
+
     private int moveEventToPosition(final Long sourceId, final Long eventId, final int current, final int target) {
         if (target == current) {
             return current;

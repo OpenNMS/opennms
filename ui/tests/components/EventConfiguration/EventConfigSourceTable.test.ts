@@ -2,6 +2,7 @@ import EventConfigSourceTable from '@/components/EventConfiguration/EventConfigS
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -25,7 +26,8 @@ vi.mock('@/services/eventConfigService', () => ({
 // Stub the child dialogs so this suite focuses on the table's own behaviour.
 const stubs = {
   DeleteEventConfigSourceDialog: { name: 'DeleteEventConfigSourceDialog', template: '<div class="delete-dialog-stub"></div>' },
-  ChangeEventConfigSourceStatusDialog: { name: 'ChangeEventConfigSourceStatusDialog', template: '<div class="change-status-dialog-stub"></div>' }
+  ChangeEventConfigSourceStatusDialog: { name: 'ChangeEventConfigSourceStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
+  StagedReorderList: { name: 'StagedReorderList', props: ['items', 'itemNoun', 'saving'], template: '<div class="staged-reorder-stub"></div>' }
 }
 
 describe('EventConfigSourceTable.vue', () => {
@@ -38,6 +40,7 @@ describe('EventConfigSourceTable.vue', () => {
   const mountTable = () => mount(EventConfigSourceTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
+      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })
@@ -99,6 +102,27 @@ describe('EventConfigSourceTable.vue', () => {
     })
   })
 
+  describe('Reorder mode', () => {
+    it('offers the evaluation-order explanation on the Order header', async () => {
+      store.sources = [mockSource]
+      await nextTick()
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(true)
+    })
+
+    it('replaces the table with the staged reorder list and hides search/refresh', async () => {
+      store.sources = [mockSource]
+      store.sourcesReorderMode = true
+      await nextTick()
+
+      expect(wrapper.find('.staged-reorder-stub').exists()).toBe(true)
+      expect(wrapper.find('[data-test="event-config-source-table"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(false)
+      // the reorder list carries its own intro
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(false)
+    })
+  })
+
   describe('Empty State', () => {
     it('shows EmptyList and no table when there are no sources', async () => {
       store.sources = []
@@ -131,7 +155,7 @@ describe('EventConfigSourceTable.vue', () => {
       const header = wrapper.find('[data-test="order-header"]')
       expect(header.exists()).toBe(true)
       expect(header.text()).toBe('Order')
-      expect(header.attributes('title')).toContain('1 is evaluated first')
+      expect(header.find('[data-test="order-info"]').exists()).toBe(true)
       expect(wrapper.findAll('tbody tr')[0].text()).toContain(String(mockSource.evaluationOrder))
     })
 

@@ -1523,6 +1523,82 @@ public class EventConfRestServiceIT {
         assertEquals("nothing moved", ids, eventIdsByOrder(source.getId()));
     }
 
+    @Test
+    @Transactional
+    public void testOrderedEventsAndFullListReorder() throws Exception {
+        final EventConfSource source = createSource("reorder.events", eventConfSourceDao.nextFileOrder());
+        sessionFactory.getCurrentSession().flush();
+        for (int i = 1; i <= 5; i++) {
+            insertEvent(source, "uei.opennms.org/test/ordered/" + i, "Ordered " + i, "d", "Normal");
+        }
+        flushAndClear();
+
+        // the ordered listing carries the evaluation order and the identifying fields only
+        Response resp = eventConfRestApi.getOrderedEventConfSourceEvents(source.getId(), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") final List<org.opennms.web.rest.v2.model.EventConfEventSummaryDto> summaries =
+                (List<org.opennms.web.rest.v2.model.EventConfEventSummaryDto>) resp.getEntity();
+        assertEquals(5, summaries.size());
+        for (int i = 0; i < summaries.size(); i++) {
+            assertEquals(Integer.valueOf(i + 1), summaries.get(i).getEventOrder());
+            assertEquals("Ordered " + (i + 1), summaries.get(i).getEventLabel());
+        }
+
+        // reverse the order with one PUT of the complete list
+        final List<Long> reversed = new ArrayList<>(summaries.stream()
+                .map(org.opennms.web.rest.v2.model.EventConfEventSummaryDto::getId).toList());
+        Collections.reverse(reversed);
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(reversed), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") final Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        assertEquals("all positions change but the middle one", 4, entity.get("updated"));
+
+        assertEquals(reversed, eventIdsByOrder(source.getId()));
+        assertEquals(List.of(1, 2, 3, 4, 5),
+                eventConfEventDao.findBySourceId(source.getId()).stream().map(EventConfEvent::getEventOrder).toList());
+    }
+
+    @Test
+    @Transactional
+    public void testEventsOrder_RejectsBadPayloads() throws Exception {
+        final EventConfSource source = createSource("reorder.events", eventConfSourceDao.nextFileOrder());
+        sessionFactory.getCurrentSession().flush();
+        insertEvent(source, "uei.opennms.org/test/ordered/1", "Ordered 1", "d", "Normal");
+        insertEvent(source, "uei.opennms.org/test/ordered/2", "Ordered 2", "d", "Normal");
+        final List<Long> ids = eventIdsByOrder(source.getId());
+
+        Response resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(), null, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of()), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of(ids.get(0), ids.get(0))), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("duplicates"));
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of(ids.get(1))), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("Ordered 1"));
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of(ids.get(0), ids.get(1), 999999L)), securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(999999L,
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(ids), securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.getOrderedEventConfSourceEvents(999999L, securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        assertEquals("nothing moved", ids, eventIdsByOrder(source.getId()));
+    }
+
     private org.opennms.web.rest.v2.model.EventConfEventMoveRequest moveRequest(final String mode, final Integer position) {
         final var request = new org.opennms.web.rest.v2.model.EventConfEventMoveRequest();
         request.setMode(mode);

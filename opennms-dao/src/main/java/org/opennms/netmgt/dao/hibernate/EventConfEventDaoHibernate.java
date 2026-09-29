@@ -317,6 +317,16 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public List<Object[]> findEventOrderSummaries(Long sourceId) {
+        return getSessionFactory().getCurrentSession()
+                .createQuery("select e.id, e.uei, e.eventLabel, e.severity, e.enabled, e.eventOrder "
+                        + "from EventConfEvent e where e.source.id = :sourceId order by e.eventOrder asc, e.id asc")
+                .setParameter("sourceId", sourceId)
+                .list();
+    }
+
+    @Override
     public EventConfEvent findNeighbourByOrder(Long sourceId, int eventOrder, boolean previous) {
         final String hql = previous
                 ? "from EventConfEvent e where e.source.id = ?1 and e.eventOrder < ?2 order by e.eventOrder desc, e.id desc"

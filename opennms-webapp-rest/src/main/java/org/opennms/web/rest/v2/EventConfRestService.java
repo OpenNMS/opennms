@@ -37,11 +37,13 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.netmgt.model.events.EventConfEventOrderPayload;
 import org.opennms.netmgt.model.events.EventConfSourceOrderPayload;
 import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.web.rest.v2.model.EventConfEventMoveRequest;
+import org.opennms.web.rest.v2.model.EventConfEventSummaryDto;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.slf4j.Logger;
@@ -680,6 +682,47 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
         } catch (Exception ex) {
             LOG.error("Failed to move event {} of source {}", eventId, sourceId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getOrderedEventConfSourceEvents(final Long sourceId, SecurityContext securityContext) {
+        try {
+            if (sourceId == null || sourceId <= 0 || eventConfSourceDao.get(sourceId) == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("EventConfSource not found for id: " + sourceId).build();
+            }
+            final List<Object[]> summaries = eventConfPersistenceService.findEventOrderSummaries(sourceId);
+            return Response.ok(EventConfEventSummaryDto.fromRows(summaries)).build();
+        } catch (Exception e) {
+            LOG.error("Failed to fetch the ordered events of source {}", sourceId, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch the ordered events: " + e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response updateEventConfSourceEventsOrder(final Long sourceId, final EventConfEventOrderPayload payload,
+                                                     SecurityContext securityContext) throws Exception {
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        if (payload.getEventIds() == null || payload.getEventIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one eventId must be provided.").build();
+        }
+
+        try {
+            final int updated = eventConfPersistenceService.reorderEventConfEvents(sourceId, payload.getEventIds());
+            eventConfPersistenceService.reloadEventsIntoMemory();
+            return Response.ok(Map.of("updated", updated)).build();
+
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
+        } catch (Exception ex) {
+            LOG.error("Failed to reorder the events of source {}", sourceId, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
     }

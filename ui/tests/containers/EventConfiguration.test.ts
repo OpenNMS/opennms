@@ -26,7 +26,6 @@ describe('EventConfiguration.vue (container)', () => {
       stubs: {
         EventConfigTabContainer: true,
         CreateEventConfigurationDialog: true,
-        ReorderEventConfigSourcesDrawer: true,
         BreadCrumbs: true,
         OnmsMenu: { name: 'OnmsMenu', props: ['items'], template: '<div class="menu-stub"></div>' }
       }
@@ -38,7 +37,7 @@ describe('EventConfiguration.vue (container)', () => {
     setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
     store = useEventConfigStore()
     store.showCreateEventConfigSourceDialog = vi.fn()
-    store.showReorderSourcesDrawer = vi.fn()
+    store.startSourcesReorder = vi.fn()
     useMenuStore().mainMenu = { homeUrl: '/opennms' } as any
     modificationStore = useEventModificationStore()
     modificationStore.openCreateWithoutSource = vi.fn()
@@ -55,13 +54,9 @@ describe('EventConfiguration.vue (container)', () => {
     expect(wrapper.find('[data-test="create-menu-button"]').text()).toContain('Create')
   })
 
-  it('mounts the reorder drawer', () => {
-    expect(wrapper.findComponent({ name: 'ReorderEventConfigSourcesDrawer' }).exists()).toBe(true)
-  })
-
-  it('opens the reorder drawer from the header button', async () => {
+  it('enters the sources reorder mode from the header button', async () => {
     await wrapper.find('[data-test="reorder-sources-button"]').trigger('click')
-    expect(store.showReorderSourcesDrawer).toHaveBeenCalled()
+    expect(store.startSourcesReorder).toHaveBeenCalled()
   })
 
   it('the Create menu opens the create-source dialog and the create-event flow', () => {

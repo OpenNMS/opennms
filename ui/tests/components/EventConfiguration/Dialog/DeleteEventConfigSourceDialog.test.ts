@@ -54,7 +54,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       orderedSources: [],
       catchAllSource: null,
       isSavingSourceOrder: false,
-      reorderSourcesDrawerState: { visible: false },
+      sourcesReorderMode: false,
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }
@@ -132,7 +132,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       orderedSources: [],
       catchAllSource: null,
       isSavingSourceOrder: false,
-      reorderSourcesDrawerState: { visible: false },
+      sourcesReorderMode: false,
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }

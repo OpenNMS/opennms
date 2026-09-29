@@ -51,7 +51,7 @@ describe('EventConfigFilesUploadReportDialog', () => {
       orderedSources: [],
       catchAllSource: null,
       isSavingSourceOrder: false,
-      reorderSourcesDrawerState: { visible: false },
+      sourcesReorderMode: false,
       createEventConfigSourceDialogState: { visible: false }
     }
 
