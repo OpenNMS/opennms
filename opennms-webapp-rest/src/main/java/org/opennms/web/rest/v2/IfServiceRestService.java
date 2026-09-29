@@ -182,6 +182,8 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
         dto.setQualifier(entity.getQualifier());
         dto.setLastFail(entity.getLastFail());
         dto.setLastGood(entity.getLastGood());
+        dto.setCollectLastFail(entity.getCollectLastFail());
+        dto.setCollectLastGood(entity.getCollectLastGood());
         dto.setStatusLong(entity.getStatusLong());
         dto.setIpInterfaceId(entity.getIpInterfaceId());
         dto.setIpAddress(entity.getIpAddress().getHostAddress());
@@ -208,6 +210,8 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
         service.setQualifier(dto.getQualifier());
         service.setLastFail(dto.getLastFail());
         service.setLastGood(dto.getLastGood());
+        service.setCollectLastFail(dto.getCollectLastFail());
+        service.setCollectLastGood(dto.getCollectLastGood());
 
         return service;
     }
@@ -268,6 +272,8 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
                                 "serviceType": { "id": 2, "name": "HTTP-8080" },
                                 "lastGood": 1787727384331,
                                 "lastFail": 1787685424834,
+                                "collectLastGood": 1787727300512,
+                                "collectLastFail": 1787640005120,
                                 "ipInterfaceId": 2,
                                 "ipAddress": "127.0.0.1",
                                 "nodeId": 2,
@@ -283,6 +289,8 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
                                 <serviceType id="2"><name>HTTP-8080</name></serviceType>
                                 <lastFail>2026-08-25T15:17:04.834-04:00</lastFail>
                                 <lastGood>2026-08-26T03:11:24.562-04:00</lastGood>
+                                <collectLastFail>2026-08-25T02:40:05.120-04:00</collectLastFail>
+                                <collectLastGood>2026-08-26T03:15:00.512-04:00</collectLastGood>
                                 <statusLong>Managed</statusLong>
                                 <ipInterfaceId>2</ipInterfaceId>
                                 <ipAddress>127.0.0.1</ipAddress>

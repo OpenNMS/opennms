@@ -22,9 +22,11 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -34,7 +36,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,12 +62,14 @@ import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.util.RrdConvertUtils;
@@ -81,6 +87,7 @@ public class CollectableServiceTest {
     private Scheduler scheduler;
     private CollectableService service;
     private ThresholdingService thresholdingService;
+    private MonitoredServiceDao monitoredServiceDao;
 
     private File snmpDirectory;
     private FileAnticipator fileAnticipator;
@@ -289,6 +296,65 @@ public class CollectableServiceTest {
         verify(eventIpcManager, times(1)).sendNow(any(Event.class));
     }
 
+    /**
+     * A successful collection records its completion time in collectlastgood, and a failed one in
+     * collectlastfail. The row key is looked up once and every write is an UPDATE by that key.
+     */
+    @Test
+    public void recordsCollectionTimestampsOnTheService() throws CollectionInitializationException, CollectionException, IOException {
+        createCollectableService();
+
+        Date before = new Date();
+        when(spec.collect(any())).thenReturn(null);
+        service.run();
+
+        ArgumentCaptor<Date> goodCaptor = ArgumentCaptor.forClass(Date.class);
+        verify(monitoredServiceDao, times(1)).updateCollectLastGood(eq(42), goodCaptor.capture());
+        verify(monitoredServiceDao, never()).updateCollectLastFail(anyInt(), any());
+        assertNotNull(goodCaptor.getValue());
+        assertTrue("completion time should not precede the collection", !goodCaptor.getValue().before(before));
+
+        // A timeout maps to FAILED but logs at INFO, so tearDown's "no ERROR logs" check stays quiet
+        when(spec.collect(any())).thenThrow(new org.opennms.netmgt.collection.api.CollectionTimedOut("timed out"));
+        service.run();
+
+        verify(monitoredServiceDao, times(1)).updateCollectLastFail(eq(42), any(Date.class));
+        verify(monitoredServiceDao, times(1)).updateCollectLastGood(anyInt(), any());
+        // one key lookup for both collections
+        verify(monitoredServiceDao, times(1)).get(eq(1), any(InetAddress.class), eq("SNMP"));
+    }
+
+    /**
+     * A collection whose outcome is unknown leaves both timestamps alone, matching the poller,
+     * which also skips unknown results.
+     */
+    @Test
+    public void doesNotRecordTimestampForUnknownCollectionOutcome() throws CollectionInitializationException, CollectionException, IOException {
+        createCollectableService();
+
+        when(spec.collect(any())).thenThrow(new org.opennms.netmgt.collection.api.CollectionUnknown("no opinion", null));
+        service.run();
+
+        verify(monitoredServiceDao, never()).updateCollectLastGood(anyInt(), any());
+        verify(monitoredServiceDao, never()).updateCollectLastFail(anyInt(), any());
+    }
+
+    /**
+     * When the UPDATE matches no row (service deleted or moved), the cached key is dropped so the
+     * next collection resolves it again instead of updating nothing forever.
+     */
+    @Test
+    public void reResolvesServiceKeyWhenUpdateMatchesNoRow() throws CollectionInitializationException, CollectionException, IOException {
+        createCollectableService();
+        when(monitoredServiceDao.updateCollectLastGood(anyInt(), any())).thenReturn(0);
+
+        when(spec.collect(any())).thenReturn(null);
+        service.run();
+        service.run();
+
+        verify(monitoredServiceDao, times(2)).get(eq(1), any(InetAddress.class), eq("SNMP"));
+    }
+
     private void createCollectableService() throws CollectionInitializationException, IOException {
         // Disable thresholding
         Map<String, Object> paramsMap = new HashMap<>();
@@ -312,13 +378,22 @@ public class CollectableServiceTest {
 
         when(iface.getNode().getId()).thenReturn(1);
         when(spec.getServiceParameters()).thenReturn(params);
+        when(spec.getServiceName()).thenReturn("SNMP");
         when(spec.getRrdRepository(any())).thenReturn(createRrdRepository());
         when(ifaceDao.load(any())).thenReturn(iface);
         when(iface.getIpAddress()).thenReturn(InetAddrUtils.getLocalHostAddress());
 
         thresholdingService = mock(ThresholdingService.class, RETURNS_DEEP_STUBS);
 
-        service = new CollectableService(iface, ifaceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, thresholdingService);
+        // The ifservices row behind this collector: id 42, resolved once and then updated by key
+        monitoredServiceDao = mock(MonitoredServiceDao.class);
+        OnmsMonitoredService monSvc = mock(OnmsMonitoredService.class);
+        when(monSvc.getId()).thenReturn(42);
+        when(monitoredServiceDao.get(eq(1), any(InetAddress.class), eq("SNMP"))).thenReturn(monSvc);
+        when(monitoredServiceDao.updateCollectLastGood(anyInt(), any())).thenReturn(1);
+        when(monitoredServiceDao.updateCollectLastFail(anyInt(), any())).thenReturn(1);
+
+        service = new CollectableService(iface, ifaceDao, monitoredServiceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, thresholdingService);
     }
 
     private RrdRepository createRrdRepository() throws IOException {
