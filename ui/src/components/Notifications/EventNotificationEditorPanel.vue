@@ -137,23 +137,23 @@
           </OnmsTabPanel>
           <OnmsTabPanel value="filter">
             <div class="rule-block" data-test="rule-block">
-              <div class="rule-header">
-                <div class="mode-toggle">
-                  <OnmsButton
-                    :variant="ruleMode === 'builder' ? 'filled' : 'text'"
-                    label="Builder"
-                    data-test="rule-mode-builder"
-                    @click="setRuleMode('builder')"
-                  />
-                  <OnmsButton
-                    :variant="ruleMode === 'raw' ? 'filled' : 'text'"
-                    label="Raw"
-                    data-test="rule-mode-raw"
-                    @click="setRuleMode('raw')"
-                  />
-                  <HelpBadge :content="ruleHelp" />
-                </div>
-              </div>
+              <p class="rule-hint">
+                Add rules to filter notifications by IP address and services.
+                <HelpBadge :content="ruleHelp" ariaLabel="Filter rules help" />
+              </p>
+              <!-- Bound to ruleMode rather than v-model: setRuleMode can refuse
+                   Builder for a rule it can't parse and keep Raw selected. -->
+              <OnmsSelectButton
+                :key="ruleModeKey"
+                class="rule-mode"
+                :modelValue="ruleMode"
+                :options="ruleModeOptions"
+                optionLabel="label"
+                optionValue="value"
+                aria-label="Rule editing mode"
+                data-test="rule-mode"
+                @update:modelValue="onRuleModeSelect"
+              />
 
               <template v-if="ruleMode === 'builder'">
                 <FormField
@@ -343,6 +343,7 @@ import {
   OnmsInputText,
   OnmsMultiSelect,
   OnmsSelect,
+  OnmsSelectButton,
   OnmsTab,
   OnmsTabList,
   OnmsTabPanel,
@@ -440,6 +441,20 @@ const firstTabWithError = (): EditorTab | null => {
 
 const ruleParseNote = ref('')
 const ruleMode = ref<'builder' | 'raw'>('builder')
+const ruleModeOptions = [
+  { label: 'Builder', value: 'builder' },
+  { label: 'Raw', value: 'raw' }
+]
+// PrimeVue's SelectButton highlights the clicked option itself and only
+// re-syncs when modelValue changes. When setRuleMode refuses Builder, ruleMode
+// stays 'raw', so remount the control to put the highlight back on Raw.
+const ruleModeKey = ref(0)
+const onRuleModeSelect = (mode: unknown) => {
+  setRuleMode(mode as 'builder' | 'raw')
+  if (ruleMode.value !== mode) {
+    ruleModeKey.value++
+  }
+}
 
 // Switch modes without letting the two representations diverge: entering Builder
 // only succeeds if the current rule parses into the pickers, otherwise stay Raw.
@@ -860,24 +875,20 @@ const save = async () => {
 .rule-block {
   padding-top: 1rem;
 
-  // only the Builder/Raw toggle now; the tab name labels the section
-  .rule-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-bottom: 0.75rem;
+  .rule-hint {
+    margin: 0 0 0.75rem 0;
+    color: var(--p-text-muted-color);
+    font-size: 0.85rem;
+  }
+
+  .rule-mode {
+    margin-bottom: 1rem;
   }
 
   .rule-note {
     display: block;
     margin-top: 0.25rem;
     color: var(--p-orange-600, #c77700);
-  }
-
-  .mode-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
   }
 
   .svc-grid {
