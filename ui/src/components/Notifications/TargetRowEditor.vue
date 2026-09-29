@@ -81,22 +81,25 @@
       <template #label-suffix>
         <HelpBadge :content="intervalHelp" ariaLabel="Interval help" />
       </template>
-      <OnmsInputText
-        :id="`target-interval-${row.key}`"
-        v-model="row.interval"
-        placeholder="0s"
-        data-test="target-interval-input"
-      />
+      <!-- The remove button sits in the Interval field's control area so it
+           centers on the input, not on the whole field (label + error). -->
+      <div class="interval-control">
+        <OnmsInputText
+          :id="`target-interval-${row.key}`"
+          v-model="row.interval"
+          placeholder="0s"
+          data-test="target-interval-input"
+        />
+        <OnmsIconButton
+          v-if="removable"
+          severity="danger"
+          :icon="Cancel"
+          aria-label="Remove target"
+          data-test="remove-target-button"
+          @click="emit('remove')"
+        />
+      </div>
     </FormField>
-
-    <OnmsIconButton
-      v-if="removable"
-      severity="danger"
-      :icon="Cancel"
-      aria-label="Remove target"
-      data-test="remove-target-button"
-      @click="emit('remove')"
-    />
   </div>
 </template>
 
@@ -187,7 +190,9 @@ const onTypeChange = () => {
 <style lang="scss" scoped>
 .target-row {
   display: flex;
-  align-items: center;
+  // top-align so the fields' labels and controls line up even when one of them
+  // shows an error below its control
+  align-items: flex-start;
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-bottom: 0.5rem;
@@ -213,6 +218,12 @@ const onTypeChange = () => {
   }
 
   .target-interval {
+    .interval-control {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
     :deep(input) {
       width: 90px;
     }

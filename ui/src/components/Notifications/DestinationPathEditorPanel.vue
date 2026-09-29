@@ -53,14 +53,6 @@
             Initial Targets
             <HelpBadge :content="initialTargetsHelp" ariaLabel="Initial Targets help" />
           </div>
-          <OnmsButton
-            variant="outlined"
-            size="small"
-            label="Add Target"
-            icon="pi pi-plus"
-            data-test="add-target-button"
-            @click="addTarget(targets)"
-          />
         </div>
         <TargetRowEditor
           v-for="(row, index) in targets"
@@ -73,6 +65,16 @@
           :removable="targets.length > 1"
           @remove="targets.splice(index, 1)"
         />
+        <div class="section-actions">
+          <OnmsButton
+            variant="outlined"
+            size="small"
+            label="Add Target"
+            icon="pi pi-plus"
+            data-test="add-target-button"
+            @click="addTarget(targets)"
+          />
+        </div>
       </div>
 
       <div class="section">
@@ -81,14 +83,6 @@
             Escalations
             <HelpBadge :content="escalationsHelp" ariaLabel="Escalations help" />
           </div>
-          <OnmsButton
-            variant="outlined"
-            size="small"
-            label="Add Escalation"
-            icon="pi pi-plus"
-            data-test="add-escalation-button"
-            @click="addEscalation"
-          />
         </div>
         <div
           v-for="(escalation, eIndex) in escalations"
@@ -109,24 +103,6 @@
                 data-test="escalation-delay-select"
               />
             </FormField>
-            <div class="escalation-actions">
-              <OnmsButton
-                variant="outlined"
-                size="small"
-                label="Add Target"
-                icon="pi pi-plus"
-                data-test="add-escalation-target-button"
-                @click="addTarget(escalation.targets)"
-              />
-              <OnmsButton
-                variant="text"
-                size="small"
-                label="Remove Escalation"
-                severity="danger"
-                data-test="remove-escalation-button"
-                @click="escalations.splice(eIndex, 1)"
-              />
-            </div>
           </div>
           <TargetRowEditor
             v-for="(row, tIndex) in escalation.targets"
@@ -139,13 +115,41 @@
             :removable="escalation.targets.length > 1"
             @remove="escalation.targets.splice(tIndex, 1)"
           />
+          <div class="escalation-actions">
+            <OnmsButton
+              variant="outlined"
+              size="small"
+              label="Add Target"
+              icon="pi pi-plus"
+              data-test="add-escalation-target-button"
+              @click="addTarget(escalation.targets)"
+            />
+            <OnmsButton
+              variant="ghost"
+              size="small"
+              label="Remove Escalation"
+              severity="danger"
+              data-test="remove-escalation-button"
+              @click="escalations.splice(eIndex, 1)"
+            />
+          </div>
+        </div>
+        <div class="section-actions">
+          <OnmsButton
+            variant="outlined"
+            size="small"
+            label="Add Escalation"
+            icon="pi pi-plus"
+            data-test="add-escalation-button"
+            @click="addEscalation"
+          />
         </div>
       </div>
     </div>
 
     <div class="panel-footer">
       <OnmsButton
-        variant="text"
+        variant="ghost"
         label="Cancel"
         data-test="cancel-button"
         @click="emit('close')"
@@ -429,9 +433,8 @@ const save = async () => {
 
 .panel-header {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 
   .back-button {
@@ -484,6 +487,11 @@ const save = async () => {
       font-weight: 600;
     }
   }
+
+  // add buttons follow the rows they add to
+  .section-actions {
+    margin-top: 1rem;
+  }
 }
 
 .escalation-block {
@@ -503,11 +511,15 @@ const save = async () => {
     :deep(.p-select) {
       min-width: 160px;
     }
+  }
 
-    .escalation-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
+  // Add Target, then Remove Escalation as the block's last control
+  .escalation-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 }
 </style>
