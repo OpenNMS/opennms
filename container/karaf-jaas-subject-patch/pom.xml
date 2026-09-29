@@ -84,6 +84,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!-- for the unpatched classes the patched ones in shell.ssh use (SshTerminal) -->
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.ssh</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <!-- the version Karaf ${karafVersion} builds shell.ssh against -->
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-osgi</artifactId>
