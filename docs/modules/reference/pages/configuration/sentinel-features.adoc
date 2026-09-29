@@ -334,12 +334,15 @@ e.g. by manually copying it over from _{page-component-title}_.
 The Sentinel container image reads its configuration from environment variables at startup.
 For settings not covered by environment variables, you can overlay individual configuration files directly (see <<sentinel-etc-overlay>>).
 
+Values from environment variables are written so that Karaf reads them back unchanged, including backslashes and other special characters.
+The exception is `${`, which Karaf always expands as a placeholder; the container logs a warning when a value contains it.
+
 === Controller configuration
 
 [options="header, autowidth"]
 |===
 | Variable | Description | Default value
-| `SENTINEL_ID`        | Unique identifier for this Sentinel instance. | generated UUID
+| `SENTINEL_ID`        | Unique identifier for this Sentinel instance. Written to the configuration on first start and kept afterwards, so changing or removing it later has no effect. | generated UUID
 | `SENTINEL_LOCATION`  | Location name associated with this Sentinel instance. | `SENTINEL`
 | `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | `tcp://127.0.0.1:61616`
 |===
@@ -397,7 +400,7 @@ The prefix is stripped, the remainder is lowercased, and underscores are convert
 
 === Elasticsearch configuration
 
-Environment variables prefixed with `ELASTICSEARCH_` are written to `$\{SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+The following environment variables are written to `$\{SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
 [options="header, autowidth"]
 |===
@@ -407,7 +410,12 @@ Environment variables prefixed with `ELASTICSEARCH_` are written to `$\{SENTINEL
 | `ELASTICSEARCH_REPLICAS`       | Number of index replicas. | `0`
 | `ELASTICSEARCH_CONN_TIMEOUT`   | Connection timeout in milliseconds. | `30000`
 | `ELASTICSEARCH_READ_TIMEOUT`   | Read timeout in milliseconds. | `60000`
+| `ELASTICSEARCH_USER`           | Username for Elasticsearch authentication (`globalElasticUser`). | `elastic`
+| `ELASTICSEARCH_PASSWORD`       | Password for Elasticsearch authentication (`globalElasticPassword`). | –
 |===
+
+Any other `ELASTICSEARCH_*` variable is written with the prefix stripped, the remainder lowercased, and underscores converted to dots, so it only matches properties whose names are lowercase and dot-separated (for example, `ELASTICSEARCH_RETRIES` sets `retries`).
+To set any other property, overlay the configuration file (see <<sentinel-etc-overlay>>).
 
 === Telemetry flow adapters
 
@@ -460,3 +468,27 @@ IMPORTANT: If you need a more sophisticated JMX configuration with custom rules,
 | `/opt/sentinel-overlay`      | Files copied into `$\{SENTINEL_HOME}/` at startup.
 | `/keystore`                  | Directory for the encrypted keystore file initialized with the `-s` flag.
 |===
+
+[[sentinel-confd-migration]]
+=== Migrating from confd-based images
+
+Earlier Sentinel images rendered configuration from a `$\{SENTINEL_HOME}/sentinel-config.yaml` file with confd.
+This file is no longer supported, and the container refuses to start if it is present.
+To migrate, move each setting to its environment variable or overlay file, then remove the file:
+
+[options="header, autowidth"]
+|===
+| `sentinel-config.yaml` key | Replacement
+| `location`, `id`, `broker-url` | `SENTINEL_LOCATION`, `SENTINEL_ID`, `OPENNMS_BROKER_URL`
+| `ipc.kafka.*` | `SENTINEL_IPC=kafka` and `KAFKA_IPC_*` (see <<sentinel-kafka-config>>)
+| `elasticsearch.*` | `ELASTICSEARCH_*`
+| `telemetry.flows.adapters` | `SENTINEL_FLOWS_ENABLED=true` and one adapter configuration file per adapter
+| `org.opennms.instance.id` | `OPENNMS_INSTANCE_ID`
+| `java.agent.prom-jmx-exporter.*` | A mounted `config.yaml` (see `PROM_JMX_EXPORTER_CONFIG`)
+|===
+
+On startup, the container removes the files confd generated in existing volumes (`etc/featuresBoot.d/ipc-strategy.boot` and `deploy/confd-flows-feature.xml`).
+
+Configuration files written by earlier images are kept when an existing `etc` volume is reused.
+In particular, `org.opennms.sentinel.controller.cfg` and `org.opennms.netmgt.distributed.datasource.cfg` keep the values written on their first start, so later changes to `SENTINEL_LOCATION`, `OPENNMS_BROKER_URL`, or the `POSTGRES_*` variables have no effect.
+To have them follow the environment, delete those two files from the volume; they are recreated on the next start, and you must set `SENTINEL_ID` to keep the existing ID.

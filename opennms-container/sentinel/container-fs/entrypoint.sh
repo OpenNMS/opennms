@@ -21,8 +21,13 @@ export KARAF_HOME="${SENTINEL_HOME}"
 
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
+# Image-owned config lives outside the /opt/sentinel/etc volume so that it is
+# still present when an existing etc volume is reused across image upgrades.
+CONTAINER_CONFIG_ETC="${SENTINEL_HOME}/container-fs/etc"
 FEATURES_BOOT_DIR="${SENTINEL_HOME}/etc/featuresBoot.d"
-FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
+FEATURES_BOOT_TEMPLATES_DIR="${CONTAINER_CONFIG_ETC}/featuresBoot.d/templates"
+# No longer supported; configuration is taken from environment variables instead
+LEGACY_CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"
 
 # Flow adapter configuration
 #
@@ -103,19 +108,76 @@ setCredentials() {
 }
 
 function updateConfig() {
-    key=$1
-    value=$2
-    file=$3
+    local key=$1
+    local value=$2
+    local file=$3
+    # Optional: name of the environment variable the value came from. A line that
+    # already resolves that variable through an ${env:<name>...} placeholder is
+    # left alone, so the value keeps tracking the environment across restarts.
+    local env_name=${4:-}
+
+    if [[ "$value" == *'${'* ]]; then
+        echo "[Configuring][WARN] value for '$key' contains '\${', which Karaf expands as a placeholder when it reads '$file'"
+    fi
+
+    # If config exists in file, replace it (also uncommenting it). Otherwise, append to file.
+    # Key and value are passed through the environment and compared literally,
+    # so values may contain any character (e.g. '@', '&' or '\').
+    touch "$file"
+    local result rc
+    result=$(KEY="$key" VALUE="$value" ENV_NAME="$env_name" awk '
+        BEGIN {
+            key = ENVIRON["KEY"]
+            placeholder = (ENVIRON["ENV_NAME"] != "") ? "${env:" ENVIRON["ENV_NAME"] : ""
+
+            # Encode the value so Karaf reads it back unchanged. Karaf unescapes
+            # backslashes twice (once when parsing the properties file, once more
+            # during ${...} substitution), so a literal "\" must be written as "\\\\".
+            # Control characters use properties escapes, and a leading space is
+            # escaped so it is not stripped.
+            raw = ENVIRON["VALUE"]; value = ""
+            for (i = 1; i <= length(raw); i++) {
+                c = substr(raw, i, 1)
+                if (c == "\\")      value = value "\\\\\\\\"
+                else if (c == "\n") value = value "\\n"
+                else if (c == "\r") value = value "\\r"
+                else if (c == "\t") value = value "\\t"
+                else if (c == " " && i == 1) value = value "\\ "
+                else                value = value c
+            }
+        }
+        {
+            line = $0
+            sub(/^#?[ \t]*/, "", line)
+            rest = substr(line, length(key) + 1)
+            if (substr(line, 1, length(key)) == key && rest ~ /^[ \t]*=/) {
+                found = 1
+                current = rest
+                sub(/^[ \t]*=[ \t]*/, "", current)
+                if (placeholder != "" && index(current, placeholder) == 1) {
+                    kept = 1
+                    print
+                } else {
+                    print key "=" value
+                }
+                next
+            }
+            print
+        }
+        END {
+            if (!found) print key "=" value
+            exit kept ? 3 : 0
+        }
+    ' "$file") && rc=0 || rc=$?
 
     # Omit $value here, in case there is sensitive information
-    echo "[Configuring] '$key' in '$file'"
-
-    # If config exists in file, replace it. Otherwise, append to file.
-    if grep -E -q "^#?\s*$key\s*=" "$file"; then
-        sed -r -i "s@^#?\s*$key\s*=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
-    else
-        echo "$key=$value" >> "$file"
-    fi
+    case "$rc" in
+      0) echo "[Configuring] '$key' in '$file'" ;;
+      3) echo "[Configuring] '$key' in '$file' is resolved from \${env:${env_name}}, left unchanged"; return 0 ;;
+      *) return "$rc" ;;
+    esac
+    # Rewrite in place to keep the file's ownership and permissions
+    printf '%s\n' "$result" > "$file"
 }
 
 function parseEnvironment() {
@@ -127,8 +189,8 @@ function parseEnvironment() {
 
         if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
             ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
-            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg"
+            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg" "$env_var"
+            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg" "$env_var"
         fi
 
         if [[ $env_var =~ ^ELASTICSEARCH_ ]]; then
@@ -139,14 +201,53 @@ function parseEnvironment() {
               replicas)       es_key="settings.index.number_of_replicas" ;;
               conn.timeout)   es_key="connTimeout" ;;
               read.timeout)   es_key="readTimeout" ;;
+              user)           es_key="globalElasticUser" ;;
+              password)       es_key="globalElasticPassword" ;;
               *)              es_key="$es_name" ;;
             esac
-            updateConfig "$es_key" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg"
+            updateConfig "$es_key" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg" "$env_var"
         fi
 
         if [[ $env_var == "OPENNMS_INSTANCE_ID" ]]; then
             updateConfig "org.opennms.instance.id" "${!env_var}" "${SENTINEL_HOME}/etc/custom.system.properties"
         fi
+    done
+}
+
+function handleLegacyConfd() {
+    # confd and sentinel-config.yaml are gone; refuse to start rather than silently
+    # ignoring a configuration the user still expects to be applied.
+    if [ -f "${LEGACY_CONFD_KEY_STORE}" ]; then
+        echo "[Startup][ERROR] Found ${LEGACY_CONFD_KEY_STORE}, which is no longer supported."
+        echo "[Startup][ERROR] Configure Sentinel through environment variables or etc overlays instead and remove the file."
+        exit ${E_INIT_CONFIG}
+    fi
+
+    # Files rendered by confd in earlier images persist in the etc/deploy volumes.
+    # A stale ipc-strategy.boot would combine with the new feature boot files and can
+    # exclude every IPC transport, so remove them.
+    local legacy_file
+    for legacy_file in \
+      "${FEATURES_BOOT_DIR}/ipc-strategy.boot" \
+      "${SENTINEL_HOME}/deploy/confd-flows-feature.xml"; do
+      if [ -f "${legacy_file}" ]; then
+        echo "[Startup] Removing legacy confd-generated file ${legacy_file}"
+        rm -f "${legacy_file}"
+      fi
+    done
+}
+
+function seedContainerConfig() {
+    # Install image-provided config files that are missing from etc. Existing files are
+    # never overwritten, so values persisted by earlier starts (e.g. the Sentinel id)
+    # and user edits survive container recreation and image upgrades.
+    local src
+    for src in "${CONTAINER_CONFIG_ETC}"/*.cfg; do
+      [ -f "${src}" ] || continue
+      if [ ! -f "${SENTINEL_HOME}/etc/$(basename "${src}")" ]; then
+        echo "[Startup] Installing default $(basename "${src}")"
+        cp "${src}" "${SENTINEL_HOME}/etc/"
+      fi
     done
 }
 
@@ -191,6 +292,9 @@ initConfig() {
         exit ${E_ILLEGAL_ARGS}
     fi
 
+    handleLegacyConfd
+    seedContainerConfig
+
     if [ ! -f ${SENTINEL_HOME}/etc/configured ]; then
         # Create SSH Key-Pair to use with the Karaf Shell
         mkdir -p "${SENTINEL_HOME}/.ssh" && \
@@ -207,22 +311,23 @@ initConfig() {
         sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
         sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
 
-        # Location, broker-url, and the datasource are resolved live from the
-        # environment via ${env:...} placeholders in the checked-in
-        # org.opennms.sentinel.controller.cfg / org.opennms.netmgt.distributed.datasource.cfg,
-        # so they stay in sync across restarts instead of being pinned here.
-        #
-        # The id must stay stable across restarts even when SENTINEL_ID isn't
-        # set, so it's the one value still persisted on first boot: generate a
-        # random one and bake it into the file, overwriting its placeholder.
-        if [ -z "${SENTINEL_ID:-}" ]; then
-            updateConfig "id" "$(uuidgen)" "${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg"
-        fi
-
         # Mark as configured
         echo "Configured $(date)" > ${SENTINEL_HOME}/etc/configured
     else
         echo "OpenNMS Sentinel is already configured, skipped."
+    fi
+
+    # Location, broker-url, and the datasource are resolved from the environment
+    # via ${env:...} placeholders in the image-provided
+    # org.opennms.sentinel.controller.cfg / org.opennms.netmgt.distributed.datasource.cfg.
+    # Volumes created by earlier images keep the literal values written back then.
+    #
+    # The id must stay stable across restarts, even if SENTINEL_ID is changed or
+    # removed later, so it's persisted once, whenever the file has none yet:
+    # SENTINEL_ID if set, otherwise a random one.
+    local controller_cfg="${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg"
+    if ! grep -E -q "^[[:space:]]*id[[:space:]]*=" "${controller_cfg}"; then
+        updateConfig "id" "${SENTINEL_ID:-$(uuidgen)}" "${controller_cfg}"
     fi
 
     # Re-applied on every start (not gated by the configured marker) so that
