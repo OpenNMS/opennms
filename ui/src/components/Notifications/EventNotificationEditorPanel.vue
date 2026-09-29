@@ -236,7 +236,7 @@
 
         <div class="advanced-body">
           <p class="advanced-hint">
-            Rarely-needed fields carried in <code>notifications.xml</code>. Leave blank unless you need them.
+            Rarely-needed fields. Leave blank unless you need them.
           </p>
 
           <div class="params-block">
@@ -288,7 +288,7 @@
                 data-test="event-severity-select"
                 fluid
               />
-              <small class="hint">Only notify when the event carries this severity.</small>
+              <small class="hint">Only notify when the event has this severity.</small>
             </FormField>
             <FormField
               label="Notification queue"
@@ -304,8 +304,8 @@
       </TogglePanel>
 
       <div class="status-row">
+        <span>Notification {{ form.enabled ? 'enabled' : 'disabled' }}</span>
         <OnmsToggleSwitch v-model="form.enabled" aria-label="Enable this notification" data-test="enabled-toggle" />
-        <span>Notification {{ form.enabled ? 'on' : 'off' }}</span>
       </div>
 
     </div>
@@ -362,7 +362,7 @@ const replacementHelp = 'Event replacement tokens are substituted when the notif
 const pathHelp = 'The escalation chain of who is notified and how (email, browser, …). Create and edit these on the Destination Paths tab.'
 const paramsHelp = 'Extra name/value pairs passed through to the notification command — most methods need none. '
   + 'They are available to the command as additional %parm[name]% tokens.'
-const varbindHelp = 'Restricts this notification to events that carry an SNMP varbind (event parameter) with this exact name AND value. '
+const varbindHelp = 'Restricts this notification to events that contain an SNMP varbind (event parameter) with this exact name AND value. '
   + 'Set both or neither; leave blank to match regardless of varbinds.'
 const queueHelp = 'Which notifd queue processes this notification. Leave blank for the default in-memory queue unless you have configured extra queues in notifd-configuration.xml.'
 
