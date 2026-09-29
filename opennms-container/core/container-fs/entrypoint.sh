@@ -88,7 +88,7 @@ initOrUpdate() {
 
     # If Newts is used initialize the keyspace with a given REPLICATION_FACTOR which defaults to 1 if unset
     if [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
-      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -Dorg.opennms.newts.config.datacenter="${OPENNMS_CASSANDRA_DATACENTER:-datacenter1}" -Dorg.opennms.newts.config.keyspace="${OPENNMS_CASSANDRA_KEYSPACE:-newts}" -Dorg.opennms.newts.config.hostname="${OPENNMS_CASSANDRA_HOSTNAME:-hostname}" -Dorg.opennms.newts.config.port="${OPENNMS_CASSANDRA_PORT:-9042}" -Dorg.opennms.newts.config.username="${OPENNMS_CASSANDRA_USERNAME:-cassandra}" -Dorg.opennms.newts.config.password="${OPENNMS_CASSANDRA_PASSWORD:-cassandra}" -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
+      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
     else
       echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, skip Newts keyspace initialisation. If unset defaults to rrd to use RRDTool."
     fi
@@ -102,10 +102,12 @@ configTester() {
 
 validateBool() {
   local name="$1" value="$2"
-  if [[ ! "$value" =~ ^(true|false)$ ]]; then
+  if [[ ! "${value,,}" =~ ^(true|false)$ ]]; then
     echo "ERROR: ${name}='${value}' is not a valid boolean. Expected 'true' or 'false'." >&2
     exit ${E_INIT_CONFIG}
   fi
+  # Normalise the variable to lowercase (True/TRUE -> true); the confd-era parsers were case-insensitive
+  printf -v "${name}" '%s' "${value,,}"
 }
 
 validateInt() {
@@ -139,6 +141,8 @@ processEnvConfig() {
 
   # Process Newts/Cassandra properties from template with defaults for unset variables
   (
+    # Don't trace this subshell, it would print OPENNMS_CASSANDRA_PASSWORD to the log
+    set +x
     export OPENNMS_CASSANDRA_HOSTNAME="${OPENNMS_CASSANDRA_HOSTNAME:-hostname}"
     export OPENNMS_CASSANDRA_KEYSPACE="${OPENNMS_CASSANDRA_KEYSPACE:-newts}"
     export OPENNMS_CASSANDRA_PORT="${OPENNMS_CASSANDRA_PORT:-9042}"
@@ -244,15 +248,17 @@ processEnvConfig() {
               > /opt/prom-jmx-exporter/config.yaml
   )
 
+  # Process trapd-configuration.xml from template with defaults for unset variables.
+  # Falls back to the legacy confd-era names (e.g. OPENNMS_TRAPD_NEWSUSPECTONTRAP) so existing deployments keep working.
   (
     export OPENNMS_TRAPD_ADDRESS="${OPENNMS_TRAPD_ADDRESS:-*}"
     export OPENNMS_TRAPD_PORT="${OPENNMS_TRAPD_PORT:-1162}"
-    export OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP="${OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP:-false}"
-    export OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE="${OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE:-false}"
+    export OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP="${OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP:-${OPENNMS_TRAPD_NEWSUSPECTONTRAP:-false}}"
+    export OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE="${OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE:-${OPENNMS_TRAPD_INCLUDERAWMESSAGE:-false}}"
     export OPENNMS_TRAPD_THREADS="${OPENNMS_TRAPD_THREADS:-0}"
-    export OPENNMS_TRAPD_QUEUE_SIZE="${OPENNMS_TRAPD_QUEUE_SIZE:-10000}"
-    export OPENNMS_TRAPD_BATCH_SIZE="${OPENNMS_TRAPD_BATCH_SIZE:-1000}"
-    export OPENNMS_TRAPD_BATCH_INTERVAL="${OPENNMS_TRAPD_BATCH_INTERVAL:-500}"
+    export OPENNMS_TRAPD_QUEUE_SIZE="${OPENNMS_TRAPD_QUEUE_SIZE:-${OPENNMS_TRAPD_QUEUESIZE:-10000}}"
+    export OPENNMS_TRAPD_BATCH_SIZE="${OPENNMS_TRAPD_BATCH_SIZE:-${OPENNMS_TRAPD_BATCHSIZE:-1000}}"
+    export OPENNMS_TRAPD_BATCH_INTERVAL="${OPENNMS_TRAPD_BATCH_INTERVAL:-${OPENNMS_TRAPD_BATCHINTERVAL:-500}}"
 
     validateAddress  OPENNMS_TRAPD_ADDRESS             "$OPENNMS_TRAPD_ADDRESS"
     validateInt      OPENNMS_TRAPD_PORT                "$OPENNMS_TRAPD_PORT"

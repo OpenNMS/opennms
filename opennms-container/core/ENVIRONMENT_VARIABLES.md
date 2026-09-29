@@ -105,8 +105,18 @@ To customise `includeObjectNames`, `excludeObjectNames`, or `rules`, mount a ful
 
 ## Migration from confd
 
-If you are upgrading from a version that used `horizon-config.yaml` / confd:
+Earlier images rendered these files with confd, which read the same environment variables (confd's `env` backend). Most variable names are unchanged. When upgrading, note:
 
-- The `horizon-config.yaml` mount is no longer used. Switch to environment variables using the tables above.
+- Five Trapd variables were renamed. The old names still work as a fallback, but the new name wins when both are set:
+
+  | Old name | New name |
+  |:---------|:---------|
+  | `OPENNMS_TRAPD_NEWSUSPECTONTRAP` | `OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP` |
+  | `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | `OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE` |
+  | `OPENNMS_TRAPD_QUEUESIZE` | `OPENNMS_TRAPD_QUEUE_SIZE` |
+  | `OPENNMS_TRAPD_BATCHSIZE` | `OPENNMS_TRAPD_BATCH_SIZE` |
+  | `OPENNMS_TRAPD_BATCHINTERVAL` | `OPENNMS_TRAPD_BATCH_INTERVAL` |
+
+- `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported. Configure Slack and Mattermost notifications with a properties file in the overlay (`etc/opennms.properties.d/`) instead.
 - Legacy `_confd.*.properties` files left in a mounted `etc/` volume are automatically removed at startup to prevent stale settings.
-- Numeric and boolean variables (`OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, and all `CORE_SERVICE_*_ENABLED`) are validated at startup. An invalid value (e.g. `"yes"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.
+- Numeric and boolean variables (`OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, and all `CORE_SERVICE_*_ENABLED`) are validated at startup. Booleans accept `true`/`false` in any case (`True` is normalised to `true`). An invalid value (e.g. `"yes"` or `"1"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.

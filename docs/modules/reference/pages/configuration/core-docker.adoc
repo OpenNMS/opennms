@@ -76,6 +76,9 @@ via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/s
 | `OPENNMS_TRAPD_BATCH_INTERVAL`          | Set batch processing interval in milliseconds.                     | optional | `500`
 |===
 
+NOTE: The earlier names `OPENNMS_TRAPD_NEWSUSPECTONTRAP`, `OPENNMS_TRAPD_INCLUDERAWMESSAGE`, `OPENNMS_TRAPD_QUEUESIZE`, `OPENNMS_TRAPD_BATCHSIZE`, and `OPENNMS_TRAPD_BATCHINTERVAL` are still accepted as a fallback.
+If both the old and new name are set, the new name wins.
+
 .Karaf Shell configuration in org.apache.karaf.shell.cfg
 [options="header, %autowidth"]
 |===
@@ -152,3 +155,17 @@ To supply a fully custom configuration (for example, custom rules), mount your o
 | `PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES`       | Lowercase label names.                                   | `true`
 | `PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES`| Automatically exclude object name attributes.           | `true`
 |===
+
+[[core-oci-confd-migration]]
+== Migrating from confd
+
+Earlier images rendered the configuration files above with confd, which read the same environment variables.
+Most variable names are unchanged, so existing deployments keep working. When upgrading, note the following:
+
+* The five Trapd variables listed above were renamed. The old names are still accepted as a fallback.
+* `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported.
+Configure Slack and Mattermost notifications with a properties file in `etc/opennms.properties.d/` through the overlay instead.
+* Legacy `_confd.*.properties` files left in a mounted `etc/` volume are removed at startup to prevent stale settings.
+* Boolean and numeric variables (for example, `CORE_SERVICE_*_ENABLED`, `OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, and `OPENNMS_RRD_STOREBYFOREIGNSOURCE`) are validated at startup.
+Booleans must be `true` or `false` in any case (for example, `True` is accepted); other values such as `1` or `yes` are rejected.
+An invalid value prints an `ERROR:` message and the container stops before it writes any configuration files.
