@@ -125,7 +125,7 @@
             :aria-label="`Acknowledge notification ${data.id}`"
             :data-test="`ack-button-${data.id}`"
             :disabled="store.loading"
-            @click="store.acknowledge(data)"
+            @click="acknowledge(data)"
           />
         </template>
       </OnmsColumn>
@@ -154,6 +154,7 @@ import useRole from '@/composables/useRole'
 import { saveBlobAsFile } from '@/services/eventConfigService'
 import { useMenuStore } from '@/stores/menuStore'
 import { MessageSeverity } from '@/types'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { OnmsNotification } from '@/types/notifications'
 
@@ -161,6 +162,7 @@ const { showSnackBar } = useSnackbar()
 const { canAcknowledgeNotifications } = useRole()
 const menuStore = useMenuStore()
 const store = useNotificationsStore()
+const { withSpinner, report } = useActionFeedback()
 
 // Cap for export/print fetches; the table itself stays server-paginated.
 const EXPORT_LIMIT = 1000
@@ -196,20 +198,28 @@ const formatTime = (value?: number | string | null) => {
   return isNaN(date.getTime()) ? '-' : date.toLocaleString()
 }
 
-const onPage = (event: OnmsTablePageEvent) => {
-  store.onPage(event.first, event.rows)
+const onPage = async (event: OnmsTablePageEvent) => {
+  report(await withSpinner(() => store.onPage(event.first, event.rows)))
+}
+
+const acknowledge = async (notification: OnmsNotification) => {
+  report(await withSpinner(() => store.acknowledge(notification)), `Notification ${notification.id} acknowledged.`)
 }
 
 const fetchAllForExport = async (): Promise<{ notifications: OnmsNotification[], totalCount: number }> => {
   // delegate to the store so the same whoami guard as load() applies
-  const result = await store.fetchForExport(EXPORT_LIMIT)
-  if (result.totalCount > result.notifications.length) {
+  const result = await withSpinner(() => store.fetchForExport(EXPORT_LIMIT))
+  if (!report(result) || !result.payload) {
+    return { notifications: [], totalCount: 0 }
+  }
+  const { notifications, totalCount } = result.payload
+  if (totalCount > notifications.length) {
     showSnackBar({
-      msg: `Only the first ${result.notifications.length} of ${result.totalCount} notifications were exported.`,
+      msg: `Only the first ${notifications.length} of ${totalCount} notifications were exported.`,
       severity: MessageSeverity.Warn
     })
   }
-  return result
+  return result.payload
 }
 
 const exportColumns = (notification: OnmsNotification): Record<string, string> => ({

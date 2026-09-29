@@ -50,10 +50,13 @@ import { OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggle
 import DestinationPathsTab from '@/components/Notifications/DestinationPathsTab.vue'
 import EventNotificationsTab from '@/components/Notifications/EventNotificationsTab.vue'
 import PathOutagesTab from '@/components/Notifications/PathOutagesTab.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
+import { createSuccessResponse, ValidationResult } from '@/types/validation'
 
 const store = useNotificationConfigStore()
+const { withSpinner, report, showError, showSuccess } = useActionFeedback()
 
 // Open on Event Notifications, the first tab in the final order (now live).
 const activeTab = ref('event-notifications')
@@ -65,18 +68,18 @@ const statusPending = ref(false)
 // instead of leaving the tab dead for the lifetime of the page.
 const loadedTabs = ref(new Set<string>())
 
-const TAB_LOADERS: Record<string, () => Promise<boolean>> = {
+// A tab's loads succeed together or the tab retries; one failed action shows
+// one message (the first failure's).
+const allOf = (results: ValidationResult[]): ValidationResult =>
+  results.find(result => !result.success) ?? createSuccessResponse()
+
+const TAB_LOADERS: Record<string, () => Promise<ValidationResult>> = {
+  // destination paths feed the event notification editor's path picker
   'event-notifications': async () =>
-    // destination paths feed the editor's path picker; every fetch must succeed or
-    // the tab retries instead of latching (a failed fetch returns null/false)
-    (await Promise.all([store.getEventNotifications(), store.getDestinationPaths()])).every(Boolean),
-  'destination-paths': async () => {
-    const results = await Promise.all([store.getDestinationPaths(), store.getCommands(), store.getUsersAndGroups()])
-    return results.every(Boolean)
-  },
-  'path-outages': async () => {
-    return await store.getPathOutages()
-  },
+    allOf(await Promise.all([store.getEventNotifications(), store.getDestinationPaths()])),
+  'destination-paths': async () =>
+    allOf(await Promise.all([store.getDestinationPaths(), store.getCommands(), store.getUsersAndGroups()])),
+  'path-outages': () => store.getPathOutages(),
   general: () => store.getStatus()
 }
 
@@ -85,7 +88,7 @@ const ensureTabLoaded = async (tab: string) => {
   if (!loader || loadedTabs.value.has(tab)) {
     return
   }
-  if (await loader()) {
+  if (report(await withSpinner(loader))) {
     loadedTabs.value = new Set([...loadedTabs.value, tab])
   }
 }
@@ -93,9 +96,14 @@ const ensureTabLoaded = async (tab: string) => {
 watch(activeTab, tab => ensureTabLoaded(tab), { immediate: true })
 
 const onStatusToggle = async (value: boolean) => {
+  const status = (value ? 'on' : 'off') as NotifdStatus
   statusPending.value = true
   try {
-    await store.setStatus((value ? 'on' : 'off') as NotifdStatus)
+    if (await withSpinner(() => store.setStatus(status))) {
+      showSuccess(`Notifications turned ${status}.`)
+    } else {
+      showError('Failed to update notification status.')
+    }
   } finally {
     statusPending.value = false
   }

@@ -18,7 +18,7 @@
           aria-label="Refresh notifications"
           :disabled="store.loading"
           data-test="query-refresh-button"
-          @click="store.load()"
+          @click="refresh"
         />
       </div>
       <div class="query-searches">
@@ -80,6 +80,7 @@ import { OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@opennms/onms
 import TableCard from '@/components/Common/TableCard.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import { useMenuStore } from '@/stores/menuStore'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { NotificationQueryPreset } from '@/types/notifications'
 
@@ -95,6 +96,15 @@ interface QueryModeOption {
 
 const menuStore = useMenuStore()
 const store = useNotificationsStore()
+const { withSpinner, report } = useActionFeedback()
+
+const applyPreset = async (preset: NotificationQueryPreset, user?: string) => {
+  report(await withSpinner(() => store.applyPreset(preset, user)))
+}
+
+const refresh = async () => {
+  report(await withSpinner(() => store.load()))
+}
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
@@ -129,7 +139,7 @@ const onModeChange = (value: unknown) => {
   } else if (mode.value === 'notificationId') {
     notificationIdInput.value?.focus()
   } else {
-    store.applyPreset(mode.value)
+    applyPreset(mode.value)
   }
 }
 
@@ -142,14 +152,14 @@ const selectMode = (value: QueryMode) => {
 const searchByUser = () => {
   const user = userSearch.value.trim()
   if (user) {
-    store.applyPreset('userSearch', user)
+    applyPreset('userSearch', user)
   }
 }
 
 // Clearing keeps user search selected and waits for a new ID, rather than
 // leaving the previous user's results on screen.
 const clearUserSearch = () => {
-  store.applyPreset('userSearch')
+  applyPreset('userSearch')
 }
 
 const goToNotification = () => {

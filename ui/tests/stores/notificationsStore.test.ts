@@ -4,6 +4,7 @@ import { useNotificationsStore } from '@/stores/notificationsStore'
 import { useAuthStore } from '@/stores/authStore'
 import API from '@/services'
 import { OnmsNotification } from '@/types/notifications'
+import { createResultWithPayload } from '@/types/validation'
 
 vi.mock('@/services', () => ({
   default: {
@@ -12,10 +13,7 @@ vi.mock('@/services', () => ({
   }
 }))
 
-const showSnackBar = vi.fn()
-vi.mock('@/composables/useSnackbar', () => ({
-  default: () => ({ showSnackBar })
-}))
+const loaded = <T>(payload: T) => createResultWithPayload(true, '', payload)
 
 describe('useNotificationsStore', () => {
   let store: ReturnType<typeof useNotificationsStore>
@@ -65,7 +63,7 @@ describe('useNotificationsStore', () => {
 
   describe('load', () => {
     it('should query outstanding notifications for the current user', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
       await store.load()
 
@@ -83,7 +81,7 @@ describe('useNotificationsStore', () => {
 
   describe('applyPreset', () => {
     it('teamOutstanding should exclude the current user', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
       await store.applyPreset('teamOutstanding')
 
@@ -93,7 +91,7 @@ describe('useNotificationsStore', () => {
     })
 
     it('allOutstanding should drop the user filter and reset paging', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
       store.first = 30
 
       await store.applyPreset('allOutstanding')
@@ -111,7 +109,7 @@ describe('useNotificationsStore', () => {
     })
 
     it('allAcknowledged should query acknowledged notifications', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
       await store.applyPreset('allAcknowledged')
 
@@ -122,7 +120,7 @@ describe('useNotificationsStore', () => {
     })
 
     it('userSearch should filter outstanding notifications by the given user', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
       await store.applyPreset('userSearch', 'operator')
 
@@ -134,16 +132,16 @@ describe('useNotificationsStore', () => {
     })
 
     it('userSearch with no user waits for one instead of querying', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
       await store.applyPreset('userSearch', 'operator')
       vi.mocked(API.browseNotifications).mockClear()
-      showSnackBar.mockClear()
 
-      await store.applyPreset('userSearch')
+      const result = await store.applyPreset('userSearch')
 
       expect(store.awaitingUser).toBe(true)
       expect(API.browseNotifications).not.toHaveBeenCalled()
-      expect(showSnackBar).not.toHaveBeenCalled()
+      // nothing to query is not a failure
+      expect(result.success).toBe(true)
       expect(store.notifications).toEqual([])
       expect(store.totalCount).toBe(0)
       expect(store.title).toBe('Outstanding Notifications for User')
@@ -152,7 +150,7 @@ describe('useNotificationsStore', () => {
 
   describe('onPage', () => {
     it('should reload with the new offset and page size', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
       await store.onPage(20, 20)
 
@@ -167,11 +165,12 @@ describe('useNotificationsStore', () => {
   describe('acknowledge', () => {
     it('should acknowledge and reload on success', async () => {
       vi.mocked(API.acknowledgeNotification).mockResolvedValue(true)
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
-      const ok = await store.acknowledge(mockNotifications[0])
+      const result = await store.acknowledge(mockNotifications[0])
 
-      expect(ok).toBe(true)
+      expect(result.success).toBe(true)
+      expect(result.errors).toBeUndefined()
       expect(API.acknowledgeNotification).toHaveBeenCalledWith(1, true)
       expect(API.browseNotifications).toHaveBeenCalledTimes(1)
     })
@@ -180,11 +179,12 @@ describe('useNotificationsStore', () => {
       const authStore = useAuthStore()
       authStore.whoAmI = { id: '', fullName: '', internal: true, roles: [] }
 
-      await store.load()
+      const result = await store.load()
 
       expect(API.browseNotifications).not.toHaveBeenCalled()
       expect(store.notifications).toEqual([])
-      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+      expect(result.success).toBe(false)
+      expect(result.message).toMatch(/Cannot determine the current user/)
 
       await store.applyPreset('teamOutstanding')
       expect(API.browseNotifications).not.toHaveBeenCalled()
@@ -193,12 +193,12 @@ describe('useNotificationsStore', () => {
     it('should clamp to the last valid page when the ack empties the current page', async () => {
       // land far past the end (offset 40), then ack away the last row there;
       // 25 remaining rows at 10/page puts the last valid page at offset 20
-      vi.mocked(API.browseNotifications).mockResolvedValue({ notifications: mockNotifications, totalCount: 41 })
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded({ notifications: mockNotifications, totalCount: 41 }))
       await store.onPage(40, 10)
       vi.mocked(API.acknowledgeNotification).mockResolvedValue(true)
       vi.mocked(API.browseNotifications)
-        .mockResolvedValueOnce({ notifications: [], totalCount: 25 })
-        .mockResolvedValueOnce({ notifications: mockNotifications, totalCount: 25 })
+        .mockResolvedValueOnce(loaded({ notifications: [], totalCount: 25 }))
+        .mockResolvedValueOnce(loaded({ notifications: mockNotifications, totalCount: 25 }))
 
       await store.acknowledge(mockNotifications[0])
 
@@ -208,12 +208,12 @@ describe('useNotificationsStore', () => {
 
     it('should rewind a page when the ack empties the current page', async () => {
       // land on page 2 (offset 10) with one row, then ack it away
-      vi.mocked(API.browseNotifications).mockResolvedValue({ notifications: mockNotifications, totalCount: 11 })
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded({ notifications: mockNotifications, totalCount: 11 }))
       await store.onPage(10, 10)
       vi.mocked(API.acknowledgeNotification).mockResolvedValue(true)
       vi.mocked(API.browseNotifications)
-        .mockResolvedValueOnce({ notifications: [], totalCount: 10 })
-        .mockResolvedValueOnce({ notifications: mockNotifications, totalCount: 10 })
+        .mockResolvedValueOnce(loaded({ notifications: [], totalCount: 10 }))
+        .mockResolvedValueOnce(loaded({ notifications: mockNotifications, totalCount: 10 }))
 
       await store.acknowledge(mockNotifications[0])
 
@@ -224,27 +224,36 @@ describe('useNotificationsStore', () => {
     it('should not reload when acknowledging fails', async () => {
       vi.mocked(API.acknowledgeNotification).mockResolvedValue(false)
 
-      const ok = await store.acknowledge(mockNotifications[0])
+      const result = await store.acknowledge(mockNotifications[0])
 
-      expect(ok).toBe(false)
+      expect(result).toEqual(expect.objectContaining({ success: false, message: 'Failed to acknowledge notification 1.' }))
       expect(API.browseNotifications).not.toHaveBeenCalled()
+    })
+
+    it('reports a failed reload after a successful acknowledge in errors', async () => {
+      vi.mocked(API.acknowledgeNotification).mockResolvedValue(true)
+      vi.mocked(API.browseNotifications).mockResolvedValue(createResultWithPayload(false, 'Failed to load notifications.'))
+
+      const result = await store.acknowledge(mockNotifications[0])
+
+      expect(result.success).toBe(true)
+      expect(result.errors).toEqual(['Failed to load notifications.'])
     })
   })
 
   describe('fetchForExport', () => {
     it('returns nothing without querying while awaiting a user', async () => {
       await store.applyPreset('userSearch')
-      showSnackBar.mockClear()
 
       const result = await store.fetchForExport(100)
 
       expect(API.browseNotifications).not.toHaveBeenCalled()
-      expect(showSnackBar).not.toHaveBeenCalled()
-      expect(result).toEqual({ notifications: [], totalCount: 0 })
+      expect(result.success).toBe(true)
+      expect(result.payload).toEqual({ notifications: [], totalCount: 0 })
     })
 
     it('scopes the export to the current user without widening', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
       const result = await store.fetchForExport(1000)
 
@@ -255,11 +264,11 @@ describe('useNotificationsStore', () => {
         limit: 1000,
         offset: 0
       })
-      expect(result).toEqual(mockResult)
+      expect(result.payload).toEqual(mockResult)
     })
 
     it('carries excludeUser for a teamOutstanding export so it stays scoped', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
       await store.applyPreset('teamOutstanding')
       vi.mocked(API.browseNotifications).mockClear()
 
@@ -277,12 +286,12 @@ describe('useNotificationsStore', () => {
       const result = await store.fetchForExport(1000)
 
       expect(API.browseNotifications).not.toHaveBeenCalled()
-      expect(result).toEqual({ notifications: [], totalCount: 0 })
-      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+      expect(result.success).toBe(false)
+      expect(result.message).toMatch(/nothing to export/)
     })
 
     it('exports all outstanding notifications with no user filter for a non-scoped preset', async () => {
-      vi.mocked(API.browseNotifications).mockResolvedValue(mockResult)
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
       await store.applyPreset('allOutstanding')
       vi.clearAllMocks()
 

@@ -20,9 +20,8 @@
 /// License.
 ///
 
-import useSnackbar from '@/composables/useSnackbar'
-import useSpinner from '@/composables/useSpinner'
 import { NotificationAckType, NotificationBrowseResult, OnmsNotification } from '@/types/notifications'
+import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { rest } from './axiosInstances'
 
 // Mirrors NotificationSummary (v1 NotificationRestService /notifications/summary).
@@ -53,8 +52,8 @@ export const getNotificationSummary = async (): Promise<NotificationSummary | fa
   }
 }
 
-const { showSnackBar } = useSnackbar()
-const { startSpinner, stopSpinner } = useSpinner()
+// API calls only: no spinner or snackbar here; the notifications store and the
+// components that call it decide what to show.
 const endpoint = '/notifications'
 
 interface BrowseNotificationsParams {
@@ -65,9 +64,8 @@ interface BrowseNotificationsParams {
   offset: number
 }
 
-const browseNotifications = async (params: BrowseNotificationsParams): Promise<NotificationBrowseResult> => {
+const browseNotifications = async (params: BrowseNotificationsParams): Promise<ValidationResultWithPayload<NotificationBrowseResult>> => {
   try {
-    startSpinner()
     const query = new URLSearchParams()
     query.set('limit', String(params.limit))
     query.set('offset', String(params.offset))
@@ -87,32 +85,24 @@ const browseNotifications = async (params: BrowseNotificationsParams): Promise<N
     const resp = await rest.get(`${endpoint}?${query.toString()}`)
     // 204 No Content when nothing matches
     if (!resp.data || typeof resp.data !== 'object') {
-      return { notifications: [], totalCount: 0 }
+      return createResultWithPayload(true, '', { notifications: [], totalCount: 0 })
     }
     const raw = resp.data.notification ?? []
     const notifications: OnmsNotification[] = Array.isArray(raw) ? raw : [raw]
-    return { notifications, totalCount: Number(resp.data.totalCount ?? notifications.length) }
+    return createResultWithPayload(true, '', { notifications, totalCount: Number(resp.data.totalCount ?? notifications.length) })
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load notifications.' })
-    return { notifications: [], totalCount: 0 }
-  } finally {
-    stopSpinner()
+    return createResultWithPayload<NotificationBrowseResult>(false, 'Failed to load notifications.')
   }
 }
 
 const acknowledgeNotification = async (notificationId: number, ack: boolean): Promise<boolean> => {
   try {
-    startSpinner()
     await rest.put(`${endpoint}/${notificationId}`, new URLSearchParams({ ack: String(ack) }), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     })
-    showSnackBar({ msg: `Notification ${notificationId} ${ack ? 'acknowledged' : 'unacknowledged'}.` })
     return true
   } catch (_err) {
-    showSnackBar({ msg: `Failed to ${ack ? 'acknowledge' : 'unacknowledge'} notification ${notificationId}.` })
     return false
-  } finally {
-    stopSpinner()
   }
 }
 

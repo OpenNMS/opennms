@@ -360,6 +360,7 @@ import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import { UNADDRESSABLE_NAME_HINT, isPathAddressable } from '@/lib/adminValidation'
 import API from '@/services'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { EventNotification, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
 
@@ -375,6 +376,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useNotificationConfigStore()
+const { withSpinner, report, showError } = useActionFeedback()
 
 const ruleHelp = 'A filter rule, e.g. IPADDR IPLIKE *.*.*.*. Octets accept * (any), ranges (0-3) and lists (0,1,2). '
   + 'Combine with service checks, e.g. (IPADDR IPLIKE *.*.*.*) & (isHTTP). Leave the default to match every node.'
@@ -561,16 +563,22 @@ const loadServices = async () => {
   if (availableServices.value.length) {
     return
   }
-  const svcs = await API.getNotificationServices()
-  if (svcs) {
-    availableServices.value = svcs
+  const result = await API.getNotificationServices()
+  if (result.success) {
+    availableServices.value = result.payload ?? []
+  } else {
+    showError(result.message)
   }
 }
 
 const doValidateRule = async () => {
   validating.value = true
   // Explicit user action: opt into the match preview (matchCount + matches).
-  ruleValidation.value = await API.validateNotificationRule(form.rule.trim() || 'IPADDR IPLIKE *.*.*.*', true)
+  const result = await API.validateNotificationRule(form.rule.trim() || 'IPADDR IPLIKE *.*.*.*', true)
+  ruleValidation.value = result.payload ?? null
+  if (!result.success) {
+    showError(result.message)
+  }
   validating.value = false
 }
 
@@ -628,9 +636,13 @@ const validateForm = async (): Promise<boolean> => {
   }
   // Only pay for the rule round-trip once the cheap checks pass.
   if (!errors.name && !errors.uei && !errors.destinationPath && !errors.textMessage) {
+    // If validation itself can't run, say so but let the save proceed; the
+    // server still rejects a bad rule.
     const result = await API.validateNotificationRule(form.rule.trim() || 'IPADDR IPLIKE *.*.*.*')
-    if (result && !result.valid) {
-      errors.rule = `Rule is not a valid filter: ${result.error ?? 'unknown error'}`
+    if (!result.success) {
+      showError(result.message)
+    } else if (result.payload && !result.payload.valid) {
+      errors.rule = `Rule is not a valid filter: ${result.payload.error ?? 'unknown error'}`
     }
   }
   return !errors.name && !errors.uei && !errors.destinationPath && !errors.textMessage && !errors.rule
@@ -701,50 +713,55 @@ const onUeiComplete = async (query: string) => {
 const save = async () => {
   saving.value = true
   try {
-    if (!(await validateForm())) {
-      activeTab.value = firstTabWithError() ?? activeTab.value
-      return
-    }
-    // Spread the original first so fields the form still doesn't expose
-    // (writeable, rule.strict) survive the round-trip into notifications.xml.
-    const original = props.notification ?? {}
-    const originalRule = typeof props.notification?.rule === 'object' && props.notification?.rule !== null
-      ? props.notification.rule
-      : {}
-    // The server (Parameter.setValue) rejects an empty value with a 400, so drop
-    // any row missing either cell — mirroring the varbind's both-or-neither rule.
-    const params = form.parameters
-      .filter(p => p.name.trim() && p.value.trim())
-      .map(p => ({ name: p.name.trim(), value: p.value }))
-    const varbind = form.varbindName.trim() && form.varbindValue.trim()
-      ? { vbname: form.varbindName.trim(), vbvalue: form.varbindValue.trim() }
-      : undefined
-    const notification: EventNotification = {
-      ...original,
-      name: form.name.trim(),
-      status: form.enabled ? 'on' : 'off',
-      uei: uei.value,
-      description: form.description.trim() || undefined,
-      rule: { ...originalRule, value: form.rule.trim() || 'IPADDR IPLIKE *.*.*.*' },
-      destinationPath: form.destinationPath,
-      subject: form.subject.trim() || undefined,
-      'text-message': form.textMessage,
-      'numeric-message': form.numericMessage.trim() || undefined,
-      'event-severity': form.eventSeverity || undefined,
-      'notice-queue': form.noticeQueue.trim() || undefined,
-      parameter: params,
-      varbind
-    }
-    const ok = isEditing.value
-      ? await store.updateEventNotification(originalName.value, notification)
-      : await store.addEventNotification(notification)
-    if (ok) {
-      emit('close')
-    } else {
-      errors.general = 'Could not save the notification. Please review the fields and try again.'
-    }
+    await withSpinner(saveNotification)
   } finally {
     saving.value = false
+  }
+}
+
+// validate, then add/update: one user action, so one spinner around both
+const saveNotification = async () => {
+  if (!(await validateForm())) {
+    activeTab.value = firstTabWithError() ?? activeTab.value
+    return
+  }
+  // Spread the original first so fields the form still doesn't expose
+  // (writeable, rule.strict) survive the round-trip into notifications.xml.
+  const original = props.notification ?? {}
+  const originalRule = typeof props.notification?.rule === 'object' && props.notification?.rule !== null
+    ? props.notification.rule
+    : {}
+  // The server (Parameter.setValue) rejects an empty value with a 400, so drop
+  // any row missing either cell — mirroring the varbind's both-or-neither rule.
+  const params = form.parameters
+    .filter(p => p.name.trim() && p.value.trim())
+    .map(p => ({ name: p.name.trim(), value: p.value }))
+  const varbind = form.varbindName.trim() && form.varbindValue.trim()
+    ? { vbname: form.varbindName.trim(), vbvalue: form.varbindValue.trim() }
+    : undefined
+  const notification: EventNotification = {
+    ...original,
+    name: form.name.trim(),
+    status: form.enabled ? 'on' : 'off',
+    uei: uei.value,
+    description: form.description.trim() || undefined,
+    rule: { ...originalRule, value: form.rule.trim() || 'IPADDR IPLIKE *.*.*.*' },
+    destinationPath: form.destinationPath,
+    subject: form.subject.trim() || undefined,
+    'text-message': form.textMessage,
+    'numeric-message': form.numericMessage.trim() || undefined,
+    'event-severity': form.eventSeverity || undefined,
+    'notice-queue': form.noticeQueue.trim() || undefined,
+    parameter: params,
+    varbind
+  }
+  const result = isEditing.value
+    ? await store.updateEventNotification(originalName.value, notification)
+    : await store.addEventNotification(notification)
+  if (report(result, `Event notification '${notification.name}' ${isEditing.value ? 'updated' : 'added'}.`)) {
+    emit('close')
+  } else {
+    errors.general = 'Could not save the notification. Please review the fields and try again.'
   }
 }
 </script>

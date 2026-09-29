@@ -104,10 +104,12 @@ import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 // Placeholder until a dedicated "test/send" icon exists.
 import TestIcon from '@opennms/onms-ui/icons/action/CheckCircle.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
+const { withSpinner, report, showError, showSuccess } = useActionFeedback()
 
 const openEditor = (path: DestinationPath | null) => {
   store.openDestinationPathEditor(path)
@@ -136,7 +138,8 @@ const askDelete = (path: DestinationPath) => {
 
 const confirmDelete = async () => {
   if (pathToDelete.value) {
-    await store.deleteDestinationPath(pathToDelete.value.name)
+    const name = pathToDelete.value.name
+    report(await withSpinner(() => store.deleteDestinationPath(name)), `Destination path '${name}' deleted.`)
   }
   showDeleteConfirmation.value = false
   pathToDelete.value = null
@@ -154,7 +157,12 @@ const askTest = (path: DestinationPath) => {
 
 const confirmTest = async () => {
   if (pathToTest.value) {
-    await store.testDestinationPath(pathToTest.value.name)
+    const name = pathToTest.value.name
+    if (await withSpinner(() => store.testDestinationPath(name))) {
+      showSuccess(`Test notification triggered for '${name}'.`)
+    } else {
+      showError(`Failed to trigger test notification for '${name}'.`)
+    }
   }
   showTestConfirmation.value = false
   pathToTest.value = null

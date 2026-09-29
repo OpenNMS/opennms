@@ -229,10 +229,12 @@ import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { PathOutage, PathOutagePreview } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
+const { withSpinner, report } = useActionFeedback()
 
 // ICMP is the only supported critical path service (matches the legacy wizard).
 const serviceOptions = ['ICMP']
@@ -291,19 +293,24 @@ const emptyListContent = {
   msg: 'No critical paths configured.'
 }
 
+// A rule the server can't evaluate marks the rule field invalid as well as
+// showing the server's reason.
+const runPreview = async (): Promise<PathOutagePreview | null> => {
+  const result = await withSpinner(() => store.previewPathOutageRule(rule.value.trim()))
+  ruleError.value = !report(result)
+  previewResult.value = result.payload ?? null
+  return previewResult.value
+}
+
 const preview = async () => {
-  const result = await store.previewPathOutageRule(rule.value.trim())
-  ruleError.value = result === null
-  previewResult.value = result
+  await runPreview()
 }
 
 const askApply = async () => {
-  const result = await store.previewPathOutageRule(rule.value.trim())
+  const result = await runPreview()
   if (!result) {
-    ruleError.value = true
     return
   }
-  previewResult.value = result
   // applying: every node matching the rule gets the critical path. The clear case
   // affects an unknown subset (only nodes that already have a path) and the server
   // caps the preview node list, so its confirmation shows no count.
@@ -313,12 +320,13 @@ const askApply = async () => {
 
 const confirmApply = async () => {
   showApplyConfirmation.value = false
-  const ok = await store.applyPathOutage({
+  const criticalPathIp = criticalIp.value.trim() || undefined
+  const result = await withSpinner(() => store.applyPathOutage({
     rule: rule.value.trim(),
-    criticalIp: criticalIp.value.trim() || undefined,
+    criticalIp: criticalPathIp,
     criticalSvc: criticalSvc.value
-  })
-  if (ok) {
+  }))
+  if (report(result, criticalPathIp ? 'Critical path applied.' : 'Critical path cleared.')) {
     previewResult.value = null
   }
 }
@@ -330,7 +338,8 @@ const askRemove = (outage: PathOutage) => {
 
 const confirmRemove = async () => {
   if (outageToRemove.value) {
-    await store.deletePathOutage(outageToRemove.value.nodeId)
+    const nodeId = outageToRemove.value.nodeId
+    report(await withSpinner(() => store.deletePathOutage(nodeId)), 'Critical path removed.')
   }
   showRemoveConfirmation.value = false
   outageToRemove.value = null

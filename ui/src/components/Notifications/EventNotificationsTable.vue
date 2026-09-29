@@ -135,10 +135,12 @@ import AddIcon from '@opennms/onms-ui/icons/action/Add.vue'
 import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { EventNotification } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
+const { withSpinner, report, showError, showSuccess } = useActionFeedback()
 
 const showDeleteConfirmation = ref(false)
 
@@ -179,8 +181,13 @@ const onToggle = async (notification: EventNotification, value: boolean) => {
     return
   }
   pendingName.value = notification.name
+  const status = value ? 'on' : 'off'
   try {
-    await store.setEventNotificationStatus(notification.name, value ? 'on' : 'off')
+    if (await withSpinner(() => store.setEventNotificationStatus(notification.name, status))) {
+      showSuccess(`Event notification '${notification.name}' turned ${status}.`)
+    } else {
+      showError(`Failed to update event notification '${notification.name}'.`)
+    }
   } finally {
     pendingName.value = null
   }
@@ -193,7 +200,8 @@ const askDelete = (notification: EventNotification) => {
 
 const confirmDelete = async () => {
   if (notificationToDelete.value) {
-    await store.deleteEventNotification(notificationToDelete.value.name)
+    const name = notificationToDelete.value.name
+    report(await withSpinner(() => store.deleteEventNotification(name)), `Event notification '${name}' deleted.`)
   }
   showDeleteConfirmation.value = false
   notificationToDelete.value = null

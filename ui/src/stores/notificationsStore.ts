@@ -21,9 +21,9 @@
 ///
 
 import API from '@/services'
-import useSnackbar from '@/composables/useSnackbar'
 import { useAuthStore } from '@/stores/authStore'
-import { NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
+import { NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
+import { createFailureResult, createResultWithPayload, createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -75,23 +75,24 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     return 'Notifications'
   })
 
-  const { showSnackBar } = useSnackbar()
+  // No snackbars here: actions return a ValidationResult and the calling
+  // component shows the message. A failed whoami leaves no user id, and
+  // widening a user-scoped query to everyone's notifications would be silently
+  // wrong, so user-scoped presets refuse instead.
+  const needsUser = computed<boolean>(() =>
+    preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding')
+  const missingUser = computed<boolean>(() => needsUser.value && !effectiveUser.value && !effectiveExcludeUser.value)
 
-
-  const load = async () => {
+  const load = async (): Promise<ValidationResult> => {
     if (awaitingUser.value) {
       notifications.value = []
       totalCount.value = 0
-      return
+      return createSuccessResponse()
     }
-    // a failed whoami leaves no user id; widening a user-scoped query to
-    // everyone's notifications would be silently wrong, so refuse instead
-    const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
-    if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
+    if (missingUser.value) {
       notifications.value = []
       totalCount.value = 0
-      showSnackBar({ msg: 'Cannot determine the current user; showing no notifications. Reload the page to retry.', error: true })
-      return
+      return createFailureResult('Cannot determine the current user; showing no notifications. Reload the page to retry.')
     }
     loading.value = true
     try {
@@ -102,61 +103,62 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
         limit: rows.value,
         offset: first.value
       })
-      notifications.value = result.notifications
-      totalCount.value = result.totalCount
+      // a failed load clears the table rather than leaving stale rows
+      notifications.value = result.payload?.notifications ?? []
+      totalCount.value = result.payload?.totalCount ?? 0
+      return result
     } finally {
       loading.value = false
     }
   }
 
-  const applyPreset = async (newPreset: NotificationQueryPreset, user?: string) => {
+  const applyPreset = async (newPreset: NotificationQueryPreset, user?: string): Promise<ValidationResult> => {
     preset.value = newPreset
     userFilter.value = newPreset === 'userSearch' ? (user ?? null) : null
     first.value = 0
-    await load()
+    return await load()
   }
 
-  const onPage = async (newFirst: number, newRows: number) => {
+  const onPage = async (newFirst: number, newRows: number): Promise<ValidationResult> => {
     first.value = newFirst
     rows.value = newRows
-    await load()
+    return await load()
   }
 
   // Export/print path: same user guard as load() so a failed whoami never
   // widens a user-scoped export to everyone's notifications.
-  const fetchForExport = async (limit: number): Promise<{ notifications: OnmsNotification[], totalCount: number }> => {
-    // Same guard as load(); the teamOutstanding preset is user-scoped via
-    // excludeUser, so a failed whoami must block it too rather than widen.
+  // Same guard as load(); the teamOutstanding preset is user-scoped via
+  // excludeUser, so a failed whoami must block it too rather than widen.
+  const fetchForExport = async (limit: number): Promise<ValidationResultWithPayload<NotificationBrowseResult>> => {
     if (awaitingUser.value) {
-      return { notifications: [], totalCount: 0 }
+      return createResultWithPayload(true, '', { notifications: [], totalCount: 0 })
     }
-    const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
-    if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
-      showSnackBar({ msg: 'Cannot determine the current user; nothing to export. Reload the page to retry.', error: true })
-      return { notifications: [], totalCount: 0 }
+    if (missingUser.value) {
+      return createResultWithPayload<NotificationBrowseResult>(false, 'Cannot determine the current user; nothing to export. Reload the page to retry.')
     }
-    const result = await API.browseNotifications({
+    return await API.browseNotifications({
       acktype: acktype.value,
       user: effectiveUser.value,
       excludeUser: effectiveExcludeUser.value,
       limit,
       offset: 0
     })
-    return { notifications: result.notifications, totalCount: result.totalCount }
   }
 
-  const acknowledge = async (notification: OnmsNotification) => {
+  // A failed reload after a successful acknowledge comes back in `errors`.
+  const acknowledge = async (notification: OnmsNotification): Promise<ValidationResult> => {
     const ok = await API.acknowledgeNotification(notification.id, true)
-    if (ok) {
-      await load()
-      // acknowledging the last row of the last page leaves the offset past
-      // the end; clamp to the last valid page instead of stranding the user
-      if (!notifications.value.length && first.value > 0) {
-        first.value = totalCount.value > 0 ? Math.floor((totalCount.value - 1) / rows.value) * rows.value : 0
-        await load()
-      }
+    if (!ok) {
+      return createFailureResult(`Failed to acknowledge notification ${notification.id}.`)
     }
-    return ok
+    let reload = await load()
+    // acknowledging the last row of the last page leaves the offset past
+    // the end; clamp to the last valid page instead of stranding the user
+    if (reload.success && !notifications.value.length && first.value > 0) {
+      first.value = totalCount.value > 0 ? Math.floor((totalCount.value - 1) / rows.value) * rows.value : 0
+      reload = await load()
+    }
+    return reload.success ? createSuccessResponse() : { ...createSuccessResponse(), errors: [reload.message] }
   }
 
   return {

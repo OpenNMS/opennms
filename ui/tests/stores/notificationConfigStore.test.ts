@@ -3,6 +3,10 @@ import { setActivePinia, createPinia } from 'pinia'
 import { NotificationConfigEditMode, useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import API from '@/services'
 import { DestinationPath, EventNotification, PathOutage } from '@/types/notificationConfig'
+import { createFailureResult, createResultWithPayload, createSuccessResponse } from '@/types/validation'
+
+const loaded = <T>(payload: T) => createResultWithPayload(true, '', payload)
+const loadFailed = (message = 'Failed to load.') => createResultWithPayload<never>(false, message)
 
 vi.mock('@/services', () => ({
   default: {
@@ -79,18 +83,18 @@ describe('useNotificationConfigStore', () => {
 
   describe('notifd status', () => {
     it('should load the status', async () => {
-      vi.mocked(API.getNotificationConfigStatus).mockResolvedValue('on')
+      vi.mocked(API.getNotificationConfigStatus).mockResolvedValue(loaded('on'))
 
       const ok = await store.getStatus()
 
-      expect(ok).toBe(true)
+      expect(ok.success).toBe(true)
       expect(store.notifdStatus).toBe('on')
     })
 
     it('reports failure so the tab loader does not latch', async () => {
-      vi.mocked(API.getNotificationConfigStatus).mockResolvedValue(null)
+      vi.mocked(API.getNotificationConfigStatus).mockResolvedValue(loadFailed())
 
-      expect(await store.getStatus()).toBe(false)
+      expect((await store.getStatus()).success).toBe(false)
     })
 
     it('should update the status on success', async () => {
@@ -115,21 +119,21 @@ describe('useNotificationConfigStore', () => {
 
   describe('event notifications', () => {
     it('should load event notifications', async () => {
-      vi.mocked(API.getEventNotifications).mockResolvedValue(mockNotifications)
+      vi.mocked(API.getEventNotifications).mockResolvedValue(loaded(mockNotifications))
 
       const ok = await store.getEventNotifications()
 
-      expect(ok).toBe(true)
+      expect(ok.success).toBe(true)
       expect(store.eventNotifications).toEqual(mockNotifications)
     })
 
     it('reports failure so the tab loader does not latch', async () => {
-      vi.mocked(API.getEventNotifications).mockResolvedValueOnce(mockNotifications)
+      vi.mocked(API.getEventNotifications).mockResolvedValueOnce(loaded(mockNotifications))
       await store.getEventNotifications()
       // a failed reload returns false and keeps the prior data
-      vi.mocked(API.getEventNotifications).mockResolvedValueOnce(null)
+      vi.mocked(API.getEventNotifications).mockResolvedValueOnce(loadFailed())
 
-      expect(await store.getEventNotifications()).toBe(false)
+      expect((await store.getEventNotifications()).success).toBe(false)
       expect(store.eventNotifications).toEqual(mockNotifications)
     })
 
@@ -153,50 +157,50 @@ describe('useNotificationConfigStore', () => {
     })
 
     it('should refresh the list after adding', async () => {
-      vi.mocked(API.addEventNotification).mockResolvedValue(true)
-      vi.mocked(API.getEventNotifications).mockResolvedValue(mockNotifications)
+      vi.mocked(API.addEventNotification).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getEventNotifications).mockResolvedValue(loaded(mockNotifications))
 
       const ok = await store.addEventNotification(mockNotifications[0])
 
-      expect(ok).toBe(true)
+      expect(ok.success).toBe(true)
       expect(API.getEventNotifications).toHaveBeenCalledTimes(1)
     })
 
     it('should refresh the list after updating and pass the original name', async () => {
-      vi.mocked(API.updateEventNotification).mockResolvedValue(true)
-      vi.mocked(API.getEventNotifications).mockResolvedValue(mockNotifications)
+      vi.mocked(API.updateEventNotification).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getEventNotifications).mockResolvedValue(loaded(mockNotifications))
 
       const renamed = { ...mockNotifications[0], name: 'nodeDown-renamed' }
       const ok = await store.updateEventNotification('nodeDown', renamed)
 
-      expect(ok).toBe(true)
+      expect(ok.success).toBe(true)
       expect(API.updateEventNotification).toHaveBeenCalledWith('nodeDown', renamed)
       expect(API.getEventNotifications).toHaveBeenCalledTimes(1)
     })
 
     it('should refresh the list after deleting', async () => {
-      vi.mocked(API.deleteEventNotification).mockResolvedValue(true)
-      vi.mocked(API.getEventNotifications).mockResolvedValue([mockNotifications[1]])
+      vi.mocked(API.deleteEventNotification).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getEventNotifications).mockResolvedValue(loaded([mockNotifications[1]]))
 
       const ok = await store.deleteEventNotification('nodeDown')
 
-      expect(ok).toBe(true)
+      expect(ok.success).toBe(true)
       expect(store.eventNotifications).toEqual([mockNotifications[1]])
     })
 
     it('should not refresh after a failed delete', async () => {
-      vi.mocked(API.deleteEventNotification).mockResolvedValue(false)
+      vi.mocked(API.deleteEventNotification).mockResolvedValue(createFailureResult('rejected'))
 
       const ok = await store.deleteEventNotification('nodeDown')
 
-      expect(ok).toBe(false)
+      expect(ok.success).toBe(false)
       expect(API.getEventNotifications).not.toHaveBeenCalled()
     })
   })
 
   describe('destination paths', () => {
     it('should load the destination paths for the editor picker', async () => {
-      vi.mocked(API.getDestinationPaths).mockResolvedValue([mockPath])
+      vi.mocked(API.getDestinationPaths).mockResolvedValue(loaded([mockPath]))
 
       await store.getDestinationPaths()
 
@@ -204,10 +208,10 @@ describe('useNotificationConfigStore', () => {
     })
 
     it('should refresh after add, update and delete', async () => {
-      vi.mocked(API.addDestinationPath).mockResolvedValue(true)
-      vi.mocked(API.updateDestinationPath).mockResolvedValue(true)
-      vi.mocked(API.deleteDestinationPath).mockResolvedValue(true)
-      vi.mocked(API.getDestinationPaths).mockResolvedValue([mockPath])
+      vi.mocked(API.addDestinationPath).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.updateDestinationPath).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.deleteDestinationPath).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getDestinationPaths).mockResolvedValue(loaded([mockPath]))
 
       await store.addDestinationPath(mockPath)
       await store.updateDestinationPath('Email-Admin', mockPath)
@@ -218,13 +222,54 @@ describe('useNotificationConfigStore', () => {
     })
 
     it('should pass the original name when renaming', async () => {
-      vi.mocked(API.updateDestinationPath).mockResolvedValue(true)
-      vi.mocked(API.getDestinationPaths).mockResolvedValue([])
+      vi.mocked(API.updateDestinationPath).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getDestinationPaths).mockResolvedValue(loaded([]))
 
       const renamed = { ...mockPath, name: 'Email-Ops' }
       await store.updateDestinationPath('Email-Admin', renamed)
 
       expect(API.updateDestinationPath).toHaveBeenCalledWith('Email-Admin', renamed)
+    })
+  })
+
+  describe('results for the UI to report', () => {
+    it('passes the server reason through on a failed mutation', async () => {
+      vi.mocked(API.deleteEventNotification).mockResolvedValue(createFailureResult('The last notification cannot be deleted.'))
+
+      const result = await store.deleteEventNotification('nodeDown')
+
+      expect(result).toEqual(expect.objectContaining({ success: false, message: 'The last notification cannot be deleted.' }))
+    })
+
+    it('reports a failed refresh after a successful save in errors', async () => {
+      vi.mocked(API.addDestinationPath).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getDestinationPaths).mockResolvedValue(loadFailed('Failed to load destination paths.'))
+
+      const result = await store.addDestinationPath(mockPath)
+
+      expect(result.success).toBe(true)
+      expect(result.errors).toEqual(['Failed to load destination paths.'])
+    })
+
+    it('reports no errors when the refresh succeeds', async () => {
+      vi.mocked(API.applyPathOutage).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getPathOutages).mockResolvedValue(loaded(mockPathOutages))
+
+      const result = await store.applyPathOutage({ rule: 'IPADDR IPLIKE *.*.*.*', criticalIp: '192.168.1.1' })
+
+      expect(result.success).toBe(true)
+      expect(result.errors).toBeUndefined()
+    })
+
+    it('getUsersAndGroups returns the first failed lookup and keeps the lists that loaded', async () => {
+      vi.mocked(API.getNotificationUsers).mockResolvedValue(loaded(['admin']))
+      vi.mocked(API.getNotificationGroups).mockResolvedValue(loadFailed('Failed to load groups.'))
+      vi.mocked(API.getOnCallRoles).mockResolvedValue(loadFailed('Failed to load on-call roles.'))
+
+      const result = await store.getUsersAndGroups()
+
+      expect(result).toEqual(expect.objectContaining({ success: false, message: 'Failed to load groups.' }))
+      expect(store.users).toEqual(['admin'])
     })
   })
 
@@ -280,7 +325,7 @@ describe('useNotificationConfigStore', () => {
 
   describe('editor lookups', () => {
     it('should load the notification commands', async () => {
-      vi.mocked(API.getNotificationCommands).mockResolvedValue([{ name: 'javaEmail' }])
+      vi.mocked(API.getNotificationCommands).mockResolvedValue(loaded([{ name: 'javaEmail' }]))
 
       await store.getCommands()
 
@@ -288,63 +333,63 @@ describe('useNotificationConfigStore', () => {
     })
 
     it('should load users, groups and roles for the target picker', async () => {
-      vi.mocked(API.getNotificationUsers).mockResolvedValue(['admin'])
-      vi.mocked(API.getNotificationGroups).mockResolvedValue(['Admin'])
-      vi.mocked(API.getOnCallRoles).mockResolvedValue(['oncall'])
+      vi.mocked(API.getNotificationUsers).mockResolvedValue(loaded(['admin']))
+      vi.mocked(API.getNotificationGroups).mockResolvedValue(loaded(['Admin']))
+      vi.mocked(API.getOnCallRoles).mockResolvedValue(loaded(['oncall']))
 
       const ok = await store.getUsersAndGroups()
 
-      expect(ok).toBe(true)
+      expect(ok.success).toBe(true)
       expect(store.users).toEqual(['admin'])
       expect(store.groups).toEqual(['Admin'])
       expect(store.roles).toEqual(['oncall'])
     })
 
     it('reports failure when a lookup errors so the tab loader can retry', async () => {
-      vi.mocked(API.getDestinationPaths).mockResolvedValueOnce([mockPath])
+      vi.mocked(API.getDestinationPaths).mockResolvedValueOnce(loaded([mockPath]))
       await store.getDestinationPaths()
       // a failed reload returns false and keeps the prior data
-      vi.mocked(API.getDestinationPaths).mockResolvedValueOnce(null)
-      expect(await store.getDestinationPaths()).toBe(false)
+      vi.mocked(API.getDestinationPaths).mockResolvedValueOnce(loadFailed())
+      expect((await store.getDestinationPaths()).success).toBe(false)
       expect(store.destinationPaths).toEqual([mockPath])
 
       // getUsersAndGroups is false if ANY of the three lookups fails
-      vi.mocked(API.getNotificationUsers).mockResolvedValue(['admin'])
-      vi.mocked(API.getNotificationGroups).mockResolvedValue(null)
-      vi.mocked(API.getOnCallRoles).mockResolvedValue(['oncall'])
-      expect(await store.getUsersAndGroups()).toBe(false)
+      vi.mocked(API.getNotificationUsers).mockResolvedValue(loaded(['admin']))
+      vi.mocked(API.getNotificationGroups).mockResolvedValue(loadFailed())
+      vi.mocked(API.getOnCallRoles).mockResolvedValue(loaded(['oncall']))
+      expect((await store.getUsersAndGroups()).success).toBe(false)
 
-      vi.mocked(API.getNotificationCommands).mockResolvedValueOnce(null)
-      expect(await store.getCommands()).toBe(false)
+      vi.mocked(API.getNotificationCommands).mockResolvedValueOnce(loadFailed())
+      expect((await store.getCommands()).success).toBe(false)
     })
   })
 
   describe('path outages', () => {
     it('should load path outages', async () => {
-      vi.mocked(API.getPathOutages).mockResolvedValue(mockPathOutages)
+      vi.mocked(API.getPathOutages).mockResolvedValue(loaded(mockPathOutages))
 
       const ok = await store.getPathOutages()
 
-      expect(ok).toBe(true)
+      expect(ok.success).toBe(true)
       expect(store.pathOutages).toEqual(mockPathOutages)
     })
 
     it('should report failure and not clobber existing outages when the load errors', async () => {
-      vi.mocked(API.getPathOutages).mockResolvedValueOnce(mockPathOutages)
+      vi.mocked(API.getPathOutages).mockResolvedValueOnce(loaded(mockPathOutages))
       await store.getPathOutages()
-      vi.mocked(API.getPathOutages).mockResolvedValueOnce(null)
+      vi.mocked(API.getPathOutages).mockResolvedValueOnce(loadFailed())
 
       const ok = await store.getPathOutages()
 
-      expect(ok).toBe(false)
+      expect(ok.success).toBe(false)
       // prior data is preserved so the tab can retry instead of latching empty
       expect(store.pathOutages).toEqual(mockPathOutages)
     })
 
     it('should refresh after apply and delete', async () => {
-      vi.mocked(API.applyPathOutage).mockResolvedValue(true)
-      vi.mocked(API.deletePathOutage).mockResolvedValue(true)
-      vi.mocked(API.getPathOutages).mockResolvedValue(mockPathOutages)
+      vi.mocked(API.applyPathOutage).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.deletePathOutage).mockResolvedValue(createSuccessResponse())
+      vi.mocked(API.getPathOutages).mockResolvedValue(loaded(mockPathOutages))
 
       await store.applyPathOutage({ rule: 'IPADDR IPLIKE *.*.*.*', criticalIp: '192.168.1.1' })
       await store.deletePathOutage(1)
@@ -353,7 +398,7 @@ describe('useNotificationConfigStore', () => {
     })
 
     it('should not refresh after a failed apply', async () => {
-      vi.mocked(API.applyPathOutage).mockResolvedValue(false)
+      vi.mocked(API.applyPathOutage).mockResolvedValue(createFailureResult('rejected'))
 
       await store.applyPathOutage({ rule: 'bogus rule' })
 
@@ -362,11 +407,11 @@ describe('useNotificationConfigStore', () => {
 
     it('should pass the preview through', async () => {
       const preview = { totalCount: 3, nodes: mockPathOutages }
-      vi.mocked(API.previewPathOutageRule).mockResolvedValue(preview)
+      vi.mocked(API.previewPathOutageRule).mockResolvedValue(loaded(preview))
 
       const result = await store.previewPathOutageRule('IPADDR IPLIKE *.*.*.*')
 
-      expect(result).toEqual(preview)
+      expect(result.payload).toEqual(preview)
     })
   })
 })

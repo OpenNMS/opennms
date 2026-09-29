@@ -175,6 +175,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import { NOTIFD_DURATION_HINT, UNADDRESSABLE_NAME_HINT, isPathAddressable, isValidNotifdDuration } from '@/lib/adminValidation'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath, DestinationPathTarget } from '@/types/notificationConfig'
 
@@ -189,6 +190,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useNotificationConfigStore()
+const { withSpinner, report } = useActionFeedback()
 
 // Methods with a working configuration today. The rest of the commands from
 // notificationCommands.xml are listed but disabled until their config lands.
@@ -414,10 +416,10 @@ const save = async () => {
         target: esc.targets.map(toTarget)
       }))
     }
-    const ok = isEditing.value
-      ? await store.updateDestinationPath(originalName.value, path)
-      : await store.addDestinationPath(path)
-    if (ok) {
+    const result = await withSpinner(() => isEditing.value
+      ? store.updateDestinationPath(originalName.value, path)
+      : store.addDestinationPath(path))
+    if (report(result, `Destination path '${path.name}' ${isEditing.value ? 'updated' : 'added'}.`)) {
       emit('close')
     }
   } finally {

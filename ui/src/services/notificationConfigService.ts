@@ -20,98 +20,86 @@
 /// License.
 ///
 
-import useSnackbar from '@/composables/useSnackbar'
-import useSpinner from '@/composables/useSpinner'
 import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, PathOutage, PathOutagePreview, PathOutageRequest, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
+import {
+  createFailureResult,
+  createResultWithPayload,
+  createSuccessResponse,
+  ValidationResult,
+  ValidationResultWithPayload
+} from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
 
-const { showSnackBar } = useSnackbar()
-const { startSpinner, stopSpinner } = useSpinner()
+// API calls only: no spinner or snackbar here. Callers (the notification config
+// store, or a component directly) decide what to show.
+//  - Reads return a ValidationResultWithPayload, so a failed load (success false,
+//    with a message) is distinguishable from an empty one.
+//  - Mutations whose failure reason comes from the server (e.g. "the last
+//    notification cannot be deleted") return a ValidationResult carrying it.
+//  - Other mutations return a plain boolean; the caller words the message.
 const endpoint = '/notification-config'
 
-const getNotificationConfigStatus = async (): Promise<NotifdStatus | null> => {
+// the server's plain-text reason for a rejected request, else the fallback
+const errorMessage = (err: any, fallback: string): string => {
+  const detail = err?.response?.data
+  return typeof detail === 'string' && detail ? detail : fallback
+}
+
+const loaded = <T>(payload: T): ValidationResultWithPayload<T> => createResultWithPayload(true, '', payload)
+const loadFailed = <T>(message: string): ValidationResultWithPayload<T> => createResultWithPayload<T>(false, message)
+
+const getNotificationConfigStatus = async (): Promise<ValidationResultWithPayload<NotifdStatus>> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}/status`)
-    return resp.data?.status ?? null
+    const status = resp.data?.status
+    return status ? loaded<NotifdStatus>(status) : loadFailed('Failed to load notification status.')
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load notification status.' })
-    return null
-  } finally {
-    stopSpinner()
+    return loadFailed('Failed to load notification status.')
   }
 }
 
 const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolean> => {
   try {
-    startSpinner()
     await v2.put(`${endpoint}/status`, { status })
-    showSnackBar({ msg: `Notifications turned ${status}.` })
     return true
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to update notification status.' })
     return false
-  } finally {
-    stopSpinner()
   }
 }
 
-const getEventNotifications = async (): Promise<EventNotification[] | null> => {
+const getEventNotifications = async (): Promise<ValidationResultWithPayload<EventNotification[]>> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}/event-notifications`)
-    return resp.data?.notification ?? []
+    return loaded<EventNotification[]>(resp.data?.notification ?? [])
   } catch (_err) {
-    // null (not []) so a failed load is distinguishable from an empty one and the
-    // tab loader can retry instead of latching
-    showSnackBar({ msg: 'Failed to load event notifications.' })
-    return null
-  } finally {
-    stopSpinner()
+    return loadFailed('Failed to load event notifications.')
   }
 }
 
 const setEventNotificationStatus = async (name: string, status: NotifdStatus): Promise<boolean> => {
   try {
-    startSpinner()
     await v2.put(`${endpoint}/event-notifications/${encodeURIComponent(name)}/status`, { status })
-    showSnackBar({ msg: `Event notification '${name}' turned ${status}.` })
     return true
   } catch (_err) {
-    showSnackBar({ msg: `Failed to update event notification '${name}'.` })
     return false
-  } finally {
-    stopSpinner()
   }
 }
 
-const addEventNotification = async (notification: EventNotification): Promise<boolean> => {
+const addEventNotification = async (notification: EventNotification): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.post(`${endpoint}/event-notifications`, notification)
-    showSnackBar({ msg: `Event notification '${notification.name}' added.` })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to add event notification '${notification.name}'.` })
-    return false
-  } finally {
-    stopSpinner()
+    return createFailureResult(errorMessage(err, `Failed to add event notification '${notification.name}'.`))
   }
 }
 
-const updateEventNotification = async (originalName: string, notification: EventNotification): Promise<boolean> => {
+const updateEventNotification = async (originalName: string, notification: EventNotification): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.put(`${endpoint}/event-notifications/${encodeURIComponent(originalName)}`, notification)
-    showSnackBar({ msg: `Event notification '${notification.name}' updated.` })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to update event notification '${notification.name}'.` })
-    return false
-  } finally {
-    stopSpinner()
+    return createFailureResult(errorMessage(err, `Failed to update event notification '${notification.name}'.`))
   }
 }
 
@@ -129,223 +117,156 @@ const searchEventConfUeis = async (query: string): Promise<UeiSuggestion[]> => {
   }
 }
 
-const deleteEventNotification = async (name: string): Promise<boolean> => {
+const deleteEventNotification = async (name: string): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.delete(`${endpoint}/event-notifications/${encodeURIComponent(name)}`)
-    showSnackBar({ msg: `Event notification '${name}' deleted.` })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    // surface the server's reason (e.g. the last notification cannot be deleted)
-    // instead of a generic failure
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to delete event notification '${name}'.` })
-    return false
-  } finally {
-    stopSpinner()
+    // the server's reason (e.g. the last notification cannot be deleted) beats a generic failure
+    return createFailureResult(errorMessage(err, `Failed to delete event notification '${name}'.`))
   }
 }
 
-const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
+const getDestinationPaths = async (): Promise<ValidationResultWithPayload<DestinationPath[]>> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}/destination-paths`)
-    return resp.data?.path ?? []
+    return loaded<DestinationPath[]>(resp.data?.path ?? [])
   } catch (_err) {
-    // null (not []) so a failed load is distinguishable from an empty one and the
-    // tab loader can retry instead of latching
-    showSnackBar({ msg: 'Failed to load destination paths.' })
-    return null
-  } finally {
-    stopSpinner()
+    return loadFailed('Failed to load destination paths.')
   }
 }
 
-const deleteDestinationPath = async (name: string): Promise<boolean> => {
+const deleteDestinationPath = async (name: string): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.delete(`${endpoint}/destination-paths/${encodeURIComponent(name)}`)
-    showSnackBar({ msg: `Destination path '${name}' deleted.` })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to delete destination path '${name}'.` })
-    return false
-  } finally {
-    stopSpinner()
+    return createFailureResult(errorMessage(err, `Failed to delete destination path '${name}'.`))
   }
 }
 
 const testDestinationPath = async (name: string): Promise<boolean> => {
   try {
-    startSpinner()
     // the trigger endpoint lives on the v1 resource (NotificationRestService), not v2
     await rest.post(`/notifications/destination-paths/${encodeURIComponent(name)}/trigger`)
-    showSnackBar({ msg: `Test notification triggered for '${name}'.` })
     return true
   } catch (_err) {
-    showSnackBar({ msg: `Failed to trigger test notification for '${name}'.` })
     return false
-  } finally {
-    stopSpinner()
   }
 }
 
-const addDestinationPath = async (path: DestinationPath): Promise<boolean> => {
+const addDestinationPath = async (path: DestinationPath): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.post(`${endpoint}/destination-paths`, path)
-    showSnackBar({ msg: `Destination path '${path.name}' added.` })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to add destination path '${path.name}'.` })
-    return false
-  } finally {
-    stopSpinner()
+    return createFailureResult(errorMessage(err, `Failed to add destination path '${path.name}'.`))
   }
 }
 
-const updateDestinationPath = async (originalName: string, path: DestinationPath): Promise<boolean> => {
+const updateDestinationPath = async (originalName: string, path: DestinationPath): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.put(`${endpoint}/destination-paths/${encodeURIComponent(originalName)}`, path)
-    showSnackBar({ msg: `Destination path '${path.name}' updated.` })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to update destination path '${path.name}'.` })
-    return false
-  } finally {
-    stopSpinner()
+    return createFailureResult(errorMessage(err, `Failed to update destination path '${path.name}'.`))
   }
 }
 
 // Users and groups for destination path target pickers. v2 (not v1) because
 // v1 /users also serializes each user's password hash. v2 returns plain arrays
 // of UserDTO/GroupDTO, keyed userId/name (not v1's {user: [{'user-id'}]}).
-const getNotificationUsers = async (): Promise<string[] | null> => {
+const getNotificationUsers = async (): Promise<ValidationResultWithPayload<string[]>> => {
   try {
     const resp = await v2.get('/users?limit=0')
     const users = Array.isArray(resp.data) ? resp.data : []
-    return users.map((u: any) => u.userId).filter(Boolean)
+    return loaded<string[]>(users.map((u: any) => u.userId).filter(Boolean))
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load users.' })
-    return null
+    return loadFailed('Failed to load users.')
   }
 }
 
-const getNotificationGroups = async (): Promise<string[] | null> => {
+const getNotificationGroups = async (): Promise<ValidationResultWithPayload<string[]>> => {
   try {
     const resp = await v2.get('/groups?limit=0')
     const groups = Array.isArray(resp.data) ? resp.data : []
-    return groups.map((g: any) => g.name).filter(Boolean)
+    return loaded<string[]>(groups.map((g: any) => g.name).filter(Boolean))
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load groups.' })
-    return null
+    return loadFailed('Failed to load groups.')
   }
 }
 
-const getOnCallRoles = async (): Promise<string[] | null> => {
+const getOnCallRoles = async (): Promise<ValidationResultWithPayload<string[]>> => {
   try {
     const resp = await v2.get(`${endpoint}/on-call-roles`)
-    return Array.isArray(resp.data) ? resp.data : []
+    return loaded<string[]>(Array.isArray(resp.data) ? resp.data : [])
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load on-call roles.' })
-    return null
+    return loadFailed('Failed to load on-call roles.')
   }
 }
 
-const getNotificationCommands = async (): Promise<NotificationCommand[] | null> => {
+const getNotificationCommands = async (): Promise<ValidationResultWithPayload<NotificationCommand[]>> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}/commands`)
-    return resp.data ?? []
+    return loaded<NotificationCommand[]>(resp.data ?? [])
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load notification commands.' })
-    return null
-  } finally {
-    stopSpinner()
+    return loadFailed('Failed to load notification commands.')
   }
 }
 
-const getPathOutages = async (): Promise<PathOutage[] | null> => {
+const getPathOutages = async (): Promise<ValidationResultWithPayload<PathOutage[]>> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}/path-outages`)
-    return resp.data ?? []
+    return loaded<PathOutage[]>(resp.data ?? [])
   } catch (_err) {
-    // null (not []) so the caller can tell a failed load from an empty one and retry
-    showSnackBar({ msg: 'Failed to load path outages.' })
-    return null
-  } finally {
-    stopSpinner()
+    return loadFailed('Failed to load path outages.')
   }
 }
 
-const getNotificationServices = async (): Promise<string[] | null> => {
+const getNotificationServices = async (): Promise<ValidationResultWithPayload<string[]>> => {
   try {
     const resp = await v2.get(`${endpoint}/services`)
-    return Array.isArray(resp.data) ? resp.data : []
+    return loaded<string[]>(Array.isArray(resp.data) ? resp.data : [])
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to load the service list.' })
-    return null
+    return loadFailed('Failed to load the service list.')
   }
 }
 
 // preview builds the (potentially large) match list; the save path leaves it
 // false so validation costs only a rule parse on the server.
-const validateNotificationRule = async (rule: string, preview = false): Promise<RuleValidation | null> => {
+const validateNotificationRule = async (rule: string, preview = false): Promise<ValidationResultWithPayload<RuleValidation>> => {
   try {
     const resp = await v2.post(`${endpoint}/rule/validate`, { rule, preview })
-    return resp.data ?? null
+    return resp.data ? loaded<RuleValidation>(resp.data) : loadFailed('Failed to validate the rule.')
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to validate the rule.' })
-    return null
+    return loadFailed('Failed to validate the rule.')
   }
 }
 
-const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | null> => {
+const previewPathOutageRule = async (rule: string): Promise<ValidationResultWithPayload<PathOutagePreview>> => {
   try {
-    startSpinner()
     const resp = await v2.get(`${endpoint}/path-outages/preview?rule=${encodeURIComponent(rule)}`)
-    return resp.data ?? null
+    return resp.data ? loaded<PathOutagePreview>(resp.data) : loadFailed('Failed to validate the filter rule.')
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to validate the filter rule.' })
-    return null
-  } finally {
-    stopSpinner()
+    return loadFailed(errorMessage(err, 'Failed to validate the filter rule.'))
   }
 }
 
-const applyPathOutage = async (request: PathOutageRequest): Promise<boolean> => {
+const applyPathOutage = async (request: PathOutageRequest): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.post(`${endpoint}/path-outages`, request)
-    showSnackBar({ msg: request.criticalIp ? 'Critical path applied.' : 'Critical path cleared.' })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to apply the critical path.' })
-    return false
-  } finally {
-    stopSpinner()
+    return createFailureResult(errorMessage(err, 'Failed to apply the critical path.'))
   }
 }
 
-const deletePathOutage = async (nodeId: number): Promise<boolean> => {
+const deletePathOutage = async (nodeId: number): Promise<ValidationResult> => {
   try {
-    startSpinner()
     await v2.delete(`${endpoint}/path-outages/${nodeId}`)
-    showSnackBar({ msg: 'Critical path removed.' })
-    return true
+    return createSuccessResponse()
   } catch (err: any) {
-    const detail = err?.response?.data
-    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to remove critical path.' })
-    return false
-  } finally {
-    stopSpinner()
+    return createFailureResult(errorMessage(err, 'Failed to remove critical path.'))
   }
 }
 

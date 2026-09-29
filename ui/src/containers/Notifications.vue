@@ -47,6 +47,7 @@ import NotificationsHelpDialog from '@/components/Notifications/NotificationsHel
 import NotificationQueriesCard from '@/components/Notifications/NotificationQueriesCard.vue'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
 import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
@@ -60,6 +61,7 @@ const router = useRouter()
 const menuStore = useMenuStore()
 const notificationsStore = useNotificationsStore()
 const { adminRole } = useRole()
+const { withSpinner, report } = useActionFeedback()
 
 const showAboutDialog = ref(false)
 
@@ -79,12 +81,12 @@ const authLoaded = computed<boolean>(() => authStore.loaded)
 
 // the top-bar bell deep-links here with a preset (NMS-20124)
 const PRESETS = ['yourOutstanding', 'teamOutstanding', 'allOutstanding', 'allAcknowledged'] as const
-const initialLoad = () => {
+const initialLoad = async () => {
   const preset = route.query.preset as string
   if ((PRESETS as readonly string[]).includes(preset)) {
-    notificationsStore.applyPreset(preset as NotificationQueryPreset)
+    report(await withSpinner(() => notificationsStore.applyPreset(preset as NotificationQueryPreset)))
   } else {
-    notificationsStore.load()
+    report(await withSpinner(() => notificationsStore.load()))
   }
 }
 
