@@ -351,8 +351,17 @@ describe('MinionsTable.vue', () => {
   })
 
   describe('delete', () => {
+    it('greys out Delete for a Minion that is UP and says why', async () => {
+      ctx.store.minions = [minion('up1', { status: 'up' }), minion('down1', { status: 'down' }), minion('unk1', { status: 'unknown' })] as any
+      await ctx.wrapper.vm.$nextTick()
+      const buttons = ctx.wrapper.findAll('[data-test="delete-minion-button"]')
+      expect(buttons.map(b => b.attributes('disabled') !== undefined)).toEqual([false, false, true])
+      expect(buttons[2].attributes('title')).toBe('up1 is up; a running Minion cannot be deleted')
+      expect(buttons[0].attributes('title')).toBe('Delete down1')
+    })
+
     it('opens the delete dialog for the row and reports the dialog state', async () => {
-      ctx.store.minions = [minion('m1')] as any
+      ctx.store.minions = [minion('m1', { status: 'down' })] as any
       await ctx.wrapper.vm.$nextTick()
       await ctx.wrapper.find('[data-test="delete-minion-button"]').trigger('click')
       await ctx.wrapper.vm.$nextTick()

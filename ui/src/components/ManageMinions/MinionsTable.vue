@@ -146,7 +146,8 @@
             <OnmsIconButton
               :icon="Delete"
               severity="danger"
-              :title="`Delete ${data.id}`"
+              :disabled="isUp(data)"
+              :title="isUp(data) ? `${data.id} is up; a running Minion cannot be deleted` : `Delete ${data.id}`"
               :aria-label="`Delete ${data.id}`"
               data-test="delete-minion-button"
               @click="askDelete(data)"
