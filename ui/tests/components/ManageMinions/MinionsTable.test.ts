@@ -27,12 +27,17 @@ const DeleteDialogStub = {
   template: '<div v-if="visible" data-test="delete-dialog">{{ minion?.id }}</div>'
 }
 
+// records what each delete wrapper would show as its tooltip, in row order
+const tooltipText = vi.fn()
+const TooltipStub = { mounted: (_el: HTMLElement, binding: { value: string }) => tooltipText(binding.value) }
+
 const mountTable = (props: Record<string, unknown> = {}) => {
   const wrapper = mount(MinionsTable, {
     props: { now: NOW, ...props },
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-      stubs: { MinionDeleteDialog: DeleteDialogStub, TableCard: { template: '<div><slot /></div>' }}
+      stubs: { MinionDeleteDialog: DeleteDialogStub, TableCard: { template: '<div><slot /></div>' }},
+      directives: { 'onms-tooltip': TooltipStub }
     }
   })
   return { wrapper, store: useMinionAdminStore() }
@@ -52,6 +57,7 @@ describe('MinionsTable.vue', () => {
 
   beforeEach(() => {
     showToast.mockClear()
+    tooltipText.mockClear()
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] })
     vi.setSystemTime(new Date(NOW))
     ctx = mountTable()
@@ -86,7 +92,7 @@ describe('MinionsTable.vue', () => {
   })
 
   it('has no Edit action or editor dialog, only Delete', async () => {
-    ctx.store.minions = [minion('m1')] as any
+    ctx.store.minions = [minion('m1', { status: 'down' })] as any
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.find('[data-test="edit-minion-button"]').exists()).toBe(false)
     expect(ctx.wrapper.findComponent({ name: 'MinionEditorDialog' }).exists()).toBe(false)
@@ -356,8 +362,12 @@ describe('MinionsTable.vue', () => {
       await ctx.wrapper.vm.$nextTick()
       const buttons = ctx.wrapper.findAll('[data-test="delete-minion-button"]')
       expect(buttons.map(b => b.attributes('disabled') !== undefined)).toEqual([false, false, true])
-      expect(buttons[2].attributes('title')).toBe('up1 is up; a running Minion cannot be deleted')
-      expect(buttons[0].attributes('title')).toBe('Delete down1')
+      // the tooltip lives on the wrapper, which still receives the hover when the button is disabled
+      const wraps = ctx.wrapper.findAll('[data-test="delete-minion-wrap"]')
+      expect(wraps).toHaveLength(3)
+      expect(tooltipText).toHaveBeenNthCalledWith(1, 'Delete down1')
+      expect(tooltipText).toHaveBeenNthCalledWith(3, 'up1 is up; a running Minion cannot be deleted')
+      expect(buttons[2].attributes('aria-label')).toBe('up1 is up; a running Minion cannot be deleted')
     })
 
     it('opens the delete dialog for the row and reports the dialog state', async () => {

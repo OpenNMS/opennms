@@ -143,15 +143,21 @@
               @click="openEditor(data)"
             />
             -->
-            <OnmsIconButton
-              :icon="Delete"
-              severity="danger"
-              :disabled="isUp(data)"
-              :title="isUp(data) ? `${data.id} is up; a running Minion cannot be deleted` : `Delete ${data.id}`"
-              :aria-label="`Delete ${data.id}`"
-              data-test="delete-minion-button"
-              @click="askDelete(data)"
-            />
+            <!-- a disabled button gets no mouse events, so the wrapper carries the tooltip -->
+            <span
+              v-onms-tooltip.top="isUp(data) ? `${data.id} is up; a running Minion cannot be deleted` : `Delete ${data.id}`"
+              class="delete-wrap"
+              data-test="delete-minion-wrap"
+            >
+              <OnmsIconButton
+                :icon="Delete"
+                severity="danger"
+                :disabled="isUp(data)"
+                :aria-label="isUp(data) ? `${data.id} is up; a running Minion cannot be deleted` : `Delete ${data.id}`"
+                data-test="delete-minion-button"
+                @click="askDelete(data)"
+              />
+            </span>
           </div>
         </template>
       </OnmsColumn>
@@ -425,5 +431,9 @@ const askDelete = (minion: Minion) => {
   display: flex;
   gap: 0.25rem;
   flex-wrap: wrap;
+}
+
+.delete-wrap {
+  display: inline-flex;
 }
 </style>
