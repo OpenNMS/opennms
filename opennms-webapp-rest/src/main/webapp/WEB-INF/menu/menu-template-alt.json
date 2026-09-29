@@ -160,6 +160,13 @@
           "roles": null
         },
         {
+          "id": "notificationsConfigPreview",
+          "name": "Notifications Config (Preview)",
+          "url": "ui/index.html#/notifications-config",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "surveillanceCategories",
           "name": "Surveillance Categories",
           "url": "admin/categories.htm",

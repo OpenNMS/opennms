@@ -246,6 +246,13 @@
           "roles": null
         },
         {
+          "id": "notificationsConfigPreview",
+          "name": "Notifications Config (Preview)",
+          "url": "ui/index.html#/notifications-config",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "manageEventConfigurations",
           "name": "Manage Event Configurations",
           "url": "ui/index.html#/event-config",
