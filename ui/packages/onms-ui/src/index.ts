@@ -41,6 +41,7 @@ export { default as OnmsInputNumber } from './components/OnmsInputNumber.vue'
 export { default as OnmsInputText } from './components/OnmsInputText.vue'
 export { default as OnmsListbox } from './components/OnmsListbox.vue'
 export { default as OnmsMenu } from './components/OnmsMenu.vue'
+export { default as OnmsMessage } from './components/OnmsMessage.vue'
 export { default as OnmsMessageDialog } from './components/OnmsMessageDialog.vue'
 export { default as OnmsMultiSelect } from './components/OnmsMultiSelect.vue'
 export { default as OnmsPanel } from './components/OnmsPanel.vue'
@@ -70,6 +71,6 @@ export { releaseActiveToast, useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_G
 // Directives — register app-level; core does this in src/theme/primevue-setup.ts
 export { default as OnmsTooltip } from './directives/OnmsTooltip'
 
-export type { OnmsHourFormat, OnmsMenuItem, OnmsTablePageEvent, OnmsTableRowClickEvent, OnmsTableRowEditSaveEvent, OnmsTableSortEvent, OnmsTagSeverity } from './types'
+export type { OnmsHourFormat, OnmsMenuItem, OnmsTablePageEvent, OnmsTableRowClickEvent, OnmsTableRowEditSaveEvent, OnmsMessageSeverity, OnmsTableSortEvent, OnmsTagSeverity } from './types'
 export type { OnmsColumnProps, OnmsColumnSlots } from './components/OnmsColumn'
 export type { OnmsToastOptions, OnmsToastSeverity } from './composables/useOnmsToast'

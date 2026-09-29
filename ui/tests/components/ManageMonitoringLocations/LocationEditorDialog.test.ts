@@ -58,13 +58,17 @@ describe('LocationEditorDialog.vue', () => {
       await ctx.wrapper.find('[data-test="location-name-input"]').setValue('LocA')
       await ctx.wrapper.find('[data-test="monitoring-area-input"]').setValue('Area A')
     }
-    const setPriority = async (value: number) => {
-      const input = ctx.wrapper.findComponent('[data-test="priority-input"]') as unknown as VueWrapper<any>
-      input.vm.$emit('update:modelValue', value)
-      await ctx.wrapper.vm.$nextTick()
-    }
+    it('shows only the name and description fields', () => {
+      expect(ctx.wrapper.find('[data-test="location-name-input"]').exists()).toBe(true)
+      expect(ctx.wrapper.find('[data-test="monitoring-area-input"]').exists()).toBe(true)
+      expect(ctx.wrapper.text()).toContain('Description')
+      expect(ctx.wrapper.text()).not.toContain('Monitoring Area')
+      for (const hidden of ['geolocation-input', 'latitude-input', 'longitude-input', 'priority-input']) {
+        expect(ctx.wrapper.find(`[data-test="${hidden}"]`).exists()).toBe(false)
+      }
+    })
 
-    it('disables Save until both a name and a monitoring area are entered', async () => {
+    it('disables Save until both a name and a description are entered', async () => {
       expect(saveDisabled(ctx.wrapper)).toBe(true)
       await ctx.wrapper.find('[data-test="location-name-input"]').setValue('LocA')
       expect(saveDisabled(ctx.wrapper)).toBe(true)
@@ -111,7 +115,7 @@ describe('LocationEditorDialog.vue', () => {
       expect(fieldErrors(ctx.wrapper)).toEqual([])
     })
 
-    it('rejects a monitoring area longer than the 256-character column', async () => {
+    it('rejects a description longer than the 256-character column', async () => {
       await ctx.wrapper.find('[data-test="location-name-input"]').setValue('LocA')
       const input = ctx.wrapper.find('[data-test="monitoring-area-input"]')
       expect(input.attributes('maxlength')).toBe('256')
@@ -120,42 +124,11 @@ describe('LocationEditorDialog.vue', () => {
       expect(saveDisabled(ctx.wrapper)).toBe(true)
     })
 
-    it('rejects a priority below 1 and blocks saving', async () => {
-      await fillValidNameArea()
-      await setPriority(0)
-      expect(fieldErrors(ctx.wrapper).join(' ')).toContain('at least 1')
-      expect(saveDisabled(ctx.wrapper)).toBe(true)
-    })
-
-    it('rejects a priority beyond the 32-bit integer max and blocks saving', async () => {
-      await fillValidNameArea()
-      await setPriority(3000000000)
-      expect(fieldErrors(ctx.wrapper).join(' ')).toContain('or less')
-      expect(saveDisabled(ctx.wrapper)).toBe(true)
-    })
-
-    it('rejects a non-integer priority', async () => {
-      await fillValidNameArea()
-      await setPriority(2.5)
-      expect(fieldErrors(ctx.wrapper).join(' ')).toContain('whole number')
-      expect(saveDisabled(ctx.wrapper)).toBe(true)
-    })
-
-    it('accepts a valid priority and shows the hint', async () => {
-      await fillValidNameArea()
-      await setPriority(5)
-      expect(fieldErrors(ctx.wrapper)).toEqual([])
-      expect(ctx.wrapper.text()).toContain('Lower numbers sort first (default 100).')
-      expect(saveDisabled(ctx.wrapper)).toBe(false)
-    })
-
-    it('creates the location, toasts and closes on success', async () => {
+    it('creates the location with only name and description, toasts and closes on success', async () => {
       await fillValidNameArea()
       await ctx.wrapper.find('[data-test="save-button"]').trigger('click')
       await flushPromises()
-      expect(ctx.store.createLocation).toHaveBeenCalledWith(
-        expect.objectContaining({ 'location-name': 'LocA', 'monitoring-area': 'Area A' })
-      )
+      expect(ctx.store.createLocation).toHaveBeenCalledWith({ 'location-name': 'LocA', 'monitoring-area': 'Area A' })
       expect(showToast).toHaveBeenCalledWith({ message: 'Monitoring location \'LocA\' created.', severity: 'success' })
       expect(ctx.wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
     })
@@ -187,15 +160,18 @@ describe('LocationEditorDialog.vue', () => {
 
     it('hides the immutable name field and does not flag its own name as a duplicate', () => {
       expect(ctx.wrapper.find('[data-test="location-name-input"]').exists()).toBe(false)
+      expect(ctx.wrapper.find('[data-test="priority-input"]').exists()).toBe(false)
       expect(fieldErrors(ctx.wrapper)).toEqual([])
       expect(saveDisabled(ctx.wrapper)).toBe(false)
     })
 
-    it('preserves unexposed fields (tags) via spread and toasts on update', async () => {
+    it('preserves the hidden fields (tags, coordinates, priority) via spread and toasts on update', async () => {
       await ctx.wrapper.find('[data-test="monitoring-area-input"]').setValue('New Area')
       await ctx.wrapper.find('[data-test="save-button"]').trigger('click')
       await flushPromises()
-      expect(ctx.store.updateLocation).toHaveBeenCalledWith(expect.objectContaining({ tags: ['keepme'], 'monitoring-area': 'New Area' }))
+      expect(ctx.store.updateLocation).toHaveBeenCalledWith(expect.objectContaining({
+        'location-name': 'LocA', 'monitoring-area': 'New Area', tags: ['keepme'], latitude: 1, longitude: 2, priority: 5, geolocation: null
+      }))
       expect(showToast).toHaveBeenCalledWith({ message: 'Monitoring location \'LocA\' updated.', severity: 'success' })
       expect(ctx.wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
     })

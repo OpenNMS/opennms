@@ -35,7 +35,7 @@
       </FormField>
 
       <FormField
-        label="Monitoring Area"
+        label="Description"
         for="monitoring-area"
         required
         :error="areaProblem || undefined"
@@ -50,6 +50,7 @@
         />
       </FormField>
 
+      <!-- geolocation, coordinates and priority are hidden for now (NMS-20364)
       <FormField label="Geolocation (address)" for="geolocation" :error="geolocationProblem || undefined">
         <OnmsInputText
           id="geolocation"
@@ -105,6 +106,7 @@
           data-test="priority-input"
         />
       </FormField>
+      -->
     </div>
 
     <template #footer>
@@ -122,7 +124,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsInputNumber, OnmsInputText, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsInputText, useOnmsToast } from '@opennms/onms-ui'
+// coordinates and priority inputs are hidden for now (NMS-20364)
+// import { OnmsInputNumber } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { isPathAddressable } from '@/lib/adminValidation'
@@ -141,20 +145,21 @@ const { showToast } = useOnmsToast()
 
 const locationName = ref('')
 const monitoringArea = ref('')
-const geolocation = ref('')
-const latitude = ref<number | null>(null)
-const longitude = ref<number | null>(null)
-const priority = ref<number | null>(null)
+// hidden for now (NMS-20364)
+// const geolocation = ref('')
+// const latitude = ref<number | null>(null)
+// const longitude = ref<number | null>(null)
+// const priority = ref<number | null>(null)
 const saving = ref(false)
 const errorText = ref('')
 
 const isEditing = computed(() => props.location !== null)
 const originalName = computed(() => props.location?.['location-name'] ?? '')
 
-// monitoringlocations.id and monitoringarea are varchar(256), geolocation varchar(2048)
+// monitoringlocations.id and monitoringarea are varchar(256)
 const MAX_NAME_LENGTH = 256
 const MAX_AREA_LENGTH = 256
-const MAX_GEOLOCATION_LENGTH = 2048
+// const MAX_GEOLOCATION_LENGTH = 2048
 
 // the location name is a URL path segment on write; block what breaks addressing or markup
 const nameProblem = computed(() => {
@@ -180,37 +185,38 @@ const nameProblem = computed(() => {
   return null
 })
 const areaProblem = computed(() =>
-  monitoringArea.value.trim().length > MAX_AREA_LENGTH ? `The monitoring area cannot be longer than ${MAX_AREA_LENGTH} characters.` : null)
-const geolocationProblem = computed(() =>
-  geolocation.value.trim().length > MAX_GEOLOCATION_LENGTH ? `The geolocation cannot be longer than ${MAX_GEOLOCATION_LENGTH} characters.` : null)
-const latProblem = computed(() =>
-  latitude.value !== null && (latitude.value < -90 || latitude.value > 90) ? 'Latitude must be between -90 and 90.' : null)
-const lngProblem = computed(() =>
-  longitude.value !== null && (longitude.value < -180 || longitude.value > 180) ? 'Longitude must be between -180 and 180.' : null)
+  monitoringArea.value.trim().length > MAX_AREA_LENGTH ? `The description cannot be longer than ${MAX_AREA_LENGTH} characters.` : null)
 
-// priority is stored in a 32-bit int DB column; anything larger fails the save
-const MAX_PRIORITY = 2147483647
-const priorityProblem = computed(() => {
-  if (priority.value === null || priority.value === undefined) {
-    return null
-  }
-  if (!Number.isInteger(priority.value)) {
-    return 'Priority must be a whole number.'
-  }
-  if (priority.value < 1) {
-    return 'Priority must be at least 1 (1 = highest).'
-  }
-  if (priority.value > MAX_PRIORITY) {
-    return `Priority must be ${MAX_PRIORITY} or less.`
-  }
-  return null
-})
+// hidden for now (NMS-20364)
+// const geolocationProblem = computed(() =>
+//   geolocation.value.trim().length > MAX_GEOLOCATION_LENGTH ? `The geolocation cannot be longer than ${MAX_GEOLOCATION_LENGTH} characters.` : null)
+// const latProblem = computed(() =>
+//   latitude.value !== null && (latitude.value < -90 || latitude.value > 90) ? 'Latitude must be between -90 and 90.' : null)
+// const lngProblem = computed(() =>
+//   longitude.value !== null && (longitude.value < -180 || longitude.value > 180) ? 'Longitude must be between -180 and 180.' : null)
+//
+// // priority is stored in a 32-bit int DB column; anything larger fails the save
+// const MAX_PRIORITY = 2147483647
+// const priorityProblem = computed(() => {
+//   if (priority.value === null || priority.value === undefined) {
+//     return null
+//   }
+//   if (!Number.isInteger(priority.value)) {
+//     return 'Priority must be a whole number.'
+//   }
+//   if (priority.value < 1) {
+//     return 'Priority must be at least 1 (1 = highest).'
+//   }
+//   if (priority.value > MAX_PRIORITY) {
+//     return `Priority must be ${MAX_PRIORITY} or less.`
+//   }
+//   return null
+// })
 
 const isValid = computed(() =>
   (isEditing.value || !!locationName.value.trim())
   && !!monitoringArea.value.trim()
-  && !nameProblem.value && !areaProblem.value && !geolocationProblem.value
-  && !latProblem.value && !lngProblem.value && !priorityProblem.value)
+  && !nameProblem.value && !areaProblem.value)
 
 watch(
   () => props.visible,
@@ -221,27 +227,28 @@ watch(
     errorText.value = ''
     locationName.value = props.location?.['location-name'] ?? ''
     monitoringArea.value = props.location?.['monitoring-area'] ?? ''
-    geolocation.value = props.location?.geolocation ?? ''
-    latitude.value = props.location?.latitude ?? null
-    longitude.value = props.location?.longitude ?? null
-    priority.value = props.location?.priority ?? null
+    // geolocation.value = props.location?.geolocation ?? ''
+    // latitude.value = props.location?.latitude ?? null
+    // longitude.value = props.location?.longitude ?? null
+    // priority.value = props.location?.priority ?? null
   }
 )
 
 const save = async () => {
   saving.value = true
   try {
-    // spread the original so fields this form doesn't expose (tags) round-trip
+    // spread the original so fields this form doesn't expose (tags, geolocation,
+    // coordinates, priority) round-trip; on update the service re-reads them anyway
     const base = props.location ?? {}
     const name = isEditing.value ? originalName.value : locationName.value.trim()
     const payload = {
       ...base,
       'location-name': name,
-      'monitoring-area': monitoringArea.value.trim(),
-      geolocation: geolocation.value.trim() || null,
-      latitude: latitude.value,
-      longitude: longitude.value,
-      priority: priority.value
+      'monitoring-area': monitoringArea.value.trim()
+      // geolocation: geolocation.value.trim() || null,
+      // latitude: latitude.value,
+      // longitude: longitude.value,
+      // priority: priority.value
     } as MonitoringLocation
     const result = isEditing.value ? await store.updateLocation(payload) : await store.createLocation(payload)
     if (result.success) {
@@ -263,16 +270,9 @@ const save = async () => {
   gap: 1rem;
   padding-top: 0.5rem;
 
-  :deep(input),
-  :deep(.p-inputnumber) {
+  :deep(input) {
     width: 100%;
   }
-}
-
-.lat-lng {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
 }
 
 .dialog-error {
