@@ -78,8 +78,9 @@
       class="preview-result"
       data-test="preview-result"
     >
-      <strong>{{ previewResult.totalCount }}</strong> node{{ previewResult.totalCount === 1 ? '' : 's' }} match the rule<span v-if="previewResult.totalCount > previewResult.nodes.length"> (showing first {{ previewResult.nodes.length }})</span>:
-      <div class="node-chips">
+      <!-- "1 node matches", "N nodes match"; the colon and chip list only when there is something to list -->
+      <strong>{{ previewResult.totalCount }}</strong> node{{ previewResult.totalCount === 1 ? ' matches' : 's match' }} the rule<span v-if="previewResult.totalCount > previewResult.nodes.length"> (showing first {{ previewResult.nodes.length }})</span><template v-if="previewResult.totalCount > 0">:</template>
+      <div v-if="previewResult.nodes.length" class="node-chips">
         <OnmsChip
           v-for="node in previewResult.nodes"
           :key="node.nodeId"

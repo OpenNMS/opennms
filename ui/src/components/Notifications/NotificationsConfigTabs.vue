@@ -123,8 +123,6 @@ const onStatusToggle = async (value: boolean) => {
   .status-hint {
     margin-top: 1rem;
     color: var(--p-text-muted-color);
-    font-size: 0.9rem;
-    max-width: 60ch;
   }
 }
 </style>
