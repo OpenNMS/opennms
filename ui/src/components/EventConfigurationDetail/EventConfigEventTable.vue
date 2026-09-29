@@ -43,6 +43,7 @@
 
     <StagedReorderList
       v-if="store.eventsReorderMode"
+      ref="reorderList"
       :items="store.orderedEvents"
       :item-label="eventLabel"
       :item-search-text="eventSearchText"
@@ -200,7 +201,7 @@
 
 <script setup lang="ts">
 import { computed, ref, useId } from 'vue'
-import { useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
@@ -240,6 +241,16 @@ const emptyListContent = {
 }
 
 const expandedRows = ref<Record<string | number, boolean>>({})
+
+// Leaving the page (Go Back, breadcrumbs, menu) with unsaved reorder edits asks first,
+// the same way the Cancel button does.
+const reorderList = ref<{ confirmLeave: () => Promise<boolean> } | null>(null)
+onBeforeRouteLeave(() => {
+  if (store.eventsReorderMode && reorderList.value) {
+    return reorderList.value.confirmLeave()
+  }
+  return true
+})
 
 const eventLabel = (event: EventConfigEventSummary) => event.eventLabel
 const eventSearchText = (event: EventConfigEventSummary) => `${event.uei} ${event.eventLabel}`

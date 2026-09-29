@@ -71,6 +71,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
   }),
   actions: {
     async fetchSourceById(id: string) {
+      // the store outlives the page, so a reorder left open on another source must not carry over
+      this.eventsReorderMode = false
+      this.orderedEvents = []
       try {
         const response = await getEventConfSourceById(id)
         this.selectedSource = response

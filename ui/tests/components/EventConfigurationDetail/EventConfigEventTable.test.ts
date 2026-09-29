@@ -12,14 +12,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
+const routeLeaveGuards: Array<(...args: unknown[]) => unknown> = []
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: mockPush })
+  useRouter: () => ({ push: mockPush }),
+  onBeforeRouteLeave: (guard: (...args: unknown[]) => unknown) => routeLeaveGuards.push(guard)
 }))
 
+const mockConfirmLeave = vi.fn()
 const stubs = {
   DeleteEventConfigEventDialog: { name: 'DeleteEventConfigEventDialog', template: '<div class="delete-event-dialog-stub"></div>' },
   ChangeEventConfigEventStatusDialog: { name: 'ChangeEventConfigEventStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
-  StagedReorderList: { name: 'StagedReorderList', props: ['items', 'itemNoun', 'saving'], template: '<div class="staged-reorder-stub"></div>' }
+  StagedReorderList: {
+    name: 'StagedReorderList',
+    props: ['items', 'itemNoun', 'saving'],
+    template: '<div class="staged-reorder-stub"></div>',
+    methods: { confirmLeave: (...args: unknown[]) => mockConfirmLeave(...args) }
+  }
 }
 
 describe('EventConfigEventTable.vue', () => {
@@ -41,6 +49,7 @@ describe('EventConfigEventTable.vue', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    routeLeaveGuards.length = 0
 
     mockEvent = {
       id: 1,
@@ -121,6 +130,22 @@ describe('EventConfigEventTable.vue', () => {
       expect(wrapper.find('[data-test="reorder-events-button"]').exists()).toBe(false)
       // the reorder list carries its own intro
       expect(wrapper.find('[data-test="order-info"]').exists()).toBe(false)
+    })
+
+    it('leaving the route outside reorder mode passes without asking', async () => {
+      expect(routeLeaveGuards.length).toBe(1)
+      expect(await routeLeaveGuards[0]()).toBe(true)
+      expect(mockConfirmLeave).not.toHaveBeenCalled()
+    })
+
+    it('leaving the route in reorder mode passes the reorder list answer through', async () => {
+      store.eventsReorderMode = true
+      await nextTick()
+      mockConfirmLeave.mockResolvedValue(false)
+      expect(await routeLeaveGuards[0]()).toBe(false)
+
+      mockConfirmLeave.mockResolvedValue(true)
+      expect(await routeLeaveGuards[0]()).toBe(true)
     })
   })
 

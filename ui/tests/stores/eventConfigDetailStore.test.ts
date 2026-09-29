@@ -3,6 +3,7 @@ import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
   filterEventConfigEvents,
+  getEventConfSourceById,
   getOrderedEventConfigEvents,
   updateEventConfigEventsOrder
 } from '@/services/eventConfigService'
@@ -610,6 +611,18 @@ describe('useEventConfigDetailStore', () => {
 
       expect(result.ok).toBe(false)
       expect(updateEventConfigEventsOrder).not.toHaveBeenCalled()
+    })
+
+    it('loading a source drops reorder state left over from another source', async () => {
+      store.eventsReorderMode = true
+      store.orderedEvents = orderedEvents
+      vi.mocked(getEventConfSourceById).mockResolvedValue(mockSource)
+      vi.mocked(filterEventConfigEvents).mockResolvedValue(mockFilterResponse)
+
+      await store.fetchSourceById('1')
+
+      expect(store.eventsReorderMode).toBe(false)
+      expect(store.orderedEvents).toEqual([])
     })
   })
 

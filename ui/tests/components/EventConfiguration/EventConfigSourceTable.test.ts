@@ -10,8 +10,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
+const routeLeaveGuards: Array<(...args: unknown[]) => unknown> = []
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: mockPush })
+  useRouter: () => ({ push: mockPush }),
+  onBeforeRouteLeave: (guard: (...args: unknown[]) => unknown) => routeLeaveGuards.push(guard)
 }))
 
 const mockDownloadEventConfXmlBySourceId = vi.fn()
@@ -24,10 +26,16 @@ vi.mock('@/services/eventConfigService', () => ({
 }))
 
 // Stub the child dialogs so this suite focuses on the table's own behaviour.
+const mockConfirmLeave = vi.fn()
 const stubs = {
   DeleteEventConfigSourceDialog: { name: 'DeleteEventConfigSourceDialog', template: '<div class="delete-dialog-stub"></div>' },
   ChangeEventConfigSourceStatusDialog: { name: 'ChangeEventConfigSourceStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
-  StagedReorderList: { name: 'StagedReorderList', props: ['items', 'itemNoun', 'saving'], template: '<div class="staged-reorder-stub"></div>' }
+  StagedReorderList: {
+    name: 'StagedReorderList',
+    props: ['items', 'itemNoun', 'saving'],
+    template: '<div class="staged-reorder-stub"></div>',
+    methods: { confirmLeave: (...args: unknown[]) => mockConfirmLeave(...args) }
+  }
 }
 
 describe('EventConfigSourceTable.vue', () => {
@@ -48,6 +56,7 @@ describe('EventConfigSourceTable.vue', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    routeLeaveGuards.length = 0
 
     mockSource = {
       id: 1,
@@ -120,6 +129,22 @@ describe('EventConfigSourceTable.vue', () => {
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(false)
       // the reorder list carries its own intro
       expect(wrapper.find('[data-test="order-info"]').exists()).toBe(false)
+    })
+
+    it('leaving the route outside reorder mode passes without asking', async () => {
+      expect(routeLeaveGuards.length).toBe(1)
+      expect(await routeLeaveGuards[0]()).toBe(true)
+      expect(mockConfirmLeave).not.toHaveBeenCalled()
+    })
+
+    it('leaving the route in reorder mode passes the reorder list answer through', async () => {
+      store.sourcesReorderMode = true
+      await nextTick()
+      mockConfirmLeave.mockResolvedValue(false)
+      expect(await routeLeaveGuards[0]()).toBe(false)
+
+      mockConfirmLeave.mockResolvedValue(true)
+      expect(await routeLeaveGuards[0]()).toBe(true)
     })
   })
 

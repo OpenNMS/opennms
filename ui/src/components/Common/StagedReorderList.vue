@@ -242,7 +242,7 @@
       actionButtonText="Discard"
       cancelButtonText="Keep Editing"
       @ok="discardAndClose"
-      @cancel="discardConfirmVisible = false"
+      @cancel="keepEditing"
     >
       <template #content>
         <p>The new {{ itemNoun }} order has not been saved. Leaving discards it.</p>
@@ -615,9 +615,9 @@ const saveOrder = async () => {
       msg: result.message || `Failed to save the ${props.itemNoun} order.`,
       error: true
     })
-    // a 400 means the list no longer matches the server (for example an item added meanwhile):
-    // re-fetch so the reorder mode edits the current truth
-    if (result.status === 400) {
+    // 400 or 404 means the list no longer matches the server (an item added or deleted
+    // meanwhile): re-fetch so the reorder mode edits the current truth
+    if (result.status === 400 || result.status === 404) {
       await props.refetch()
     }
   }
@@ -640,11 +640,35 @@ const requestClose = () => {
   }
 }
 
+// Route guards in the host components call this before navigating away: unsaved edits
+// raise the same discard dialog, and the promise carries the user's choice back to the guard.
+let leaveResolver: ((leave: boolean) => void) | null = null
+
+const confirmLeave = (): Promise<boolean> => {
+  if (!isDirty.value) {
+    return Promise.resolve(true)
+  }
+  discardConfirmVisible.value = true
+  return new Promise((resolve) => {
+    leaveResolver = resolve
+  })
+}
+
+const keepEditing = () => {
+  discardConfirmVisible.value = false
+  leaveResolver?.(false)
+  leaveResolver = null
+}
+
 const discardAndClose = () => {
   discardConfirmVisible.value = false
   resetOrder()
   emit('close')
+  leaveResolver?.(true)
+  leaveResolver = null
 }
+
+defineExpose({ confirmLeave })
 </script>
 
 <style lang="scss" scoped>

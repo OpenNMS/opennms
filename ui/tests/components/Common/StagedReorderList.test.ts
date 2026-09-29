@@ -233,6 +233,15 @@ describe('StagedReorderList.vue', () => {
     expect(wrapper.emitted('close')).toBeFalsy()
   })
 
+  it('a save rejected because an item was deleted meanwhile (404) also re-fetches', async () => {
+    saveMock.mockResolvedValue({ ok: false, status: 404, message: 'Event not found: 3' })
+    wrapper.vm.moveStep(wrapper.vm.workingItems[0], 1)
+    await wrapper.vm.saveOrder()
+    expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Event not found: 3', error: true })
+    expect(refetchMock).toHaveBeenCalled()
+    expect(wrapper.emitted('close')).toBeFalsy()
+  })
+
   it('reset restores the original order', async () => {
     wrapper.vm.moveStep(wrapper.vm.workingItems[0], 2)
     await nextTick()
@@ -259,6 +268,33 @@ describe('StagedReorderList.vue', () => {
     wrapper.vm.requestClose()
     expect(wrapper.vm.discardConfirmVisible).toBe(false)
     expect(wrapper.emitted('close')).toBeTruthy()
+  })
+
+  describe('confirmLeave (route-leave guard hook)', () => {
+    it('allows leaving immediately when nothing is staged', async () => {
+      await expect(wrapper.vm.confirmLeave()).resolves.toBe(true)
+      expect(wrapper.vm.discardConfirmVisible).toBe(false)
+    })
+
+    it('keeps editing when the discard dialog is cancelled', async () => {
+      wrapper.vm.moveStep(wrapper.vm.workingItems[0], 1)
+      const pending = wrapper.vm.confirmLeave()
+      expect(wrapper.vm.discardConfirmVisible).toBe(true)
+
+      wrapper.vm.keepEditing()
+      await expect(pending).resolves.toBe(false)
+      expect(wrapper.vm.isDirty).toBe(true)
+    })
+
+    it('discards and allows leaving when the discard dialog is confirmed', async () => {
+      wrapper.vm.moveStep(wrapper.vm.workingItems[0], 1)
+      const pending = wrapper.vm.confirmLeave()
+
+      wrapper.vm.discardAndClose()
+      await expect(pending).resolves.toBe(true)
+      expect(workingIds()).toEqual([1, 2, 3, 4, 5])
+      expect(wrapper.emitted('close')).toBeTruthy()
+    })
   })
 
   describe('windowed rendering', () => {

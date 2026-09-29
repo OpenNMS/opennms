@@ -33,6 +33,7 @@
 
     <StagedReorderList
       v-if="store.sourcesReorderMode"
+      ref="reorderList"
       :items="store.orderedSources"
       :item-label="sourceLabel"
       :item-search-text="sourceSearchText"
@@ -187,7 +188,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
-import { useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
@@ -228,6 +229,16 @@ const emptyListContent = {
 
 const sourceLabel = (source: EventConfigSource) => source.name
 const sourceSearchText = (source: EventConfigSource) => `${source.name} ${source.vendor}`
+
+// Leaving the page (source detail link, breadcrumbs, menu) with unsaved reorder edits asks
+// first, the same way the Cancel button does.
+const reorderList = ref<{ confirmLeave: () => Promise<boolean> } | null>(null)
+onBeforeRouteLeave(() => {
+  if (store.sourcesReorderMode && reorderList.value) {
+    return reorderList.value.confirmLeave()
+  }
+  return true
+})
 
 const rowMenu = ref()
 const rowMenuTarget = ref<EventConfigSource | null>(null)
