@@ -49,7 +49,13 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
 
-    Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String eventOrder, Integer totalRecords, Integer offset, Integer limit);
+    /**
+     * Pages the events of a source. {@code eventSortBy} may be uei, eventLabel, description, severity,
+     * enabled, createdTime or eventOrder; anything else (including null) sorts by eventOrder, the
+     * evaluation order within the source. {@code sortDirection} is asc or desc; when absent, eventOrder is
+     * ascending (first evaluated first) and every other field descending. An unknown source yields an empty page.
+     */
+    Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String sortDirection, Integer totalRecords, Integer offset, Integer limit);
 
     void saveAll(Collection<EventConfEvent> events);
 
@@ -58,4 +64,26 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     void deleteByEventIds(Long sourceId,List<Long> eventIds);
 
     List<EventConfEvent> findEventsByVendor(final String vendor);
+
+    /**
+     * @return the highest {@code eventOrder} within the given source, or 0 when the source has no events.
+     */
+    Integer findMaxEventOrder(Long sourceId);
+
+    /**
+     * Allocates the {@code eventOrder} for an event appended to the given source
+     * ({@code findMaxEventOrder + 1}). The source row is locked for the rest of the current
+     * transaction so that concurrent appenders to the same source are serialized and cannot
+     * receive the same value. Must be called inside a transaction.
+     */
+    /**
+     * @throws javax.persistence.EntityNotFoundException if no source with that id exists
+     */
+    Integer nextEventOrder(Long sourceId);
+
+    /**
+     * Renumbers the events of the given source so that {@code eventOrder} is dense 1..N,
+     * preserving the current relative order (by eventOrder, then id).
+     */
+    void compactEventOrder(Long sourceId);
 }

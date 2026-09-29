@@ -60,4 +60,11 @@ describe('OnmsInputNumber contract', () => {
     await wrapper.findComponent({ name: 'InputNumber' }).vm.$emit('update:modelValue', null)
     expect(wrapper.emitted('update:modelValue')).toEqual([[null]])
   })
+
+  it('hides the spinner buttons unless asked', () => {
+    expect(mountIt().findComponent({ name: 'InputNumber' }).props('showButtons')).toBe(false)
+    const spun = mountIt({ showButtons: true, buttonLayout: 'horizontal' })
+    expect(spun.findComponent({ name: 'InputNumber' }).props('showButtons')).toBe(true)
+    expect(spun.findComponent({ name: 'InputNumber' }).props('buttonLayout')).toBe('horizontal')
+  })
 })

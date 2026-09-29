@@ -1746,7 +1746,7 @@
     <activemqVersion>5.19.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.84</bouncyCastleVersion>
+    <bouncyCastleVersion>1.85</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <byteBuddyVersion>1.14.9</byteBuddyVersion>
@@ -1803,8 +1803,7 @@
     <fopVersion>2.10</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
-    <!-- this has to match FST's direct dependency because we specify it in karaf features -->
-    <objenesisVersion>2.5.1</objenesisVersion>
+    <objenesisVersion>3.5</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
@@ -1828,12 +1827,18 @@
     <httpcoreVersion>4.4.16</httpcoreVersion>
     <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
+    <!-- HttpComponents 5.x arrives transitively only (OWASP ESAPI -> AntiSamy, Apache Thrift).
+         Pinned here because AntiSamy 1.7.x lags behind the httpcore5 CVE fixes. -->
+    <httpcore5Version>5.4.3</httpcore5Version>
+    <httpclient5Version>5.6.4</httpclient5Version>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.18.9</jackson2Version>
-    <cxfJackson2Version>2.21.5</cxfJackson2Version>
+    <jackson2Version>2.22.1</jackson2Version>
+    <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
+    <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
     <jmsApiVersion>2.0.1</jmsApiVersion>
-    <snakeyamlVersion>2.3</snakeyamlVersion>
+    <!-- jackson-dataformat-yaml 2.21+ imports org.yaml.snakeyaml;version="[2.5,3)" -->
+    <snakeyamlVersion>2.5</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
     <jasperreportsVersion>7.0.7</jasperreportsVersion>
@@ -1878,7 +1883,7 @@
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
-    <jschVersion>0.2.11</jschVersion>
+    <jschVersion>2.28.7</jschVersion>
     <jsonVersion>20240303</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
@@ -1907,8 +1912,9 @@
     <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
     <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
-    <paxLoggingVersion>2.3.0</paxLoggingVersion>
+    <paxLoggingVersion>2.3.5</paxLoggingVersion>
     <paxSwissboxVersion>1.9.0</paxSwissboxVersion>
+    <!-- pax-swissbox-optional-jcl was not released alongside 1.9.0, so it keeps its own property -->
     <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
     <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
          container/pax-url-aether-patch to replace the plexus-utils it shades
@@ -1922,7 +1928,7 @@
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
-    <log4j2Version>2.25.5</log4j2Version>
+    <log4j2Version>2.26.1</log4j2Version>
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
@@ -1930,7 +1936,7 @@
     <minaVersion>2.2.9</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.2.16.Final</netty4Version>
+    <netty4Version>4.2.17.Final</netty4Version>
     <newtsVersion>3.0.1</newtsVersion>
     <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
@@ -1946,8 +1952,8 @@
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>4.9.2</okhttp3Version>
     <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
-    <opennmsApiVersion>2.0.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>2.0.1</opennmsApiVersion>
+    <opennmsApiVersionOsgi>2.0.1</opennmsApiVersionOsgi>
     <osgiVersion>8.0.0</osgiVersion>
     <osgiAnnotationVersion>8.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1996,7 +2002,7 @@
     <xmlSchemaVersion>2.3.1</xmlSchemaVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xstreamVersion>1.4.21</xstreamVersion>
-    <wsmanVersion>1.3.3</wsmanVersion>
+    <wsmanVersion>1.3.7</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.15.0</minaSshdVersion>
@@ -2806,11 +2812,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.request-tracker</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.phonebook</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3038,11 +3039,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-alarm-northbounder-jms</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3468,11 +3464,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-javamail-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-rt</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -4014,6 +4005,11 @@
         <version>${xstreamVersion}_1</version>
       </dependency>
       <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>${objenesisVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.2.2</version>
@@ -4193,6 +4189,21 @@
           </exclusion>
         </exclusions>
      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${httpcore5Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5-h2</artifactId>
+        <version>${httpcore5Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${httpclient5Version}</version>
+      </dependency>
      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
@@ -4502,7 +4513,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson2Version}</version>
+        <version>${jackson2AnnotationsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -5184,17 +5195,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-orm</artifactId>
         <version>${springVersion}</version>
         <exclusions>
@@ -5264,17 +5264,6 @@
         </exclusions>
       </dependency>
       <!-- spring-webmvc-portlet was removed in Spring 5.0; no OpenNMS module consumes it. -->
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-websocket</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -5471,6 +5460,16 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk18on</artifactId>
+        <version>${bouncyCastleVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcutil-jdk18on</artifactId>
+        <version>${bouncyCastleVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bctls-jdk18on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
       <dependency>

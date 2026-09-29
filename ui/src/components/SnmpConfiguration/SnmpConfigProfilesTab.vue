@@ -52,7 +52,7 @@
 import { computed, ref } from 'vue'
 
 import { OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'

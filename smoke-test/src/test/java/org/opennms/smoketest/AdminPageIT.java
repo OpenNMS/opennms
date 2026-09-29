@@ -77,7 +77,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Service Monitoring
         new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
         new String[] { "Manage and Unmanage Interfaces and Services", "//span[text()='Manage and Unmanage Interfaces and Services']" },
-        new String[] { "Manage Business Services", "//div[@id='content']/iframe[@name='bsm-admin-page']" },
+        new String[] { "Manage Business Services", "//div[@id='content']//iframe[@name='bsm-admin-page']" },
 
         // Performance Measurement
         new String[] { "Manage SNMP Data Collection Config", "//div[@id='app']//h1[text()='Manage SNMP Data Collection Sources']" },
@@ -92,9 +92,9 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Additional Tools
         new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },
         new String[] { "Instrumentation Log Reader", "//span[text()='Filtering']" },
-        new String[] { "SNMP MIB Compiler", "//div[@id='content']/iframe[@name='mib-compiler']" },
-        new String[] { "Surveillance Views Configuration", "//div[@id='content']/iframe[@name='surveillance-views-config']" },
-        new String[] { "JMX Configuration Generator", "//div[@id='content']/iframe[@name='jmx-config-ui']" },
+        new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe[@name='mib-compiler']" },
+        new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe[@name='surveillance-views-config']" },
+        new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe[@name='jmx-config-ui']" },
         new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" },
         new String[] { "Product Update Enrollment", "//div[contains(@class, 'admin-product-update-enrollment-form-wrapper')]" }
     };
@@ -207,7 +207,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // ...and create it by hitting the button
         findElementByName("newApplicationSubmit").click();
         // now click the edit link...
-        findElementByXpath("//*[@id=\"content\"]/table/tbody/tr[2]/td[2]/a").click();
+        findElementByXpath("//*[@id=\"content\"]//table/tbody/tr[2]/td[2]/a").click();
         // ...and check for the given text.
         // This will fail if the text is not properly escaped, as a user dialogue will appear.
         waitUntil(pageContainsText("Edit application foobar"));

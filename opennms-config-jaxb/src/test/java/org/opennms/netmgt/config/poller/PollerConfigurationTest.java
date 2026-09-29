@@ -450,18 +450,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "pop3"
                 ));
 
-        example1.addService(new Service("NSClient", 300000, "false", "on",
-                                        "retry", "2",
-                                        "port", "1248",
-                                        "timeout", "3000"
-                ));
-
-        example1.addService(new Service("NSClientpp", 300000, "false", "on",
-                                        "retry", "2",
-                                        "port", "12489",
-                                        "timeout", "3000"
-                ));
-
         example1.addService(new Service("NRPE", 300000, "false", "on",
                                         "retry", "3",
                                         "timeout", "3000",

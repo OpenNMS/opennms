@@ -41,6 +41,7 @@ describe('DeleteEventConfigEventDialog', () => {
     enabled: true,
     eventCount: 3,
     fileOrder: 1,
+    evaluationOrder: 1,
     uploadedBy: 'admin',
     createdTime: new Date(),
     lastModified: new Date()

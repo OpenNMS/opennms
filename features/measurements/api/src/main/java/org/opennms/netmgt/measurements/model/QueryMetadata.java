@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -67,10 +69,14 @@ public class QueryMetadata {
         }
     }
 
+    @Schema(name = "resources",
+            description = "One entry per resource resolved from the request's sources.")
     public List<QueryResource> getResources() {
         return this.resources == null? new ArrayList<QueryResource>() : this.resources;
     }
 
+    @Schema(name = "nodes",
+            description = "Distinct nodes owning the resolved resources.")
     public Set<QueryNode> getNodes() {
         return this.nodes == null? new HashSet<QueryNode>() : this.nodes;
     }

@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="cdpLinkNode")
 @JsonRootName("cdpLinkNode")
+@Schema(description = "One discovered CDP neighbour of the node. Every field is a display string, with ifIndexes embedded in the port labels and the timestamps locale-formatted rather than epoch milliseconds.")
 public class CdpLinkNodeDTO {
 
     private String  cdpLocalPort;
@@ -53,6 +56,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpLocalPort")
     @JsonProperty("cdpLocalPort")
+    @Schema(description = "Local port as a display label built from the CDP interface name, the SNMP ifName, (ifindex:N) and the interface address, whichever of those resolved.", example = "GigabitEthernet0/1(ifindex:2)(10.10.1.1)")
     public String getCdpLocalPort() {
         return cdpLocalPort;
     }
@@ -68,6 +72,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpLocalPortUrl")
     @JsonProperty("cdpLocalPortUrl")
+    @Schema(description = "Relative URL of the local SNMP interface page. Omitted when the ifIndex could not be resolved.", example = "element/snmpinterface.jsp?node=1&ifindex=2")
     public String getCdpLocalPortUrl() {
         return cdpLocalPortUrl;
     }
@@ -83,6 +88,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCacheDevice")
     @JsonProperty("cdpCacheDevice")
+    @Schema(description = "Neighbour device as a display label: the raw cdpCacheDeviceId, or the node label followed by (Cisco Device Id:...) once the neighbour resolves to a node.", example = "core-sw-01(Cisco Device Id:SEP001B213C4D5E)")
     public String getCdpCacheDevice() {
         return cdpCacheDevice;
     }
@@ -98,6 +104,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCacheDeviceUrl")
     @JsonProperty("cdpCacheDeviceUrl")
+    @Schema(description = "Relative URL of the neighbour's linked-node page. Omitted when the neighbour does not resolve to a node.", example = "element/linkednode.jsp?node=7")
     public String getCdpCacheDeviceUrl() {
         return cdpCacheDeviceUrl;
     }
@@ -113,6 +120,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCacheDevicePort")
     @JsonProperty("cdpCacheDevicePort")
+    @Schema(description = "Neighbour port as a display label, in the same form as cdpLocalPort.", example = "GigabitEthernet0/24(ifindex:24)")
     public String getCdpCacheDevicePort() {
         return cdpCacheDevicePort;
     }
@@ -128,6 +136,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCacheDevicePortUrl")
     @JsonProperty("cdpCacheDevicePortUrl")
+    @Schema(description = "Relative URL of the neighbour's SNMP interface page. Omitted when the remote ifIndex could not be resolved.", example = "element/snmpinterface.jsp?node=7&ifindex=24")
     public String getCdpCacheDevicePortUrl() {
         return cdpCacheDevicePortUrl;
     }
@@ -143,6 +152,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCachePlatform")
     @JsonProperty("cdpCachePlatform")
+    @Schema(description = "Neighbour platform and software version joined by an arrow, built as cdpCacheDevicePlatform + space-arrow-space + cdpCacheVersion.", example = "cisco WS-C3750G-24TS -> Cisco IOS Software, C3750 Software")
     public String getCdpCachePlatform() {
         return cdpCachePlatform;
     }
@@ -158,6 +168,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpCreateTime")
     @JsonProperty("cdpCreateTime")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getCdpCreateTime() {
         return cdpCreateTime;
     }
@@ -173,6 +184,7 @@ public class CdpLinkNodeDTO {
 
     @XmlElement(name="cdpLastPollTime")
     @JsonProperty("cdpLastPollTime")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/18/26, 1:16:57\u202fPM")
     public String getCdpLastPollTime() {
         return cdpLastPollTime;
     }

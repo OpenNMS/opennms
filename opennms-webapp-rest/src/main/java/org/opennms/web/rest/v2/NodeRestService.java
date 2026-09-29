@@ -38,6 +38,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
@@ -48,8 +49,19 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -74,6 +86,9 @@ import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.support.SearchPropertyCollection;
+import org.opennms.web.rest.support.StringCollection;
+import org.opennms.web.rest.v2.model.NodeServiceTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -480,11 +495,488 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         return getDao().get(id);
     }
 
+    // The generic collection and item operations below are inherited from AbstractDaoRestServiceWithDTO.
+    // They are overridden here only so that each concrete path carries its own OpenAPI documentation;
+    // the bodies delegate unchanged.
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get nodes",
+            description = """
+        Return the nodes matching the FIQL expression in `_s`, or the first page of all nodes when `_s`
+        is absent. `limit` defaults to 10, so an unfiltered call returns 10 nodes and reports the
+        unpaged total in `totalCount`. A `Content-Range` header of the form `items 0-9/3677` accompanies
+        a 200. Nodes with `type` of `D` (deleted) are not excluded.
+
+        In JSON, `id` is a string and `createTime`, `lastIngressFlow`, `lastEgressFlow` and the asset
+        record timestamps are epoch milliseconds, although the derived schema for those fields shows
+        `string`/`date-time`. The XML representation of the same fields is ISO-8601 with an offset.
+
+        Example query: `_s=node.foreignSource==Servers;category.name==Production&orderBy=label`.""",
+            operationId = "NodeRestServiceGETNodes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Matching nodes.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsNodeList.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 1,
+                      "count": 1,
+                      "offset": 0,
+                      "node": [
+                        {
+                          "id": "257",
+                          "label": "ApiDoc-node",
+                          "labelSource": "U",
+                          "type": "A",
+                          "foreignSource": "ApiDoc",
+                          "foreignId": "apidoc-1",
+                          "location": "Default",
+                          "sysContact": "noc@example.org",
+                          "sysName": "apidoc",
+                          "sysDescription": "ApiDoc probe node",
+                          "createTime": 1787727308166,
+                          "lastIngressFlow": null,
+                          "lastEgressFlow": null,
+                          "nodeParentID": null,
+                          "categories": [],
+                          "assetRecord": {
+                            "id": 23599,
+                            "category": "Unspecified",
+                            "lastModifiedBy": "",
+                            "lastModifiedDate": 1787727308166
+                          }
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsNodeList.class),
+                                    examples = @ExampleObject(value = """
+                    <nodes count="1" offset="0" totalCount="1">
+                      <node foreignId="apidoc-1" foreignSource="ApiDoc" label="ApiDoc-node" id="257" type="A">
+                        <createTime>2026-08-26T02:55:08.166-04:00</createTime>
+                        <labelSource>U</labelSource>
+                        <location>Default</location>
+                        <sysContact>noc@example.org</sysContact>
+                      </node>
+                    </nodes>"""))
+                    }),
+            @ApiResponse(responseCode = "204", description = "No node matched. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "The FIQL expression could not be parsed, or it names a property Hibernate cannot resolve.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    @Override
+    public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return super.get(uriInfo, searchContext);
+    }
+
+    @GET
+    @Path("count")
+    @Produces({MediaType.TEXT_PLAIN})
+    @Operation(
+            summary = "Count nodes",
+            description = """
+        Return the number of nodes matching `_s` as a bare decimal string. `limit` and `offset` do not
+        affect the count.
+
+        Example query: `_s=node.foreignSource==Servers`.""",
+            operationId = "NodeRestServiceGETNodeCount")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Number of matching nodes.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "3677"))),
+            @ApiResponse(responseCode = "500", description = "The FIQL expression could not be parsed or resolved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    @Override
+    public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @GET
+    @Path("properties")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Get node search properties",
+            description = """
+        List the properties that may appear in a `_s` expression or in `orderBy` for the node
+        resources. A property that carries a closed set of values reports them in `values`, keyed by
+        the value stored in the database.""",
+            operationId = "NodeRestServiceGETNodeSearchProperties")
+    @ApiResponse(responseCode = "200", description = "Supported search properties.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = SearchPropertyCollection.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "searchProperty": [
+                        {"id": "label", "name": "Label", "type": "STRING", "orderBy": true, "iplike": false},
+                        {
+                          "id": "labelSource",
+                          "name": "Label Source",
+                          "type": "STRING",
+                          "orderBy": true,
+                          "iplike": false,
+                          "values": {
+                            "A": "IP Address",
+                            "H": "Hostname",
+                            "N": "NetBIOS",
+                            "S": "SNMP sysName",
+                            " ": "Unknown",
+                            "U": "User-Defined"
+                          }
+                        }
+                      ]
+                    }""")))
+    @Override
+    public Response getProperties(
+            @Parameter(in = ParameterIn.QUERY, name = "q",
+                    description = "Case-insensitive substring matched against the property `name`, not its id.",
+                    example = "Label")
+            @QueryParam("q") final String query) {
+        return super.getProperties(query);
+    }
+
+    @GET
+    @Path("properties/{propertyId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Get values of a node search property",
+            description = """
+        Return the distinct values a search property takes across the node table, or its declared value
+        list when it has one. The wrapper element is named `value` regardless of the property type;
+        numeric and timestamp properties come back in the collection type matching the property, with
+        the same envelope.""",
+            operationId = "NodeRestServiceGETNodeSearchPropertyValues")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Distinct values of the property.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = StringCollection.class),
+                            examples = @ExampleObject(value = """
+                    {"totalCount": 3, "count": 3, "offset": 0, "value": ["core-switch-01", "core-switch-02", "edge-router-01"]}"""))),
+            @ApiResponse(responseCode = "404", description = "No search property has that id. No body is returned.")
+    })
+    @Override
+    public Response getPropertyValues(
+            @Parameter(in = ParameterIn.PATH, name = "propertyId",
+                    description = "Property id as reported by `GET /nodes/properties`.", example = "label")
+            @PathParam("propertyId") final String propertyId,
+            @Parameter(in = ParameterIn.QUERY, name = "q",
+                    description = "Substring the value must contain. Case-sensitive for declared value lists, case-insensitive for values read from the database.",
+                    example = "core")
+            @QueryParam("q") final String query,
+            @Parameter(in = ParameterIn.QUERY, name = "limit",
+                    description = "Maximum number of values to return. Applied only when the values are read from the database.", example = "10")
+            @QueryParam("limit") final Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get a node",
+            description = """
+        Return one node by database id or by `foreignSource:foreignId`. Timestamps are epoch
+        milliseconds in JSON and ISO-8601 with an offset in XML.""",
+            operationId = "NodeRestServiceGETNodeById")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsNode.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": "257",
+                      "label": "ApiDoc-node",
+                      "labelSource": "U",
+                      "type": "A",
+                      "foreignSource": "ApiDoc",
+                      "foreignId": "apidoc-1",
+                      "location": "Default",
+                      "sysContact": "noc@example.org",
+                      "sysName": "apidoc",
+                      "sysDescription": "ApiDoc probe node",
+                      "createTime": 1787727308166,
+                      "lastIngressFlow": null,
+                      "lastEgressFlow": null,
+                      "nodeParentID": null,
+                      "categories": [],
+                      "assetRecord": {
+                        "id": 23599,
+                        "category": "Unspecified",
+                        "lastModifiedBy": "",
+                        "lastModifiedDate": 1787727308166
+                      }
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsNode.class),
+                                    examples = @ExampleObject(value = """
+                    <node foreignId="apidoc-1" foreignSource="ApiDoc" label="ApiDoc-node" id="257" type="A">
+                      <createTime>2026-08-26T02:55:08.166-04:00</createTime>
+                      <labelSource>U</labelSource>
+                      <location>Default</location>
+                      <sysContact>noc@example.org</sysContact>
+                    </node>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No such node. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "The path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    @Override
+    public Response get(@Context final UriInfo uriInfo,
+            @Parameter(in = ParameterIn.PATH, name = "id",
+                    description = "Node database id, or `foreignSource:foreignId`. A value that is neither is answered with 500.",
+                    example = "257")
+            @PathParam("id") final String id) {
+        return super.get(uriInfo, id);
+    }
+
+    @POST
+    @Path("{id}")
+    @Operation(
+            summary = "Rejected: create a node at a caller-chosen id",
+            description = "Always answered with 404, whether or not the id exists.",
+            operationId = "NodeRestServicePOSTNodeSpecific",
+            parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                    description = "Node database id, or `foreignSource:foreignId`. The value is not read: every request to this path is answered with 404.",
+                    example = "257"))
+    @ApiResponse(responseCode = "404", description = "Creating a node at a specific id is not supported. No body is returned.")
+    @Override
+    public Response createSpecific() {
+        return super.createSpecific();
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Create a node",
+            description = """
+        Create a node and send a `nodeAdded` event. When `location` is omitted the default monitoring
+        location is used, and the new node's URI is returned in the `Location` header. A requisition
+        synchronisation does not preserve the node unless the matching `foreignSource` and `foreignId`
+        also exist in a requisition. A body that fails to parse is answered with 500, not 400.""",
+            operationId = "NodeRestServicePOSTNode")
+    @RequestBody(required = true, description = "The node to create.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsNode.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "label": "ApiDoc-node",
+                      "labelSource": "U",
+                      "type": "A",
+                      "foreignSource": "ApiDoc",
+                      "foreignId": "apidoc-1",
+                      "sysContact": "noc@example.org",
+                      "sysName": "apidoc",
+                      "sysDescription": "ApiDoc probe node"
+                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = OnmsNode.class),
+                            examples = @ExampleObject(value = """
+                    <node label="ApiDoc-node" labelSource="U" type="A" foreignSource="ApiDoc" foreignId="apidoc-1">
+                      <location>Default</location>
+                      <sysContact>noc@example.org</sysContact>
+                    </node>"""))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Node created. `Location` carries the URI of the new node.",
+                    headers = @Header(name = "Location", description = "URI of the created node.",
+                            schema = @Schema(type = "string", example = "http://localhost:8980/opennms/api/v2/nodes/257"))),
+            @ApiResponse(responseCode = "400", description = "The body was absent after deserialisation.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node object cannot be null"))),
+            @ApiResponse(responseCode = "500", description = "The body could not be deserialised.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No content to map to Object due to end of input")))
+    })
+    @Override
+    public Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsNode object) {
+        return super.create(securityContext, uriInfo, object);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Update properties of several nodes",
+            description = """
+        Apply the form parameters as bean properties to every node matching `_s`. The default `limit`
+        of 10 applies to the selection, so a call without an explicit `limit` updates at most 10 nodes.
+        The whole call runs in one transaction, so a per-node failure aborts the batch.
+
+        Example query: `_s=node.foreignSource==ApiDoc&limit=100`.""",
+            operationId = "NodeRestServicePUTNodes")
+    @RequestBody(required = true, description = "Node bean properties to set, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "sys-contact=noc%40example.org&sys-description=updated+by+ReST")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "All selected nodes were updated."),
+            @ApiResponse(responseCode = "404", description = "No node matched. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "The FIQL expression could not be parsed or resolved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    @Override
+    public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
+        return super.updateMany(securityContext, uriInfo, searchContext, params);
+    }
+
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("{id}")
+    @Operation(
+            summary = "Not implemented: replace a node from a document",
+            description = """
+        Answered with 501. This variant binds `{id}` as an integer, so a non-numeric path segment is
+        answered with 404 before the handler runs.""",
+            operationId = "NodeRestServicePUTNodeDocument")
+    @RequestBody(description = "Ignored.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OnmsNode.class),
+                            examples = @ExampleObject(value = "{\"label\": \"ApiDoc-node\"}")),
+                    @Content(mediaType = MediaType.APPLICATION_XML, schema = @Schema(implementation = OnmsNode.class),
+                            examples = @ExampleObject(value = "<node label=\"ApiDoc-node\"/>"))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "`{id}` is not an integer."),
+            @ApiResponse(responseCode = "501", description = "Replacing a node from a document is not implemented. No body is returned.")
+    })
+    @Override
+    public Response update(
+            @Context final SecurityContext securityContext,
+            @Context final UriInfo uriInfo,
+            @Parameter(in = ParameterIn.PATH, name = "id", description = "Node database id.", example = "257")
+            @PathParam("id") final Integer id,
+            final OnmsNode object) {
+        return super.update(securityContext, uriInfo, id, object);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{id}")
+    @Operation(
+            summary = "Update properties of a node",
+            description = """
+        Apply the form parameters as bean properties to one node. Only the properties present in the
+        body are touched. No event is sent.""",
+            operationId = "NodeRestServicePUTNodeProperties")
+    @RequestBody(required = true, description = "Node bean properties to set, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "sys-contact=noc%40example.org")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The node was updated."),
+            @ApiResponse(responseCode = "404", description = "No such node. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "The path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    @Override
+    public Response updateProperties(
+            @Context final SecurityContext securityContext,
+            @Context final UriInfo uriInfo,
+            @Parameter(in = ParameterIn.PATH, name = "id",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("id") final String id,
+            final MultivaluedMapImpl params) {
+        return super.updateProperties(securityContext, uriInfo, id, params);
+    }
+
+    @DELETE
+    @Operation(
+            summary = "Delete several nodes",
+            description = """
+        Delete every node matching `_s` and send a `deleteNode` event for each. The default `limit` of
+        10 applies to the selection, so a call without an explicit `limit` deletes at most 10 nodes.
+
+        Example query: `_s=node.foreignSource==ApiDoc&limit=100`.""",
+            operationId = "NodeRestServiceDELETENodes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The selected nodes were deleted."),
+            @ApiResponse(responseCode = "404", description = "No node matched. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "The FIQL expression could not be parsed or resolved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    @Override
+    public Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return super.deleteMany(securityContext, uriInfo, searchContext);
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Operation(
+            summary = "Delete a node",
+            description = """
+        Delete one node and send a `deleteNode` event. The node's interfaces, services, outages and
+        metadata go with it.""",
+            operationId = "NodeRestServiceDELETENodeById")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The node was deleted."),
+            @ApiResponse(responseCode = "404", description = "No such node. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "The path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    @Override
+    public Response delete(
+            @Context final SecurityContext securityContext,
+            @Context final UriInfo uriInfo,
+            @Parameter(in = ParameterIn.PATH, name = "id",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("id") final String id) {
+        return super.delete(securityContext, uriInfo, id);
+    }
+
     @GET
     @Path("service-types")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional(readOnly = true)
-    @Operation(summary = "Get all service types", description = "Returns all monitored service types for use in node filtering", operationId = "NodeRestServiceGETServiceTypes")
+    @Operation(
+            summary = "Get all service types",
+            description = """
+        Return every monitored service type known to the system, sorted by name. The list is
+        system-wide, not scoped to a node, and is the set of names accepted by
+        `POST /nodes/{nodeCriteria}/ipinterfaces/{ipAddress}/services`.
+
+        This operation produces JSON only. A request with `Accept: application/xml` does not match it
+        and falls through to `GET /nodes/{id}` with an id of `service-types`, which is answered with
+        500.""",
+            operationId = "NodeRestServiceGETServiceTypes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "All service types, sorted by name.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = NodeServiceTypeDto.class)),
+                            examples = @ExampleObject(value = """
+                    [
+                      {"name": "DNS", "id": 4},
+                      {"name": "HTTP-8080", "id": 2},
+                      {"name": "ICMP", "id": 1},
+                      {"name": "SNMP", "id": 3}
+                    ]"""))),
+            @ApiResponse(responseCode = "500", description = "The request asked for `application/xml`, so it matched `GET /nodes/{id}` with an id of `service-types` instead.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"service-types\"")))
+    })
     public Response getServiceTypes() {
         final List<Map<String,Object>> result = m_serviceTypeDao.findAll().stream()
             .sorted(Comparator.comparing(OnmsServiceType::getName))
@@ -527,8 +1019,28 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}/rescan")
-    @Operation(summary = "Rescan node by NodeId", description = "Rescan node by NodeId", operationId = "NodeRestServicePUTRescanNodeByNodeId")
-    public Response rescanNode(@PathParam("nodeCriteria") final String nodeCriteria) {
+    @Operation(
+            summary = "Request a rescan of a node",
+            description = """
+        Send a `forceRescan` event for the node and return as soon as the event is queued. The 200 says
+        the event was accepted, not that the scan has run or succeeded. The request body is not read,
+        although the operation is declared as consuming `application/x-www-form-urlencoded`.""",
+            operationId = "NodeRestServicePUTRescanNodeByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The rescan event was sent. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "500", description = "The path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public Response rescanNode(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria) {
         final OnmsNode node = m_dao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
@@ -542,8 +1054,50 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @GET
     @Path("{nodeCriteria}/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    @Operation(summary = "Get Metadata by NodeId", description = "Get Metadata by NodeId", operationId = "NodeRestServiceGETMetaDataByNodeId")
-    public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria) {
+    @Operation(
+            summary = "Get all metadata of a node",
+            description = """
+        Return every metadata entry attached to the node, across all contexts. Contexts populated by
+        the system (`requisition`, `snmp` and vendor contexts) appear alongside user-defined `X-`
+        contexts. An empty result is still a 200; `totalCount` and `count` are then `null` rather
+        than `0`.""",
+            operationId = "NodeRestServiceGETMetaDataByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Metadata entries of the node.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsMetaDataList.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "metaData": [
+                        {"context": "X-ApiDoc", "key": "owner", "value": "noc-team"},
+                        {"context": "X-ApiDoc", "key": "tier", "value": "gold"}
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsMetaDataList.class),
+                                    examples = @ExampleObject(value = """
+                    <meta-data-list count="2" offset="0" totalCount="2">
+                      <meta-data><context>X-ApiDoc</context><key>owner</key><value>noc-team</value></meta-data>
+                      <meta-data><context>X-ApiDoc</context><key>tier</key><value>gold</value></meta-data>
+                    </meta-data-list>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "getMetaData: Can't find node 999999"))),
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public OnmsMetaDataList getMetaData(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`. A value that is neither is answered with 500.", example = "257")
+            @PathParam("nodeCriteria") String nodeCriteria) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
         if (node == null) {
@@ -556,8 +1110,47 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @GET
     @Path("{nodeCriteria}/metadata/{context}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    @Operation(summary = "Get Metadata by NodeId and Context", description = "Get Metadata by NodeId and Context", operationId = "NodeRestServiceGETMetaDataByNodeIdAndContext")
-    public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context) {
+    @Operation(
+            summary = "Get metadata of a node in one context",
+            description = """
+        Return the node's metadata entries whose context matches exactly, case-sensitively. A context
+        that holds no entries and a context that does not exist are indistinguishable: both give a 200
+        with an empty list.""",
+            operationId = "NodeRestServiceGETMetaDataByNodeIdAndContext")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Metadata entries in that context, possibly empty.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsMetaDataList.class),
+                                    examples = {
+                                            @ExampleObject(name = "match", value = """
+                    {"totalCount": 1, "count": 1, "offset": 0, "metaData": [{"context": "X-ApiDoc", "key": "owner", "value": "noc-team"}]}"""),
+                                            @ExampleObject(name = "no match", value = """
+                    {"totalCount": null, "count": null, "offset": 0, "metaData": []}""")
+                                    }),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsMetaDataList.class),
+                                    examples = @ExampleObject(value = """
+                    <meta-data-list count="1" offset="0" totalCount="1">
+                      <meta-data><context>X-ApiDoc</context><key>owner</key><value>noc-team</value></meta-data>
+                    </meta-data-list>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "getMetaData: Can't find node 999999"))),
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public OnmsMetaDataList getMetaData(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") String nodeCriteria,
+            @Parameter(in = ParameterIn.PATH, name = "context",
+                    description = "Metadata context to filter on.", example = "X-ApiDoc")
+            @PathParam("context") String context) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
         if (node == null) {
@@ -572,8 +1165,38 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @GET
     @Path("{nodeCriteria}/metadata/{context}/{key}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    @Operation(summary = "Get Metadata by NodeId, Context and Key", description = "Get Metadata by NodeId, Context and Key", operationId = "NodeRestServiceGETMetaDataByNodeIdAndContextAndKey")
-    public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
+    @Operation(
+            summary = "Get one metadata entry of a node",
+            description = """
+        Return the node's metadata entries matching both context and key. At most one entry can match,
+        but the response is still the list envelope. An unknown context or key gives a 200 with an
+        empty list.""",
+            operationId = "NodeRestServiceGETMetaDataByNodeIdAndContextAndKey")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The matching entry, or an empty list.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsMetaDataList.class),
+                            examples = @ExampleObject(value = """
+                    {"totalCount": 1, "count": 1, "offset": 0, "metaData": [{"context": "X-ApiDoc", "key": "owner", "value": "noc-team"}]}"""))),
+            @ApiResponse(responseCode = "400", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "getMetaData: Can't find node 999999"))),
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public OnmsMetaDataList getMetaData(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") String nodeCriteria,
+            @Parameter(in = ParameterIn.PATH, name = "context",
+                    description = "Metadata context.", example = "X-ApiDoc")
+            @PathParam("context") String context,
+            @Parameter(in = ParameterIn.PATH, name = "key",
+                    description = "Metadata key within the context.", example = "owner")
+            @PathParam("key") String key) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
         if (node == null) {
@@ -588,7 +1211,35 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @DELETE
     @Path("{nodeCriteria}/metadata/{context}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response deleteMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context) {
+    @Operation(
+            summary = "Delete a metadata context of a node",
+            description = """
+        Remove every metadata entry of the node in the given context. Deleting a context that holds no
+        entries is also a 204. The context is checked before the node is looked up, so a non-`X-`
+        context is answered with 403 even for a node that does not exist.""",
+            operationId = "NodeRestServiceDELETEMetaDataByNodeIdAndContext")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The context was removed."),
+            @ApiResponse(responseCode = "400", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "deleteMetaData: Can't find node 999999"))),
+            @ApiResponse(responseCode = "403", description = "The context does not start with `X-`. Only user-defined contexts may be written through this API.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Only metadata in contexts starting with 'X-' can be modified"))),
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public Response deleteMetaData(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria,
+            @Parameter(in = ParameterIn.PATH, name = "context",
+                    description = "Metadata context to remove. Must start with `X-`.", example = "X-ApiDoc")
+            @PathParam("context") final String context) {
         checkUserDefinedMetadataContext(context);
 
         writeLock();
@@ -608,7 +1259,37 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @DELETE
     @Path("{nodeCriteria}/metadata/{context}/{key}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response deleteMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context, @PathParam("key") final String key) {
+    @Operation(
+            summary = "Delete one metadata entry of a node",
+            description = """
+        Remove a single metadata entry of the node. Deleting a key that does not exist is also a
+        204.""",
+            operationId = "NodeRestServiceDELETEMetaDataByNodeIdAndContextAndKey")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The entry was removed."),
+            @ApiResponse(responseCode = "400", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "deleteMetaData: Can't find node 999999"))),
+            @ApiResponse(responseCode = "403", description = "The context does not start with `X-`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Only metadata in contexts starting with 'X-' can be modified"))),
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public Response deleteMetaData(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria,
+            @Parameter(in = ParameterIn.PATH, name = "context",
+                    description = "Metadata context. Must start with `X-`.", example = "X-ApiDoc")
+            @PathParam("context") final String context,
+            @Parameter(in = ParameterIn.PATH, name = "key",
+                    description = "Metadata key to remove.", example = "owner")
+            @PathParam("key") final String key) {
         checkUserDefinedMetadataContext(context);
 
         writeLock();
@@ -628,7 +1309,46 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @POST
     @Path("{nodeCriteria}/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response postMetaData(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsMetaData entity) {
+    @Operation(
+            summary = "Add or replace a metadata entry of a node",
+            description = """
+        Set one metadata entry from the request body. An existing entry with the same context and key is
+        overwritten. No `@Consumes` is declared, so both
+        JSON and XML bodies are accepted; the XML root element is `meta-data`. The context is checked
+        before the node is looked up, so a non-`X-` context is answered with 403 even for a node that
+        does not exist.""",
+            operationId = "NodeRestServicePOSTMetaDataByNodeId")
+    @RequestBody(required = true, description = "The metadata entry to set. The context must start with `X-`.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsMetaData.class),
+                            examples = @ExampleObject(value = """
+                    {"context": "X-ApiDoc", "key": "owner", "value": "noc-team"}""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = OnmsMetaData.class),
+                            examples = @ExampleObject(value = """
+                    <meta-data><context>X-ApiDoc</context><key>owner</key><value>noc-team</value></meta-data>"""))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The entry was stored."),
+            @ApiResponse(responseCode = "400", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "postMetaData: Can't find node 999999"))),
+            @ApiResponse(responseCode = "403", description = "The context does not start with `X-`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Only metadata in contexts starting with 'X-' can be modified"))),
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`, or the body could not be deserialised.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public Response postMetaData(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria,
+            final OnmsMetaData entity) {
         checkUserDefinedMetadataContext(entity.getContext());
 
         writeLock();
@@ -648,7 +1368,41 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @PUT
     @Path("{nodeCriteria}/metadata/{context}/{key}/{value}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response putMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context, @PathParam("key") final String key, @PathParam("value") final String value) {
+    @Operation(
+            summary = "Set a metadata entry of a node from the path",
+            description = """
+        Set one metadata entry with context, key and value all taken from the path. An existing entry
+        with the same context and key is overwritten. A value containing `/` has to be percent-encoded,
+        and an empty value cannot be expressed this way.""",
+            operationId = "NodeRestServicePUTMetaDataByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The entry was stored."),
+            @ApiResponse(responseCode = "400", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "putMetaData: Can't find node 999999"))),
+            @ApiResponse(responseCode = "403", description = "The context does not start with `X-`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Only metadata in contexts starting with 'X-' can be modified"))),
+            @ApiResponse(responseCode = "500", description = "The node path segment is neither a number nor `foreignSource:foreignId`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"notanumber\"")))
+    })
+    public Response putMetaData(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria,
+            @Parameter(in = ParameterIn.PATH, name = "context",
+                    description = "Metadata context. Must start with `X-`.", example = "X-ApiDoc")
+            @PathParam("context") final String context,
+            @Parameter(in = ParameterIn.PATH, name = "key",
+                    description = "Metadata key.", example = "owner")
+            @PathParam("key") final String key,
+            @Parameter(in = ParameterIn.PATH, name = "value",
+                    description = "Metadata value.", example = "noc-team")
+            @PathParam("value") final String value) {
         checkUserDefinedMetadataContext(context);
 
         writeLock();

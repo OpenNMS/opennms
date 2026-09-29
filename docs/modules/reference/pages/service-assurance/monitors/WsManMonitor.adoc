@@ -3,6 +3,7 @@
 :description: Learn about the WsManMonitor in OpenNMS {page-component-title} to issue a WS-Man GET command and validate the results using a Spring language expression.
 
 Use this monitor to issue a WS-Man GET command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
+Connection details, credentials, and Kerberos settings for the target come from `wsman-config.xml`; see xref:performance-data-collection/collectors/wsman.adoc#ga-performance-mgmt-collectors-wsman-agent-config[WS-Management agent configuration] and xref:configuration/wsman-kerberos.adoc[WS-Management Kerberos authentication and message encryption].
 
 == Monitor facts
 

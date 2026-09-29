@@ -53,6 +53,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import joptsimple.internal.Strings;
 
@@ -100,7 +105,43 @@ public class NewsFeedRestService {
     @GET
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get news feed", description = "Get news feed", operationId = "NewsFeedRestServiceGetNewsFeed")
+    @Operation(summary = "Get news feed",
+            description = """
+        Fetches an RSS feed server-side and returns it as JSON. The source defaults to
+        `https://www.opennms.com/feed/` and can be overridden with the `opennms.newsFeedPanel.url`
+        system property. Responses are cached in the web tier for five minutes, so repeated calls do
+        not re-fetch and a change at the source can take that long to appear.
+
+        `description` is the feed's raw HTML and `shortDescription` the same text with markup stripped.
+        No publication date is carried through: the items arrive in feed order.
+
+        The call reaches the internet from the OpenNMS host. An install with no outbound access answers
+        500 rather than an empty feed.""",
+            operationId = "NewsFeedRestServiceGetNewsFeed")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The parsed feed.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = NewsFeed.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "items": [
+                        {
+                          "categories": ["News"],
+                          "tags": ["meridian"],
+                          "title": "August 2026 Releases - Meridian 2025.0.9 and 2024.3.12",
+                          "link": "https://www.opennms.com/en/blog/2026-08-12-august-2026-releases/",
+                          "description": "<p>In August, we released updates to all OpenNMS Meridian versions under active support.</p>",
+                          "shortDescription": "In August, we released updates to all OpenNMS Meridian versions under active support."
+                        }
+                      ],
+                      "channelTitle": "The OpenNMS Group, Inc."
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = """
+                    The feed could not be fetched or parsed: an unreachable source, a non-200 from it, or
+                    a body that is not the expected RSS. The cause is logged, not returned.""",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error building news feed.")))
+    })
     public Response getNewsFeed(final @Context HttpServletRequest request) {
         try {
             String responseBody = this.cache.get("newsfeed");

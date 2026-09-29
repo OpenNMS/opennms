@@ -186,16 +186,6 @@
       <parameter key="rrd-base-name" value="pop3" />
       <parameter key="ds-name" value="pop3" />
     </service>
-    <service name="NSClient" interval="300000" user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="port" value="1248" />
-      <parameter key="timeout" value="3000" />
-    </service>
-    <service name="NSClientpp" interval="300000" user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="port" value="12489" />
-      <parameter key="timeout" value="3000" />
-    </service>
     <service name="NRPE" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="3" />
       <parameter key="timeout" value="3000" />

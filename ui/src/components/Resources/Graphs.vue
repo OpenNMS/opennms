@@ -7,7 +7,10 @@
   <div class="onms-row">
     <div class="onms-col-11">
       <div class="controls">
-        <TimeControls @updateTime="updateTime" />
+        <TimeControls
+          label="Time Range:"
+          @updateTime="updateTime"
+        />
         <FormField
           v-if="!singleGraphDefinition"
           class="search-input"
@@ -40,7 +43,7 @@ import { useDebounceFn, useScroll } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
 import GraphContainer from './GraphContainer.vue'
-import TimeControls from './TimeControls.vue'
+import TimeControls from '@/components/Common/TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
 import FormField from '@/components/Common/FormField.vue'

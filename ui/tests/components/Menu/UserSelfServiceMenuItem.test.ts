@@ -122,5 +122,6 @@ describe('UserSelfServiceMenuItem.vue', () => {
     await nextTick()
 
     expect(performLogout).not.toHaveBeenCalled()
+    expect(event.defaultPrevented).toBe(false)
   })
 })

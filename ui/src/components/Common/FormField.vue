@@ -14,6 +14,16 @@
         aria-hidden="true"
       >*</span>
     </label>
+    <!-- Presentational stand-in for a label, so a field that has none still lines
+         its control up with the labelled fields beside it (e.g. an action button
+         in a form row). A real <label> element, so it picks up exactly the same
+         typography and spacing as the labelled case; aria-hidden and without a
+         `for`, so it says nothing to assistive tech. -->
+    <label
+      v-else-if="reserveLabelSpace"
+      class="form-field__label"
+      aria-hidden="true"
+    >&nbsp;</label>
     <slot
       :errorId="errorId"
       :invalid="invalid"
@@ -40,12 +50,14 @@ const props = withDefaults(defineProps<{
   required?: boolean
   error?: string
   hint?: string
+  reserveLabelSpace?: boolean
 }>(), {
   label: undefined,
   for: undefined,
   required: false,
   error: undefined,
-  hint: undefined
+  hint: undefined,
+  reserveLabelSpace: false
 })
 
 // `for` is a reserved word; alias it for use in the template.

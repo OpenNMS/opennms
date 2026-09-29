@@ -6,6 +6,7 @@
     :outlined="variant === 'outlined' || variant === 'ghost'"
     :disabled="disabled"
     :loading="loading"
+    :size="size"
     :pt="unsafePt as never"
   >
     <template
@@ -34,6 +35,7 @@ const props = withDefaults(defineProps<{
   label?: string
   variant?: 'filled' | 'outlined' | 'text' | 'ghost'
   severity?: 'primary' | 'danger'
+  size?: 'small' | 'large'
   disabled?: boolean
   loading?: boolean
   unsafePt?: unknown
@@ -41,6 +43,7 @@ const props = withDefaults(defineProps<{
   label: undefined,
   variant: 'filled',
   severity: 'primary',
+  size: undefined,
   disabled: false,
   loading: false,
   unsafePt: undefined

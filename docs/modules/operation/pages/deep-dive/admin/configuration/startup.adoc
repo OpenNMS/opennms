@@ -52,3 +52,13 @@ See https://opennms.discourse.group/t/how-to-investigate-file-descriptor-issues/
 | Units are in kilobytes.
 Passed to `ulimit -s` before starting JVM.
 |===
+
+TIP: By default, the JVM temp directory (`java.io.tmpdir`) is `$\{OPENNMS_HOME}/tmp` and the embedded ActiveMQ
+broker's on-disk store (`activemq.data`) is `$\{OPENNMS_HOME}/var/activemq`. To use different paths -- for example,
+to keep the pre-upgrade locations under `$\{OPENNMS_HOME}/data/tmp` -- set `ADDITIONAL_MANAGER_OPTIONS` in
+`opennms.conf`:
++
+[source, properties]
+----
+ADDITIONAL_MANAGER_OPTIONS="-Djava.io.tmpdir=${OPENNMS_HOME}/data/tmp -Dactivemq.data=${OPENNMS_HOME}/data/tmp/activemq"
+----

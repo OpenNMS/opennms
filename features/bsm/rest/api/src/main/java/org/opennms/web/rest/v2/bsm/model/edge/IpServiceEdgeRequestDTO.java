@@ -21,16 +21,21 @@
  */
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="ip-service-edge")
+@Schema(description = "An edge pointing at a monitored IP service. The edge listens on the node, "
+        + "interface and service reduction keys derived from that service.")
 public class IpServiceEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     private Integer ipServiceId;
 
     private String friendlyName;
 
+    @Schema(description = "Monitored service id, as returned by `/api/v2/ifservices`.",
+            example = "1017", required = true)
     @XmlElement(name="ip-service-id",required = true)
     public Integer getIpServiceId() {
         return ipServiceId;
@@ -40,6 +45,7 @@ public class IpServiceEdgeRequestDTO extends AbstractEdgeRequestDTO {
         this.ipServiceId = ipServiceId;
     }
 
+    @Schema(description = "Label shown for this edge in the UI.", example = "web front end")
     @XmlElement(name="friendly-name",required = false)
     public String getFriendlyName() {
         return friendlyName;

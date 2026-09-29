@@ -81,7 +81,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
 
         clickMenuItem("Dashboards", "Surveillance Dashboard");
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
 
         driver.switchTo().parentFrame();
@@ -115,7 +115,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("Monitoring", "Surveillance View");
         // switchTo() by xpath is much faster than by ID
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         driver.switchTo().parentFrame();
         frontPage();
@@ -412,7 +412,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // get the central search text input control and search for "Configure"
-        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']/input[@class='search-input']");
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']");
         searchInput.sendKeys("Configure");
 
         // Get the search result context header

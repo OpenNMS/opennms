@@ -38,6 +38,10 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.UserNotificationDao;
+import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +76,12 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
 
     @Autowired
     private ServletContext m_servletContext;
+
+    @Autowired
+    private NotificationDao m_notificationDao;
+
+    @Autowired
+    private UserNotificationDao m_userNotificationDao;
 
     @Override
     protected void afterServletStart() {
@@ -109,5 +119,37 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
         JSONObject restObject = new JSONObject(json);
         JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/notifications.json")));
         JSONAssert.assertEquals(expectedObject, restObject, true);
+    }
+
+    /**
+     * A notification carries one usersNotified row per notification method, so the
+     * same user can appear on it more than once. The summary must count notifications,
+     * not join rows.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testSummaryCountsNotificationsNotUsersNotifiedRows() throws Exception {
+        final OnmsNotification notification = m_notificationDao.findAll().get(0);
+
+        // the same notification delivered to the same user twice (e.g. email and pager)
+        for (final String media : new String[] { "email", "pager" }) {
+            final OnmsUserNotification delivery = new OnmsUserNotification();
+            delivery.setUserId("admin");
+            delivery.setNotification(notification);
+            delivery.setMedia(media);
+            m_userNotificationDao.saveOrUpdate(delivery);
+        }
+        m_userNotificationDao.flush();
+
+        final MockHttpServletRequest request = createRequest(m_servletContext, GET, "/notifications/summary");
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        final JSONObject summary = new JSONObject(sendRequest(request, 200));
+
+        // fixture guard: exactly one unacknowledged notification exists
+        assertEquals(1, summary.getInt("totalUnacknowledgedCount"));
+        // two deliveries, one notification
+        assertEquals(1, summary.getInt("userUnacknowledgedCount"));
+        assertEquals(1, summary.getJSONObject("userUnacknowledgedNotifications")
+                .getJSONArray("notification").length());
     }
 }

@@ -23,7 +23,7 @@
 import { AdhocExpression, AdhocGraphConfig, AdhocSeries, AdhocSeriesStyle } from '@/types/adhocGraph'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
 import { RelativeTimeRange, StartEndTime } from '@/types'
-import { RANGE_UNITS } from '@/components/Resources/utils/timeRangeOptions'
+import { RANGE_UNITS } from '@/components/Common/utils/timeRangeOptions'
 import { DEFAULT_RESOLUTION } from './adhocQuery'
 
 /** Field separator inside one entry. */

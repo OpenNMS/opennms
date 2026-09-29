@@ -51,6 +51,18 @@
         style="width: 3rem"
       />
       <OnmsColumn
+        field="eventOrder"
+        sortable
+        style="width: 6rem"
+      >
+        <template #header>
+          <span
+            title="Order in which the events of this source are evaluated: 1 is evaluated first."
+            data-test="order-header"
+          >Order</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn
         field="uei"
         header="Event UEI"
         sortable
@@ -153,9 +165,9 @@ import {
   type OnmsTablePageEvent,
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
-import Edit from '@/components/icons/action/Edit.vue'
-import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import Refresh from '@/components/icons/navigation/Refresh.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
+import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
+import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -203,7 +215,7 @@ const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onEventsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
-    store.onEventsSortChange('createdTime', 'desc')
+    store.onEventsSortChange('eventOrder', 'asc')
   }
 }
 

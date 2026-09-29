@@ -13,6 +13,7 @@ import {
   EventConfigSourcesResponse,
   UploadedSourceNamesResponse
 } from '@/types/eventConfig'
+import axios from 'axios'
 import { v2 } from './axiosInstances'
 
 /**
@@ -36,10 +37,18 @@ export const uploadEventConfigFiles = async (files: File[]): Promise<EventConfig
     }
     return mapUploadedEventConfigFilesResponseFromServer(response.data)
   } catch (error) {
+    // The server answers with an error status when the files were stored but the eventconf.xml
+    // source order could not be applied; the body is still the per-file report, so show it.
+    if (axios.isAxiosError(error) && isUploadReport(error.response?.data)) {
+      return mapUploadedEventConfigFilesResponseFromServer(error.response?.data)
+    }
     console.error('Error uploading event config files:', error)
     throw error
   }
 }
+
+const isUploadReport = (data: unknown): boolean =>
+  typeof data === 'object' && data !== null && Array.isArray((data as any).success) && Array.isArray((data as any).errors)
 
 /**
  * Makes a DELETE request to the REST endpoint to delete an event configuration source.

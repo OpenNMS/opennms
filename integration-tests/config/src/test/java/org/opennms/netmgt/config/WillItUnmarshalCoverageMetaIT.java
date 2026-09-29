@@ -114,7 +114,6 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(droolsDirectory, "drools-engine.xml"));
         ignoreFile(new File(droolsDirectory, "nodeParentRules-context.xml"));
         ignoreFile(new File(droolsDirectory, "locationMonitorRules-context.xml"));
-        ignoreFile(new File(getDaemonEtcDirectory(), "examples/nsclient-config.xml"));
 
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/ApacheHTTPD.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/LinuxKernel.syslog.xml"));

@@ -22,6 +22,7 @@
 package org.opennms.netmgt.graph.provider.legacy;
 
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.LinkDetailsAware;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
@@ -32,12 +33,40 @@ public class LegacyEdge extends AbstractDomainEdge {
     }
 
     public LegacyEdge(Edge legacyEdge) {
-        super(GenericEdge.builder()
+        super(toGenericEdge(legacyEdge));
+    }
+
+    /** Provider-local: an ifIndex means nothing on a business-service edge. */
+    public interface Properties {
+        String SOURCE_IFINDEX = "sourceIfIndex";
+        String TARGET_IFINDEX = "targetIfIndex";
+        String DISCOVERY_PROTOCOL = "discoveryProtocol";
+    }
+
+    /**
+     * Only the endpoint node refs used to survive here, dropping the interfaces
+     * discovery had already resolved.
+     */
+    private static GenericEdge toGenericEdge(Edge legacyEdge) {
+        final GenericEdge.GenericEdgeBuilder builder = GenericEdge.builder()
                 .id(legacyEdge.getId())
                 .label(legacyEdge.getLabel())
                 .namespace(legacyEdge.getNamespace())
                 .source(new VertexRef(legacyEdge.getSource().getNamespace(), legacyEdge.getSource().getVertex().getId()))
-                .target(new VertexRef(legacyEdge.getTarget().getNamespace(), legacyEdge.getTarget().getVertex().getId()))
-                .build());
+                .target(new VertexRef(legacyEdge.getTarget().getNamespace(), legacyEdge.getTarget().getVertex().getId()));
+        if (legacyEdge instanceof LinkDetailsAware) {
+            final LinkDetailsAware link = (LinkDetailsAware) legacyEdge;
+            // Strings because the REST converters have no case for a boxed
+            // Integer and fall back to toString() anyway, as nodeID already does.
+            builder.property(Properties.SOURCE_IFINDEX, asString(link.getSourceIfIndex()));
+            builder.property(Properties.TARGET_IFINDEX, asString(link.getTargetIfIndex()));
+            // The builder drops nulls, so an unresolved end is absent.
+            builder.property(Properties.DISCOVERY_PROTOCOL, link.getDiscoveryProtocol());
+        }
+        return builder.build();
+    }
+
+    private static String asString(final Integer ifIndex) {
+        return ifIndex == null ? null : String.valueOf(ifIndex);
     }
 }

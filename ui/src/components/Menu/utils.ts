@@ -21,7 +21,7 @@
 ///
 
 import { Component } from 'vue'
-import IconHome from '@/components/icons/action/Home.vue'
+import IconHome from '@opennms/onms-ui/icons/action/Home.vue'
 import { OnmsMenuItem as PrimeMenuItem } from '@opennms/onms-ui'
 import { Plugin } from '@/types'
 import { MenuItem } from '@/types/mainMenu'

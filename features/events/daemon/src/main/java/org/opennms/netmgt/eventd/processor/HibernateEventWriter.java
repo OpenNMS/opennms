@@ -127,15 +127,24 @@ public class HibernateEventWriter implements EventWriter {
      * @param logPrefix a {@link java.lang.String} object.
      * @return a boolean.
      */
-    private static boolean checkEventSanityAndDoWeProcess(Event event, String logPrefix) {
+    static boolean checkEventSanityAndDoWeProcess(Event event, String logPrefix) {
         Assert.notNull(event, "event argument must not be null");
+
+        /*
+         * No logmsg means nothing matched. Skipped rather than thrown: this runs
+         * in a stream over the whole log, and throwing discarded the rest of it.
+         */
+        if (event.getLogmsg() == null) {
+            LOG.warn("{}: uei '{}' has no logmsg, which means no event definition matched it; "
+                    + "not processing event.", logPrefix, event.getUei());
+            return false;
+        }
 
         /*
          * Check value of <logmsg> attribute 'dest', if set to
          * "donotpersist" or "suppress" then simply return, the UEI is not to be
          * persisted to the database
          */
-        Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
         if (
             LOG_MSG_DEST_DO_NOT_PERSIST.equalsIgnoreCase(event.getLogmsg().getDest()) ||
             LOG_MSG_DEST_SUPRRESS.equalsIgnoreCase(event.getLogmsg().getDest())

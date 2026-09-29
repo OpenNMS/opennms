@@ -3,6 +3,7 @@
 
 The WSManDetector attempts to connect to the agent defined in `wsman-config.xml` and issues an identify command.
 If the identify command is successful, the service is marked as detected, and the product details returned by the command are optionally stored in the asset fields (see details below).
+Connection details, credentials, and Kerberos settings for the target come from `wsman-config.xml`; see xref:performance-data-collection/collectors/wsman.adoc#ga-performance-mgmt-collectors-wsman-agent-config[WS-Management agent configuration] and xref:configuration/wsman-kerberos.adoc[WS-Management Kerberos authentication and message encryption].
 
 == Detector facts
 

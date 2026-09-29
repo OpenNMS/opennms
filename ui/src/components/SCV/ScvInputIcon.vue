@@ -3,7 +3,7 @@
     class="scv-edit-icon"
     :aria-label="title ?? tooltipTitle"
     :disabled="disabled"
-    v-onms-tooltip="title ?? tooltipTitle"
+    :tooltip="title ?? tooltipTitle"
     :icon="IconSecurity"
     @click="$emit('click')"
   />
@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { OnmsIconButton } from '@opennms/onms-ui'
-import IconSecurity from '@/components/icons/network/Security.vue'
+import IconSecurity from '@opennms/onms-ui/icons/network/Security.vue'
 
 defineProps<{
   title?: string

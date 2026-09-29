@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="ospfLinkNode")
 @JsonRootName("ospfLinkNode")
+@Schema(description = "One discovered OSPF neighbour of the node. Every field is a display string, with ifIndexes and addresses embedded in the port labels and the timestamps locale-formatted rather than epoch milliseconds.")
 public class OspfLinkNodeDTO {
 
     private String ospfLocalPort;
@@ -53,6 +56,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfLocalPort")
     @JsonProperty("ospfLocalPort")
+    @Schema(description = "Local interface as a display label: ifName, the ifAlias in parentheses, then (ifindex:N), then the interface address in parentheses. The ifIndex is embedded here rather than carried as its own field.", example = "Gi0/2(review-iface)(ifindex:2)(10.10.1.1)")
     public String getOspfLocalPort() {
         return ospfLocalPort;
     }
@@ -68,6 +72,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfLocalPortUrl")
     @JsonProperty("ospfLocalPortUrl")
+    @Schema(description = "Relative URL of the local SNMP interface page, or of the IP interface page when the link is addressed rather than address-less.", example = "element/snmpinterface.jsp?node=1&ifindex=2")
     public String getOspfLocalPortUrl() {
         return ospfLocalPortUrl;
     }
@@ -83,6 +88,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfRemRouterId")
     @JsonProperty("ospfRemRouterId")
+    @Schema(description = "Neighbour router as a display label: the node label followed by (router id:...) when the neighbour resolves to a node, otherwise the parenthesised router id alone.", example = "loopback-001(router id:10.255.0.2)")
     public String getOspfRemRouterId() {
         return ospfRemRouterId;
     }
@@ -98,6 +104,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfRemRouterUrl")
     @JsonProperty("ospfRemRouterUrl")
+    @Schema(description = "Relative URL of the neighbour's linked-node page. Omitted when the neighbour does not resolve to a node.", example = "element/linkednode.jsp?node=2")
     public String getOspfRemRouterUrl() {
         return ospfRemRouterUrl;
     }
@@ -113,6 +120,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfRemPort")
     @JsonProperty("ospfRemPort")
+    @Schema(description = "Neighbour interface as a display label. For an addressed neighbour this is just the parenthesised IP address.", example = "(10.10.1.2)")
     public String getOspfRemPort() {
         return ospfRemPort;
     }
@@ -128,6 +136,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfRemPortUrl")
     @JsonProperty("ospfRemPortUrl")
+    @Schema(description = "Relative URL of the neighbour's IP or SNMP interface page.", example = "element/interface.jsp?node=2&intf=10.10.1.2")
     public String getOspfRemPortUrl() {
         return ospfRemPortUrl;
     }
@@ -143,6 +152,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfLinkInfo")
     @JsonProperty("ospfLinkInfo")
+    @Schema(description = "Link mask as a display label, (mask:...) when known and (No mask) when not.", example = "(mask:255.255.255.252)")
     public String getOspfLinkInfo() {
         return ospfLinkInfo;
     }
@@ -158,6 +168,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfLinkCreateTime")
     @JsonProperty("ospfLinkCreateTime")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfLinkCreateTime() {
         return ospfLinkCreateTime;
     }
@@ -173,6 +184,7 @@ public class OspfLinkNodeDTO {
 
     @XmlElement(name="ospfLinkLastPollTime")
     @JsonProperty("ospfLinkLastPollTime")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfLinkLastPollTime() {
         return ospfLinkLastPollTime;
     }

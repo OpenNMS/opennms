@@ -27,7 +27,8 @@ export const getDefaultEventConfigEvent = (): EventConfigEvent => ({
   modifiedBy: '',
   sourceName: '',
   vendor: '',
-  fileOrder: 0
+  fileOrder: 0,
+  eventOrder: 0
 })
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
@@ -36,8 +37,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     eventsPagination: { ...defaultPagination },
     eventsSearchTerm: '',
     eventsSorting: {
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
+      sortOrder: 'asc',
+      sortKey: 'eventOrder'
     },
     selectedSource: null,
     isLoading: false,
@@ -117,8 +118,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     async refreshEventConfigEvents() {
       this.resetEventsPagination()
       this.eventsSearchTerm = ''
-      this.eventsSorting.sortKey = 'createdTime'
-      this.eventsSorting.sortOrder = 'desc'
+      this.eventsSorting.sortKey = 'eventOrder'
+      this.eventsSorting.sortOrder = 'asc'
       await this.fetchEventsBySourceId()
     },
     showDeleteEventConfigEventDialog(eventConfigSource: EventConfigEvent) {
@@ -204,8 +205,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     async resetEventConfigEvents() {
       this.resetEventsPagination()
       this.eventsSearchTerm = ''
-      this.eventsSorting.sortKey = 'createdTime'
-      this.eventsSorting.sortOrder = 'desc'
+      this.eventsSorting.sortKey = 'eventOrder'
+      this.eventsSorting.sortOrder = 'asc'
       await this.fetchEventsBySourceId()
     }
   }

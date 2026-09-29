@@ -34,8 +34,8 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.WSManException;
+import org.opennms.core.wsman.utils.CachingWSManClientFactory;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
@@ -44,6 +44,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.opennms.netmgt.provision.detector.wsman.WsmanEndpointUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.ListMultimap;
@@ -58,6 +60,7 @@ import com.google.common.collect.Maps;
  * @author jwhite
  */
 public class WsManMonitor extends ParameterSubstitutingMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(WsManMonitor.class);
 
     private static final String WSMAN_RETRY_KEY = "retry";
 
@@ -67,7 +70,7 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
 
     public static final String SELECTOR_PARAM_PREFIX = "selector.";
 
-    private WSManClientFactory m_factory = new CXFWSManClientFactory();
+    private WSManClientFactory m_factory = new CachingWSManClientFactory();
 
     private WSManConfigDao m_wsManConfigDao;
 
@@ -120,12 +123,11 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
         } catch (MalformedURLException e) {
             return PollStatus.down(e.getMessage());
         }
-        final WSManClient client = m_factory.getClient(endpoint);
         final RetryNTimesLoop retryLoop = new RetryNTimesLoop(ParameterMap.getKeyedInteger(parameters, WSMAN_RETRY_KEY, 0));
 
-        // Issue a GET
+        // Issue a GET, closing the client afterwards so any session it holds (Kerberos encryption) is released
         Node node = null;
-        try {
+        try (WSManClient client = m_factory.getClient(endpoint)) {
             while (retryLoop.shouldContinue()) {
                 try {
                     node = client.get(resourceUri, selectors);
@@ -159,5 +161,19 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
 
     public void setWSManClientFactory(WSManClientFactory factory) {
         m_factory = Objects.requireNonNull(factory);
+    }
+
+    /**
+     * Releases any clients the factory is holding on to. Called by the blueprint
+     * container when the bundle stops.
+     */
+    public void destroy() {
+        if (m_factory instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) m_factory).close();
+            } catch (Exception e) {
+                LOG.debug("Error closing WS-Man client factory", e);
+            }
+        }
     }
 }

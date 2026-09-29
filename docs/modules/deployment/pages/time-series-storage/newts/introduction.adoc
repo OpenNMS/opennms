@@ -6,6 +6,16 @@
 link:http://newts.io/[Newts] is a time series data schema for link:http://cassandra.apache.org/[Apache Cassandra].
 It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontal scaling] for your time series database and is an alternative to link:http://oss.oetiker.ch/rrdtool/[RRDtool].
 
+[IMPORTANT]
+====
+Newts and its Apache Cassandra backend should be considered deprecated.
+{page-component-title} {page-component-version} still ships with Newts support for existing Newts users: if you are already running on Newts, you can continue to do so through this release.
+
+After {page-component-title} {page-component-version} reaches end of support, OpenNMS will no longer provide official support for the Cassandra backend, and Newts will not be carried forward into subsequent releases.
+For new deployments, and when planning an upgrade path for an existing one, we suggest looking at the xref:time-series-storage/timeseries/prometheus-remotewrite.adoc[Prometheus RemoteWrite plugin], which stores metrics in any Prometheus `remote_write`-compatible time series database.
+Note that there is no tool to copy existing Newts data into another store, so after a switch the historical metrics remain in Cassandra until its retention period expires.
+====
+
 This section describes how to xref:time-series-storage/newts/newts.adoc#newts-configure[configure] {page-component-title} to use an existing Cassandra cluster, including how to initialize the Newts keyspace using `newts init` with STCS without production-ready tuning, and verify that time series data is stored and can be accessed
 
 It also provides reference documentation for Newts:

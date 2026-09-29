@@ -13,7 +13,7 @@ include::../../repos/rhel-centos/meridian-rhel9.adoc[]
 endif::[]
 
 .Install the {page-component-title} Minion package
-[source, console]
+[source, console, subs="attributes"]
 ----
 sudo dnf -y install {package-prefix}-minion
 ----

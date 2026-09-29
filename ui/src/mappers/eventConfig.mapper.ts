@@ -28,6 +28,7 @@ export const mapEventConfigSourceFromServer = (source: any): EventConfigSource =
     enabled: source.enabled,
     eventCount: source.eventCount,
     fileOrder: source.fileOrder,
+    evaluationOrder: source.evaluationOrder,
     vendor: source.vendor,
     uploadedBy: source.uploadedBy,
     createdTime: new Date(source.createdTime),
@@ -76,7 +77,8 @@ export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
     modifiedBy: event.modifiedBy,
     sourceName: event.sourceName,
     vendor: event.vendor,
-    fileOrder: event.fileOrder
+    fileOrder: event.fileOrder,
+    eventOrder: event.eventOrder
   }
 }
 

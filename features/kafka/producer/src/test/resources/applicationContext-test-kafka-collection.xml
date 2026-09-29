@@ -19,4 +19,15 @@
       <constructor-arg ref="resourceDao"/>
     </bean>
 
+    <!--
+      Meta-data resolution, used by metric routing. EntityScopeProviderImpl autowires a
+      SecureCredentialsVault for the 'scv' context, which metric routing never uses, so a mock is
+      enough here and saves the tests a keystore and its file watcher.
+    -->
+    <bean id="secureCredentialsVault" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.opennms.features.scv.api.SecureCredentialsVault"/>
+    </bean>
+
+    <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl"/>
+
 </beans>

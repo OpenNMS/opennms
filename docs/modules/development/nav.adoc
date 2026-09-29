@@ -97,6 +97,7 @@
 *** xref:rest/situation-feedback.adoc[]
 
 * xref:oia/introduction.adoc[]
+** xref:oia/mcp-server.adoc[]
 
 * xref:amqp/introduction.adoc[]
 ** xref:amqp/event_forwarder.adoc[]

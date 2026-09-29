@@ -62,7 +62,6 @@ public class AlarmRestServiceBase extends OnmsRestService {
 
     	final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
-    	cb.fetch("firstEvent", FetchType.EAGER);
         cb.fetch("lastEvent", FetchType.EAGER);
         
         cb.alias("node", "node", JoinType.LEFT_JOIN);

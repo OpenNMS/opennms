@@ -72,12 +72,8 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
                 // make sure we are redirecting to an actual page, not e.g. a URL to an asset
                 // TODO: Determine why assets are getting saved in the requestCache
-                if (useSavedRequest) {
-                    final String servletPathLower = savedRequest.getServletPath().toLowerCase();
-
-                    if (LoginModuleUtils.isInvalidSavedRequestUrl(servletPathLower)) {
-                        useSavedRequest = false;
-                    }
+                if (useSavedRequest && LoginModuleUtils.isInvalidSavedRequestUrl(savedRequest.getServletPath())) {
+                    useSavedRequest = false;
                 }
 
                 if (useSavedRequest) {

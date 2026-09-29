@@ -135,11 +135,6 @@ watch(() => props.isOpen, (newVal) => {
   .search-field {
     // vertical spacing above the search field
     margin-top: 1em;
-
-    :deep(.p-inputtext),
-    :deep(.p-iconfield) {
-      width: 100%;
-    }
   }
 
   .key-link {

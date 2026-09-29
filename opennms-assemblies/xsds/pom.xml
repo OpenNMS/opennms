@@ -71,12 +71,6 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.availability</artifactId>
       <version>${project.version}</version>
@@ -109,12 +103,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
@@ -175,12 +163,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-alarm-northbounder-jms</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

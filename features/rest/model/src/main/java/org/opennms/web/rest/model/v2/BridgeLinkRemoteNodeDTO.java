@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="bridgeLinkRemoteNode")
 @JsonRootName("bridgeLinkRemoteNode")
+@Schema(description = "The far end of a shared bridge segment. Every field is a display string.")
 public class BridgeLinkRemoteNodeDTO {
 
     private String bridgeRemote;
@@ -40,6 +43,7 @@ public class BridgeLinkRemoteNodeDTO {
 
     @XmlElement(name="bridgeRemote")
     @JsonProperty("bridgeRemote")
+    @Schema(description = "Remote end as a display label: the node label followed by (bridge base address:...) or (mac:...) when it resolves to a node, otherwise (nodeid:N) or (mac:...) alone.", example = "acc-sw-04(bridge base address:001b213c4d5e)")
     public String getBridgeRemote() {
         return bridgeRemote;
     }
@@ -55,6 +59,7 @@ public class BridgeLinkRemoteNodeDTO {
 
     @XmlElement(name="bridgeRemoteUrl")
     @JsonProperty("bridgeRemoteUrl")
+    @Schema(description = "Relative URL of the remote node's linked-node page.", example = "element/linkednode.jsp?node=12")
     public String getBridgeRemoteUrl() {
         return bridgeRemoteUrl;
     }
@@ -70,6 +75,7 @@ public class BridgeLinkRemoteNodeDTO {
 
     @XmlElement(name="bridgeRemotePort")
     @JsonProperty("bridgeRemotePort")
+    @Schema(description = "Remote port as a display label, with the bridge port number or ifIndex embedded in the string.", example = "GigabitEthernet0/24(ifindex:24)(bridgeport:24)")
     public String getBridgeRemotePort() {
         return bridgeRemotePort;
     }
@@ -85,6 +91,7 @@ public class BridgeLinkRemoteNodeDTO {
 
     @XmlElement(name="bridgeRemotePortUrl")
     @JsonProperty("bridgeRemotePortUrl")
+    @Schema(description = "Relative URL of the remote SNMP interface page. Omitted when the remote ifIndex could not be resolved.", example = "element/snmpinterface.jsp?node=12&ifindex=24")
     public String getBridgeRemotePortUrl() {
         return bridgeRemotePortUrl;
     }

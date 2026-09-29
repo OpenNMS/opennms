@@ -45,17 +45,5 @@ const getDeviceConfigBackupsOnDebounce = useDebounceFn(() => deviceStore.getDevi
 <style scoped lang="scss">
 .dcb-search-field {
   width: 100%;
-
-  // make the input (and its IconField wrapper) fill the field so the
-  // search icon sits at the input's right edge
-  :deep(.p-iconfield) {
-    display: block;
-    width: 100%;
-  }
-
-  :deep(.p-inputtext) {
-    width: 100%;
-    padding-right: 2.75rem;
-  }
 }
 </style>

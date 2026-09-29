@@ -49,16 +49,23 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
     protected static final Logger LOG = LoggerFactory.getLogger(OffHeapDataBlock.class);
     protected static final ForkJoinPool serdesPool = new ForkJoinPool(
             Math.max(Runtime.getRuntime().availableProcessors() * 2, 4));
+    // flushToDisk() tasks run here. Kept separate from prefetchExecutorService so that
+    // prefetch tasks blocking in enableQueue() waiting on a flush future can never starve
+    // the threads a flush needs to actually run.
     protected static final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    // notifyNextDataBlock() prefetch tasks run here. They call enableQueue(), which can block
+    // waiting on an in-flight flush future; if that wait happened on the same pool as the flush
+    // itself, enough blocked prefetch tasks could wedge every flush behind them forever.
+    protected static final ExecutorService prefetchExecutorService = Executors.newFixedThreadPool(10);
 
     protected int queueSize;
-    protected BlockingQueue<Map.Entry<String, T>> queue;
+    protected volatile BlockingQueue<Map.Entry<String, T>> queue;
 
     private String name;
     private final Function<T, byte[]> serializer;
     private final Function<byte[], T> deserializer;
     private final Lock diskLock = new ReentrantLock(true);
-    private int offHeapQueueSize = -1;
+    private volatile int offHeapQueueSize = -1;
 
     private Future<Integer> future;
 
@@ -122,7 +129,7 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
     @Override
     public synchronized Map.Entry<String, T> dequeue() throws InterruptedException, ReadFailedException {
         enableQueue();
-        return queue.take();
+        return queue.poll();
     }
 
     @Override
@@ -131,7 +138,7 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
             return;
         }
         if (nextDataBlock instanceof OffHeapDataBlock) {
-            executorService.submit(() -> {
+            prefetchExecutorService.submit(() -> {
                         try {
                             ((OffHeapDataBlock<T>) nextDataBlock).enableQueue();
                         } catch (ReadFailedException | InterruptedException e) {
@@ -159,8 +166,8 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
         if (future != null) {
             return;
         }
-        diskLock.lock();
-        // it will return the size of the bytes
+        // Do not take diskLock here: the submitted task acquires it itself, and enableQueue()
+        // must be able to observe the future without contending for the lock the task needs.
         future = executorService.submit(() -> {
             diskLock.lock();
             long start = System.currentTimeMillis();
@@ -186,25 +193,20 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
                 diskLock.unlock();
             }
         });
-        diskLock.unlock();
     }
 
     // make sure data is in memory queue
     public synchronized void enableQueue() throws ReadFailedException, InterruptedException {
+        // Wait for an in-flight flush before taking diskLock. The flush task acquires diskLock
+        // itself, so holding it while waiting on the future deadlocks the two against each other.
+        while (future != null && !future.isDone()) {
+            this.wait(10);
+        }
+        if (!restore && queue != null) {
+            return;
+        }
+        diskLock.lock();
         try {
-            if (!restore) {
-                while (!diskLock.tryLock()) {
-                    this.wait(10);
-                }
-                while ((future != null && !future.isDone())) {
-                    this.wait(10);
-                }
-                if (queue != null) {
-                    return;
-                }
-            } else {
-                diskLock.lock();
-            }
             toMemory();
             future = null;
             restore = false;

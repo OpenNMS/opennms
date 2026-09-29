@@ -60,4 +60,10 @@ describe('OnmsButton', () => {
     await wrapper.find('button').trigger('click')
     expect(onClick).toHaveBeenCalledTimes(1)
   })
+
+  it('maps size through, defaulting to the standard size', () => {
+    expect(mount(OnmsButton, { props: { label: 'x' }}).find('button').classes()).not.toContain('p-button-sm')
+    expect(mount(OnmsButton, { props: { label: 'x', size: 'small' }}).find('button').classes()).toContain('p-button-sm')
+    expect(mount(OnmsButton, { props: { label: 'x', size: 'large' }}).find('button').classes()).toContain('p-button-lg')
+  })
 })

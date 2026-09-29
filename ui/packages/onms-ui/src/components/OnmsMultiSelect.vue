@@ -6,6 +6,8 @@
     :dataKey="dataKey"
     :filter="filter"
     :display="display"
+    :showToggleAll="showToggleAll"
+    :maxSelectedLabels="maxSelectedLabels"
     :placeholder="placeholder"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
@@ -23,6 +25,8 @@ withDefaults(defineProps<{
   dataKey?: string
   filter?: boolean
   display?: 'comma' | 'chip'
+  showToggleAll?: boolean
+  maxSelectedLabels?: number
   placeholder?: string
   unsafePt?: unknown
 }>(), {
@@ -32,6 +36,8 @@ withDefaults(defineProps<{
   dataKey: undefined,
   filter: false,
   display: 'comma',
+  showToggleAll: true,
+  maxSelectedLabels: undefined,
   placeholder: undefined,
   unsafePt: undefined
 })

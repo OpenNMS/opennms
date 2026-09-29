@@ -65,8 +65,11 @@ public interface WSManConfigDao {
             }
 
             String host = agentInetAddress.getHostAddress();
-            if (agentConfig.isGssAuth()!=null && agentConfig.isGssAuth()) {
-                // Always use the canonical host name when using GSS authentication
+            if (isGssAuth(agentConfig) || isKerberosEncryption(agentConfig)) {
+                // Always use the canonical host name when using GSS authentication: the
+                // Kerberos service ticket is requested for HTTP/<host>, so the name has
+                // to match the target's service principal. Kerberos message encryption
+                // implies GSS authentication.
                 host = agentInetAddress.getCanonicalHostName();
             }
 
@@ -80,8 +83,11 @@ public interface WSManConfigDao {
         if (agentConfig.getUsername() != null && agentConfig.getPassword() != null) {
             builder.withBasicAuth(agentConfig.getUsername(), agentConfig.getPassword());
         }
-        if (agentConfig.isGssAuth() != null && agentConfig.isGssAuth()) {
+        if (isGssAuth(agentConfig)) {
             builder.withGSSAuth();
+        }
+        if (isKerberosEncryption(agentConfig)) {
+            builder.withKerberosEncryption();
         }
         if (agentConfig.getMaxElements() != null) {
             builder.withMaxElements(agentConfig.getMaxElements());
@@ -94,5 +100,13 @@ public interface WSManConfigDao {
                    .withReceiveTimeout(agentConfig.getTimeout());
         }
         return builder.build();
+    }
+
+    static boolean isGssAuth(WsmanAgentConfig agentConfig) {
+        return Boolean.TRUE.equals(agentConfig.isGssAuth());
+    }
+
+    static boolean isKerberosEncryption(WsmanAgentConfig agentConfig) {
+        return Boolean.TRUE.equals(agentConfig.isKerberosEncryption());
     }
 }

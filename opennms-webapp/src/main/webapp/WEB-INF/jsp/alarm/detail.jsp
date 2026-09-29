@@ -37,9 +37,6 @@
         org.opennms.netmgt.model.TroubleTicketState,
         org.opennms.web.api.Authentication,
         org.opennms.web.api.Util,
-        org.apache.commons.configuration.Configuration,
-        org.apache.commons.configuration.ConfigurationException,
-        org.apache.commons.configuration.PropertiesConfiguration,
         org.opennms.web.element.NetworkElementFactory,
         java.util.stream.Collectors"
 %>

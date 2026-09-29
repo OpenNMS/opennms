@@ -1,0 +1,92 @@
+= WS-Management Shell Detector
+:description: Learn how the WsManShellDetector in OpenNMS {page-component-title} runs a command on a Windows host through WinRS and detects a service from its output.
+
+The WsManShellDetector connects to the agent defined in `wsman-config.xml`, runs a command through WinRS (the Windows Remote Shell protocol carried over WS-Management), and marks the service as detected when its output matches an optional banner and, if configured, it exits with the expected code.
+Use it to define arbitrary services based on the state of the Windows host.
+Connection details, credentials, and Kerberos settings for the target come from `wsman-config.xml`; see xref:performance-data-collection/collectors/wsman.adoc#ga-performance-mgmt-collectors-wsman-agent-config[WS-Management agent configuration] and xref:configuration/wsman-kerberos.adoc[WS-Management Kerberos authentication and message encryption].
+
+The command runs as the user configured in `wsman-config.xml`.
+Give that account only the rights it needs: membership in the `Remote Management Users` group on the target is enough to run commands.
+
+WARNING: The `command` and `args` values are handed to the Windows command interpreter exactly as written, and `cmd.exe` treats characters such as `&`, `|`, and `>` as command separators.
+Metadata expressions are expanded by provisiond for every parameter, so avoid referencing node or interface metadata in `command` or `args` unless you control who can edit it.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManShellDetector`
+|===
+
+== Configuration and use
+
+.Parameters for the WsManShellDetector
+[options="header, autowidth"]
+[cols="1,1,4"]
+|===
+| Parameter
+| Description
+| Default value
+
+3+| *Required*
+
+| command
+| The executable to run, for example `sc` or `powershell`.
+| none
+
+3+| *Optional*
+
+| args
+| Arguments passed to the command.
+The value is handed to the Windows host verbatim, so it is the rest of the command line exactly as you would type it there, using Windows quoting rules.
+Write double quotes as `&quot;` in the XML file.
+| none
+
+| banner
+| Text that must appear in the command's standard output.
+If the value starts with `~`, the rest is a regular expression that must match the whole output.
+The expression is compiled so that `.` also matches line breaks.
+Use `*` or leave the parameter out to accept any output.
+| `*`
+
+| exitCode
+| Exit code the command must return, for example `0`.
+By default any exit code is accepted and only the banner is checked.
+| `*`
+
+| noProfile
+| Skip loading the user profile when creating the shell.
+| `true`
+
+| codepage
+| Windows code page number the remote shell uses to encode the command's output, which the detector decodes with the same code page.
+The default, `65001`, is UTF-8 and suits most commands.
+Set a legacy code page such as `437` (US OEM) or `850` (Western European OEM) only if a command writes output in that encoding.
+| `65001` (UTF-8)
+
+| workingDirectory
+| Working directory for the command.
+| Shell default
+
+| timeout
+| Time in milliseconds that bounds each step of the detection: connecting to the host, creating the shell, waiting for the command to complete, and deleting the shell.
+No single step may take longer than this.
+| `2000`
+
+| serviceName
+| A custom service name to identify this service.
+| WsManShell
+|===
+
+== Examples
+
+Detect a `W32Time` service on hosts where the Windows Time service is running:
+
+[source, xml]
+----
+<detector name="W32Time" class="org.opennms.netmgt.provision.detector.wsman.WsManShellDetector">
+    <parameter key="command" value="sc"/>
+    <parameter key="args" value="query w32time"/>
+    <parameter key="banner" value="~.*STATE\s*:\s*4\s+RUNNING.*"/>
+</detector>
+----

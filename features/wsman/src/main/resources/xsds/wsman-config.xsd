@@ -94,6 +94,12 @@
           <documentation>Enables GSS (HTTP Negotiate) authentication.</documentation>
         </annotation>
       </attribute>
+      <attribute name="kerberos-encryption" type="boolean" use="optional">
+        <annotation>
+          <documentation>Enables Kerberos message encryption (MS-WSMV 2.2.9.1), which protects the SOAP payload itself and
+          allows WS-Man over plain HTTP. Implies gss-auth.</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
   <element name="definition">
@@ -135,6 +141,7 @@
       <attribute name="product-vendor" type="string" use="optional"/>
       <attribute name="product-version" type="string" use="optional"/>
       <attribute name="gss-auth" type="boolean" use="optional" />
+      <attribute name="kerberos-encryption" type="boolean" use="optional" />
     </complexType>
   </element>
   <element name="ip-match">

@@ -59,8 +59,8 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import Apps from '@/components/icons/navigation/Apps.vue'
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Apps from '@opennms/onms-ui/icons/navigation/Apps.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
 import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import { saveNodePreferences } from '@/services/localStorageService'
@@ -145,10 +145,11 @@ watch(() => nodeListStore.columns, (newColumns) => {
 </script>
 
 <style lang="scss" scoped>
+// No height/overflow here on purpose: PrimeVue's own `.p-drawer-content` is the
+// drawer's scroll container. A second scroller nested inside it drew its own
+// scrollbar next to the page's (NMS-20182).
 .drawer-content {
   padding: 20px;
-  height: 100%;
-  overflow: auto;
 }
 
 .spacer-large {

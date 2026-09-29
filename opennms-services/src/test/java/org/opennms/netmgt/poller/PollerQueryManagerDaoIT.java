@@ -562,8 +562,8 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 		startDaemons();
 
-		final int waitTime = 2000;
-		final int verifyTime = 2000;
+		final int waitTime = 4000;
+		final int verifyTime = 4000;
 
 		sleep(waitTime);
 

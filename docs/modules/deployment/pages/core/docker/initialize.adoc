@@ -20,12 +20,20 @@ docker compose up -d
 TIP: You can also use this command when you run upgrades.
      You must delete the file `etc/configured` file first.
      It works as a guard to prevent unnecessary database migration runs on startup.
-     +
-     +
-     Show configuration changes from a pristine system with  +
-     `docker compose exec -w /opt/opennms/bin horizon ./config-diff.sh -d`.
-     +
-     +
-     If you changed your configuration files manually you can run the configuration tester with +
-     `docker compose exec horizon bin/config-tester -a`
+
+[[docker-upgrade-core]]
+.Upgrade an existing deployment
+
+IMPORTANT: Your persisted `etc` volume is never merged with the new version's defaults, even for files you didn't edit.
+Before upgrading, xref:deployment:upgrade/introduction.adoc#byb_upgrade[check the release notes for breaking changes] and update your config accordingly, or the container may fail to start.
+
+After updating the image tag, deleting `etc/configured`, and re-running `docker compose run horizon -i`, compare your config against the pristine defaults and fix any differences yourself:
+
+[source, console]
+----
+docker compose exec -w /opt/opennms/bin horizon ./config-diff.sh -d <1>
+docker compose exec horizon bin/config-tester -a <2>
+----
+<1> Reports added/changed/removed files vs. pristine -- doesn't apply fixes.
+<2> Validates syntax/XML only -- won't catch removed or renamed properties.
 

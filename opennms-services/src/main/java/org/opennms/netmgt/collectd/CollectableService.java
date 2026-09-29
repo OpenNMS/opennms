@@ -156,7 +156,10 @@ public class CollectableService implements ReadyRunnable {
         m_persisterFactory = persisterFactory;
 
         m_nodeId = iface.getNode().getId().intValue();
-        m_status = CollectionStatus.SUCCEEDED;
+        // Start out with no opinion rather than assuming success, so the first successful collection is a
+        // transition and emits the event that clears an alarm left over from a previous scheduling
+        // generation. A restart and a collectd reload both discard and rebuild every CollectableService.
+        m_status = CollectionStatus.UNKNOWN;
 
         m_updates = new CollectorUpdates();
 

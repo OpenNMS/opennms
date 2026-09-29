@@ -66,7 +66,7 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
 
     @Override
     public List<SnmpCollectionMibGroup> findAllEnabledBySource(Integer snmpCollectionSourceId) {
-        return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ?1 and s.enabled = true", snmpCollectionSourceId);
+        return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ?1 and s.enabled = true order by s.id", snmpCollectionSourceId);
     }
 
     @Override

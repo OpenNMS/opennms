@@ -118,6 +118,16 @@ Provides:	%{name}-plugin-ticketing-otrs = %{version}-%{release}
 Obsoletes:	%{name}-plugin-ticketing-otrs < %{version}
 Provides:	%{name}-plugin-ticketing-remedy = %{version}-%{release}
 Obsoletes:	%{name}-plugin-ticketing-remedy < %{version}
+Provides:	%{name}-plugin-northbounder-jms = %{version}-%{release}
+Obsoletes:	%{name}-plugin-northbounder-jms < %{version}
+Provides:	%{name}-plugin-ticketer-rt = %{version}-%{release}
+Obsoletes:	%{name}-plugin-ticketer-rt < %{version}
+Provides:	%{name}-plugin-protocol-cifs = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-cifs < %{version}
+Provides:	%{name}-plugin-protocol-nsclient = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-nsclient < %{version}
+Provides:	%{name}-plugin-collector-juniper-tca = %{version}-%{release}
+Obsoletes:	%{name}-plugin-collector-juniper-tca < %{version}
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -195,8 +205,6 @@ The Hawtio web console.
 %package plugins
 Summary:	All Plugins
 Group:		Applications/System
-Requires(pre):	%{name}-plugin-northbounder-jms
-Requires:	%{name}-plugin-northbounder-jms
 Requires(pre):	%{name}-plugin-provisioning-dns
 Requires:	%{name}-plugin-provisioning-dns
 Requires(pre):	%{name}-plugin-provisioning-reverse-dns
@@ -209,12 +217,6 @@ Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	%{name}-plugin-ticketer-jira
 Requires:	%{name}-plugin-ticketer-jira
-Requires(pre):	%{name}-plugin-ticketer-rt
-Requires:	%{name}-plugin-ticketer-rt
-Requires(pre):	%{name}-plugin-protocol-cifs
-Requires:	%{name}-plugin-protocol-cifs
-Requires(pre):	%{name}-plugin-protocol-nsclient
-Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
@@ -225,21 +227,6 @@ This installs all optional plugins.
 
 %{extrainfo}
 %{extrainfo2}
-
-
-%package plugin-northbounder-jms
-Summary:	JMS Alarm Northbounder
-Group:		Applications/System
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-northbounder-jms
-This northbounder allows you to send OpenNMS alarms to an
-external JMS listener.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 
 
 %package plugin-provisioning-dns
@@ -326,47 +313,6 @@ issues from %{_descr} alarms.
 %{extrainfo2}
 
 
-%package plugin-ticketer-rt
-Summary:	RT Ticketer Plugin
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-ticketer-rt
-The RT ticketer plugin provides the ability to automatically create RT
-tickets from %{_descr} alarms.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-protocol-cifs
-Summary:	CIFS Poller Plugin
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-cifs
-The CIFS protocol plugin provides a poller monitor for CIFS network shares.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-protocol-nsclient
-Summary:	NSCLIENT Plugin Support
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-nsclient
-The NSClient protocol plugin provides a capsd plugin and poller monitor for NSClient
-and NSClient++.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-protocol-radius
 Summary:	RADIUS Plugin Support
 Group:		Applications/System
@@ -376,19 +322,6 @@ Requires:	%{name}-core = %{version}-%{release}
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
 monitor, and Spring Security authorization mechanism for RADIUS.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-collector-juniper-tca
-Summary:	Juniper TCA Collector
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-collector-juniper-tca
-The Juniper JCA collector provides a collector plugin for Collectd to collect data from TCA devices.
 
 %{extrainfo}
 %{extrainfo2}
@@ -583,17 +516,11 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v -E 'etc/.*.cfg$' | \
 	grep -v 'etc/custom.properties' | \
 	grep -v 'jira.properties' | \
-	grep -v 'jms-northbounder-configuration.xml' | \
-	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
-	grep -v 'nsclient-config.xml' | \
-	grep -v 'nsclient-datacollection-config.xml' | \
-	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v '/users.xml' | \
-	grep -v 'tca-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
 	grep -v 'etc/org.opennms' | \
@@ -606,16 +533,10 @@ find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
 find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v 'jira.properties' | \
-	grep -v 'jms-northbounder-configuration.xml' | \
-	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
-	grep -v 'nsclient-config.xml' | \
-	grep -v 'nsclient-datacollection-config.xml' | \
-	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v 'tca-datacollection-config.xml' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/bin ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
@@ -624,10 +545,6 @@ find %{buildroot}%{instprefix}/bin ! -type d | \
 find %{buildroot}%{sharedir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v 'etc-pristine' | \
-	grep -v 'nsclient-config.xsd' | \
-	grep -v 'nsclient-datacollection.xsd' | \
-	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/agent ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
@@ -635,12 +552,7 @@ find %{buildroot}%{instprefix}/agent ! -type d | \
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jradius' | \
-	grep -v 'opennms-alarm-northbounder-jms' | \
-	grep -v 'opennms-integration-rt' | \
 	grep -v 'opennms_jmx_config_generator' | \
-	grep -v 'org.opennms.features.juniper-tca-collector' | \
-	grep -v 'org.opennms.protocols.cifs' | \
-	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'opennms-vtdxml-collector-handler' | \
 	grep -v 'provisioning-adapter' | \
@@ -741,12 +653,6 @@ rm -rf %{buildroot}
 
 %files plugins
 
-%files plugin-northbounder-jms
-%defattr(644 opennms opennms 755)
-%{instprefix}/lib/opennms-alarm-northbounder-jms-*.jar
-%config(noreplace) %{instprefix}/etc/jms-northbounder-configuration.xml
-%{sharedir}/etc-pristine/jms-northbounder-configuration.xml
-
 %files plugin-provisioning-dns
 %defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
@@ -773,10 +679,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{instprefix}/etc/snmp-hardware-inventory-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml
 
-%files plugin-protocol-cifs
-%defattr(664 opennms opennms 775)
-%{instprefix}/lib/org.opennms.protocols.cifs*.jar
-
 %files plugin-ticketer-jira
 %defattr(664 opennms opennms 775)
 %{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
@@ -786,34 +688,10 @@ rm -rf %{buildroot}
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
 
-%files plugin-ticketer-rt
-%defattr(664 opennms opennms 775)
-%{instprefix}/lib/opennms-integration-rt-*.jar
-%config(noreplace) %{instprefix}/etc/rt.properties
-%{sharedir}/etc-pristine/rt.properties
-
-%files plugin-protocol-nsclient
-%defattr(664 opennms opennms 775)
-%config(noreplace) %{instprefix}/etc/nsclient*.xml
-%{instprefix}/etc/examples/nsclient*.xml
-%{instprefix}/lib/org.opennms.protocols.nsclient*.jar
-%{sharedir}/etc-pristine/nsclient*.xml
-%{sharedir}/xsds/nsclient*.xsd
-
 %files plugin-protocol-radius
 %defattr(664 opennms opennms 775)
 %{instprefix}/lib/*jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
-
-%files plugin-collector-juniper-tca
-%defattr(664 opennms opennms 775)
-%config(noreplace) %{instprefix}/etc/tca*.xml
-%config(noreplace) %{instprefix}/etc/datacollection/juniper-tca*
-%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/juniper-tca*
-%{instprefix}/lib/org.opennms.features.juniper-tca-collector-*.jar
-%{sharedir}/etc-pristine/tca*.xml
-%{sharedir}/etc-pristine/datacollection/juniper-tca*
-%{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
 
 %files plugin-collector-vtdxml-handler
 %defattr(664 opennms opennms 775)
@@ -982,9 +860,6 @@ fi
 %post webapp-hawtio
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-webapp-hawtio"
 
-%post plugin-northbounder-jms
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-northbounder-jms"
-
 %post plugin-provisioning-dns
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-dns"
 
@@ -1000,23 +875,11 @@ fi
 %post plugin-provisioning-snmp-hardware-inventory
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-snmp-hardware-inventory"
 
-%post plugin-protocol-cifs
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-cifs"
-
 %post plugin-ticketer-jira
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-jira"
 
-%post plugin-ticketer-rt
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-rt"
-
-%post plugin-protocol-nsclient
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-nsclient"
-
 %post plugin-protocol-radius
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-radius"
-
-%post plugin-collector-juniper-tca
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-juniper-tca"
 
 %post plugin-collector-vtdxml-handler
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-vtdxml-handler"

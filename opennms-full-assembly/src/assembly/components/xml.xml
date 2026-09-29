@@ -13,6 +13,7 @@
       <outputDirectory>lib</outputDirectory>
       <includes>
         <include>org.opennms.protocols:org.opennms.protocols.xml:jar:${project.version}</include>
+        <include>com.github.mwiede:jsch:jar</include>
       </includes>
     </dependencySet>
     <!-- configuration files -->

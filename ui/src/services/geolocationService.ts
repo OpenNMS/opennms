@@ -26,15 +26,29 @@ import { GeolocationConfigItem } from '@/types'
 const geolocationEndpoint = 'geolocation'
 const geolocationConfigEndpoint = 'config'
 
+/**
+ * The tile server is an install-wide setting (opennms.properties), so the answer
+ * is shared rather than refetched per caller. Callers that mount repeatedly --
+ * the topology inspector's location map, once per node selection -- would
+ * otherwise issue a request every time.
+ *
+ * A failure is not cached, so a briefly unavailable server is retried.
+ */
+let configPromise: Promise<GeolocationConfigItem | false> | null = null
+
 const getGeolocationConfig = async (): Promise<GeolocationConfigItem | false> => {
+  if (configPromise) {
+    return configPromise
+  }
   const endpoint = `${geolocationEndpoint}/${geolocationConfigEndpoint}`
 
-  try {
-    const resp = await v2.get(endpoint)
-    return resp.data as GeolocationConfigItem
-  } catch (_err) {
-    return false
-  }
+  configPromise = v2.get(endpoint)
+    .then(resp => resp.data as GeolocationConfigItem)
+    .catch(() => {
+      configPromise = null
+      return false as const
+    })
+  return configPromise
 }
 
 export {

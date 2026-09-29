@@ -31,6 +31,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.web.rest.support.menu.HttpMenuRequestContext;
@@ -58,7 +63,103 @@ public class MenuRestService {
     @GET
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get main menu", description = "Get main menu", operationId = "MenuRestServiceGetMainMenu")
+    @Operation(summary = "Get main menu",
+            description = """
+        The whole menubar for the calling user, assembled from the menu template plus the request's
+        roles, so two users can get different `menus` contents from the same call. Alongside the menu
+        trees the response carries `baseHref`, `username`, `version`, `copyrightDates`, the formatted
+        server date and time, the notification status, and the Zenith Connect and add-node feature
+        flags.
+
+        `menus` is the top-level bar. `helpMenu`, `selfServiceMenu`, `userNotificationMenu`,
+        `provisionMenu` and `configurationMenu` are the fixed right-hand entries, each a single menu
+        object rather than a list. Every entry shares one shape; unused members come back as null, and
+        `items` is null for a leaf and a list for a submenu.""",
+            operationId = "MenuRestServiceGetMainMenu")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The menu definition for the calling user.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = MainMenu.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "templateName": "default",
+                      "baseHref": "http://localhost:8980/opennms/",
+                      "homeUrl": "http://localhost:8980/opennms/index.jsp",
+                      "formattedDateTime": "2026-08-26T02:57:01-04:00",
+                      "formattedDate": "August 26, 2026",
+                      "formattedTime": "02:57:01 UTC-04",
+                      "noticeStatus": "Off",
+                      "username": "admin",
+                      "baseNodeUrl": "element/node.jsp?node=",
+                      "zenithConnectEnabled": false,
+                      "zenithConnectBaseUrl": "",
+                      "zenithConnectRelativeUrl": "",
+                      "displayAddNodeButton": false,
+                      "sideMenuInitialExpand": false,
+                      "copyrightDates": "2002-2026",
+                      "version": "36.0.4-SNAPSHOT",
+                      "menus": [
+                        {
+                          "type": "header",
+                          "id": "emptyHeader",
+                          "name": "",
+                          "url": null,
+                          "isExternalLink": null,
+                          "locationMatch": null,
+                          "action": null,
+                          "linkTarget": null,
+                          "icon": null,
+                          "roles": null,
+                          "requiredSystemProperties": [],
+                          "items": null
+                        }
+                      ],
+                      "helpMenu": {
+                        "type": null,
+                        "id": "helpMenu",
+                        "name": "Help",
+                        "url": "#",
+                        "roles": null,
+                        "requiredSystemProperties": [],
+                        "items": []
+                      },
+                      "selfServiceMenu": {
+                        "id": "selfServiceMenu",
+                        "name": "admin",
+                        "url": "account/selfService/index.jsp",
+                        "requiredSystemProperties": [],
+                        "items": [
+                          {"id": "changePassword", "name": "Change Password", "url": "account/selfService/newPasswordEntry", "items": null}
+                        ]
+                      },
+                      "userNotificationMenu": {
+                        "id": "userNotificationMenu",
+                        "requiredSystemProperties": [],
+                        "items": [
+                          {"id": "userNotificationConfiguration", "url": "admin/notification/index.jsp", "items": null}
+                        ]
+                      },
+                      "provisionMenu": {
+                        "id": "provisionMenu",
+                        "name": "Quick-Add Node",
+                        "url": "admin/ng-requisitions/quick-add-node.jsp#/",
+                        "roles": ["ROLE_ADMIN", "ROLE_PROVISION"],
+                        "requiredSystemProperties": [],
+                        "items": null
+                      },
+                      "configurationMenu": {
+                        "id": "configurationMenu",
+                        "name": "Configure OpenNMS",
+                        "url": "admin/index.jsp",
+                        "roles": ["ROLE_ADMIN"],
+                        "requiredSystemProperties": [],
+                        "items": null
+                      }
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = "The menu template could not be read or parsed. The cause is logged, not returned.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error building menu.")))
+    })
     public Response getMainMenu(final @Context HttpServletRequest request) {
         try {
             MainMenu mainMenu = buildMenu(request);

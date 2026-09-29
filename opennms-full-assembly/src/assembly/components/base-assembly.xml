@@ -16,12 +16,6 @@
       </includes>
       <unpackOptions>
         <excludes>
-          <!-- northbounders -->
-          <exclude>lib/*alarm-northbounder-jms*</exclude>
-
-          <!-- protocols -->
-          <exclude>etc/nsclient-config.xml</exclude>
-
           <!-- provisioning adapters -->
           <exclude>etc/*snmp-asset-adapter*</exclude>
           <exclude>lib/*snmp-asset-provisioning-adapter*</exclude>
@@ -31,10 +25,6 @@
           <exclude>etc/*wsman-asset-adapter*</exclude>
           <!-- not included in base assembly tar -->
           <!-- <exclude>lib/*wsman-asset-provisioning-adapter*</exclude> -->
-
-          <!-- ticketing plugins -->
-          <exclude>etc/rt.properties</exclude>
-          <exclude>lib/*integration-rt*</exclude>
         </excludes>
       </unpackOptions>
     </dependencySet>

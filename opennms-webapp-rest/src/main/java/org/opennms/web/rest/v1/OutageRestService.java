@@ -37,6 +37,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -88,7 +95,54 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{outageId}")
     @Transactional
-    public Response getOutage(@Context final UriInfo uriInfo, @PathParam("outageId") final String outageId) {
+    @Operation(
+            summary = "Get an outage",
+            description = """
+                    Return one outage by id.
+                    The literal path segment `summaries` is handled by this same method and returns per-node outage
+                    summaries, honouring a `limit` query parameter that defaults to 10.
+                    The derived schema shows `date-time`; the wire carries epoch milliseconds in JSON and ISO-8601
+                    strings in XML.""",
+            operationId = "getOutageV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The outage, or the node outage summaries for the `summaries` path segment.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsOutage.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": 255,
+                      "nodeId": 197,
+                      "nodeLabel": "loopback-202",
+                      "foreignSource": "loopback-lab",
+                      "foreignId": "lb-202",
+                      "locationName": "Default",
+                      "ipAddress": "127.0.0.202",
+                      "serviceId": 2,
+                      "ifLostService": 1786382635109,
+                      "ifRegainedService": 1786382665199,
+                      "serviceLostEvent": null,
+                      "monitoredService": {
+                        "id": 1221,
+                        "status": "A",
+                        "statusLong": "Managed",
+                        "down": false,
+                        "ipInterfaceId": 582,
+                        "lastGood": 1787727479371,
+                        "lastFail": 1787685424740,
+                        "serviceType": { "id": 2, "name": "HTTP-8080" }
+                      }
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "No outage with that id."),
+            @ApiResponse(responseCode = "500", description = "The path segment is neither `summaries` nor an integer.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"abc\"")))
+    })
+    public Response getOutage(@Context final UriInfo uriInfo,
+            @Parameter(description = "Outage id, or the literal `summaries` for per-node outage summaries.",
+                    example = "255", required = true)
+            @PathParam("outageId") final String outageId) {
         if ("summaries".equals(outageId)) {
             final MultivaluedMap<String,String> parms = uriInfo.getQueryParameters(true);
             int limit = 10;
@@ -112,6 +166,20 @@ public class OutageRestService extends OnmsRestService {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
     @Transactional
+    @Operation(
+            summary = "Count all outages",
+            description = """
+                    Return the total number of outage rows as a plain-text integer. Query parameters are ignored.
+                    This count includes the perspective (remote-poller) outages that `GET /outages` excludes, so it
+                    can be larger than the `totalCount` that operation reports for an unfiltered query.""",
+            operationId = "getOutageCountV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The outage count.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "4077")))
+    })
     public String getCount() {
         return Integer.toString(m_outageDao.countAll());
     }
@@ -124,6 +192,57 @@ public class OutageRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
+    @Operation(
+            summary = "Search outages",
+            description = """
+                    Return outages matching the query parameters. Perspective (remote-poller) outages are excluded
+                    by a fixed `perspective is null` restriction that a query parameter cannot lift.
+                    Filters are `OnmsOutage` property names, with `monitoredService.*`, `ipInterface.*`, `node.*`,
+                    `snmpInterface.*`, `serviceType.*`, `serviceLostEvent.*` and `serviceRegainedEvent.*` reachable
+                    through their aliases. Current outages are the ones with `ifRegainedService=null`. `limit`
+                    (default 10), `offset`, `orderBy`, `order`, `match` and `comparator` shape the result, and no
+                    ordering is applied unless `orderBy` asks for one. A filter name that is not a property of the
+                    entity fails with 500.""",
+            operationId = "getOutagesV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The matching outages.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsOutageCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 4067,
+                      "count": 1,
+                      "offset": 0,
+                      "outage": [ {
+                          "id": 255,
+                          "nodeId": 197,
+                          "nodeLabel": "loopback-202",
+                          "foreignSource": "loopback-lab",
+                          "foreignId": "lb-202",
+                          "locationName": "Default",
+                          "ipAddress": "127.0.0.202",
+                          "serviceId": 2,
+                          "ifLostService": 1786382635109,
+                          "ifRegainedService": 1786382665199,
+                          "serviceLostEvent": null,
+                          "monitoredService": {
+                            "id": 1221,
+                            "status": "A",
+                            "statusLong": "Managed",
+                            "down": false,
+                            "ipInterfaceId": 582,
+                            "lastGood": 1787727479371,
+                            "lastFail": 1787685424740,
+                            "serviceType": { "id": 2, "name": "HTTP-8080" }
+                          }
+                        } ]
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the outage entity.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
+    })
     public OnmsOutageCollection getOutages(@Context final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
         builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
@@ -159,10 +278,70 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     @Path("forNode/{nodeId}")
+    @Operation(
+            summary = "List a node's outages",
+            description = """
+                    Return outages for one node, newest id first. Perspective outages are excluded.
+                    With both `start` and `end` present the window is `ifLostService` strictly between them; with
+                    either missing, `dateRange` is subtracted from now to give the lower bound and there is no
+                    upper bound. Outages that are still open (`ifRegainedService` null) are always included,
+                    whichever form is used.
+                    Remaining query parameters are applied as outage filters as on `GET /outages`, including the
+                    default `limit` of 10. `totalCount` is never set separately here, so it falls back to `count`
+                    and reflects the page size rather than the number of matches.
+                    An unknown node id is not an error: the result is an empty list.""",
+            operationId = "getOutagesForNodeV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The node's outages.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsOutageCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 1,
+                      "count": 1,
+                      "offset": 0,
+                      "outage": [ {
+                          "id": 255,
+                          "nodeId": 197,
+                          "nodeLabel": "loopback-202",
+                          "foreignSource": "loopback-lab",
+                          "foreignId": "lb-202",
+                          "locationName": "Default",
+                          "ipAddress": "127.0.0.202",
+                          "serviceId": 2,
+                          "ifLostService": 1786382635109,
+                          "ifRegainedService": 1786382665199,
+                          "serviceLostEvent": null,
+                          "monitoredService": {
+                            "id": 1221,
+                            "status": "A",
+                            "statusLong": "Managed",
+                            "down": false,
+                            "ipInterfaceId": 582,
+                            "lastGood": 1787727479371,
+                            "lastFail": 1787685424740,
+                            "serviceType": { "id": 2, "name": "HTTP-8080" }
+                          }
+                        } ]
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "The path segment is not an integer."),
+            @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the outage entity.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
+    })
     public OnmsOutageCollection forNodeId(@Context final UriInfo uriInfo,
+            @Parameter(description = "Node id.", example = "2", required = true)
             @PathParam("nodeId") final int nodeId,
+            @Parameter(description = "Lookback window in milliseconds, counted back from now. Ignored when both "
+                    + "`start` and `end` are given.", example = "604800000")
             @DefaultValue("604800000") @QueryParam("dateRange") final long dateRange,
+            @Parameter(description = "Window start as epoch milliseconds. Only honoured together with `end`.",
+                    example = "1780000000000")
             @QueryParam("start") final Long startTs,
+            @Parameter(description = "Window end as epoch milliseconds. Only honoured together with `start`.",
+                    example = "1790000000000")
             @QueryParam("end") final Long endTs) {
 
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);

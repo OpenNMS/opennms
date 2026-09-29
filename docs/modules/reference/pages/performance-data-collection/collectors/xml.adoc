@@ -53,6 +53,27 @@ The available handlers include:
 The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
 If the root element is an array, it will be wrapped in an object accessible as `/elements`.
 
+JSON object keys are not restricted the way XML element names are: a key may start with a digit or contain characters that are not allowed in an XML name, for example `2xx` or `o'brien`.
+A plain XPath location step cannot express such a name, so the JSON collection handler rewrites those steps transparently to an equivalent `*[name()='...']` step before evaluating them.
+You can therefore write the key exactly as it appears in the JSON document:
+
+[source, xml]
+----
+<xml-group name="http-stats" resource-type="node" resource-xpath="/stats">
+  <xml-object name="ok" type="GAUGE" xpath="2xx/count"/>
+  <xml-object name="failed" type="GAUGE" xpath="5xx/count"/>
+</xml-group>
+----
+
+This works for `resource-xpath`, `key-xpath`, `timestamp-xpath` and the `xpath` of an `xml-object`, and predicates keep working on a rewritten step, for example `2xx[1]/count`.
+A key that holds an array still produces one resource per array element.
+
+The rewrite applies only to the JSON collection handler and only to steps that are not already a legal XML name.
+It leaves predicates, functions, axis specifiers (`self::`, `child::`), `.`, `..`, `*`, `node()` and `text()` untouched, which has two consequences worth knowing:
+
+* A step written with an explicit axis or namespace prefix is not rewritten -- write `2xx` rather than `child::2xx`.
+* A value that is a full XPath expression rather than a location path, such as a union like `/a | /b`, is left as-is.
+
 
 == XML collection configuration
 
@@ -179,6 +200,13 @@ To avoid storing the passwords in plain text, store them in the xref:operation:d
 When `key-store` is set, HTTP redirects are followed only when the target keeps the same scheme, host, and port as the source URL, so that the client certificate is not presented to other services.
 These parameters apply to the JSON collector as well, which uses the same HTTP request mechanism.
 
+[NOTE]
+====
+The XSLT stylesheet must be self-contained.
+Because the collected XML can come from an untrusted endpoint, the transformer blocks all external references to prevent XML External Entity (XXE) and server-side request forgery attacks: `xsl:include`, `xsl:import`, the `document()` function, and external DTDs referenced by the collected XML are not resolved.
+Secure processing is also enabled, which disables XSLT extension functions (for example, EXSLT or `java:` extensions).
+====
+
 === HTTP headers
 
 If the endpoint being collected requires additional headers, you can add them as part of the `<request>` object.
@@ -248,6 +276,150 @@ If your XML data needs to be retrieved via a POST instead of a GET, you can spec
   </xml-source>
 ----
 
+== Collect files over SFTP
+
+The XmlCollector can read XML files from an SFTP server as well as from HTTP endpoints.
+Two URL schemes are available:
+
+* `sftp://`: This scheme retrieves one file at a fixed path on each collection and works with the default handler.
+* `sftp.3gpp://`: This scheme retrieves 3GPP performance measurement files named according to 3GPP TS 32.432.
+It is intended for use with the `Sftp3gppXmlCollectionHandler` or `Sftp3gppVTDXmlCollectionHandler` handler.
+
+=== SFTP URLs
+
+An SFTP source URL has the form `sftp://<username>:<password>@<host>[:<port>]/<path>`.
+
+.Sample collection that reads one file over SFTP
+[source, xml]
+----
+<xml-collection name="sftp-stats">
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+  </rrd>
+  <xml-source url="sftp://${scv:sftp-stats:username}:${scv:sftp-stats:password}@{ipaddr}/data/stats.xml"> <1>
+    <import-groups>xml-datacollection/sftp-stats.xml</import-groups>
+  </xml-source>
+</xml-collection>
+----
+<1> The credentials in this example are stored in the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] under the alias `sftp-stats`.
+They can also be written directly in the URL.
+
+The following rules apply to SFTP URLs:
+
+* The port defaults to 22.
+* The path is the absolute path of the file as the SFTP server presents it.
+On a server that restricts users to a chroot directory, the path starts at that directory.
+* A username is required.
+The password can be left out when key-based authentication is configured.
+* The password can't contain the characters `@`, `/`, `?`, `#`, or `:`, and percent-encoded characters are not decoded.
+* The `<request>` parameters described above apply only to HTTP and HTTPS sources.
+SFTP connections use a fixed timeout of 30 seconds.
+
+WARNING: The collector does not verify the host key of the SFTP server and accepts whatever key the server presents.
+
+=== Key-based authentication
+
+To authenticate with a private key, set the xref:reference:configuration/system-properties.adoc[system property] `sftp.private-key.location` to the path of the key file, for example in `$\{OPENNMS_HOME}/etc/opennms.properties.d/sftp.properties`:
+
+[source, properties]
+----
+sftp.private-key.location=/opt/opennms/etc/sftp/id_ed25519
+----
+
+The source URL then needs only a username, for example `sftp://pmuser@\{ipaddr}/data/stats.xml`.
+
+The property applies to every SFTP source.
+The key file must be readable by the {page-component-title} process and can't be protected with a passphrase.
+Changes to the property take effect after a restart.
+If a Minion performs the collection, the property and the key file must be configured on that Minion.
+
+=== 3GPP measurement files
+
+3GPP performance measurement files are named `A<date>.<start time><UTC offset>-<end time><UTC offset>_<NE ID>`, for example `A20260923.0905-0400-0910-0400_NE01` for the interval from 09:05 to 09:10 at UTC-4.
+An `sftp.3gpp://` URL points to the directory that holds these files, and its query parameters describe how the file names are built:
+
+`sftp.3gpp://<username>:<password>@<host>[:<port>]/<directory>?<parameters>`
+
+.Query parameters for `sftp.3gpp://` URLs
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| step
+| Length of the measurement interval in seconds.
+The `\{step}` placeholder resolves to the `step` of the collection's `<rrd>` element.
+| Required
+
+| neId
+| Network element ID that appears at the end of each file name.
+| Required
+
+| timezone
+| Time zone used to build the file names, as a Java time zone ID such as `America/Chicago`.
+| Time zone of the {page-component-title} JVM
+
+| deleteFile
+| Whether to delete each file from the server after it is processed.
+| false
+|===
+
+The `Sftp3gppXmlCollectionHandler` handler retrieves files by these rules:
+
+* On the first collection for a node, service, and directory, the handler requests the file for the most recent completed interval.
+The file must exist at that time, and the request uses a name without a file extension.
+* After it processes a file, the handler stores the file name.
+Later collections list the directory and process, in name order, every file whose interval ends after the stored one.
+* Files whose names start with `.` are skipped.
+* When `deleteFile` is `true`, only the files that the handler processed are deleted.
+* Each resource receives the string attributes `label` and `instance`, which hold the resource instance.
+
+.Sample collection for 3GPP measurement files
+[source, xml]
+----
+<xml-collection name="3gpp-pm">
+  <rrd step="900">
+    <rra>RRA:AVERAGE:0.5:1:8928</rra>
+  </rrd>
+  <xml-source url="sftp.3gpp://${scv:ne-pm:username}:${scv:ne-pm:password}@{ipaddr}/export/pm?step={step}&amp;neId={foreignId}&amp;timezone=America/Chicago&amp;deleteFile=true"> <1>
+    <xml-group name="platform-system-resource" resource-type="platformSystemResource"
+               key-xpath="@measObjLdn"
+               resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='platform-system|resource']/measValue"
+               timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime" <2>
+               timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+      <xml-object name="cpuUtilization" type="GAUGE" xpath="r[@p=1]"/>
+      <xml-object name="memoryUtilization" type="GAUGE" xpath="r[@p=2]"/>
+    </xml-group>
+  </xml-source>
+</xml-collection>
+----
+<1> The `&` characters between query parameters are written as `+&amp;+` inside the XML attribute.
+<2> The timestamp XPath stores each value at the end time of its measurement interval.
+
+The resource type referenced by the group needs a definition, for example in `$\{OPENNMS_HOME}/etc/resource-types.d/3gpp.xml`:
+
+[source, xml]
+----
+<resource-types>
+  <resourceType name="platformSystemResource" label="3GPP Processor" resourceLabel="${label}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+</resource-types>
+----
+
+The collectd service selects the handler with the `handler-class` parameter:
+
+[source, xml]
+----
+<service name="3GPP-PM" interval="900000" user-defined="false" status="on">
+  <parameter key="collection" value="3gpp-pm"/>
+  <parameter key="handler-class" value="org.opennms.protocols.xml.collector.Sftp3gppXmlCollectionHandler"/>
+</service>
+----
+
 == Mapping values
 
 Sometimes data is represented as string values.
@@ -299,6 +471,13 @@ With the configuration in place, you can test it using the `collect` command ava
 [source, karaf]
 ----
 opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
+----
+
+To test a collection that uses a different handler, add the `handler-class` attribute:
+
+[source, karaf]
+----
+opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=3gpp-pm handler-class=org.opennms.protocols.xml.collector.Sftp3gppXmlCollectionHandler
 ----
 
 == Examples

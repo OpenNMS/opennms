@@ -297,8 +297,8 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@/types'
-import Delete from '@/components/icons/action/Delete.vue'
-import Edit from '@/components/icons/action/Edit.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import { OnmsAutoComplete, OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()

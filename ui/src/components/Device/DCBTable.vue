@@ -191,8 +191,8 @@ import { computed, ref } from 'vue'
 
 import { OnmsButton, OnmsCheckbox, OnmsIcon, OnmsTable, OnmsColumn, type OnmsTablePageEvent, type OnmsTableSortEvent } from '@opennms/onms-ui'
 import { SORT } from '@/types'
-import History from '@/components/icons/action/Restore.vue'
-import Download from '@/components/icons/action/DownloadFile.vue'
+import History from '@opennms/onms-ui/icons/action/Restore.vue'
+import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import Backup from '@/assets/Backup.vue'
 import Compare from '@/assets/Compare.vue'
 import Speed from '@/assets/Speed.vue'
@@ -404,8 +404,5 @@ const onLastBackupDateClick = (config: DeviceConfigBackup) => {
       border-left: 1px solid var(--p-content-border-color);
     }
   }
-}
-a:visited {
-  color: var(--p-primary-color) !important;
 }
 </style>

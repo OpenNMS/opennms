@@ -132,7 +132,7 @@ import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
 import { OnmsButton, OnmsConfirmationDialog, OnmsIcon, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
-import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
 const router = useRouter()
 const route = useRoute()

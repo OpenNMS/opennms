@@ -242,7 +242,17 @@
   </script>
   <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css<%= __menuAssetsVersion %>" media="screen" />
   <%-- Start fetching/compiling the menu bundle now rather than when the parser
-       reaches its <script type="module"> tag near the end of the body. --%>
+       reaches its <script type="module"> tag near the end of the body.
+
+       These two links are deliberately emitted on 'quiet' pages too, including
+       the unauthenticated login page: preloading there warms the cache while
+       the user types their credentials, so the menu mounts instantly on the
+       first post-login page. This is only safe because the bundle is
+       anonymously accessible (see the /ui-components/assets/** rule in
+       applicationContext-spring-security.xml) — without that rule the preload
+       would cache an auth redirect as text/html under the asset URL and break
+       the menu on every JSP page after login (NMS-20174). Keep the two in
+       sync. --%>
   <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
 </head>
 
@@ -315,6 +325,16 @@
     </c:if>
 
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
+
+    <%-- #content is a flex column at least as tall as the window, so the footer
+         can sit at the bottom of a short page instead of stopping wherever the
+         content ends (see #content / #content-body in opennms-theme.scss). This
+         wrapper holds everything except the footer, which keeps #content down to
+         two flex items: page markup lays out inside a plain block exactly as it
+         did before, rather than becoming flex items itself (which stretched
+         inline-level children like .btn-group and collapsed <hr> elements).
+         Closed in bootstrap-footer.jsp, just before the footer. --%>
+    <%= "<div id=\"content-body\">" %>
 
     <%-- Vue menus: do not display if 'quiet' is true (whether requested via the
          'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp), or

@@ -41,6 +41,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
@@ -68,7 +77,33 @@ import com.google.gson.Gson;
  */
 @Component("resourceRestService")
 @Path("resources")
-@Tag(name = "Resources", description = "Resources API")
+@Tag(name = "Resources", description = """
+        The tree of entities that performance data is collected against.
+
+        ## Resource ids
+
+        A resource id is an opaque string with a fixed grammar: a dot-separated path of segments, each
+        segment being a resource type followed by that type's instance name in square brackets:
+
+            <type>[<instance>]{.<type>[<instance>]}
+
+        The root segment is always `node[...]`, and the node instance is either the database id
+        (`node[1]`) or `foreignSource:foreignId` (`node[loopback-lab:lb-001]`). Which of the two forms
+        appears is decided by the node, not by how it was looked up: a node that came from a requisition is
+        always reported in the `foreignSource:foreignId` form. Child segments name the sub-resource type and
+        its instance, for example `.responseTime[127.0.0.1]`, `.interfaceSnmp[eth0-005056b6b6b6]`,
+        `.perspectiveResponseTime[127.0.0.1@Default]`.
+
+        Ids therefore contain `[`, `]`, `:` and `@`, all of which have to be percent-encoded when the id is
+        used as a path segment: `node%5Bloopback-lab%3Alb-001%5D.responseTime%5B127.0.0.1%5D`.
+
+        `GET /resources/fornode/{nodeCriteria}` takes a database id or `foreignSource:foreignId` and returns
+        the node's resource with its children. The ids that can be graphed are the children carrying
+        `rrdGraphAttributes`; the attribute keys in that map are the attribute names the Measurements API
+        takes.
+
+        A resource id that does not parse is reported as 500, not 400. An id that parses but names nothing is
+        a 404.""")
 public class ResourceRestService extends OnmsRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceRestService.class);
@@ -90,7 +125,50 @@ public class ResourceRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
-    public ResourceDTOCollection getResources(@DefaultValue("1") @QueryParam("depth") final int depth) {
+    @Operation(
+            summary = "List top-level resources",
+            description = """
+        List the top-level resources, which in practice means one entry per node that has collected data,
+        plus any non-node top-level resources the running resource types define.
+
+        `depth` controls how far the children are walked. The default of 1 returns each top-level resource
+        with its immediate children. A negative depth walks the whole subtree.
+
+        This operation is not paged: `totalCount` and `count` are always equal and `offset` is always 0.""",
+            operationId = "getResources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The top-level resources.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = ResourceDTOCollection.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 254,
+                      "count": 254,
+                      "offset": 0,
+                      "resource": [
+                        {
+                          "id": "node[loopback-lab:lb-001]",
+                          "label": "loopback-001",
+                          "name": "loopback-lab:lb-001",
+                          "link": "element/node.jsp?node=loopback-lab:lb-001",
+                          "typeLabel": "Node",
+                          "parentId": null,
+                          "stringPropertyAttributes": {},
+                          "externalValueAttributes": {},
+                          "rrdGraphAttributes": {}
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = ResourceDTOCollection.class))
+                    })
+    })
+    public ResourceDTOCollection getResources(
+            @Parameter(description = "How many levels of children to include. 1 returns the immediate children; a negative value walks the whole subtree.",
+                    example = "1")
+            @DefaultValue("1") @QueryParam("depth") final int depth) {
         List<ResourceDTO> resources = Lists.newLinkedList();
         for (OnmsResource resource : m_resourceDao.findTopLevelResources()) {
             resources.add(ResourceDTO.fromResource(resource, depth));
@@ -102,7 +180,75 @@ public class ResourceRestService extends OnmsRestService {
     @Path("{resourceId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
-    public ResourceDTO getResourceById(@PathParam("resourceId") final String resourceId,
+    @Operation(
+            summary = "Get one resource by id",
+            description = """
+        Return a single resource and, by default, its whole subtree. The path segment is a resource id and
+        has to be percent-encoded, since ids contain `[`, `]` and often `:`.
+
+        `rrdGraphAttributes` names the numeric attributes on the resource; each entry gives the attribute
+        name and where its RRD/JRB file sits under the share directory. `stringPropertyAttributes` holds
+        collected strings, `externalValueAttributes` holds values sourced from outside the collector.
+
+        An id whose grammar does not parse fails with 500 rather than 400.""",
+            operationId = "getResourceById"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The resource.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = ResourceDTO.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": "node[loopback-lab:lb-001]",
+                      "label": "loopback-001",
+                      "name": "loopback-lab:lb-001",
+                      "link": "element/node.jsp?node=loopback-lab:lb-001",
+                      "typeLabel": "Node",
+                      "parentId": null,
+                      "children": {
+                        "totalCount": 1,
+                        "count": 1,
+                        "offset": 0,
+                        "resource": [
+                          {
+                            "id": "node[loopback-lab:lb-001].responseTime[127.0.0.1]",
+                            "label": "Response Time for 127.0.0.1",
+                            "name": "127.0.0.1",
+                            "link": "element/interface.jsp?node=loopback-lab:lb-001&intf=127.0.0.1",
+                            "typeLabel": "Response Time",
+                            "parentId": "node[loopback-lab:lb-001]",
+                            "stringPropertyAttributes": {},
+                            "externalValueAttributes": {},
+                            "rrdGraphAttributes": {
+                              "http-8080": {
+                                "name": "http-8080",
+                                "relativePath": "response/127.0.0.1",
+                                "rrdFile": "http-8080.rrd"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = ResourceDTO.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "The id parses but names no resource.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No resource with id 'node[99999]' found."))),
+            @ApiResponse(responseCode = "500", description = "The id does not match the resource-id grammar.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Ill-formed resource ID: not-an-id")))
+    })
+    public ResourceDTO getResourceById(
+            @Parameter(description = "Percent-encoded resource id.", required = true,
+                    example = "node[loopback-lab:lb-001].responseTime[127.0.0.1]")
+            @PathParam("resourceId") final String resourceId,
+            @Parameter(description = "How many levels of children to include. The default of -1 walks the whole subtree.",
+                    example = "-1")
             @DefaultValue("-1") @QueryParam("depth") final int depth) {
         OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(resourceId));
         if (resource == null) {
@@ -115,7 +261,30 @@ public class ResourceRestService extends OnmsRestService {
     @DELETE
     @Path("{resourceId}")
     @Transactional(readOnly=false)
-    public void deleteResourceById(@PathParam("resourceId") final String resourceId) {
+    @Operation(
+            summary = "Delete a resource and its collected data",
+            description = """
+        Remove the resource and the persisted data behind it, including files under the share directory.
+
+        The response carries no body on success. An id whose grammar does not parse fails with 500 rather
+        than 400.""",
+            operationId = "deleteResourceById"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The resource was deleted."),
+            @ApiResponse(responseCode = "404", description = "The id parses but names no resource.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No resource with id 'node[99999]' found."))),
+            @ApiResponse(responseCode = "500", description = "The id does not match the resource-id grammar.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Ill-formed resource ID: not-an-id")))
+    })
+    public void deleteResourceById(
+            @Parameter(description = "Percent-encoded resource id.", required = true,
+                    example = "node[loopback-lab:lb-001].responseTime[127.0.0.1]")
+            @PathParam("resourceId") final String resourceId) {
         final boolean found = m_resourceDao.deleteResourceById(ResourceId.fromString(resourceId));
 
         if (!found) {
@@ -128,7 +297,72 @@ public class ResourceRestService extends OnmsRestService {
     @Path("fornode/{nodeCriteria}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
-    public ResourceDTO getResourceForNode(@PathParam("nodeCriteria") final String nodeCriteria,
+    @Operation(
+            summary = "Get the resource tree for a node",
+            description = """
+        Return the node's own resource with, by default, its whole subtree.
+
+        `nodeCriteria` is either the database node id (`1`) or `foreignSource:foreignId`
+        (`loopback-lab:lb-001`). A criteria string that is neither numeric nor contains a colon fails with
+        500 while trying to parse it as a number, rather than with 404.""",
+            operationId = "getResourceForNode"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The node resource.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = ResourceDTO.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": "node[loopback-lab:lb-001]",
+                      "label": "loopback-001",
+                      "name": "loopback-lab:lb-001",
+                      "link": "element/node.jsp?node=loopback-lab:lb-001",
+                      "typeLabel": "Node",
+                      "parentId": null,
+                      "children": {
+                        "totalCount": 1,
+                        "count": 1,
+                        "offset": 0,
+                        "resource": [
+                          {
+                            "id": "node[loopback-lab:lb-001].responseTime[127.0.0.1]",
+                            "label": "Response Time for 127.0.0.1",
+                            "name": "127.0.0.1",
+                            "link": "element/interface.jsp?node=loopback-lab:lb-001&intf=127.0.0.1",
+                            "typeLabel": "Response Time",
+                            "parentId": "node[loopback-lab:lb-001]",
+                            "stringPropertyAttributes": {},
+                            "externalValueAttributes": {},
+                            "rrdGraphAttributes": {
+                              "http-8080": {
+                                "name": "http-8080",
+                                "relativePath": "response/127.0.0.1",
+                                "rrdFile": "http-8080.rrd"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = ResourceDTO.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No such node, or the node has no resource.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No node found with criteria 'loopback-lab:nope'."))),
+            @ApiResponse(responseCode = "500", description = "The criteria is neither a node id nor a foreignSource:foreignId pair.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"not-a-node\"")))
+    })
+    public ResourceDTO getResourceForNode(
+            @Parameter(description = "Node database id, or foreignSource:foreignId.", required = true,
+                    example = "loopback-lab:lb-001")
+            @PathParam("nodeCriteria") final String nodeCriteria,
+            @Parameter(description = "How many levels of children to include. The default of -1 walks the whole subtree.",
+                    example = "-1")
             @DefaultValue("-1") @QueryParam("depth") final int depth) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
@@ -160,10 +394,74 @@ public class ResourceRestService extends OnmsRestService {
     @Path("select")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
+    @Operation(
+            summary = "Select node resources and prune them",
+            description = """
+        Return node resources for a set of nodes, pruned to the parts asked for. Nodes come from `nodes`,
+        from `filterRules`, or from both; the two sets are merged.
+
+        The node resource always comes back with its own attribute maps blanked. What happens below it
+        depends on `nodeSubresources`:
+
+        - omitted: every sub-resource is listed, but stripped of its children and attribute maps;
+        - given: only sub-resources whose id ends in `.<name>` are kept, and those keep their
+          `stringPropertyAttributes`.
+
+        `stringProperties` narrows the string properties on the kept sub-resources to the named ones. It has
+        no effect unless `nodeSubresources` is also given.
+
+        Every parameter is a comma-separated list, and unknown node ids are dropped silently rather than
+        reported. The response is a bare JSON array, not the usual count/offset envelope.""",
+            operationId = "selectResources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The selected node resources. An empty array when nothing matched.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    array = @ArraySchema(schema = @Schema(implementation = ResourceDTO.class)),
+                                    examples = @ExampleObject(value = """
+                    [
+                      {
+                        "id": "node[loopback-lab:lb-004]",
+                        "label": "loopback-004",
+                        "name": "loopback-lab:lb-004",
+                        "link": "element/node.jsp?node=loopback-lab:lb-004",
+                        "typeLabel": "Node",
+                        "parentId": null,
+                        "children": {
+                          "totalCount": 1,
+                          "count": 1,
+                          "offset": 0,
+                          "resource": [
+                            {
+                              "id": "node[loopback-lab:lb-004].responseTime[127.0.0.4]",
+                              "label": "Response Time for 127.0.0.4",
+                              "name": "127.0.0.4",
+                              "link": "element/interface.jsp?node=loopback-lab:lb-004&intf=127.0.0.4",
+                              "typeLabel": "Response Time",
+                              "parentId": "node[loopback-lab:lb-004]",
+                              "stringPropertyAttributes": {}
+                            }
+                          ]
+                        }
+                      }
+                    ]""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    array = @ArraySchema(schema = @Schema(implementation = ResourceDTO.class)))
+                    })
+    })
     public List<ResourceDTO> select(
+            @Parameter(description = "Comma-separated node ids. Database ids and foreignSource:foreignId pairs may be mixed.",
+                    example = "1,loopback-lab:lb-002")
             @DefaultValue("") @QueryParam("nodes") String nodes,
+            @Parameter(description = "Comma-separated filter rule names, each resolved to the node ids it matches. Merged with `nodes`.",
+                    example = "Routers")
             @DefaultValue("") @QueryParam("filterRules") String filterRules,
+            @Parameter(description = "Comma-separated sub-resource names, matched against the part of the id after the last dot. Omit to list all sub-resources without their contents.",
+                    example = "responseTime[127.0.0.4]")
             @DefaultValue("") @QueryParam("nodeSubresources") String nodeSubresources,
+            @Parameter(description = "Comma-separated string-property names to keep on the selected sub-resources. Only applies when `nodeSubresources` is given.",
+                    example = "sysName")
             @DefaultValue("") @QueryParam("stringProperties") String stringProperties
     ) {
         var allNodeIds = Stream.of(nodes.split(","))
@@ -259,6 +557,35 @@ public class ResourceRestService extends OnmsRestService {
     @Path("generateId")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Store a list of resource ids under a generated key",
+            description = """
+        Store a list of resource ids in the JSON store and return the key they were filed under.
+
+        The key is a UUID derived from the JSON form of the list, so the same list always produces the same
+        key and re-posting it overwrites the entry with identical content. Order matters: a reordered list is
+        a different key.
+
+        The response body is a JSON string, quotes included. The ids are not validated.""",
+            operationId = "generateResourceIdKey"
+    )
+    @RequestBody(
+            required = true,
+            description = "The resource ids to store, as a JSON array of strings.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    array = @ArraySchema(schema = @Schema(type = "string")),
+                    examples = @ExampleObject(value = """
+                    [
+                      "node[loopback-lab:lb-001].responseTime[127.0.0.1]",
+                      "node[loopback-lab:lb-002].responseTime[127.0.0.2]"
+                    ]"""))
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The key the list was stored under, as a JSON string.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "\"3c9721e3-1213-37d4-b7d3-71407ad60eb7\"")))
+    })
     public Response saveResourcesWithId(String[] resources) {
 
         String resourcesInJson = m_gson.toJson(resources);
