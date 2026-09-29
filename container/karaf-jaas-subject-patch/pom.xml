@@ -78,6 +78,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.modules</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- the version Karaf ${karafVersion} builds shell.ssh against -->
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-osgi</artifactId>
+            <version>2.15.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <!-- the version Karaf ${karafVersion} builds shell.console against -->
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.gogo.runtime</artifactId>
