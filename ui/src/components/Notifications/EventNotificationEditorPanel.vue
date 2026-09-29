@@ -1,324 +1,335 @@
 <template>
-  <OnmsDialog
-    :visible="visible"
-    modal
-    :header="isEditing ? `Edit Event Notification: ${originalName}` : 'Add Event Notification'"
-    class="event-notification-editor-dialog"
-    width="min(1040px, 95vw)"
-    data-test="event-notification-editor-dialog"
-    @update:visible="(value: boolean) => emit('update:visible', value)"
+  <TableCard
+    class="event-notification-editor-panel"
+    data-test="event-notification-editor-panel"
   >
-    <div v-if="errors.general" class="error-banner" data-test="save-error">{{ errors.general }}</div>
+    <div class="panel-header">
+      <OnmsButton
+        variant="text"
+        class="back-button"
+        data-test="back-button"
+        @click="emit('close')"
+      >
+        <OnmsIcon :icon="ArrowBack" />
+        Back
+      </OnmsButton>
+      <h2 class="card-title">{{ isEditing ? `Edit Event Notification: ${originalName}` : 'Add Event Notification' }}</h2>
+    </div>
+    <div class="editor-body">
+      <div v-if="errors.general" class="error-banner" data-test="save-error">{{ errors.general }}</div>
 
-    <!-- Event UEI: full-width, friendly label first (how the legacy chooser
-         listed them) with the UEI beneath; free-typed UEIs/regexes still work. -->
-    <FormField
-      class="uei-field"
-      label="Event UEI"
-      required
-      for="new-notification-uei"
-      :error="errors.uei || undefined"
-    >
-      <OnmsAutoComplete
-        v-model="ueiValue"
-        inputId="new-notification-uei"
-        :suggestions="ueiSuggestions"
-        optionLabel="uei"
-        dropdown
-        dropdownMode="current"
-        completeOnFocus
-        data-test="uei-input"
-        fluid
-        @complete="onUeiComplete"
-      >
-        <template #option="{ option }">
-          <div class="uei-option">
-            <div class="label">{{ option.eventLabel || '(no friendly label)' }}</div>
-            <div class="uei">{{ option.uei }}</div>
-          </div>
-        </template>
-      </OnmsAutoComplete>
-      <small v-if="selectedLabel" class="hint" data-test="uei-friendly">Event: <strong>{{ selectedLabel }}</strong></small>
-      <small v-else class="hint">Search by UEI. Enter a literal UEI, or a <code>~</code>-prefixed regular expression to match several.</small>
-    </FormField>
-
-    <div class="form-grid">
+      <!-- Event UEI: full-width, friendly label first (how the legacy chooser
+           listed them) with the UEI beneath; free-typed UEIs/regexes still work. -->
       <FormField
-        label="Name"
+        class="uei-field"
+        label="Event UEI"
         required
-        for="new-notification-name"
-        :error="errors.name || undefined"
+        for="new-notification-uei"
+        :error="errors.uei || undefined"
       >
-        <OnmsInputText id="new-notification-name" v-model="form.name" :maxlength="NAME_MAX" data-test="name-input" />
-      </FormField>
-      <FormField
-        label="Destination Path"
-        required
-        for="new-notification-path"
-        :error="errors.destinationPath || undefined"
-      >
-        <template #label-suffix>
-          <HelpBadge :content="pathHelp" ariaLabel="Destination Path help" />
-        </template>
-        <OnmsSelect
-          v-model="form.destinationPath"
-          inputId="new-notification-path"
-          :options="pathOptions"
-          data-test="destination-path-select"
+        <OnmsAutoComplete
+          v-model="ueiValue"
+          inputId="new-notification-uei"
+          :suggestions="ueiSuggestions"
+          optionLabel="uei"
+          dropdown
+          dropdownMode="current"
+          completeOnFocus
+          data-test="uei-input"
           fluid
-        />
+          @complete="onUeiComplete"
+        >
+          <template #option="{ option }">
+            <div class="uei-option">
+              <div class="label">{{ option.eventLabel || '(no friendly label)' }}</div>
+              <div class="uei">{{ option.uei }}</div>
+            </div>
+          </template>
+        </OnmsAutoComplete>
+        <small v-if="selectedLabel" class="hint" data-test="uei-friendly">Event: <strong>{{ selectedLabel }}</strong></small>
+        <small v-else class="hint">Search by UEI. Enter a literal UEI, or a <code>~</code>-prefixed regular expression to match several.</small>
       </FormField>
-      <FormField
-        label="Description"
-        for="new-notification-description"
-      >
-        <OnmsInputText id="new-notification-description" v-model="form.description" :maxlength="512" data-test="description-input" />
-      </FormField>
-      <FormField
-        label="Subject"
-        for="new-notification-subject"
-      >
-        <OnmsInputText id="new-notification-subject" v-model="form.subject" :maxlength="512" data-test="subject-input" />
-      </FormField>
-      <FormField
-        label="Numeric (pager) Message"
-        for="new-notification-numeric"
-      >
-        <OnmsInputText id="new-notification-numeric" v-model="form.numericMessage" :maxlength="512" data-test="numeric-message-input" />
-        <small class="hint">
-          Numeric-only message for pagers
-          <HelpBadge :content="numericHelp" ariaLabel="Numeric message help" />
-        </small>
-      </FormField>
-      <FormField
-        class="full-width"
-        label="Text Message"
-        required
-        for="new-notification-text"
-        :error="errors.textMessage || undefined"
-      >
-        <OnmsTextarea id="new-notification-text" v-model="form.textMessage" rows="4" :maxlength="8000" data-test="text-message-input" fluid />
-        <small class="hint">
-          Supports event replacement tokens such as %nodelabel%, %interface%, %parm[...]%
-          <HelpBadge :content="replacementHelp" ariaLabel="Event replacement tokens help" />
-        </small>
-      </FormField>
-    </div>
 
-    <div class="rule-block" data-test="rule-block">
-      <div class="rule-header">
-        <span class="rule-header__label">Rule</span>
-        <div class="mode-toggle">
-          <OnmsButton
-            :variant="ruleMode === 'builder' ? 'filled' : 'text'"
-            label="Builder"
-            data-test="rule-mode-builder"
-            @click="setRuleMode('builder')"
+      <div class="form-grid">
+        <FormField
+          label="Name"
+          required
+          for="new-notification-name"
+          :error="errors.name || undefined"
+        >
+          <OnmsInputText id="new-notification-name" v-model="form.name" :maxlength="NAME_MAX" data-test="name-input" />
+        </FormField>
+        <FormField
+          label="Destination Path"
+          required
+          for="new-notification-path"
+          :error="errors.destinationPath || undefined"
+        >
+          <template #label-suffix>
+            <HelpBadge :content="pathHelp" ariaLabel="Destination Path help" />
+          </template>
+          <OnmsSelect
+            v-model="form.destinationPath"
+            inputId="new-notification-path"
+            :options="pathOptions"
+            data-test="destination-path-select"
+            fluid
           />
-          <OnmsButton
-            :variant="ruleMode === 'raw' ? 'filled' : 'text'"
-            label="Raw"
-            data-test="rule-mode-raw"
-            @click="setRuleMode('raw')"
-          />
-          <HelpBadge :content="ruleHelp" />
-        </div>
+        </FormField>
+        <FormField
+          label="Description"
+          for="new-notification-description"
+        >
+          <OnmsInputText id="new-notification-description" v-model="form.description" :maxlength="512" data-test="description-input" />
+        </FormField>
+        <FormField
+          label="Subject"
+          for="new-notification-subject"
+        >
+          <OnmsInputText id="new-notification-subject" v-model="form.subject" :maxlength="512" data-test="subject-input" />
+        </FormField>
+        <FormField
+          label="Numeric (pager) Message"
+          for="new-notification-numeric"
+        >
+          <OnmsInputText id="new-notification-numeric" v-model="form.numericMessage" :maxlength="512" data-test="numeric-message-input" />
+          <small class="hint">
+            Numeric-only message for pagers
+            <HelpBadge :content="numericHelp" ariaLabel="Numeric message help" />
+          </small>
+        </FormField>
+        <FormField
+          class="full-width"
+          label="Text Message"
+          required
+          for="new-notification-text"
+          :error="errors.textMessage || undefined"
+        >
+          <OnmsTextarea id="new-notification-text" v-model="form.textMessage" rows="4" :maxlength="8000" data-test="text-message-input" fluid />
+          <small class="hint">
+            Supports event replacement tokens such as %nodelabel%, %interface%, %parm[...]%
+            <HelpBadge :content="replacementHelp" ariaLabel="Event replacement tokens help" />
+          </small>
+        </FormField>
       </div>
 
-        <template v-if="ruleMode === 'builder'">
+      <div class="rule-block" data-test="rule-block">
+        <div class="rule-header">
+          <span class="rule-header__label">Rule</span>
+          <div class="mode-toggle">
+            <OnmsButton
+              :variant="ruleMode === 'builder' ? 'filled' : 'text'"
+              label="Builder"
+              data-test="rule-mode-builder"
+              @click="setRuleMode('builder')"
+            />
+            <OnmsButton
+              :variant="ruleMode === 'raw' ? 'filled' : 'text'"
+              label="Raw"
+              data-test="rule-mode-raw"
+              @click="setRuleMode('raw')"
+            />
+            <HelpBadge :content="ruleHelp" />
+          </div>
+        </div>
+
+          <template v-if="ruleMode === 'builder'">
+            <FormField
+              label="IP address filter"
+              for="rule-ipfilter"
+              hint="Octets accept * (any), ranges (0-3) and lists (0,1,2), e.g. IPADDR IPLIKE 192.168.0-3.*"
+            >
+              <OnmsInputText id="rule-ipfilter" v-model="ipFilter" data-test="rule-ipfilter" />
+            </FormField>
+            <div class="svc-grid">
+              <FormField
+                label="Services (match ANY)"
+                for="rule-services"
+              >
+                <OnmsMultiSelect
+                  v-model="ruleServices"
+                  inputId="rule-services"
+                  :options="availableServices"
+                  filter
+                  display="chip"
+                  data-test="rule-services"
+                  fluid
+                />
+              </FormField>
+              <FormField
+                label="Exclude services (NOT)"
+                for="rule-not-services"
+              >
+                <OnmsMultiSelect
+                  v-model="ruleNotServices"
+                  inputId="rule-not-services"
+                  :options="availableServices"
+                  filter
+                  display="chip"
+                  data-test="rule-not-services"
+                  fluid
+                />
+              </FormField>
+            </div>
+            <div class="rule-generated">
+              <span class="rule-generated__label">Generated rule:</span>
+              <code data-test="rule-generated">{{ form.rule || '(empty)' }}</code>
+            </div>
+          </template>
+
           <FormField
-            label="IP address filter"
-            for="rule-ipfilter"
-            hint="Octets accept * (any), ranges (0-3) and lists (0,1,2), e.g. IPADDR IPLIKE 192.168.0-3.*"
+            v-else
+            label="Rule expression"
+            for="new-notification-rule"
           >
-            <OnmsInputText id="rule-ipfilter" v-model="ipFilter" data-test="rule-ipfilter" />
+            <OnmsInputText id="new-notification-rule" v-model="form.rule" data-test="rule-input" />
+            <small class="hint">The filter that limits which nodes/interfaces trigger this notification.</small>
+            <small v-if="ruleParseNote" class="rule-note" data-test="rule-note">{{ ruleParseNote }}</small>
           </FormField>
-          <div class="svc-grid">
-            <FormField
-              label="Services (match ANY)"
-              for="rule-services"
-            >
-              <OnmsMultiSelect
-                v-model="ruleServices"
-                inputId="rule-services"
-                :options="availableServices"
-                filter
-                display="chip"
-                data-test="rule-services"
-                fluid
-              />
-            </FormField>
-            <FormField
-              label="Exclude services (NOT)"
-              for="rule-not-services"
-            >
-              <OnmsMultiSelect
-                v-model="ruleNotServices"
-                inputId="rule-not-services"
-                :options="availableServices"
-                filter
-                display="chip"
-                data-test="rule-not-services"
-                fluid
-              />
-            </FormField>
+
+          <small v-if="errors.rule" class="field-error" data-test="rule-error">{{ errors.rule }}</small>
+
+          <div class="rule-validate">
+            <OnmsButton
+              variant="outlined"
+              label="Validate"
+              :loading="validating"
+              data-test="rule-validate"
+              @click="doValidateRule"
+            />
+            <template v-if="ruleValidation">
+              <span v-if="!ruleValidation.valid" class="rule-invalid" data-test="rule-invalid">
+                Invalid: {{ ruleValidation.error }}
+              </span>
+              <span v-else class="rule-valid" data-test="rule-valid">
+                Valid — {{ ruleValidation.matchCount }} interface{{ ruleValidation.matchCount === 1 ? '' : 's' }} match
+                <template v-if="ruleValidation.error"> ({{ ruleValidation.error }})</template>
+              </span>
+            </template>
           </div>
-          <div class="rule-generated">
-            <span class="rule-generated__label">Generated rule:</span>
-            <code data-test="rule-generated">{{ form.rule || '(empty)' }}</code>
+
+          <div v-if="ruleValidation?.valid && ruleValidation.matches.length" class="rule-matches" data-test="rule-matches">
+            <table>
+              <thead><tr><th>Interface</th><th>Services</th></tr></thead>
+              <tbody>
+                <tr v-for="m in ruleValidation.matches" :key="m.ipAddress">
+                  <td>{{ m.ipAddress }}</td>
+                  <td>{{ m.services.join(', ') || 'All services' }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <small v-if="ruleValidation.matchCount > ruleValidation.matches.length" class="hint">
+              Showing first {{ ruleValidation.matches.length }} of {{ ruleValidation.matchCount }}.
+            </small>
           </div>
+      </div>
+
+      <TogglePanel
+        :collapsed="advancedCollapsed"
+        class="advanced-panel"
+        data-test="advanced-options"
+        @update:collapsed="(value: boolean) => (advancedCollapsed = value)"
+      >
+        <template #header>
+          <span class="panel-header">Advanced options</span>
         </template>
 
-        <FormField
-          v-else
-          label="Rule expression"
-          for="new-notification-rule"
-        >
-          <OnmsInputText id="new-notification-rule" v-model="form.rule" data-test="rule-input" />
-          <small class="hint">The filter that limits which nodes/interfaces trigger this notification.</small>
-          <small v-if="ruleParseNote" class="rule-note" data-test="rule-note">{{ ruleParseNote }}</small>
-        </FormField>
+        <div class="advanced-body">
+          <p class="advanced-hint">
+            Rarely-needed fields carried in <code>notifications.xml</code>. Leave blank unless you need them.
+          </p>
 
-        <small v-if="errors.rule" class="field-error" data-test="rule-error">{{ errors.rule }}</small>
-
-        <div class="rule-validate">
-          <OnmsButton
-            variant="outlined"
-            label="Validate"
-            :loading="validating"
-            data-test="rule-validate"
-            @click="doValidateRule"
-          />
-          <template v-if="ruleValidation">
-            <span v-if="!ruleValidation.valid" class="rule-invalid" data-test="rule-invalid">
-              Invalid: {{ ruleValidation.error }}
-            </span>
-            <span v-else class="rule-valid" data-test="rule-valid">
-              Valid — {{ ruleValidation.matchCount }} interface{{ ruleValidation.matchCount === 1 ? '' : 's' }} match
-              <template v-if="ruleValidation.error"> ({{ ruleValidation.error }})</template>
-            </span>
-          </template>
-        </div>
-
-        <div v-if="ruleValidation?.valid && ruleValidation.matches.length" class="rule-matches" data-test="rule-matches">
-          <table>
-            <thead><tr><th>Interface</th><th>Services</th></tr></thead>
-            <tbody>
-              <tr v-for="m in ruleValidation.matches" :key="m.ipAddress">
-                <td>{{ m.ipAddress }}</td>
-                <td>{{ m.services.join(', ') || 'All services' }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <small v-if="ruleValidation.matchCount > ruleValidation.matches.length" class="hint">
-            Showing first {{ ruleValidation.matches.length }} of {{ ruleValidation.matchCount }}.
-          </small>
-        </div>
-    </div>
-
-    <TogglePanel
-      :collapsed="advancedCollapsed"
-      class="advanced-panel"
-      data-test="advanced-options"
-      @update:collapsed="(value: boolean) => (advancedCollapsed = value)"
-    >
-      <template #header>
-        <span class="panel-header">Advanced options</span>
-      </template>
-
-      <div class="advanced-body">
-        <p class="advanced-hint">
-          Rarely-needed fields carried in <code>notifications.xml</code>. Leave blank unless you need them.
-        </p>
-
-        <div class="params-block">
-          <div class="params-title">Notification parameters <HelpBadge :content="paramsHelp" /></div>
-          <div v-for="(p, i) in form.parameters" :key="i" class="param-row" :data-test="`param-row-${i}`">
-            <OnmsInputText v-model="p.name" placeholder="Name" :data-test="`param-name-${i}`" />
-            <OnmsInputText v-model="p.value" placeholder="Value" :data-test="`param-value-${i}`" />
-            <OnmsIconButton
-              :icon="Delete"
-              title="Remove parameter"
-              severity="danger"
-              :data-test="`param-remove-${i}`"
-              @click="form.parameters.splice(i, 1)"
+          <div class="params-block">
+            <div class="params-title">Notification parameters <HelpBadge :content="paramsHelp" /></div>
+            <div v-for="(p, i) in form.parameters" :key="i" class="param-row" :data-test="`param-row-${i}`">
+              <OnmsInputText v-model="p.name" placeholder="Name" :data-test="`param-name-${i}`" />
+              <OnmsInputText v-model="p.value" placeholder="Value" :data-test="`param-value-${i}`" />
+              <OnmsIconButton
+                :icon="Delete"
+                title="Remove parameter"
+                severity="danger"
+                :data-test="`param-remove-${i}`"
+                @click="form.parameters.splice(i, 1)"
+              />
+            </div>
+            <OnmsButton
+              variant="text"
+              label="Add parameter"
+              data-test="add-param"
+              @click="form.parameters.push({ name: '', value: '' })"
             />
           </div>
-          <OnmsButton
-            variant="text"
-            label="Add parameter"
-            data-test="add-param"
-            @click="form.parameters.push({ name: '', value: '' })"
-          />
-        </div>
 
-        <div class="form-grid">
-          <FormField
-            label="Varbind name"
-            for="new-notification-vbname"
-          >
-            <template #label-suffix>
-              <HelpBadge :content="varbindHelp" ariaLabel="Varbind name help" />
-            </template>
-            <OnmsInputText id="new-notification-vbname" v-model="form.varbindName" data-test="varbind-name-input" />
-          </FormField>
-          <FormField
-            label="Varbind value"
-            for="new-notification-vbvalue"
-          >
-            <OnmsInputText id="new-notification-vbvalue" v-model="form.varbindValue" data-test="varbind-value-input" />
-          </FormField>
-          <FormField
-            label="Event severity"
-            for="new-notification-severity"
-          >
-            <OnmsSelect
-              v-model="form.eventSeverity"
-              inputId="new-notification-severity"
-              :options="severityOptions"
-              showClear
-              data-test="event-severity-select"
-              fluid
-            />
-            <small class="hint">Only notify when the event carries this severity.</small>
-          </FormField>
-          <FormField
-            label="Notification queue"
-            for="new-notification-queue"
-          >
-            <template #label-suffix>
-              <HelpBadge :content="queueHelp" ariaLabel="Notification queue help" />
-            </template>
-            <OnmsInputText id="new-notification-queue" v-model="form.noticeQueue" data-test="notice-queue-input" />
-          </FormField>
+          <div class="form-grid">
+            <FormField
+              label="Varbind name"
+              for="new-notification-vbname"
+            >
+              <template #label-suffix>
+                <HelpBadge :content="varbindHelp" ariaLabel="Varbind name help" />
+              </template>
+              <OnmsInputText id="new-notification-vbname" v-model="form.varbindName" data-test="varbind-name-input" />
+            </FormField>
+            <FormField
+              label="Varbind value"
+              for="new-notification-vbvalue"
+            >
+              <OnmsInputText id="new-notification-vbvalue" v-model="form.varbindValue" data-test="varbind-value-input" />
+            </FormField>
+            <FormField
+              label="Event severity"
+              for="new-notification-severity"
+            >
+              <OnmsSelect
+                v-model="form.eventSeverity"
+                inputId="new-notification-severity"
+                :options="severityOptions"
+                showClear
+                data-test="event-severity-select"
+                fluid
+              />
+              <small class="hint">Only notify when the event carries this severity.</small>
+            </FormField>
+            <FormField
+              label="Notification queue"
+              for="new-notification-queue"
+            >
+              <template #label-suffix>
+                <HelpBadge :content="queueHelp" ariaLabel="Notification queue help" />
+              </template>
+              <OnmsInputText id="new-notification-queue" v-model="form.noticeQueue" data-test="notice-queue-input" />
+            </FormField>
+          </div>
         </div>
+      </TogglePanel>
+
+      <div class="status-row">
+        <OnmsToggleSwitch v-model="form.enabled" aria-label="Enable this notification" data-test="enabled-toggle" />
+        <span>Notification {{ form.enabled ? 'on' : 'off' }}</span>
       </div>
-    </TogglePanel>
 
-    <div class="status-row">
-      <OnmsToggleSwitch v-model="form.enabled" aria-label="Enable this notification" data-test="enabled-toggle" />
-      <span>Notification {{ form.enabled ? 'on' : 'off' }}</span>
     </div>
-
-    <template #footer>
-      <OnmsButton variant="text" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+    <div class="panel-footer">
+      <OnmsButton variant="text" label="Cancel" data-test="cancel-button" @click="emit('close')" />
       <OnmsButton
         :label="isEditing ? 'Save Notification' : 'Add Notification'"
         :disabled="saving"
         data-test="save-button"
         @click="save"
       />
-    </template>
-  </OnmsDialog>
+    </div>
+  </TableCard>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 
-import { OnmsAutoComplete, OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsSelect, OnmsTextarea, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsSelect, OnmsTextarea, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
+import TableCard from '@/components/Common/TableCard.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import { UNADDRESSABLE_NAME_HINT, isPathAddressable } from '@/lib/adminValidation'
@@ -326,12 +337,16 @@ import API from '@/services'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { EventNotification, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
 
+// Rendered in place of the Event Notifications table (see EventNotificationsTab);
+// `notification` is null when creating. Emits `close` on Back, Cancel, or a
+// successful save.
 const props = defineProps<{
-  visible: boolean
   notification: EventNotification | null
 }>()
 
-const emit = defineEmits(['update:visible'])
+const emit = defineEmits<{
+  close: []
+}>()
 
 const store = useNotificationConfigStore()
 
@@ -584,12 +599,11 @@ const ruleValue = (rule: EventNotification['rule']): string => {
   return rule?.value ?? ''
 }
 
+// Mounted fresh each time the panel opens, so the form is filled once from
+// `notification`; the watch only matters if the caller swaps it while open.
 watch(
-  () => props.visible,
-  (isVisible) => {
-    if (!isVisible) {
-      return
-    }
+  () => props.notification,
+  () => {
     ueiSuggestions.value = []
     advancedCollapsed.value = true
     clearErrors()
@@ -625,7 +639,8 @@ watch(
     nextTick(() => {
       suppressRuleBuild.value = false
     })
-  }
+  },
+  { immediate: true }
 )
 
 const onUeiComplete = async (query: string) => {
@@ -672,7 +687,7 @@ const save = async () => {
       ? await store.updateEventNotification(originalName.value, notification)
       : await store.addEventNotification(notification)
     if (ok) {
-      emit('update:visible', false)
+      emit('close')
     } else {
       errors.general = 'Could not save the notification. Please review the fields and try again.'
     }
@@ -683,6 +698,41 @@ const save = async () => {
 </script>
 
 <style lang="scss" scoped>
+.event-notification-editor-panel {
+  padding: 25px;
+}
+
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  .back-button {
+    padding-left: 0;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+// the old dialog's width; keeps rows from stretching across a wide page
+.editor-body,
+.panel-footer {
+  max-width: 1040px;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
 .uei-field {
   margin-bottom: 1rem;
 }

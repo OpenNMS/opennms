@@ -25,8 +25,9 @@ import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-// Destination Paths tab: the table, or the editor panel in place of it.
-export enum DestinationPathEditMode {
+// Event Notifications and Destination Paths tabs: the table, or the editor
+// panel in place of it.
+export enum NotificationConfigEditMode {
   Table = 'table',
   Edit = 'edit',
   Create = 'create'
@@ -42,19 +43,33 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
   const groups = ref([] as string[])
   const roles = ref([] as string[])
   const pathOutages = ref([] as PathOutage[])
-  const destinationPathEditMode = ref(DestinationPathEditMode.Table)
+  const eventNotificationEditMode = ref(NotificationConfigEditMode.Table)
+  // the notification being edited; null while creating or on the table
+  const currentEventNotification = ref<EventNotification | null>(null)
+  const destinationPathEditMode = ref(NotificationConfigEditMode.Table)
   // the path being edited; null while creating or on the table
   const currentDestinationPath = ref<DestinationPath | null>(null)
+
+  // null opens the editor on a new notification
+  const openEventNotificationEditor = (notification: EventNotification | null) => {
+    currentEventNotification.value = notification
+    eventNotificationEditMode.value = notification ? NotificationConfigEditMode.Edit : NotificationConfigEditMode.Create
+  }
+
+  const closeEventNotificationEditor = () => {
+    currentEventNotification.value = null
+    eventNotificationEditMode.value = NotificationConfigEditMode.Table
+  }
 
   // null opens the editor on a new path
   const openDestinationPathEditor = (path: DestinationPath | null) => {
     currentDestinationPath.value = path
-    destinationPathEditMode.value = path ? DestinationPathEditMode.Edit : DestinationPathEditMode.Create
+    destinationPathEditMode.value = path ? NotificationConfigEditMode.Edit : NotificationConfigEditMode.Create
   }
 
   const closeDestinationPathEditor = () => {
     currentDestinationPath.value = null
-    destinationPathEditMode.value = DestinationPathEditMode.Table
+    destinationPathEditMode.value = NotificationConfigEditMode.Table
   }
 
   const getStatus = async (): Promise<boolean> => {
@@ -212,6 +227,10 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     groups,
     roles,
     pathOutages,
+    eventNotificationEditMode,
+    currentEventNotification,
+    openEventNotificationEditor,
+    closeEventNotificationEditor,
     destinationPathEditMode,
     currentDestinationPath,
     openDestinationPathEditor,

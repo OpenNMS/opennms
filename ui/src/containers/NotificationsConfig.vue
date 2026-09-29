@@ -36,8 +36,11 @@ const router = useRouter()
 const notificationConfigStore = useNotificationConfigStore()
 
 // The editor state lives in the store so it survives switching tabs; leaving
-// the page should land back on the table next time.
-onUnmounted(() => notificationConfigStore.closeDestinationPathEditor())
+// the page should land back on the tables next time.
+onUnmounted(() => {
+  notificationConfigStore.closeEventNotificationEditor()
+  notificationConfigStore.closeDestinationPathEditor()
+})
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 

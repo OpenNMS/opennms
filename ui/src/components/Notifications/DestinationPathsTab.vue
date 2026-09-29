@@ -1,5 +1,5 @@
 <template>
-  <DestinationPathsTable v-if="store.destinationPathEditMode === DestinationPathEditMode.Table" />
+  <DestinationPathsTable v-if="store.destinationPathEditMode === NotificationConfigEditMode.Table" />
   <DestinationPathEditorPanel
     v-else
     :path="store.currentDestinationPath"
@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import DestinationPathEditorPanel from '@/components/Notifications/DestinationPathEditorPanel.vue'
 import DestinationPathsTable from '@/components/Notifications/DestinationPathsTable.vue'
-import { DestinationPathEditMode, useNotificationConfigStore } from '@/stores/notificationConfigStore'
+import { NotificationConfigEditMode, useNotificationConfigStore } from '@/stores/notificationConfigStore'
 
 // Same pattern as SnmpConfigDefinitionsTab: the editor replaces the table on
 // the same route, driven by the store's edit mode.

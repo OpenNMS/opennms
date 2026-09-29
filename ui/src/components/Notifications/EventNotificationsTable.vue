@@ -101,10 +101,6 @@
       />
     </div>
   </TableCard>
-  <EventNotificationEditorDialog
-    v-model:visible="showEditor"
-    :notification="notificationToEdit"
-  />
   <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Event Notification"
@@ -133,7 +129,6 @@ import {
   OnmsTag
 } from '@opennms/onms-ui'
 
-import EventNotificationEditorDialog from '@/components/Notifications/EventNotificationEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import AddIcon from '@opennms/onms-ui/icons/action/Add.vue'
@@ -145,13 +140,10 @@ import { EventNotification } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
 
-const showEditor = ref(false)
-const notificationToEdit = ref<EventNotification | null>(null)
 const showDeleteConfirmation = ref(false)
 
 const openEditor = (notification: EventNotification | null) => {
-  notificationToEdit.value = notification
-  showEditor.value = true
+  store.openEventNotificationEditor(notification)
 }
 const notificationToDelete = ref<EventNotification | null>(null)
 // Guards against a second click racing the in-flight status update.

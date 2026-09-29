@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { DestinationPathEditMode, useNotificationConfigStore } from '@/stores/notificationConfigStore'
+import { NotificationConfigEditMode, useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import API from '@/services'
 import { DestinationPath, EventNotification, PathOutage } from '@/types/notificationConfig'
 
@@ -228,19 +228,44 @@ describe('useNotificationConfigStore', () => {
     })
   })
 
+  describe('event notification editor mode', () => {
+    it('starts on the table', () => {
+      expect(store.eventNotificationEditMode).toBe(NotificationConfigEditMode.Table)
+      expect(store.currentEventNotification).toBeNull()
+    })
+
+    it('opens in edit mode for an existing notification and create mode for null', () => {
+      store.openEventNotificationEditor(mockNotifications[0])
+      expect(store.eventNotificationEditMode).toBe(NotificationConfigEditMode.Edit)
+      expect(store.currentEventNotification).toEqual(mockNotifications[0])
+
+      store.openEventNotificationEditor(null)
+      expect(store.eventNotificationEditMode).toBe(NotificationConfigEditMode.Create)
+      expect(store.currentEventNotification).toBeNull()
+    })
+
+    it('closes back to the table and clears the current notification', () => {
+      store.openEventNotificationEditor(mockNotifications[0])
+      store.closeEventNotificationEditor()
+
+      expect(store.eventNotificationEditMode).toBe(NotificationConfigEditMode.Table)
+      expect(store.currentEventNotification).toBeNull()
+    })
+  })
+
   describe('destination path editor mode', () => {
     it('starts on the table', () => {
-      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Table)
+      expect(store.destinationPathEditMode).toBe(NotificationConfigEditMode.Table)
       expect(store.currentDestinationPath).toBeNull()
     })
 
     it('opens in edit mode for an existing path and create mode for null', () => {
       store.openDestinationPathEditor(mockPath)
-      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Edit)
+      expect(store.destinationPathEditMode).toBe(NotificationConfigEditMode.Edit)
       expect(store.currentDestinationPath).toEqual(mockPath)
 
       store.openDestinationPathEditor(null)
-      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Create)
+      expect(store.destinationPathEditMode).toBe(NotificationConfigEditMode.Create)
       expect(store.currentDestinationPath).toBeNull()
     })
 
@@ -248,7 +273,7 @@ describe('useNotificationConfigStore', () => {
       store.openDestinationPathEditor(mockPath)
       store.closeDestinationPathEditor()
 
-      expect(store.destinationPathEditMode).toBe(DestinationPathEditMode.Table)
+      expect(store.destinationPathEditMode).toBe(NotificationConfigEditMode.Table)
       expect(store.currentDestinationPath).toBeNull()
     })
   })

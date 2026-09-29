@@ -12,7 +12,7 @@
     </OnmsTabList>
     <OnmsTabPanels>
       <OnmsTabPanel value="event-notifications">
-        <EventNotificationsTable />
+        <EventNotificationsTab />
       </OnmsTabPanel>
       <OnmsTabPanel value="destination-paths">
         <DestinationPathsTab />
@@ -48,7 +48,7 @@ import { ref, watch } from 'vue'
 import { OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 import DestinationPathsTab from '@/components/Notifications/DestinationPathsTab.vue'
-import EventNotificationsTable from '@/components/Notifications/EventNotificationsTable.vue'
+import EventNotificationsTab from '@/components/Notifications/EventNotificationsTab.vue'
 import PathOutagesTab from '@/components/Notifications/PathOutagesTab.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
