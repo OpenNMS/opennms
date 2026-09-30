@@ -34,81 +34,64 @@ License.
     </template>
     <template #content>
       <!-- Nothing selected (full/View only) -->
-      <p v-if="kind === 'none' && !editable" class="ti-empty">
-        Select a node, link, label, or box to see its properties.
-      </p>
-      <!-- Edit-mode Properties panel with nothing selected: the hint, plus
-           the view background controls (pick/upload an image, opacity,
-           adjust placement, remove). The panel is always present (reserves
-           layout) so selecting a link/label never shifts the canvas. -->
+      <p v-if="kind === 'none' && !editable" class="ti-empty">Nothing selected.</p>
+      <!-- Edit mode, nothing selected: settings for the whole view, plus the
+           background while the rail's Background tool is on. The panel is always
+           present (reserves layout) so selecting an item never shifts the canvas. -->
       <div v-else-if="kind === 'none' && editable" class="ti-section">
-        <p class="ti-empty">Select a node, link, label, or box to edit it. These apply to the whole view.</p>
-        <div class="ti-field">
-          <label class="ti-label">Canvas</label>
-          <div class="ti-field">
-            <label class="ti-label">Node label color</label>
-            <div class="ti-row">
-              <OnmsColorPicker
-                :model-value="store.viewStyle?.nodeLabelColor ?? '#000000'"
-                @update:model-value="onNodeLabelColor"
-              />
-              <OnmsButton
-                v-if="store.viewStyle?.nodeLabelColor"
-                label="Auto"
-                size="small"
-                variant="text"
-                title="Follow the light/dark theme"
-                @click="store.setViewStyle({ nodeLabelColor: undefined })"
-              />
-              <span v-else class="ti-inline-hint">automatic (theme)</span>
-            </div>
+        <div class="ti-group">
+          <div class="ti-heading">
+            <span class="ti-group-title">Global View Settings</span>
+            <TopologyInfoTip
+              text="Nothing is selected, so these apply to the whole view; select a node, link, label or box to edit it instead. Default colors follow the light/dark theme."
+            />
           </div>
-          <div class="ti-field">
-            <label class="ti-label">Link label color</label>
-            <div class="ti-row">
-              <OnmsColorPicker
-                :model-value="store.viewStyle?.linkLabelColor ?? '#9aa7b8'"
-                @update:model-value="onLinkLabelColor"
-              />
-              <OnmsButton
-                v-if="store.viewStyle?.linkLabelColor"
-                label="Auto"
-                size="small"
-                variant="text"
-                title="Follow the light/dark theme"
-                @click="store.setViewStyle({ linkLabelColor: undefined })"
-              />
-              <span v-else class="ti-inline-hint">automatic (theme)</span>
-            </div>
+          <div class="ti-row">
+            <span class="ti-row-label">Node Label Color</span>
+            <OnmsColorPicker
+              :model-value="store.viewStyle?.nodeLabelColor ?? '#000000'"
+              @update:model-value="onNodeLabelColor"
+            />
+            <OnmsButton
+              v-if="store.viewStyle?.nodeLabelColor"
+              label="Default"
+              size="small"
+              variant="text"
+              title="Follow the light/dark theme"
+              @click="store.setViewStyle({ nodeLabelColor: undefined })"
+            />
+            <span v-else class="ti-inline-hint">Default</span>
           </div>
-          <p class="ti-hint">
-            Custom label colors save with the view and don't follow the light/dark
-            theme — <strong>Auto</strong> re-derives them from it. The stats overlay
-            is a personal preference.
-          </p>
+          <div class="ti-row">
+            <span class="ti-row-label">Link Label Color</span>
+            <OnmsColorPicker
+              :model-value="store.viewStyle?.linkLabelColor ?? '#9aa7b8'"
+              @update:model-value="onLinkLabelColor"
+            />
+            <OnmsButton
+              v-if="store.viewStyle?.linkLabelColor"
+              label="Default"
+              size="small"
+              variant="text"
+              title="Follow the light/dark theme"
+              @click="store.setViewStyle({ linkLabelColor: undefined })"
+            />
+            <span v-else class="ti-inline-hint">Default</span>
+          </div>
         </div>
-        <!-- Shown while the rail's Background tool is on: that tool is the
-             way in to choosing, placing and sizing the image. -->
-        <div v-if="store.isBackgroundAdjustMode" class="ti-field">
-          <label class="ti-label">Background</label>
-          <template v-if="store.background?.ref">
-            <div class="ti-field">
-              <label class="ti-label">Opacity</label>
-              <input
-                type="range"
-                min="0.1"
-                max="1"
-                step="0.05"
-                :value="store.background?.opacity ?? 0.5"
-                @input="onBackgroundOpacity"
-              />
-            </div>
-            <div class="ti-row">
-              <span class="ti-hint">Drag it on the canvas to move; drag its corner to resize.</span>
-              <OnmsButton label="Remove" size="small" severity="danger" variant="text" @click="removeBackground" />
-            </div>
-          </template>
-          <div class="ti-icon-grid">
+        <!-- The rail's Background tool is the way in to choosing, placing and
+             sizing the image. -->
+        <div v-if="store.isBackgroundAdjustMode" class="ti-group">
+          <div class="ti-heading">
+            <span class="ti-group-title">Background</span>
+          </div>
+          <div class="ti-heading">
+            <span class="ti-label">Image</span>
+            <TopologyInfoTip
+              text="Pick an image or upload one. On the canvas, drag the image to move it and drag its corner to resize it."
+            />
+          </div>
+          <div v-if="backgroundAssets.length > 0" class="ti-icon-grid">
             <button
               v-for="asset in backgroundAssets"
               :key="asset.id"
@@ -121,7 +104,9 @@ License.
               <img :src="assetUrl(asset.id)" :alt="asset.name" />
             </button>
           </div>
-          <OnmsButton label="Upload background…" size="small" variant="text" @click="bgFileInput?.click()" />
+          <div class="ti-row">
+            <OnmsButton label="Upload image…" size="small" variant="text" @click="bgFileInput?.click()" />
+          </div>
           <input
             ref="bgFileInput"
             type="file"
@@ -129,7 +114,25 @@ License.
             class="ti-hidden-input"
             @change="onBackgroundFileChosen"
           />
-          <p class="ti-hint"><strong>Save</strong> the view to keep background changes.</p>
+          <template v-if="store.background?.ref">
+            <div class="ti-row">
+              <label class="ti-row-label" for="ti-bg-opacity">Opacity</label>
+              <input
+                id="ti-bg-opacity"
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                class="ti-range"
+                :value="store.background?.opacity ?? 0.5"
+                @input="onBackgroundOpacity"
+              />
+              <span class="ti-inline-hint">{{ Math.round((store.background?.opacity ?? 0.5) * 100) }}%</span>
+            </div>
+            <div class="ti-row">
+              <OnmsButton label="Remove background" size="small" severity="danger" variant="text" @click="removeBackground" />
+            </div>
+          </template>
         </div>
       </div>
 
@@ -432,6 +435,7 @@ import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText }
 import { useTopologyStore } from '@/stores/topologyStore'
 import { isLabelId, isShapeId, nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
 import { severityColor } from '@/components/Topology/severity'
+import TopologyInfoTip from '@/components/Topology/TopologyInfoTip.vue'
 import TopologyLocationMap from '@/components/Topology/TopologyLocationMap.vue'
 import {
   adminStatusName,
@@ -1287,6 +1291,40 @@ const linkLabel = computed<string>({
 .ti-inline-hint {
   font-size: 0.75rem;
   color: var(--onms-secondary-text-on-surface);
+}
+
+.ti-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ti-group + .ti-group {
+  border-top: 1px solid var(--onms-border-on-surface);
+  padding-top: 0.75rem;
+}
+
+.ti-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ti-group-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--onms-primary-text-on-surface);
+}
+
+/* A fixed column, so the controls in consecutive rows line up. */
+.ti-row-label {
+  flex: 0 0 7.5rem;
+  font-size: 0.8rem;
+}
+
+.ti-range {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .ti-check {
