@@ -75,8 +75,48 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  reloadThresholdingConfiguration,
+  reloadThreshdConfiguration,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration
+} from './thresholdConfigurationService'
 
 export default {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  reloadThresholdingConfiguration,
+  reloadThreshdConfiguration,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration,
   search,
   getInfo,
   getNodes,

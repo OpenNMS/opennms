@@ -42,7 +42,7 @@ Next, you need an additional package definition in your `threshd-configuration.x
 [source, xml]
 ----
 <?xml version="1.0"?>
-<threshd-configuration threads="5">
+<threshd-configuration>
 ...
     <package name="flow-thresholding">
         <filter>IPADDR != '0.0.0.0'</filter>
@@ -56,11 +56,11 @@ Next, you need an additional package definition in your `threshd-configuration.x
 </threshd-configuration>
 ----
 
-Finally, define the thresholds in the `thresholds.xml` file.
+Finally, define the thresholds under menu:Administration[Configure Thresholds], or over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
 Use `flowApp` for the `ds-type`.
 The following example defines thresholds for HTTPS traffic exceeding 4096000 bytes/second.
 
-.Example of thresholds for https traffic in thresholds.xml
+.Example of thresholds for https traffic
 [source, xml]
 ----
 <?xml version="1.0"?>

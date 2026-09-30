@@ -15,28 +15,21 @@ A threshold group associates a set of thresholds to a service (for example, thre
 * netsnmp-memory-nonlinux
 * opennms-jvm-jvx
 
-You can edit an existing group through the web UI, or create a new one in `$\{OPENNMS_HOME}/etc/thresholds.xml`.
-Once you create a group, you can then define it the UI or in `thresholds.xml`.
+Threshold groups are stored in the database and are created and edited through the web UI.
+Editing `$\{OPENNMS_HOME}/etc/thresholds.xml` has no effect: the file's contents are migrated into the database during the upgrade and the file is no longer read.
+You can also manage groups over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
 
 This procedure creates a threshold group called "demo_group":
-
-. Open `$\{OPENNMS_HOME}/etc/thresholds.xml` and add the following line of code:
-+
-[source, xml]
-----
-<group name="demo_group" rrdRepository="/opt/opennms/share/rrd/snmp/">
-</group>
-----
 
 . Log in to the web UI.
 . Click menu:Administration[Configure Thresholds] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Performance Measurement[Configure Thresholds].
+. On the *Groups* tab, click *New group*.
+. Enter `demo_group` as the name and `/opt/opennms/share/rrd/snmp/` as the RRD repository, then click *Save*.
 +
-The group you created should appear in the UI.
+The group opens, ready for you to add thresholds.
 
-. Click *Edit* next to the group's name.
-
-The following is a sample of how the threshold appears in `thresholds.xml`:
+A group with an expression threshold corresponds to the following configuration:
 
 [source, xml]
 -----

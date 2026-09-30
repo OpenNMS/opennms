@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<threshd-configuration threads="5">
+<threshd-configuration>
    
    <package name="example1">
        <filter>IPADDR IPLIKE *.*.*.*</filter>   

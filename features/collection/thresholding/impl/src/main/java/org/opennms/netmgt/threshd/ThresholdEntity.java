@@ -67,7 +67,7 @@ public final class ThresholdEntity implements Cloneable {
 
     private ThresholdingEventProxy m_thresholdingEventProxy;
 
-    // the commands for these need to be listed in ThresholdController as well
+    // the commands for these need to be listed in ThresholdConfigValidator and thresholdValidator.ts as well
     static {
         s_thresholdEvaluators = new LinkedList<ThresholdEvaluator>();
         s_thresholdEvaluators.add(new ThresholdEvaluatorHighLow());

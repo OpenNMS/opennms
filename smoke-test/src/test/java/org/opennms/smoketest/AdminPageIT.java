@@ -82,7 +82,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Performance Measurement
         new String[] { "Manage SNMP Data Collection Config", "//div[@id='app']//h1[text()='Manage SNMP Data Collection Sources']" },
         new String[] { "Configure SNMP Data Collection per Interface", "//span[text()='Manage SNMP Data Collection per Interface']" },
-        new String[] { "Configure Thresholds", "//span[text()='Threshold Configuration']" },
+        new String[] { "Configure Thresholds", "//div[@id='app']//h1[text()='Threshold Configuration']" },
 
         // Distributed Monitoring
         new String[] { "Manage Monitoring Locations", "//div[contains(@class,'card')]/table//tr//a[text()='Location Name']" },

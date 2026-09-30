@@ -63,6 +63,14 @@ public class EventConfPersistenceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfPersistenceService.class);
 
+    /**
+     * Source name for event definitions created on the fly rather than uploaded. Kept byte-identical to the
+     * name the JSP threshold editor used, so an upgraded system reuses its existing row.
+     */
+    private static final String PROGRAMMATIC_SOURCE_NAME = "opennms.programmatic.events";
+
+    private static final String PROGRAMMATIC_SOURCE_VENDOR = "opennms";
+
     @Autowired
     private EventConfSourceDao eventConfSourceDao;
 
@@ -104,6 +112,76 @@ public class EventConfPersistenceService {
         eventConfSource.setEventCount(eventConfEventDao.countBySourceId(sourceId));
         eventConfSourceDao.saveOrUpdate(eventConfSource);
         return eventConfId;
+    }
+
+    /**
+     * Saves events into the source reserved for programmatically generated event definitions, in one
+     * transaction, creating that source on first use.
+     *
+     * <p>Used when a threshold names a triggered or rearmed UEI that eventconf does not know yet: without a
+     * definition the daemon would emit an event that raises no alarm and fires no notification, silently.
+     * Moved here from the JSP threshold editor's own service, which had no other consumer.</p>
+     *
+     * <p>An event whose UEI the source already holds is skipped. Callers decide what is missing from the
+     * in-memory eventconf, which only catches up once the asynchronous {@link #reloadEventsIntoMemory()}
+     * has run, so without this check two saves in quick succession would both add the same UEI.</p>
+     *
+     * <p>Does not reload: the caller reloads once, after this transaction has committed.</p>
+     *
+     * @param events the event definitions to store
+     * @param username the user the events are attributed to
+     * @return the number of events actually saved
+     */
+    @Transactional
+    public int saveProgrammaticEvents(final List<Event> events, final String username) {
+        if (events == null || events.isEmpty()) {
+            return 0;
+        }
+
+        // Lock (and re-read) the source before appending: serializes concurrent callers for the UEI check
+        // below, and keeps the count from being a lost update
+        final EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreateProgrammaticSource().getId());
+        final Date now = new Date();
+
+        int saved = 0;
+        for (final Event event : events) {
+            if (!eventConfEventDao.findByUeiAndSourceId(event.getUei(), source.getId()).isEmpty()) {
+                LOG.debug("Programmatic event source already holds {}, not adding it again.", event.getUei());
+                continue;
+            }
+            EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, now);
+            saved++;
+        }
+
+        if (saved > 0) {
+            // Update event count from the table, under the lock
+            source.setEventCount(eventConfEventDao.countBySourceId(source.getId()));
+            eventConfSourceDao.save(source);
+        }
+        return saved;
+    }
+
+    private EventConfSource getOrCreateProgrammaticSource() {
+        EventConfSource source = eventConfSourceDao.findByName(PROGRAMMATIC_SOURCE_NAME);
+        if (source == null) {
+            LOG.info("Creating new programmatic event source: {}", PROGRAMMATIC_SOURCE_NAME);
+            source = new EventConfSource();
+            source.setName(PROGRAMMATIC_SOURCE_NAME);
+            source.setVendor(PROGRAMMATIC_SOURCE_VENDOR);
+            source.setDescription("Programmatically generated events (e.g., from thresholds)");
+            source.setEnabled(true);
+            source.setEventCount(0);
+            source.setUploadedBy("system");
+            final Date now = new Date();
+            source.setCreatedTime(now);
+            source.setLastModified(now);
+
+            // Higher fileOrder is evaluated first, so max + 1 puts programmatic events ahead of all other sources
+            source.setFileOrder(eventConfSourceDao.nextFileOrder());
+
+            eventConfSourceDao.saveOrUpdate(source);
+        }
+        return source;
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
