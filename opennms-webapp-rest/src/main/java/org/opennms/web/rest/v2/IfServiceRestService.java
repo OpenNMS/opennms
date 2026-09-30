@@ -88,6 +88,9 @@ import org.opennms.web.rest.support.StringCollection;
 @Transactional
 @Tag(name = "IfServices", description = "Monitored Services API")
 public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMonitoredService,MonitoredServiceDTO,SearchBean,Integer,String> {
+
+    /** Written only by collectd; a PUT naming them is ignored (and logged) rather than applied. */
+    static final Set<String> COLLECTD_OWNED_PROPERTIES = Set.of("collectLastGood", "collectLastFail");
     @Autowired
     private MonitoredServiceDao m_dao;
 
@@ -210,8 +213,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
         service.setQualifier(dto.getQualifier());
         service.setLastFail(dto.getLastFail());
         service.setLastGood(dto.getLastGood());
-        service.setCollectLastFail(dto.getCollectLastFail());
-        service.setCollectLastGood(dto.getCollectLastGood());
+        // collectLastGood/collectLastFail are owned by collectd and are never taken from a request
 
         return service;
     }
@@ -225,7 +227,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
             applicationsOriginal.addAll(targetObject.getApplications());
         }
 
-        RestUtils.setBeanProperties(targetObject, params);
+        RestUtils.setBeanProperties(targetObject, params, COLLECTD_OWNED_PROPERTIES);
         getDao().update(targetObject);
 
         Set<OnmsApplication> changedApplications = Sets.symmetricDifference(applicationsOriginal, targetObject.getApplications());
