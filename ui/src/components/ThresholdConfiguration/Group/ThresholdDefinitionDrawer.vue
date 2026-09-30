@@ -111,10 +111,9 @@ const onCancel = () => {
 const onSave = async () => {
   const { kind, mode, index } = store.definitionDrawer
 
-  store.upsertDefinition(kind, mode === CreateEditMode.Edit ? index : null, definition.value)
   store.closeDefinitionDrawer()
 
-  const result = await store.saveCurrentGroup()
+  const result = await store.saveDefinition(kind, mode === CreateEditMode.Edit ? index : null, definition.value)
 
   showSnackBar({
     msg: result.success ? 'Threshold saved.' : result.message,

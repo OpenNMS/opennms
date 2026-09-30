@@ -72,7 +72,12 @@ const getErrorMessage = (error: unknown, fallbackMessage: string): string => {
 
 const failure = (error: unknown, fallbackMessage: string): ValidationResult => {
   console.error(fallbackMessage, error)
-  return createFailureResult(getErrorMessage(error, fallbackMessage))
+  const result = createFailureResult(getErrorMessage(error, fallbackMessage))
+  // The stores tell a 412 apart: it means the copy they hold is stale, not that the change was invalid.
+  if (axios.isAxiosError(error) && error.response) {
+    result.status = error.response.status
+  }
+  return result
 }
 
 const failureWithPayload = <T>(error: unknown, fallbackMessage: string): ValidationResultWithPayload<T> => {

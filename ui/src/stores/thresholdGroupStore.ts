@@ -76,6 +76,8 @@ export interface DefinitionDrawerState {
   index: number
 }
 
+const PRECONDITION_FAILED = 412
+
 const closedDrawer = (): DefinitionDrawerState => ({
   visible: false,
   mode: CreateEditMode.None,
@@ -86,8 +88,8 @@ const closedDrawer = (): DefinitionDrawerState => ({
 /**
  * State for the thresholding configuration (formerly thresholds.xml).
  *
- * The group is the transactional unit: adding, editing or deleting a threshold changes the local copy, and
- * one save then writes the whole group back. That mirrors the REST API, which has no per-threshold
+ * The group is the transactional unit: adding, editing or deleting a threshold writes the whole group back,
+ * changed on a copy so the loaded group only moves on once the save has succeeded. That mirrors the REST API, which has no per-threshold
  * endpoint because a threshold has no identity beyond its position in the group.
  */
 export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
@@ -103,14 +105,13 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
   const currentThresholds = computed(() => currentGroup.value?.thresholds ?? [])
   const currentExpressions = computed(() => currentGroup.value?.expressions ?? [])
 
-  const definitionsOf = (kind: ThresholdDefinitionKind): ThresholdDefinition[] | undefined => {
-    if (!currentGroup.value) {
-      return undefined
-    }
-    return kind === ThresholdDefinitionKind.Threshold
-      ? (currentGroup.value.thresholds as ThresholdDefinition[])
-      : (currentGroup.value.expressions as ThresholdDefinition[])
-  }
+  const definitionsIn = (group: ThresholdGroup, kind: ThresholdDefinitionKind): ThresholdDefinition[] =>
+    kind === ThresholdDefinitionKind.Threshold
+      ? (group.thresholds as ThresholdDefinition[])
+      : (group.expressions as ThresholdDefinition[])
+
+  const definitionsOf = (kind: ThresholdDefinitionKind): ThresholdDefinition[] | undefined =>
+    currentGroup.value ? definitionsIn(currentGroup.value, kind) : undefined
 
   const fetchGroups = async (): Promise<ValidationResult> => {
     isLoading.value = true
@@ -153,22 +154,66 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
   }
 
   /**
-   * Writes the whole current group back. Always refetches afterwards: the save replaces the stored document
-   * and yields a new entity tag, so keeping the old copy would make the next save fail with a 412.
+   * A 412 means the loaded copy is stale, and keeping it would make every later save fail the same way.
+   * Load the stored group instead, so the user sees what changed and the next save carries its version.
    */
-  const saveCurrentGroup = async (): Promise<ValidationResult> => {
-    if (!currentGroup.value) {
-      return createFailureResult('No threshold group is loaded.')
+  const reloadAfterConflict = async (name: string, result: ValidationResult): Promise<ValidationResult> => {
+    if (result.status !== PRECONDITION_FAILED) {
+      return result
     }
 
-    const name = currentGroup.value.name
-    const result = await API.updateThresholdGroup(name, currentGroup.value)
+    await fetchGroup(name)
+    return { ...result, message: `${result.message} The current version has been loaded; please make your change again.` }
+  }
+
+  /**
+   * Writes a changed copy of the loaded group back. The change is never made on currentGroup itself, so a
+   * failed save leaves the page showing what is stored. Refetches after a success for the new entity tag.
+   */
+  const writeGroup = async (group: ThresholdGroup): Promise<ValidationResult> => {
+    const name = group.name
+    const result = await API.updateThresholdGroup(name, group)
 
     if (result.success) {
       await fetchGroup(name)
       await fetchGroups()
+      return result
     }
-    return result
+    return reloadAfterConflict(name, result)
+  }
+
+  /** Adds (index null or out of range) or replaces a definition and saves the group. */
+  const saveDefinition = async (
+    kind: ThresholdDefinitionKind,
+    index: number | null,
+    definition: ThresholdDefinition
+  ): Promise<ValidationResult> => {
+    if (!currentGroup.value) {
+      return createFailureResult('No threshold group is loaded.')
+    }
+
+    const group = cloneDeep(currentGroup.value)
+    const definitions = definitionsIn(group, kind)
+
+    if (index === null || index < 0 || index >= definitions.length) {
+      definitions.push(definition)
+    } else {
+      definitions.splice(index, 1, definition)
+    }
+    return writeGroup(group)
+  }
+
+  /** Removes a definition and saves the group. */
+  const deleteDefinition = async (kind: ThresholdDefinitionKind, index: number): Promise<ValidationResult> => {
+    const definitions = definitionsOf(kind)
+
+    if (!currentGroup.value || !definitions || index < 0 || index >= definitions.length) {
+      return createFailureResult('No such threshold.')
+    }
+
+    const group = cloneDeep(currentGroup.value)
+    definitionsIn(group, kind).splice(index, 1)
+    return writeGroup(group)
   }
 
   const renameGroup = async (oldName: string, group: ThresholdGroup): Promise<ValidationResult> => {
@@ -176,8 +221,9 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
 
     if (result.success) {
       await fetchGroups()
+      return result
     }
-    return result
+    return reloadAfterConflict(oldName, result)
   }
 
   const deleteGroup = async (name: string, version?: string): Promise<ValidationResult> => {
@@ -190,32 +236,6 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
       await fetchGroups()
     }
     return result
-  }
-
-  const upsertDefinition = (
-    kind: ThresholdDefinitionKind,
-    index: number | null,
-    definition: ThresholdDefinition
-  ): void => {
-    const definitions = definitionsOf(kind)
-
-    if (!definitions) {
-      return
-    }
-
-    if (index === null || index < 0 || index >= definitions.length) {
-      definitions.push(definition)
-    } else {
-      definitions.splice(index, 1, definition)
-    }
-  }
-
-  const removeDefinition = (kind: ThresholdDefinitionKind, index: number): void => {
-    const definitions = definitionsOf(kind)
-
-    if (definitions && index >= 0 && index < definitions.length) {
-      definitions.splice(index, 1)
-    }
   }
 
   /**
@@ -285,11 +305,10 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     fetchGroup,
     fetchMetadata,
     createGroup,
-    saveCurrentGroup,
     renameGroup,
     deleteGroup,
-    upsertDefinition,
-    removeDefinition,
+    saveDefinition,
+    deleteDefinition,
     moveResourceFilter,
     reloadThresholdConfiguration,
     openDefinitionDrawer,

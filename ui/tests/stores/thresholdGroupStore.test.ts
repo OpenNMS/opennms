@@ -25,7 +25,7 @@ vi.mock('@/services', () => ({
 }))
 
 const ok = (payload?: unknown) => ({ success: true, message: '', payload })
-const fail = (message: string) => ({ success: false, message })
+const fail = (message: string, status?: number) => ({ success: false, message, status })
 
 const group = (overrides: Partial<ThresholdGroup> = {}): ThresholdGroup => ({
   ...getDefaultThresholdGroup(),
@@ -74,47 +74,61 @@ describe('thresholdGroupStore', () => {
   describe('definition CRUD', () => {
     beforeEach(() => {
       const store = useThresholdGroupStore()
-      store.currentGroup = group({ thresholds: [getDefaultThreshold()], expressions: [] })
+      store.currentGroup = group({ thresholds: [{ ...getDefaultThreshold(), dsName: 'original' }], expressions: [] })
+      // Stop at the write: these tests look at what would be sent.
+      vi.mocked(API.updateThresholdGroup).mockResolvedValue(fail('stop here') as never)
     })
 
-    test('appends when the index is null and replaces when it is not', () => {
+    const sent = (call = 0) => vi.mocked(API.updateThresholdGroup).mock.calls[call][1]
+
+    test('appends when the index is null and replaces when it is not', async () => {
       const store = useThresholdGroupStore()
-      const added = { ...getDefaultThreshold(), dsName: 'added' }
 
-      store.upsertDefinition(ThresholdDefinitionKind.Threshold, null, added)
-      expect(store.currentGroup?.thresholds).toHaveLength(2)
-      expect(store.currentGroup?.thresholds[1].dsName).toBe('added')
+      await store.saveDefinition(ThresholdDefinitionKind.Threshold, null, { ...getDefaultThreshold(), dsName: 'added' })
+      expect(sent(0).thresholds.map(t => t.dsName)).toEqual(['original', 'added'])
 
-      store.upsertDefinition(ThresholdDefinitionKind.Threshold, 0, { ...getDefaultThreshold(), dsName: 'replaced' })
-      expect(store.currentGroup?.thresholds).toHaveLength(2)
-      expect(store.currentGroup?.thresholds[0].dsName).toBe('replaced')
+      await store.saveDefinition(ThresholdDefinitionKind.Threshold, 0, { ...getDefaultThreshold(), dsName: 'replaced' })
+      expect(sent(1).thresholds.map(t => t.dsName)).toEqual(['replaced'])
     })
 
-    test('appends rather than throwing when the index is out of range', () => {
+    test('appends rather than throwing when the index is out of range', async () => {
       const store = useThresholdGroupStore()
 
-      store.upsertDefinition(ThresholdDefinitionKind.Threshold, 99, { ...getDefaultThreshold(), dsName: 'x' })
+      await store.saveDefinition(ThresholdDefinitionKind.Threshold, 99, { ...getDefaultThreshold(), dsName: 'x' })
 
-      expect(store.currentGroup?.thresholds).toHaveLength(2)
+      expect(sent().thresholds).toHaveLength(2)
     })
 
-    test('routes expressions to the expression list', () => {
+    test('routes expressions to the expression list', async () => {
       const store = useThresholdGroupStore()
 
-      store.upsertDefinition(ThresholdDefinitionKind.Expression, null, getDefaultExpression())
+      await store.saveDefinition(ThresholdDefinitionKind.Expression, null, getDefaultExpression())
 
-      expect(store.currentGroup?.expressions).toHaveLength(1)
-      expect(store.currentGroup?.thresholds).toHaveLength(1)
+      expect(sent().expressions).toHaveLength(1)
+      expect(sent().thresholds).toHaveLength(1)
     })
 
-    test('removes by index and ignores an index that is not there', () => {
+    test('removes by index and refuses an index that is not there', async () => {
       const store = useThresholdGroupStore()
 
-      store.removeDefinition(ThresholdDefinitionKind.Threshold, 5)
-      expect(store.currentGroup?.thresholds).toHaveLength(1)
+      expect((await store.deleteDefinition(ThresholdDefinitionKind.Threshold, 5)).success).toBe(false)
+      expect(API.updateThresholdGroup).not.toHaveBeenCalled()
 
-      store.removeDefinition(ThresholdDefinitionKind.Threshold, 0)
-      expect(store.currentGroup?.thresholds).toHaveLength(0)
+      await store.deleteDefinition(ThresholdDefinitionKind.Threshold, 0)
+      expect(sent().thresholds).toEqual([])
+    })
+
+    test('leaves the loaded group untouched when a save fails', async () => {
+      const store = useThresholdGroupStore()
+
+      const added = await store.saveDefinition(ThresholdDefinitionKind.Threshold, null, getDefaultThreshold())
+      const edited = await store.saveDefinition(ThresholdDefinitionKind.Threshold, 0, { ...getDefaultThreshold(), dsName: 'x' })
+      const deleted = await store.deleteDefinition(ThresholdDefinitionKind.Threshold, 0)
+
+      expect([added.success, edited.success, deleted.success]).toEqual([false, false, false])
+      expect(store.currentGroup?.thresholds.map(t => t.dsName)).toEqual(['original'])
+      // Not a conflict, so there is nothing newer to load.
+      expect(API.getThresholdGroup).not.toHaveBeenCalled()
     })
   })
 
@@ -152,17 +166,16 @@ describe('thresholdGroupStore', () => {
   describe('persistence', () => {
     test('writes the whole group and refetches, so the next save has a current version', async () => {
       const store = useThresholdGroupStore()
-      const sent = group()
-      store.currentGroup = sent
+      store.currentGroup = group({ version: 'old' })
 
       vi.mocked(API.updateThresholdGroup).mockResolvedValue(ok() as never)
       vi.mocked(API.getThresholdGroup).mockResolvedValue(ok(group({ version: 'new' })) as never)
       vi.mocked(API.getThresholdGroups).mockResolvedValue(ok([]) as never)
 
-      const result = await store.saveCurrentGroup()
+      const result = await store.saveDefinition(ThresholdDefinitionKind.Threshold, null, getDefaultThreshold())
 
       expect(result.success).toBe(true)
-      expect(API.updateThresholdGroup).toHaveBeenCalledWith('mib2', sent)
+      expect(API.updateThresholdGroup).toHaveBeenCalledWith('mib2', expect.objectContaining({ version: 'old' }))
       expect(API.getThresholdGroup).toHaveBeenCalledWith('mib2')
       // The refetched group carries the new entity tag, so a second save is not rejected with a 412.
       expect(store.currentGroup?.version).toBe('new')
@@ -171,22 +184,40 @@ describe('thresholdGroupStore', () => {
     test('refuses to save when no group is loaded', async () => {
       const store = useThresholdGroupStore()
 
-      const result = await store.saveCurrentGroup()
+      const result = await store.saveDefinition(ThresholdDefinitionKind.Threshold, null, getDefaultThreshold())
 
       expect(result.success).toBe(false)
       expect(API.updateThresholdGroup).not.toHaveBeenCalled()
     })
 
-    test('does not refetch after a failed save', async () => {
+    test('loads the stored group after a 412, so the next save is not rejected too', async () => {
       const store = useThresholdGroupStore()
-      store.currentGroup = group()
+      store.currentGroup = group({ version: 'stale' })
 
-      vi.mocked(API.updateThresholdGroup).mockResolvedValue(fail('nope') as never)
+      vi.mocked(API.updateThresholdGroup).mockResolvedValue(fail('Threshold group \'mib2\' has changed since it was read.', 412) as never)
+      vi.mocked(API.getThresholdGroup).mockResolvedValue(
+        ok(group({ version: 'current', thresholds: [{ ...getDefaultThreshold(), dsName: 'theirs' }] })) as never)
 
-      const result = await store.saveCurrentGroup()
+      const result = await store.saveDefinition(ThresholdDefinitionKind.Threshold, null, getDefaultThreshold())
 
       expect(result.success).toBe(false)
-      expect(API.getThresholdGroup).not.toHaveBeenCalled()
+      expect(result.message).toContain('has changed since it was read.')
+      expect(result.message).toContain('The current version has been loaded')
+      expect(store.currentGroup?.version).toBe('current')
+      expect(store.currentGroup?.thresholds.map(t => t.dsName)).toEqual(['theirs'])
+    })
+
+    test('loads the stored group after a rename is rejected with a 412', async () => {
+      const store = useThresholdGroupStore()
+      store.currentGroup = group({ version: 'stale' })
+
+      vi.mocked(API.updateThresholdGroup).mockResolvedValue(fail('changed', 412) as never)
+      vi.mocked(API.getThresholdGroup).mockResolvedValue(ok(group({ version: 'current' })) as never)
+
+      await store.renameGroup('mib2', group({ name: 'renamed', version: 'stale' }))
+
+      expect(API.getThresholdGroup).toHaveBeenCalledWith('mib2')
+      expect(store.currentGroup?.version).toBe('current')
     })
 
     test('clears the loaded group when it is the one deleted', async () => {

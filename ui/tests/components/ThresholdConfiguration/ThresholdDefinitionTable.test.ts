@@ -37,7 +37,7 @@ describe('ThresholdDefinitionTable.vue', () => {
       thresholds: [{ ...getDefaultThreshold(), dsName: 'cpuUtilization', triggeredUEI: 'uei.opennms.org/example/x' }],
       expressions: [{ ...getDefaultExpression(), expression: 'a + b', exprLabel: 'sum' }]
     }
-    store.saveCurrentGroup = vi.fn().mockResolvedValue({ success: true, message: '' })
+    store.deleteDefinition = vi.fn().mockResolvedValue({ success: true, message: '' })
   })
 
   afterEach(() => {
@@ -98,13 +98,12 @@ describe('ThresholdDefinitionTable.vue', () => {
     const wrapper = mountComponent(ThresholdDefinitionKind.Threshold)
 
     await wrapper.find('[data-test="threshold-delete-threshold"]').trigger('click')
-    expect(store.saveCurrentGroup).not.toHaveBeenCalled()
+    expect(store.deleteDefinition).not.toHaveBeenCalled()
 
     await wrapper.findComponent({ name: 'OnmsConfirmationDialog' }).vm.$emit('ok')
     await new Promise(resolve => setTimeout(resolve))
 
-    expect(store.currentGroup?.thresholds).toHaveLength(0)
-    expect(store.saveCurrentGroup).toHaveBeenCalledTimes(1)
+    expect(store.deleteDefinition).toHaveBeenCalledWith(ThresholdDefinitionKind.Threshold, 0)
   })
 
   it('keeps the definition when the delete is cancelled', async () => {
@@ -114,7 +113,7 @@ describe('ThresholdDefinitionTable.vue', () => {
     await wrapper.findComponent({ name: 'OnmsConfirmationDialog' }).vm.$emit('cancel')
 
     expect(store.currentGroup?.thresholds).toHaveLength(1)
-    expect(store.saveCurrentGroup).not.toHaveBeenCalled()
+    expect(store.deleteDefinition).not.toHaveBeenCalled()
   })
 
   it('disables every mutating control for an extension-provided group', () => {

@@ -71,6 +71,8 @@ export interface EntityDrawerState {
   index: number
 }
 
+const PRECONDITION_FAILED = 412
+
 const closedDrawer = (): EntityDrawerState => ({ visible: false, mode: CreateEditMode.None, index: -1 })
 
 /**
@@ -157,13 +159,19 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
       return createFailureResult('No threshd package is loaded.')
     }
 
-    const result = await API.updateThreshdPackage(loadedPackageName.value, pkg)
+    const name = loadedPackageName.value
+    const result = await API.updateThreshdPackage(name, pkg)
 
     if (result.success) {
       // The server trims the name it stores.
       await fetchPackage(pkg.name.trim())
       await fetchConfiguration()
       await fetchPackages()
+    } else if (result.status === PRECONDITION_FAILED) {
+      // The loaded copy is stale, and its version would make every later save fail the same way. Reloading
+      // also drops pending edits in the form, which were made against what someone has since changed.
+      await fetchPackage(name)
+      return { ...result, message: `${result.message} The current version has been loaded; please make your change again.` }
     }
     return result
   }

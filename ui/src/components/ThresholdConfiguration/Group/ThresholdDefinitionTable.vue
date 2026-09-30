@@ -151,9 +151,7 @@ const onConfirmDelete = async () => {
   const index = pendingDeleteIndex.value
   pendingDeleteIndex.value = -1
 
-  store.removeDefinition(props.kind, index)
-
-  const result = await store.saveCurrentGroup()
+  const result = await store.deleteDefinition(props.kind, index)
 
   showSnackBar({
     msg: result.success ? 'Threshold deleted.' : result.message,

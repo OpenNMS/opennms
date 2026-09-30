@@ -183,6 +183,19 @@ describe('thresholdConfigurationService', () => {
       expect(result.message).toContain('longer than 19 characters')
     })
 
+    test('passes the HTTP status on, so a 412 can be told apart from an invalid change', async () => {
+      const axiosError = Object.assign(new Error('Request failed'), {
+        isAxiosError: true,
+        response: { status: 412, data: 'Threshold group \'mib2\' has changed since it was read.' }
+      })
+      vi.mocked(v2.put).mockRejectedValue(axiosError)
+
+      const result = await updateThresholdGroup('mib2', group({ version: 'stale' }))
+
+      expect(result.success).toBe(false)
+      expect(result.status).toBe(412)
+    })
+
     test('falls back to a descriptive message for a non-axios failure', async () => {
       vi.mocked(v2.get).mockRejectedValue(new Error(''))
 

@@ -25,7 +25,7 @@ vi.mock('@/services', () => ({
 }))
 
 const ok = (payload?: unknown) => ({ success: true, message: '', payload })
-const fail = (message: string) => ({ success: false, message })
+const fail = (message: string, status?: number) => ({ success: false, message, status })
 
 const packageWithGroup = (name: string, groupName: string): ThreshdPackage => ({
   ...getDefaultThreshdPackage(),
@@ -156,6 +156,21 @@ describe('threshdConfigurationStore', () => {
 
       expect([added.success, edited.success, deleted.success]).toEqual([false, false, false])
       expect(store.currentPackage?.services.map(s => s.name)).toEqual(['SNMP'])
+    })
+
+    test('loads the stored package after a 412, so the next save is not rejected too', async () => {
+      const store = await load({ ...packageWithGroup('one', 'mib2'), version: 'stale' })
+      vi.mocked(API.updateThreshdPackage).mockResolvedValue(fail('Threshd package \'one\' has changed since it was read.', 412) as never)
+      vi.mocked(API.getThreshdPackage).mockResolvedValue(
+        ok({ ...packageWithGroup('one', 'mib2'), outageCalendars: ['maintenance'], version: 'current' }) as never)
+
+      const result = await store.saveService(null, { ...getDefaultThreshdService(), name: 'ICMP' })
+
+      expect(result.success).toBe(false)
+      expect(result.message).toContain('The current version has been loaded')
+      expect(API.getThreshdPackage).toHaveBeenLastCalledWith('one')
+      expect(store.currentPackage?.version).toBe('current')
+      expect(store.currentPackage?.outageCalendars).toEqual(['maintenance'])
     })
 
     test('removes by index and refuses an index that is not there', async () => {
