@@ -210,4 +210,34 @@ public class MonitoredServiceDaoIT implements InitializingBean {
         assertEquals(fail, reloaded.getCollectLastFail());
     }
 
+    /**
+     * The poller and provisiond load a service, change something, and save it. This entity has no
+     * dynamic update, so that save writes every column. A collect timestamp committed by collectd
+     * between their load and their save must survive: the columns are mapped updatable=false, so
+     * the flush leaves them alone even though the in-memory object still holds the older value.
+     */
+    @Test
+    @Transactional
+    public void testEntityFlushDoesNotClobberCollectionTimestamps() {
+        final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
+        assertNotNull(monSvc);
+        assertNull(monSvc.getCollectLastGood());
+
+        // collectd records a collection while the poller holds a loaded copy with the old (null) value
+        final Date collected = new Date(1_700_000_000_000L);
+        assertEquals(1, m_monitoredServiceDao.updateCollectLastGood(monSvc.getId(), collected));
+        assertNull("the loaded copy still has the stale value", monSvc.getCollectLastGood());
+
+        // the poller's save: lastGood changes, and a full-column flush follows
+        final Date polled = new Date(1_700_000_060_000L);
+        monSvc.setLastGood(polled);
+        m_monitoredServiceDao.saveOrUpdate(monSvc);
+        m_monitoredServiceDao.flush();
+        m_monitoredServiceDao.clear();
+
+        final OnmsMonitoredService reloaded = m_monitoredServiceDao.get(monSvc.getId());
+        assertEquals(polled, reloaded.getLastGood());
+        assertEquals("collectd's timestamp must not be overwritten by the poller's flush", collected, reloaded.getCollectLastGood());
+    }
+
 }

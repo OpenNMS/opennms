@@ -274,10 +274,16 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      * Completion time of the most recent successful data collection (collectd) for this service.
      * Null until collectd has completed a collection for it.
      *
+     * The collect timestamps are written only by the keyed UPDATE methods on MonitoredServiceDao,
+     * never by an entity flush (insertable=false, updatable=false). This entity has no dynamic
+     * update, so a flush writes every column: without this, the poller saving lastGood/lastFail
+     * or provisiond saving a rescan would write a stale in-memory value over one collectd had
+     * committed in between. The setter only affects the in-memory object.
+     *
      * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="collectLastGood")
+    @Column(name="collectLastGood", insertable=false, updatable=false)
     public Date getCollectLastGood() {
         return m_collectLastGood;
     }
@@ -288,12 +294,13 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
 
     /**
      * Completion time of the most recent failed data collection (collectd) for this service.
-     * Null until collectd has recorded a failed collection for it.
+     * Null until collectd has recorded a failed collection for it. Written only through
+     * MonitoredServiceDao, see {@link #getCollectLastGood()}.
      *
      * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="collectLastFail")
+    @Column(name="collectLastFail", insertable=false, updatable=false)
     public Date getCollectLastFail() {
         return m_collectLastFail;
     }
