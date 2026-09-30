@@ -202,13 +202,21 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   const isBackgroundAdjustMode = ref<boolean>(false)
 
+  // The background controls and a selection share the Details page, so the tool
+  // and a selection exclude each other: turning it on deselects, selecting turns it off.
   const setBackgroundAdjustMode = (on: boolean) => {
     isBackgroundAdjustMode.value = on
-    // The background controls live on the Details page; the tool opens it.
     if (on) {
+      selectedIds.value = []
       sidePanel.value = 'details'
     }
   }
+
+  watch(selectedIds, (ids) => {
+    if (ids.length > 0) {
+      isBackgroundAdjustMode.value = false
+    }
+  }, { flush: 'sync' })
 
   /**
    * Whether the canvas stats overlay (Nodes/Links/Labels/Selected) shows.

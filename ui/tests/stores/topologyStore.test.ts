@@ -151,6 +151,17 @@ describe('useTopologyStore - view background', () => {
     expect(store.isBackgroundAdjustMode).toBe(false)
   })
 
+  it('adjust mode and a selection exclude each other, since both show on Details', () => {
+    store.selectOnly('placed-1')
+    store.setBackgroundAdjustMode(true)
+    expect(store.selectedIds).toEqual([])
+    expect(store.isBackgroundAdjustMode).toBe(true)
+
+    store.selectOnly('placed-2')
+    expect(store.isBackgroundAdjustMode).toBe(false)
+    expect(store.selectedIds).toEqual(['placed-2'])
+  })
+
   it('adjust mode never survives leaving Edit mode or switching views', () => {
     store.setBackgroundAdjustMode(true)
     store.setEditMode(false)
