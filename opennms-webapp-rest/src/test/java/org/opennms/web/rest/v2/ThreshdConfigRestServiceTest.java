@@ -80,6 +80,17 @@ public class ThreshdConfigRestServiceTest {
             final ThreshdConfigDto dto = (ThreshdConfigDto) response.getEntity();
             assertEquals(2, dto.getPackages().size());
             assertNotNull(response.getEntityTag());
+            assertEquals(response.getEntityTag().getValue(), dto.getVersion());
+        }
+    }
+
+    @Test
+    public void returnsAPackageWithAnEntityTagThatAlsoAppearsInTheBody() {
+        try (Response response = restService.getThreshdPackage("example1", adminContext())) {
+            assertEquals(200, response.getStatus());
+            final ThreshdPackageDto dto = (ThreshdPackageDto) response.getEntity();
+            assertNotNull(response.getEntityTag());
+            assertEquals(response.getEntityTag().getValue(), dto.getVersion());
         }
     }
 
@@ -184,6 +195,40 @@ public class ThreshdConfigRestServiceTest {
 
         try (Response response = restService.updateThreshdPackage("example1", packageDto("example1"),
                 '"' + etag + '"', adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+        assertEquals(1, threshdDao.getSaveCount());
+    }
+
+    @Test
+    public void rejectsAPackageReadBeforeAnOutageCalendarWasAssigned() {
+        // The UI sends the body's version back as If-Match, so this is the round trip it relies on.
+        final ThreshdPackageDto read;
+        try (Response response = restService.getThreshdPackage("example1", adminContext())) {
+            read = (ThreshdPackageDto) response.getEntity();
+        }
+
+        threshdDao.getWriteableConfig().getPackage("example1").orElseThrow()
+                .setOutageCalendars(List.of("maintenance"));
+
+        try (Response response = restService.updateThreshdPackage("example1", read,
+                '"' + read.getVersion() + '"', adminContext())) {
+            assertEquals(412, response.getStatus());
+        }
+        assertEquals(0, threshdDao.getSaveCount());
+        assertEquals(List.of("maintenance"),
+                threshdDao.getWriteableConfig().getPackage("example1").orElseThrow().getOutageCalendars());
+    }
+
+    @Test
+    public void acceptsAPackageWrittenBackWithTheVersionItWasReadWith() {
+        final ThreshdPackageDto read;
+        try (Response response = restService.getThreshdPackage("example1", adminContext())) {
+            read = (ThreshdPackageDto) response.getEntity();
+        }
+
+        try (Response response = restService.updateThreshdPackage("example1", read,
+                '"' + read.getVersion() + '"', adminContext())) {
             assertEquals(204, response.getStatus());
         }
         assertEquals(1, threshdDao.getSaveCount());

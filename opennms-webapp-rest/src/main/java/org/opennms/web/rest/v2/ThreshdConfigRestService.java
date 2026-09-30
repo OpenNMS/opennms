@@ -89,7 +89,10 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
             }
 
             final ThreshdConfigDto dto = ThreshdConfigMapper.toDto(config);
-            return Response.ok(dto).tag(ThresholdRestSupport.etagOf(objectMapper, dto)).build();
+            final String etag = ThresholdRestSupport.etagOf(objectMapper, dto);
+            dto.setVersion(etag);
+
+            return Response.ok(dto).tag(etag).build();
         } catch (final Exception e) {
             LOG.error("Failed to retrieve the threshd configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve threshd configuration.").build();
@@ -125,7 +128,10 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
             }
 
             final ThreshdPackageDto dto = ThreshdConfigMapper.toDto(pkg.get());
-            return Response.ok(dto).tag(ThresholdRestSupport.etagOf(objectMapper, dto)).build();
+            final String etag = ThresholdRestSupport.etagOf(objectMapper, dto);
+            dto.setVersion(etag);
+
+            return Response.ok(dto).tag(etag).build();
         } catch (final Exception e) {
             LOG.error("Failed to retrieve the threshd package {}.", packageName, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve threshd configuration.").build();

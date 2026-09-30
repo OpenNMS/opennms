@@ -55,6 +55,11 @@ public class ThreshdPackageDto {
             + "maintained by the scheduled outages API.")
     private List<String> outageCalendars;
 
+    @Schema(description = "Opaque version of the package, also returned as the ETag header. Send it back as "
+            + "If-Match on a write to be rejected with a 412 instead of overwriting someone else's change.",
+            accessMode = Schema.AccessMode.READ_ONLY)
+    private String version;
+
     public String getName() {
         return name;
     }
@@ -110,5 +115,13 @@ public class ThreshdPackageDto {
 
     public void setOutageCalendars(final List<String> outageCalendars) {
         this.outageCalendars = outageCalendars;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
     }
 }

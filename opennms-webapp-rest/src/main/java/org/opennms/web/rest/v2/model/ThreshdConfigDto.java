@@ -32,11 +32,24 @@ public class ThreshdConfigDto {
     @Schema(description = "Threshd packages. The schema requires at least one.")
     private List<ThreshdPackageDto> packages;
 
+    @Schema(description = "Opaque version of the configuration, also returned as the ETag header. Send it back as "
+            + "If-Match on a write to be rejected with a 412 instead of overwriting someone else's change.",
+            accessMode = Schema.AccessMode.READ_ONLY)
+    private String version;
+
     public List<ThreshdPackageDto> getPackages() {
         return packages;
     }
 
     public void setPackages(final List<ThreshdPackageDto> packages) {
         this.packages = packages;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
     }
 }
