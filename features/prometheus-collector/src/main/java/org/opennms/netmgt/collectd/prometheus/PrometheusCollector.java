@@ -66,10 +66,11 @@ import org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
@@ -88,6 +89,9 @@ import com.google.common.collect.ImmutableMap;
 public class PrometheusCollector extends AbstractRemoteServiceCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(PrometheusCollector.class);
+
+    // Restricted context: a configured expression cannot reference types, call constructors, or use reflection.
+    private static final EvaluationContext SPEL_CONTEXT = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
 
     private static final String INTERFACE_ADDRESS_PLACEHOLDER = "INTERFACE_ADDRESS";
 
@@ -196,8 +200,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
                     ExpressionParser parser = new SpelExpressionParser();
                     Expression exp = parser.parseExpression(attribute.getAliasExp());
                     Function<Metric, String> attributeNameMapper = (metric) -> {
-                        StandardEvaluationContext context = new StandardEvaluationContext(metric);
-                        String name = exp.getValue(context, String.class);
+                        String name = exp.getValue(SPEL_CONTEXT, metric, String.class);
                         if (attribute.isCompressAlias()) {
                             name = CamelCaseCompressor.compress(name, RRD_DS_MAX_SIZE);
                         }
@@ -253,8 +256,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
                     ExpressionParser parser = new SpelExpressionParser();
                     Expression stringAttributeValueExp = parser.parseExpression(attribute.getValueExp());
                     for (Metric metric : entry.getValue()) {
-                        StandardEvaluationContext context = new StandardEvaluationContext(metric);
-                        String stringValue = stringAttributeValueExp.getValue(context, String.class);
+                        String stringValue = stringAttributeValueExp.getValue(SPEL_CONTEXT, metric, String.class);
                         if (stringValue != null) {
                             builder.withStringAttribute(resource, group.getName(), attribute.getAlias(), stringValue);
                             // Only process the first match
@@ -276,11 +278,9 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
         final Expression exp = parser.parseExpression(filterExpression);
         final List<Metric> filteredMetrics = new ArrayList<>();
         for (Metric metric : metrics) {
-            StandardEvaluationContext context = new StandardEvaluationContext(metric);
-
             boolean passed = false;
             try {
-                passed = exp.getValue(context, Boolean.class);
+                passed = exp.getValue(SPEL_CONTEXT, metric, Boolean.class);
             } catch (Exception e) {
                 LOG.warn("Failed to evaluate expression '{}'. The metric will not be included.",
                         filterExpression, e);
@@ -308,9 +308,8 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
         final ExpressionParser parser = new SpelExpressionParser();
         final Expression exp = parser.parseExpression(group.getGroupByExp());
         for (Metric metric : metrics) {
-            final StandardEvaluationContext context = new StandardEvaluationContext(metric);
             try {
-                final String instance = exp.getValue(context, String.class);
+                final String instance = exp.getValue(SPEL_CONTEXT, metric, String.class);
                 LOG.debug("Rule '{}' on {} returned instance: {}", group.getGroupByExp(), metric, instance);
                 if (instance == null) {
                     LOG.info("Rule '{}' on {} did not produce an instance. Result will be ignored.", group.getGroupByExp(), metric);

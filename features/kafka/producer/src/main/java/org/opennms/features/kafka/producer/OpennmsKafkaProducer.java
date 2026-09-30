@@ -85,7 +85,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
-    // Restricted context so a configured filter expression cannot execute arbitrary code.
+    // Restricted context: a configured filter expression cannot reference types, call constructors, or use reflection.
     private static final EvaluationContext SPEL_CONTEXT = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
     private final ThreadFactory nodeUpdateThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("kafka-producer-node-update-%d")

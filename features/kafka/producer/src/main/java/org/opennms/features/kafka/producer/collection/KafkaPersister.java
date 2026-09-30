@@ -56,7 +56,7 @@ public class KafkaPersister implements Persister {
     private static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
 
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
-    // Restricted context so a configured filter expression cannot execute arbitrary code.
+    // Restricted context: a configured filter expression cannot reference types, call constructors, or use reflection.
     private static final EvaluationContext SPEL_CONTEXT = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
 
     // NumericAttribute.type must always print: GAUGE is the zero enum value, which the
