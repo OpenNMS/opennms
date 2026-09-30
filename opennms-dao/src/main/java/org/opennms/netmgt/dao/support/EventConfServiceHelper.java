@@ -115,6 +115,9 @@ public class EventConfServiceHelper {
      * queued reload has not started reading yet, it will observe this mutation's committed state
      * too, so a second reload would only rebuild the same result. The flag is cleared before the
      * read begins, so a mutation that commits any later always gets a fresh reload.
+     * <p>
+     * Call this only after the mutation has committed (outside its transaction): the coalescing
+     * argument above rests on the queued reload being able to see the caller's changes.
      *
      * @param eventConfEventDao The DAO for retrieving EventConfEvent entities
      * @param eventConfDao The DAO for loading events into memory

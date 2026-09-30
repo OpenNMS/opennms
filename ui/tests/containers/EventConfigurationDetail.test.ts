@@ -116,6 +116,13 @@ describe('EventConfigurationDetail.vue', () => {
     expect(configBox.text()).toContain(format(new Date(), 'MM/dd/yyyy'))
   })
 
+  it('disables "Add Event Config" during events reorder mode so nothing is added mid-edit', async () => {
+    wrapper = await createWrapper()
+    store.eventsReorderMode = true
+    await wrapper.vm.$nextTick()
+    expect(wrapper.get('[data-test="add-event-config"]').attributes('disabled')).toBeDefined()
+  })
+
   it('should call setSelectedEventConfigSource when "Add Event Config" button is clicked', async () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()

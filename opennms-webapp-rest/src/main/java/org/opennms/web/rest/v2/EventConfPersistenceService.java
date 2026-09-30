@@ -292,6 +292,9 @@ public class EventConfPersistenceService {
      * bulk updates against the {@code (source_id, event_order)} index, never a whole-source renumbering;
      * the deferred unique constraint tolerates the intermediate duplicates. Runs under the source's row
      * lock, so uploads, appends, deletes and other moves on the same source are serialized with it.
+     * <p>
+     * Assumes each source's {@code event_order} runs dense 1..N: every write path keeps it that way
+     * (uploads and the full-list reorder renumber 1..N, appends use max+1, deletes compact).
      *
      * @return the event's resulting position (unchanged for an edge no-op)
      * @throws EntityNotFoundException  on an unknown source or event

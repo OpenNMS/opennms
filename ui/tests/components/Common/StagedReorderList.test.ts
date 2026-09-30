@@ -217,7 +217,7 @@ describe('StagedReorderList.vue', () => {
     expect(workingIds()).toEqual([2, 1, 3, 4, 5])
   })
 
-  it('a rejected save surfaces the server message and re-fetches the current order', async () => {
+  it('a rejected save surfaces the server message, warns about the discard and re-fetches', async () => {
     saveMock.mockResolvedValue({
       ok: false,
       status: 400,
@@ -226,7 +226,8 @@ describe('StagedReorderList.vue', () => {
     wrapper.vm.moveStep(wrapper.vm.workingItems[0], 1)
     await wrapper.vm.saveOrder()
     expect(mockShowSnackBar).toHaveBeenCalledWith({
-      msg: 'The order must list every source exactly once; missing: New.events',
+      msg: 'The order must list every source exactly once; missing: New.events'
+        + ' The list was reloaded and your unsaved moves were discarded.',
       error: true
     })
     expect(refetchMock).toHaveBeenCalled()
@@ -237,9 +238,21 @@ describe('StagedReorderList.vue', () => {
     saveMock.mockResolvedValue({ ok: false, status: 404, message: 'Event not found: 3' })
     wrapper.vm.moveStep(wrapper.vm.workingItems[0], 1)
     await wrapper.vm.saveOrder()
-    expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Event not found: 3', error: true })
+    expect(mockShowSnackBar).toHaveBeenCalledWith({
+      msg: 'Event not found: 3 The list was reloaded and your unsaved moves were discarded.',
+      error: true
+    })
     expect(refetchMock).toHaveBeenCalled()
     expect(wrapper.emitted('close')).toBeFalsy()
+  })
+
+  it('a non-conflict failure keeps the working copy without re-fetching', async () => {
+    saveMock.mockResolvedValue({ ok: false, status: 500, message: 'boom' })
+    wrapper.vm.moveStep(wrapper.vm.workingItems[0], 1)
+    await wrapper.vm.saveOrder()
+    expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'boom', error: true })
+    expect(refetchMock).not.toHaveBeenCalled()
+    expect(wrapper.vm.isDirty).toBe(true)
   })
 
   it('reset restores the original order', async () => {

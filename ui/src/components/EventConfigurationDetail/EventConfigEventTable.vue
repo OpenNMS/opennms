@@ -243,11 +243,16 @@ const emptyListContent = {
 const expandedRows = ref<Record<string | number, boolean>>({})
 
 // Leaving the page (Go Back, breadcrumbs, menu) with unsaved reorder edits asks first,
-// the same way the Cancel button does.
+// the same way the Cancel button does. An allowed leave also ends the reorder mode:
+// the store outlives the page, so the mode must not still be on when the page is reopened.
 const reorderList = ref<{ confirmLeave: () => Promise<boolean> } | null>(null)
-onBeforeRouteLeave(() => {
+onBeforeRouteLeave(async () => {
   if (store.eventsReorderMode && reorderList.value) {
-    return reorderList.value.confirmLeave()
+    const leave = await reorderList.value.confirmLeave()
+    if (leave) {
+      store.stopEventsReorder()
+    }
+    return leave
   }
   return true
 })

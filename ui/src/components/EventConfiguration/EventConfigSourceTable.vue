@@ -231,11 +231,16 @@ const sourceLabel = (source: EventConfigSource) => source.name
 const sourceSearchText = (source: EventConfigSource) => `${source.name} ${source.vendor}`
 
 // Leaving the page (source detail link, breadcrumbs, menu) with unsaved reorder edits asks
-// first, the same way the Cancel button does.
+// first, the same way the Cancel button does. An allowed leave also ends the reorder mode:
+// the store outlives the page, so the mode must not still be on when the page is reopened.
 const reorderList = ref<{ confirmLeave: () => Promise<boolean> } | null>(null)
-onBeforeRouteLeave(() => {
+onBeforeRouteLeave(async () => {
   if (store.sourcesReorderMode && reorderList.value) {
-    return reorderList.value.confirmLeave()
+    const leave = await reorderList.value.confirmLeave()
+    if (leave) {
+      store.stopSourcesReorder()
+    }
+    return leave
   }
   return true
 })

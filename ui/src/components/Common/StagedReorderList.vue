@@ -611,13 +611,16 @@ const saveOrder = async () => {
       emit('close')
     }
   } else {
+    // 400 or 404 means the list no longer matches the server (an item added or deleted
+    // meanwhile): re-fetch so the reorder mode edits the current truth. The fresh list
+    // replaces the working copy, so the snackbar says the staged moves are gone.
+    const outOfDate = result.status === 400 || result.status === 404
     showSnackBar({
-      msg: result.message || `Failed to save the ${props.itemNoun} order.`,
+      msg: (result.message || `Failed to save the ${props.itemNoun} order.`)
+        + (outOfDate ? ' The list was reloaded and your unsaved moves were discarded.' : ''),
       error: true
     })
-    // 400 or 404 means the list no longer matches the server (an item added or deleted
-    // meanwhile): re-fetch so the reorder mode edits the current truth
-    if (result.status === 400 || result.status === 404) {
+    if (outOfDate) {
       await props.refetch()
     }
   }

@@ -142,9 +142,12 @@ describe('EventConfigSourceTable.vue', () => {
       await nextTick()
       mockConfirmLeave.mockResolvedValue(false)
       expect(await routeLeaveGuards[0]()).toBe(false)
+      expect(store.sourcesReorderMode).toBe(true)
 
       mockConfirmLeave.mockResolvedValue(true)
       expect(await routeLeaveGuards[0]()).toBe(true)
+      // an allowed leave ends the mode so the page does not reopen mid-reorder
+      expect(store.sourcesReorderMode).toBe(false)
     })
   })
 

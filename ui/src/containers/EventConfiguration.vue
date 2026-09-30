@@ -27,6 +27,7 @@
           aria-haspopup="true"
           aria-controls="create-event-config-menu"
           data-test="create-menu-button"
+          :disabled="store.sourcesReorderMode"
           @click="toggleCreateMenu"
         >
           Create

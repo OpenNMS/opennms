@@ -23,6 +23,7 @@
         <OnmsButton
           label="Add Event Config"
           data-test="add-event-config"
+          :disabled="store.eventsReorderMode"
           @click="onAddEventClick(store.selectedSource)"
         />
         <OnmsButton

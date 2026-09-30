@@ -143,9 +143,12 @@ describe('EventConfigEventTable.vue', () => {
       await nextTick()
       mockConfirmLeave.mockResolvedValue(false)
       expect(await routeLeaveGuards[0]()).toBe(false)
+      expect(store.stopEventsReorder).not.toHaveBeenCalled()
 
       mockConfirmLeave.mockResolvedValue(true)
       expect(await routeLeaveGuards[0]()).toBe(true)
+      // an allowed leave ends the mode so the page does not reopen mid-reorder
+      expect(store.stopEventsReorder).toHaveBeenCalled()
     })
   })
 

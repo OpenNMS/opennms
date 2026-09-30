@@ -59,6 +59,13 @@ describe('EventConfiguration.vue (container)', () => {
     expect(store.startSourcesReorder).toHaveBeenCalled()
   })
 
+  it('disables both header buttons during reorder mode so nothing is added mid-edit', async () => {
+    store.sourcesReorderMode = true
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-test="reorder-sources-button"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-test="create-menu-button"]').attributes('disabled')).toBeDefined()
+  })
+
   it('the Create menu opens the create-source dialog and the create-event flow', () => {
     const items = wrapper.vm.createMenuItems
     expect(items.map((i: any) => i.label)).toEqual(['New Event Source', 'New Event Config'])
