@@ -205,6 +205,7 @@ License.
           ref="canvasRef"
           class="topology-canvas-pane"
           @node-contextmenu="onNodeContextMenu"
+          @clear-focus="showAll"
         />
         <!-- Many discovered sources (OSPF, IS-IS, Bridge, …) have no links
              unless that protocol was discovered; explain the empty canvas. -->
