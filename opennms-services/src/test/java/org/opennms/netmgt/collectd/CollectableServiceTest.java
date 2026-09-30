@@ -355,6 +355,37 @@ public class CollectableServiceTest {
         verify(monitoredServiceDao, times(2)).get(eq(1), any(InetAddress.class), eq("SNMP"));
     }
 
+    /**
+     * When the cached key no longer matches a row because the service was deleted and re-added,
+     * the key is looked up again and the write retried in the same transaction, so the timestamp
+     * of that collection lands on the new row instead of being dropped.
+     */
+    @Test
+    public void retriesWithFreshKeyWhenServiceWasRecreated() throws CollectionInitializationException, CollectionException, IOException {
+        createCollectableService();
+        when(spec.collect(any())).thenReturn(null);
+
+        service.run(); // resolves and caches key 42, writes it
+        verify(monitoredServiceDao, times(1)).updateCollectLastGood(eq(42), any());
+
+        // the service is re-created: row 42 is gone, the lookup now yields 43
+        OnmsMonitoredService recreated = mock(OnmsMonitoredService.class);
+        when(recreated.getId()).thenReturn(43);
+        when(monitoredServiceDao.get(eq(1), any(InetAddress.class), eq("SNMP"))).thenReturn(recreated);
+        when(monitoredServiceDao.updateCollectLastGood(eq(42), any())).thenReturn(0);
+
+        service.run();
+
+        verify(monitoredServiceDao, times(2)).updateCollectLastGood(eq(42), any());
+        verify(monitoredServiceDao, times(1)).updateCollectLastGood(eq(43), any());
+        verify(monitoredServiceDao, times(2)).get(eq(1), any(InetAddress.class), eq("SNMP"));
+
+        service.run(); // the new key is cached, no further lookup
+
+        verify(monitoredServiceDao, times(2)).updateCollectLastGood(eq(43), any());
+        verify(monitoredServiceDao, times(2)).get(eq(1), any(InetAddress.class), eq("SNMP"));
+    }
+
     private void createCollectableService() throws CollectionInitializationException, IOException {
         // Disable thresholding
         Map<String, Object> paramsMap = new HashMap<>();

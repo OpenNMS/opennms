@@ -461,21 +461,28 @@ public class CollectableService implements ReadyRunnable {
         try {
             final Integer updated = m_transTemplate.execute(tx -> {
                 Integer ifServiceId = m_ifServiceId;
-                if (ifServiceId == null) {
-                    final OnmsMonitoredService svc = m_monitoredServiceDao.get(m_nodeId, getAddress(), getServiceName());
-                    if (svc == null) {
+                final boolean usedCachedKey = ifServiceId != null;
+                if (!usedCachedKey) {
+                    ifServiceId = resolveIfServiceId();
+                    if (ifServiceId == null) {
                         return 0;
                     }
-                    ifServiceId = svc.getId();
-                    m_ifServiceId = ifServiceId;
                 }
-                return status == CollectionStatus.SUCCEEDED
-                        ? m_monitoredServiceDao.updateCollectLastGood(ifServiceId, completed)
-                        : m_monitoredServiceDao.updateCollectLastFail(ifServiceId, completed);
+                int rows = writeCollectionTimestamp(status, ifServiceId, completed);
+                if (rows == 0 && usedCachedKey) {
+                    // The cached key matches no row: the service was deleted and re-added since the
+                    // key was resolved. Look it up again and retry once so this collection is not lost.
+                    ifServiceId = resolveIfServiceId();
+                    if (ifServiceId == null) {
+                        return 0;
+                    }
+                    rows = writeCollectionTimestamp(status, ifServiceId, completed);
+                }
+                return rows;
             });
             if (updated == null || updated == 0) {
-                // The service was deleted or moved since the key was resolved. Forget the key so the
-                // next collection resolves it again rather than updating nothing forever.
+                // No row for this service, even after a fresh lookup. Forget the key so the next
+                // collection resolves it again rather than updating nothing forever.
                 m_ifServiceId = null;
                 LOG.debug("trackCollection: no ifservices row for {}/{}/{}, collection timestamp not recorded.", m_nodeId, getHostAddress(), getServiceName());
             } else {
@@ -484,6 +491,19 @@ public class CollectableService implements ReadyRunnable {
         } catch (Exception e) {
             LOG.warn("trackCollection: failed to record {} collection timestamp for {}/{}/{}", status, m_nodeId, getHostAddress(), getServiceName(), e);
         }
+    }
+
+    /** Looks up the ifservices key for this collector's service and caches it; null if there is no such row. */
+    private Integer resolveIfServiceId() {
+        final OnmsMonitoredService svc = m_monitoredServiceDao.get(m_nodeId, getAddress(), getServiceName());
+        m_ifServiceId = svc == null ? null : svc.getId();
+        return m_ifServiceId;
+    }
+
+    private int writeCollectionTimestamp(final CollectionStatus status, final int ifServiceId, final Date completed) {
+        return status == CollectionStatus.SUCCEEDED
+                ? m_monitoredServiceDao.updateCollectLastGood(ifServiceId, completed)
+                : m_monitoredServiceDao.updateCollectLastFail(ifServiceId, completed);
     }
 
     /**
