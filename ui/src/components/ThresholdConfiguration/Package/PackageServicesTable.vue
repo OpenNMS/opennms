@@ -94,9 +94,7 @@ const onConfirmDelete = async () => {
   const index = pendingDeleteIndex.value
   pendingDeleteIndex.value = -1
 
-  store.removeService(index)
-
-  const result = await store.saveCurrentPackage()
+  const result = await store.deleteService(index)
 
   showSnackBar({ msg: result.success ? 'Service deleted.' : result.message, error: !result.success })
 }

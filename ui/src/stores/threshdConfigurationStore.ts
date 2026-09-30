@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { cloneDeep } from 'lodash'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { THRESHOLDING_GROUP_PARAMETER, ThreshdServiceStatus } from '@/lib/thresholdValidator'
@@ -83,6 +84,11 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
   const config = ref<ThreshdConfiguration>(getDefaultThreshdConfiguration())
   const packages = ref<ThreshdPackageSummary[]>([])
   const currentPackage = ref<ThreshdPackage | null>(null)
+  /**
+   * The name currentPackage is stored under. Distinct from currentPackage.name, which the form edits in
+   * place, so it still addresses the stored package while a rename is pending.
+   */
+  const loadedPackageName = ref<string | null>(null)
   const isLoading = ref(false)
   const serviceDrawer = ref<EntityDrawerState>(closedDrawer())
 
@@ -127,6 +133,7 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     isLoading.value = false
 
     currentPackage.value = result.success ? (result.payload ?? null) : null
+    loadedPackageName.value = currentPackage.value ? name : null
     return result
   }
 
@@ -141,65 +148,76 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
   }
 
   /**
-   * Writes the whole current package back, then refetches: the save yields a new entity tag, and the
-   * scheduled outages page may have changed the outage calendars in the meantime.
+   * Writes a package back in place of the loaded one, then refetches: the save yields a new entity tag, and
+   * the scheduled outages page may have changed the outage calendars in the meantime. When pkg carries a
+   * new name this is a rename, and loadedPackageName follows it.
    */
-  const saveCurrentPackage = async (): Promise<ValidationResult> => {
-    if (!currentPackage.value) {
+  const writePackage = async (pkg: ThreshdPackage): Promise<ValidationResult> => {
+    if (!loadedPackageName.value) {
       return createFailureResult('No threshd package is loaded.')
     }
 
-    const name = currentPackage.value.name
-    const result = await API.updateThreshdPackage(name, currentPackage.value)
+    const result = await API.updateThreshdPackage(loadedPackageName.value, pkg)
 
     if (result.success) {
-      await fetchPackage(name)
-      await fetchConfiguration()
-    }
-    return result
-  }
-
-  const renamePackage = async (oldName: string, pkg: ThreshdPackage): Promise<ValidationResult> => {
-    const result = await API.updateThreshdPackage(oldName, pkg)
-
-    if (result.success) {
+      // The server trims the name it stores.
+      await fetchPackage(pkg.name.trim())
       await fetchConfiguration()
       await fetchPackages()
     }
     return result
+  }
+
+  /** Writes the whole current package back, including any pending edit to its name. */
+  const saveCurrentPackage = async (): Promise<ValidationResult> => {
+    if (!currentPackage.value) {
+      return createFailureResult('No threshd package is loaded.')
+    }
+    return writePackage(currentPackage.value)
+  }
+
+  /**
+   * Adds (index null) or replaces a service and saves the package. The change is made on a copy, so a
+   * failed save leaves the loaded package as it was instead of showing a service that is not stored.
+   */
+  const saveService = async (index: number | null, service: ThreshdService): Promise<ValidationResult> => {
+    if (!currentPackage.value) {
+      return createFailureResult('No threshd package is loaded.')
+    }
+
+    const pkg = cloneDeep(currentPackage.value)
+
+    if (index === null || index < 0 || index >= pkg.services.length) {
+      pkg.services.push(service)
+    } else {
+      pkg.services.splice(index, 1, service)
+    }
+    return writePackage(pkg)
+  }
+
+  /** Removes a service and saves the package, on a copy for the same reason as saveService. */
+  const deleteService = async (index: number): Promise<ValidationResult> => {
+    if (!currentPackage.value || index < 0 || index >= currentPackage.value.services.length) {
+      return createFailureResult('No such service.')
+    }
+
+    const pkg = cloneDeep(currentPackage.value)
+    pkg.services.splice(index, 1)
+    return writePackage(pkg)
   }
 
   const deletePackage = async (name: string, version?: string): Promise<ValidationResult> => {
     const result = await API.deleteThreshdPackage(name, version)
 
     if (result.success) {
-      if (currentPackage.value?.name === name) {
+      if (loadedPackageName.value === name) {
         currentPackage.value = null
+        loadedPackageName.value = null
       }
       await fetchConfiguration()
       await fetchPackages()
     }
     return result
-  }
-
-  const upsertService = (index: number | null, service: ThreshdService): void => {
-    if (!currentPackage.value) {
-      return
-    }
-
-    const services = currentPackage.value.services
-
-    if (index === null || index < 0 || index >= services.length) {
-      services.push(service)
-    } else {
-      services.splice(index, 1, service)
-    }
-  }
-
-  const removeService = (index: number): void => {
-    if (currentPackage.value && index >= 0 && index < currentPackage.value.services.length) {
-      currentPackage.value.services.splice(index, 1)
-    }
   }
 
   const reloadThreshdConfiguration = async (): Promise<ValidationResult> => API.reloadThreshdConfiguration()
@@ -216,6 +234,7 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     config.value = getDefaultThreshdConfiguration()
     packages.value = []
     currentPackage.value = null
+    loadedPackageName.value = null
     isLoading.value = false
     serviceDrawer.value = closedDrawer()
   }
@@ -224,6 +243,7 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     config,
     packages,
     currentPackage,
+    loadedPackageName,
     isLoading,
     serviceDrawer,
     packageNames,
@@ -233,10 +253,9 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     fetchPackage,
     createPackage,
     saveCurrentPackage,
-    renamePackage,
     deletePackage,
-    upsertService,
-    removeService,
+    saveService,
+    deleteService,
     reloadThreshdConfiguration,
     openServiceDrawer,
     closeServiceDrawer,

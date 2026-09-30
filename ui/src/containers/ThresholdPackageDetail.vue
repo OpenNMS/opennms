@@ -88,21 +88,24 @@ const load = async () => {
 
 onMounted(load)
 
-watch(packageName, load)
+// A save already refetched the package under its new name, so only load when navigating elsewhere.
+watch(packageName, (name) => {
+  if (name !== store.loadedPackageName) {
+    load()
+  }
+})
+
+// Any save can rename the package, including a service save while a name edit is pending.
+watch(() => store.loadedPackageName, (name) => {
+  if (name && name !== packageName.value) {
+    router.replace(`/threshold-config/package/${encodeURIComponent(name)}`)
+  }
+})
 
 const onSave = async () => {
-  const previousName = packageName.value
-  const newName = store.currentPackage?.name ?? previousName
-
-  const result = await store.renamePackage(previousName, store.currentPackage!)
+  const result = await store.saveCurrentPackage()
 
   showSnackBar({ msg: result.success ? 'Threshd package saved.' : result.message, error: !result.success })
-
-  if (result.success && newName !== previousName) {
-    router.replace(`/threshold-config/package/${encodeURIComponent(newName)}`)
-  } else if (result.success) {
-    await store.fetchPackage(previousName)
-  }
 }
 </script>
 

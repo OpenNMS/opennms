@@ -173,9 +173,7 @@ const onSave = async () => {
   const { mode, index } = store.serviceDrawer
   store.closeServiceDrawer()
 
-  store.upsertService(mode === CreateEditMode.Edit ? index : null, draft.value)
-
-  const result = await store.saveCurrentPackage()
+  const result = await store.saveService(mode === CreateEditMode.Edit ? index : null, draft.value)
 
   showSnackBar({ msg: result.success ? 'Service saved.' : result.message, error: !result.success })
 }

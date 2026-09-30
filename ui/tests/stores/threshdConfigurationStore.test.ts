@@ -94,46 +94,96 @@ describe('threshdConfigurationStore', () => {
     })
   })
 
-  describe('service CRUD', () => {
+  describe('saving', () => {
+    // As the detail page has it: fetched under 'one', so writes address 'one' whatever the form says.
+    const load = async (pkg: ThreshdPackage) => {
+      const store = useThreshdConfigurationStore()
+      vi.mocked(API.getThreshdPackage).mockResolvedValueOnce(ok(pkg) as never)
+      await store.fetchPackage(pkg.name)
+      return store
+    }
+
     beforeEach(() => {
-      const store = useThreshdConfigurationStore()
-      store.currentPackage = packageWithGroup('one', 'mib2')
+      vi.mocked(API.getThreshdConfiguration).mockResolvedValue(ok(getDefaultThreshdConfiguration()) as never)
+      vi.mocked(API.getThreshdPackages).mockResolvedValue(ok([]) as never)
     })
 
-    test('appends when the index is null and replaces when it is not', () => {
-      const store = useThreshdConfigurationStore()
+    test('saves the whole package and refetches it for the new entity tag', async () => {
+      const sent = packageWithGroup('one', 'mib2')
+      const store = await load(sent)
 
-      store.upsertService(null, { ...getDefaultThreshdService(), name: 'ICMP' })
-      expect(store.currentPackage?.services).toHaveLength(2)
+      vi.mocked(API.updateThreshdPackage).mockResolvedValue(ok() as never)
+      vi.mocked(API.getThreshdPackage).mockResolvedValue(ok({ ...sent, version: 'new' }) as never)
 
-      store.upsertService(0, { ...getDefaultThreshdService(), name: 'replaced' })
-      expect(store.currentPackage?.services).toHaveLength(2)
-      expect(store.currentPackage?.services[0].name).toBe('replaced')
+      await store.saveCurrentPackage()
+
+      expect(API.updateThreshdPackage).toHaveBeenCalledWith('one', sent)
+      expect(store.currentPackage?.version).toBe('new')
     })
 
-    test('removes by index and ignores an index that is not there', () => {
-      const store = useThreshdConfigurationStore()
+    test('writes a pending rename to the stored name and then follows it', async () => {
+      const store = await load(packageWithGroup('one', 'mib2'))
+      store.currentPackage!.name = ' renamed '
 
-      store.removeService(9)
-      expect(store.currentPackage?.services).toHaveLength(1)
+      vi.mocked(API.updateThreshdPackage).mockResolvedValue(ok() as never)
+      vi.mocked(API.getThreshdPackage).mockResolvedValue(ok(packageWithGroup('renamed', 'mib2')) as never)
 
-      store.removeService(0)
-      expect(store.currentPackage?.services).toHaveLength(0)
+      await store.saveService(null, { ...getDefaultThreshdService(), name: 'ICMP' })
+
+      expect(vi.mocked(API.updateThreshdPackage).mock.calls[0][0]).toBe('one')
+      expect(API.getThreshdPackage).toHaveBeenLastCalledWith('renamed')
+      expect(store.loadedPackageName).toBe('renamed')
     })
 
-    test('does nothing when no package is loaded', () => {
-      const store = useThreshdConfigurationStore()
-      store.currentPackage = null
+    test('appends when the index is null and replaces when it is not', async () => {
+      const store = await load(packageWithGroup('one', 'mib2'))
+      vi.mocked(API.updateThreshdPackage).mockResolvedValue(fail('stop here') as never)
 
-      expect(() => store.upsertService(null, getDefaultThreshdService())).not.toThrow()
-      expect(() => store.removeService(0)).not.toThrow()
+      await store.saveService(null, { ...getDefaultThreshdService(), name: 'ICMP' })
+      expect(vi.mocked(API.updateThreshdPackage).mock.calls[0][1].services.map(s => s.name)).toEqual(['SNMP', 'ICMP'])
+
+      await store.saveService(0, { ...getDefaultThreshdService(), name: 'replaced' })
+      expect(vi.mocked(API.updateThreshdPackage).mock.calls[1][1].services.map(s => s.name)).toEqual(['replaced'])
+    })
+
+    test('leaves the loaded package untouched when a service save fails', async () => {
+      const store = await load(packageWithGroup('one', 'mib2'))
+      vi.mocked(API.updateThreshdPackage).mockResolvedValue(fail('Threshd package \'one\' has changed since it was read.') as never)
+
+      const added = await store.saveService(null, { ...getDefaultThreshdService(), name: 'ICMP' })
+      const edited = await store.saveService(0, { ...getDefaultThreshdService(), name: 'replaced' })
+      const deleted = await store.deleteService(0)
+
+      expect([added.success, edited.success, deleted.success]).toEqual([false, false, false])
+      expect(store.currentPackage?.services.map(s => s.name)).toEqual(['SNMP'])
+    })
+
+    test('removes by index and refuses an index that is not there', async () => {
+      const store = await load(packageWithGroup('one', 'mib2'))
+      vi.mocked(API.updateThreshdPackage).mockResolvedValue(fail('stop here') as never)
+
+      expect((await store.deleteService(9)).success).toBe(false)
+      expect(API.updateThreshdPackage).not.toHaveBeenCalled()
+
+      await store.deleteService(0)
+      expect(vi.mocked(API.updateThreshdPackage).mock.calls[0][1].services).toEqual([])
+    })
+
+    test('refuses to save when no package is loaded', async () => {
+      const store = useThreshdConfigurationStore()
+
+      expect((await store.saveCurrentPackage()).success).toBe(false)
+      expect((await store.saveService(null, getDefaultThreshdService())).success).toBe(false)
+      expect((await store.deleteService(0)).success).toBe(false)
+      expect(API.updateThreshdPackage).not.toHaveBeenCalled()
     })
   })
 
   describe('packages', () => {
     test('clears the loaded package when it is the one deleted', async () => {
       const store = useThreshdConfigurationStore()
-      store.currentPackage = packageWithGroup('one', 'mib2')
+      vi.mocked(API.getThreshdPackage).mockResolvedValueOnce(ok(packageWithGroup('one', 'mib2')) as never)
+      await store.fetchPackage('one')
 
       vi.mocked(API.deleteThreshdPackage).mockResolvedValue(ok() as never)
       vi.mocked(API.getThreshdConfiguration).mockResolvedValue(ok(getDefaultThreshdConfiguration()) as never)
@@ -153,21 +203,6 @@ describe('threshdConfigurationStore', () => {
       await store.fetchPackage('one')
 
       expect(store.currentPackage).toBeNull()
-    })
-
-    test('saves the whole package and refetches it for the new entity tag', async () => {
-      const store = useThreshdConfigurationStore()
-      const sent = packageWithGroup('one', 'mib2')
-      store.currentPackage = sent
-
-      vi.mocked(API.updateThreshdPackage).mockResolvedValue(ok() as never)
-      vi.mocked(API.getThreshdPackage).mockResolvedValue(ok({ ...sent, version: 'new' }) as never)
-      vi.mocked(API.getThreshdConfiguration).mockResolvedValue(ok(getDefaultThreshdConfiguration()) as never)
-
-      await store.saveCurrentPackage()
-
-      expect(API.updateThreshdPackage).toHaveBeenCalledWith('one', sent)
-      expect(store.currentPackage?.version).toBe('new')
     })
   })
 
