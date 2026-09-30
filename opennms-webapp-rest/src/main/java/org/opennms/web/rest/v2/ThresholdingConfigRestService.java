@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
-import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.FilterOperator;
 import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdType;
@@ -97,6 +97,9 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
 
     @Autowired
     private ThresholdUeiService thresholdUeiService;
+
+    @Autowired
+    private EventConfPersistenceService eventConfPersistenceService;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -207,6 +210,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
 
         final String groupName = group.getName().trim();
         final AtomicReference<Response> failure = new AtomicReference<>();
+        final AtomicBoolean eventsCreated = new AtomicBoolean();
 
         try {
             thresholdingDao.withWriteLock(config -> {
@@ -221,7 +225,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                 }
 
                 final Group entity = ThresholdingConfigMapper.toEntity(group);
-                ensureUeis(entity);
+                eventsCreated.set(thresholdUeiService.ensureUeisInEventConf(entity.getThresholdsAndExpressions()));
 
                 final List<Group> groups = new ArrayList<>(config.getGroups());
                 groups.add(entity);
@@ -236,6 +240,10 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         } catch (final Exception e) {
             LOG.error("Failed to create threshold group {}.", groupName, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist thresholding configuration.").build();
+        } finally {
+            // Also after a failed save: the definitions are committed either way, and until the reload
+            // eventconf would neither use them nor know not to create them again.
+            reloadEventConfIf(eventsCreated.get());
         }
 
         if (failure.get() != null) {
@@ -256,6 +264,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
 
         final String newName = group.getName().trim();
         final AtomicReference<Response> failure = new AtomicReference<>();
+        final AtomicBoolean eventsCreated = new AtomicBoolean();
 
         try {
             thresholdingDao.withWriteLock(config -> {
@@ -284,7 +293,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                 }
 
                 final Group entity = ThresholdingConfigMapper.toEntity(group);
-                ensureUeis(entity);
+                eventsCreated.set(thresholdUeiService.ensureUeisInEventConf(entity.getThresholdsAndExpressions()));
 
                 final List<Group> groups = new ArrayList<>();
                 for (final Group candidate : config.getGroups()) {
@@ -300,6 +309,10 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         } catch (final Exception e) {
             LOG.error("Failed to update threshold group {}.", groupName, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist thresholding configuration.").build();
+        } finally {
+            // Also after a failed save: the definitions are committed either way, and until the reload
+            // eventconf would neither use them nor know not to create them again.
+            reloadEventConfIf(eventsCreated.get());
         }
 
         if (failure.get() != null) {
@@ -490,9 +503,13 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
 
     // ------------------------------------------------------------------ helpers
 
-    private void ensureUeis(final Group group) {
-        for (final Basethresholddef def : group.getThresholdsAndExpressions()) {
-            thresholdUeiService.ensureUeisInEventConf(def);
+    /**
+     * Reloads eventconf into memory once per request, and only when the request created event definitions.
+     * Done here rather than per event: the reload is asynchronous and re-reads every event from the database.
+     */
+    private void reloadEventConfIf(final boolean eventsCreated) {
+        if (eventsCreated) {
+            eventConfPersistenceService.reloadEventsIntoMemory();
         }
     }
 

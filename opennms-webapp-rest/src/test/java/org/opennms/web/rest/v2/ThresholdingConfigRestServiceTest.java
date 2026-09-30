@@ -30,6 +30,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,6 +65,7 @@ public class ThresholdingConfigRestServiceTest {
     private ThresholdingConfigRestService restService;
     private FakeThresholdingDao thresholdingDao;
     private ThresholdUeiService thresholdUeiService;
+    private EventConfPersistenceService eventConfPersistenceService;
     private EventProxy eventProxy;
 
     @Before
@@ -71,10 +73,12 @@ public class ThresholdingConfigRestServiceTest {
         restService = new ThresholdingConfigRestService();
         thresholdingDao = new FakeThresholdingDao(configWith(group("mib2"), group("cisco")));
         thresholdUeiService = mock(ThresholdUeiService.class);
+        eventConfPersistenceService = mock(EventConfPersistenceService.class);
         eventProxy = mock(EventProxy.class);
 
         setField(restService, "thresholdingDao", thresholdingDao);
         setField(restService, "thresholdUeiService", thresholdUeiService);
+        setField(restService, "eventConfPersistenceService", eventConfPersistenceService);
         setField(restService, "eventProxy", eventProxy);
         setField(restService, "resourceDao", mock(ResourceDao.class));
     }
@@ -210,6 +214,45 @@ public class ThresholdingConfigRestServiceTest {
         }
 
         verify(thresholdUeiService).ensureUeisInEventConf(any());
+    }
+
+    @Test
+    public void reloadsEventConfOncePerRequestWhenDefinitionsWereCreated() {
+        when(thresholdUeiService.ensureUeisInEventConf(any())).thenReturn(true);
+
+        try (Response response = restService.createThresholdGroup(groupDto("newGroup"), adminContext())) {
+            assertEquals(201, response.getStatus());
+        }
+        try (Response response = restService.updateThresholdGroup("mib2", groupDto("mib2"), null, adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+
+        verify(eventConfPersistenceService, times(2)).reloadEventsIntoMemory();
+    }
+
+    @Test
+    public void skipsTheEventConfReloadWhenNoDefinitionWasCreated() {
+        when(thresholdUeiService.ensureUeisInEventConf(any())).thenReturn(false);
+
+        try (Response response = restService.createThresholdGroup(groupDto("newGroup"), adminContext())) {
+            assertEquals(201, response.getStatus());
+        }
+
+        verify(eventConfPersistenceService, never()).reloadEventsIntoMemory();
+    }
+
+    @Test
+    public void stillReloadsEventConfWhenTheConfigSaveFailsAfterDefinitionsWereCreated() {
+        // The definitions are committed before the config save; without the reload eventconf would not know
+        // them, and the next save would create them again.
+        when(thresholdUeiService.ensureUeisInEventConf(any())).thenReturn(true);
+        thresholdingDao.failNextSaveWith(new RuntimeException("db down"));
+
+        try (Response response = restService.createThresholdGroup(groupDto("newGroup"), adminContext())) {
+            assertEquals(500, response.getStatus());
+        }
+
+        verify(eventConfPersistenceService, times(1)).reloadEventsIntoMemory();
     }
 
     @Test

@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -73,18 +74,18 @@ public class ThresholdUeiServiceTest {
 
     @Test
     public void createsNothingWhenTheThresholdUsesTheStandardUeis() {
-        thresholdUeiService.ensureUeisInEventConf(threshold(ThresholdType.HIGH, null, null));
+        thresholdUeiService.ensureUeisInEventConf(List.of(threshold(ThresholdType.HIGH, null, null)));
 
-        verify(eventConfPersistenceService, never()).saveProgrammaticEvent(any(), anyString());
+        verify(eventConfPersistenceService, never()).saveProgrammaticEvents(any(), anyString());
     }
 
     @Test
     public void createsNothingWhenTheCustomUeiIsAlreadyKnown() {
         when(eventConfDao.getEvents(CUSTOM_TRIGGER_UEI)).thenReturn(List.of(new Event()));
 
-        thresholdUeiService.ensureUeisInEventConf(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, null));
+        thresholdUeiService.ensureUeisInEventConf(List.of(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, null)));
 
-        verify(eventConfPersistenceService, never()).saveProgrammaticEvent(any(), anyString());
+        verify(eventConfPersistenceService, never()).saveProgrammaticEvents(any(), anyString());
     }
 
     @Test
@@ -93,7 +94,7 @@ public class ThresholdUeiServiceTest {
                 .thenReturn(List.of(sourceEvent("uei.opennms.org/threshold/highThresholdExceeded:%uei%:%dsname%")));
         when(eventConfDao.getEvents(CUSTOM_TRIGGER_UEI)).thenReturn(List.of());
 
-        thresholdUeiService.ensureUeisInEventConf(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, null));
+        thresholdUeiService.ensureUeisInEventConf(List.of(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, null)));
 
         final Event created = captureSavedEvent();
         assertEquals(CUSTOM_TRIGGER_UEI, created.getUei());
@@ -106,14 +107,15 @@ public class ThresholdUeiServiceTest {
         assertEquals(Integer.valueOf(1), created.getAlarmData().getAlarmType());
         // A trigger event carries no clear key; only the rearm event clears the alarm the trigger raised.
         assertNull(created.getAlarmData().getClearKey());
-        verify(eventConfPersistenceService, times(1)).reloadEventsIntoMemory();
+        // The reload is asynchronous and reads every event, so the REST service does it once per request.
+        verify(eventConfPersistenceService, never()).reloadEventsIntoMemory();
     }
 
     @Test
     public void fallsBackToWarningDefaultsWhenTheBuiltInEventIsMissing() {
         when(eventConfDao.getEvents(anyString())).thenReturn(List.of());
 
-        thresholdUeiService.ensureUeisInEventConf(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, null));
+        thresholdUeiService.ensureUeisInEventConf(List.of(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, null)));
 
         final Event created = captureSavedEvent();
         assertEquals("Warning", created.getSeverity());
@@ -131,12 +133,12 @@ public class ThresholdUeiServiceTest {
         when(eventConfDao.getEvents(CUSTOM_TRIGGER_UEI)).thenReturn(List.of());
         when(eventConfDao.getEvents(CUSTOM_REARM_UEI)).thenReturn(List.of());
 
-        thresholdUeiService.ensureUeisInEventConf(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, CUSTOM_REARM_UEI));
+        thresholdUeiService.ensureUeisInEventConf(List.of(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, CUSTOM_REARM_UEI)));
 
-        final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
-        verify(eventConfPersistenceService, times(2)).saveProgrammaticEvent(captor.capture(), eq("Web UI"));
+        final List<Event> saved = captureSavedEvents();
+        assertEquals(2, saved.size());
 
-        final Event rearmEvent = captor.getAllValues().get(1);
+        final Event rearmEvent = saved.get(1);
         assertEquals(CUSTOM_REARM_UEI, rearmEvent.getUei());
         assertEquals("reduction:" + CUSTOM_TRIGGER_UEI + ":tail", rearmEvent.getAlarmData().getClearKey());
     }
@@ -147,9 +149,33 @@ public class ThresholdUeiServiceTest {
         when(eventConfDao.getEvents(anyString())).thenReturn(List.of());
 
         final Threshold threshold = threshold(ThresholdType.RELATIVE_CHANGE, CUSTOM_TRIGGER_UEI, null);
-        thresholdUeiService.ensureUeisInEventConf(threshold);
+        thresholdUeiService.ensureUeisInEventConf(List.of(threshold));
 
-        verify(eventConfPersistenceService, times(1)).saveProgrammaticEvent(any(), anyString());
+        assertEquals(1, captureSavedEvents().size());
+    }
+
+    @Test
+    public void savesEveryMissingUeiOfAGroupInOneCallAndOnlyOncePerUei() {
+        // eventconf does not show a new definition until the asynchronous reload, so a UEI named by two
+        // thresholds of the same group would otherwise be created twice.
+        when(eventConfDao.getEvents(anyString())).thenReturn(List.of());
+        when(eventConfPersistenceService.saveProgrammaticEvents(any(), anyString())).thenReturn(2);
+
+        final boolean created = thresholdUeiService.ensureUeisInEventConf(List.of(
+                threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, CUSTOM_REARM_UEI),
+                threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, CUSTOM_REARM_UEI)));
+
+        assertTrue(created);
+        assertEquals(List.of(CUSTOM_TRIGGER_UEI, CUSTOM_REARM_UEI),
+                captureSavedEvents().stream().map(Event::getUei).toList());
+    }
+
+    @Test
+    public void reportsNothingCreatedWhenThePersistenceLayerSkippedEverything() {
+        when(eventConfDao.getEvents(anyString())).thenReturn(List.of());
+        when(eventConfPersistenceService.saveProgrammaticEvents(any(), anyString())).thenReturn(0);
+
+        assertFalse(thresholdUeiService.ensureUeisInEventConf(List.of(threshold(ThresholdType.HIGH, CUSTOM_TRIGGER_UEI, null))));
     }
 
     @Test
@@ -180,17 +206,26 @@ public class ThresholdUeiServiceTest {
 
     @Test
     public void ignoresADefinitionWithoutAType() {
-        thresholdUeiService.ensureUeisInEventConf(null);
-        thresholdUeiService.ensureUeisInEventConf(new Threshold());
+        final List<Threshold> defs = new java.util.ArrayList<>();
+        defs.add(null);
+        defs.add(new Threshold());
 
-        verify(eventConfPersistenceService, never()).saveProgrammaticEvent(any(), anyString());
+        assertFalse(thresholdUeiService.ensureUeisInEventConf(defs));
+        verify(eventConfPersistenceService, never()).saveProgrammaticEvents(any(), anyString());
     }
 
     // ------------------------------------------------------------------ helpers
 
     private Event captureSavedEvent() {
-        final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
-        verify(eventConfPersistenceService).saveProgrammaticEvent(captor.capture(), eq("Web UI"));
+        final List<Event> saved = captureSavedEvents();
+        assertEquals(1, saved.size());
+        return saved.get(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Event> captureSavedEvents() {
+        final ArgumentCaptor<List<Event>> captor = ArgumentCaptor.forClass(List.class);
+        verify(eventConfPersistenceService, times(1)).saveProgrammaticEvents(captor.capture(), eq("Web UI"));
         return captor.getValue();
     }
 

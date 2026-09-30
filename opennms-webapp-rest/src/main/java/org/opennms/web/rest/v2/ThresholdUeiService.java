@@ -21,7 +21,10 @@
  */
 package org.opennms.web.rest.v2;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
@@ -61,14 +64,36 @@ public class ThresholdUeiService {
     private EventConfPersistenceService eventConfPersistenceService;
 
     /**
-     * Ensures eventconf knows the triggered and rearmed UEIs of the given threshold definition, creating
-     * definitions for any that are missing.
+     * Ensures eventconf knows the triggered and rearmed UEIs of the given threshold definitions, creating
+     * definitions for any that are missing. All of them are saved in one transaction.
      *
-     * <p>Call this with the mapped entity rather than the request DTO: the mapper has already dropped the
+     * <p>Call this with the mapped entities rather than the request DTOs: the mapper has already dropped the
      * rearmed UEI for the threshold types that never re-arm, so this method does not have to know about
      * that rule a second time.</p>
+     *
+     * <p>Does not reload eventconf into memory, because that happens asynchronously and is a full reload:
+     * the caller does it once per request, when this returns true.</p>
+     *
+     * @return true when at least one event definition was created
      */
-    public void ensureUeisInEventConf(final Basethresholddef def) {
+    public boolean ensureUeisInEventConf(final Collection<? extends Basethresholddef> defs) {
+        // Keyed by UEI: several thresholds of a group may name the same custom UEI, and eventconf will not
+        // show the first one's new definition until the reload, so it has to be deduplicated here.
+        final Map<String, Event> missing = new LinkedHashMap<>();
+
+        for (final Basethresholddef def : defs) {
+            collectMissingEvents(def, missing);
+        }
+
+        if (missing.isEmpty()) {
+            return false;
+        }
+
+        LOG.info("Creating event definitions for user-defined threshold UEIs {}.", missing.keySet());
+        return eventConfPersistenceService.saveProgrammaticEvents(List.copyOf(missing.values()), AUTHOR) > 0;
+    }
+
+    private void collectMissingEvents(final Basethresholddef def, final Map<String, Event> missing) {
         if (def == null || def.getType() == null) {
             return;
         }
@@ -81,13 +106,13 @@ public class ThresholdUeiService {
             if (source != null && source.getAlarmData() != null && source.getAlarmData().getReductionKey() != null) {
                 clearKey = source.getAlarmData().getReductionKey().replace("%uei%", triggeredUei);
             }
-            ensureUeiInEventConf(source, triggeredUei, def.getType(), null, true);
+            addIfMissing(missing, source, triggeredUei, def.getType(), null, true);
         }
 
         final String rearmedUei = def.getRearmedUEI().orElse(null);
         if (rearmedUei != null) {
             final Event source = getSourceEvent(def.getType(), false);
-            ensureUeiInEventConf(source, rearmedUei, def.getType(), clearKey, false);
+            addIfMissing(missing, source, rearmedUei, def.getType(), clearKey, false);
         }
     }
 
@@ -128,8 +153,11 @@ public class ThresholdUeiService {
         return null;
     }
 
-    private void ensureUeiInEventConf(final Event source, final String targetUei, final ThresholdType thresholdType,
-                                      final String clearKey, final boolean isTrigger) {
+    private void addIfMissing(final Map<String, Event> missing, final Event source, final String targetUei,
+                              final ThresholdType thresholdType, final String clearKey, final boolean isTrigger) {
+        if (missing.containsKey(targetUei)) {
+            return;
+        }
         final List<Event> eventsForUei = eventConfDao.getEvents(targetUei);
         if (eventsForUei != null && !eventsForUei.isEmpty()) {
             return;
@@ -170,8 +198,6 @@ public class ThresholdUeiService {
             }
         }
 
-        LOG.info("Creating event definition for user-defined threshold UEI {}.", targetUei);
-        eventConfPersistenceService.saveProgrammaticEvent(event, AUTHOR);
-        eventConfPersistenceService.reloadEventsIntoMemory();
+        missing.put(targetUei, event);
     }
 }

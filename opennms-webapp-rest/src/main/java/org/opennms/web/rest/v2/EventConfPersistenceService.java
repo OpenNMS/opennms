@@ -115,25 +115,50 @@ public class EventConfPersistenceService {
     }
 
     /**
-     * Saves an event into the source reserved for programmatically generated event definitions, creating
-     * that source on first use.
+     * Saves events into the source reserved for programmatically generated event definitions, in one
+     * transaction, creating that source on first use.
      *
      * <p>Used when a threshold names a triggered or rearmed UEI that eventconf does not know yet: without a
      * definition the daemon would emit an event that raises no alarm and fires no notification, silently.
      * Moved here from the JSP threshold editor's own service, which had no other consumer.</p>
      *
-     * @param event the event definition to store
-     * @param username the user the event is attributed to
+     * <p>An event whose UEI the source already holds is skipped. Callers decide what is missing from the
+     * in-memory eventconf, which only catches up once the asynchronous {@link #reloadEventsIntoMemory()}
+     * has run, so without this check two saves in quick succession would both add the same UEI.</p>
+     *
+     * <p>Does not reload: the caller reloads once, after this transaction has committed.</p>
+     *
+     * @param events the event definitions to store
+     * @param username the user the events are attributed to
+     * @return the number of events actually saved
      */
     @Transactional
-    public void saveProgrammaticEvent(final Event event, final String username) {
-        // Lock (and re-read) the source before appending, so the count below is not a lost update
-        final EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreateProgrammaticSource().getId());
-        EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, new Date());
+    public int saveProgrammaticEvents(final List<Event> events, final String username) {
+        if (events == null || events.isEmpty()) {
+            return 0;
+        }
 
-        // Update event count from the table, under the lock
-        source.setEventCount(eventConfEventDao.countBySourceId(source.getId()));
-        eventConfSourceDao.save(source);
+        // Lock (and re-read) the source before appending: serializes concurrent callers for the UEI check
+        // below, and keeps the count from being a lost update
+        final EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreateProgrammaticSource().getId());
+        final Date now = new Date();
+
+        int saved = 0;
+        for (final Event event : events) {
+            if (!eventConfEventDao.findByUeiAndSourceId(event.getUei(), source.getId()).isEmpty()) {
+                LOG.debug("Programmatic event source already holds {}, not adding it again.", event.getUei());
+                continue;
+            }
+            EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, now);
+            saved++;
+        }
+
+        if (saved > 0) {
+            // Update event count from the table, under the lock
+            source.setEventCount(eventConfEventDao.countBySourceId(source.getId()));
+            eventConfSourceDao.save(source);
+        }
+        return saved;
     }
 
     private EventConfSource getOrCreateProgrammaticSource() {
