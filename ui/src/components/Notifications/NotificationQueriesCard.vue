@@ -46,25 +46,21 @@
             @clear="clearUserSearch"
           />
         </div>
+        <!-- Not a query: Enter opens that notification's detail page, so this is a
+             plain label and takes no part in the selection above. -->
         <div class="query-search">
-          <OnmsSelectButton
-            :modelValue="mode"
-            :options="notificationIdOptions"
-            optionLabel="label"
-            optionValue="value"
-            aria-label="View details for ID"
-            data-test="query-notification-id"
-            @update:modelValue="onModeChange"
-          />
+          <label
+            for="notification-id-search"
+            class="query-search-label"
+            data-test="notification-id-label"
+          >View details for ID:</label>
           <OnmsSearchInput
-            ref="notificationIdInput"
             v-model="notificationIdSearch"
             class="query-search-input"
             inputId="notification-id-search"
             placeholder="Notification ID"
             ariaLabel="Notification ID"
             dataTest="notification-id-search-input"
-            @focusin="selectMode('notificationId')"
             @keyup.enter="goToNotification"
           />
         </div>
@@ -85,10 +81,9 @@ import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { NotificationQueryPreset } from '@/types/notifications'
 
-// The three select buttons act as one choice: each is bound to `mode` and only
-// shows a selection when `mode` is one of its own options. 'notificationId' is
-// local to this card: it jumps to a detail page rather than querying the table.
-type QueryMode = NotificationQueryPreset | 'notificationId'
+// The preset and user-search select buttons act as one choice: each is bound to
+// `mode` and only shows a selection when `mode` is one of its own options.
+type QueryMode = NotificationQueryPreset
 
 interface QueryModeOption {
   label: string
@@ -97,7 +92,7 @@ interface QueryModeOption {
 
 const menuStore = useMenuStore()
 const store = useNotificationsStore()
-const { withSpinner, report } = useActionFeedback()
+const { withSpinner, report, showError } = useActionFeedback()
 
 const applyPreset = async (preset: NotificationQueryPreset, user?: string) => {
   report(await withSpinner(() => store.applyPreset(preset, user)))
@@ -123,14 +118,12 @@ const presetOptions: QueryModeOption[] = [
   { label: 'All acknowledged notifications', value: 'allAcknowledged' }
 ]
 const userSearchOptions: QueryModeOption[] = [{ label: 'Notifications for user:', value: 'userSearch' }]
-const notificationIdOptions: QueryModeOption[] = [{ label: 'View details for ID:', value: 'notificationId' }]
 
 const mode = ref<QueryMode>(store.preset)
 const userSearch = ref(store.preset === 'userSearch' ? store.userFilter ?? '' : '')
 const notificationIdSearch = ref('')
 
 const userSearchInput = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
-const notificationIdInput = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
 
 // Follow preset changes made elsewhere (e.g. the top-bar bell deep link).
 watch(() => store.preset, (preset) => {
@@ -143,14 +136,12 @@ const onModeChange = (value: unknown) => {
   if (mode.value === 'userSearch') {
     // the search itself runs from the button's click handler (runUserSearch)
     userSearchInput.value?.focus()
-  } else if (mode.value === 'notificationId') {
-    notificationIdInput.value?.focus()
   } else {
     applyPreset(mode.value)
   }
 }
 
-// Clicking or tabbing into a search field selects its button. It only selects:
+// Clicking or tabbing into the user field selects its button. It only selects:
 // a user search already typed there runs on Enter, not on focus.
 const selectMode = (value: QueryMode) => {
   mode.value = value
@@ -174,11 +165,20 @@ const clearUserSearch = () => {
   applyPreset('userSearch')
 }
 
+// notification ids are positive integers; anything else would only reach the
+// legacy detail page as an error (leading zeros are fine: "007" is notice 7)
+const isNotificationId = (value: string) => /^\d+$/.test(value) && Number(value) > 0
+
 const goToNotification = () => {
-  const notification = notificationIdSearch.value.trim()
-  if (notification) {
-    window.location.href = `${baseHref.value}notification/detail.jsp?notice=${encodeURIComponent(notification)}`
+  const id = notificationIdSearch.value.trim()
+  if (!id) {
+    return
   }
+  if (!isNotificationId(id)) {
+    showError('Enter a notification ID as a positive whole number, e.g. 42.')
+    return
+  }
+  window.location.href = `${baseHref.value}notification/detail.jsp?notice=${Number(id)}`
 }
 </script>
 
@@ -214,6 +214,14 @@ const goToNotification = () => {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+
+  // same text as the select-button labels beside it, but plainly not a button
+  // (a global label rule would otherwise shrink it to 14px)
+  .query-search-label {
+    padding: 0 0.5rem;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
 
   // User and notification IDs are short; ~20 characters plus the search and
   // clear glyphs is plenty.

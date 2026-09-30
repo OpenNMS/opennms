@@ -55,7 +55,6 @@ describe('NotificationQueriesCard', () => {
 
     expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
     expect(pressed(wrapper, 'query-user-search')).toEqual([])
-    expect(pressed(wrapper, 'query-notification-id')).toEqual([])
   })
 
   it('applies a preset when one is chosen', async () => {
@@ -120,7 +119,7 @@ describe('NotificationQueriesCard', () => {
     expect(store.applyPreset).toHaveBeenCalledTimes(1)
   })
 
-  it('focusing a search field selects its button without searching', async () => {
+  it('focusing the user field selects its button without searching', async () => {
     mountCard()
     await wrapper.find('#notification-user-search').setValue('operator')
 
@@ -129,11 +128,20 @@ describe('NotificationQueriesCard', () => {
     expect(pressed(wrapper, 'query-user-search')).toEqual(['Notifications for user:'])
     expect(pressed(wrapper, 'query-presets')).toEqual([])
     expect(store.applyPreset).not.toHaveBeenCalled()
+  })
 
+  it('"View details for ID:" is a plain label, not part of the selection', async () => {
+    mountCard()
+    const label = wrapper.find('[data-test="notification-id-label"]')
+
+    expect(label.element.tagName).toBe('LABEL')
+    expect(label.attributes('for')).toBe('notification-id-search')
+    expect(label.find('button').exists()).toBe(false)
+
+    // focusing the id field changes neither the highlight nor the query
     await wrapper.find('#notification-id-search').trigger('focusin')
-
-    expect(pressed(wrapper, 'query-notification-id')).toEqual(['View details for ID:'])
-    expect(pressed(wrapper, 'query-user-search')).toEqual([])
+    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
+    expect(store.applyPreset).not.toHaveBeenCalled()
   })
 
   it('searches for the trimmed user id on Enter', async () => {
@@ -161,29 +169,67 @@ describe('NotificationQueriesCard', () => {
     expect(pressed(wrapper, 'query-user-search')).toEqual(['Notifications for user:'])
   })
 
-  it('opens the notification detail page on Enter in the id field', async () => {
-    const assigned: string[] = []
+  describe('View details for ID', () => {
     const original = window.location
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: {
-        ...original,
-        set href(url: string) {
-          assigned.push(url)
-        }
-      }
-    })
-    try {
-      mountCard()
-      const input = wrapper.find('#notification-id-search')
-      await input.setValue(' 42 ')
+    let assigned: string[]
 
+    beforeEach(() => {
+      assigned = []
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: {
+          ...original,
+          set href(url: string) {
+            assigned.push(url)
+          }
+        }
+      })
+    })
+
+    afterEach(() => {
+      Object.defineProperty(window, 'location', { configurable: true, value: original })
+    })
+
+    const enterId = async (value: string) => {
+      const input = wrapper.find('#notification-id-search')
+      await input.setValue(value)
       await input.trigger('keyup', { key: 'Enter' })
+    }
+
+    it('opens the detail page for a positive integer id (trimmed)', async () => {
+      mountCard()
+
+      await enterId(' 42 ')
 
       expect(assigned).toEqual(['http://localhost:8980/opennms/notification/detail.jsp?notice=42'])
-    } finally {
-      Object.defineProperty(window, 'location', { configurable: true, value: original })
-    }
+      expect(showSnackBar).not.toHaveBeenCalled()
+    })
+
+    it.each(['0', '00', '-1', '1.5', 'abc', '12a', '1e3', '+5'])('rejects "%s" with an error and does not navigate', async (value) => {
+      mountCard()
+
+      await enterId(value)
+
+      expect(assigned).toEqual([])
+      expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Enter a notification ID as a positive whole number, e.g. 42.', error: true })
+    })
+
+    it('accepts leading zeros as the same id', async () => {
+      mountCard()
+
+      await enterId('007')
+
+      expect(assigned).toEqual(['http://localhost:8980/opennms/notification/detail.jsp?notice=7'])
+    })
+
+    it('ignores Enter on an empty field', async () => {
+      mountCard()
+
+      await enterId('   ')
+
+      expect(assigned).toEqual([])
+      expect(showSnackBar).not.toHaveBeenCalled()
+    })
   })
 
   it('refresh re-runs the current query', async () => {

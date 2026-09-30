@@ -31,9 +31,10 @@
             You may also search for notifications associated with a specific user ID by selecting
             <strong>Notifications for user:</strong> and entering that user ID in the box beside it.
             And finally, you can jump immediately to a page with details specific to a given
-            notification identifier by selecting <strong>View details for ID:</strong> and
-            entering that numeric identifier. Note that this is particularly useful if you are using a
-            numeric paging service and receive the numeric notification identifier as part of the page.
+            notification identifier by entering that numeric identifier in the
+            <strong>View details for ID:</strong> box and pressing Enter. Note that this is particularly
+            useful if you are using a numeric paging service and receive the numeric notification
+            identifier as part of the page.
           </p>
         </div>
         <div class="explanation-section">
