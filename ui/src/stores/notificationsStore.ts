@@ -83,16 +83,21 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding')
   const missingUser = computed<boolean>(() => needsUser.value && !effectiveUser.value && !effectiveExcludeUser.value)
 
+  // Loads can overlap (preset buttons, Refresh, paging); only the latest may
+  // write the table, or a slow earlier response could land under a newer
+  // preset's title. Every call, including the ones that return without
+  // querying, supersedes any request still in flight.
+  let latestLoad = 0
+
   const load = async (): Promise<ValidationResult> => {
-    if (awaitingUser.value) {
+    const thisLoad = ++latestLoad
+    if (awaitingUser.value || missingUser.value) {
       notifications.value = []
       totalCount.value = 0
-      return createSuccessResponse()
-    }
-    if (missingUser.value) {
-      notifications.value = []
-      totalCount.value = 0
-      return createFailureResult('Cannot determine the current user; showing no notifications. Reload the page to retry.')
+      loading.value = false
+      return awaitingUser.value
+        ? createSuccessResponse()
+        : createFailureResult('Cannot determine the current user; showing no notifications. Reload the page to retry.')
     }
     loading.value = true
     try {
@@ -103,12 +108,18 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
         limit: rows.value,
         offset: first.value
       })
+      if (thisLoad !== latestLoad) {
+        // superseded: a newer load owns the table (and any message to show)
+        return createSuccessResponse()
+      }
       // a failed load clears the table rather than leaving stale rows
       notifications.value = result.payload?.notifications ?? []
       totalCount.value = result.payload?.totalCount ?? 0
       return result
     } finally {
-      loading.value = false
+      if (thisLoad === latestLoad) {
+        loading.value = false
+      }
     }
   }
 

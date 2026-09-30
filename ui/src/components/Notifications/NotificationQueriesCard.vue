@@ -31,6 +31,7 @@
             aria-label="Notifications for user"
             data-test="query-user-search"
             @update:modelValue="onModeChange"
+            @click="runUserSearch"
           />
           <OnmsSearchInput
             ref="userSearchInput"
@@ -41,7 +42,7 @@
             ariaLabel="User ID"
             dataTest="user-search-input"
             @focusin="selectMode('userSearch')"
-            @keyup.enter="searchByUser"
+            @keyup.enter="runUserSearch"
             @clear="clearUserSearch"
           />
         </div>
@@ -102,7 +103,14 @@ const applyPreset = async (preset: NotificationQueryPreset, user?: string) => {
   report(await withSpinner(() => store.applyPreset(preset, user)))
 }
 
+// Refresh runs what is highlighted: focusing the user field can highlight user
+// search before any search has run, and re-running the previous preset under
+// that highlight would show one query while claiming another.
 const refresh = async () => {
+  if (mode.value === 'userSearch') {
+    runUserSearch()
+    return
+  }
   report(await withSpinner(() => store.load()))
 }
 
@@ -133,8 +141,7 @@ const onModeChange = (value: unknown) => {
   mode.value = value as QueryMode
 
   if (mode.value === 'userSearch') {
-    // Re-run a search that was already typed; otherwise wait for Enter.
-    searchByUser()
+    // the search itself runs from the button's click handler (runUserSearch)
     userSearchInput.value?.focus()
   } else if (mode.value === 'notificationId') {
     notificationIdInput.value?.focus()
@@ -149,12 +156,17 @@ const selectMode = (value: QueryMode) => {
   mode.value = value
 }
 
-const searchByUser = () => {
-  const user = userSearch.value.trim()
-  if (user) {
-    applyPreset('userSearch', user)
-  }
+// Run user search for whatever is typed; with nothing typed, enter the
+// awaiting-user state (same as Clear), so the table and its title match the
+// highlight instead of still showing the previous preset. Bound to the button's
+// native click rather than its selection change: a button already highlighted
+// by focusing its field emits no selection change when clicked. (A keyboard
+// Enter/Space on the button is a native click too.)
+const runUserSearch = () => {
+  mode.value = 'userSearch'
+  applyPreset('userSearch', userSearch.value.trim() || undefined)
 }
+
 
 // Clearing keeps user search selected and waits for a new ID, rather than
 // leaving the previous user's results on screen.

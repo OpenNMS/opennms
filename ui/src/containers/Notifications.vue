@@ -40,7 +40,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
-import { whenever } from '@vueuse/core'
+import { useEventListener, whenever } from '@vueuse/core'
 
 import NotificationsTable from '@/components/Notifications/NotificationsTable.vue'
 import NotificationsHelpDialog from '@/components/Notifications/NotificationsHelpDialog.vue'
@@ -49,6 +49,7 @@ import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
+import { SAME_PAGE_NAVIGATION_EVENT } from '@/lib/navigation'
 import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNotificationsStore } from '@/stores/notificationsStore'
@@ -101,6 +102,14 @@ onMounted(() => {
 // Clicking a bell link while already on this page only changes the hash query,
 // so the component is not remounted — re-apply the preset when it changes.
 watch(() => route.query.preset, () => {
+  if (authLoaded.value) {
+    initialLoad()
+  }
+})
+
+// ...and re-clicking the link for the preset already showing leaves the hash
+// unchanged, so the watch above never fires; the menu signals it instead.
+useEventListener(window, SAME_PAGE_NAVIGATION_EVENT, () => {
   if (authLoaded.value) {
     initialLoad()
   }

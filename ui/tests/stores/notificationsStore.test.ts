@@ -62,6 +62,58 @@ describe('useNotificationsStore', () => {
   })
 
   describe('load', () => {
+    // resolve browseNotifications calls by hand, in any order
+    const deferredBrowse = () => {
+      const pending: Array<(value: unknown) => void> = []
+      vi.mocked(API.browseNotifications).mockImplementation(() => new Promise(resolve => pending.push(resolve as (value: unknown) => void)) as never)
+      return pending
+    }
+    const acked = [{ ...mockNotifications[0], id: 99, ackUser: 'admin' }]
+
+    it('drops a slower earlier response that lands after a newer load', async () => {
+      const pending = deferredBrowse()
+
+      const first = store.applyPreset('allAcknowledged')
+      const second = store.applyPreset('yourOutstanding')
+      // the newer request answers first, then the older one arrives late
+      pending[1](loaded(mockResult))
+      await second
+      pending[0](loaded({ notifications: acked, totalCount: 1 }))
+      await first
+
+      expect(store.title).toBe('Your Outstanding Notifications')
+      expect(store.notifications).toEqual(mockNotifications)
+      expect(store.totalCount).toBe(5)
+      expect(store.loading).toBe(false)
+    })
+
+    it('a stale response cannot overwrite a load that returned without querying', async () => {
+      const pending = deferredBrowse()
+
+      const first = store.applyPreset('allAcknowledged')
+      await store.applyPreset('userSearch') // awaiting a user: clears the table, no request
+      pending[0](loaded({ notifications: acked, totalCount: 1 }))
+      await first
+
+      expect(store.notifications).toEqual([])
+      expect(store.totalCount).toBe(0)
+      expect(store.loading).toBe(false)
+    })
+
+    it('keeps loading true until the latest request finishes', async () => {
+      const pending = deferredBrowse()
+
+      const first = store.load()
+      const second = store.load()
+      pending[0](loaded(mockResult))
+      await first
+      expect(store.loading).toBe(true)
+
+      pending[1](loaded(mockResult))
+      await second
+      expect(store.loading).toBe(false)
+    })
+
     it('should query outstanding notifications for the current user', async () => {
       vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 

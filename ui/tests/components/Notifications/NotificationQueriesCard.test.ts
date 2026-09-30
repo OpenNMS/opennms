@@ -67,15 +67,16 @@ describe('NotificationQueriesCard', () => {
     expect(pressed(wrapper, 'query-presets')).toEqual(['All acknowledged notifications'])
   })
 
-  it('choosing user search deselects the presets and waits for a user id', async () => {
+  it('choosing user search with nothing typed enters the awaiting-user state, like Clear', async () => {
     mountCard()
 
     await clickOption(wrapper, 'query-user-search', 'Notifications for user:')
 
     expect(pressed(wrapper, 'query-user-search')).toEqual(['Notifications for user:'])
     expect(pressed(wrapper, 'query-presets')).toEqual([])
-    // nothing typed yet, so nothing to search for
-    expect(store.applyPreset).not.toHaveBeenCalled()
+    // the store (and so the table, title and Refresh) now matches the highlight
+    // instead of still showing the previous preset
+    expect(store.applyPreset).toHaveBeenCalledWith('userSearch', undefined)
   })
 
   it('choosing user search re-runs a user id that is already typed', async () => {
@@ -85,6 +86,38 @@ describe('NotificationQueriesCard', () => {
     await clickOption(wrapper, 'query-user-search', 'Notifications for user:')
 
     expect(store.applyPreset).toHaveBeenCalledWith('userSearch', 'operator')
+  })
+
+  it('clicking user search after focus already highlighted it still runs it (no stale preset under the highlight)', async () => {
+    mountCard()
+    await wrapper.find('#notification-user-search').trigger('focusin')
+    expect(pressed(wrapper, 'query-user-search')).toEqual(['Notifications for user:'])
+    expect(store.applyPreset).not.toHaveBeenCalled()
+
+    await clickOption(wrapper, 'query-user-search', 'Notifications for user:')
+
+    expect(store.applyPreset).toHaveBeenCalledTimes(1)
+    expect(store.applyPreset).toHaveBeenCalledWith('userSearch', undefined)
+  })
+
+  it('refresh runs user search when that is highlighted, not the previous preset', async () => {
+    mountCard()
+    await wrapper.find('#notification-user-search').setValue('operator')
+    await wrapper.find('#notification-user-search').trigger('focusin')
+
+    await wrapper.find('[data-test="query-refresh-button"]').trigger('click')
+    await flushPromises()
+
+    expect(store.applyPreset).toHaveBeenCalledWith('userSearch', 'operator')
+    expect(store.load).not.toHaveBeenCalled()
+  })
+
+  it('choosing a not-yet-highlighted user search runs it once', async () => {
+    mountCard()
+
+    await clickOption(wrapper, 'query-user-search', 'Notifications for user:')
+
+    expect(store.applyPreset).toHaveBeenCalledTimes(1)
   })
 
   it('focusing a search field selects its button without searching', async () => {

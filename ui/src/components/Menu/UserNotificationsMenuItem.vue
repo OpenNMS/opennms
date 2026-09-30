@@ -133,6 +133,7 @@ import IconGroup from '@opennms/onms-ui/icons/action/Group.vue'
 import IconNotificationsOff from '@opennms/onms-ui/icons/notification/NotificationsOff.vue'
 import IconNotificationSelected from '@opennms/onms-ui/icons/notification/NotificationSelected.vue'
 import IconPerson from '@opennms/onms-ui/icons/action/Person.vue'
+import { navigateTo } from '@/lib/navigation'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
@@ -258,8 +259,9 @@ const computeLink = (url: string) => {
 }
 
 const onMenuItemClick = (url: string) => {
-  const link = computeLink(url)
-  window.location.assign(link)
+  // re-clicking the link for the page already open (e.g. a preset of the
+  // Notifications page) refreshes that page instead of doing nothing
+  navigateTo(computeLink(url))
 }
 
 const formatPageTime = (pageTime: OnmsNotification['pageTime']) => {
