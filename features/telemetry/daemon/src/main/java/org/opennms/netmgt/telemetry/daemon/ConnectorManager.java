@@ -84,7 +84,7 @@ public class ConnectorManager {
     // Connectors whose configuration was handed to the publisher, whether or not publishing it succeeded yet
     private final Set<ConnectorKey> activeConnectors = new HashSet<>();
 
-    // Services whose connector configuration failed to build; retried with the next update of their package
+    // Services whose connector configuration failed to build; retried only when the tracker next reports a change for their package
     private final Map<ConnectorKey, ServiceRef> failedBuilds = new LinkedHashMap<>();
 
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
@@ -128,7 +128,7 @@ public class ConnectorManager {
                     activeConnectors.add(key);
                     LOG.debug("Starting connector for: {}", key);
                 } catch (RuntimeException e) {
-                    LOG.error("Failed to build config for connector: {}. Will retry with the next update.", key, e);
+                    LOG.error("Failed to build config for connector: {}. Will retry with the next change for this package.", key, e);
                     failedBuilds.put(key, serviceRef);
                 }
             });
@@ -144,7 +144,7 @@ public class ConnectorManager {
     }
 
     private void publish(Map<String, LocationChanges> changesByLocation) {
-        // A failed publish keeps its changes in the location's publisher, which sends them with its next publish
+        // A failed publish keeps its changes in the location's publisher; they are only sent with the next change at that location
         changesByLocation.forEach((location, changes) -> {
             try {
                 openConfigTwinPublisher.publishConfigs(location, changes.addedConfigs, changes.removedKeys, changes.queueName);

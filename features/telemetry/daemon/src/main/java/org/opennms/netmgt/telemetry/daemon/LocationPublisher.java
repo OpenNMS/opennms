@@ -63,7 +63,7 @@ public class LocationPublisher {
     /**
      * Applies all removals and additions, then publishes the resulting configuration once.
      * Nothing is published when the call changes nothing and no earlier publish is pending.
-     * The changes are kept even when publishing fails, and are published with the next update.
+     * The changes are kept even when publishing fails, and are only published with the next update for this location.
      */
     public void updateConfigsAndPublish(Collection<ConnectorTwinConfig.ConnectorConfig> added,
                                         Collection<String> removedConnectionKeys) throws IOException {
