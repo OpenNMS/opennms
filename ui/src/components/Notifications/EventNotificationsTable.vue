@@ -8,7 +8,7 @@
         @click="openEditor(null)"
       >
         <OnmsIcon :icon="AddIcon" />
-        Add New Event Notification
+        Add Event Notification
       </OnmsButton>
     </div>
 
@@ -101,10 +101,6 @@
       />
     </div>
   </TableCard>
-  <EventNotificationEditorDialog
-    v-model:visible="showEditor"
-    :notification="notificationToEdit"
-  />
   <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Event Notification"
@@ -133,25 +129,23 @@ import {
   OnmsTag
 } from '@opennms/onms-ui'
 
-import EventNotificationEditorDialog from '@/components/AdminNotifications/EventNotificationEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import AddIcon from '@opennms/onms-ui/icons/action/Add.vue'
 import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { EventNotification } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
+const { withSpinner, report, showError, showSuccess } = useActionFeedback()
 
-const showEditor = ref(false)
-const notificationToEdit = ref<EventNotification | null>(null)
 const showDeleteConfirmation = ref(false)
 
 const openEditor = (notification: EventNotification | null) => {
-  notificationToEdit.value = notification
-  showEditor.value = true
+  store.openEventNotificationEditor(notification)
 }
 const notificationToDelete = ref<EventNotification | null>(null)
 // Guards against a second click racing the in-flight status update.
@@ -187,8 +181,13 @@ const onToggle = async (notification: EventNotification, value: boolean) => {
     return
   }
   pendingName.value = notification.name
+  const status = value ? 'on' : 'off'
   try {
-    await store.setEventNotificationStatus(notification.name, value ? 'on' : 'off')
+    if (await withSpinner(() => store.setEventNotificationStatus(notification.name, status))) {
+      showSuccess(`Event notification '${notification.name}' turned ${status}.`)
+    } else {
+      showError(`Failed to update event notification '${notification.name}'.`)
+    }
   } finally {
     pendingName.value = null
   }
@@ -201,7 +200,8 @@ const askDelete = (notification: EventNotification) => {
 
 const confirmDelete = async () => {
   if (notificationToDelete.value) {
-    await store.deleteEventNotification(notificationToDelete.value.name)
+    const name = notificationToDelete.value.name
+    report(await withSpinner(() => store.deleteEventNotification(name)), `Event notification '${name}' deleted.`)
   }
   showDeleteConfirmation.value = false
   notificationToDelete.value = null

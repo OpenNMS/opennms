@@ -1,55 +1,19 @@
 <template>
   <div class="path-outages-tab">
-    <p class="intro">
-      Define a critical path for a group of nodes so node-down notifications are suppressed when
-      the critical path is unreachable. The rule selects the nodes; leaving the IP address blank
-      clears the critical path for the matching nodes.
-    </p>
-
-    <TogglePanel
-      :collapsed="helpCollapsed"
-      class="help-panel"
-      data-test="path-outages-help"
-      @update:collapsed="(value: boolean) => (helpCollapsed = value)"
-    >
-      <template #header>
-        <span class="help-header">
-          <i class="pi pi-question-circle" aria-hidden="true" />
-          About Critical Paths and Filter Rules
-        </span>
-      </template>
-      <div class="help-content">
-        <div class="help-section">
-          <div class="section-title">Critical Path IP Address</div>
-          <p>
-            Enter the critical path IP address in xxx.xxx.xxx.xxx or
-            xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx format. Or leave it blank to clear previously
-            set paths for the nodes matching the rule. The critical path service is typically ICMP,
-            and at this time ICMP is the only critical path service supported.
-          </p>
-        </div>
-        <div class="help-section">
-          <div class="section-title">Node Filter Rule</div>
-          <p>
-            Filtering on TCP/IP address uses a very flexible format, allowing you to separate the
-            four octets (fields) of a TCP/IP address into specific searches. An asterisk (*) in
-            place of any octet matches any value for that octet. Ranges are indicated by two
-            numbers separated by a dash (-), and commas are used for list demarcation.
-          </p>
-          <p>The following examples are all valid and yield the set of addresses from 192.168.0.0 through 192.168.3.255:</p>
-          <ul>
-            <li><code>192.168.0-3.*</code></li>
-            <li><code>192.168.0-3.0-255</code></li>
-            <li><code>192.168.0,1,2,3.*</code></li>
-          </ul>
-          <p>
-            To use a rule based on TCP/IP addresses as described above, enter
-            <code>IPADDR IPLIKE *.*.*.*</code> substituting your desired address fields for
-            <code>*.*.*.*</code>. Otherwise, you may enter any valid rule.
-          </p>
-        </div>
-      </div>
-    </TogglePanel>
+    <div class="intro-row">
+      <p class="intro">
+        Define a critical path for a group of nodes so that node-down notifications are suppressed
+        when the critical path is unreachable.
+      </p>
+      <OnmsIconButton
+        variant="text"
+        :icon="InfoIcon"
+        tooltip="About path outages"
+        aria-label="About path outages"
+        data-test="path-outages-help-button"
+        @click="showHelp = true"
+      />
+    </div>
 
     <div class="form-row">
       <FormField
@@ -91,6 +55,8 @@
           data-test="rule-input"
         />
       </FormField>
+    </div>
+    <div class="form-actions">
       <OnmsButton
         variant="outlined"
         label="Preview Matching Nodes"
@@ -112,8 +78,9 @@
       class="preview-result"
       data-test="preview-result"
     >
-      <strong>{{ previewResult.totalCount }}</strong> node{{ previewResult.totalCount === 1 ? '' : 's' }} match the rule<span v-if="previewResult.totalCount > previewResult.nodes.length"> (showing first {{ previewResult.nodes.length }})</span>:
-      <div class="node-chips">
+      <!-- "1 node matches", "N nodes match"; the colon and chip list only when there is something to list -->
+      <strong>{{ previewResult.totalCount }}</strong> node{{ previewResult.totalCount === 1 ? ' matches' : 's match' }} the rule<span v-if="previewResult.totalCount > previewResult.nodes.length"> (showing first {{ previewResult.nodes.length }})</span><template v-if="previewResult.totalCount > 0">:</template>
+      <div v-if="previewResult.nodes.length" class="node-chips">
         <OnmsChip
           v-for="node in previewResult.nodes"
           :key="node.nodeId"
@@ -154,10 +121,9 @@
         />
         <OnmsColumn header="Actions">
           <template #body="{ data }">
-            <OnmsButton
-              variant="text"
-              label="Remove"
-              severity="danger"
+            <OnmsIconButton
+              :icon="DeleteIcon"
+              tooltip="Remove"
               :aria-label="`Remove critical path for ${data.nodeLabel ?? data.nodeId}`"
               data-test="remove-path-outage-button"
               @click="askRemove(data)"
@@ -174,6 +140,55 @@
     </div>
   </div>
 
+  <OnmsMessageDialog
+    :visible="showHelp"
+    :relative="true"
+    maxWidth="50em"
+    maxHeight="80vh"
+    title="Path Outages"
+    data-test="path-outages-help"
+    @close="showHelp = false"
+  >
+    <template #content>
+      <div class="help-content">
+        <p>
+          Define a critical path for a group of nodes so that node-down notifications are suppressed
+          when the critical path is unreachable. The rule selects the nodes; leaving the IP address
+          blank clears the critical path for the matching nodes.
+        </p>
+        <div class="help-heading">About Critical Paths and Filter Rules</div>
+        <div class="help-section">
+          <div class="section-title">Critical Path IP Address</div>
+          <p>
+            Enter the critical path IP address in xxx.xxx.xxx.xxx or
+            xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx format. Or leave it blank to clear previously
+            set paths for the nodes matching the rule. The critical path service is typically ICMP,
+            and at this time ICMP is the only critical path service supported.
+          </p>
+        </div>
+        <div class="help-section">
+          <div class="section-title">Node Filter Rule</div>
+          <p>
+            Filtering on TCP/IP address uses a very flexible format, allowing you to separate the
+            four octets (fields) of a TCP/IP address into specific searches. An asterisk (*) in
+            place of any octet matches any value for that octet. Ranges are indicated by two
+            numbers separated by a dash (-), and commas are used for list demarcation.
+          </p>
+          <p>The following examples are all valid and yield the set of addresses from 192.168.0.0 through 192.168.3.255:</p>
+          <ul>
+            <li><code>192.168.0-3.*</code></li>
+            <li><code>192.168.0-3.0-255</code></li>
+            <li><code>192.168.0,1,2,3.*</code></li>
+          </ul>
+          <p>
+            To use a rule based on TCP/IP addresses as described above, enter
+            <code>IPADDR IPLIKE *.*.*.*</code> substituting your desired address fields for
+            <code>*.*.*.*</code>. Otherwise, you may enter any valid rule.
+          </p>
+        </div>
+      </div>
+    </template>
+  </OnmsMessageDialog>
   <OnmsConfirmationDialog
     :visible="showApplyConfirmation"
     :title="criticalIp.trim() ? 'Apply Critical Path' : 'Clear Critical Path'"
@@ -208,21 +223,24 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsConfirmationDialog, OnmsButton, OnmsChip, OnmsColumn, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
+import { OnmsConfirmationDialog, OnmsButton, OnmsChip, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsMessageDialog, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
-import TogglePanel from '@/components/Common/TogglePanel.vue'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { PathOutage, PathOutagePreview } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
+const { withSpinner, report } = useActionFeedback()
 
 // ICMP is the only supported critical path service (matches the legacy wizard).
 const serviceOptions = ['ICMP']
 
-const helpCollapsed = ref(true)
+const showHelp = ref(false)
 const criticalIp = ref('')
 const criticalSvc = ref('ICMP')
 const rule = ref('')
@@ -276,19 +294,24 @@ const emptyListContent = {
   msg: 'No critical paths configured.'
 }
 
+// A rule the server can't evaluate marks the rule field invalid as well as
+// showing the server's reason.
+const runPreview = async (): Promise<PathOutagePreview | null> => {
+  const result = await withSpinner(() => store.previewPathOutageRule(rule.value.trim()))
+  ruleError.value = !report(result)
+  previewResult.value = result.payload ?? null
+  return previewResult.value
+}
+
 const preview = async () => {
-  const result = await store.previewPathOutageRule(rule.value.trim())
-  ruleError.value = result === null
-  previewResult.value = result
+  await runPreview()
 }
 
 const askApply = async () => {
-  const result = await store.previewPathOutageRule(rule.value.trim())
+  const result = await runPreview()
   if (!result) {
-    ruleError.value = true
     return
   }
-  previewResult.value = result
   // applying: every node matching the rule gets the critical path. The clear case
   // affects an unknown subset (only nodes that already have a path) and the server
   // caps the preview node list, so its confirmation shows no count.
@@ -298,12 +321,13 @@ const askApply = async () => {
 
 const confirmApply = async () => {
   showApplyConfirmation.value = false
-  const ok = await store.applyPathOutage({
+  const criticalPathIp = criticalIp.value.trim() || undefined
+  const result = await withSpinner(() => store.applyPathOutage({
     rule: rule.value.trim(),
-    criticalIp: criticalIp.value.trim() || undefined,
+    criticalIp: criticalPathIp,
     criticalSvc: criticalSvc.value
-  })
-  if (ok) {
+  }))
+  if (report(result, criticalPathIp ? 'Critical path applied.' : 'Critical path cleared.')) {
     previewResult.value = null
   }
 }
@@ -315,7 +339,8 @@ const askRemove = (outage: PathOutage) => {
 
 const confirmRemove = async () => {
   if (outageToRemove.value) {
-    await store.deletePathOutage(outageToRemove.value.nodeId)
+    const nodeId = outageToRemove.value.nodeId
+    report(await withSpinner(() => store.deletePathOutage(nodeId)), 'Critical path removed.')
   }
   showRemoveConfirmation.value = false
   outageToRemove.value = null
@@ -332,40 +357,31 @@ const cancelRemove = () => {
   padding: 1rem 0;
 }
 
-.intro {
-  margin: 0 0 1rem 0;
-  max-width: 80ch;
-  color: var(--p-text-muted-color);
-}
-
-// Cap the interactive area so it doesn't sprawl across ultra-wide screens:
-// the About panel's toggle stops floating far to the right, and the form's
-// fields and action buttons stay grouped together instead of the rule input
-// stretching and pushing the buttons off toward (or past) the edge.
-.help-panel {
+.intro-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
   margin-bottom: 1rem;
   max-width: 1200px;
 }
 
-.help-header {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-
-  .pi-question-circle {
-    color: var(--p-primary-color);
-  }
+.intro {
+  margin: 0;
+  max-width: 80ch;
+  color: var(--p-text-muted-color);
 }
 
+// Help dialog body (slot content, so this component's scoped styles apply).
+// One column; OnmsMessageDialog scrolls it past maxHeight.
 .help-content {
-  display: flex;
-  gap: 2.5rem;
-  flex-wrap: wrap;
+  .help-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1rem 0 0.75rem 0;
+  }
 
   .help-section {
-    flex: 1;
-    min-width: 300px;
+    margin-bottom: 0.5rem;
   }
 
   .section-title {
@@ -381,9 +397,11 @@ const cancelRemove = () => {
   }
 }
 
+// Cap the form so its fields and action buttons stay grouped together instead
+// of the rule input stretching and pushing the buttons off toward the edge.
 .form-row {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 0.75rem;
   flex-wrap: wrap;
   max-width: 1200px;
@@ -401,6 +419,13 @@ const cancelRemove = () => {
       width: 100%;
     }
   }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
 }
 
 .preview-result {

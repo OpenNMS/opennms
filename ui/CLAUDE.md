@@ -105,6 +105,16 @@ Services in `src/services/` use pre-configured axios instances from `services/ax
 
 Each service exports individual functions; all are aggregated into the default export of `services/index.ts` — add new service methods there too.
 
+### UI feedback: components only, never services or stores
+
+Keep `useSpinner` / `useSnackbar` out of services and Pinia stores. Services make the API call and return a result, and stores pass results through. The component that started the user action decides what to show.
+
+- **Return results, not UI.** Reads return `ValidationResultWithPayload<T>` (`src/types/validation.ts`) so a failed load is distinguishable from an empty one. A mutation whose failure reason comes from the server returns a `ValidationResult` carrying that message. Other mutations can return a plain `boolean` and let the caller word the message. A store that refreshes a list after a successful mutation reports a failed refresh in the result's `errors`.
+- **Show feedback with `useActionFeedback`** (`src/composables/useActionFeedback.ts`). `withSpinner(action)` wraps a whole user action once: the spinner is a single on/off flag rather than a counter, so don't wrap each request inside the action. `report(result, successMsg?)` shows the failure message, or the success message followed by any follow-up `errors`, and returns `result.success`. Every error snackbar must set `error: true`; `report` and `showError` do that for you.
+- **Check `.success`, not truthiness.** Once a call returns a result object, `if (await store.save(...))` is always true, and the type-checker won't flag it.
+
+`notificationConfigService` / `notificationConfigStore` and `notificationService` / `notificationsStore` follow this pattern; older services still show snackbars themselves and should be migrated when touched.
+
 ### Auto-imports
 
 Vue, Vue Router, and VueUse APIs are auto-imported via `unplugin-auto-import` (`ref`, `computed`, `watch`, `useRouter`, `whenever`, etc. need no imports). **Custom composables from `src/composables/` must be imported manually** (e.g. `import useSnackbar from '@/composables/useSnackbar'`). Composables share global state via module-level refs.

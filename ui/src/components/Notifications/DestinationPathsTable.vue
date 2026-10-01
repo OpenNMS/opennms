@@ -36,26 +36,25 @@
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <OnmsButton
-              variant="text"
-              label="Edit"
+            <OnmsIconButton
+              :title="`Edit ${data.name}`"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-destination-path-button"
+              :icon="EditIcon"
               @click="openEditor(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Test"
+            <OnmsIconButton
+              :title="`Send test notification via ${data.name}`"
               :aria-label="`Send test notification via ${data.name}`"
               data-test="test-destination-path-button"
+              :icon="TestIcon"
               @click="askTest(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Delete"
-              severity="danger"
+            <OnmsIconButton
+              :title="`Delete ${data.name}`"
               :aria-label="`Delete ${data.name}`"
               data-test="delete-destination-path-button"
+              :icon="DeleteIcon"
               @click="askDelete(data)"
             />
           </div>
@@ -70,10 +69,6 @@
       />
     </div>
   </TableCard>
-  <DestinationPathEditorDialog
-    v-model:visible="showEditor"
-    :path="pathToEdit"
-  />
   <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Destination Path"
@@ -101,22 +96,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsConfirmationDialog, OnmsButton, OnmsColumn, OnmsTable } from '@opennms/onms-ui'
+import { OnmsConfirmationDialog, OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 
-import DestinationPathEditorDialog from '@/components/AdminNotifications/DestinationPathEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
+// Placeholder until a dedicated "test/send" icon exists.
+import TestIcon from '@opennms/onms-ui/icons/action/CheckCircle.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath } from '@/types/notificationConfig'
 
 const store = useNotificationConfigStore()
-
-const showEditor = ref(false)
-const pathToEdit = ref<DestinationPath | null>(null)
+const { withSpinner, report, showError, showSuccess } = useActionFeedback()
 
 const openEditor = (path: DestinationPath | null) => {
-  pathToEdit.value = path
-  showEditor.value = true
+  store.openDestinationPathEditor(path)
 }
 
 const showDeleteConfirmation = ref(false)
@@ -142,7 +138,8 @@ const askDelete = (path: DestinationPath) => {
 
 const confirmDelete = async () => {
   if (pathToDelete.value) {
-    await store.deleteDestinationPath(pathToDelete.value.name)
+    const name = pathToDelete.value.name
+    report(await withSpinner(() => store.deleteDestinationPath(name)), `Destination path '${name}' deleted.`)
   }
   showDeleteConfirmation.value = false
   pathToDelete.value = null
@@ -160,7 +157,12 @@ const askTest = (path: DestinationPath) => {
 
 const confirmTest = async () => {
   if (pathToTest.value) {
-    await store.testDestinationPath(pathToTest.value.name)
+    const name = pathToTest.value.name
+    if (await withSpinner(() => store.testDestinationPath(name))) {
+      showSuccess(`Test notification triggered for '${name}'.`)
+    } else {
+      showError(`Failed to trigger test notification for '${name}'.`)
+    }
   }
   showTestConfirmation.value = false
   pathToTest.value = null
@@ -191,6 +193,7 @@ const cancelTest = () => {
 
 .action-container {
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 5px;
 }
 </style>
