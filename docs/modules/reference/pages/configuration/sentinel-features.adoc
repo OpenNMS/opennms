@@ -405,7 +405,7 @@ The following environment variables are written to `$\{SENTINEL_HOME}/etc/org.op
 [options="header, autowidth"]
 |===
 | Variable | Description | Example value
-| `ELASTICSEARCH_URL`            | Elasticsearch URL. | `http://elastic:9200`
+| `ELASTICSEARCH_URL`            | Elasticsearch URL. | `http://localhost:9200`
 | `ELASTICSEARCH_INDEX_STRATEGY` | Index strategy. | `hourly`
 | `ELASTICSEARCH_REPLICAS`       | Number of index replicas. | `0`
 | `ELASTICSEARCH_CONN_TIMEOUT`   | Connection timeout in milliseconds. | `30000`
