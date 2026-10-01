@@ -200,8 +200,15 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
                     ExpressionParser parser = new SpelExpressionParser();
                     Expression exp = parser.parseExpression(attribute.getAliasExp());
                     Function<Metric, String> attributeNameMapper = (metric) -> {
-                        String name = exp.getValue(SPEL_CONTEXT, metric, String.class);
-                        if (attribute.isCompressAlias()) {
+                        String name;
+                        try {
+                            name = exp.getValue(SPEL_CONTEXT, metric, String.class);
+                        } catch (Exception e) {
+                            LOG.warn("Failed to evaluate alias expression '{}' in the group named '{}'. The metric will not be included.",
+                                    attribute.getAliasExp(), group.getName(), e);
+                            return null;
+                        }
+                        if (name != null && attribute.isCompressAlias()) {
                             name = CamelCaseCompressor.compress(name, RRD_DS_MAX_SIZE);
                         }
                         return name;
@@ -256,7 +263,14 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
                     ExpressionParser parser = new SpelExpressionParser();
                     Expression stringAttributeValueExp = parser.parseExpression(attribute.getValueExp());
                     for (Metric metric : entry.getValue()) {
-                        String stringValue = stringAttributeValueExp.getValue(SPEL_CONTEXT, metric, String.class);
+                        String stringValue;
+                        try {
+                            stringValue = stringAttributeValueExp.getValue(SPEL_CONTEXT, metric, String.class);
+                        } catch (Exception e) {
+                            LOG.warn("Failed to evaluate value expression '{}' in the group named '{}'. The metric will not be included.",
+                                    attribute.getValueExp(), group.getName(), e);
+                            continue;
+                        }
                         if (stringValue != null) {
                             builder.withStringAttribute(resource, group.getName(), attribute.getAlias(), stringValue);
                             // Only process the first match
