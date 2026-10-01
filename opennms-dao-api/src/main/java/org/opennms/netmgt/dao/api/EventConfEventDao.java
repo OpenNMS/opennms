@@ -35,6 +35,7 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     EventConfEvent findByUei(String uei);
 
+    /** The source's events whose UEI matches exactly, in evaluation order (eventOrder, then id). */
     List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId);
 
     int countBySourceId(Long sourceId);
@@ -47,13 +48,15 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int offset, int limit);
 
-    void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
+    /** Flips the events' enabled flag, stamping lastModified and {@code modifiedBy} on each. */
+    void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled, String modifiedBy);
 
     /**
      * Pages the events of a source. {@code eventSortBy} may be uei, eventLabel, description, severity,
      * enabled, createdTime or eventOrder; anything else (including null) sorts by eventOrder, the
      * evaluation order within the source. {@code sortDirection} is asc or desc; when absent, eventOrder is
      * ascending (first evaluated first) and every other field descending. An unknown source yields an empty page.
+     * A null or zero {@code limit} returns every matching event in one page; a null {@code offset} means 0.
      */
     Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String sortDirection, Integer totalRecords, Integer offset, Integer limit);
 
