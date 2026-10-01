@@ -66,6 +66,8 @@ public class ShellCommand implements Command {
     private ServerSession serverSession;
     private SessionFactory sessionFactory;
     private Environment env;
+    private Session session;
+    private Thread commandThread;
 
     public ShellCommand(SessionFactory sessionFactory, String command) {
         this.sessionFactory = sessionFactory;
@@ -99,9 +101,11 @@ public class ShellCommand implements Command {
     }
 
     public void run() {
+        commandThread = Thread.currentThread();
         int exitStatus = 0;
         try {
-            final Session session = sessionFactory.create(in, new PrintStream(out), new PrintStream(err));
+            this.session = sessionFactory.create(in, new PrintStream(out, true), new PrintStream(err, true));
+            final Session session = this.session;
             for (Map.Entry<String,String> e : env.getEnv().entrySet()) {
                 session.put(e.getKey(), e.getValue());
             }
@@ -158,7 +162,12 @@ public class ShellCommand implements Command {
 
     @Override
     public void destroy(ChannelSession channelSession) throws Exception {
-
+        if (session != null) {
+            session.close();
+        }
+        if (commandThread != null && commandThread != Thread.currentThread()) {
+            commandThread.interrupt();
+        }
     }
 
     private void executeScript(String names, Session session) {

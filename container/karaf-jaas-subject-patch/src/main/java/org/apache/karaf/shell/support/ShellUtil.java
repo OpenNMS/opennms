@@ -182,8 +182,9 @@ public class ShellUtil {
                 session.getConsole().println(str);
             }
             session.getConsole().flush();
-        } catch (Exception ignore) {
-            // ignore
+        } catch (Throwable ignore) {
+            // ignore (catch Throwable to handle LinkageError from JLine classloader
+            // changes during bundle refresh, which would otherwise kill the console thread)
         }
     }
 

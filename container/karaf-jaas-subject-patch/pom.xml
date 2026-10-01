@@ -94,7 +94,7 @@
             <!-- the version Karaf ${karafVersion} builds shell.ssh against -->
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-osgi</artifactId>
-            <version>2.15.0</version>
+            <version>${minaSshdVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
