@@ -434,6 +434,13 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     nodeSize.value = autoNodeSizeForCount(count)
   }
 
+  /** The density default for a view being opened, unless it saved a size of its own. */
+  const sizeNodesForView = (count: number) => {
+    if (currentView.value?.style?.nodeSize === undefined) {
+      setNodeSizeForCount(count)
+    }
+  }
+
   const LINK_WIDTH_MIN = 1
   const LINK_WIDTH_MAX = 8
   const DEFAULT_LINK_WIDTH = 3
@@ -882,6 +889,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     nodeSize,
     setNodeSize,
     setNodeSizeForCount,
+    sizeNodesForView,
     NODE_SIZE_MIN,
     NODE_SIZE_MAX,
     linkWidth,

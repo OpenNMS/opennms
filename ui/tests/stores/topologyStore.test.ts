@@ -25,7 +25,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { flushPromises } from '@vue/test-utils'
 import { useTopologyStore } from '@/stores/topologyStore'
 import {
-  saveView, listViews, getNodeSeverities, loadDiscoveredGraph
+  saveView, listViews, getView, getNodeSeverities, loadDiscoveredGraph
 } from '@/services/topologyService'
 import type { TopologyView } from '@/types/topology'
 
@@ -113,6 +113,22 @@ describe('useTopologyStore - node size (density default + clamp)', () => {
     store.setNodeSizeForCount(55)
     expect(store.nodeSize).toBeGreaterThan(9)
     expect(store.nodeSize).toBeLessThan(20)
+  })
+
+  // The canvas sizes nodes by density as a view loads; a size saved with the
+  // view was being overwritten that way, so it never survived a reopen.
+  it('keeps a saved node size when a view is opened', async () => {
+    vi.mocked(getView).mockResolvedValueOnce({ ...existingView(), style: { nodeSize: 8 }})
+    await store.openView('5')
+    store.sizeNodesForView(100)
+    expect(store.nodeSize).toBe(8)
+  })
+
+  it('sizes by density when the view saved no size', async () => {
+    vi.mocked(getView).mockResolvedValueOnce(existingView())
+    await store.openView('5')
+    store.sizeNodesForView(100)
+    expect(store.nodeSize).toBe(9)
   })
 
   it('clamps the manual size to [MIN, MAX]', () => {

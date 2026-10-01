@@ -784,7 +784,8 @@ const loadView = (view: TopologyView) => {
   placedCount.value = placed.length
   store.setLabels(view.labels)
   store.setShapes(view.shapes ?? [])
-  store.setNodeSizeForCount(g.order) // density-based default node size
+  // Density-based default, which a saved size wins over (openView applied it).
+  store.sizeNodesForView(g.order)
 
   mountSigma(g)
   if (sigma) {
