@@ -69,6 +69,7 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -158,6 +159,9 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired
     private volatile IpInterfaceDao m_ifaceDao;
+
+    @Autowired
+    private volatile MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
     private volatile FilterDao m_filterDao;
@@ -473,6 +477,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = new CollectableService(
                     iface, 
                     m_ifaceDao, 
+                    m_monitoredServiceDao,
                     spec, 
                     getScheduler(),
                     m_schedulingCompletedFlag,
@@ -1390,6 +1395,15 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
+    }
+
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
+     */
+    void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+        m_monitoredServiceDao = monitoredServiceDao;
     }
 
     /**

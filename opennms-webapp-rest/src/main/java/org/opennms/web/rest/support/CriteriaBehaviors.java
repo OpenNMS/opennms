@@ -295,6 +295,8 @@ public abstract class CriteriaBehaviors {
         MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
         MONITORED_SERVICE_BEHAVIORS.put("lastGood", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        MONITORED_SERVICE_BEHAVIORS.put("collectLastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        MONITORED_SERVICE_BEHAVIORS.put("collectLastGood", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
         MONITORING_LOCATION_BEHAVIORS.put("latitude", new CriteriaBehavior<Float>(FLOAT_CONVERTER));
         MONITORING_LOCATION_BEHAVIORS.put("longitude", new CriteriaBehavior<Float>(FLOAT_CONVERTER));
