@@ -39,7 +39,8 @@
         org.opennms.netmgt.config.poller.Parameter,
         org.opennms.netmgt.model.OnmsMonitoredService,
         org.opennms.netmgt.poller.ServiceMonitor,
-        org.opennms.netmgt.poller.DefaultPollContext
+        org.opennms.netmgt.poller.DefaultPollContext,
+        org.opennms.netmgt.collectd.CollectableService
         "
 %>
 <%@ page import="java.util.Optional" %>
@@ -334,6 +335,25 @@ function doDelete() {
                   <c:otherwise><td>Unknown or Missing</td></c:otherwise>
                 </c:choose>
               </tr>
+              <c:choose>
+                <%-- Hide the collection timestamp rows when collection timestamp tracking is disabled. --%>
+                <c:when test="${!CollectableService.DISABLE_COLLECTION_TIMESTAMP_TRACKING}">
+                  <tr>
+                    <th>Last Collection Good</th>
+                    <c:choose>
+                        <c:when test="${service.collectLastGood != null}"><td><onms:datetime date="${service.collectLastGood}" /></td></c:when>
+                        <c:otherwise><td>Unknown</td></c:otherwise>
+                    </c:choose>
+                  </tr>
+                  <tr>
+                    <th>Last Collection Fail</th>
+                    <c:choose>
+                        <c:when test="${service.collectLastFail != null}"><td><onms:datetime date="${service.collectLastFail}" /></td></c:when>
+                        <c:otherwise><td>Unknown</td></c:otherwise>
+                    </c:choose>
+                  </tr>
+                </c:when>
+              </c:choose>
 	        <% } else { %>
 	          <tr>
                 <th>Collection Status</th>

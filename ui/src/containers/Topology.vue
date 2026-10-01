@@ -21,7 +21,7 @@ License.
 -->
 
 <template>
-  <div class="topology-page" :class="store.isEditMode ? 'is-edit' : 'is-view'">
+  <div class="topology-page" :class="[store.isEditMode ? 'is-edit' : 'is-view', { 'is-dirty': isDirty }]">
     <div class="topology-toolbar">
       <div class="toolbar-start">
           <span class="topology-title">Topology (Preview)</span>
@@ -50,27 +50,20 @@ License.
               class="view-chooser"
               aria-label="Choose a topology view"
             />
-            <OnmsButton label="New" variant="outlined" @click="onNew" />
             <OnmsButton label="Save" :loading="store.isSaving" :disabled="!canSave" @click="onSave" />
-            <OnmsButton
-              label="Save As"
+            <span v-if="isDirty" class="unsaved-badge" role="status">Unsaved changes</span>
+            <!-- The less frequent view actions sit behind one menu, so the bar
+                 keeps the one button pressed many times a session. -->
+            <OnmsIconButton
+              :icon="MoreVert"
+              title="View actions"
+              tooltip="New, Save As, Rename, Delete"
+              tooltip-position="bottom"
               variant="outlined"
-              :disabled="store.isSaving"
-              @click="onSaveAs"
+              aria-haspopup="true"
+              @click="viewMenuRef?.toggle($event)"
             />
-            <OnmsButton
-              label="Rename"
-              variant="outlined"
-              :disabled="!store.currentView"
-              @click="onRename"
-            />
-            <OnmsButton
-              label="Delete"
-              severity="danger"
-              variant="outlined"
-              :disabled="!canDelete"
-              @click="onDelete"
-            />
+            <OnmsTieredMenu ref="viewMenuRef" :items="viewMenuModel" />
           </template>
           <template v-else>
             <!-- Variant picker: which representation of this discovered source
@@ -89,31 +82,22 @@ License.
           </template>
       </div>
       <div class="toolbar-controls">
-          <!-- Discovered sources are read-only: no Edit mode. -->
-          <OnmsSelectButton
-            v-if="!isDiscovered"
-            v-model="mode"
-            :options="modeOptions"
-            option-label="label"
-            option-value="value"
-            :allow-empty="false"
-            aria-label="View or Edit mode"
-            class="mode-select"
-          />
           <!-- Search works in both kinds of view; what picking a result does
                differs (focus a neighborhood vs pan to the node). Focus and the
                Semantic Zoom Level below are discovered-only. -->
-          <OnmsAutoComplete
-            v-model="searchModel"
-            :suggestions="searchSuggestions"
-            option-label="node.label"
-            :complete-on-focus="true"
-            placeholder="Search nodes, IPs, categories"
-            class="topology-search"
-            :aria-label="store.focusNodeId ? 'Focused node; type to search' : 'Search nodes'"
-            @complete="onSearchComplete"
-            @option-select="onSearchSelect"
-          >
+          <span class="topology-search-field">
+            <OnmsIcon :icon="SearchIcon" class="topology-search-icon" />
+            <OnmsAutoComplete
+              v-model="searchModel"
+              :suggestions="searchSuggestions"
+              option-label="node.label"
+              :complete-on-focus="true"
+              placeholder="Nodes, IPs, categories"
+              class="topology-search"
+              :aria-label="store.focusNodeId ? 'Focused node; type to search' : 'Search nodes'"
+              @complete="onSearchComplete"
+              @option-select="onSearchSelect"
+            >
             <!-- A hit on an IP or a provider property is indistinguishable from
                  a label hit unless the matched value is shown. -->
             <template #option="{ option }">
@@ -128,8 +112,20 @@ License.
                 </span>
               </span>
             </template>
-          </OnmsAutoComplete>
+            </OnmsAutoComplete>
+          </span>
           <template v-if="isDiscovered">
+            <!-- Discovered graphs regenerate and cannot be edited. This keeps
+                 what is on screen as a view that can be. -->
+            <OnmsIconButton
+              :icon="ContentCopy"
+              title="Copy into a custom view"
+              tooltip="Keep this graph, as laid out now, as an editable custom view"
+              tooltip-position="bottom"
+              variant="outlined"
+              :disabled="store.isSaving || store.isDiscoveredLoading"
+              @click="onSaveAsCustom"
+            />
             <OnmsButton
               v-if="!store.focusNodeId"
               label="Focus"
@@ -155,56 +151,60 @@ License.
               <OnmsButton label="Show all" variant="outlined" @click="showAll" />
             </span>
           </template>
-          <OnmsButton
-            :label="refreshLabel"
+          <OnmsIconButton
+            :icon="RefreshIcon"
+            :title="refreshLabel"
+            :tooltip="refreshLabel"
+            tooltip-position="bottom"
             :disabled="store.isDiscoveredLoading"
             variant="outlined"
             @click="onRefresh"
           />
-          <OnmsButton
-            v-if="store.isEditMode"
-            :label="store.isLinkDrawMode ? 'Link: ON' : 'Draw Link'"
-            :variant="store.isLinkDrawMode ? 'filled' : 'outlined'"
-            @click="store.setLinkDrawMode(!store.isLinkDrawMode)"
+          <!-- Sizes for every node and link live in a popover, not the bar. -->
+          <OnmsIconButton
+            :icon="Options"
+            title="Appearance"
+            tooltip="Node size and link width"
+            tooltip-position="bottom"
+            variant="outlined"
+            aria-haspopup="true"
+            :aria-expanded="appearanceOpen"
+            @click="toggleAppearance($event)"
           />
-          <OnmsButton
-            v-if="store.isEditMode"
-            :label="store.isShapeDrawMode ? 'Box: drag to draw' : 'Draw Box'"
-            :variant="store.isShapeDrawMode ? 'filled' : 'outlined'"
-            @click="store.setShapeDrawMode(!store.isShapeDrawMode)"
+          <OnmsPopover ref="appearanceRef" @hide="appearanceOpen = false">
+            <TopologyAppearance />
+          </OnmsPopover>
+          <OnmsIconButton
+            :icon="Fullscreen"
+            title="Fit to view"
+            tooltip="Fit to view"
+            tooltip-position="left"
+            variant="outlined"
+            @click="canvasRef?.fit()"
           />
-          <OnmsButton
-            v-if="store.isEditMode"
-            :label="store.isLinkHintsEnabled ? 'Link Hints: ON' : 'Link Hints'"
-            :variant="store.isLinkHintsEnabled ? 'filled' : 'outlined'"
-            title="Show discovered adjacencies between placed nodes as ghost links"
-            @click="store.setLinkHintsEnabled(!store.isLinkHintsEnabled)"
+          <OnmsIconButton
+            :icon="DownloadFile"
+            title="Export PNG"
+            tooltip="Export PNG"
+            tooltip-position="left"
+            variant="outlined"
+            @click="onExport"
           />
-          <span class="node-size-control" title="Node size">
-            <span class="node-size-dot node-size-dot-sm" />
-            <OnmsSlider
-              v-model="nodeSizeModel"
-              :min="store.NODE_SIZE_MIN"
-              :max="store.NODE_SIZE_MAX"
-              class="node-size-slider"
-              aria-label="Node size"
-            />
-            <span class="node-size-dot node-size-dot-lg" />
-          </span>
-          <OnmsButton label="Fit" variant="outlined" @click="canvasRef?.fit()" />
-          <OnmsButton label="Export PNG" variant="outlined" @click="onExport" />
       </div>
     </div>
 
     <div class="topology-body">
       <!-- Palette is an Edit-mode tool (compose); hidden in View and for
            read-only discovered sources. -->
-      <TopologyPalette v-if="store.isEditMode && !isDiscovered" class="topology-palette-pane" />
+      <!-- One rail and one panel, on the left, in both modes. -->
+      <TopologyToolStrip />
+      <TopologySidePanel :canvas="canvasRef" />
       <div class="topology-canvas-wrap">
         <TopologyCanvas
           ref="canvasRef"
           class="topology-canvas-pane"
           @node-contextmenu="onNodeContextMenu"
+          @clear-focus="showAll"
         />
         <!-- Many discovered sources (OSPF, IS-IS, Bridge, …) have no links
              unless that protocol was discovered; explain the empty canvas. -->
@@ -240,18 +240,6 @@ License.
           </div>
         </div>
       </div>
-      <!-- View: full read-only Inspector on the left (order -1).
-           Edit: slim Properties panel on the right, only when a label/edge
-           is selected (nodes have no editable props here). -->
-      <!-- Always rendered (in both modes) so selecting an edge/label doesn't
-           reflow the canvas -- a reflow shifts the view and staled sigma's
-           hit-detection, which broke selecting a second edge. -->
-      <TopologyInspector
-        :canvas="canvasRef"
-        :variant="store.isEditMode ? 'props' : 'full'"
-        class="topology-inspector-pane"
-        :style="{ order: store.isEditMode ? 0 : -1 }"
-      />
     </div>
 
     <!-- Bottom Explore panel: tables for the view, tied to selection. -->
@@ -266,6 +254,19 @@ License.
       :taken-names="nameDialogTaken"
       @submit="onNameSubmit"
     />
+
+    <OnmsConfirmationDialog
+      :visible="discardDialogVisible"
+      title="Unsaved changes"
+      :action-button-text="'Discard'"
+      cancel-button-text="Keep editing"
+      @ok="answerDiscard(true)"
+      @cancel="answerDiscard(false)"
+    >
+      <template #content>
+        This view has unsaved changes. Discard them?
+      </template>
+    </OnmsConfirmationDialog>
 
     <OnmsConfirmationDialog
       :visible="deleteDialogVisible"
@@ -290,19 +291,28 @@ import {
   OnmsConfirmationDialog,
   OnmsContextMenu,
   OnmsIcon,
+  OnmsIconButton,
+  OnmsPopover,
   OnmsSelect,
-  OnmsSelectButton,
-  OnmsSlider,
   OnmsTieredMenu,
   useOnmsToast
 } from '@opennms/onms-ui'
 import type { OnmsMenuItem } from '@opennms/onms-ui'
 import type { SourceGroup } from '@/components/Topology/sources'
+import { PLACED_PREFIX } from '@/components/Topology/nodeIds'
 import ExpandMore from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
-import { useRoute, useRouter } from 'vue-router'
+import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
+import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
+import Fullscreen from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
+import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import Options from '@opennms/onms-ui/icons/action/Options.vue'
+import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
+import ContentCopy from '@opennms/onms-ui/icons/action/ContentCopy.vue'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
-import TopologyPalette from '@/components/Topology/TopologyPalette.vue'
-import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
+import TopologyToolStrip from '@/components/Topology/TopologyToolStrip.vue'
+import TopologySidePanel from '@/components/Topology/TopologySidePanel.vue'
+import TopologyAppearance from '@/components/Topology/TopologyAppearance.vue'
 import TopologyExplorePanel from '@/components/Topology/TopologyExplorePanel.vue'
 import ViewNameDialog from '@/components/Topology/ViewNameDialog.vue'
 import { useTopologyStore } from '@/stores/topologyStore'
@@ -334,6 +344,7 @@ const currentSource = computed(() => sourceForSlug(store.topologySources, source
 
 // Navigate to a source via the route so every source stays bookmarkable.
 // Dropping the query resets the variant to the group's default.
+// The route-update guard asks about unsaved changes on the way.
 const goToSource = (slug: string) => {
   if (slug !== sourceSlug.value) {
     router.push({ name: 'Topology', params: { source: slug }})
@@ -367,6 +378,15 @@ const selectedVariant = computed<string>({
 // Grouped source menu: Custom as a leaf, discovered sources under a submenu
 // (new providers slot in as further submenus). Each command navigates the
 // route. The active source is marked.
+const viewMenuRef = ref<{ toggle: (event: Event) => void } | null>(null)
+const viewMenuModel = computed<OnmsMenuItem[]>(() => [
+  { label: 'New', command: onNew },
+  { label: 'Save As', disabled: store.isSaving, command: onSaveAs },
+  { label: 'Rename', disabled: !store.currentView, command: onRename },
+  { separator: true },
+  { label: 'Delete', disabled: !canDelete.value, class: 'view-item-danger', command: onDelete }
+])
+
 const sourceMenuRef = ref<{ toggle: (event: Event) => void } | null>(null)
 const sourceMenuModel = computed<OnmsMenuItem[]>(() => {
   const item = (slug: string, label: string): OnmsMenuItem => ({
@@ -468,16 +488,6 @@ const onNodeContextMenu = (payload: { event: MouseEvent; nodeId: number | null; 
   nodeMenuItems.value = items
   nodeMenuRef.value?.show(event)
 }
-
-// Segmented View/Edit control (clear, always-visible mode indicator).
-const modeOptions = [
-  { label: 'View', value: false },
-  { label: 'Edit', value: true }
-]
-const mode = computed<boolean>({
-  get: () => store.isEditMode,
-  set: value => store.setEditMode(value)
-})
 
 // Load whatever the route's :source points at -- the custom catalog or a
 // discovered topology. Re-runs whenever the source changes.
@@ -613,10 +623,12 @@ const showAll = () => navFocus(null, store.semanticZoomLevel)
 // Export the current map as a PNG. The file name reflects the open view
 // (custom) or the source/variant (discovered); the canvas appends ".png".
 // Node-size slider <-> store (clamped in the store setter).
-const nodeSizeModel = computed<number>({
-  get: () => store.nodeSize,
-  set: n => store.setNodeSize(n)
-})
+const appearanceRef = ref<{ toggle: (event: Event) => void } | null>(null)
+const appearanceOpen = ref(false)
+const toggleAppearance = (event: Event) => {
+  appearanceOpen.value = !appearanceOpen.value
+  appearanceRef.value?.toggle(event)
+}
 
 // Explore-panel row -> select that node on the canvas (or clear to "show all").
 const onExploreSelect = (placedId: string | null) => {
@@ -829,10 +841,126 @@ const currentViewId = computed<string | null>({
   get: () => store.currentView?.id ?? null,
   set: (id) => {
     if (id && id !== store.currentView?.id) {
-      openIntoCanvas(id)
+      void confirmDiscard().then((ok) => {
+        if (ok) {
+          openIntoCanvas(id)
+        }
+      })
     }
   }
 })
+
+// --- Unsaved changes ---------------------------------------------------------
+// The view as it would be saved, minus the viewport, which is not a change.
+// Compared as a string against what was last loaded or saved, on every
+// canvas command and store-side edit, a beat after the last one.
+const snapshotNow = (): string => {
+  const canvas = canvasRef.value?.serialize()
+  return JSON.stringify({
+    name: store.currentView?.name ?? null,
+    nodes: canvas?.nodes ?? [],
+    links: canvas?.links ?? [],
+    labels: store.labels,
+    shapes: store.shapes,
+    background: store.background ?? null,
+    style: store.viewStyle ?? null
+  })
+}
+
+const savedSnapshot = ref<string | null>(null)
+const liveSnapshot = ref<string | null>(null)
+
+const markSaved = () => {
+  savedSnapshot.value = snapshotNow()
+  liveSnapshot.value = savedSnapshot.value
+}
+
+// A different view in the store is a new baseline: opened, created or saved
+// under a new name. A rename keeps the id and so stays a change. Runs after
+// the synchronous load that follows an open, so the canvas is already there.
+watch(
+  () => [store.currentView?.id ?? null, store.currentView === null] as const,
+  () => markSaved()
+)
+
+let snapshotTimer: ReturnType<typeof setTimeout> | null = null
+watch(
+  [
+    () => canvasRef.value?.changeVersion,
+    () => store.labels,
+    () => store.shapes,
+    () => store.background,
+    () => store.viewStyle,
+    () => store.currentView?.name
+  ],
+  () => {
+    if (snapshotTimer) {
+      clearTimeout(snapshotTimer)
+    }
+    snapshotTimer = setTimeout(() => {
+      snapshotTimer = null
+      liveSnapshot.value = snapshotNow()
+    }, 150)
+  },
+  { deep: true }
+)
+
+// Picking a label, link or box while the palette is showing lands on its
+// details, since those are edited there. Picking a node does not: while
+// placing nodes, every nudge of one selects it, and the palette must stay.
+// A collapsed panel stays collapsed and the rail shows a dot instead.
+watch(
+  () => store.selectedIds,
+  (ids) => {
+    if (ids.length > 0 && store.sidePanel === 'palette' && ids.some(id => !id.startsWith(PLACED_PREFIX))) {
+      store.setSidePanel('details')
+    }
+  }
+)
+
+const isDirty = computed<boolean>(
+  () => !isDiscovered.value && savedSnapshot.value !== null && liveSnapshot.value !== savedSnapshot.value
+)
+
+// The guards cannot wait for the debounce: an edit made a moment before a
+// view pick or a tab close must still count.
+const isDirtyNow = (): boolean =>
+  !isDiscovered.value && savedSnapshot.value !== null && snapshotNow() !== savedSnapshot.value
+
+// Resolves true when it is fine to drop the open view: nothing unsaved, or
+// the user chose Discard in the dialog. One question at a time; a second
+// caller while it is open gets the same answer.
+const discardDialogVisible = ref(false)
+let discardResolvers: Array<(ok: boolean) => void> = []
+
+const confirmDiscard = (): Promise<boolean> => {
+  if (!isDirtyNow()) {
+    return Promise.resolve(true)
+  }
+  discardDialogVisible.value = true
+  return new Promise(resolve => discardResolvers.push(resolve))
+}
+
+const answerDiscard = (ok: boolean) => {
+  discardDialogVisible.value = false
+  const resolvers = discardResolvers
+  discardResolvers = []
+  resolvers.forEach(resolve => resolve(ok))
+}
+
+onBeforeRouteLeave(() => confirmDiscard())
+// A source change stays on this route, so the leave guard never sees it;
+// browser back and forward arrive this way.
+onBeforeRouteUpdate((to, from) => (to.params.source === from.params.source ? true : confirmDiscard()))
+
+const onBeforeUnload = (event: BeforeUnloadEvent) => {
+  if (isDirtyNow()) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
+}
+onMounted(() => window.addEventListener('beforeunload', onBeforeUnload))
+onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
 
 const saveCurrent = async (): Promise<boolean> => {
   const snapshot = canvasRef.value?.serialize()
@@ -840,6 +968,9 @@ const saveCurrent = async (): Promise<boolean> => {
     return false
   }
   const ok = await store.saveCurrentView(snapshot)
+  if (ok) {
+    markSaved()
+  }
   showToast(
     ok
       ? { message: `View "${store.currentView?.name}" saved`, severity: 'success', timeout: 3000 }
@@ -888,6 +1019,7 @@ const openIntoCanvas = async (id: string): Promise<boolean> => {
     return false
   }
   canvasRef.value?.loadView(view)
+  markSaved()
   syncRouteToView()
   return true
 }
@@ -902,6 +1034,7 @@ const loadDefault = async (): Promise<void> => {
     if (store.currentView) {
       canvasRef.value?.loadView(store.currentView)
     }
+    markSaved()
     syncRouteToView()
   }
 }
@@ -911,7 +1044,7 @@ const onSave = () => saveCurrent()
 // New, Save As and Rename all ask for one view name under the same rules, so
 // they share a single dialog. The mode decides the wording, what the field is
 // seeded with, and what the answer does.
-type NameDialogMode = 'new' | 'saveAs' | 'rename'
+type NameDialogMode = 'new' | 'saveAs' | 'rename' | 'adoptDiscovered'
 
 const nameDialogVisible = ref(false)
 const nameDialogMode = ref<NameDialogMode>('new')
@@ -923,6 +1056,12 @@ const nameDialogConfig = computed(() => {
       return { title: 'Save view as', actionLabel: 'Save', initialName: current }
     case 'rename':
       return { title: 'Rename view', actionLabel: 'Rename', initialName: current }
+    case 'adoptDiscovered':
+      return {
+        title: 'Copy into a custom view',
+        actionLabel: 'Save',
+        initialName: currentSourceShort.value
+      }
     default:
       return { title: 'New view', actionLabel: 'Create', initialName: '' }
   }
@@ -944,7 +1083,13 @@ const openNameDialog = (mode: NameDialogMode) => {
   nameDialogVisible.value = true
 }
 
-const onNew = () => openNameDialog('new')
+const onNew = async () => {
+  if (await confirmDiscard()) {
+    openNameDialog('new')
+  }
+}
+
+const onSaveAsCustom = () => openNameDialog('adoptDiscovered')
 
 const onSaveAs = () => {
   if (store.currentView) {
@@ -966,6 +1111,9 @@ const onNameSubmit = async (name: string) => {
     case 'rename':
       await renameCurrentView(name)
       break
+    case 'adoptDiscovered':
+      await saveDiscoveredAsCustom(name)
+      break
     default:
       await createView(name)
   }
@@ -978,8 +1126,40 @@ const createView = async (name: string) => {
   if (store.currentView) {
     canvasRef.value?.loadView(store.currentView)
   }
+  markSaved()
   await saveCurrent()
   syncRouteToView()
+}
+
+/**
+ * Keep the discovered graph as it stands as an editable view. What is on screen
+ * is what is kept: a discovered container here runs to thousands of vertices,
+ * and the focused subgraph is both what the operator means and what a canvas
+ * can carry.
+ */
+const saveDiscoveredAsCustom = async (name: string) => {
+  const snapshot = canvasRef.value?.serialize()
+  if (!snapshot) {
+    return
+  }
+  const ok = await store.saveDiscoveredAsView(name, snapshot)
+  showToast(
+    ok
+      ? { message: `View "${name}" saved`, severity: 'success', timeout: 3000 }
+      : { message: 'Could not save the view; the name may already be in use.', severity: 'error', timeout: 5000 }
+  )
+  if (ok) {
+    // Straight into the copy, in Edit mode with the palette up: this is only
+    // ever pressed by someone who wants to start moving things. Set here
+    // rather than by setEditMode's rule, which does not run on a discovered source.
+    store.setEditMode(true)
+    store.setSidePanel('palette')
+    router.push({
+      name: 'Topology',
+      params: { source: CUSTOM_SOURCE_SLUG },
+      query: { view: name }
+    })
+  }
 }
 
 const saveViewAs = async (name: string) => {
@@ -996,6 +1176,7 @@ const saveViewAs = async (name: string) => {
       : { message: 'Could not save the view; the name may already be in use.', severity: 'error', timeout: 5000 }
   )
   if (ok) {
+    markSaved()
     syncRouteToView()
   }
 }
@@ -1090,12 +1271,31 @@ const confirmDelete = async () => {
   border-top: 3px solid transparent;
 }
 
+.topology-page {
+  /* Mode accents, shared with the rail's Edit item. */
+  --topology-edit-accent: #f59e0b;
+  --topology-edit-accent-text: #1f1300;
+  --topology-view-accent: #00bfcb;
+}
+
 .topology-page.is-edit .topology-toolbar {
-  border-top-color: #f59e0b; /* amber = editing */
+  border-top-color: var(--topology-edit-accent);
 }
 
 .topology-page.is-view .topology-toolbar {
-  border-top-color: #00bfcb; /* teal accent = viewing */
+  border-top-color: var(--topology-view-accent);
+}
+
+/* Unsaved work outranks the mode cue, in either mode. */
+.topology-page.is-dirty .topology-toolbar {
+  border-top-color: var(--onms-error, #a5021f);
+}
+
+.unsaved-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--onms-error, #a5021f);
+  white-space: nowrap;
 }
 
 .topology-title {
@@ -1134,31 +1334,26 @@ const confirmDelete = async () => {
   min-width: 12rem;
 }
 
-.topology-search :deep(.p-autocomplete-input) {
-  min-width: 11rem;
+/* The glass sits inside the field's left padding; the placeholder does the
+   rest, so the word "Search" is not spent twice. */
+.topology-search-field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
-.node-size-control {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+.topology-search-icon {
+  position: absolute;
+  left: 0.6rem;
+  font-size: 1.1rem;
   color: var(--onms-secondary-text-on-surface);
+  pointer-events: none;
+  z-index: 1;
 }
-.node-size-slider {
-  width: 6rem;
-}
-.node-size-dot {
-  border-radius: 50%;
-  background: currentColor;
-  flex: 0 0 auto;
-}
-.node-size-dot-sm {
-  width: 0.4rem;
-  height: 0.4rem;
-}
-.node-size-dot-lg {
-  width: 0.7rem;
-  height: 0.7rem;
+
+.topology-search :deep(.p-autocomplete-input) {
+  min-width: 11rem;
+  padding-left: 2.2rem;
 }
 
 .discovered-hint {
@@ -1192,10 +1387,6 @@ const confirmDelete = async () => {
   gap: 0.75rem;
   min-height: 400px;
   min-height: 0;
-}
-
-.topology-palette-pane {
-  flex: 0 0 auto;
 }
 
 /* Wraps the canvas so the discovered empty-state can overlay it. */
@@ -1259,7 +1450,4 @@ const confirmDelete = async () => {
   background: var(--onms-surface);
 }
 
-.topology-inspector-pane {
-  flex: 0 0 auto;
-}
 </style>

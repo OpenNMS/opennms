@@ -272,6 +272,8 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsMonitoredService.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsMonitoredService.class, "lastFail", "Last Failure Time", TIMESTAMP),
 		new SearchProperty(OnmsMonitoredService.class, "lastGood", "Last Good Time", TIMESTAMP),
+		new SearchProperty(OnmsMonitoredService.class, "collectLastFail", "Last Collection Failure Time", TIMESTAMP),
+		new SearchProperty(OnmsMonitoredService.class, "collectLastGood", "Last Collection Good Time", TIMESTAMP),
 		new SearchProperty(OnmsMonitoredService.class, "notify", "Notify", STRING, ImmutableMap.<String,String>builder()
 			.put("Y", "Yes")
 			.put("N", "No")
