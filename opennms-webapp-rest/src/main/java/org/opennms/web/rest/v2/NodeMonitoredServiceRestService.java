@@ -260,8 +260,8 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         `GET .../services/count` are inflated by the same factor.
 
         `status` holds the single-letter poller status and `statusLong` its label. `lastGood` and
-        `lastFail` are epoch milliseconds in JSON, not the `string/date-time` the derived schema
-        shows.
+        `lastFail` (poller) and `collectLastGood` and `collectLastFail` (collectd) are epoch
+        milliseconds in JSON, not the `string/date-time` the derived schema shows.
 
         Example query: `_s=status==A&orderBy=id`.""",
             operationId = "NodeMonitoredServiceRestServiceGETServices",
@@ -293,7 +293,9 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
                           "qualifier": null,
                           "notify": null,
                           "lastGood": null,
-                          "lastFail": null
+                          "lastFail": null,
+                          "collectLastGood": null,
+                          "collectLastFail": null
                         }
                       ]
                     }""")),
@@ -431,7 +433,9 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
                       "qualifier": null,
                       "notify": null,
                       "lastGood": null,
-                      "lastFail": null
+                      "lastFail": null,
+                      "collectLastGood": null,
+                      "collectLastFail": null
                     }""")),
                             @Content(mediaType = MediaType.APPLICATION_XML,
                                     schema = @Schema(implementation = OnmsMonitoredService.class),

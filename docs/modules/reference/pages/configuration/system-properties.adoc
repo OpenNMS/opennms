@@ -231,6 +231,10 @@ Many of the properties here are documented with much greater detail in their rel
 | Varies with OpenNMS version
 | Defines the Version of the Jasperreports libraryaused for database reports
 
+| `org.opennms.netmgt.collectd.disableCollectionTimestampTracking`
+| false
+| If true, collectd no longer records the completion time of each data collection in the `collectlastgood` and `collectlastfail` columns of the `ifservices` table, and the service page hides the corresponding rows
+
 | `org.opennms.netmgt.collectd.SnmpCollector.forceRescan`
 | false
 | Enable or disable the SNMP Collector's ability to force rescans when the interface count changes
