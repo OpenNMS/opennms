@@ -178,7 +178,7 @@ Where these diverge from PrimeVue, deliberately:
 
 ## Icons
 
-The icon set (262 template-only SVG SFCs, originally vendored from FeatherDS)
+The icon set (template-only SVG SFCs, originally vendored from FeatherDS)
 lives at `packages/onms-ui/src/icons/<category>/<Name>.vue`, alongside the
 `OnmsIcon` wrapper that renders it. It moved here from `ui/src/components/icons/`
 in NMS-20243: under the old `@/components/icons/...` path it was reachable only
@@ -193,7 +193,7 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 
 The 12 category directories (`account`, `action`, `communication`, `content`,
 `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
-`notification`, `status`) are part of the path. They matter: 22 basenames
+`notification`, `status`) are part of the path. They matter: several basenames
 (`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
 more than one category, so the category is what disambiguates them.
 
@@ -202,7 +202,7 @@ more than one category, so the category is what disambiguates them.
 Deliberate, and load-bearing. `ui/src/main/main.ts` does
 `import * as OnmsUI` and assigns that namespace object to `window.OnmsUI`. A
 namespace object cannot be tree-shaken — so **anything reachable from
-`index.ts` ships to every user unconditionally**. Exporting 262 icons from the
+`index.ts` ships to every user unconditionally**. Exporting every icon from the
 barrel would force the entire set into the core bundle even though a typical
 screen uses a handful.
 
