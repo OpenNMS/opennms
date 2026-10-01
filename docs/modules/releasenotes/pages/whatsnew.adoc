@@ -74,6 +74,7 @@ The biggest addition is a new Quick Start Guide that provides simple steps to se
 
 * support for the XML Management Protocol (XMP) has been removed
 * security-related HTTP headers (Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, Permissions-Policy, Referrer-Policy) were added in `web.xml`
+* writing OpenNMS configuration through the REST API (`POST`/`PUT`/`DELETE` on `/rest/config/**`, including the alarm northbounder configurations) now requires `ROLE_ADMIN`; previously an account with only `ROLE_REST` could write these. Update any integration that used a `ROLE_REST` account to change configuration to use a `ROLE_ADMIN` account. Reading configuration and all other `ROLE_REST` data operations are unchanged.
 
 === SNMP4J upgrade
 The SNMP4J library has been upgraded to version 2.8.15.

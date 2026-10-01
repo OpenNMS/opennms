@@ -68,7 +68,8 @@ Does not allow user to change alarm states or notifications.
 | Permissions to manage reports in the web UI and REST API.
 
 | ROLE_REST
-| Permissions to interact with the entire {page-component-title} REST API.
+| Permissions to interact with the {page-component-title} REST API. +
+Writing configuration through the REST API (the `/rest/config` endpoints) requires `ROLE_ADMIN`.
 
 | ROLE_RTC *
 | Permissions to exchange information with the {page-component-title} Real-Time Console for availability calculations.
