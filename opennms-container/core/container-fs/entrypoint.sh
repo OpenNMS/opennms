@@ -100,10 +100,12 @@ configTester() {
   ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
 }
 
+# Optional third argument: the legacy confd-era variable name, so the error names what the user may actually have set
 validateBool() {
-  local name="$1" value="$2"
+  local name="$1" value="$2" legacy="$3"
+  local label="${name}${legacy:+ (or legacy ${legacy})}"
   if [[ ! "${value,,}" =~ ^(true|false)$ ]]; then
-    echo "ERROR: ${name}='${value}' is not a valid boolean. Expected 'true' or 'false'." >&2
+    echo "ERROR: ${label}='${value}' is not a valid boolean. Expected 'true' or 'false'." >&2
     exit ${E_INIT_CONFIG}
   fi
   # Normalise the variable to lowercase (True/TRUE -> true); the confd-era parsers were case-insensitive
@@ -111,9 +113,10 @@ validateBool() {
 }
 
 validateInt() {
-  local name="$1" value="$2"
+  local name="$1" value="$2" legacy="$3"
+  local label="${name}${legacy:+ (or legacy ${legacy})}"
   if [[ ! "$value" =~ ^[0-9]+$ ]]; then
-    echo "ERROR: ${name}='${value}' is not a valid non-negative integer." >&2
+    echo "ERROR: ${label}='${value}' is not a valid non-negative integer." >&2
     exit ${E_INIT_CONFIG}
   fi
 }
@@ -262,12 +265,12 @@ processEnvConfig() {
 
     validateAddress  OPENNMS_TRAPD_ADDRESS             "$OPENNMS_TRAPD_ADDRESS"
     validateInt      OPENNMS_TRAPD_PORT                "$OPENNMS_TRAPD_PORT"
-    validateBool     OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP "$OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP"
-    validateBool     OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE "$OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE"
+    validateBool     OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP "$OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP" OPENNMS_TRAPD_NEWSUSPECTONTRAP
+    validateBool     OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE "$OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE" OPENNMS_TRAPD_INCLUDERAWMESSAGE
     validateInt      OPENNMS_TRAPD_THREADS             "$OPENNMS_TRAPD_THREADS"
-    validateInt      OPENNMS_TRAPD_QUEUE_SIZE          "$OPENNMS_TRAPD_QUEUE_SIZE"
-    validateInt      OPENNMS_TRAPD_BATCH_SIZE          "$OPENNMS_TRAPD_BATCH_SIZE"
-    validateInt      OPENNMS_TRAPD_BATCH_INTERVAL      "$OPENNMS_TRAPD_BATCH_INTERVAL"
+    validateInt      OPENNMS_TRAPD_QUEUE_SIZE          "$OPENNMS_TRAPD_QUEUE_SIZE"          OPENNMS_TRAPD_QUEUESIZE
+    validateInt      OPENNMS_TRAPD_BATCH_SIZE          "$OPENNMS_TRAPD_BATCH_SIZE"          OPENNMS_TRAPD_BATCHSIZE
+    validateInt      OPENNMS_TRAPD_BATCH_INTERVAL      "$OPENNMS_TRAPD_BATCH_INTERVAL"      OPENNMS_TRAPD_BATCHINTERVAL
 
     envsubst < "${CONTAINER_CONFIG_ETC}/templates/trapd-configuration.xml.tmpl" \
               > "${OPENNMS_HOME}/etc/trapd-configuration.xml"
