@@ -25,12 +25,12 @@ Exchange uses `/` as a separator, for example.
 
 Configure a readmail-test and a matching subject.
 Optionally, configure the test to delete all read mail.
-Do not do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
+Do this only if the folder receives mail from another system that cannot be covered by the end-to-end test.
 
 === Sending and receipt (end-to-end test) of a message
 
 Test your infrastructure's ability to send and receive email.
-It tests sending and receiving of an mail message via one or two separate mail servers.
+It tests sending and receiving of a mail message via one or two separate mail servers.
 For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.
 
 == Monitor facts

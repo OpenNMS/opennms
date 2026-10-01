@@ -31,7 +31,7 @@ Use this service to determine if the monitored node provides DNS resolution of r
 
 == Configuration and use
 
-.Monitor specific parameters for the DNSResolutionMonitor
+.Monitor-specific parameters for the DNSResolutionMonitor
 [options="header"]
 [cols="1,3a,2"]
 |===

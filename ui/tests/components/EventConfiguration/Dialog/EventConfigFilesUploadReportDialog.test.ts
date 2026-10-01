@@ -48,6 +48,10 @@ describe('EventConfigFilesUploadReportDialog', () => {
       isLoading: false,
       activeTab: 0,
       uploadedSources: [],
+      orderedSources: [],
+      catchAllSource: null,
+      isSavingSourceOrder: false,
+      sourcesReorderMode: false,
       createEventConfigSourceDialogState: { visible: false }
     }
 

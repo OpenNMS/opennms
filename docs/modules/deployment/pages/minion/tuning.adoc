@@ -91,7 +91,7 @@ WantedBy=multi-user.target
 LimitNOFILE=100000
 ----
 
-. If the minion is running when this change is made, it must be restarted to take effect.
+. If the Minion is running when this change is made, it must be restarted to take effect.
 +
 [source, console]
 ----
@@ -99,7 +99,7 @@ systemctl restart minion
 ----
 
 [[minion-loglevel]]
-== Adjusting the minion log level
+== Adjusting the Minion log level
 
 In many situations it can be beneficial to change the log level to be more or less verbose.
 Follow these steps to change it.
