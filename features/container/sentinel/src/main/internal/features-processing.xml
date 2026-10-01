@@ -283,9 +283,9 @@
     <bundle replacement="mvn:org.codehaus.jettison/jettison/${jettisonVersion}"
             originalUri="mvn:org.codehaus.jettison/jettison/[1,${jettisonVersion})" mode="maven" />
     <bundle replacement="mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}"
-            originalUri="mvn:io.dropwizard.metrics/metrics-core/[3,${dropwizardMetricsVersion})" mode="maven" />
+            originalUri="mvn:io.dropwizard.metrics/metrics-core/[3,10)" mode="maven" />
     <bundle replacement="mvn:io.dropwizard.metrics/metrics-jvm/${dropwizardMetricsVersion}"
-            originalUri="mvn:io.dropwizard.metrics/metrics-jvm/[3,${dropwizardMetricsVersion})" mode="maven" />
+            originalUri="mvn:io.dropwizard.metrics/metrics-jvm/[3,10)" mode="maven" />
     <bundle replacement="wrap:mvn:org.dom4j/dom4j/${dom4jVersion}"
             originalUri="mvn:dom4j/dom4j/[0,${dom4jVersion})" mode="maven" />
     <bundle replacement="mvn:org.jolokia/jolokia-osgi/${jolokiaVersion}"

@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -110,11 +111,19 @@ public class CollectionSetMapper {
         // Insertion-ordered so that, for a set which does not actually span topics, the single
         // group is emitted in the order the resources were visited.
         final Map<String, CollectionSetProtos.CollectionSet.Builder> buildersByTopic = new LinkedHashMap<>();
+        // Resources in one collection set almost always belong to a single node; resolve each
+        // distinct node criteria once per set rather than once per resource.
+        final Map<String, CollectionSetProtos.NodeLevelResource.Builder> nodesInThisSet = new HashMap<>();
 
         collectionSet.visit(new CollectionSetVisitor() {
             CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder;
             String lastGroupName = null;
             int currentNodeId;
+
+            private CollectionSetProtos.NodeLevelResource.Builder nodeFor(String nodeCriteria) {
+                return nodesInThisSet.computeIfAbsent(nodeCriteria,
+                        CollectionSetMapper.this::buildNodeLevelResourceForProto);
+            }
 
             @Override
             public void visitCollectionSet(CollectionSet set) {
@@ -142,7 +151,7 @@ public class CollectionSetMapper {
                 if (shouldPersist && (isNodeResource || !Strings.isNullOrEmpty(nodeCriteria))) {
                     // Node resources are built even from an unparseable criteria, so that they
                     // are still emitted (with node id 0) exactly as before.
-                    nodeResourceBuilder = buildNodeLevelResourceForProto(nodeCriteria);
+                    nodeResourceBuilder = nodeFor(nodeCriteria);
                 }
 
                 if (!shouldPersist) {

@@ -103,32 +103,27 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             byte[] sinkMessageContent = module.marshal(message);
             String messageId = UUID.randomUUID().toString();
             final String messageKey = module.getRoutingKey(message).orElse(messageId);
-            // Send this message to Kafka, If partition changed in between sending chunks of a larger message,
-            // try to send message again.
-            boolean partitionChanged = false;
-            do {
-                partitionChanged = sendMessage(topic, messageId, messageKey, sinkMessageContent);
-            } while (partitionChanged);
+            sendMessage(topic, messageId, messageKey, sinkMessageContent);
         }
     }
 
     /**
-     * This method will divide message into chunks and send each chunk to kafka.
-     * This will return false by default. If this is large buffer (total chunks > 1) and if different chunks have
-     * been sent to different partitions, method will return true indicating partition change in between.
+     * Divides the message into chunks and sends them to Kafka. The first chunk is partitioned by key; every
+     * following chunk is sent to that same partition explicitly, so one message never straddles partitions
+     * even if the partition count changes while it is being sent.
      * @param topic    The kafka topic message needs to be sent
      * @param messageId  The messageId message associated with
      * @param messageKey  The key used to route the message
      * @param sinkMessageContent  The sink message
-     * @return partitionChanged  return true if partition changed in between else return false by default.
      */
-    private boolean sendMessage(String topic, String messageId, String messageKey, byte[] sinkMessageContent) {
-        int partitionNum = INVALID_PARTITION;
-        boolean partitionChanged = false;
+    private void sendMessage(String topic, String messageId, String messageKey, byte[] sinkMessageContent) {
+        int partition = INVALID_PARTITION;
         int totalChunks = IntMath.divide(sinkMessageContent.length, maxBufferSize, RoundingMode.UP);
         for (int chunk = 0; chunk < totalChunks; chunk++) {
             byte[] messageInBytes = wrapMessageToProto(messageId, chunk, totalChunks, sinkMessageContent);
-            final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageKey, messageInBytes);
+            final ProducerRecord<String, byte[]> record = (chunk == 0)
+                    ? new ProducerRecord<>(topic, messageKey, messageInBytes)
+                    : new ProducerRecord<>(topic, partition, messageKey, messageInBytes);
             // Add tags to tracer active span.
             Span activeSpan = getTracer().activeSpan();
             if (activeSpan != null && (chunk + 1 == totalChunks)) {
@@ -137,15 +132,16 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 activeSpan.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             }
             // Keep sending record till it delivers successfully.
-            int partition = sendMessageChunkToKafka(topic, record);
-            if (totalChunks > 1 && chunk == 0) {
-                partitionNum = partition;
-            } else if (totalChunks > 1 && partitionNum != partition) {
-                partitionChanged = true;
-                break;
+            int sentTo = sendMessageChunkToKafka(topic, record);
+            if (sentTo == INVALID_PARTITION) {
+                if (totalChunks > 1) {
+                    LOG.error("Failed to send chunk {} of {} for message {} to topic {}, dropping the message.",
+                            chunk, totalChunks, messageId, topic);
+                }
+                return;
             }
+            partition = sentTo;
         }
-        return partitionChanged;
     }
 
     /**
@@ -265,12 +261,17 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     public Integer getMaxBufferSize() {
         int maxBufferSize = DEFAULT_MAX_BUFFER_SIZE;
-        String bufferSize = kafkaConfig.getProperty(MAX_BUFFER_SIZE_PROPERTY);
+        Object bufferSize = kafkaConfig.get(MAX_BUFFER_SIZE_PROPERTY);
         if (bufferSize != null) {
             try {
-                maxBufferSize = Integer.parseInt(bufferSize);
+                int configured = Integer.parseInt(bufferSize.toString().trim());
+                if (configured > 0) {
+                    maxBufferSize = configured;
+                } else {
+                    LOG.warn("Configured max buffer size {} is not positive, using default {}", configured, DEFAULT_MAX_BUFFER_SIZE);
+                }
             } catch (NumberFormatException ex){
-                LOG.warn("Configured max buffer size is not a number");
+                LOG.warn("Configured max buffer size '{}' is not a number, using default {}", bufferSize, DEFAULT_MAX_BUFFER_SIZE);
             }
         }
         return Math.min(DEFAULT_MAX_BUFFER_SIZE, maxBufferSize);
