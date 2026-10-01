@@ -219,7 +219,6 @@ import Sigma from 'sigma'
 import EdgeCurveProgram from '@sigma/edge-curve'
 import { createNodeImageProgram } from '@sigma/node-image'
 import { hasWebGL } from '@/components/Topology/webgl'
-import { drawDiscNodeLabel } from 'sigma/rendering'
 import { drawOnCanvas } from '@sigma/export-image'
 import { PALETTE_DRAG_MIME, type PaletteDragPayload } from '@/components/Topology/dragTypes'
 import { useTopologyStore } from '@/stores/topologyStore'
@@ -342,9 +341,11 @@ const toViewport = (point: { x: number; y: number }): { x: number; y: number } =
 // fattens further so the click target is generous right when you're aiming
 // at it (the affordance pattern Cytoscape/Grafana use). The edgeReducer is
 // the single place these are applied, so per-link creation sizes don't matter.
-const LINK_SIZE = 3
-const LINK_HOVER_SIZE = 6
-const LINK_SELECTED_SIZE = 4
+// Link thickness comes from the store; emphasis adds to it rather than
+// replacing it, so a thick link stays thicker than its neighbours when hovered.
+const linkSize = () => store.linkWidth
+const linkHoverSize = () => store.linkWidth + 3
+const linkSelectedSize = () => store.linkWidth + 1
 // Transient hovered link id (cleared on leave). Drives the reducer + cursor.
 const hoveredLinkId = ref<string | null>(null)
 
@@ -435,12 +436,17 @@ const MAX_HISTORY = 100
 const undoStack: Command[] = []
 const redoStack: Command[] = []
 
+// Bumped on every command, undo and redo: the page compares its saved and
+// live snapshots when this moves.
+const changeVersion = ref(0)
+
 const pushCommand = (cmd: Command) => {
   undoStack.push(cmd)
   if (undoStack.length > MAX_HISTORY) {
     undoStack.shift()
   }
   redoStack.length = 0
+  changeVersion.value++
 }
 
 const undo = () => {
@@ -450,6 +456,7 @@ const undo = () => {
   }
   cmd.undo()
   redoStack.push(cmd)
+  changeVersion.value++
 }
 
 const redo = () => {
@@ -459,6 +466,7 @@ const redo = () => {
   }
   cmd.do()
   undoStack.push(cmd)
+  changeVersion.value++
 }
 
 const clearHistory = () => {
@@ -471,6 +479,36 @@ const clearHistory = () => {
  * re-wiring interaction handlers. Shared by the mock rebuild and by
  * loadView so the renderer options stay in one place.
  */
+const ZOOMING_RATIO = 1.3
+// Shift+wheel: a quarter of a notch, so four make one plain notch.
+const FINE_ZOOMING_RATIO = Math.pow(ZOOMING_RATIO, 0.25)
+
+/**
+ * Shift+wheel zooms by a fraction of a step. Runs in the capture phase on the
+ * same element sigma listens on, and stops there, because browsers report
+ * Shift+wheel as a horizontal delta that sigma's own handler discards.
+ */
+const onFineZoomWheel = (e: WheelEvent) => {
+  if (!e.shiftKey || !sigma || !canvasEl.value) {
+    return
+  }
+  const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX
+  if (delta === 0) {
+    return
+  }
+  e.preventDefault()
+  e.stopImmediatePropagation()
+  const camera = sigma.getCamera()
+  const ratio = camera.getBoundedRatio(
+    camera.getState().ratio * (delta < 0 ? 1 / FINE_ZOOMING_RATIO : FINE_ZOOMING_RATIO)
+  )
+  const rect = canvasEl.value.getBoundingClientRect()
+  camera.animate(
+    sigma.getViewportZoomedState({ x: e.clientX - rect.left, y: e.clientY - rect.top }, ratio),
+    { easing: 'quadraticOut', duration: 120 }
+  )
+}
+
 const mountSigma = (g: Graph) => {
   if (sigma) {
     sigma.kill()
@@ -503,7 +541,7 @@ const mountSigma = (g: Graph) => {
     // Gentler zoom: sigma's defaults (1.7 per wheel notch, 2.2 per
     // double-click) jump roughly twice as far as feels right here. Using
     // ~the square root halves each step, so two steps cover what one did.
-    zoomingRatio: 1.3,
+    zoomingRatio: ZOOMING_RATIO,
     doubleClickZoomingRatio: 1.5,
     // This is a positioning editor: node x/y are absolute graph coordinates we
     // persist and expect to render consistently. Disable sigma's auto-rescale
@@ -522,8 +560,10 @@ const mountSigma = (g: Graph) => {
     edgeProgramClasses: {
       curved: EdgeCurveProgram
     },
-    // Theme-aware hover/selection halo (see drawThemedNodeHover).
+    // Theme-aware hover/selection halo (see drawThemedNodeHover), and labels
+    // placed where the view says (see drawPlacedNodeLabel).
     defaultDrawNodeHover: drawThemedNodeHover as never,
+    defaultDrawNodeLabel: drawPlacedNodeLabel as never,
     // Color placed nodes by their node's current alarm severity (held in
     // the store, refreshed on an interval in View mode). Nodes without a
     // known severity -- decorative/mock nodes, or before a status fetch --
@@ -580,10 +620,10 @@ const mountSigma = (g: Graph) => {
       // color rather than the same color slightly thicker.
       const base = { ...attrs, color: linkBaseColor(attrs.color) }
       if (edge === hoveredLinkId.value) {
-        return { ...base, color: accentColor(), size: LINK_HOVER_SIZE }
+        return { ...base, color: accentColor(), size: linkHoverSize() }
       }
       if ((attrs as { _selected?: boolean })._selected) {
-        return { ...base, color: accentColor(), size: LINK_SELECTED_SIZE }
+        return { ...base, color: accentColor(), size: linkSelectedSize() }
       }
       // A hovered or selected node emphasizes its own links: with many straight
       // lines crossing under nodes (a dual-homed fabric, say) it is otherwise
@@ -592,9 +632,9 @@ const mountSigma = (g: Graph) => {
         hoveredNodeId.value ??
         (store.selectedIds.length === 1 && g.hasNode(store.selectedIds[0]) ? store.selectedIds[0] : null)
       if (emphasisNode && (g.source(edge) === emphasisNode || g.target(edge) === emphasisNode)) {
-        return { ...base, color: accentColor(), size: LINK_SELECTED_SIZE }
+        return { ...base, color: accentColor(), size: linkSelectedSize() }
       }
-      return { ...base, size: LINK_SIZE }
+      return { ...base, size: linkSize() }
     }
   })
   // Pin a fixed coordinate frame. With autoRescale:false sigma still
@@ -621,6 +661,8 @@ const mountSigma = (g: Graph) => {
     sigma.refresh()
   })
   resizeObserver.observe(canvasEl.value)
+  canvasEl.value.removeEventListener('wheel', onFineZoomWheel, true)
+  canvasEl.value.addEventListener('wheel', onFineZoomWheel, { passive: false, capture: true })
   attachInteractionHandlers(sigma, g)
   applyViewStyle()
   // A webfont that lands after the first frame would leave canvas labels in
@@ -742,7 +784,8 @@ const loadView = (view: TopologyView) => {
   placedCount.value = placed.length
   store.setLabels(view.labels)
   store.setShapes(view.shapes ?? [])
-  store.setNodeSizeForCount(g.order) // density-based default node size
+  // Density-based default, which a saved size wins over (openView applied it).
+  store.sizeNodesForView(g.order)
 
   mountSigma(g)
   if (sigma) {
@@ -1565,7 +1608,12 @@ watch(
   { deep: true }
 )
 
-// Repaint when the node size changes (slider or density default).
+// Repaint when the link width or label placement changes.
+watch(
+  [() => store.linkWidth, () => store.labelPlacement],
+  () => sigma?.refresh()
+)
+
 watch(
   () => store.nodeSize,
   () => sigma?.refresh()
@@ -1961,6 +2009,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyDown)
+  canvasEl.value?.removeEventListener('wheel', onFineZoomWheel, true)
   endBackgroundDrag()
   endShapeDrag()
   window.removeEventListener('mousemove', onShapeDrawMove)
@@ -2543,10 +2592,46 @@ const HOVER_HALO_DARK = 'rgba(38, 44, 69, 0.85)'
  * a theme-aware halo, then sigma's own label routine on top (which already
  * follows the theme-aware labelColor set in applyViewStyle).
  */
+/**
+ * Where a label's anchor sits for the view's placement. Right is sigma's own
+ * geometry; below and above center the text under or over the node.
+ */
+const labelAnchor = (
+  data: { x: number; y: number; size: number },
+  labelSize: number
+): { x: number; y: number; align: 'left' | 'center' } => {
+  switch (store.labelPlacement) {
+    case 'bottom':
+      return { x: data.x, y: data.y + data.size + labelSize + 2, align: 'center' }
+    case 'top':
+      return { x: data.x, y: data.y - data.size - 4, align: 'center' }
+    default:
+      return { x: data.x + data.size + 3, y: data.y + labelSize / 3, align: 'left' }
+  }
+}
+
+/** Sigma's label drawer, with the anchor moved by the view's placement. */
+const drawPlacedNodeLabel = (
+  context: CanvasRenderingContext2D,
+  data: { x: number; y: number; size: number; label?: string | null },
+  settings: { labelSize: number; labelFont: string; labelWeight: string; labelColor: { color?: string }}
+) => {
+  if (!data.label) {
+    return
+  }
+  const { labelSize: size, labelFont: font, labelWeight: weight } = settings
+  const anchor = labelAnchor(data, size)
+  context.fillStyle = settings.labelColor.color ?? '#000'
+  context.font = `${weight} ${size}px ${font}`
+  context.textAlign = anchor.align
+  context.fillText(data.label, anchor.x, anchor.y)
+  context.textAlign = 'left'
+}
+
 const drawThemedNodeHover = (
   context: CanvasRenderingContext2D,
   data: { x: number; y: number; size: number; label?: string | null },
-  settings: { labelSize: number; labelFont: string; labelWeight: string }
+  settings: { labelSize: number; labelFont: string; labelWeight: string; labelColor: { color?: string }}
 ) => {
   const { labelSize: size, labelFont: font, labelWeight: weight } = settings
   context.font = `${weight} ${size}px ${font}`
@@ -2561,7 +2646,7 @@ const drawThemedNodeHover = (
   context.shadowColor = 'rgba(0, 0, 0, 0.35)'
 
   const PADDING = 2
-  if (typeof data.label === 'string') {
+  if (typeof data.label === 'string' && store.labelPlacement === 'right') {
     const textWidth = context.measureText(data.label).width
     const boxWidth = Math.round(textWidth + 5)
     const boxHeight = Math.round(size + 2 * PADDING)
@@ -2581,16 +2666,21 @@ const drawThemedNodeHover = (
     context.arc(data.x, data.y, data.size + PADDING, 0, Math.PI * 2)
     context.closePath()
     context.fill()
+    if (typeof data.label === 'string') {
+      // Label sits above or below: give it its own box under the text.
+      const textWidth = context.measureText(data.label).width
+      const anchor = labelAnchor(data, size)
+      context.beginPath()
+      context.rect(anchor.x - textWidth / 2 - PADDING - 1, anchor.y - size, textWidth + 2 * PADDING + 2, size + 2 * PADDING)
+      context.closePath()
+      context.fill()
+    }
   }
   context.shadowOffsetX = 0
   context.shadowOffsetY = 0
   context.shadowBlur = 0
 
-  drawDiscNodeLabel(
-    context,
-    data as Parameters<typeof drawDiscNodeLabel>[1],
-    settings as Parameters<typeof drawDiscNodeLabel>[2]
-  )
+  drawPlacedNodeLabel(context, data, settings)
 }
 
 /**
@@ -2803,7 +2893,8 @@ defineExpose({
   placeNeighbor,
   getNodeIconOverride,
   setNodeIconOverride,
-  exportImage
+  exportImage,
+  changeVersion
 })
 </script>
 
