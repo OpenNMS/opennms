@@ -82,10 +82,10 @@ TIP: Password or encryption algorithm changes happen immediately.
 It is not required to restart the Sentinel.
 
 TIP: By default the Karaf Shell is restricted to 127.0.0.1.
-If you want enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
+If you want to enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
 The change is applied immediately and a Sentinel restart is not required.
 If you have a firewall running on your host, allow `8301/tcp` to grant access to the Karaf Shell.
 
 == Set up flow processing
 
-Once you have Sentinel installed, see xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[scale flows data] to setup flow processing.
+Once you have Sentinel installed, see xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[scale flows data] to set up flow processing.

@@ -12,7 +12,7 @@ As an alternative to creating graphs within {page-component-title}, you can also
 
 == Graph definitions
 
-Graphs are defined in in the `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d` directory via `.properties` file.
+Graphs are defined in the `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d` directory via `.properties` file.
 These files are re-read whenever the "Resource Graphs" page is loaded in the Web UI and do not require restarting any daemons to apply changes.
 When the Resource Graphs page is loaded for a node, {page-component-title} will look at the available metrics for the node, and will only display graphs where there are metrics for the `columns` defined in the graph.
 Within the configuration files, each graph is referred to as a "report".

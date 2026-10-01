@@ -71,7 +71,7 @@ NOTE: GitHub's `open_issues_count` is the combined count of open issues *and* op
 | STRING
 |===
 
-TIP: It's best to Keep names short to avoid the 19 character limit of RRDs.
+TIP: It's best to keep names short to avoid the 19 character limit of RRDs.
 
 === Configuration
 
@@ -140,7 +140,7 @@ Create (or reuse) a requisition and add a node representing the API:
 * *Interface*: any reachable address; the URL ignores it
 * *Service*: `GitHubRepoStats` (must match the service `name` in `collectd-configuration.xml`) 
 
-TIP: The entire 127.0.0.0/8 is available and references localhost. It works well for these kind of applications.
+TIP: The entire 127.0.0.0/8 is available and references localhost. It works well for this kind of application.
 
 Synchronize the requisition once the node has been added.
 
