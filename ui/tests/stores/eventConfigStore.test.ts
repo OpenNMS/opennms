@@ -10,6 +10,11 @@ import {
 } from '@/services/eventConfigService'
 import { EventConfigSource, UploadedSourceNamesResponse } from '@/types/eventConfig'
 
+const mockShowSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: mockShowSnackBar, hideSnackbar: vi.fn() })
+}))
+
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigSourceStatus: vi.fn(),
   filterEventConfigSources: vi.fn(),
@@ -503,13 +508,16 @@ describe('useEventConfigStore', () => {
       expect(store.sourcesReorderMode).toBe(false)
     })
 
-    it('fetchOrderedSources clears the lists on failure', async () => {
+    it('fetchOrderedSources failure leaves the reorder mode and says why', async () => {
       vi.mocked(getOrderedEventConfigSources).mockRejectedValue(new Error('boom'))
 
-      await store.fetchOrderedSources()
+      await store.startSourcesReorder()
 
       expect(store.orderedSources).toEqual([])
       expect(store.catchAllSource).toBeNull()
+      // an empty reorder view with no explanation is worse than no reorder view
+      expect(store.sourcesReorderMode).toBe(false)
+      expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the source order. Try again.', error: true })
     })
 
     it('saveSourcesOrder refreshes the table on success', async () => {

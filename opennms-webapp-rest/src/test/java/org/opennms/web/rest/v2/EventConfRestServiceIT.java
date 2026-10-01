@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
@@ -109,6 +110,12 @@ public class EventConfRestServiceIT {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+
+    @Autowired
+    private org.opennms.netmgt.config.api.EventConfDao eventConfDao;
+
+    @Autowired
+    private org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
 
     @Before
     public void setUp() {
@@ -1604,6 +1611,46 @@ public class EventConfRestServiceIT {
         request.setMode(mode);
         request.setPosition(position);
         return request;
+    }
+
+    /**
+     * The feature's actual promise: reordering changes which of two overlapping definitions the
+     * in-memory configuration matches first, not just the {@code eventOrder} column.
+     */
+    @Test
+    @Transactional
+    public void testReorderChangesWhichDefinitionWins() throws Exception {
+        final EventConfSource source = createSource("match-order.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/matchorder/shared";
+        final String eventXmlTemplate = """
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>%s</uei>
+                   <event-label>%s</event-label>
+                   <descr>d</descr>
+                   <severity>Normal</severity>
+                </event>
+                """;
+        eventConfRestApi.addEventConfSourceEvent(source.getId(),
+                JaxbUtils.unmarshal(Event.class, eventXmlTemplate.formatted(uei, "First definition")), securityContext);
+        eventConfRestApi.addEventConfSourceEvent(source.getId(),
+                JaxbUtils.unmarshal(Event.class, eventXmlTemplate.formatted(uei, "Second definition")), securityContext);
+        flushAndClear();
+
+        EventConfServiceHelper.reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+        assertEquals("First definition", eventConfDao.findByUei(uei).getEventLabel());
+
+        // swap the two with the full-list PUT and reload, exactly as the UI save does
+        final List<Long> reversed = new ArrayList<>(eventIdsByOrder(source.getId()));
+        Collections.reverse(reversed);
+        final Response resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(reversed), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        flushAndClear();
+
+        EventConfServiceHelper.reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+        assertEquals("the definition moved to the top matches first",
+                "Second definition", eventConfDao.findByUei(uei).getEventLabel());
     }
 
 }

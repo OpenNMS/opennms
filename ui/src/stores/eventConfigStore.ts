@@ -1,3 +1,4 @@
+import useSnackbar from '@/composables/useSnackbar'
 import { EVENT_CONF_CATCH_ALL_SOURCE } from '@/lib/utils'
 import {
   changeEventConfigSourceStatus,
@@ -170,6 +171,10 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         console.error('Error fetching ordered event configuration sources:', error)
         this.orderedSources = []
         this.catchAllSource = null
+        // without the current order there is nothing to edit: leave the mode instead of
+        // showing an inexplicable empty list
+        this.stopSourcesReorder()
+        useSnackbar().showSnackBar({ msg: 'Failed to load the source order. Try again.', error: true })
       } finally {
         this.isLoading = false
       }

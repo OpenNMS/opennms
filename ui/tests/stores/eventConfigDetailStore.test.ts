@@ -12,6 +12,11 @@ import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+const mockShowSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: mockShowSnackBar, hideSnackbar: vi.fn() })
+}))
+
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigEventStatus: vi.fn(),
   changeEventConfigSourceStatus: vi.fn(),
@@ -572,13 +577,16 @@ describe('useEventConfigDetailStore', () => {
       expect(store.eventsReorderMode).toBe(false)
     })
 
-    it('fetchOrderedEvents clears the list on failure', async () => {
+    it('fetchOrderedEvents failure leaves the reorder mode and says why', async () => {
       store.selectedSource = mockSource
       vi.mocked(getOrderedEventConfigEvents).mockRejectedValue(new Error('boom'))
 
-      await store.fetchOrderedEvents()
+      await store.startEventsReorder()
 
       expect(store.orderedEvents).toEqual([])
+      // an empty reorder view with no explanation is worse than no reorder view
+      expect(store.eventsReorderMode).toBe(false)
+      expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the event order. Try again.', error: true })
     })
 
     it('saveEventsOrder refreshes the table page on success', async () => {

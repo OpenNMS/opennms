@@ -1,4 +1,5 @@
 import { Severity } from '@/components/EventConfigEventCreate/constants'
+import useSnackbar from '@/composables/useSnackbar'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
@@ -189,6 +190,10 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       } catch (error) {
         console.error('Error fetching ordered event configuration events:', error)
         this.orderedEvents = []
+        // without the current order there is nothing to edit: leave the mode instead of
+        // showing an inexplicable empty list
+        this.stopEventsReorder()
+        useSnackbar().showSnackBar({ msg: 'Failed to load the event order. Try again.', error: true })
       } finally {
         this.isLoading = false
       }
