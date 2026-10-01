@@ -27,27 +27,35 @@ import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 
 /**
- * beforeEnter guard for a route restricted to a role, e.g.
- * `beforeEnter: requireRole(adminRole, 'Must be admin to ...')`.
+ * beforeEnter guard for a route that is only allowed once some state has
+ * loaded, e.g. the user's roles or the main menu config.
  *
- * whoAmI loads asynchronously at app start (App.vue), so on a direct load or a
- * refresh the roles are not known yet when the first navigation runs. Waiting
- * for them here means the page never mounts for a user without the role, so it
- * never fires requests the server will refuse. (authStore sets `loaded` even
- * when whoAmI fails, so this cannot hang.)
+ * That state loads asynchronously at app start (App.vue), so on a direct load
+ * or a refresh it is not known yet when the first navigation runs. Waiting for
+ * it here means the page never mounts for a user who is not allowed, so it
+ * never fires requests the server will refuse. `isReady` must become true even
+ * when the load fails, or the navigation never resolves.
  *
  * The redirect is returned rather than done with router.push() inside the
  * guard: an in-app navigation is cancelled, leaving the user where they were;
  * the first navigation of a fresh load has nowhere to stay, so it goes home.
  */
-export const requireRole = (hasRole: Ref<boolean>, deniedMsg: string): NavigationGuard => async (_to, from) => {
-  const { rolesAreLoaded } = useRole()
-  await until(rolesAreLoaded).toBe(true)
+export const requireCondition = (isReady: Ref<boolean>, isAllowed: Ref<boolean>, deniedMsg: string): NavigationGuard =>
+  async (_to, from) => {
+    await until(isReady).toBe(true)
 
-  if (hasRole.value) {
-    return true
+    if (isAllowed.value) {
+      return true
+    }
+
+    useSnackbar().showSnackBar({ msg: deniedMsg, error: true })
+    return from.matched.length ? false : '/'
   }
 
-  useSnackbar().showSnackBar({ msg: deniedMsg, error: true })
-  return from.matched.length ? false : '/'
-}
+/**
+ * beforeEnter guard for a route restricted to a role, e.g.
+ * `beforeEnter: requireRole(adminRole, 'Must be admin to ...')`.
+ * (authStore sets `loaded` even when whoAmI fails, so this cannot hang.)
+ */
+export const requireRole = (hasRole: Ref<boolean>, deniedMsg: string): NavigationGuard =>
+  requireCondition(useRole().rolesAreLoaded, hasRole, deniedMsg)

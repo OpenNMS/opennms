@@ -20,13 +20,13 @@
 /// License.
 ///
 
-import { requireRole } from '@/main/router/guards'
+import { requireCondition, requireRole } from '@/main/router/guards'
 import useRole from '@/composables/useRole'
 import { useAuthStore } from '@/stores/authStore'
 import { WhoAmIResponse } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import { RouteLocationNormalized, START_LOCATION } from 'vue-router'
 
 const { showSnackBar } = vi.hoisted(() => ({ showSnackBar: vi.fn() }))
@@ -87,6 +87,47 @@ describe('requireRole', () => {
 
     authStore.whoAmI = { roles: ['ROLE_ADMIN'] } as WhoAmIResponse
     authStore.loaded = true
+    await pending
+
+    expect(decided).toBe(true)
+  })
+})
+
+describe('requireCondition', () => {
+  beforeEach(() => {
+    showSnackBar.mockClear()
+  })
+
+  const guardFor = (isReady: boolean, isAllowed: boolean) => {
+    const ready = ref(isReady)
+    const allowed = ref(isAllowed)
+    const guard = requireCondition(ready, allowed, 'Not allowed.') as (...args: unknown[]) => Promise<unknown>
+    return { ready, allowed, run: (from: RouteLocationNormalized) => guard(to, from, () => undefined) }
+  }
+
+  it('lets the navigation through when the condition holds', async () => {
+    expect(await guardFor(true, true).run(fromInApp)).toBe(true)
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('cancels an in-app navigation, or sends a fresh load home, when it does not', async () => {
+    expect(await guardFor(true, false).run(fromInApp)).toBe(false)
+    expect(await guardFor(true, false).run(fromFreshLoad)).toBe('/')
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Not allowed.', error: true })
+  })
+
+  it('waits until ready and decides on the value at that point', async () => {
+    const { ready, allowed, run } = guardFor(false, false)
+
+    let decided: unknown = 'pending'
+    const pending = run(fromFreshLoad).then((result) => {
+      decided = result
+    })
+    await nextTick()
+    expect(decided).toBe('pending')
+
+    allowed.value = true
+    ready.value = true
     await pending
 
     expect(decided).toBe(true)
