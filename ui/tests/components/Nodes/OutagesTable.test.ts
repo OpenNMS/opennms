@@ -23,7 +23,7 @@
 import OutagesTable from '@/components/Nodes/OutagesTable.vue'
 import NodeDownloadDropdown from '@/components/Nodes/NodeDownloadDropdown.vue'
 import { OnmsTag } from '@opennms/onms-ui'
-import { useNodeStore } from '@/stores/nodeStore'
+import { useOutageStore } from '@/stores/outageStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
@@ -59,14 +59,21 @@ const mockOutage = {
 
 describe('OutagesTable.vue', () => {
   let wrapper: VueWrapper<any>
-  let nodeStore: ReturnType<typeof useNodeStore>
+  let outageStore: ReturnType<typeof useOutageStore>
+
+  // Seed the store's node slice as a successful fetch for `nodeId` would leave it.
+  const setNodeOutages = (outages: unknown[], totalCount = outages.length, nodeId = mockNodeId) => {
+    outageStore.nodeOutages = outages as any
+    outageStore.nodeOutagesTotalCount = totalCount
+    outageStore.nodeOutagesNodeId = nodeId
+  }
 
   // The store action must be mocked BEFORE mounting — the component fetches in
   // onMounted, and an unmocked action would fire a real network request.
   const mountTable = () => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
-    nodeStore = useNodeStore(pinia)
-    nodeStore.getNodeOutages = vi.fn().mockResolvedValue(undefined)
+    outageStore = useOutageStore(pinia)
+    outageStore.getNodeOutages = vi.fn().mockResolvedValue({ success: true, message: '' })
     useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as any
 
     return mount(OutagesTable, {
@@ -89,8 +96,7 @@ describe('OutagesTable.vue', () => {
     vi.clearAllMocks()
     ;(useRoute() as any).params.id = mockNodeId
     wrapper = mountTable()
-    nodeStore.outages = []
-    nodeStore.outagesTotalCount = 0
+    setNodeOutages([], 0)
     await flushPromises()
     await nextTick()
   })
@@ -116,8 +122,7 @@ describe('OutagesTable.vue', () => {
     })
 
     it('renders rows for each outage, and no longer the host name', async () => {
-      nodeStore.outages = [mockOutage] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([mockOutage], 1)
       await nextTick()
 
       const rows = wrapper.findAll('tbody tr')
@@ -151,8 +156,7 @@ describe('OutagesTable.vue', () => {
 
   describe('Cell links', () => {
     const cellLinks = async () => {
-      nodeStore.outages = [mockOutage] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([mockOutage], 1)
       await nextTick()
 
       return wrapper.findAll('tbody tr td a')
@@ -183,8 +187,7 @@ describe('OutagesTable.vue', () => {
     })
 
     it('shows N/A without a link when the outage has no IP address or known service', async () => {
-      nodeStore.outages = [{ id: 1, serviceId: 99 }] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([{ id: 1, serviceId: 99 }], 1)
       await nextTick()
 
       const cells = wrapper.findAll('tbody tr td')
@@ -195,8 +198,7 @@ describe('OutagesTable.vue', () => {
     })
 
     it('shows a known service name without a link when the outage has no IP address', async () => {
-      nodeStore.outages = [{ id: 1, serviceId: 3, monitoredService: { serviceType: { name: 'ICMP' }}}] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([{ id: 1, serviceId: 3, monitoredService: { serviceType: { name: 'ICMP' }}}], 1)
       await nextTick()
 
       const cells = wrapper.findAll('tbody tr td')
@@ -209,8 +211,7 @@ describe('OutagesTable.vue', () => {
     // An ongoing outage has no regained time; it kept showing N/A before the dates were
     // formatted and should keep doing so.
     it('shows N/A for a missing lost or regained time', async () => {
-      nodeStore.outages = [{ id: 1 }] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([{ id: 1 }], 1)
       await nextTick()
 
       const cells = wrapper.findAll('tbody tr td')
@@ -220,8 +221,7 @@ describe('OutagesTable.vue', () => {
 
     // An outage with no regained time is still down, so its lost time is called out.
     it('tags the lost time as danger while the outage is unresolved', async () => {
-      nodeStore.outages = [{ id: 1, ifLostService: 1700000000000 }] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([{ id: 1, ifLostService: 1700000000000 }], 1)
       await nextTick()
 
       const tag = wrapper.findComponent(OnmsTag)
@@ -231,16 +231,14 @@ describe('OutagesTable.vue', () => {
     })
 
     it('leaves the lost time untagged once the outage has been regained', async () => {
-      nodeStore.outages = [mockOutage] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([mockOutage], 1)
       await nextTick()
 
       expect(wrapper.findComponent(OnmsTag).exists()).toBe(false)
     })
 
     it('renders the lost and regained times through the date directive', async () => {
-      nodeStore.outages = [mockOutage] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([mockOutage], 1)
       await nextTick()
 
       const cells = wrapper.findAll('tbody tr td')
@@ -283,19 +281,18 @@ describe('OutagesTable.vue', () => {
     // The download is the page the paginator is showing, which the store already holds: no
     // second request, and no way for the file to disagree with the table.
     it('exports the rows the table is showing without another request', async () => {
-      nodeStore.outages = [mockOutage] as any
-      nodeStore.outagesTotalCount = 1
+      setNodeOutages([mockOutage], 1)
       vi.clearAllMocks()
 
       await runDownload('Download CSV...')
 
-      expect(nodeStore.getNodeOutages).not.toHaveBeenCalled()
+      expect(outageStore.getNodeOutages).not.toHaveBeenCalled()
       expect(downloadNames).toEqual(['Outages.csv'])
       expect(await blobs[0].text()).toContain(String(mockOutage.id))
     })
 
     it('downloads a CSV of every outage field', async () => {
-      nodeStore.outages = [{ id: 2435, ipAddress: '10.0.0.44' }] as any
+      setNodeOutages([{ id: 2435, ipAddress: '10.0.0.44' }])
 
       await runDownload('Download CSV...')
 
@@ -307,7 +304,7 @@ describe('OutagesTable.vue', () => {
     // Log messages and service names come from traps and syslog, so a leading = + - @ or tab
     // would execute as a formula when the file is opened in a spreadsheet.
     it('neutralises spreadsheet formulas in CSV text cells', async () => {
-      nodeStore.outages = [{ id: 1, ipAddress: '=cmd|calc!A1' }] as any
+      setNodeOutages([{ id: 1, ipAddress: '=cmd|calc!A1' }])
 
       await runDownload('Download CSV...')
 
@@ -316,7 +313,7 @@ describe('OutagesTable.vue', () => {
 
     // A number cannot be a formula, and guarding one would corrupt a legitimate negative.
     it('leaves negative numbers alone', async () => {
-      nodeStore.outages = [{ id: -5, ipAddress: '10.0.0.44' }] as any
+      setNodeOutages([{ id: -5, ipAddress: '10.0.0.44' }])
 
       await runDownload('Download CSV...')
 
@@ -326,10 +323,10 @@ describe('OutagesTable.vue', () => {
     // Only serviceType used to be special-cased, so an outage's monitoredService landed in one
     // cell as a JSON blob.
     it('expands nested objects into their own CSV columns', async () => {
-      nodeStore.outages = [{
+      setNodeOutages([{
         id: 1,
         monitoredService: { id: 99, serviceType: { id: 3, name: 'ICMP' }}
-      }] as any
+      }])
 
       await runDownload('Download CSV...')
 
@@ -340,7 +337,7 @@ describe('OutagesTable.vue', () => {
     })
 
     it('downloads JSON of the full outage records', async () => {
-      nodeStore.outages = [mockOutage] as any
+      setNodeOutages([mockOutage])
 
       await runDownload('Download JSON...')
 
@@ -350,7 +347,7 @@ describe('OutagesTable.vue', () => {
     })
 
     it('shows an error snackbar and downloads nothing when the node has no outages', async () => {
-      nodeStore.outages = [] as any
+      setNodeOutages([])
 
       await runDownload('Download CSV...')
 
@@ -364,17 +361,24 @@ describe('OutagesTable.vue', () => {
       ;(useRoute() as any).params.id = '99'
       await flushPromises()
 
-      expect(nodeStore.getNodeOutages).toHaveBeenCalledWith({
-        id: '99',
-        queryParameters: { limit: 5, offset: 0 }
-      })
+      expect(outageStore.getNodeOutages).toHaveBeenLastCalledWith('99', { limit: 5, offset: 0 })
+    })
+
+    // The store's slice is replaced only on success, so until node 99's outages arrive -- or
+    // when they fail to -- it still holds node 42's. Those must not be shown under node 99.
+    it('shows nothing until the store holds the new node\'s outages', async () => {
+      setNodeOutages([mockOutage], 1, mockNodeId)
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+
+      expect(wrapper.findAll('tbody tr td a')).toHaveLength(0)
+      expect(wrapper.findComponent({ name: 'EmptyList' }).exists()).toBe(true)
     })
   })
 
   describe('Empty state', () => {
     it('shows EmptyList when there are no rows', async () => {
-      nodeStore.outages = []
-      nodeStore.outagesTotalCount = 0
+      setNodeOutages([], 0)
       await nextTick()
 
       expect(wrapper.findComponent({ name: 'EmptyList' }).exists()).toBe(true)
@@ -389,11 +393,9 @@ describe('OutagesTable.vue', () => {
       await flushPromises()
       await nextTick()
 
-      expect(nodeStore.getNodeOutages).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: mockNodeId,
-          queryParameters: expect.objectContaining({ offset: 0, limit: 5 })
-        })
+      expect(outageStore.getNodeOutages).toHaveBeenCalledWith(
+        mockNodeId,
+        expect.objectContaining({ offset: 0, limit: 5 })
       )
 
       localWrapper.unmount()
@@ -405,14 +407,9 @@ describe('OutagesTable.vue', () => {
       await wrapper.vm.onPage({ first: 10, rows: 10, page: 1, pageCount: 2 } as any)
       await flushPromises()
 
-      expect(nodeStore.getNodeOutages).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: mockNodeId,
-          queryParameters: expect.objectContaining({
-            offset: 10,
-            limit: 10
-          })
-        })
+      expect(outageStore.getNodeOutages).toHaveBeenLastCalledWith(
+        mockNodeId,
+        expect.objectContaining({ offset: 10, limit: 10 })
       )
     })
 
@@ -420,9 +417,7 @@ describe('OutagesTable.vue', () => {
       await wrapper.vm.onPage({ first: 0, rows: 10, page: 0, pageCount: 1 } as any)
       await flushPromises()
 
-      expect(nodeStore.getNodeOutages).toHaveBeenCalledWith(
-        expect.objectContaining({ id: mockNodeId })
-      )
+      expect(outageStore.getNodeOutages).toHaveBeenLastCalledWith(mockNodeId, expect.anything())
     })
   })
 })

@@ -1,4 +1,5 @@
 <template>
+  <NodeScheduledOutagesBox />
   <NodeStatusBox />
 
   <!--
@@ -34,6 +35,7 @@
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
 import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'
+import NodeScheduledOutagesBox from '@/components/Nodes/NodeScheduledOutagesBox.vue'
 import NodeStatusBox from '@/components/Nodes/NodeStatusBox.vue'
 import { Node } from '@/types'
 

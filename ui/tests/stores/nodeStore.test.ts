@@ -30,7 +30,6 @@ vi.mock('@/services', () => ({
   default: {
     getSnmpInterfaces: vi.fn(),
     getIpInterfaces: vi.fn(),
-    getNodeOutages: vi.fn(),
     getNodeById: vi.fn(),
     getNodeIpInterfaces: vi.fn(),
     getNodeSnmpInterfaces: vi.fn(),
@@ -343,21 +342,6 @@ describe('nodeStore getNodeById', () => {
     expect(store.snmpInterfacesTotalCount).toBe(0)
   })
 
-  // Everything this store holds is scoped to the node that failed to load, so none of it
-  // should stay on screen under an id that has no node. Events belong to their own store and
-  // are cleared by the page.
-  it('clears the outages when the request fails', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
-    const store = useNodeStore()
-    store.outages = [{ id: 1 }] as never
-    store.outagesTotalCount = 1
-
-    await store.getNodeById({ id: '99' } as Node)
-
-    expect(store.outages).toEqual([])
-    expect(store.outagesTotalCount).toBe(0)
-  })
-
   it('clears the failure flag when a later fetch succeeds', async () => {
     vi.mocked(API.getNodeById).mockResolvedValue(false as never)
     const store = useNodeStore()
@@ -463,7 +447,7 @@ describe('nodeStore stale node responses', () => {
       .mockImplementationOnce(() => first.promise as never)
       .mockImplementationOnce(() => second.promise as never)
     const store = useNodeStore()
-    store.outages = [{ id: 7 }] as never
+    store.ipInterfaces = [{ id: 7 }] as never
 
     const firstCall = store.getNodeById({ id: '1' } as Node)
     const secondCall = store.getNodeById({ id: '2' } as Node)
@@ -475,7 +459,7 @@ describe('nodeStore stale node responses', () => {
 
     expect(store.node).toEqual({ id: '2', label: 'node-2' })
     expect(store.nodeLoadFailed).toBe(false)
-    expect(store.outages).toEqual([{ id: 7 }])
+    expect(store.ipInterfaces).toEqual([{ id: 7 }])
   })
 
   // A stale address here builds admin/updateSnmp.jsp for an address that is not the node's.
@@ -629,21 +613,5 @@ describe('nodeStore stale panel responses', () => {
 
     expect(store.ipInterfaces).toEqual([{ id: 'ip2' }])
     expect(store.ipInterfacesTotalCount).toBe(1)
-  })
-
-  it('discards superseded outages', async () => {
-    const { first, second } = racePair(vi.mocked(API.getNodeOutages) as never)
-    const store = useNodeStore()
-
-    const firstCall = store.getNodeOutages({ id: '1' })
-    const secondCall = store.getNodeOutages({ id: '2' })
-
-    second.resolve({ outage: [{ id: 2 }], totalCount: 1 } as never)
-    await secondCall
-    first.resolve({ outage: [{ id: 1 }], totalCount: 9 } as never)
-    await firstCall
-
-    expect(store.outages).toEqual([{ id: 2 }])
-    expect(store.outagesTotalCount).toBe(1)
   })
 })

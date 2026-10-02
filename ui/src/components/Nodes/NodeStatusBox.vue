@@ -1,7 +1,6 @@
 <template>
-  <div
-    class="node-status"
-    :class="`node-status--${bannerSeverity}`"
+  <NodeDetailsBanner
+    :severity="severity"
     role="status"
     data-test="node-status"
   >
@@ -26,16 +25,17 @@
       data-test="node-status-unavailable"
     >Node status is unavailable.</span>
     <span v-else>Checking node status&hellip;</span>
-  </div>
+  </NodeDetailsBanner>
 </template>
 
 <script setup lang="ts">
-import { computed, onActivated, onDeactivated, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDocumentVisibility, useIntervalFn } from '@vueuse/core'
+import useVisiblePolling from '@/composables/useVisiblePolling'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { computeNodeStatus, NodeStatus } from './nodeStatus'
+import NodeDetailsBanner from './NodeDetailsBanner.vue'
+import { BannerSeverity, bannerSeverity, computeNodeStatus, NodeStatus } from './nodeStatus'
 
 // How often the status is refreshed while it is on screen. The JSP worked it out once per page
 // load; the alarms behind it change without the page knowing, so this one keeps up.
@@ -59,7 +59,7 @@ const status = computed<NodeStatus | undefined>(() => (isThisNode.value ? comput
 const loadFailed = computed<boolean>(() => !isThisNode.value && lastFetchFailed.value)
 
 // Before the first answer there is no severity to show, so the banner stays neutral.
-const bannerSeverity = computed<string>(() => (status.value ? status.value.severity.toLowerCase() : 'none'))
+const severity = computed<BannerSeverity>(() => bannerSeverity(status.value?.severity))
 
 const problems = (count: number) => (count === 1 ? 'problem' : 'problems')
 
@@ -83,69 +83,9 @@ const fetchStatus = async () => {
   }
 }
 
-const visibility = useDocumentVisibility()
-const { pause, resume } = useIntervalFn(fetchStatus, POLL_INTERVAL_MS, { immediate: false })
-
-// Poll only while someone can see it: not while the browser tab is hidden, and not while the
-// Main tab is switched away (KeepAlive keeps this component, and its timer, alive).
-const active = ref(true)
-
-watch([active, visibility], ([isActive, vis]) => {
-  if (isActive && vis === 'visible') {
-    resume()
-  } else {
-    pause()
-  }
-}, { immediate: true })
-
-onActivated(() => {
-  // Coming back after a while: refresh now rather than up to a minute from now.
-  if (!active.value) {
-    fetchStatus()
-  }
-
-  active.value = true
-})
-
-onDeactivated(() => {
-  active.value = false
-})
+useVisiblePolling(fetchStatus, POLL_INTERVAL_MS)
 
 watch(nodeId, fetchStatus, { immediate: true })
 
 defineExpose({ fetchStatus })
 </script>
-
-<style lang="scss" scoped>
-@use '@/styles/onms-tokens' as variables;
-@use '@/styles/onms-color-utils' as utils;
-
-.node-status {
-  border: 1px solid var(--p-content-border-color);
-  border-left-width: 6px;
-  border-radius: 5px;
-  padding: 0.75em 1em;
-  margin-bottom: 15px;
-  background: var(--p-content-background);
-
-  a {
-    color: inherit;
-    text-decoration: underline;
-  }
-}
-
-$severity-tokens: (
-  'normal': variables.$success,
-  'warning': variables.$warning,
-  'minor': variables.$minor,
-  'major': variables.$major,
-  'critical': variables.$error
-);
-
-@each $name, $token in $severity-tokens {
-  .node-status--#{$name} {
-    border-left-color: var(#{$token});
-    background: utils.alpha($token, 0.2);
-  }
-}
-</style>

@@ -23,12 +23,12 @@
 import {
   getNodes,
   getNodeById,
-  getNodeOutages,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
 import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
+import { getNodeOutages, getOutages } from './outageService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
 import { getServiceTypes } from './serviceTypes'
@@ -135,6 +135,7 @@ export default {
   modifyAlarm,
   getNodeById,
   getNodeOutages,
+  getOutages,
   getNodeIfServices,
   getIpInterfaces,
   getNodeIpInterfaceQuery,

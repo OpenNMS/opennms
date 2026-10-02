@@ -22,6 +22,17 @@
 
 import { Alarm } from '@/types'
 
+// The tints NodeDetailsBanner offers. Indeterminate and cleared are never a node's status here --
+// they are not problems -- so they have none of their own.
+export type BannerSeverity = 'none' | 'normal' | 'warning' | 'minor' | 'major' | 'critical'
+
+/** The banner tint for an OnmsSeverity name; `none` for one that has no tint. */
+export const bannerSeverity = (severity: string | undefined): BannerSeverity => {
+  const key = (severity ?? '').toLowerCase()
+
+  return (['normal', 'warning', 'minor', 'major', 'critical'] as const).find(s => s === key) ?? 'none'
+}
+
 /**
  * A node's at-a-glance status, worked out from its alarms the way the legacy
  * includes/nodeStatus-box.jsp did.

@@ -49,6 +49,7 @@ describe('NodeDetails.vue', () => {
           NodeDetailsHeader: true,
           NodeNotificationsPanel: true,
           NodeStatusBox: true,
+          NodeScheduledOutagesBox: true,
           NodeDetailsDialog: true,
           EventsTable: true,
           OutagesTable: true,
@@ -118,6 +119,7 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeStatusBox' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeScheduledOutagesBox' }).exists()).toBe(true)
   })
 
   describe('Main / Additional tabs', () => {

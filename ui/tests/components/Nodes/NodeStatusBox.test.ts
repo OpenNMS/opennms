@@ -94,7 +94,7 @@ describe('NodeStatusBox.vue', () => {
     })
 
     expect(wrapper.text()).toContain('Checking node status')
-    expect(wrapper.classes()).toContain('node-status--none')
+    expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--none')
   })
 
   it('shows a node with no problems as normal, without counts', async () => {
@@ -102,7 +102,7 @@ describe('NodeStatusBox.vue', () => {
     await flushPromises()
 
     expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problems.')
-    expect(wrapper.classes()).toContain('node-status--normal')
+    expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--normal')
     expect(wrapper.find('[data-test="node-status-unack-link"]').exists()).toBe(false)
   })
 
@@ -110,7 +110,7 @@ describe('NodeStatusBox.vue', () => {
     const wrapper = mountBox(() => answerWith([major, acked]))
     await flushPromises()
 
-    expect(wrapper.classes()).toContain('node-status--major')
+    expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--major')
     expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has 1 service down.')
     expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There is 1 unacknowledged problem, and 1 acknowledged problem.')
     expect(wrapper.find('[data-test="node-status-unack-link"]').attributes('href'))
@@ -131,7 +131,7 @@ describe('NodeStatusBox.vue', () => {
     await flushPromises()
 
     expect(wrapper.find('[data-test="node-status-unavailable"]').exists()).toBe(true)
-    expect(wrapper.classes()).toContain('node-status--none')
+    expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--none')
   })
 
   // A minute-old status says more than none.
