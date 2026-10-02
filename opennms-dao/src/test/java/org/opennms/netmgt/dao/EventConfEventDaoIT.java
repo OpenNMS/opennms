@@ -246,7 +246,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         EventConfEvent hardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
 
         // disable events
-        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), false);
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), false, "JUnitTest");
         sessionFactory.getCurrentSession().flush();
         sessionFactory.getCurrentSession().clear();
 
@@ -257,7 +257,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         assertFalse(refreshedHardwareEvent.getEnabled());
 
         // enable events
-        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), true);
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), true, "JUnitTest");
         sessionFactory.getCurrentSession().flush();
         sessionFactory.getCurrentSession().clear();
 
