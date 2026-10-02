@@ -31,7 +31,9 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -39,6 +41,7 @@ import javax.xml.bind.JAXBContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,6 +53,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
@@ -66,6 +71,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -99,6 +105,19 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     
     @Autowired
     private OverrideablePollOutagesDao m_pollOutagesDao;
+
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
+
+    // Windows that do and do not cover the time the test runs, whenever that is.
+    private static final String ALWAYS = "<time begins='01-Jan-2000 00:00:00' ends='31-Dec-2099 23:59:59' />";
+    private static final String PAST = "<time begins='01-Jan-2000 00:00:00' ends='02-Jan-2000 00:00:00' />";
 
     @Override
     protected void beforeServletStart() throws Exception {
@@ -341,6 +360,86 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         JSONObject applies = getApplicability("/sched-outages/applies-to");
         Assert.assertFalse(applies.getBoolean("notifications"));
         Assert.assertFalse(appliedFor(applies, "pollers", "example1"));
+    }
+
+    @Test
+    public void testActiveForNodeByNodeId() throws Exception {
+        populate();
+        final int node1 = m_databasePopulator.getNode1().getId();
+        final int node2 = m_databasePopulator.getNode2().getId();
+        postOutage("active-node", ALWAYS, "<node id='" + node1 + "' />");
+
+        Assert.assertEquals(List.of("active-node"), activeOutageNames(node1));
+        Assert.assertEquals(List.of(), activeOutageNames(node2));
+    }
+
+    // The node page also lists an outage that names none of the node's ids but covers one of its
+    // interfaces.
+    @Test
+    public void testActiveForNodeByInterface() throws Exception {
+        populate();
+        final int node2 = m_databasePopulator.getNode2().getId();
+        postOutage("active-interface", ALWAYS, "<interface address='192.168.2.2' />");
+
+        Assert.assertEquals(List.of("active-interface"), activeOutageNames(node2));
+        Assert.assertEquals(List.of(), activeOutageNames(m_databasePopulator.getNode3().getId()));
+    }
+
+    @Test
+    public void testActiveForNodeIgnoresDeletedInterfaces() throws Exception {
+        populate();
+        final int node2 = m_databasePopulator.getNode2().getId();
+        postOutage("active-interface", ALWAYS, "<interface address='192.168.2.2' />");
+        m_transactionTemplate.execute(status -> {
+            m_ipInterfaceDao.findByNodeIdAndIpAddress(node2, "192.168.2.2").setIsManaged("D");
+            m_ipInterfaceDao.flush();
+            return null;
+        });
+
+        Assert.assertEquals(List.of(), activeOutageNames(node2));
+    }
+
+    // Neither 'past' nor my-junit-test -- which covers every interface (match-any), but only for one
+    // second on Mondays -- is in effect.
+    @Test
+    public void testActiveForNodeIgnoresOutagesNotInEffect() throws Exception {
+        populate();
+        final int node1 = m_databasePopulator.getNode1().getId();
+        postOutage("past", PAST, "<node id='" + node1 + "' />");
+        postOutage("active-node", ALWAYS, "<node id='" + node1 + "' />");
+
+        Assert.assertEquals(List.of("active-node"), activeOutageNames(node1));
+    }
+
+    @Test
+    public void testActiveForUnknownNode() throws Exception {
+        Assert.assertEquals(List.of(), activeOutageNames(999999));
+    }
+
+    // The temporary database lives for the whole class, so reset first: each test starts from the
+    // same rows whichever order they run in, and one that edits an interface cannot leak into another.
+    private void populate() {
+        m_transactionTemplate.execute(status -> {
+            m_databasePopulator.resetDatabase();
+            m_databasePopulator.populateDatabase();
+            return null;
+        });
+    }
+
+    private void postOutage(final String name, final String time, final String covers) throws Exception {
+        sendPost("/sched-outages", "<?xml version=\"1.0\"?><outage name='" + name + "' type='specific'>"
+                + time + covers + "</outage>", 201, null);
+    }
+
+    private List<String> activeOutageNames(final int nodeId) throws Exception {
+        final MockHttpServletRequest request = createRequest(m_servletContext, GET, "/sched-outages/activeForNode/" + nodeId);
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        final JSONArray outages = new JSONObject(sendRequest(request, 200)).optJSONArray("outage");
+        final List<String> names = new ArrayList<>();
+        for (int i = 0; outages != null && i < outages.length(); i++) {
+            names.add(outages.getJSONObject(i).getString("name"));
+        }
+        return names;
     }
 
     private JSONObject getApplicability(String url) throws Exception {
