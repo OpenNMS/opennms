@@ -10,7 +10,7 @@ By default, the path outage feature is disabled and must be enabled in `poller-c
 
 == Enable path outages
 
-By default, the path outage feature is disabled and has to be enabled for pollerd to check if notifications should be suppresed for an outage.
+By default, the path outage feature is disabled and has to be enabled for pollerd to check if notifications should be suppressed for an outage.
 Edit the `$\{OPENNMS_HOME}/etc/poller-configuration.xml` file to set `pathOutageEnabled` to `true` at the top of the file.
 A service restart is required after changing this setting.
 

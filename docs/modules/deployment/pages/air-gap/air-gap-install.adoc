@@ -2,7 +2,7 @@
 = Air-Gap System Installation
 :description: Offline Installation directions for air-gapped environments
 
-Some scenarios for deploying OpenNMS {page-component-title} require that the installation run in an isolated or "air-gapped" network. This page provides a directions for an offline installation of {page-component-title} into such a network. As with any offline installation of software, the exact steps may vary depending upon the precise environment details. Before attempting, users should be familiar with the basic OpenNMS {page-component-title} installation steps from our xref:core/install.adoc[Getting Started page].
+Some scenarios for deploying OpenNMS {page-component-title} require that the installation run in an isolated or "air-gapped" network. This page provides directions for an offline installation of {page-component-title} into such a network. As with any offline installation of software, the exact steps may vary depending upon the precise environment details. Before attempting, users should be familiar with the basic OpenNMS {page-component-title} installation steps from our xref:core/install.adoc[Getting Started page].
 
 [[basic-process-outline]]
 == Basic Process Outline
@@ -109,7 +109,7 @@ Transfer the files to your air-gapped system via USB, DVD, or link:https://www.r
 
 === Step 1: Locate The Files
 
-Locate the directory where the install files are located after you have transfered them.
+Locate the directory where the install files are located after you have transferred them.
 
 [source,console]
 ----

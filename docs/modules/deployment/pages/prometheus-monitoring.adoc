@@ -2,7 +2,7 @@
 = Monitoring with Prometheus
 
 Running OpenNMS {page-component-title} components in a larger monitoring application stack requires monitoring.
-To give people operating these components a unified view, a Prometheus compatible metrics endpoint can be exposed for the Core, Minion and Sentinel applications which allows engineers insights for sizing, troubleshooting and capacity planing.
+To give people operating these components a unified view, a Prometheus compatible metrics endpoint can be exposed for the Core, Minion and Sentinel applications which allows engineers insights for sizing, troubleshooting and capacity planning.
 We recommend using the https://github.com/prometheus/jmx_exporter[JMX Prometheus Exporter] agent which exposes our JMX management beans as a Prometheus compatible metrics endpoint.
 
 == Native application deployment
@@ -234,7 +234,7 @@ Replace `your-app` with the host or domain name where your Core, Minion or Senti
 The environment variables can be used for Core, Minion and Sentinel in the same way and are documented in the xref:reference:configuration/core-docker.adoc#core-oci-confd[docker environment] section.
 
 If you need to customize the JMX Prometheus Exporter configuration you have two options.
-You can use Confd which is running in our containers to render configuration files or use just inject your own `config.yaml` file to path configured with `PROM_JMX_EXPORTER_CONFIG`.
+You can use Confd which is running in our containers to render configuration files or just inject your own `config.yaml` file to the path configured with `PROM_JMX_EXPORTER_CONFIG`.
 
 IMPORTANT: In confd you have access to some basic JMX Prometheus Exporter configurations. If you need a more sophisticated configuration with JMX rules, you need to inject your own `config.yaml` file.
 

@@ -51,6 +51,7 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -516,5 +517,89 @@ public class EventConfEventDaoIT implements InitializingBean {
         });
         assertEquals("nothing may have been inserted", 0,
                 m_eventDao.findBySourceId(sourceId).stream().filter(e -> "uei.opennms.org/test/duplicate-order".equals(e.getUei())).count());
+    }
+
+    private EventConfSource createSecondSourceWithEvents(final int eventCount) {
+        final EventConfSource other = new EventConfSource();
+        other.setName("other-source");
+        other.setEnabled(true);
+        other.setCreatedTime(new Date());
+        other.setFileOrder(m_eventSourceDao.nextFileOrder());
+        other.setVendor("TestVendor");
+        other.setEventCount(eventCount);
+        other.setLastModified(new Date());
+        other.setUploadedBy("JUnitTest");
+        m_eventSourceDao.saveOrUpdate(other);
+        m_eventSourceDao.flush();
+        for (int i = 1; i <= eventCount; i++) {
+            final EventConfEvent event = new EventConfEvent();
+            event.setUei("uei.opennms.org/test/other/" + i);
+            event.setEventLabel("Other " + i);
+            event.setXmlContent("<event/>");
+            event.setSource(other);
+            event.setSeverity("Normal");
+            event.setEventOrder(i);
+            event.setEnabled(true);
+            event.setCreatedTime(new Date());
+            event.setLastModified(new Date());
+            event.setModifiedBy("JUnitTest");
+            m_eventDao.saveOrUpdate(event);
+        }
+        m_eventDao.flush();
+        return other;
+    }
+
+    private List<Integer> ordersOf(final Long sourceId) {
+        sessionFactory.getCurrentSession().clear();
+        return m_eventDao.findBySourceId(sourceId).stream().map(EventConfEvent::getEventOrder).toList();
+    }
+
+    @Test
+    @Transactional
+    public void testShiftEventOrderIsScopedToOneSource() {
+        final EventConfSource other = createSecondSourceWithEvents(3);
+        m_eventDao.flush();
+
+        // shifting into an unused band keeps every position unique, so this end state would also commit
+        final int shifted = m_eventDao.shiftEventOrder(m_source.getId(), 2, 3, 10);
+        assertEquals(2, shifted);
+
+        assertEquals(List.of(1, 4, 12, 13), ordersOf(m_source.getId()));
+        assertEquals("the other source must be untouched", List.of(1, 2, 3), ordersOf(other.getId()));
+
+        assertEquals("an empty range shifts nothing", 0, m_eventDao.shiftEventOrder(m_source.getId(), 5, 4, 1));
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateEventOrderTargetsOneEventOfOneSource() {
+        m_eventDao.flush();
+        final List<EventConfEvent> events = m_eventDao.findBySourceId(m_source.getId());
+        final EventConfEvent first = events.get(0);
+
+        m_eventDao.updateEventOrder(m_source.getId(), first.getId(), 9);
+        assertEquals(List.of(2, 3, 4, 9), ordersOf(m_source.getId()));
+
+        // a mismatched source id must not touch the row
+        m_eventDao.updateEventOrder(-1L, first.getId(), 1);
+        assertEquals(List.of(2, 3, 4, 9), ordersOf(m_source.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testFindNeighbourByOrder() {
+        m_eventDao.flush();
+        final Long sourceId = m_source.getId();
+
+        assertNull("nothing before the first position", m_eventDao.findNeighbourByOrder(sourceId, 1, true));
+        assertNull("nothing after the last position", m_eventDao.findNeighbourByOrder(sourceId, 4, false));
+
+        final EventConfEvent previous = m_eventDao.findNeighbourByOrder(sourceId, 3, true);
+        assertNotNull(previous);
+        assertEquals(Integer.valueOf(2), previous.getEventOrder());
+
+        final EventConfEvent next = m_eventDao.findNeighbourByOrder(sourceId, 2, false);
+        assertNotNull(next);
+        assertEquals(Integer.valueOf(3), next.getEventOrder());
     }
 }

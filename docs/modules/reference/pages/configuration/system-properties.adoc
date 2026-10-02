@@ -4,7 +4,7 @@
 :description: System properties used to configure OpenNMS and their default values
 
 == Documented Properties
-This list is not exhaustive; some properties critical to core functions may been purposely omitted as they should never be changed.
+This list is not exhaustive; some properties critical to core functions may be purposely omitted as they should never be changed.
 Many of the properties here are documented with much greater detail in their relevant sections.
 
 [cols="5,3,3"]
@@ -29,7 +29,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `importer.adapter.dns.level`
 | 0
-| Used by the forward and reverse DNS provisiong adapters; define the default level dns domain for nodelabel
+| Used by the forward and reverse DNS provisioning adapters; define the default level dns domain for nodelabel
 
 | `importer.adapter.dns.privatekey`
 | `null`
@@ -37,7 +37,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `importer.adapter.dns.reverse.level`
 | 0
-| Used by the forward and reverse DNS provisiong adapters; define the default level reverse dns domain for nodelabel
+| Used by the forward and reverse DNS provisioning adapters; define the default level reverse dns domain for nodelabel
 
 | `importer.adapter.dns.server`
 | 127.0.0.1
@@ -53,7 +53,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `opennms.alarmlist.unackflash`
 | false
-| Allows the alarm list page to display acknowleged and unacknowledged alarms on the same list but unacknowledged alarms flash until they are acknowledged
+| Allows the alarm list page to display acknowledged and unacknowledged alarms on the same list but unacknowledged alarms flash until they are acknowledged
 
 | `opennms.alarmTroubleTicketLinkTemplate`
 | "http://localhost/Ticket/Display.html?id=$\{id}"
@@ -89,7 +89,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `opennms.minion.provisioning.foreignSourcePattern`
 | "Minions"
-| The pattern used to name the foreign source to provision minions. can contain a single `%s` placeholder which is replaced with the minion location
+| The pattern used to name the foreign source to provision minions; it can contain a single `%s` placeholder which is replaced with the minion location
 
 | `opennms.newsFeedPanel.show`
 | true
@@ -221,7 +221,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `org.opennms.jasperReportsVersion`
 | Varies with OpenNMS version
-| Defines the Version of the Jasperreports libraryaused for database reports
+| Defines the Version of the Jasperreports library used for database reports
 
 | `org.opennms.netmgt.collectd.disableCollectionTimestampTracking`
 | false
@@ -241,11 +241,11 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `org.opennms.netmgt.icmp.requireV4`
 | "detect"
-| Used to to force IPv4 ICMP support explicitly
+| Used to force IPv4 ICMP support explicitly
 
 | `org.opennms.netmgt.icmp.requireV6`
 | "detect"
-| Used to to force IPv6 ICMP support explicitly
+| Used to force IPv6 ICMP support explicitly
 
 | `org.opennms.netmgt.search.info`
 | `null`
@@ -265,7 +265,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `org.opennms.newts.config.hostname`
 | "localhost"
-| Comma-separated of list IP address or hostnames of the Cassandra nodes
+| Comma-separated list of IP addresses or hostnames of the Cassandra nodes
 
 | `org.opennms.newts.config.keyspace`
 | "newts"
@@ -378,7 +378,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `org.opennms.web.assets.path`
 | `null`
-| A filesystem path fromwhich to load web assets
+| A filesystem path from which to load web assets
 
 | `org.opennms.web.console.centerUrl`
 | "status/status-box.jsp,/includes/categories-box.jsp,/geomap/map-box.jsp"

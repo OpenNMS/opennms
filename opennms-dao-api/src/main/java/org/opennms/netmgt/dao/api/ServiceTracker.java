@@ -22,6 +22,8 @@
 package org.opennms.netmgt.dao.api;
 
 import java.io.Closeable;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Tracking services is a pain - use this service to handle it for you.
@@ -43,6 +45,33 @@ public interface ServiceTracker {
          * @param serviceRef service reference
          */
         void onServiceStoppedMatching(ServiceRef serviceRef);
+    }
+
+    /**
+     * A {@link ServiceListener} that receives every change in the tracked results as a single call.
+     */
+    interface BatchServiceListener extends ServiceListener {
+        /**
+         * Called once per change in the tracked results, with every service that started or
+         * stopped matching in that change.
+         *
+         * If this throws, none of the changes are considered delivered and they are passed again
+         * with the next change, so implementations must tolerate services they already handled.
+         *
+         * @param matched services that now match the criteria
+         * @param stoppedMatching services that no longer match the criteria
+         */
+        void onServicesChanged(Set<ServiceRef> matched, Set<ServiceRef> stoppedMatching);
+
+        @Override
+        default void onServiceMatched(ServiceRef serviceRef) {
+            onServicesChanged(Collections.singleton(serviceRef), Collections.emptySet());
+        }
+
+        @Override
+        default void onServiceStoppedMatching(ServiceRef serviceRef) {
+            onServicesChanged(Collections.emptySet(), Collections.singleton(serviceRef));
+        }
     }
 
     /**

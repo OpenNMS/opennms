@@ -122,8 +122,8 @@ To keep the previous behavior, see xref:operation:deep-dive/admin/configuration/
 The OpenNMS WSMan library has added support for WinRS remote shell commands.
 A corresponding monitor and detector have been added to leverage these new capabilities.
 
-=== WSMan kerberos mesage encryption
-The OpenNMS WSMan library has added support for kerberos message encryption over unencrypted channels.
+=== WSMan Kerberos message encryption
+The OpenNMS WSMan library has added support for Kerberos message encryption over unencrypted channels.
 The existing configuration has been extended to take advantage of this new feature.
 This should greatly reduce friction when deploying WS-Man / WinRM-based monitoring on Windows.
 
