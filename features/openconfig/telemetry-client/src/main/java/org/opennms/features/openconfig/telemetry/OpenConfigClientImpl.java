@@ -24,6 +24,7 @@ package org.opennms.features.openconfig.telemetry;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
@@ -47,14 +48,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Handler;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -65,7 +63,7 @@ import static io.grpc.ConnectivityState.READY;
  * OpenConfig Client makes a gRPC connection and subscribes to telemetry data for the paths specified.
  * When it fails to make a connection, it attempts to make a connection after given interval.
  * When retries are specified, it bails out after those many attempts.
- * If no retries or <=0 specified, it always attempts to connect after given interval.
+ * If retries <=0 is specified, it always attempts to connect after the given interval.
  */
 public class OpenConfigClientImpl implements OpenConfigClient {
 
@@ -73,13 +71,13 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final Pattern STRINGS_IN_SQUARE_BRACKETS = Pattern.compile("\\[(.+?=.+?)\\]");
     // Path separator but exclude in square brackets.
     private static final Pattern PATH_SEPARATOR = Pattern.compile("\\/(?![^\\[]*])");
-    // Internal retries and timeout are used to make a connection and wait till channel is active.
-    private static final int DEFAULT_INTERNAL_RETRIES = 5;
-    private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
+    private static final int DEFAULT_RETRIES = 0;
+    private static final long CONNECTION_TIMEOUT_MILLIS = 5000;
     private static final int DEFAULT_FREQUENCY = 300000; //5min
     private static final long DEFAULT_FREQUENCY_FOR_GNMI = 300L * 1_000_000_000L; // 5 min in ns
     // 5mins in nano seconds
     private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
+    private static final int MIN_INTERVAL_IN_SEC = 1;
     private static final String PORT = "port";
     private static final String HOSTNAME = "hostname";
     private static final String MODE = "mode";
@@ -92,21 +90,54 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final String DEFAULT_ORIGIN = "openconfig";
     private static final String USERNAME_FIELD = "username";
     private static final String PASSWORD_FIELD = "password";
-    private ManagedChannel channel;
     private final InetAddress host;
     private String hostName;
     private Integer port;
     private String mode;
-    private Integer interval;
-    private Integer retries;
-    private List<Map<String,String>> paramList = new ArrayList<>();
-    private AtomicBoolean closed = new AtomicBoolean(false);
-    private AtomicBoolean scheduled = new AtomicBoolean(false);
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+    private int interval = DEFAULT_INTERVAL_IN_SEC;
+    private int retries = DEFAULT_RETRIES;
+    private final List<Map<String,String>> paramList = new ArrayList<>();
+    private final ScheduledExecutorService executor;
+    private final boolean ownsExecutor;
+    private final Consumer<OpenConfigClientImpl> onShutdown;
+    private final long connectionTimeoutMillis;
+    // Lifecycle state is guarded by this client, including callbacks from gRPC.
+    private boolean closed;
+    private Handler handler;
+    private Attempt attempt;
+    private ScheduledFuture<?> retry;
+    private int remainingRetries;
+
+    private static class Attempt {
+        private final boolean initial;
+        private ManagedChannel channel;
+        private ScheduledFuture<?> timeout;
+        private boolean subscribed;
+        // Set once the stream has delivered data; only then is the retry budget reset.
+        private boolean received;
+
+        private Attempt(boolean initial) {
+            this.initial = initial;
+        }
+    }
 
     public OpenConfigClientImpl(InetAddress host, List<Map<String, String>> paramList) {
+        this(host, paramList, newExecutor(1), true, client -> { }, CONNECTION_TIMEOUT_MILLIS);
+    }
+
+    OpenConfigClientImpl(InetAddress host, List<Map<String, String>> paramList,
+                         ScheduledExecutorService executor, Consumer<OpenConfigClientImpl> onShutdown) {
+        this(host, paramList, executor, false, onShutdown, CONNECTION_TIMEOUT_MILLIS);
+    }
+
+    OpenConfigClientImpl(InetAddress host, List<Map<String, String>> paramList,
+                         ScheduledExecutorService executor, boolean ownsExecutor,
+                         Consumer<OpenConfigClientImpl> onShutdown, long connectionTimeoutMillis) {
         this.host = Objects.requireNonNull(host);
+        this.executor = Objects.requireNonNull(executor);
+        this.ownsExecutor = ownsExecutor;
+        this.onShutdown = Objects.requireNonNull(onShutdown);
+        this.connectionTimeoutMillis = connectionTimeoutMillis;
         this.paramList.addAll(paramList);
         // Extract port and mode which are global.
         this.paramList.stream().filter(entry -> entry.containsKey(PORT) && entry.get(PORT) != null)
@@ -117,54 +148,112 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         this.paramList.stream().filter(entry -> entry.containsKey(HOSTNAME) && entry.get(HOSTNAME) != null)
                 .findFirst().ifPresent(entry ->
                         this.hostName = entry.get(HOSTNAME));
+        this.paramList.stream().filter(entry -> entry.get(INTERVAL) != null)
+                .findFirst().ifPresent(entry -> this.interval = StringUtils.parseInt(entry.get(INTERVAL), DEFAULT_INTERVAL_IN_SEC));
+        // An interval of zero with unlimited retries would spin on the shared pool.
+        this.interval = Math.max(MIN_INTERVAL_IN_SEC, this.interval);
+        this.paramList.stream().filter(entry -> entry.get(RETRIES) != null)
+                .findFirst().ifPresent(entry -> this.retries = StringUtils.parseInt(entry.get(RETRIES), DEFAULT_RETRIES));
+    }
+
+    static ScheduledThreadPoolExecutor newExecutor(int threads) {
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(threads,
+                new ThreadFactoryBuilder()
+                        .setNameFormat("openconfig-client-%d").build());
+        executor.setRemoveOnCancelPolicy(true);
+        return executor;
     }
 
     @Override
-    public void subscribe(OpenConfigClient.Handler handler) {
-        boolean succeeded = trySubscribing(handler);
-        if (!succeeded) {
-            close();
-            executor.execute(() -> scheduleSubscription(handler));
+    public synchronized void subscribe(OpenConfigClient.Handler handler) {
+        Objects.requireNonNull(handler);
+        if (closed || this.handler != null) {
+            return;
+        }
+        this.handler = handler;
+        if (port == null) {
+            // Retrying cannot fix a missing parameter; fail once instead of once per interval.
+            LOG.error("OpenConfig Server at `{}` has no port configured, not subscribing", InetAddressUtils.str(host));
+            return;
+        }
+        remainingRetries = retries;
+        retry = executor.schedule(() -> startAttempt(true), 0, TimeUnit.SECONDS);
+    }
+
+    private synchronized void startAttempt(boolean initial) {
+        if (closed) {
+            return;
+        }
+        retry = null;
+        Attempt next = new Attempt(initial);
+        attempt = next;
+        try {
+            next.channel = createChannel();
+            next.timeout = executor.schedule(() -> connectionTimedOut(next), connectionTimeoutMillis, TimeUnit.MILLISECONDS);
+            awaitReady(next);
+        } catch (Exception e) {
+            LOG.warn("Exception while subscribing to OpenConfig Server at `{}`", InetAddressUtils.str(host), e);
+            retry(next);
         }
     }
 
-    private boolean trySubscribing(OpenConfigClient.Handler handler) {
-        try {
-            Map<String, String> tlsFilePaths = new HashMap<>();
-            paramList.forEach(entry -> {
-                tlsFilePaths.putAll(entry.entrySet().stream()
-                        .filter(configuration -> configuration.getKey().contains("tls"))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-            });
-            String host = this.hostName != null ? this.hostName : this.host.getHostAddress();
-            var optionalUsername =
-                    this.paramList.stream().filter(entry -> entry.get(USERNAME_FIELD) != null).findFirst();
-            var optionalPassword =
-                    this.paramList.stream().filter(entry -> entry.get(PASSWORD_FIELD) != null).findFirst();
-            if (optionalUsername.isPresent() && optionalPassword.isPresent()) {
-                String username = optionalUsername.get().get(USERNAME_FIELD);
-                String password = optionalPassword.get().get(PASSWORD_FIELD);
-                Metadata metadata = new Metadata();
-                metadata.put(Metadata.Key.of(USERNAME_FIELD, Metadata.ASCII_STRING_MARSHALLER), username);
-                metadata.put(Metadata.Key.of(PASSWORD_FIELD, Metadata.ASCII_STRING_MARSHALLER), password);
-                var clientInterceptor = new GrpcClientInterceptor(metadata);
-                this.channel = GrpcClientBuilder.getChannelWithInterceptor(host, port, tlsFilePaths, clientInterceptor);
-            } else {
-                this.channel = GrpcClientBuilder.getChannel(host, port, tlsFilePaths);
-            }
+    ManagedChannel createChannel() throws Exception {
+        Map<String, String> tlsFilePaths = new HashMap<>();
+        paramList.forEach(entry -> {
+            tlsFilePaths.putAll(entry.entrySet().stream()
+                    .filter(configuration -> configuration.getKey().contains("tls"))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        });
+        String host = this.hostName != null ? this.hostName : this.host.getHostAddress();
+        var optionalUsername =
+                this.paramList.stream().filter(entry -> entry.get(USERNAME_FIELD) != null).findFirst();
+        var optionalPassword =
+                this.paramList.stream().filter(entry -> entry.get(PASSWORD_FIELD) != null).findFirst();
+        if (optionalUsername.isPresent() && optionalPassword.isPresent()) {
+            String username = optionalUsername.get().get(USERNAME_FIELD);
+            String password = optionalPassword.get().get(PASSWORD_FIELD);
+            Metadata metadata = new Metadata();
+            metadata.put(Metadata.Key.of(USERNAME_FIELD, Metadata.ASCII_STRING_MARSHALLER), username);
+            metadata.put(Metadata.Key.of(PASSWORD_FIELD, Metadata.ASCII_STRING_MARSHALLER), password);
+            var clientInterceptor = new GrpcClientInterceptor(metadata);
+            return GrpcClientBuilder.getChannelWithInterceptor(host, port, tlsFilePaths, clientInterceptor);
+        } else {
+            return GrpcClientBuilder.getChannel(host, port, tlsFilePaths);
+        }
+    }
 
-            if (READY.equals(retrieveChannelState())) {
-                subscribeToTelemetry(handler, host);
-                return true;
+    private synchronized void awaitReady(Attempt current) {
+        if (!isCurrent(current) || current.subscribed) {
+            return;
+        }
+        try {
+            ConnectivityState state = current.channel.getState(true);
+            if (state == READY) {
+                current.timeout.cancel(false);
+                subscribeToTelemetry(current);
+                current.subscribed = true;
+            } else if (state == ConnectivityState.SHUTDOWN) {
+                retry(current);
+            } else {
+                current.channel.notifyWhenStateChanged(state, () -> awaitReady(current));
             }
         } catch (Exception e) {
-            LOG.warn("Exception while subscribing to OpenConfig Server at `{}` ", InetAddressUtils.str(host), e);
+            LOG.warn("Exception while subscribing to OpenConfig Server at `{}`", InetAddressUtils.str(host), e);
+            retry(current);
         }
-        return false;
     }
 
+    private synchronized void connectionTimedOut(Attempt current) {
+        if (isCurrent(current) && !current.subscribed) {
+            LOG.warn("Timed out connecting to OpenConfig Server at `{}`, current state {}",
+                    InetAddressUtils.str(host), current.channel.getState(false));
+            retry(current);
+        }
+    }
 
-    private void subscribeToTelemetry(Handler handler, String host) {
+    private void subscribeToTelemetry(Attempt current) {
+        ManagedChannel channel = current.channel;
+        String host = hostName != null ? hostName : this.host.getHostAddress();
 
         // Defaults to gnmi
         if (JTI_MODE.equalsIgnoreCase(mode)) {
@@ -176,7 +265,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
                 paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
             });
-            asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(this.host, port, handler));
+            asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(current));
             LOG.info("Subscribed to OpenConfig telemetry stream at {}:{}", host, port);
         } else {
 
@@ -199,7 +288,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 });
             });
             requestBuilder.setSubscribe(subscriptionListBuilder.build());
-            StreamObserver<Gnmi.SubscribeRequest> requestStreamObserver = gNMIStub.subscribe(new GnmiDataHandler(handler, this.host, port));
+            StreamObserver<Gnmi.SubscribeRequest> requestStreamObserver = gNMIStub.subscribe(new GnmiDataHandler(current));
             requestStreamObserver.onNext(requestBuilder.build());
             LOG.info("Subscribed to OpenConfig telemetry stream at {}:{}", host, port);
         }
@@ -244,176 +333,142 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     }
 
 
-    private void scheduleSubscription(OpenConfigClient.Handler handler) {
-        if (scheduled.get()) {
-            // Task is already scheduled.
+    private boolean isCurrent(Attempt current) {
+        return !closed && attempt == current;
+    }
+
+    // Called with the client lock held. The initial attempt and an established stream get one
+    // immediate reconnect; anything else waits for the interval, so a device that accepts the
+    // connection but rejects the RPC cannot reconnect in a tight loop.
+    private void retry(Attempt current) {
+        if (!isCurrent(current)) {
             return;
         }
-        scheduled.set(true);
-        // Try at least once.
-        boolean succeeded = trySubscribing(handler);
-        if (succeeded) {
-            scheduled.set(false);
-            return;
-        }
-
-        // If it's not subscribed, schedule this to run after configured timeout
-        this.paramList.stream().filter(entry -> entry.containsKey(INTERVAL) && entry.get(INTERVAL) != null)
-                .findFirst().ifPresent(entry ->
-                this.interval = StringUtils.parseInt(entry.get(INTERVAL), DEFAULT_INTERVAL_IN_SEC));
-        // When retries is null or <= 0, scheduling will happen indefinitely until it succeeds.
-        this.paramList.stream().filter(entry -> entry.containsKey(RETRIES) && entry.get(RETRIES) != null)
-                .findFirst().ifPresent(entry ->
-                this.retries = StringUtils.parseInt(entry.get(RETRIES), DEFAULT_INTERNAL_RETRIES));
-
-        int retries = this.retries != null ? this.retries : DEFAULT_INTERNAL_RETRIES;
-        int interval = this.interval != null ? this.interval : DEFAULT_INTERVAL_IN_SEC;
-        while (!closed.get()) {
-            ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), interval, TimeUnit.SECONDS);
-            try {
-                succeeded = future.get();
-                if (succeeded) {
-                    scheduled.set(false);
-                    break;
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("Exception while scheduling subscription at host `{}` ", InetAddressUtils.str(host), e);
+        attempt = null;
+        close(current);
+        if (current.initial || current.received) {
+            retry = executor.schedule(() -> startAttempt(false), 0, TimeUnit.SECONDS);
+        } else if (retries <= 0 || remainingRetries > 0) {
+            if (remainingRetries > 0) {
+                remainingRetries--;
             }
-            if (retries > 0) {
-                retries--;
-                if (retries == 0) {
-                    scheduled.set(false);
-                    break;
-                }
-            }
+            retry = executor.schedule(() -> startAttempt(false), interval, TimeUnit.SECONDS);
+        } else {
+            LOG.warn("Giving up on OpenConfig Server at `{}` after {} retries at {}s interval",
+                    InetAddressUtils.str(host), retries, interval);
         }
     }
 
     @Override
-    public void shutdown() {
-        close();
-        closed.set(true);
-        if (scheduledExecutor != null) {
-            scheduledExecutor.shutdown();
+    public synchronized void shutdown() {
+        if (closed) {
+            return;
         }
-        if (executor != null) {
-            executor.shutdown();
+        // Mark closed before cancelling the stream: cancellation also invokes onError.
+        closed = true;
+        if (retry != null) {
+            retry.cancel(false);
+            retry = null;
+        }
+        if (attempt != null) {
+            close(attempt);
+            attempt = null;
+        }
+        if (ownsExecutor) {
+            executor.shutdownNow();
+        }
+        onShutdown.accept(this);
+    }
+
+    synchronized boolean isClosed() {
+        return closed;
+    }
+
+    private void close(Attempt current) {
+        if (current.timeout != null) {
+            current.timeout.cancel(false);
+        }
+        if (current.channel != null) {
+            // A streaming RPC can outlive orderly shutdown indefinitely.
+            current.channel.shutdownNow();
         }
     }
 
-    private void close() {
-        if (channel != null) {
-            LOG.info("Closing the OpenConfig Client at {}", host);
-            channel.shutdown();
+    // The handler may block (e.g. on sink back-pressure), so it is never invoked with the lock held.
+    private void accept(Attempt current, byte[] data) {
+        synchronized (this) {
+            if (!isCurrent(current)) {
+                return;
+            }
+            if (!current.received) {
+                current.received = true;
+                remainingRetries = retries;
+            }
+        }
+        handler.accept(host, port, data);
+    }
+
+    private void streamFailed(Attempt current, String message, Throwable cause) {
+        synchronized (this) {
+            if (!isCurrent(current)) {
+                return;
+            }
+            LOG.warn("OpenConfig stream at `{}` ended: {}", InetAddressUtils.str(host), message, cause);
+        }
+        try {
+            handler.onError(message);
+        } finally {
+            synchronized (this) {
+                retry(current);
+            }
         }
     }
-    // Handles JTI Telemetry data
+
     private class TelemetryDataHandler implements StreamObserver<OpenConfigData> {
+        private final Attempt current;
 
-        private final OpenConfigClient.Handler handler;
-        private final InetAddress host;
-        private final Integer port;
-
-        private TelemetryDataHandler(InetAddress host, Integer port, Handler handler) {
-            this.host = host;
-            this.port = port;
-            this.handler = handler;
+        private TelemetryDataHandler(Attempt current) {
+            this.current = current;
         }
 
         @Override
         public void onNext(OpenConfigData value) {
-            if (!closed.get()) {
-                handler.accept(host, port, value.toByteArray());
-            }
+            accept(current, value.toByteArray());
         }
 
         @Override
         public void onError(Throwable t) {
-            LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
-            handler.onError(t.getMessage());
-            close();
-            if (!closed.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            streamFailed(current, t.getMessage(), t);
         }
 
         @Override
         public void onCompleted() {
-            LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
-            handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
-            close();
-            if (!closed.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            streamFailed(current, "OpenConfig Server closed connection for host " + InetAddressUtils.str(host), null);
         }
     }
 
-    // Handles Gnmi Telemetry data
     private class GnmiDataHandler implements StreamObserver<Gnmi.SubscribeResponse> {
+        private final Attempt current;
 
-        private final OpenConfigClient.Handler handler;
-        private final InetAddress host;
-        private final Integer port;
-
-        public GnmiDataHandler(Handler handler, InetAddress host, Integer port) {
-            this.handler = handler;
-            this.host = host;
-            this.port = port;
+        private GnmiDataHandler(Attempt current) {
+            this.current = current;
         }
 
         @Override
-        public void onNext(Gnmi.SubscribeResponse subscribeResponse) {
-            if(subscribeResponse != null && !closed.get()) {
-                handler.accept(host, port, subscribeResponse.toByteArray());
+        public void onNext(Gnmi.SubscribeResponse response) {
+            if (response != null) {
+                accept(current, response.toByteArray());
             }
         }
 
         @Override
         public void onError(Throwable t) {
-            LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
-            handler.onError(t.getMessage());
-            close();
-            if (!closed.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            streamFailed(current, t.getMessage(), t);
         }
 
         @Override
         public void onCompleted() {
-            LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
-            handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
-            close();
-            if (!closed.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            streamFailed(current, "OpenConfig Server closed connection for host " + InetAddressUtils.str(host), null);
         }
     }
-
-
-    /*gRPC channel may not be in ready state instantly, this is internal wait to make a connection*/
-    private ConnectivityState retrieveChannelState() {
-        int retries = DEFAULT_INTERNAL_RETRIES;
-        ConnectivityState state = null;
-        while (retries > 0 && !closed.get()) {
-            state = channel.getState(true);
-            if (!state.equals(READY)) {
-                LOG.warn("OpenConfig Server at `{}` is not in ready state, current state {}, retrying..", InetAddressUtils.str(host), state);
-                waitBeforeRetrying(DEFAULT_INTERNAL_TIMEOUT);
-                retries--;
-            } else {
-                break;
-            }
-        }
-        return state;
-    }
-
-    private void waitBeforeRetrying(long timeout) {
-        try {
-            Thread.sleep(timeout);
-        } catch (InterruptedException e) {
-            LOG.warn("Sleep was interrupted", e);
-        }
-    }
-
-
 }

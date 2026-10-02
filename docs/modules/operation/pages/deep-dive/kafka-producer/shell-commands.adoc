@@ -68,3 +68,39 @@ Result: true
 
 In this case, a new event will be created with the given UEI, and the filter will be evaluated against this new event object.
 At this time, existing events cannot be referenced by this tool, so this functionality only serves to help make sure the expressions are syntactically valid.
+
+== opennms:kafka-metric-routing-test
+
+Use the `kafka-metric-routing-test` command to see which topic collected metrics for a node, interface, or service would be routed to, and which meta-data definition decided it.
+See xref:operation:deep-dive/kafka-producer/configure-kafka.adoc#metric-routing[Route metrics to multiple topics].
+
+The command reads the live configuration, so it also works while `metricRouting.enabled` is still `false` -- useful for checking meta-data before switching routing on.
+
+[source, console]
+----
+admin@opennms> opennms:kafka-metric-routing-test -n 1 -i 10.0.0.1 -s SNMP
+Metric routing: enabled
+Meta-data key : requisition:metricRouting.package
+Default topic : metrics
+---
+Node          : 1
+Interface     : 10.0.0.1
+Service       : SNMP
+---
+Meta-data value: 'foobar'
+Resolved from  : SERVICE
+Outcome        : ROUTED - the meta-data value is used as the topic name
+Topic          : foobar
+---
+Counters:
+  metricRouting.routed.foobar                        1420
+  metricRouting.unmapped                            98311
+----
+
+Specify the node with `-n` (a node ID or `foreignSource:foreignId`).
+
+Add `-i` for the interface the collecting service is assigned to and `-s` for that service; the two together are what exercise the service scope.
+Omit them to see what a collection would resolve to from the node's meta-data alone.
+
+Resolved topics are cached, so a meta-data change made through a requisition import or the REST API can take a few minutes to show up.
+Pass `-c` (`--clear-cache`) to drop the cached decisions first.

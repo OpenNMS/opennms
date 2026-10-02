@@ -22,7 +22,6 @@
 package org.opennms.web.services;
 
 import java.util.Date;
-import java.util.concurrent.ExecutorService;
 
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
@@ -52,9 +51,6 @@ public class EventConfProgrammaticService {
     private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private EventConfDao eventConfDao;
 
-    private final ExecutorService eventConfExecutor =
-            EventConfServiceHelper.createEventConfExecutor("load-eventConf-programmatic-%d");
-
     /**
      * Saves an event to the programmatic events source in the database.
      * Creates the source if it doesn't exist.
@@ -64,16 +60,17 @@ public class EventConfProgrammaticService {
      */
     @Transactional
     public void saveEventToDB(Event event, String username) {
-        EventConfSource source = getOrCreateProgrammaticSource();
+        // Lock (and re-read) the source before appending, so the count below is not a lost update
+        EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreateProgrammaticSource().getId());
         EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, new Date());
 
-        // Update event count
-        source.setEventCount(source.getEventCount() + 1);
+        // Update event count from the table, under the lock
+        source.setEventCount(eventConfEventDao.countBySourceId(source.getId()));
         eventConfSourceDao.save(source);
     }
 
     public void reloadEventsFromDB() {
-        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, eventConfExecutor);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
     }
 
     /**
@@ -96,9 +93,8 @@ public class EventConfProgrammaticService {
             source.setCreatedTime(now);
             source.setLastModified(now);
 
-            // Get max file order and add 1 to ensure programmatic events are loaded last
-            Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
-            source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
+            // Higher fileOrder is evaluated first, so max + 1 puts programmatic events ahead of all other sources
+            source.setFileOrder(eventConfSourceDao.nextFileOrder());
 
             eventConfSourceDao.saveOrUpdate(source);
         }
@@ -140,7 +136,4 @@ public class EventConfProgrammaticService {
         this.eventConfDao = eventConfDao;
     }
 
-    public void shutdown() {
-        eventConfExecutor.shutdown();
-    }
 }

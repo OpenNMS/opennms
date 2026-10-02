@@ -41,15 +41,19 @@ public class EventConfEventDto {
     // Flattened fields from EventConfSource
     private String sourceName;
     private String vendor;
+    /** Priority of the owning source (higher = evaluated first). */
     private Integer fileOrder;
     private String severity;
+    /** Evaluation position within the source (ascending, 1 = evaluated first). */
+    private Integer eventOrder;
 
     public EventConfEventDto() {
     }
 
     public EventConfEventDto(Long id, String uei, String eventLabel, String description, Boolean enabled,
                              String xmlContent, Date createdTime, Date lastModified, String modifiedBy,
-                             String sourceName, String vendor, Integer fileOrder, String severity) {
+                             String sourceName, String vendor, Integer fileOrder, String severity,
+                             Integer eventOrder) {
         this.id = id;
         this.uei = uei;
         this.eventLabel = eventLabel;
@@ -63,6 +67,7 @@ public class EventConfEventDto {
         this.vendor = vendor;
         this.fileOrder = fileOrder;
         this.severity = severity;
+        this.eventOrder = eventOrder;
     }
 
     // Getters and Setters
@@ -112,6 +117,14 @@ public class EventConfEventDto {
         this.fileOrder = fileOrder;
     }
 
+    public Integer getEventOrder() {
+        return eventOrder;
+    }
+
+    public void setEventOrder(Integer eventOrder) {
+        this.eventOrder = eventOrder;
+    }
+
     public String getSeverity() { return severity; }
 
     public void setSeverity(String severity) { this.severity = severity; }
@@ -132,7 +145,8 @@ public class EventConfEventDto {
                         e.getSource() != null ? e.getSource().getName() : null,
                         e.getSource() != null ? e.getSource().getVendor() : null,
                         e.getSource() != null ? e.getSource().getFileOrder() : null,
-                        e.getSeverity()
+                        e.getSeverity(),
+                        e.getEventOrder()
                 ))
                 .collect(Collectors.toList());
     }

@@ -43,7 +43,7 @@ Writes specified configuration to `$\{MINION_HOME}/etc/instance-id.properties`.
 
 === Kafka
 
-When using Kafka instead of the embedded Active MQ, settings for Kafka IPC (Twin) will take precedence over any RPC- and Sink-specific settings.
+When using Kafka instead of the embedded ActiveMQ, settings for Kafka IPC (Twin) will take precedence over any RPC- and Sink-specific settings.
 
 [source, yaml]
 ----
@@ -192,7 +192,7 @@ system:
 ----
 
 Writes the specified configuration settings to `$\{MINION_HOME}/etc/confd.system.properties`.
-`$\{MINION_HOME}/ect/confd.system.properties` is automatically appended to `etc/system.properties`.
+`$\{MINION_HOME}/etc/confd.system.properties` is automatically appended to `etc/system.properties`.
 If the `JAEGER_AGENT_HOST` or `JAEGER_ENDPOINT` keys are specified, `$\{MINION_HOME}/etc/featuresBoot.d/jaeger.boot` is also updated.
 
 === Karaf properties

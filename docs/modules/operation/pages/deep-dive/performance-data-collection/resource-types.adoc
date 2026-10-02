@@ -135,7 +135,7 @@ You can use this storage strategy with JMX MBean data collections where multiple
 
 NOTE: As of OpenNMS Horizon 20, this is supported only when using an HTTP-to-JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
 
-.Example storage storage strategy used with JMX MBean
+.Example storage strategy used with JMX MBean
 [source, xml]
 ----
 <storageStrategy class="org.opennms.netmgt.collection.support.ObjectNameStorageStragegy">

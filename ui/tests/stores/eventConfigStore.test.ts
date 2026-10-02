@@ -4,14 +4,23 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import {
   changeEventConfigSourceStatus,
   filterEventConfigSources,
-  getAllSourceNames
+  getAllSourceNames,
+  getOrderedEventConfigSources,
+  updateEventConfigSourcesOrder
 } from '@/services/eventConfigService'
 import { EventConfigSource, UploadedSourceNamesResponse } from '@/types/eventConfig'
+
+const mockShowSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: mockShowSnackBar, hideSnackbar: vi.fn() })
+}))
 
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigSourceStatus: vi.fn(),
   filterEventConfigSources: vi.fn(),
-  getAllSourceNames: vi.fn()
+  getAllSourceNames: vi.fn(),
+  getOrderedEventConfigSources: vi.fn(),
+  updateEventConfigSourcesOrder: vi.fn()
 }))
 
 describe('useEventConfigStore', () => {
@@ -32,6 +41,7 @@ describe('useEventConfigStore', () => {
       enabled: true,
       eventCount: 5,
       fileOrder: 1,
+      evaluationOrder: 1,
       uploadedBy: 'user1',
       createdTime: new Date('2024-01-01'),
       lastModified: new Date('2024-01-02')
@@ -44,6 +54,7 @@ describe('useEventConfigStore', () => {
       enabled: false,
       eventCount: 10,
       fileOrder: 2,
+      evaluationOrder: 2,
       uploadedBy: 'user2',
       createdTime: new Date('2024-01-03'),
       lastModified: new Date('2024-01-04')
@@ -74,8 +85,8 @@ describe('useEventConfigStore', () => {
     })
     expect(store.sourcesSearchTerm).toBe('')
     expect(store.sourcesSorting).toEqual({
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
+      sortOrder: 'asc',
+      sortKey: 'evaluationOrder'
     })
     expect(store.isLoading).toBe(false)
     expect(store.activeTab).toBe(0)
@@ -132,7 +143,7 @@ describe('useEventConfigStore', () => {
 
     await store.fetchEventConfigs()
 
-    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'createdTime', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'evaluationOrder', 'asc')
     expect(getAllSourceNames).toHaveBeenCalledTimes(1)
     expect(store.sources).toEqual(mockSources)
     expect(store.sourcesPagination.total).toBe(2)
@@ -149,7 +160,7 @@ describe('useEventConfigStore', () => {
 
     await store.fetchEventConfigs()
 
-    expect(filterEventConfigSources).toHaveBeenCalledWith(40, 20, '', 'createdTime', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(40, 20, '', 'evaluationOrder', 'asc')
   })
 
   it('should fetch with search term', async () => {
@@ -160,7 +171,7 @@ describe('useEventConfigStore', () => {
 
     await store.fetchEventConfigs()
 
-    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, 'test search', 'createdTime', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, 'test search', 'evaluationOrder', 'asc')
   })
 
   it('should fetch with custom sorting', async () => {
@@ -376,10 +387,10 @@ describe('useEventConfigStore', () => {
     expect(store.sourcesPagination.total).toBe(2)
     expect(store.sourcesSearchTerm).toBe('')
     expect(store.sourcesSorting).toEqual({
-      sortKey: 'createdTime',
-      sortOrder: 'desc'
+      sortKey: 'evaluationOrder',
+      sortOrder: 'asc'
     })
-    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'createdTime', 'desc')
+    expect(filterEventConfigSources).toHaveBeenCalledWith(0, 10, '', 'evaluationOrder', 'asc')
   })
 
   it('should handle multiple consecutive fetches correctly', async () => {
@@ -453,8 +464,8 @@ describe('useEventConfigStore', () => {
     await store.onSourcesSortChange('name', 'asc')
     expect(store.sourcesSorting).toEqual({ sortKey: 'name', sortOrder: 'asc' })
 
-    await store.onSourcesSortChange('createdTime', 'desc')
-    expect(store.sourcesSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
+    await store.onSourcesSortChange('evaluationOrder', 'asc')
+    expect(store.sourcesSorting).toEqual({ sortKey: 'evaluationOrder', sortOrder: 'asc' })
   })
 
   it('should reset active tab to 0', () => {
@@ -474,5 +485,62 @@ describe('useEventConfigStore', () => {
     await store.refreshSourcesFilters()
 
     expect(store.sourcesSearchTerm).toBe('')
+  })
+
+  describe('reorder sources drawer', () => {
+    const catchAll: EventConfigSource = {
+      ...mockSources[0],
+      id: 99,
+      name: 'opennms.catch-all.events',
+      evaluationOrder: 3
+    }
+
+    it('startSourcesReorder enters the mode and fetches the ordered list', async () => {
+      vi.mocked(getOrderedEventConfigSources).mockResolvedValue([...mockSources, catchAll])
+
+      await store.startSourcesReorder()
+
+      expect(store.sourcesReorderMode).toBe(true)
+      expect(store.orderedSources.map(s => s.id)).toEqual(mockSources.map(s => s.id))
+      expect(store.catchAllSource?.id).toBe(99)
+
+      store.stopSourcesReorder()
+      expect(store.sourcesReorderMode).toBe(false)
+    })
+
+    it('fetchOrderedSources failure leaves the reorder mode and says why', async () => {
+      vi.mocked(getOrderedEventConfigSources).mockRejectedValue(new Error('boom'))
+
+      await store.startSourcesReorder()
+
+      expect(store.orderedSources).toEqual([])
+      expect(store.catchAllSource).toBeNull()
+      // an empty reorder view with no explanation is worse than no reorder view
+      expect(store.sourcesReorderMode).toBe(false)
+      expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the source order. Try again.', error: true })
+    })
+
+    it('saveSourcesOrder refreshes the table on success', async () => {
+      vi.mocked(updateEventConfigSourcesOrder).mockResolvedValue({ ok: true, status: 200, message: '' })
+      vi.mocked(filterEventConfigSources).mockResolvedValue(mockFilterResponse)
+      vi.mocked(getAllSourceNames).mockResolvedValue(mockSourceNames)
+
+      const result = await store.saveSourcesOrder([2, 1])
+
+      expect(updateEventConfigSourcesOrder).toHaveBeenCalledWith([2, 1])
+      expect(result.ok).toBe(true)
+      expect(filterEventConfigSources).toHaveBeenCalled()
+      expect(store.isSavingSourceOrder).toBe(false)
+    })
+
+    it('saveSourcesOrder passes a rejection through without refreshing', async () => {
+      vi.mocked(updateEventConfigSourcesOrder).mockResolvedValue({ ok: false, status: 400, message: 'missing: x' })
+
+      const result = await store.saveSourcesOrder([2, 1])
+
+      expect(result).toEqual({ ok: false, status: 400, message: 'missing: x' })
+      expect(filterEventConfigSources).not.toHaveBeenCalled()
+      expect(store.isSavingSourceOrder).toBe(false)
+    })
   })
 })

@@ -41,13 +41,19 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Savepoint;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -72,6 +78,7 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Autowired
     private SessionFactory sessionFactory;
 
+
     private int defaultEventConfEventCount;
     @Before
     @Transactional
@@ -80,7 +87,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("test-source");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor");
         m_source.setUploadedBy("JUnitTest");
@@ -133,6 +140,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
         event.setSeverity(severity);
+        event.setEventOrder(m_eventDao.findMaxEventOrder(m_source.getId()) + 1);
         event.setEnabled(true);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
@@ -215,7 +223,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("testEventEnabledFlagName");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -267,7 +275,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("testDeleteEvents");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test events from a source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -329,6 +337,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         event.setXmlContent("<event><uei>uei.opennms.org/test/bulk/" + i + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setEventOrder(i);
         event.setSeverity("Normal");
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
@@ -345,7 +354,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setName("sourceAndEventTesting");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(m_eventSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor2");
         m_source.setUploadedBy("testCases");
@@ -370,9 +379,227 @@ public class EventConfEventDaoIT implements InitializingBean {
 
     }
 
+    @Test
+    @Transactional
+    public void testEventOrderIsAssignedAndPersisted() {
+        m_eventDao.flush();
+        List<EventConfEvent> events = m_eventDao.findBySourceId(m_source.getId());
+        assertEquals(4, events.size());
+        for (int i = 0; i < events.size(); i++) {
+            assertEquals("events of a source are numbered 1..N", Integer.valueOf(i + 1), events.get(i).getEventOrder());
+        }
+        assertEquals(Integer.valueOf(4), m_eventDao.findMaxEventOrder(m_source.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testFindMaxEventOrderIsZeroForSourceWithoutEvents() {
+        EventConfSource empty = new EventConfSource();
+        empty.setName("empty-source");
+        empty.setEnabled(true);
+        empty.setCreatedTime(new Date());
+        empty.setFileOrder(m_eventSourceDao.nextFileOrder());
+        empty.setVendor("TestVendor");
+        empty.setEventCount(0);
+        m_eventSourceDao.saveOrUpdate(empty);
+        m_eventSourceDao.flush();
+
+        assertEquals(Integer.valueOf(0), m_eventDao.findMaxEventOrder(empty.getId()));
+        assertEquals(Integer.valueOf(0), m_eventDao.findMaxEventOrder(-1L));
+    }
+
+    @Test
+    @Transactional
+    public void testNextEventOrderIsMaxPlusOne() {
+        m_eventDao.flush();
+        assertEquals(Integer.valueOf(5), m_eventDao.nextEventOrder(m_source.getId()));
+        // nothing was inserted, so the value is stable until someone appends
+        assertEquals(Integer.valueOf(5), m_eventDao.nextEventOrder(m_source.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testFindEnabledEventsFollowsEventOrderNotId() {
+        m_eventDao.flush();
+        List<EventConfEvent> events = m_eventDao.findBySourceId(m_source.getId());
+        // Move the last inserted event (highest id) to the front of its source
+        EventConfEvent last = events.get(events.size() - 1);
+        last.setEventOrder(0);
+        m_eventDao.saveOrUpdate(last);
+        m_eventDao.flush();
+        m_eventDao.clear();
+
+        List<EventConfEvent> enabled = m_eventDao.findEnabledEvents().stream()
+                .filter(e -> e.getSource().getId().equals(m_source.getId()))
+                .toList();
+        assertEquals(4, enabled.size());
+        assertEquals("uei.opennms.org/internal/discovery/newSuspect", enabled.get(0).getUei());
+        assertEquals("uei.opennms.org/internal/discoveryConfigChange", enabled.get(1).getUei());
+
+        // findBySourceId (download) follows the same order
+        assertEquals("uei.opennms.org/internal/discovery/newSuspect",
+                m_eventDao.findBySourceId(m_source.getId()).get(0).getUei());
+    }
+
+    @Test
+    @Transactional
+    public void testCompactEventOrderRemovesGaps() {
+        m_eventDao.flush();
+        List<EventConfEvent> events = m_eventDao.findBySourceId(m_source.getId());
+        // Delete the 2nd event (eventOrder 2) leaving 1,3,4
+        m_eventDao.deleteByEventIds(m_source.getId(), List.of(events.get(1).getId()));
+        m_eventDao.compactEventOrder(m_source.getId());
+        m_eventDao.flush();
+        m_eventDao.clear();
+
+        List<EventConfEvent> remaining = m_eventDao.findBySourceId(m_source.getId());
+        assertEquals(3, remaining.size());
+        assertEquals("uei.opennms.org/internal/discoveryConfigChange", remaining.get(0).getUei());
+        assertEquals("uei.opennms.org/internal/discovery/hardwareInventorySuccessful", remaining.get(1).getUei());
+        assertEquals("uei.opennms.org/internal/discovery/newSuspect", remaining.get(2).getUei());
+        for (int i = 0; i < remaining.size(); i++) {
+            assertEquals(Integer.valueOf(i + 1), remaining.get(i).getEventOrder());
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testPagedFindBySourceIdDefaultsToEventOrder() {
+        m_eventDao.flush();
+        @SuppressWarnings("unchecked")
+        List<EventConfEvent> page = (List<EventConfEvent>) m_eventDao
+                .findBySourceId(m_source.getId(), "", null, null, 0, 0, 10).get("eventConfEventList");
+        assertEquals(4, page.size());
+        assertEquals(Integer.valueOf(1), page.get(0).getEventOrder());
+        assertEquals(Integer.valueOf(4), page.get(3).getEventOrder());
+
+        @SuppressWarnings("unchecked")
+        List<EventConfEvent> desc = (List<EventConfEvent>) m_eventDao
+                .findBySourceId(m_source.getId(), "", "eventOrder", "desc", 0, 0, 10).get("eventConfEventList");
+        assertEquals(Integer.valueOf(4), desc.get(0).getEventOrder());
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
+
+    /**
+     * Two events of one source may not share an eventOrder. The constraint is deferred (so a compaction
+     * can rewrite positions inside a transaction), so it is made immediate here and the violating insert
+     * is wrapped in a savepoint, which keeps the surrounding test transaction usable for the cleanup.
+     */
+    @Test
+    @Transactional
+    public void testEventOrderMustBeUniqueWithinSource() {
+        m_eventDao.flush();
+        final long sourceId = m_source.getId();
+        sessionFactory.getCurrentSession().doWork(connection -> {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("SET CONSTRAINTS ALL IMMEDIATE");
+            }
+            final Savepoint savepoint = connection.setSavepoint();
+            // copy the source's last event onto the very same position
+            final String duplicate = "INSERT INTO eventconf_events (id, source_id, uei, event_label, description, severity, enabled,"
+                    + " xml_content, created_time, last_modified, modified_by, event_order)"
+                    + " SELECT nextval('eventconf_events_id_seq'), source_id, 'uei.opennms.org/test/duplicate-order', event_label, description, severity, enabled,"
+                    + " xml_content, created_time, last_modified, modified_by, event_order"
+                    + " FROM eventconf_events WHERE source_id = ? ORDER BY event_order DESC LIMIT 1";
+            try (PreparedStatement statement = connection.prepareStatement(duplicate)) {
+                statement.setLong(1, sourceId);
+                statement.executeUpdate();
+                fail("duplicate eventOrder within a source must be rejected");
+            } catch (SQLException e) {
+                assertEquals("unique_violation expected: " + e.getMessage(), "23505", e.getSQLState());
+                connection.rollback(savepoint);
+            }
+        });
+        assertEquals("nothing may have been inserted", 0,
+                m_eventDao.findBySourceId(sourceId).stream().filter(e -> "uei.opennms.org/test/duplicate-order".equals(e.getUei())).count());
+    }
+
+    private EventConfSource createSecondSourceWithEvents(final int eventCount) {
+        final EventConfSource other = new EventConfSource();
+        other.setName("other-source");
+        other.setEnabled(true);
+        other.setCreatedTime(new Date());
+        other.setFileOrder(m_eventSourceDao.nextFileOrder());
+        other.setVendor("TestVendor");
+        other.setEventCount(eventCount);
+        other.setLastModified(new Date());
+        other.setUploadedBy("JUnitTest");
+        m_eventSourceDao.saveOrUpdate(other);
+        m_eventSourceDao.flush();
+        for (int i = 1; i <= eventCount; i++) {
+            final EventConfEvent event = new EventConfEvent();
+            event.setUei("uei.opennms.org/test/other/" + i);
+            event.setEventLabel("Other " + i);
+            event.setXmlContent("<event/>");
+            event.setSource(other);
+            event.setSeverity("Normal");
+            event.setEventOrder(i);
+            event.setEnabled(true);
+            event.setCreatedTime(new Date());
+            event.setLastModified(new Date());
+            event.setModifiedBy("JUnitTest");
+            m_eventDao.saveOrUpdate(event);
+        }
+        m_eventDao.flush();
+        return other;
+    }
+
+    private List<Integer> ordersOf(final Long sourceId) {
+        sessionFactory.getCurrentSession().clear();
+        return m_eventDao.findBySourceId(sourceId).stream().map(EventConfEvent::getEventOrder).toList();
+    }
+
+    @Test
+    @Transactional
+    public void testShiftEventOrderIsScopedToOneSource() {
+        final EventConfSource other = createSecondSourceWithEvents(3);
+        m_eventDao.flush();
+
+        // shifting into an unused band keeps every position unique, so this end state would also commit
+        final int shifted = m_eventDao.shiftEventOrder(m_source.getId(), 2, 3, 10);
+        assertEquals(2, shifted);
+
+        assertEquals(List.of(1, 4, 12, 13), ordersOf(m_source.getId()));
+        assertEquals("the other source must be untouched", List.of(1, 2, 3), ordersOf(other.getId()));
+
+        assertEquals("an empty range shifts nothing", 0, m_eventDao.shiftEventOrder(m_source.getId(), 5, 4, 1));
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateEventOrderTargetsOneEventOfOneSource() {
+        m_eventDao.flush();
+        final List<EventConfEvent> events = m_eventDao.findBySourceId(m_source.getId());
+        final EventConfEvent first = events.get(0);
+
+        m_eventDao.updateEventOrder(m_source.getId(), first.getId(), 9);
+        assertEquals(List.of(2, 3, 4, 9), ordersOf(m_source.getId()));
+
+        // a mismatched source id must not touch the row
+        m_eventDao.updateEventOrder(-1L, first.getId(), 1);
+        assertEquals(List.of(2, 3, 4, 9), ordersOf(m_source.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testFindNeighbourByOrder() {
+        m_eventDao.flush();
+        final Long sourceId = m_source.getId();
+
+        assertNull("nothing before the first position", m_eventDao.findNeighbourByOrder(sourceId, 1, true));
+        assertNull("nothing after the last position", m_eventDao.findNeighbourByOrder(sourceId, 4, false));
+
+        final EventConfEvent previous = m_eventDao.findNeighbourByOrder(sourceId, 3, true);
+        assertNotNull(previous);
+        assertEquals(Integer.valueOf(2), previous.getEventOrder());
+
+        final EventConfEvent next = m_eventDao.findNeighbourByOrder(sourceId, 2, false);
+        assertNotNull(next);
+        assertEquals(Integer.valueOf(3), next.getEventOrder());
+    }
 }

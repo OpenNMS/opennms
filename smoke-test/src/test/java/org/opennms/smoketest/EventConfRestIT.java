@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class EventConfRestIT {
 
@@ -81,6 +82,13 @@ public class EventConfRestIT {
         List<Map<String, Object>> successList = (List<Map<String, Object>>) responseMap.get("success");
         int successCount = successList != null ? successList.size() : 0;
 
-        assertEquals("Mismatch in successfully uploaded file count!", eventFiles.length, successCount);
+        // eventconf.xml is the ordering manifest: it defines the source order and is not stored as a source
+        long manifestCount = java.util.Arrays.stream(eventFiles)
+                .filter(f -> f.getName().equalsIgnoreCase("eventconf.xml")).count();
+        assertEquals("Mismatch in successfully uploaded file count!", eventFiles.length - manifestCount, successCount);
+        assertTrue("the ordering manifest must not be stored as a source",
+                successList.stream().noneMatch(entry -> "eventconf".equals(entry.get("file"))));
+        List<Map<String, Object>> errorList = (List<Map<String, Object>>) responseMap.get("errors");
+        assertTrue("no upload errors expected: " + errorList, errorList == null || errorList.isEmpty());
     }
 }

@@ -1,11 +1,19 @@
 import { Severity } from '@/components/EventConfigEventCreate/constants'
+import useSnackbar from '@/composables/useSnackbar'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
   filterEventConfigEvents,
-  getEventConfSourceById
+  getEventConfSourceById,
+  getOrderedEventConfigEvents,
+  updateEventConfigEventsOrder
 } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import {
+  EventConfigDetailStoreState,
+  EventConfigEvent,
+  EventConfigMutationResult,
+  EventConfigSource
+} from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -27,7 +35,8 @@ export const getDefaultEventConfigEvent = (): EventConfigEvent => ({
   modifiedBy: '',
   sourceName: '',
   vendor: '',
-  fileOrder: 0
+  fileOrder: 0,
+  eventOrder: 0
 })
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
@@ -36,8 +45,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     eventsPagination: { ...defaultPagination },
     eventsSearchTerm: '',
     eventsSorting: {
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
+      sortOrder: 'asc',
+      sortKey: 'eventOrder'
     },
     selectedSource: null,
     isLoading: false,
@@ -49,6 +58,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       visible: false,
       eventConfigEvent: null
     },
+    eventsReorderMode: false,
+    orderedEvents: [],
+    isSavingEventsOrder: false,
     deleteEventConfigSourceDialogState: {
       visible: false,
       eventConfigSource: null
@@ -60,6 +72,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
   }),
   actions: {
     async fetchSourceById(id: string) {
+      // the store outlives the page, so a reorder left open on another source must not carry over
+      this.eventsReorderMode = false
+      this.orderedEvents = []
       try {
         const response = await getEventConfSourceById(id)
         this.selectedSource = response
@@ -117,8 +132,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     async refreshEventConfigEvents() {
       this.resetEventsPagination()
       this.eventsSearchTerm = ''
-      this.eventsSorting.sortKey = 'createdTime'
-      this.eventsSorting.sortOrder = 'desc'
+      this.eventsSorting.sortKey = 'eventOrder'
+      this.eventsSorting.sortOrder = 'asc'
       await this.fetchEventsBySourceId()
     },
     showDeleteEventConfigEventDialog(eventConfigSource: EventConfigEvent) {
@@ -152,6 +167,52 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     showChangeEventConfigEventStatusDialog(eventConfigEvent: EventConfigEvent) {
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
       this.changeEventConfigEventStatusDialogState.visible = true
+    },
+    async startEventsReorder() {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return
+      }
+      this.eventsReorderMode = true
+      await this.fetchOrderedEvents()
+    },
+    stopEventsReorder() {
+      this.eventsReorderMode = false
+    },
+    async fetchOrderedEvents() {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return
+      }
+      this.isLoading = true
+      try {
+        this.orderedEvents = await getOrderedEventConfigEvents(this.selectedSource.id)
+      } catch (error) {
+        console.error('Error fetching ordered event configuration events:', error)
+        this.orderedEvents = []
+        // without the current order there is nothing to edit: leave the mode instead of
+        // showing an inexplicable empty list
+        this.stopEventsReorder()
+        useSnackbar().showSnackBar({ msg: 'Failed to load the event order. Try again.', error: true })
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async saveEventsOrder(eventIds: number[]): Promise<EventConfigMutationResult> {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return { ok: false, status: 0, message: 'No source selected' }
+      }
+      this.isSavingEventsOrder = true
+      try {
+        const result = await updateEventConfigEventsOrder(this.selectedSource.id, eventIds)
+        if (result.ok) {
+          await this.fetchEventsBySourceId()
+        }
+        return result
+      } finally {
+        this.isSavingEventsOrder = false
+      }
     },
     async hideChangeEventConfigEventStatusDialog() {
       this.changeEventConfigEventStatusDialogState.visible = false
@@ -204,8 +265,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     async resetEventConfigEvents() {
       this.resetEventsPagination()
       this.eventsSearchTerm = ''
-      this.eventsSorting.sortKey = 'createdTime'
-      this.eventsSorting.sortOrder = 'desc'
+      this.eventsSorting.sortKey = 'eventOrder'
+      this.eventsSorting.sortOrder = 'asc'
       await this.fetchEventsBySourceId()
     }
   }

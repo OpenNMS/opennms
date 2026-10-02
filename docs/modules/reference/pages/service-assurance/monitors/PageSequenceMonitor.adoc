@@ -8,7 +8,7 @@ This monitor has several configuration options regarding IPv4, IPv6, and how to 
 To add flexibility, the node label and IP address can be passed as variables into the monitor.
 This lets you run the monitor with node-dependent configuration.
 Beyond testing a web application with a single URL, it can also test a path through a web application.
-A test path through an web application can look like this:
+A test path through a web application can look like this:
 
 . Log in to a certain web application.
 . Run an action while logged in.

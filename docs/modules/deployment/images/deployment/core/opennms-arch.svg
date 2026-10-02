@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1190" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1180" height="1190" fill="#ffffff"/>
+
+  <!-- ============ Row 1: functional groups ============ -->
+
+  <!-- Monitoring -->
+  <rect x="20" y="20" width="210" height="415" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="20" y="20" width="26" height="415" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 33 227)" x="33" y="227" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Monitoring</text>
+  <rect x="58" y="38" width="158" height="176" rx="6" fill="none" stroke="#666666" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <rect x="70" y="50" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="137" y="72" text-anchor="middle" font-size="13" fill="#222222">Pollerd</text>
+  <rect x="70" y="94" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="137" y="116" text-anchor="middle" font-size="13" fill="#222222">PerspectivePoller</text>
+  <rect x="70" y="138" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="137" y="160" text-anchor="middle" font-size="13" fill="#222222">Collectd</text>
+  <text x="137" y="200" text-anchor="middle" font-size="12" font-style="italic" fill="#444444">Monitors, Thresholding</text>
+  <rect x="70" y="230" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="137" y="252" text-anchor="middle" font-size="13" fill="#222222">SnmpPoller</text>
+  <rect x="70" y="274" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="137" y="296" text-anchor="middle" font-size="13" fill="#222222">PassiveStatusd</text>
+  <rect x="70" y="318" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="137" y="340" text-anchor="middle" font-size="13" fill="#222222">Bsmd</text>
+  <rect x="70" y="362" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="137" y="384" text-anchor="middle" font-size="12" fill="#222222">Device Config Backup</text>
+
+  <!-- Provisioning -->
+  <rect x="250" y="20" width="210" height="415" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="250" y="20" width="26" height="415" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 263 227)" x="263" y="227" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Provisioning</text>
+  <rect x="288" y="38" width="158" height="96" rx="6" fill="none" stroke="#666666" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <rect x="300" y="50" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="367" y="72" text-anchor="middle" font-size="13" fill="#222222">Provisiond</text>
+  <text x="367" y="121" text-anchor="middle" font-size="12" font-style="italic" fill="#444444">Detectors, Policies</text>
+  <rect x="300" y="150" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="367" y="172" text-anchor="middle" font-size="13" fill="#222222">Discovery</text>
+  <rect x="300" y="194" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="367" y="216" text-anchor="middle" font-size="13" fill="#222222">Enlinkd</text>
+
+  <!-- External Events -->
+  <rect x="480" y="20" width="210" height="415" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="480" y="20" width="26" height="415" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 493 227)" x="493" y="227" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">External Events</text>
+  <rect x="530" y="50" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="597" y="72" text-anchor="middle" font-size="13" fill="#222222">Trapd</text>
+  <rect x="530" y="94" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="597" y="116" text-anchor="middle" font-size="13" fill="#222222">Syslogd</text>
+  <rect x="530" y="138" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="597" y="160" text-anchor="middle" font-size="13" fill="#222222">Telemetryd</text>
+  <rect x="530" y="182" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="597" y="204" text-anchor="middle" font-size="13" fill="#222222">ReST API</text>
+  <rect x="530" y="226" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="597" y="248" text-anchor="middle" font-size="13" fill="#222222">Ackd</text>
+
+  <!-- Automations -->
+  <rect x="710" y="20" width="210" height="415" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="710" y="20" width="26" height="415" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 723 227)" x="723" y="227" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Automations</text>
+  <rect x="760" y="50" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="827" y="72" text-anchor="middle" font-size="13" fill="#222222">Alarmd</text>
+  <rect x="760" y="94" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="827" y="116" text-anchor="middle" font-size="13" fill="#222222">Notifd</text>
+  <rect x="760" y="138" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="827" y="160" text-anchor="middle" font-size="13" fill="#222222">Ticketer</text>
+  <rect x="760" y="182" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="827" y="204" text-anchor="middle" font-size="13" fill="#222222">Scriptd</text>
+  <rect x="760" y="226" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="827" y="248" text-anchor="middle" font-size="13" fill="#222222">Actiond</text>
+  <rect x="760" y="270" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="827" y="292" text-anchor="middle" font-size="13" fill="#222222">Correlator</text>
+  <rect x="760" y="314" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="827" y="336" text-anchor="middle" font-size="13" fill="#222222">Statsd</text>
+
+  <!-- User Interface -->
+  <rect x="940" y="20" width="220" height="415" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="940" y="20" width="26" height="415" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 953 227)" x="953" y="227" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">User Interface</text>
+  <rect x="986" y="38" width="158" height="208" rx="6" fill="none" stroke="#666666" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="1065" y="62" text-anchor="middle" font-size="12" font-style="italic" fill="#444444">OpenNMS Webapp</text>
+  <rect x="998" y="76" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="1065" y="98" text-anchor="middle" font-size="13" fill="#222222">Maps and Topology</text>
+  <rect x="998" y="120" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="1065" y="142" text-anchor="middle" font-size="13" fill="#222222">Dashboards</text>
+  <rect x="998" y="164" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="1065" y="186" text-anchor="middle" font-size="13" fill="#222222">Jasper Reporting</text>
+  <text x="1065" y="228" text-anchor="middle" font-size="12" font-style="italic" fill="#444444">Jetty</text>
+  <rect x="998" y="266" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="1065" y="288" text-anchor="middle" font-size="13" fill="#222222">Karaf Shell</text>
+  <rect x="998" y="310" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="1065" y="326" text-anchor="middle" font-size="11" fill="#222222">OpenNMS Plugin</text>
+  <text x="1065" y="339" text-anchor="middle" font-size="11" fill="#222222">for Grafana</text>
+
+  <g transform="translate(0,45)">
+  <!-- ============ Row 2: Core ============ -->
+  <rect x="20" y="440" width="900" height="120" rx="8" fill="#d5e9f2" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="20" y="440" width="26" height="120" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 33 500)" x="33" y="500" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Core</text>
+
+  <rect x="130" y="405" width="730" height="48" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="495" y="435" text-anchor="middle" font-size="17" font-weight="bold" fill="#222222">Eventd</text>
+  <rect x="431" y="440" width="128" height="30" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="495" y="460" text-anchor="middle" font-size="12" fill="#222222">EventTranslator</text>
+
+  <rect x="85" y="488" width="130" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="150" y="510" text-anchor="middle" font-size="13" fill="#222222">Manager</text>
+  <rect x="255" y="488" width="130" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="320" y="510" text-anchor="middle" font-size="13" fill="#222222">Vacuumd</text>
+  <rect x="425" y="488" width="130" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="490" y="510" text-anchor="middle" font-size="13" fill="#222222">Queued</text>
+  <rect x="595" y="488" width="130" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="660" y="510" text-anchor="middle" font-size="13" fill="#222222">Rtcd</text>
+  <rect x="765" y="488" width="130" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="830" y="504" text-anchor="middle" font-size="11" fill="#222222">KarafStartup</text>
+  <text x="830" y="516" text-anchor="middle" font-size="11" fill="#222222">Monitor</text>
+
+  <rect x="130" y="543" width="280" height="44" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="270" y="571" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">ReST API (v1 and v2)</text>
+  <rect x="560" y="543" width="340" height="44" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="730" y="571" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">Log4j2 - Hibernate - Time Series API</text>
+
+  <!-- ============ Row 3: Integrations and plugins ============ -->
+  <rect x="20" y="605" width="1140" height="175" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="20" y="605" width="26" height="175" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 33 692)" x="33" y="692" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Integrations</text>
+
+  <!-- Northbound interfaces -->
+  <rect x="70" y="628" width="720" height="130" rx="6" fill="none" stroke="#666666" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="430" y="650" text-anchor="middle" font-size="12" font-style="italic" fill="#444444">Northbound interfaces</text>
+
+  <rect x="100" y="666" width="190" height="52" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="195" y="688" text-anchor="middle" font-size="13" fill="#222222">Kafka Producer</text>
+  <text x="195" y="706" text-anchor="middle" font-size="10" font-style="italic" fill="#444444">events, alarms, nodes, metrics</text>
+
+  <rect x="315" y="666" width="190" height="52" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="410" y="688" text-anchor="middle" font-size="13" fill="#222222">Elasticsearch</text>
+  <text x="410" y="706" text-anchor="middle" font-size="10" font-style="italic" fill="#444444">event and alarm forwarder</text>
+
+  <rect x="530" y="666" width="190" height="52" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="625" y="688" text-anchor="middle" font-size="13" fill="#222222">Alarm NBI</text>
+  <text x="625" y="706" text-anchor="middle" font-size="10" font-style="italic" fill="#444444">SNMP trap, syslog, email, BSF, Drools</text>
+
+  <text x="430" y="748" text-anchor="middle" font-size="11" font-style="italic" fill="#444444">alarms, events, nodes and metrics to upstream systems</text>
+
+  <!-- Plugins -->
+  <rect x="820" y="628" width="310" height="130" rx="6" fill="#eef6fa" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="975" y="686" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">OpenNMS Plugins</text>
+  <text x="975" y="710" text-anchor="middle" font-size="12" fill="#444444">OpenNMS Plugin Integration API</text>
+
+  <g transform="translate(0,195)">
+  <!-- ============ Row 3: Configuration ============ -->
+  <rect x="20" y="605" width="400" height="315" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="20" y="605" width="26" height="315" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 33 762)" x="33" y="762" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Configuration</text>
+
+  <!-- Configuration held in files -->
+  <rect x="60" y="672" width="180" height="180" rx="8" fill="#fafafa" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="150" y="696" text-anchor="middle" font-size="13" font-weight="bold" fill="#222222">Configuration files</text>
+  <text x="150" y="712" text-anchor="middle" font-size="10" font-style="italic" fill="#444444">$OPENNMS_HOME/etc</text>
+  <rect x="130" y="742" width="72" height="80" fill="#14d1df" stroke="#0e8d97" stroke-width="1.5"/>
+  <rect x="122" y="734" width="72" height="80" fill="#14d1df" stroke="#0e8d97" stroke-width="1.5"/>
+  <rect x="114" y="726" width="72" height="80" fill="#14d1df" stroke="#0e8d97" stroke-width="1.5"/>
+  <text x="150" y="762" text-anchor="middle" font-size="11" fill="#06333a">XML</text>
+  <text x="150" y="776" text-anchor="middle" font-size="11" fill="#06333a">files</text>
+
+  <!-- Configuration held in the database -->
+  <rect x="248" y="672" width="160" height="180" rx="8" fill="#fafafa" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="328" y="696" text-anchor="middle" font-size="13" font-weight="bold" fill="#222222">Database</text>
+  <text x="328" y="712" text-anchor="middle" font-size="10" font-style="italic" fill="#444444">PostgreSQL</text>
+  <path d="M 290 746 L 290 804 A 38 12 0 0 0 366 804 L 366 746 Z" fill="#85d9a5" stroke="#3f8f5d" stroke-width="1.5"/>
+  <ellipse cx="328" cy="746" rx="38" ry="12" fill="#a5e5bd" stroke="#3f8f5d" stroke-width="1.5"/>
+
+  <!-- ============ Row 3: Storage ============ -->
+  <rect x="440" y="605" width="720" height="315" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>
+  <rect x="440" y="605" width="26" height="315" rx="8" fill="#40a1c2"/>
+  <text transform="rotate(-90 453 762)" x="453" y="762" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Storage</text>
+
+  <!-- Logs, binaries, libraries -->
+  <rect x="524" y="656" width="96" height="116" fill="#14d1df" stroke="#0e8d97" stroke-width="1.5"/>
+  <rect x="512" y="644" width="96" height="116" fill="#14d1df" stroke="#0e8d97" stroke-width="1.5"/>
+  <rect x="500" y="632" width="96" height="116" fill="#14d1df" stroke="#0e8d97" stroke-width="1.5"/>
+  <text x="548" y="678" text-anchor="middle" font-size="12" fill="#06333a">Logs,</text>
+  <text x="548" y="694" text-anchor="middle" font-size="12" fill="#06333a">Binaries,</text>
+  <text x="548" y="710" text-anchor="middle" font-size="12" fill="#06333a">Libraries</text>
+
+  <!-- PostgreSQL cylinder -->
+  <path d="M 670 650 L 670 728 A 50 15 0 0 0 770 728 L 770 650 Z" fill="#85d9a5" stroke="#3f8f5d" stroke-width="1.5"/>
+  <ellipse cx="720" cy="650" rx="50" ry="15" fill="#a5e5bd" stroke="#3f8f5d" stroke-width="1.5"/>
+  <text x="720" y="700" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f3a1f">PostgreSQL</text>
+
+  <!-- Time series storage: cluster of cylinders -->
+  <g stroke="#0e8d97" stroke-width="1.2" fill="#14d1df">
+    <path d="M 828 648 L 828 684 A 12 5 0 0 0 852 684 L 852 648 Z"/><ellipse cx="840" cy="648" rx="12" ry="5" fill="#63e2eb"/>
+    <path d="M 858 648 L 858 684 A 12 5 0 0 0 882 684 L 882 648 Z"/><ellipse cx="870" cy="648" rx="12" ry="5" fill="#63e2eb"/>
+    <path d="M 888 648 L 888 684 A 12 5 0 0 0 912 684 L 912 648 Z"/><ellipse cx="900" cy="648" rx="12" ry="5" fill="#63e2eb"/>
+    <path d="M 918 648 L 918 684 A 12 5 0 0 0 942 684 L 942 648 Z"/><ellipse cx="930" cy="648" rx="12" ry="5" fill="#63e2eb"/>
+    <path d="M 843 694 L 843 730 A 12 5 0 0 0 867 730 L 867 694 Z"/><ellipse cx="855" cy="694" rx="12" ry="5" fill="#63e2eb"/>
+    <path d="M 873 694 L 873 730 A 12 5 0 0 0 897 730 L 897 694 Z"/><ellipse cx="885" cy="694" rx="12" ry="5" fill="#63e2eb"/>
+    <path d="M 903 694 L 903 730 A 12 5 0 0 0 927 730 L 927 694 Z"/><ellipse cx="915" cy="694" rx="12" ry="5" fill="#63e2eb"/>
+  </g>
+  <text x="885" y="754" text-anchor="middle" font-size="13" font-weight="bold" fill="#222222">Time series storage</text>
+
+  <!-- Elasticsearch cylinder -->
+  <path d="M 1010 650 L 1010 728 A 48 15 0 0 0 1106 728 L 1106 650 Z" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="1.5"/>
+  <ellipse cx="1058" cy="650" rx="48" ry="15" fill="#fafafa" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="1058" y="694" text-anchor="middle" font-size="13" font-weight="bold" fill="#222222">Elasticsearch</text>
+
+  <!-- Wavy notes -->
+  <path d="M 490 782 L 620 782 L 620 862 C 587 878 523 846 490 862 Z" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="555" y="814" text-anchor="middle" font-size="12" fill="#222222">Daemons and</text>
+  <text x="555" y="830" text-anchor="middle" font-size="12" fill="#222222">web application</text>
+
+  <path d="M 655 782 L 785 782 L 785 862 C 752 878 688 846 655 862 Z" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="720" y="806" text-anchor="middle" font-size="12" fill="#222222">Events, alarms,</text>
+  <text x="720" y="822" text-anchor="middle" font-size="12" fill="#222222">nodes and</text>
+  <text x="720" y="838" text-anchor="middle" font-size="12" fill="#222222">configuration</text>
+
+  <path d="M 820 782 L 950 782 L 950 862 C 917 878 853 846 820 862 Z" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="885" y="806" text-anchor="middle" font-size="12" fill="#222222">Performance data</text>
+  <text x="885" y="828" text-anchor="middle" font-size="11" font-style="italic" fill="#444444">RRDs or plugins</text>
+
+  <path d="M 993 782 L 1123 782 L 1123 862 C 1090 878 1026 846 993 862 Z" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
+  <text x="1058" y="822" text-anchor="middle" font-size="12" fill="#222222">Flow data</text>
+  </g>
+  </g>
+</svg>

@@ -9,7 +9,7 @@ The `$\{OPENNMS_HOME}/etc/scriptd-configuration.xml` file contains elements and 
 Beanshell scripts executed by `scriptd` should be placed in `$\{OPENNMS_HOME}/etc/scripts/`
 
 When an event is published on the event bus that Scriptd is configured to listen for, it executes the beanscript associated with that event.
-A common (though not _only_, as you can see in the examples) usage pattern is to compose a script that defines one or more a callable functions that accept an immutable event `IEvent` as a argument, which is sourced when scriptd starts, in `start-script` block.
+A common (though not _only_, as you can see in the examples) usage pattern is to compose a script that defines one or more callable functions that accept an immutable event `IEvent` as an argument, which is sourced when scriptd starts, in `start-script` block.
 This makes the function available within the context of `scriptd` so that the script function can be called from an `event-script` block.
 Beanshell script can also be embedded directly in the `start-script` or `event-script` blocks, using xml `CDATA` tags.
 
@@ -115,7 +115,7 @@ Parm lookupParm(IParm parm) { <10>
 }
 ----
 <1> `java.net.InetAddress` is used to perform the reverse DNS lookup.
-<2> Incoming events are immutable `IEvent` objects, and event paramters are immutable `IParm` objects.
+<2> Incoming events are immutable `IEvent` objects, and event parameters are immutable `IParm` objects.
 <3> The `EventBuilder` is used to create new events.
 <4> The `EventForwarder` requires mutable `Event` and `Parm` objects.
 <5> This defines the `mangleEvent` function, called from the `event-script` block in `scripts-configuration.xml`.
@@ -124,7 +124,7 @@ Parm lookupParm(IParm parm) { <10>
 <8> This adds the event parameter containing the rDNS hostname to the new event being created.
 <9> Using the `EventForwarder`, send the new event out on the event bus.
 <10> This function is called by `mangleEvent` to perform the rDNS lookup on the original event parameter.
-<11> Perform the rDNS loookup using `InetAddress.getByName()` from `java.net.InetAddress`.
+<11> Perform the rDNS lookup using `InetAddress.getByName()` from `java.net.InetAddress`.
 <12> Create a new event `Parm` object using the original `Parameter` name appended with `'-hostname'`, using the value returned by the `getByName()`
 
 [[ga-scriptd-forward-snmpv3]]

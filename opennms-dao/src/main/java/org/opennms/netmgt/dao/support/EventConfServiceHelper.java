@@ -39,7 +39,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +66,8 @@ public class EventConfServiceHelper {
                                   Event event, String username, Date timestamp) {
         EventConfEvent eventConfEvent = new EventConfEvent();
         eventConfEvent.setSource(source);
+        // Appended events are evaluated last within their source (allocation locks the source row)
+        eventConfEvent.setEventOrder(eventConfEventDao.nextEventOrder(source.getId()));
         eventConfEvent.setUei(event.getUei());
         eventConfEvent.setEventLabel(event.getEventLabel());
         eventConfEvent.setDescription(event.getDescr());
@@ -87,36 +90,72 @@ public class EventConfServiceHelper {
         final long startTime = System.currentTimeMillis();
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         List<EventConfGlobalSecurity> globalSecurities = eventConfGlobalSecurityDao.findAll();
+        final long fetchedAt = System.currentTimeMillis();
         eventConfDao.loadEventsFromDB(dbEvents, globalSecurities);
         final long endTime = System.currentTimeMillis();
-        LOG.info("Time to reload {} events from DB: {} ms", dbEvents.size(), (endTime - startTime));
+        LOG.info("Reloaded {} events from the database in {} ms ({} ms database fetch, {} ms in-memory build)",
+                dbEvents.size(), (endTime - startTime), (fetchedAt - startTime), (endTime - fetchedAt));
     }
 
+    /** True while a reload task is queued but has not yet begun reading the database. */
+    private static final AtomicBoolean RELOAD_QUEUED = new AtomicBoolean(false);
+
     /**
-     * Reloads all enabled events from the database into memory asynchronously.
+     * The single lane every reload runs on. Serialized publishes keep the coalescing below correct:
+     * the queued task that justified skipping a request is always also the last to publish.
+     */
+    private static final ExecutorService RELOAD_EXECUTOR = Executors.newSingleThreadExecutor(
+            new ThreadFactoryBuilder().setNameFormat("eventconf-reload-%d").setDaemon(true).build());
+
+    /**
+     * Reloads all enabled events from the database into memory asynchronously, on the shared
+     * serialized reload executor.
+     * <p>
+     * Bursts of mutations (for example several single-event moves in a row) are coalesced: while a
+     * queued reload has not started reading yet, it will observe this mutation's committed state
+     * too, so a second reload would only rebuild the same result. The flag is cleared before the
+     * read begins, so a mutation that commits any later always gets a fresh reload.
+     * <p>
+     * Call this only after the mutation has committed (outside its transaction): the coalescing
+     * argument above rests on the queued reload being able to see the caller's changes.
      *
      * @param eventConfEventDao The DAO for retrieving EventConfEvent entities
      * @param eventConfDao The DAO for loading events into memory
-     * @param executor The ExecutorService to use for async execution
      */
     public static void reloadEventsFromDBAsync(EventConfEventDao eventConfEventDao,
                                                  EventConfDao eventConfDao,
-                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao,
-                                                 ExecutorService executor) {
-        executor.execute(() -> reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao));
+                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao) {
+        reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, RELOAD_EXECUTOR);
     }
 
     /**
-     * Creates a single-threaded executor with a custom thread factory for EventConf operations.
-     *
-     * @param threadNameFormat The format string for thread names (e.g., "load-eventConf-%d")
-     * @return A configured ExecutorService
+     * Visible for testing. Production callers use the public overload: the coalescing flag is
+     * global, so it is only correct when every reload shares one serialized executor.
      */
-    public static ExecutorService createEventConfExecutor(String threadNameFormat) {
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat(threadNameFormat)
-                .build();
-        return Executors.newSingleThreadExecutor(threadFactory);
+    static void reloadEventsFromDBAsync(EventConfEventDao eventConfEventDao,
+                                                 EventConfDao eventConfDao,
+                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao,
+                                                 ExecutorService executor) {
+        if (!RELOAD_QUEUED.compareAndSet(false, true)) {
+            LOG.debug("An event configuration reload is already queued, coalescing this request");
+            return;
+        }
+        try {
+            executor.execute(() -> {
+                RELOAD_QUEUED.set(false);
+                try {
+                    reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+                } catch (Exception e) {
+                    // not retried; the next mutation queues a fresh reload
+                    LOG.error("Reloading the event configuration from the database failed; "
+                            + "the in-memory configuration is stale until the next change triggers a reload", e);
+                }
+            });
+        } catch (RuntimeException e) {
+            // a rejected execution (e.g. on shutdown) queued nothing, so the flag is released
+            RELOAD_QUEUED.set(false);
+            throw e;
+        }
     }
 
     /**
@@ -127,15 +166,21 @@ public class EventConfServiceHelper {
      * @param events The list of Event XML objects to convert
      * @param username The username of the user creating these events
      * @param timestamp The timestamp for creation and modification
+     * @param startOrder The {@code eventOrder} assigned to the first event; subsequent events get
+     *                   consecutive values in list order (1 when replacing all events of a source,
+     *                   {@code findMaxEventOrder(sourceId) + 1} when appending)
      * @return A list of EventConfEvent entities ready to be persisted
      */
     public static List<EventConfEvent> createEventConfEventEntities(EventConfSource source,
                                                                       List<Event> events,
                                                                       String username,
-                                                                      Date timestamp) {
+                                                                      Date timestamp,
+                                                                      int startOrder) {
+        final AtomicInteger nextOrder = new AtomicInteger(startOrder);
         return events.stream().map(parsed -> {
             EventConfEvent event = new EventConfEvent();
             event.setSource(source);
+            event.setEventOrder(nextOrder.getAndIncrement());
             event.setUei(parsed.getUei());
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());

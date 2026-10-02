@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,6 +58,9 @@ import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.features.kafka.producer.KafkaForwarderIT.KafkaMessageConsumerRunner;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
@@ -75,10 +79,18 @@ import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.StringAttribute;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
+
+import com.codahale.metrics.MetricRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -98,6 +110,10 @@ public class KafkaPersisterIT {
 
     static final String LOCATION = "MINION";
 
+    private static final String ROUTED_TOPIC = "test-metrics-routed";
+
+    private static final ContextKey ROUTING_CONTEXT_KEY = new ContextKey("requisition", "metricRouting.package");
+
     @Autowired
     private DatabasePopulator databasePopulator;
 
@@ -109,6 +125,21 @@ public class KafkaPersisterIT {
 
     @Autowired
     private CollectionSetMapper collectionSetMapper;
+
+    @Autowired
+    private EntityScopeProvider entityScopeProvider;
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private IpInterfaceDao ipInterfaceDao;
+
+    @Autowired
+    private MonitoredServiceDao monitoredServiceDao;
+
+    @Autowired
+    private SessionUtils sessionUtils;
 
     private KafkaPersisterFactory kafkaPersisterFactory;
 
@@ -137,7 +168,8 @@ public class KafkaPersisterIT {
         RrdRepository repository = new RrdRepository();
         persister = kafkaPersisterFactory.createPersister(params, repository);
         executor = Executors.newSingleThreadExecutor();
-        kafkaConsumer = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
+        kafkaConsumer = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString(),
+                Collections.singleton(ROUTED_TOPIC));
         executor.execute(kafkaConsumer);
 
     }
@@ -466,6 +498,152 @@ public class KafkaPersisterIT {
                 .collect(Collectors.toList());
 
         assertThat(resources.size(), equalTo(2));
+    }
+
+    /**
+     * End-to-end check of metric routing: a node tagged with the routing meta-data is published to
+     * the topic it names, while an untagged node keeps going to the default topic.
+     */
+    @Test
+    public void testMetricRoutingByRequisitionMetadata() throws IOException {
+        final OnmsNode taggedNode = databasePopulator.getNode1();
+        final OnmsNode untaggedNode = databasePopulator.getNode2();
+
+        sessionUtils.withTransaction(() -> {
+            final OnmsNode node = nodeDao.get(taggedNode.getId());
+            node.addMetaData(ROUTING_CONTEXT_KEY.getContext(), ROUTING_CONTEXT_KEY.getKey(), ROUTED_TOPIC);
+            nodeDao.saveOrUpdate(node);
+            nodeDao.flush();
+            return null;
+        });
+
+        final Persister routingPersister = routingPersister(true);
+        routingPersister.visitCollectionSet(nodeCollectionSet(taggedNode, "tagged", 105));
+        routingPersister.visitCollectionSet(nodeCollectionSet(untaggedNode, "untagged", 106));
+
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetsByTopic().keySet(),
+                        Matchers.containsInAnyOrder(ROUTED_TOPIC, "test-metrics"));
+
+        assertThat(nodeIdsOn(ROUTED_TOPIC), Matchers.contains(taggedNode.getId().longValue()));
+        assertThat(nodeIdsOn("test-metrics"), Matchers.contains(untaggedNode.getId().longValue()));
+    }
+
+    /**
+     * With routing disabled, meta-data is ignored entirely and everything goes to the default topic.
+     */
+    @Test
+    public void testMetricRoutingDisabledIgnoresMetadata() throws IOException {
+        final OnmsNode taggedNode = databasePopulator.getNode1();
+
+        sessionUtils.withTransaction(() -> {
+            final OnmsNode node = nodeDao.get(taggedNode.getId());
+            node.addMetaData(ROUTING_CONTEXT_KEY.getContext(), ROUTING_CONTEXT_KEY.getKey(), ROUTED_TOPIC);
+            nodeDao.saveOrUpdate(node);
+            nodeDao.flush();
+            return null;
+        });
+
+        routingPersister(false).visitCollectionSet(nodeCollectionSet(taggedNode, "tagged", 105));
+
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        assertThat(kafkaConsumer.getCollectionSetsByTopic().keySet(), Matchers.contains("test-metrics"));
+    }
+
+    /**
+     * Collection is triggered by a monitored service on an interface, so tagging that service has
+     * to route everything the service collects - including node level resources, which are not
+     * about any interface. This is what a bare node-level tag cannot express.
+     */
+    @Test
+    public void testMetricRoutingByServiceMetadata() throws IOException {
+        final OnmsNode node = databasePopulator.getNode1();
+        // DatabasePopulator gives node 1 an SNMP service on 192.168.1.1
+        final InetAddress serviceAddress = InetAddressUtils.addr("192.168.1.1");
+
+        sessionUtils.withTransaction(() -> {
+            final OnmsMonitoredService service = monitoredServiceDao.get(node.getId(), serviceAddress, "SNMP");
+            assertThat(service, Matchers.notNullValue());
+            service.addMetaData(ROUTING_CONTEXT_KEY.getContext(), ROUTING_CONTEXT_KEY.getKey(), ROUTED_TOPIC);
+            monitoredServiceDao.saveOrUpdate(service);
+            monitoredServiceDao.flush();
+            return null;
+        });
+
+        // What collectd hands the persister: the service name in the parameters, and an agent
+        // whose address is the interface the service is assigned to.
+        final ServiceParameters snmpParams = new ServiceParameters(
+                Map.of(ServiceParameters.ParameterName.SERVICE.toString(), "SNMP"));
+
+        routingPersister(true, snmpParams)
+                .visitCollectionSet(nodeCollectionSet(node, "snmp", 105, serviceAddress));
+
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetsByTopic().keySet(),
+                        Matchers.contains(ROUTED_TOPIC));
+        assertThat(nodeIdsOn(ROUTED_TOPIC), Matchers.contains(node.getId().longValue()));
+    }
+
+    /**
+     * The same collection, but with the meta-data on the interface the service is assigned to.
+     */
+    @Test
+    public void testMetricRoutingByCollectingInterfaceMetadata() throws IOException {
+        final OnmsNode node = databasePopulator.getNode1();
+        final InetAddress serviceAddress = InetAddressUtils.addr("192.168.1.1");
+
+        sessionUtils.withTransaction(() -> {
+            final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(node.getId(), "192.168.1.1");
+            assertThat(ipInterface, Matchers.notNullValue());
+            ipInterface.addMetaData(ROUTING_CONTEXT_KEY.getContext(), ROUTING_CONTEXT_KEY.getKey(), ROUTED_TOPIC);
+            ipInterfaceDao.saveOrUpdate(ipInterface);
+            ipInterfaceDao.flush();
+            return null;
+        });
+
+        routingPersister(true).visitCollectionSet(nodeCollectionSet(node, "snmp", 105, serviceAddress));
+
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetsByTopic().keySet(),
+                        Matchers.contains(ROUTED_TOPIC));
+        assertThat(nodeIdsOn(ROUTED_TOPIC), Matchers.contains(node.getId().longValue()));
+    }
+
+    private Persister routingPersister(final boolean enabled) {
+        return routingPersister(enabled, new ServiceParameters(Collections.emptyMap()));
+    }
+
+    private Persister routingPersister(final boolean enabled, final ServiceParameters params) {
+        final MetricTopicRouter router = new MetricTopicRouter(entityScopeProvider, sessionUtils,
+                new MetricRegistry(), "test-metrics", ROUTING_CONTEXT_KEY, enabled, 300000L);
+        kafkaPersisterFactory.setMetricTopicRouter(router);
+        return kafkaPersisterFactory.createPersister(params, new RrdRepository());
+    }
+
+    private static CollectionSet nodeCollectionSet(final OnmsNode node, final String name, final int value)
+            throws IOException {
+        return nodeCollectionSet(node, name, value, InetAddress.getLocalHost());
+    }
+
+    /**
+     * @param agentAddress the address collectd's agent would carry, i.e. the address of the
+     *                     interface the collecting service is assigned to
+     */
+    private static CollectionSet nodeCollectionSet(final OnmsNode node, final String name, final int value,
+                                                  final InetAddress agentAddress) {
+        final CollectionAgent agent = new MockCollectionAgent(node.getId(), node.getLabel(), agentAddress);
+        return new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withNumericAttribute(new NodeLevelResource(node.getId()), "group1", name, value, AttributeType.GAUGE)
+                .build();
+    }
+
+    private List<Long> nodeIdsOn(final String topic) {
+        return kafkaConsumer.getCollectionSetsByTopic().getOrDefault(topic, Collections.emptyList()).stream()
+                .map(CollectionSetProtos.CollectionSet::getResourceList)
+                .flatMap(Collection::stream)
+                .map(resource -> resource.getNode().getNodeId())
+                .collect(Collectors.toList());
     }
 
     @After

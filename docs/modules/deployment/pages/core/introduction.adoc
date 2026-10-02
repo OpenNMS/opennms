@@ -7,6 +7,6 @@ A basic {page-component-title} deployment installs and configures the core softw
 It also includes a set of xref:reference:daemons/introduction.adoc[daemons] for specific network management use cases.
 
 .Basic {page-component-title} deployment architecture diagram
-image::deployment/core/opennms-arch.png["Architecture diagram displaying the components of a basic {page-component-title} deployment and their relationships", 850]
+image::deployment/core/opennms-arch.svg["Architecture diagram displaying the components of a basic {page-component-title} deployment and their relationships", 850]
 
 For more information about {page-component-title} architecture, see xref:ROOT:index.adoc[].

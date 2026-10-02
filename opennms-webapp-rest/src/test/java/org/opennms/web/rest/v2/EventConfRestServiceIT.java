@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
@@ -45,6 +46,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
+import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -71,6 +73,7 @@ import java.util.Comparator;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -107,6 +110,12 @@ public class EventConfRestServiceIT {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+
+    @Autowired
+    private org.opennms.netmgt.config.api.EventConfDao eventConfDao;
+
+    @Autowired
+    private org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
 
     @Before
     public void setUp() {
@@ -304,7 +313,7 @@ public class EventConfRestServiceIT {
         m_source.setName("testEventEnabledFlagTest");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(eventConfSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -395,7 +404,7 @@ public class EventConfRestServiceIT {
         source.setName("emptySource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        source.setFileOrder(1);
+        source.setFileOrder(eventConfSourceDao.nextFileOrder());
         source.setDescription("Source with no events");
         source.setVendor("TestVendor");
         source.setUploadedBy("JUnitTest");
@@ -493,6 +502,7 @@ public class EventConfRestServiceIT {
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setEventOrder(eventConfEventDao.findMaxEventOrder(m_source.getId()) + 1);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
         event.setModifiedBy("JUnitTest");
@@ -591,7 +601,7 @@ public class EventConfRestServiceIT {
         m_source.setName("testEventEnabledFlagTest");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(eventConfSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("TestVendor1");
         m_source.setUploadedBy("JUnitTest");
@@ -779,7 +789,7 @@ public class EventConfRestServiceIT {
         source.setName("testGetSource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        source.setFileOrder(1);
+        source.setFileOrder(eventConfSourceDao.nextFileOrder());
         source.setDescription("Test source for get by ID");
         source.setVendor("Cisco");
         source.setUploadedBy("JUnitTest");
@@ -817,7 +827,7 @@ public class EventConfRestServiceIT {
         m_source.setName("testGetEventsByVendor");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
+        m_source.setFileOrder(eventConfSourceDao.nextFileOrder());
         m_source.setDescription("Test event source");
         m_source.setVendor("test");
         m_source.setUploadedBy("JUnitTest");
@@ -853,7 +863,7 @@ public class EventConfRestServiceIT {
         source.setName("addEventConfSource");
         source.setEnabled(true);
         source.setCreatedTime(new Date());
-        source.setFileOrder(1);
+        source.setFileOrder(eventConfSourceDao.nextFileOrder());
         source.setDescription("Test addEventConfSource");
         source.setVendor("Cisco");
         source.setUploadedBy("JUnitTest");
@@ -1083,6 +1093,564 @@ public class EventConfRestServiceIT {
                 alarm.getFileOrder() > catchAllAfter.getFileOrder());
         assertTrue("cisco should have higher fileOrder than catch-all",
                 cisco.getFileOrder() > catchAllAfter.getFileOrder());
+    }
+
+    // ---- within-source event ordering (eventOrder) ----
+
+    @Test
+    @Transactional
+    public void testUpload_AssignsEventOrderInFileOrder() throws Exception {
+        Response resp = eventConfRestApi.uploadEventConfFiles(
+                List.of(mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        EventConfSource alarm = eventConfSourceDao.findByName("opennms.alarm.events");
+        List<EventConfEvent> events = eventConfEventDao.findBySourceId(alarm.getId());
+        assertEquals(3, events.size());
+        assertEquals("uei.opennms.org/alarms/trigger", events.get(0).getUei());
+        assertEquals(Integer.valueOf(1), events.get(0).getEventOrder());
+        assertEquals("uei.opennms.org/alarms/clear", events.get(1).getUei());
+        assertEquals(Integer.valueOf(2), events.get(1).getEventOrder());
+        assertEquals("uei.opennms.org/alarms/situation", events.get(2).getUei());
+        assertEquals(Integer.valueOf(3), events.get(2).getEventOrder());
+
+        // Re-upload replaces the events and numbers them 1..N again
+        eventConfRestApi.uploadEventConfFiles(
+                List.of(mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        List<EventConfEvent> reUploaded = eventConfEventDao.findBySourceId(alarm.getId());
+        assertEquals(3, reUploaded.size());
+        assertEquals(Integer.valueOf(1), reUploaded.get(0).getEventOrder());
+        assertEquals(Integer.valueOf(3), reUploaded.get(2).getEventOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testAddEventConfSourceEvent_AppendsAtEndOfSource() throws Exception {
+        eventConfRestApi.uploadEventConfFiles(
+                List.of(mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        EventConfSource alarm = eventConfSourceDao.findByName("opennms.alarm.events");
+
+        Event event = JaxbUtils.unmarshal(Event.class, """
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>uei.opennms.org/alarms/appended</uei>
+                   <event-label>Appended event</event-label>
+                   <descr>Appended via REST</descr>
+                   <severity>Warning</severity>
+                </event>
+                """);
+        Response resp = eventConfRestApi.addEventConfSourceEvent(alarm.getId(), event, securityContext);
+        assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        List<EventConfEvent> events = eventConfEventDao.findBySourceId(alarm.getId());
+        assertEquals(4, events.size());
+        assertEquals("uei.opennms.org/alarms/appended", events.get(3).getUei());
+        assertEquals("a newly added event is evaluated last within its source", Integer.valueOf(4), events.get(3).getEventOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testFilterEventsBySourceId_ExposesAndSortsByEventOrder() throws Exception {
+        eventConfRestApi.uploadEventConfFiles(
+                List.of(mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        EventConfSource alarm = eventConfSourceDao.findByName("opennms.alarm.events");
+
+        // Default sort (no eventSortBy) is eventOrder ascending
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(alarm.getId(), "", null, null, 0, 0, 10, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        @SuppressWarnings("unchecked") List<EventConfEventDto> dtos = (List<EventConfEventDto>) entity.get("eventConfSourceList");
+        assertEquals(3, dtos.size());
+        assertEquals(Integer.valueOf(1), dtos.get(0).getEventOrder());
+        assertEquals("uei.opennms.org/alarms/trigger", dtos.get(0).getUei());
+        assertEquals(Integer.valueOf(3), dtos.get(2).getEventOrder());
+        assertEquals("the source priority is still flattened onto each event", alarm.getFileOrder(), dtos.get(0).getFileOrder());
+
+        // Explicit descending sort by eventOrder
+        resp = eventConfRestApi.filterConfEventsBySourceId(alarm.getId(), "", "eventOrder", "desc", 0, 0, 10, securityContext);
+        @SuppressWarnings("unchecked") Map<String, Object> descEntity = (Map<String, Object>) resp.getEntity();
+        @SuppressWarnings("unchecked") List<EventConfEventDto> descDtos = (List<EventConfEventDto>) descEntity.get("eventConfSourceList");
+        assertEquals("uei.opennms.org/alarms/situation", descDtos.get(0).getUei());
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteEvents_CompactsEventOrder() throws Exception {
+        eventConfRestApi.uploadEventConfFiles(
+                List.of(mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        EventConfSource alarm = eventConfSourceDao.findByName("opennms.alarm.events");
+        EventConfEvent clear = eventConfEventDao.findByUeiAndSourceId("uei.opennms.org/alarms/clear", alarm.getId()).get(0);
+
+        EventConfEventDeletePayload payload = new EventConfEventDeletePayload();
+        payload.setEventIds(List.of(clear.getId()));
+        Response resp = eventConfRestApi.deleteEventsForSource(alarm.getId(), payload, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        List<EventConfEvent> remaining = eventConfEventDao.findBySourceId(alarm.getId());
+        assertEquals(2, remaining.size());
+        assertEquals("uei.opennms.org/alarms/trigger", remaining.get(0).getUei());
+        assertEquals(Integer.valueOf(1), remaining.get(0).getEventOrder());
+        assertEquals("uei.opennms.org/alarms/situation", remaining.get(1).getUei());
+        assertEquals("gap left by the delete is closed", Integer.valueOf(2), remaining.get(1).getEventOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testDownload_FollowsEventOrder() throws Exception {
+        eventConfRestApi.uploadEventConfFiles(
+                List.of(mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        EventConfSource alarm = eventConfSourceDao.findByName("opennms.alarm.events");
+
+        // Move the last event to the front
+        EventConfEvent situation = eventConfEventDao.findByUeiAndSourceId("uei.opennms.org/alarms/situation", alarm.getId()).get(0);
+        situation.setEventOrder(0);
+        eventConfEventDao.saveOrUpdate(situation);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Response response = eventConfRestApi.downloadEventConfXmlBySourceId(alarm.getId(), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        Object entity = response.getEntity();
+        String xml;
+        if (entity instanceof StreamingOutput) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ((StreamingOutput) entity).write(baos);
+            xml = baos.toString(StandardCharsets.UTF_8);
+        } else if (entity instanceof InputStream) {
+            xml = new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
+        } else {
+            xml = (String) entity;
+        }
+        Events downloaded = JaxbUtils.unmarshal(Events.class, new StringReader(xml));
+        assertEquals("uei.opennms.org/alarms/situation", downloaded.getEvents().get(0).getUei());
+        assertEquals("uei.opennms.org/alarms/trigger", downloaded.getEvents().get(1).getUei());
+    }
+
+    @Test
+    @Transactional
+    public void testFilterSources_ExposesAndSortsByEvaluationOrder() throws Exception {
+        eventConfRestApi.uploadEventConfFiles(List.of(
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml"),
+                mockAttachment("Cisco.airespace.xml", "/EVENTS-CONF/Cisco.airespace.xml")), securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Response resp = eventConfRestApi.filterEventConfSource("", "evaluationOrder", "asc", 0, 0, 100, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        @SuppressWarnings("unchecked") List<EventConfSourceDto> dtos = (List<EventConfSourceDto>) entity.get("eventConfSourceList");
+
+        // Sorted ascending by evaluationOrder == descending by the (unique) fileOrder; the value is the dense 1-based rank
+        for (int i = 0; i < dtos.size(); i++) {
+            EventConfSourceDto dto = dtos.get(i);
+            assertEquals("rank of " + dto.getName(), Integer.valueOf(i + 1), dto.getEvaluationOrder());
+            if (i > 0) {
+                assertTrue("fileOrder must be unique and strictly ordered",
+                        dtos.get(i - 1).getFileOrder() > dto.getFileOrder());
+            }
+        }
+        // the catch-all (fileOrder 1) is never evaluated before anything else
+        EventConfSourceDto catchAll = dtos.stream()
+                .filter(d -> EventConfSource.CATCH_ALL_SOURCE_NAME.equals(d.getName())).findFirst().orElseThrow();
+        assertEquals(Integer.valueOf(1), catchAll.getFileOrder());
+        int maxRank = dtos.stream().mapToInt(EventConfSourceDto::getEvaluationOrder).max().orElseThrow();
+        assertEquals(Integer.valueOf(maxRank), catchAll.getEvaluationOrder());
+
+        // single-source endpoint carries it too
+        EventConfSourceDto cisco = dtos.stream().filter(d -> "Cisco.airespace".equals(d.getName())).findFirst().orElseThrow();
+        Response one = eventConfRestApi.getEventConfSourceById(cisco.getId(), securityContext);
+        assertEquals(cisco.getEvaluationOrder(), ((EventConfSourceDto) one.getEntity()).getEvaluationOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testUploadWithMalformedEventConfXml_FailsTheRequestButPersistsFiles() throws Exception {
+        Response resp = eventConfRestApi.uploadEventConfFiles(List.of(
+                mockAttachment("eventconf.xml", "/EVENTS-CONF/test.invalid.xml"),
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")), securityContext);
+
+        // the requested order could not be applied -> failed request, but with the full report
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
+        @SuppressWarnings("unchecked") List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
+
+        assertEquals(1, success.size());
+        assertEquals("opennms.alarm.events", success.get(0).get("file"));
+        assertEquals(1, errors.size());
+        assertEquals(EventConfRestService.EVENTCONF_ORDER_STEP, errors.get(0).get("file"));
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        assertNotNull("files are still persisted", eventConfSourceDao.findByName("opennms.alarm.events"));
+        assertNull("the manifest must not be stored as a source", eventConfSourceDao.findByName("eventconf"));
+    }
+
+    private EventConfSource createSource(final String name, final int fileOrder) {
+        final EventConfSource source = new EventConfSource();
+        source.setName(name);
+        source.setVendor("test");
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setLastModified(new Date());
+        source.setUploadedBy("JUnitTest");
+        source.setEventCount(0);
+        source.setFileOrder(fileOrder);
+        eventConfSourceDao.save(source);
+        return source;
+    }
+
+    private void flushAndClear() {
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+    }
+
+    private List<Long> eventIdsByOrder(final Long sourceId) {
+        flushAndClear();
+        return eventConfEventDao.findBySourceId(sourceId).stream().map(EventConfEvent::getId).toList();
+    }
+
+    @Test
+    @Transactional
+    public void testGetOrderedSources_EvaluationOrderWithCatchAllLast() throws Exception {
+        // the temporary database is seeded with the stock sources, including the pinned catch-all
+        createSource("a.events", eventConfSourceDao.nextFileOrder());
+        createSource("b.events", eventConfSourceDao.nextFileOrder());
+        createSource("c.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+
+        final Response resp = eventConfRestApi.getOrderedEventConfSources(securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        @SuppressWarnings("unchecked") final List<EventConfSourceDto> dtos = (List<EventConfSourceDto>) resp.getEntity();
+        final List<String> names = dtos.stream().map(EventConfSourceDto::getName).toList();
+        // the newest allocation is evaluated first; the pinned catch-all closes the list
+        assertEquals(List.of("c.events", "b.events", "a.events"), names.subList(0, 3));
+        assertEquals(EventConfSource.CATCH_ALL_SOURCE_NAME, names.get(names.size() - 1));
+        for (int i = 0; i < dtos.size(); i++) {
+            assertEquals("evaluationOrder must equal the position in the list",
+                    Integer.valueOf(i + 1), dtos.get(i).getEvaluationOrder());
+        }
+    }
+
+    /** every non-catch-all source id, evaluation order first, with {@code first} moved to the front. */
+    private List<Long> completeOrderStartingWith(final List<Long> first) {
+        final List<Long> order = new ArrayList<>(first);
+        final List<EventConfSource> existing = new ArrayList<>(eventConfSourceDao.findAllByFileOrder());
+        Collections.reverse(existing); // evaluation order
+        existing.stream()
+                .filter(source -> !EventConfSource.CATCH_ALL_SOURCE_NAME.equals(source.getName()))
+                .map(EventConfSource::getId)
+                .filter(id -> !order.contains(id))
+                .forEach(order::add);
+        return order;
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateSourcesOrder_RenumbersAndPinsCatchAll() throws Exception {
+        final EventConfSource a = createSource("a.events", eventConfSourceDao.nextFileOrder());
+        final EventConfSource b = createSource("b.events", eventConfSourceDao.nextFileOrder());
+        final EventConfSource c = createSource("c.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final EventConfSource catchAll = eventConfSourceDao.findByName(EventConfSource.CATCH_ALL_SOURCE_NAME);
+        assertNotNull("the schema seeds the catch-all", catchAll);
+
+        // a evaluated first, then b, then c, then every seeded source in its current relative order
+        final List<Long> order = completeOrderStartingWith(List.of(a.getId(), b.getId(), c.getId()));
+        final Response resp = eventConfRestApi.updateEventConfSourcesOrder(
+                new org.opennms.netmgt.model.events.EventConfSourceOrderPayload(order), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") final Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        assertNotNull(entity.get("updated"));
+
+        flushAndClear();
+        final int n = order.size();
+        assertEquals(Integer.valueOf(n + 1), eventConfSourceDao.get(a.getId()).getFileOrder());
+        assertEquals(Integer.valueOf(n), eventConfSourceDao.get(b.getId()).getFileOrder());
+        assertEquals(Integer.valueOf(n - 1), eventConfSourceDao.get(c.getId()).getFileOrder());
+        assertEquals("the catch-all stays pinned", Integer.valueOf(1), eventConfSourceDao.get(catchAll.getId()).getFileOrder());
+
+        // the whole table is now dense: 1 (catch-all) .. N+1
+        final List<Integer> fileOrders = eventConfSourceDao.findAllByFileOrder().stream()
+                .map(EventConfSource::getFileOrder).toList();
+        assertEquals(java.util.stream.IntStream.rangeClosed(1, n + 1).boxed().toList(), fileOrders);
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateSourcesOrder_RejectsBadPayloads() throws Exception {
+        final EventConfSource a = createSource("a.events", eventConfSourceDao.nextFileOrder());
+        final EventConfSource b = createSource("b.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final EventConfSource catchAll = eventConfSourceDao.findByName(EventConfSource.CATCH_ALL_SOURCE_NAME);
+        assertNotNull("the schema seeds the catch-all", catchAll);
+        final Integer aOrderBefore = eventConfSourceDao.get(a.getId()).getFileOrder();
+        final Integer bOrderBefore = eventConfSourceDao.get(b.getId()).getFileOrder();
+
+        Response resp = eventConfRestApi.updateEventConfSourcesOrder(null, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourcesOrder(
+                new org.opennms.netmgt.model.events.EventConfSourceOrderPayload(List.of()), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourcesOrder(
+                new org.opennms.netmgt.model.events.EventConfSourceOrderPayload(List.of(a.getId(), a.getId(), b.getId())), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("duplicates"));
+
+        resp = eventConfRestApi.updateEventConfSourcesOrder(
+                new org.opennms.netmgt.model.events.EventConfSourceOrderPayload(List.of(a.getId(), b.getId(), catchAll.getId())), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("pinned"));
+
+        resp = eventConfRestApi.updateEventConfSourcesOrder(
+                new org.opennms.netmgt.model.events.EventConfSourceOrderPayload(List.of(a.getId(), b.getId(), 999999L)), securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        // an incomplete list names what is missing - this is also how a concurrent add surfaces
+        resp = eventConfRestApi.updateEventConfSourcesOrder(
+                new org.opennms.netmgt.model.events.EventConfSourceOrderPayload(List.of(a.getId())), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("b.events"));
+
+        // nothing was renumbered by any of the rejected calls
+        flushAndClear();
+        assertEquals(aOrderBefore, eventConfSourceDao.get(a.getId()).getFileOrder());
+        assertEquals(bOrderBefore, eventConfSourceDao.get(b.getId()).getFileOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testMoveEvent_AllModes() throws Exception {
+        final EventConfSource source = createSource("move.events", eventConfSourceDao.nextFileOrder());
+        sessionFactory.getCurrentSession().flush();
+        for (int i = 1; i <= 5; i++) {
+            insertEvent(source, "uei.opennms.org/test/move/" + i, "Move " + i, "d", "Normal");
+        }
+        final EventConfSource other = createSource("untouched.events", eventConfSourceDao.nextFileOrder());
+        sessionFactory.getCurrentSession().flush();
+        for (int i = 1; i <= 3; i++) {
+            insertEvent(other, "uei.opennms.org/test/untouched/" + i, "Untouched " + i, "d", "Normal");
+        }
+        final List<Long> ids = eventIdsByOrder(source.getId()); // e1..e5 in order 1..5
+        final List<Long> otherIdsBefore = eventIdsByOrder(other.getId());
+        final Long e1 = ids.get(0), e2 = ids.get(1), e3 = ids.get(2), e4 = ids.get(3), e5 = ids.get(4);
+
+        // up: e3 swaps with e2
+        Response resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), e3, moveRequest("up", null), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        assertEquals(Map.of("id", e3, "eventOrder", 2), resp.getEntity());
+        assertEquals(List.of(e1, e3, e2, e4, e5), eventIdsByOrder(source.getId()));
+
+        // top: e3 (at 2) to 1
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), e3, moveRequest("top", null), securityContext);
+        assertEquals(Map.of("id", e3, "eventOrder", 1), resp.getEntity());
+        assertEquals(List.of(e3, e1, e2, e4, e5), eventIdsByOrder(source.getId()));
+
+        // up at the top is a no-op that still returns 200
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), e3, moveRequest("up", null), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        assertEquals(Map.of("id", e3, "eventOrder", 1), resp.getEntity());
+        assertEquals(List.of(e3, e1, e2, e4, e5), eventIdsByOrder(source.getId()));
+
+        // bottom: e3 to 5
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), e3, moveRequest("bottom", null), securityContext);
+        assertEquals(Map.of("id", e3, "eventOrder", 5), resp.getEntity());
+        assertEquals(List.of(e1, e2, e4, e5, e3), eventIdsByOrder(source.getId()));
+
+        // down at the bottom is a no-op
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), e3, moveRequest("down", null), securityContext);
+        assertEquals(Map.of("id", e3, "eventOrder", 5), resp.getEntity());
+
+        // position: e3 back to 2
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), e3, moveRequest("position", 2), securityContext);
+        assertEquals(Map.of("id", e3, "eventOrder", 2), resp.getEntity());
+        assertEquals(List.of(e1, e3, e2, e4, e5), eventIdsByOrder(source.getId()));
+
+        // down: e3 swaps back with e2
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), e3, moveRequest("down", null), securityContext);
+        assertEquals(Map.of("id", e3, "eventOrder", 3), resp.getEntity());
+        assertEquals(List.of(e1, e2, e3, e4, e5), eventIdsByOrder(source.getId()));
+
+        // the other source's order never moved, and each source stays dense 1..N
+        assertEquals(otherIdsBefore, eventIdsByOrder(other.getId()));
+        assertEquals(List.of(1, 2, 3), eventConfEventDao.findBySourceId(other.getId()).stream().map(EventConfEvent::getEventOrder).toList());
+        assertEquals(List.of(1, 2, 3, 4, 5), eventConfEventDao.findBySourceId(source.getId()).stream().map(EventConfEvent::getEventOrder).toList());
+    }
+
+    @Test
+    @Transactional
+    public void testMoveEvent_RejectsBadRequests() throws Exception {
+        final EventConfSource source = createSource("move.events", eventConfSourceDao.nextFileOrder());
+        sessionFactory.getCurrentSession().flush();
+        insertEvent(source, "uei.opennms.org/test/move/1", "Move 1", "d", "Normal");
+        insertEvent(source, "uei.opennms.org/test/move/2", "Move 2", "d", "Normal");
+        final List<Long> ids = eventIdsByOrder(source.getId());
+
+        Response resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), ids.get(0), null, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), ids.get(0), moveRequest(null, null), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), ids.get(0), moveRequest("sideways", null), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("sideways"));
+
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), ids.get(0), moveRequest("position", 0), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), ids.get(0), moveRequest("position", 3), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("between 1 and 2"));
+
+        resp = eventConfRestApi.moveEventConfSourceEvent(source.getId(), 999999L, moveRequest("top", null), securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.moveEventConfSourceEvent(999999L, ids.get(0), moveRequest("top", null), securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        assertEquals("nothing moved", ids, eventIdsByOrder(source.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testOrderedEventsAndFullListReorder() throws Exception {
+        final EventConfSource source = createSource("reorder.events", eventConfSourceDao.nextFileOrder());
+        sessionFactory.getCurrentSession().flush();
+        for (int i = 1; i <= 5; i++) {
+            insertEvent(source, "uei.opennms.org/test/ordered/" + i, "Ordered " + i, "d", "Normal");
+        }
+        flushAndClear();
+
+        // the ordered listing carries the evaluation order and the identifying fields only
+        Response resp = eventConfRestApi.getOrderedEventConfSourceEvents(source.getId(), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") final List<org.opennms.web.rest.v2.model.EventConfEventSummaryDto> summaries =
+                (List<org.opennms.web.rest.v2.model.EventConfEventSummaryDto>) resp.getEntity();
+        assertEquals(5, summaries.size());
+        for (int i = 0; i < summaries.size(); i++) {
+            assertEquals(Integer.valueOf(i + 1), summaries.get(i).getEventOrder());
+            assertEquals("Ordered " + (i + 1), summaries.get(i).getEventLabel());
+        }
+
+        // reverse the order with one PUT of the complete list
+        final List<Long> reversed = new ArrayList<>(summaries.stream()
+                .map(org.opennms.web.rest.v2.model.EventConfEventSummaryDto::getId).toList());
+        Collections.reverse(reversed);
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(reversed), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        @SuppressWarnings("unchecked") final Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        assertEquals("all positions change but the middle one", 4, entity.get("updated"));
+
+        assertEquals(reversed, eventIdsByOrder(source.getId()));
+        assertEquals(List.of(1, 2, 3, 4, 5),
+                eventConfEventDao.findBySourceId(source.getId()).stream().map(EventConfEvent::getEventOrder).toList());
+    }
+
+    @Test
+    @Transactional
+    public void testEventsOrder_RejectsBadPayloads() throws Exception {
+        final EventConfSource source = createSource("reorder.events", eventConfSourceDao.nextFileOrder());
+        sessionFactory.getCurrentSession().flush();
+        insertEvent(source, "uei.opennms.org/test/ordered/1", "Ordered 1", "d", "Normal");
+        insertEvent(source, "uei.opennms.org/test/ordered/2", "Ordered 2", "d", "Normal");
+        final List<Long> ids = eventIdsByOrder(source.getId());
+
+        Response resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(), null, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of()), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of(ids.get(0), ids.get(0))), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("duplicates"));
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of(ids.get(1))), securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(((String) resp.getEntity()).contains("Ordered 1"));
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(List.of(ids.get(0), ids.get(1), 999999L)), securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.updateEventConfSourceEventsOrder(999999L,
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(ids), securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        resp = eventConfRestApi.getOrderedEventConfSourceEvents(999999L, securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        assertEquals("nothing moved", ids, eventIdsByOrder(source.getId()));
+    }
+
+    private org.opennms.web.rest.v2.model.EventConfEventMoveRequest moveRequest(final String mode, final Integer position) {
+        final var request = new org.opennms.web.rest.v2.model.EventConfEventMoveRequest();
+        request.setMode(mode);
+        request.setPosition(position);
+        return request;
+    }
+
+    /**
+     * The feature's actual promise: reordering changes which of two overlapping definitions the
+     * in-memory configuration matches first, not just the {@code eventOrder} column.
+     */
+    @Test
+    @Transactional
+    public void testReorderChangesWhichDefinitionWins() throws Exception {
+        final EventConfSource source = createSource("match-order.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/matchorder/shared";
+        final String eventXmlTemplate = """
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>%s</uei>
+                   <event-label>%s</event-label>
+                   <descr>d</descr>
+                   <severity>Normal</severity>
+                </event>
+                """;
+        eventConfRestApi.addEventConfSourceEvent(source.getId(),
+                JaxbUtils.unmarshal(Event.class, eventXmlTemplate.formatted(uei, "First definition")), securityContext);
+        eventConfRestApi.addEventConfSourceEvent(source.getId(),
+                JaxbUtils.unmarshal(Event.class, eventXmlTemplate.formatted(uei, "Second definition")), securityContext);
+        flushAndClear();
+
+        EventConfServiceHelper.reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+        assertEquals("First definition", eventConfDao.findByUei(uei).getEventLabel());
+
+        // swap the two with the full-list PUT and reload, exactly as the UI save does
+        final List<Long> reversed = new ArrayList<>(eventIdsByOrder(source.getId()));
+        Collections.reverse(reversed);
+        final Response resp = eventConfRestApi.updateEventConfSourceEventsOrder(source.getId(),
+                new org.opennms.netmgt.model.events.EventConfEventOrderPayload(reversed), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        flushAndClear();
+
+        EventConfServiceHelper.reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+        assertEquals("the definition moved to the top matches first",
+                "Second definition", eventConfDao.findByUei(uei).getEventLabel());
     }
 
 }

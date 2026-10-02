@@ -83,10 +83,9 @@ public final class EventConfTestUtil {
                         .username("system")
                         .description("")
                         .eventCount(events.getEvents().size())
-                        .fileOrder(fileOrder--)
                         .build();
 
-                EventConfSource source = createSource(metadataDto);
+                EventConfSource source = createSource(metadataDto, fileOrder--);
 
                 eventConfEventList.addAll(
                         getEventConfEventList(source, events, metadataDto.getUsername(), metadataDto.getNow())
@@ -99,12 +98,12 @@ public final class EventConfTestUtil {
         return eventConfEventList;
     }
 
-    private static EventConfSource createSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
+    private static EventConfSource createSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto, final int fileOrder) {
         EventConfSource source = new EventConfSource();
         source.setId(sourceIdGenerator.incrementAndGet());
         source.setCreatedTime(eventConfSourceMetadataDto.getNow());
         source.setName(eventConfSourceMetadataDto.getFilename());
-        source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
+        source.setFileOrder(fileOrder);
         source.setEventCount(eventConfSourceMetadataDto.getEventCount());
         source.setEnabled(true);
         source.setUploadedBy(eventConfSourceMetadataDto.getUsername());
@@ -119,6 +118,7 @@ public final class EventConfTestUtil {
             EventConfEvent event = new EventConfEvent();
             event.setId(eventIdGenerator.incrementAndGet());
             event.setSource(source);
+            event.setEventOrder((int) eventIdGenerator.get());
             event.setUei(parsed.getUei());
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());

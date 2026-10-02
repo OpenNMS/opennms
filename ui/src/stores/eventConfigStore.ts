@@ -1,9 +1,13 @@
+import useSnackbar from '@/composables/useSnackbar'
+import { EVENT_CONF_CATCH_ALL_SOURCE } from '@/lib/utils'
 import {
   changeEventConfigSourceStatus,
   filterEventConfigSources,
-  getAllSourceNames
+  getAllSourceNames,
+  getOrderedEventConfigSources,
+  updateEventConfigSourcesOrder
 } from '@/services/eventConfigService'
-import { EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
+import { EventConfigMutationResult, EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -18,12 +22,16 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     sourcesPagination: { ...defaultPagination },
     sourcesSearchTerm: '',
     sourcesSorting: {
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
+      sortOrder: 'asc',
+      sortKey: 'evaluationOrder'
     },
     isLoading: false,
     activeTab: 0,
     uploadedSources: [],
+    orderedSources: [],
+    catchAllSource: null,
+    isSavingSourceOrder: false,
+    sourcesReorderMode: false,
     uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
@@ -106,8 +114,8 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     async refreshSourcesFilters() {
       this.resetSourcesPagination()
       this.sourcesSearchTerm = ''
-      this.sourcesSorting.sortKey = 'createdTime'
-      this.sourcesSorting.sortOrder = 'desc'
+      this.sourcesSorting.sortKey = 'evaluationOrder'
+      this.sourcesSorting.sortOrder = 'asc'
       await this.fetchEventConfigs()
     },
     showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
@@ -145,6 +153,43 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     hideCreateEventConfigSourceDialog() {
       this.createEventConfigSourceDialogState.visible = false
+    },
+    async startSourcesReorder() {
+      this.sourcesReorderMode = true
+      await this.fetchOrderedSources()
+    },
+    stopSourcesReorder() {
+      this.sourcesReorderMode = false
+    },
+    async fetchOrderedSources() {
+      this.isLoading = true
+      try {
+        const sources = await getOrderedEventConfigSources()
+        this.orderedSources = sources.filter(source => source.name !== EVENT_CONF_CATCH_ALL_SOURCE)
+        this.catchAllSource = sources.find(source => source.name === EVENT_CONF_CATCH_ALL_SOURCE) ?? null
+      } catch (error) {
+        console.error('Error fetching ordered event configuration sources:', error)
+        this.orderedSources = []
+        this.catchAllSource = null
+        // without the current order there is nothing to edit: leave the mode instead of
+        // showing an inexplicable empty list
+        this.stopSourcesReorder()
+        useSnackbar().showSnackBar({ msg: 'Failed to load the source order. Try again.', error: true })
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async saveSourcesOrder(sourceIds: number[]): Promise<EventConfigMutationResult> {
+      this.isSavingSourceOrder = true
+      try {
+        const result = await updateEventConfigSourcesOrder(sourceIds)
+        if (result.ok) {
+          await this.fetchEventConfigs()
+        }
+        return result
+      } finally {
+        this.isSavingSourceOrder = false
+      }
     }
   }
 })
