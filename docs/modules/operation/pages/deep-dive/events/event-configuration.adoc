@@ -75,7 +75,7 @@ Core {page-component-title} events are pre-loaded in the database and are essent
 These events handle internal {page-component-title} functionality such as node discovery, service monitoring, and alarm management.
 
 IMPORTANT: Core OpenNMS event configuration cannot be deleted.
-It ships managed by the system and stays adjustable across upgrades, so the API refuses to delete `opennms`-vendor sources and their events; disable individual events instead when you do not want them matched.
+It ships managed by the system and stays adjustable across upgrades, so the API refuses to delete `opennms`-vendor sources and their events; disable a whole source or individual events instead when you do not want them matched.
 The `opennms.catch-all.events` source is additionally pinned as the last source evaluated.
 
 === Vendor event files

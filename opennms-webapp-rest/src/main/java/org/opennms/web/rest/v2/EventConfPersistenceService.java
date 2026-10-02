@@ -208,7 +208,7 @@ public class EventConfPersistenceService {
             }
         }
         if (!refused.isEmpty()) {
-            throw new IllegalArgumentException("These sources are part of the stock configuration and cannot be deleted: "
+            throw new IllegalArgumentException("These sources are part of the stock configuration and cannot be deleted; disable them instead: "
                     + String.join(", ", refused));
         }
         eventConfSourceDao.deleteBySourceIds(eventConfSourceDeletePayload.getSourceIds());
