@@ -35,6 +35,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.sax.SAXSource;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLFilter;
 
 /**
  * Fast XML marshaling and unmarshaling.
@@ -81,9 +86,13 @@ public class XmlHandler<U> {
     }
 
     public U unmarshal(String xml) {
-        try (final StringReader sr = new StringReader(xml)) {
-            return clazz.cast(unmarshaller.unmarshal(sr));
-        } catch (JAXBException e) {
+        try {
+            // Parse through the hardened XML filter (DOCTYPE and external entities disabled) so a
+            // crafted IPC message cannot use an XXE to read files or reach internal services.
+            final XMLFilter filter = JaxbUtils.getXMLFilterForClass(clazz, true);
+            final SAXSource source = new SAXSource(filter, new InputSource(new StringReader(xml)));
+            return clazz.cast(unmarshaller.unmarshal(source));
+        } catch (JAXBException | SAXException e) {
             throw new RuntimeException(e);
         }
     }
