@@ -1174,7 +1174,14 @@ case "$COMMAND" in
 		;;
 
 	ssh)
-		karafSshPort="$(grep "^sshPort" "${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg" | cut -d= -f2)"
+		karafSshPort="$(grep "^sshPort" "${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg" | cut -d= -f2 | tr -d "[:blank:]")"
+		# The container image sets sshPort to a Karaf env placeholder (env:OPENNMS_KARAF_SSH_PORT with a default); resolve it the way Karaf does
+		envPlaceholder='^\$\{env:([A-Za-z_][A-Za-z0-9_]*)(:-([^}]*))?\}$'
+		if [[ "$karafSshPort" =~ $envPlaceholder ]]; then
+			envName="${BASH_REMATCH[1]}"
+			envDefault="${BASH_REMATCH[3]}"
+			karafSshPort="${!envName:-$envDefault}"
+		fi
 		karafUser="$(grep "^karaf.local.user" "${OPENNMS_HOME}/etc/system.properties" | cut -d= -f2 | tr -d "[:blank:]")"
 		printf 'Trying to establish SSH connection to OpenNMS Karaf Shell (%s@localhost:%s)... ' "$karafUser" "$karafSshPort"
 		ssh -o NoHostAuthenticationForLocalhost=yes -o HostKeyAlgorithms=+ssh-dss -l "$karafUser" -p "$karafSshPort" localhost

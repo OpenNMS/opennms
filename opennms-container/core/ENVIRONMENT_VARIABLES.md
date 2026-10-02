@@ -50,6 +50,8 @@ Config written to `etc/opennms.properties.d/_container.newts.properties`.
 
 Config written to `etc/trapd-configuration.xml`.
 
+> **Note:** These variables only take effect when the database is first initialized or upgraded (`-i`/`-s` without an existing `etc/configured`). At that point the database installer imports `etc/trapd-configuration.xml` into the database and moves the file to `etc_archive/`. From then on, OpenNMS reads Trapd's configuration from the database, so later changes to `OPENNMS_TRAPD_*` have no effect, even though the entrypoint still writes the file at every startup. Change an existing installation through *Integrations -> Trap Configuration* or the REST v2 API (`/api/v2/trapd`). The same was true with confd.
+
 ## Service configuration
 
 Each OpenNMS service can be enabled or disabled via an environment variable. Set the variable to `true` or `false`.
@@ -100,7 +102,7 @@ The JMX exporter is disabled by default. Enable it with `PROM_JMX_EXPORTER_ENABL
 | `PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES` | Lowercase label names | `true` |
 | `PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES` | Auto-exclude non-numeric MBean attributes | `true` |
 
-The default config at `/opt/prom-jmx-exporter/config.yaml` is generated at startup from a template and exposes `java.lang:*`, `OpenNMS:*`, `org.opennms.*:*`, and `com.zaxxer.hikari:*`.
+When the exporter is enabled and `PROM_JMX_EXPORTER_CONFIG` is left at its default, `/opt/prom-jmx-exporter/config.yaml` is generated at startup from a template (a file you mount there is used as is and never overwritten). The generated config exposes `java.lang:*`, `OpenNMS:*`, `org.opennms.*:*`, and `com.zaxxer.hikari:*`.
 To customise `includeObjectNames`, `excludeObjectNames`, or `rules`, mount a full YAML file and point `PROM_JMX_EXPORTER_CONFIG` at it.
 
 ## Migration from confd
@@ -117,6 +119,7 @@ Earlier images rendered these files with confd, which read the same environment 
   | `OPENNMS_TRAPD_BATCHSIZE` | `OPENNMS_TRAPD_BATCH_SIZE` |
   | `OPENNMS_TRAPD_BATCHINTERVAL` | `OPENNMS_TRAPD_BATCH_INTERVAL` |
 
-- `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported. Configure Slack and Mattermost notifications with a properties file in the overlay (`etc/opennms.properties.d/`) instead.
+- `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported, because the Slack and Mattermost notification strategies were removed. Use the webhook notification strategy instead (see "Migrating from Slack and Mattermost" in the Webhook Notifications docs).
 - Legacy `_confd.*.properties` files left in a mounted `etc/` volume are automatically removed at startup to prevent stale settings.
-- Numeric and boolean variables (`OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, and all `CORE_SERVICE_*_ENABLED`) are validated at startup. Booleans accept `true`/`false` in any case (`True` is normalised to `true`). An invalid value (e.g. `"yes"` or `"1"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.
+- A `_confd.<name>.properties` file supplied through an overlay still replaces the generated settings, as it did with confd: the matching `_container.<name>.properties` is removed and a warning is logged. Rename it to `_container.<name>.properties` to silence the warning.
+- Numeric and boolean variables (`OPENNMS_TRAPD_*`, `OPENNMS_CASSANDRA_PORT`, `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, all `CORE_SERVICE_*_ENABLED`, and `PROM_JMX_*` when the exporter config is generated) are validated at startup. Booleans accept `true`/`false` in any case (`True` is normalised to `true`). An invalid value (e.g. `"yes"` or `"1"` instead of `"true"`) prints a clear `ERROR:` message and stops the container before OpenNMS starts. The file that uses the invalid value isn't written, but files rendered earlier in the same startup may already have been updated.

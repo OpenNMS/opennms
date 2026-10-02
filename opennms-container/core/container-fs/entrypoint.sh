@@ -36,7 +36,10 @@ OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
-PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-/opt/prom-jmx-exporter/config.yaml}"
+PROM_JMX_EXPORTER_DEFAULT_CONFIG="/opt/prom-jmx-exporter/config.yaml"
+PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-${PROM_JMX_EXPORTER_DEFAULT_CONFIG}}"
+# First line of the generated config.yaml; a file at the default path without it is left alone
+PROM_JMX_EXPORTER_GENERATED_MARKER="# GENERATED FROM PROM_JMX_* ENVIRONMENT VARIABLES"
 
 if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
   export JAVA_OPTS="${JAVA_OPTS} -javaagent:${PROM_JMX_EXPORTER_JAR}=${PROM_JMX_EXPORTER_PORT}:${PROM_JMX_EXPORTER_CONFIG}"
@@ -128,6 +131,25 @@ validateAddress() {
     echo "ERROR: ${name}='${value}' is not a valid address. Expected '*' or an IP address." >&2
     exit ${E_INIT_CONFIG}
   fi
+}
+
+renderPromJmxExporterConfig() {
+  (
+    export PROM_JMX_START_DELAY_SECONDS="${PROM_JMX_START_DELAY_SECONDS:-0}"
+    export PROM_JMX_LOWERCASE_OUTPUT_NAME="${PROM_JMX_LOWERCASE_OUTPUT_NAME:-true}"
+    export PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES="${PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES:-true}"
+    export PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES="${PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES:-true}"
+
+    validateInt  PROM_JMX_START_DELAY_SECONDS                  "$PROM_JMX_START_DELAY_SECONDS"
+    validateBool PROM_JMX_LOWERCASE_OUTPUT_NAME                "$PROM_JMX_LOWERCASE_OUTPUT_NAME"
+    validateBool PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES         "$PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES"
+    validateBool PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES  "$PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES"
+
+    {
+      echo "${PROM_JMX_EXPORTER_GENERATED_MARKER}"
+      envsubst < "/opt/opennms/container-fs/etc/templates/prom-jmx-exporter-config.yaml.tmpl"
+    } > "${PROM_JMX_EXPORTER_CONFIG}"
+  )
 }
 
 processEnvConfig() {
@@ -236,20 +258,15 @@ processEnvConfig() {
   # Process prom-jmx-exporter config from template; only scalar knobs are exposed.
   # To customise includeObjectNames/excludeObjectNames/rules, mount a full YAML and
   # set PROM_JMX_EXPORTER_CONFIG to its path.
-  (
-    export PROM_JMX_START_DELAY_SECONDS="${PROM_JMX_START_DELAY_SECONDS:-0}"
-    export PROM_JMX_LOWERCASE_OUTPUT_NAME="${PROM_JMX_LOWERCASE_OUTPUT_NAME:-true}"
-    export PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES="${PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES:-true}"
-    export PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES="${PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES:-true}"
-
-    validateInt  PROM_JMX_START_DELAY_SECONDS                  "$PROM_JMX_START_DELAY_SECONDS"
-    validateBool PROM_JMX_LOWERCASE_OUTPUT_NAME                "$PROM_JMX_LOWERCASE_OUTPUT_NAME"
-    validateBool PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES         "$PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES"
-    validateBool PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES  "$PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES"
-
-    envsubst < "${CONTAINER_CONFIG_ETC}/templates/prom-jmx-exporter-config.yaml.tmpl" \
-              > /opt/prom-jmx-exporter/config.yaml
-  )
+  # Only render when the exporter is enabled and reads the default path, and never replace
+  # a file there that we didn't generate (e.g. one the user mounted).
+  if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" && "${PROM_JMX_EXPORTER_CONFIG}" == "${PROM_JMX_EXPORTER_DEFAULT_CONFIG}" ]]; then
+    if [[ -e "${PROM_JMX_EXPORTER_CONFIG}" ]] && ! head -n 1 "${PROM_JMX_EXPORTER_CONFIG}" | grep -qF "${PROM_JMX_EXPORTER_GENERATED_MARKER}"; then
+      echo "Using existing ${PROM_JMX_EXPORTER_CONFIG}; PROM_JMX_* variables are ignored."
+    else
+      renderPromJmxExporterConfig
+    fi
+  fi
 
   # Process trapd-configuration.xml from template with defaults for unset variables.
   # Falls back to the legacy confd-era names (e.g. OPENNMS_TRAPD_NEWSUSPECTONTRAP) so existing deployments keep working.
@@ -336,6 +353,22 @@ applyOverlayConfig() {
   else
     echo "No custom Jetty WEB-INF config found in ${OPENNMS_OVERLAY_JETTY_WEBINF}. Use default configuration."
   fi
+
+  applyLegacyConfdOverlays
+}
+
+# processEnvConfig removed every _confd.*.properties, so any still present came from an overlay.
+# Under confd an overlaid _confd.X.properties replaced the generated file, so keep that behaviour:
+# drop the matching _container.X.properties, which would otherwise sort after it and win.
+applyLegacyConfdOverlays() {
+  local propsD="${OPENNMS_HOME}/etc/opennms.properties.d"
+  local legacy name
+  for legacy in "${propsD}"/_confd.*.properties; do
+    [[ -e "${legacy}" ]] || continue
+    name="${legacy##*/_confd.}"
+    echo "WARNING: Overlay supplies legacy ${legacy##*/}; it replaces _container.${name}. Rename it to _container.${name} or another name." >&2
+    rm -f "${propsD}/_container.${name}"
+  done
 }
 
 # Start opennms in foreground

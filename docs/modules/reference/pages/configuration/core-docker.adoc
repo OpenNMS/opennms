@@ -79,6 +79,11 @@ via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/s
 NOTE: The earlier names `OPENNMS_TRAPD_NEWSUSPECTONTRAP`, `OPENNMS_TRAPD_INCLUDERAWMESSAGE`, `OPENNMS_TRAPD_QUEUESIZE`, `OPENNMS_TRAPD_BATCHSIZE`, and `OPENNMS_TRAPD_BATCHINTERVAL` are still accepted as a fallback.
 If both the old and new name are set, the new name wins.
 
+IMPORTANT: The Trapd variables only take effect when the database is first initialized or upgraded.
+At that point, the database installer imports `etc/trapd-configuration.xml` into the database and moves the file to `etc_archive/`.
+From then on, {page-component-title} reads the Trapd configuration from the database, and changing these variables has no effect, even though the container still writes `etc/trapd-configuration.xml` at every startup.
+To change the Trapd configuration of an existing installation, use the *Integrations -> Trap Configuration* page or the xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)].
+
 .Karaf Shell configuration in org.apache.karaf.shell.cfg
 [options="header, %autowidth"]
 |===
@@ -143,8 +148,10 @@ If both the old and new name are set, the new name wins.
 
 == JMX Prometheus Exporter
 
-The following variables control the default `config.yaml` generated for the JMX exporter.
+When `PROM_JMX_EXPORTER_ENABLED=true` and `PROM_JMX_EXPORTER_CONFIG` is left at its default, the container generates `/opt/prom-jmx-exporter/config.yaml` at startup from the following variables.
 To supply a fully custom configuration (for example, custom rules), mount your own file and set `PROM_JMX_EXPORTER_CONFIG` to its path.
+A file you mount at the default path is used as is and never overwritten.
+Nothing is generated while the exporter is disabled.
 
 .JMX exporter configuration knobs
 [options="header, %autowidth"]
@@ -163,9 +170,15 @@ Earlier images rendered the configuration files above with confd, which read the
 Most variable names are unchanged, so existing deployments keep working. When upgrading, note the following:
 
 * The five Trapd variables listed above were renamed. The old names are still accepted as a fallback.
-* `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported.
-Configure Slack and Mattermost notifications with a properties file in `etc/opennms.properties.d/` through the overlay instead.
+* The Trapd variables are imported into the database only once, when the database is first initialized or upgraded; later changes have no effect.
+This was also the case with confd.
+See the note under the Trapd variables above.
+* `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported, because the Slack and Mattermost notification strategies were removed.
+Use the webhook notification strategy instead, as described in xref:operation:deep-dive/notifications/strategies/webhook.adoc#migrating-from-slack-and-mattermost[Migrating from Slack and Mattermost].
 * Legacy `_confd.*.properties` files left in a mounted `etc/` volume are removed at startup to prevent stale settings.
-* Boolean and numeric variables (for example, `CORE_SERVICE_*_ENABLED`, `OPENNMS_TRAPD_*`, `PROM_JMX_*`, `OPENNMS_CASSANDRA_PORT`, and `OPENNMS_RRD_STOREBYFOREIGNSOURCE`) are validated at startup.
+* A `_confd.<name>.properties` file supplied through an overlay still replaces the generated settings, as it did with confd: the matching `_container.<name>.properties` file is removed and a warning is logged.
+Rename the file in your overlay to `_container.<name>.properties` (for example, `_container.timeseries.properties`) to silence the warning.
+* Boolean and numeric variables (for example, `CORE_SERVICE_*_ENABLED`, `OPENNMS_TRAPD_*`, `OPENNMS_CASSANDRA_PORT`, and `OPENNMS_RRD_STOREBYFOREIGNSOURCE`, plus `PROM_JMX_*` when the exporter config is generated) are validated at startup.
 Booleans must be `true` or `false` in any case (for example, `True` is accepted); other values such as `1` or `yes` are rejected.
-An invalid value prints an `ERROR:` message and the container stops before it writes any configuration files.
+An invalid value prints an `ERROR:` message and the container stops before {page-component-title} starts.
+The file that uses the invalid value is not written, but files rendered earlier in the same startup may already have been updated.
