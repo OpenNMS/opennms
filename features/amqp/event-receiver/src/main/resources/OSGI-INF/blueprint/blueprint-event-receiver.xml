@@ -71,10 +71,33 @@
     </route>
   </camelContext>
 
-  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent" factory-method="amqpComponent">
-    <argument value="${connectionUrl}"/>
+  <!-- Drop inbound Camel* headers so a message producer cannot set Camel internals (CVE-2026-40453) -->
+  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.InboundCamelHeaderFilterStrategy">
+    <argument>
+      <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy"/>
+    </argument>
+  </bean>
+
+  <!--
+    Same as AMQPComponent.amqpComponent(), plus a deserialization policy with an empty allow-list.
+    The receiver only reads text messages, and Qpid JMS otherwise deserializes any class from an
+    ObjectMessage (CVE-2026-40860).
+  -->
+  <bean id="amqpConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
     <argument value="${username}"/>
     <argument value="${password}"/>
+    <argument value="${connectionUrl}"/>
+    <property name="topicPrefix" value="topic://"/>
+    <property name="deserializationPolicy">
+      <bean class="org.apache.qpid.jms.policy.JmsDefaultDeserializationPolicy">
+        <property name="allowList" value=""/>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
+    <argument ref="amqpConnectionFactory"/>
+    <property name="headerFilterStrategy" ref="jmsHeaderFilterStrategy"/>
   </bean>
 
 </blueprint>

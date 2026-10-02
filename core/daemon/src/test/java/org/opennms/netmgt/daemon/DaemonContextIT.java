@@ -21,18 +21,23 @@
  */
 package org.opennms.netmgt.daemon;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import javax.jms.QueueConnection;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.camel.component.jms.JmsComponent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -49,6 +54,10 @@ public class DaemonContextIT {
     @Autowired
     ActiveMQConnectionFactory activeMQConnectionFactory;
 
+    @Autowired
+    @Qualifier("queuingservice")
+    JmsComponent queuingservice;
+
 	/**
 	* Verifies that the embedded ActiveMQ broker bootstraps successfully
 	* and is accessible using the provided connection factory.
@@ -61,6 +70,15 @@ public class DaemonContextIT {
 	    message.setText("ping");
 	    QueueSender sender = session.createSender(session.createQueue("pong"));
 	    sender.send(message);
+	}
+
+	/**
+	* Verifies that inbound Camel headers are filtered on the JMS component (CVE-2026-40453).
+	*/
+	@Test
+	public void queuingserviceDropsInboundCamelHeaders() {
+	    assertTrue(queuingservice.getHeaderFilterStrategy().applyFilterToExternalHeaders("CAmelExecCommandExecutable", "x", null));
+	    assertFalse(queuingservice.getHeaderFilterStrategy().applyFilterToExternalHeaders("JmsQueueName", "x", null));
 	}
 
 }

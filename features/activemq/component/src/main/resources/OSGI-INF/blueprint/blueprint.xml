@@ -46,8 +46,16 @@
 		<property name="concurrentConsumers" value="$[org.opennms.activemq.client.concurrent-consumers]" />
 	</bean>
 
+	<!-- Drop inbound Camel* headers so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
+	<bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.InboundCamelHeaderFilterStrategy">
+		<argument>
+			<bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy"/>
+		</argument>
+	</bean>
+
 	<bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
 		<property name="configuration" ref="jmsConfig" />
+		<property name="headerFilterStrategy" ref="jmsHeaderFilterStrategy" />
 	</bean>
 
 	<service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">
