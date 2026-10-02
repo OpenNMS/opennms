@@ -195,6 +195,14 @@ describe('EventConfigUploadFilesTab.vue', () => {
       expect(wrapper.get('[data-test="commit-detail"]').text()).toContain('evaluation order will be applied')
     })
 
+    it('blocks uploads beyond the server attachment cap with the reason', async () => {
+      wrapper.vm.eventFiles = Array.from({ length: 301 }, (_, i) => makeFile(`f${i}.xml`))
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+      expect(wrapper.get('[data-test="commit-headline"]').text())
+        .toContain('limited to 300 files per request — remove 1')
+    })
+
     it('clear queue empties everything and drops the commit bar', async () => {
       wrapper.vm.eventFiles = [makeFile('a.xml'), makeFile('b.xml')]
       await wrapper.vm.$nextTick()

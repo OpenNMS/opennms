@@ -317,6 +317,7 @@ const queueingCount = ref(0)
 const shouldUploadDisabled = computed(() => {
   return (
     eventFiles.value.length === 0 ||
+    eventFiles.value.length > MAX_FILES_PER_UPLOAD ||
     isLoading.value ||
     queueingCount.value > 0 ||
     !eventFiles.value.every(f => f.isValid) ||
@@ -364,10 +365,17 @@ const queueView = computed({
   }
 })
 
+// the server accepts at most this many multipart attachments per request
+// (attachment-max-count in applicationContext-cxf-rest-v2.xml)
+const MAX_FILES_PER_UPLOAD = 300
+
 // What the upload will do, and when it cannot run, why — never just a mute grey button
 const blockedReason = computed(() => {
   if (queueingCount.value > 0) {
     return 'Still reading and validating the selection…'
+  }
+  if (eventFiles.value.length > MAX_FILES_PER_UPLOAD) {
+    return `Uploads are limited to ${MAX_FILES_PER_UPLOAD} files per request — remove ${eventFiles.value.length - MAX_FILES_PER_UPLOAD} or upload in batches`
   }
   const parts: string[] = []
   if (invalidCount.value > 0) {
