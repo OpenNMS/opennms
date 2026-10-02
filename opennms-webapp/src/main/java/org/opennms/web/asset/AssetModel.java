@@ -577,6 +577,14 @@ public class AssetModel {
             .map(entry -> entry[1].toLowerCase())
             .collect(Collectors.toMap(e -> e, e -> String.format("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS.%s FROM ASSETS, NODE WHERE LOWER(ASSETS.%s) LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL", e, e)));
 
+    /**
+     * Returns true if the given name is one of the asset columns in {@link #getColumns()},
+     * compared case-insensitively.
+     */
+    public static boolean isColumnValid(final String columnName) {
+        return columnName != null && VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase());
+    }
+
     private Float safeFloat(final String value) {
         if (StringUtils.hasLength(value)) {
             try {

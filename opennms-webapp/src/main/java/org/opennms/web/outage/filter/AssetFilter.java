@@ -28,9 +28,13 @@
 
 package org.opennms.web.outage.filter;
 
+import java.util.Locale;
+import java.util.Set;
+
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.opennms.web.asset.AssetModel;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
@@ -49,6 +53,14 @@ public class AssetFilter extends EqualsFilter<String> {
     private String assetField;
 
     /**
+     * Columns of the assets table that are not part of the {@link AssetModel} UI column list but are
+     * still legitimate filter targets. Kept in lower case because the allow-list check is
+     * case-insensitive.
+     */
+    private static final Set<String> ENTITY_ONLY_COLUMNS = Set.of(
+            "nodeid", "lastmodifieddate", "managedobjecttype", "managedobjectinstance");
+
+    /**
      * Instantiates a new asset filter.
      *
      * @param field the name of the field field
@@ -56,7 +68,24 @@ public class AssetFilter extends EqualsFilter<String> {
      */
     public AssetFilter(String field, String value) {
         super(field, SQLType.STRING, "OUTAGES.IFSERVICEID", field, value);
-        assetField = field.replaceFirst("asset.","");
+        if (field == null || !field.startsWith(TYPE)) {
+            throw new IllegalArgumentException("Asset filter field must start with '" + TYPE + "'");
+        }
+        assetField = field.substring(TYPE.length());
+        if (!isValidAssetColumn(assetField)) {
+            throw new IllegalArgumentException("Unknown asset field: " + assetField);
+        }
+    }
+
+    /**
+     * The asset field is a SQL identifier spliced into the query and cannot be bound as a
+     * parameter, so it must be validated against the known asset schema to prevent SQL
+     * injection (NMS-20383). The schema is the {@link AssetModel} column list plus the few
+     * assets-table columns that list does not expose in the UI.
+     */
+    static boolean isValidAssetColumn(final String column) {
+        return AssetModel.isColumnValid(column)
+                || ENTITY_ONLY_COLUMNS.contains(column.toLowerCase(Locale.ROOT));
     }
 
     /** {@inheritDoc} */
