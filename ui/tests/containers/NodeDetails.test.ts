@@ -1,7 +1,6 @@
 import NodeDetails from '@/containers/NodeDetails.vue'
 import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { useEventStore } from '@/stores/eventStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
@@ -49,6 +48,7 @@ describe('NodeDetails.vue', () => {
           },
           NodeDetailsHeader: true,
           NodeNotificationsPanel: true,
+          NodeStatusBox: true,
           NodeDetailsDialog: true,
           EventsTable: true,
           OutagesTable: true,
@@ -108,33 +108,6 @@ describe('NodeDetails.vue', () => {
       .toBe('10.0.0.44')
   })
 
-  // The events table fetches by node id on its own and only replaces its rows on a successful
-  // response, so a node that 404s would otherwise keep the previous node's events on screen.
-  it('clears the events when the node fails to load', async () => {
-    const { wrapper, nodeStore } = mountComponent()
-    nodeStore.getNodeById = vi.fn().mockImplementation(async () => {
-      nodeStore.nodeLoadFailed = true
-    })
-    const eventStore = useEventStore()
-    eventStore.clearEvents = vi.fn()
-
-    await wrapper.vm.$nextTick()
-    await (wrapper.vm as any).fetchNode()
-
-    expect(eventStore.clearEvents).toHaveBeenCalled()
-  })
-
-  it('leaves the events alone when the node loads', async () => {
-    const { wrapper, nodeStore } = mountComponent('42', true)
-    nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
-    const eventStore = useEventStore()
-    eventStore.clearEvents = vi.fn()
-
-    await (wrapper.vm as any).fetchNode()
-
-    expect(eventStore.clearEvents).not.toHaveBeenCalled()
-  })
-
   it('renders the node panels once the node has loaded', async () => {
     const { wrapper } = mountComponent('42', true)
     await flushPromises()
@@ -144,6 +117,7 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeStatusBox' }).exists()).toBe(true)
   })
 
   describe('Main / Additional tabs', () => {

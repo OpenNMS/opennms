@@ -1,4 +1,6 @@
 <template>
+  <NodeStatusBox />
+
   <!--
     One row of two columns, each stacking its own panels, rather than a row per pair of panels.
     A row is a grid track, so its height is that of its tallest panel: with a row per pair, a
@@ -32,6 +34,7 @@
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
 import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'
+import NodeStatusBox from '@/components/Nodes/NodeStatusBox.vue'
 import { Node } from '@/types'
 
 // Panels that read the node wait for a real one (see nodeStore.nodeLoaded); the interface
