@@ -96,7 +96,7 @@ public abstract class PrometheusMetricsProcessor<T> {
                                     ((org.hawkular.agent.prometheus.types.Histogram) metric), metricIndex);
                             break;
                         
-                        case UNTYPED:
+                        case UNKNOWN:
                             // if we can't tell what it is, it's a gauge.
                             log.debug("UNtyped metric: '{}'",metric);
                             walker.walkGaugeMetric(convertedMetricFamily, (Gauge) metric, metricIndex);

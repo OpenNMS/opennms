@@ -1,0 +1,14 @@
+# TYPE executor_pool_size_threads gauge
+# HELP executor_pool_size_threads The current number of threads in the pool
+executor_pool_size_threads{name="taskExecutor"} 0.0
+# TYPE jvm_classes_unloaded_classes counter
+# HELP jvm_classes_unloaded_classes The total number of classes unloaded since the Java virtual machine has started execution
+jvm_classes_unloaded_classes_total 1.0
+# TYPE logback_events counter
+# HELP logback_events Number of log events that were enabled by the effective log level
+logback_events_total{level="warn"} 2876.0
+logback_events_total{level="debug"} 2.0
+logback_events_total{level="error"} 9170.0
+logback_events_total{level="trace"} 1.0
+logback_events_total{level="info"} 251.0
+# EOF
