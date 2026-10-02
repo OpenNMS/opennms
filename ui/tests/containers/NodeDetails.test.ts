@@ -1,5 +1,5 @@
 import NodeDetails from '@/containers/NodeDetails.vue'
-import { useNodeStore } from '@/stores/nodeStore'
+import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useEventStore } from '@/stores/eventStore'
 import { createTestingPinia } from '@pinia/testing'
@@ -18,13 +18,14 @@ vi.mock('vue-router', () => ({
 }))
 
 describe('NodeDetails.vue', () => {
-  const mountComponent = (id = '42', loaded = false) => {
+  const mountComponent = (id = '42', loaded = false, tab: NodeDetailsTab = 'main') => {
     const pinia = createTestingPinia({ stubActions: false })
     setActivePinia(pinia)
 
     const nodeStore = useNodeStore()
     nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
     nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
+    nodeStore.nodeDetailsTab = tab
 
     if (loaded) {
       nodeStore.node = { id: '42', label: 'srv-42' } as any
@@ -142,9 +143,66 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(true)
+  })
+
+  describe('Main / Additional tabs', () => {
+    const selectTab = async (wrapper: any, tab: NodeDetailsTab) => {
+      wrapper.findComponent({ name: 'OnmsSelectButton' }).vm.$emit('update:modelValue', tab)
+      await flushPromises()
+    }
+
+    it('opens on Main, without mounting the Additional tables', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsAdditionalTab' }).exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(false)
+    })
+
+    it('shows events and outages on Additional, and keeps the header in view', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      await selectTab(wrapper, 'additional')
+
+      expect(nodeStore.nodeDetailsTab).toBe('additional')
+      expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
+
+      expect(wrapper.findComponent({ name: 'BreadCrumbs' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
+      expect(wrapper.find('.header').findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(true)
+    })
+
+    // KeepAlive: going back to Main reuses the mounted tab rather than rebuilding it.
+    it('keeps a tab mounted after switching away and back', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+      const mainTabUid = wrapper.findComponent({ name: 'NodeDetailsMainTab' }).vm.$.uid
+
+      await selectTab(wrapper, 'additional')
+      await selectTab(wrapper, 'main')
+
+      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).vm.$.uid).toBe(mainTabUid)
+    })
+
+    it('opens on the tab last chosen, which the store keeps', async () => {
+      const { wrapper } = mountComponent('42', true, 'additional')
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'OnmsSelectButton' }).props('modelValue')).toBe('additional')
+      expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
+    })
+
+    it('puts the tab switch on the title row', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      expect(wrapper.find('.header').findComponent({ name: 'OnmsSelectButton' }).exists()).toBe(true)
+    })
   })
 
   // The SNMP Attributes panel is gone; those attributes are now behind the actions menu's
