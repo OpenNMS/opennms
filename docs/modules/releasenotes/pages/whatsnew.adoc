@@ -68,6 +68,11 @@ This means that things will have moved around a bit in the filesystem, and that 
 === Stricter validation of requisition names
 Some characters (/, \, ?, &, *, ', “) may not be used in requisition names. The UI components have already enforced the validation of requisition names. This restriction is now also enforced when creating search requests via the OpenNMS ReST API.
 
+=== REST API configuration writes require ROLE_ADMIN
+Writing OpenNMS configuration through the REST API (`POST`/`PUT`/`DELETE` on `/rest/config/**`, including the alarm northbounder configurations) now requires `ROLE_ADMIN`; previously an account with only `ROLE_REST` could write these.
+Update any integration that used a `ROLE_REST` account to change configuration to use a `ROLE_ADMIN` account.
+Reading configuration and all other `ROLE_REST` data operations are unchanged.
+
 === SNMP4J upgrade
 The SNMP4J library has been upgraded to version 2.8.15.
 As part of this upgrade, the SNMP4J logger configuration in opennms.properties has been updated to use the SLF4J logging implementation:
