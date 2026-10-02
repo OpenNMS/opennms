@@ -221,6 +221,11 @@ Note that there is no tool to copy existing Newts data into another store, so af
 === Jasper Reports engine
 We have updated the Jasper Reports engine to version 7.0.7. Custom reports created using version 6.x must be updated to work with the new version.
 
+=== REST API configuration writes require ROLE_ADMIN
+Writing OpenNMS configuration through the REST API (`POST`/`PUT`/`DELETE` on `/rest/config/**`, including the alarm northbounder configurations) now requires `ROLE_ADMIN`; previously an account with only `ROLE_REST` could write these.
+Update any integration that used a `ROLE_REST` account to change configuration to use a `ROLE_ADMIN` account.
+Reading configuration and all other `ROLE_REST` data operations are unchanged.
+
 === Ops Board and Wallboard removed
 
 The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
