@@ -28,6 +28,8 @@ import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
 
+export type NodeDetailsTab = 'main' | 'additional'
+
 export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])
   const totalCount = ref(0)
@@ -65,6 +67,17 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
   const setAvailabilityRange = (selection: RangeSelection) => {
     availabilityRange.value = selection
+  }
+
+  /**
+   * Which of the details page's tabs is showing. Kept here rather than in the page for the same
+   * reason as availabilityRange: it is how the user chose to look at nodes, so it carries over
+   * from one node to the next instead of resetting each time the page is rebuilt.
+   */
+  const nodeDetailsTab = ref<NodeDetailsTab>('main')
+
+  const setNodeDetailsTab = (tab: NodeDetailsTab) => {
+    nodeDetailsTab.value = tab
   }
 
   // map of nodeId to IpInterfaces associated with that node
@@ -348,6 +361,8 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeToSnmpInterfaceMap,
     availabilityRange,
     setAvailabilityRange,
+    nodeDetailsTab,
+    setNodeDetailsTab,
     nodeQueryParameters,
     outages,
     outagesTotalCount,

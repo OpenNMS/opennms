@@ -9,13 +9,23 @@
       <div class="heading">
         <h2>Node Details for {{ nodeTitle }}</h2>
       </div>
-      <NodeActionsDropdown
-        v-if="nodeLoaded"
-        :baseHref="baseHref"
-        :node="nodeStore.node"
-        :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
-        :triggerNodeInfo="onNodeInfo"
-      />
+      <div class="header-controls">
+        <OnmsSelectButton
+          v-model="activeTab"
+          :options="tabOptions"
+          option-label="label"
+          option-value="value"
+          aria-label="Node details view"
+          data-test="node-details-tab-select"
+        />
+        <NodeActionsDropdown
+          v-if="nodeLoaded"
+          :baseHref="baseHref"
+          :node="nodeStore.node"
+          :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+          :triggerNodeInfo="onNodeInfo"
+        />
+      </div>
     </div>
     <div
       v-if="nodeLoaded"
@@ -27,34 +37,19 @@
     </div>
 
     <!--
-      One row of two columns, each stacking its own panels, rather than a row per pair of panels.
-      A row is a grid track, so its height is that of its tallest panel: with a row per pair, a
-      short panel left a gap beneath it until the next row could start -- most visibly under
-      Notifications, waiting on the much taller Availability panel beside it.
-
-      The panels need no nested .onms-row of their own. They are block-level and fill the column
-      already, and the cards carry their own bottom margin, so nesting a fresh 12-column grid per
-      panel would add a grid to configure without changing the result.
+      KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
+      paging and sorting when the user switches away and back. Cached tabs still follow the route,
+      so moving to another node refreshes them too.
     -->
-    <div class="onms-row">
-      <div class="onms-col-6">
-        <NodeAvailabilityGraph
-          v-if="nodeLoaded"
-          :node="nodeStore.node"
-          :base-href="baseHref"
-        />
-        <InterfacesTabs />
-      </div>
-      <div class="onms-col-6">
-        <NodeNotificationsPanel
-          v-if="nodeLoaded"
-          :node="nodeStore.node"
-          :base-href="baseHref"
-        />
-        <EventsTable />
-        <OutagesTable />
-      </div>
-    </div>
+    <KeepAlive>
+      <NodeDetailsMainTab
+        v-if="activeTab === 'main'"
+        :node="nodeStore.node"
+        :nodeLoaded="nodeLoaded"
+        :baseHref="baseHref"
+      />
+      <NodeDetailsAdditionalTab v-else />
+    </KeepAlive>
 
     <NodeDetailsDialog
       :visible="dialogVisible"
@@ -66,18 +61,16 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
-import EventsTable from '@/components/Nodes/EventsTable.vue'
-import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
-import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
+import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
-import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'
-import OutagesTable from '@/components/Nodes/OutagesTable.vue'
+import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
 import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStore } from '@/stores/nodeStore'
+import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { BreadCrumb, Node } from '@/types'
 
 const eventStore = useEventStore()
@@ -91,6 +84,16 @@ const props = defineProps({
 })
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+
+const tabOptions: { label: string, value: NodeDetailsTab }[] = [
+  { label: 'Main', value: 'main' },
+  { label: 'Additional', value: 'additional' }
+]
+
+const activeTab = computed<NodeDetailsTab>({
+  get: () => nodeStore.nodeDetailsTab,
+  set: tab => nodeStore.setNodeDetailsTab(tab)
+})
 
 // The node attributes now live behind the actions menu's Info... rather than in a panel of their
 // own. The dialog takes the node it is given; this page only ever has one, so the handler
@@ -161,6 +164,12 @@ defineExpose({ fetchNode })
     align-items: center;
     margin-bottom: 1.25em;
     padding: 0;
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+    }
   }
 }
 </style>
