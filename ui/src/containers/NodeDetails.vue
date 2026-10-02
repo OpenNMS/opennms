@@ -68,12 +68,10 @@ import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTa
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
 import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
-import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { BreadCrumb, Node } from '@/types'
 
-const eventStore = useEventStore()
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 
@@ -138,13 +136,6 @@ const fetchNode = async () => {
   nodeStore.getNodeSnmpPrimaryInterface(props.id)
 
   await nodeStore.getNodeById({ id: props.id } as Node)
-
-  // The events table fetches by node id itself and only replaces its rows on success, so a
-  // node that could not be fetched would otherwise keep the previous node's events on screen.
-  // Events are the event store's to clear, so the page asks rather than reaching across.
-  if (nodeStore.nodeLoadFailed) {
-    eventStore.clearEvents()
-  }
 }
 
 onMounted(fetchNode)

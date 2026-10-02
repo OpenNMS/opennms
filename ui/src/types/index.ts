@@ -254,6 +254,9 @@ export interface Alarm {
   count: number
   lastEventTime: number
   logMessage: string
+  // Both absent while the alarm is unacknowledged: the REST API omits null fields.
+  ackTime?: number
+  ackUser?: string
 }
 
 export interface Event {
