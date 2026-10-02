@@ -160,6 +160,17 @@ Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they a
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
 See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
+=== Core container image no longer uses confd
+The Core container image renders its configuration directly from environment variables at startup instead of through confd.
+Most variable names and defaults are unchanged, but a few things behave differently:
+
+* Five Trapd variables were renamed; the old names still work as a fallback. As before, the Trapd variables are imported into the database only once, when the database is first initialized or upgraded.
+* `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported.
+* Boolean and numeric variables are validated, and an invalid value stops the container at startup.
+* The JMX exporter `config.yaml` is generated only when the exporter is enabled, and a file mounted at the default path is no longer overwritten.
+
+See xref:reference:configuration/core-docker.adoc#core-oci-confd-migration[Migrating from confd] for details.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
