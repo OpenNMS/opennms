@@ -22,7 +22,7 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { IpInterface, Node, Outage, QueryParameters, SnmpInterface } from '@/types'
+import { IpInterface, Node, QueryParameters, SnmpInterface } from '@/types'
 import { DEFAULT_SELECTION, RangeSelection } from '@/components/Nodes/availabilityRange'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
@@ -51,8 +51,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
   const ipInterfacesTotalCount = ref(0)
-  const outages = ref([] as Outage[])
-  const outagesTotalCount = ref(0)
   const nodeQueryParameters = ref({ limit: 50, offset: 0, orderBy: 'label' } as QueryParameters)
 
   /**
@@ -106,7 +104,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
   // newer call has started since its request was issued.
   let nodeSnmpInterfacesRequestId = 0
   let nodeIpInterfacesRequestId = 0
-  let outagesRequestId = 0
 
   // Monotonic id sequencing getNodeById requests, mirroring getIpInterfacesForNodes below: the
   // details page fires one per node id as the user moves between nodes, and the responses can
@@ -141,13 +138,12 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
     // Every panel fetches by node id on its own and only replaces its rows on a successful
     // response, so without this the previous node's data stays on screen under an id that has
-    // no node. Events live in their own store and are cleared by the page.
+    // no node. Events, alarms and outages live in their own stores, whose node slices are stamped
+    // with the node id, so their panels can tell for themselves.
     ipInterfaces.value = []
     ipInterfacesTotalCount.value = 0
     snmpInterfaces.value = []
     snmpInterfacesTotalCount.value = 0
-    outages.value = []
-    outagesTotalCount.value = 0
     snmpPrimaryIpAddress.value = undefined
   }
 
@@ -325,21 +321,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeToSnmpInterfaceMap.value = grouped
   }
 
-  const getNodeOutages = async (payload: { id: string; queryParameters?: QueryParameters }) => {
-    const requestId = ++outagesRequestId
-
-    const resp = await API.getNodeOutages(payload.id, payload.queryParameters)
-
-    if (requestId !== outagesRequestId) {
-      return
-    }
-
-    if (resp) {
-      outages.value = resp.outage
-      outagesTotalCount.value = resp.totalCount
-    }
-  }
-
   const setNodeQueryParameters = async (params: QueryParameters) => {
     nodeQueryParameters.value = {
       ...params
@@ -364,15 +345,12 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeDetailsTab,
     setNodeDetailsTab,
     nodeQueryParameters,
-    outages,
-    outagesTotalCount,
     getIpInterfacesForNodes,
     getSnmpInterfacesForNodes,
     getNodes,
     getNodeById,
     getNodeSnmpInterfaces,
     getNodeIpInterfaces,
-    getNodeOutages,
     getNodeSnmpPrimaryInterface,
     setNodeQueryParameters
   }

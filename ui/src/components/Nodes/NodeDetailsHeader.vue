@@ -80,7 +80,6 @@ const nodeSeverity = computed<OnmsTagSeverity>(() => SEVERITY_BY_STATUS[nodeStat
 
 <style lang="scss" scoped>
 .card {
-  padding: 1rem;
   margin-bottom: 1rem;
 
   .node-badge-wrapper {

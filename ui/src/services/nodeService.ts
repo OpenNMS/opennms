@@ -26,8 +26,7 @@ import {
   SnmpInterfaceApiResponse,
   QueryParameters,
   IpInterfaceApiResponse,
-  NodeAvailability,
-  OutagesApiResponse
+  NodeAvailability
 } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 import { orderBy } from 'lodash'
@@ -137,27 +136,9 @@ const getNodeAvailabilityPercentage = async (
   }
 }
 
-const getNodeOutages = async (id: string, queryParameters?: QueryParameters): Promise<OutagesApiResponse | false> => {
-  const outagesEndpoint = `/outages/forNode/${id}`
-  let outagesEndpointWithQueryString = ''
-
-  if (queryParameters) {
-    outagesEndpointWithQueryString = queryParametersHandler(queryParameters, outagesEndpoint)
-  }
-
-  try {
-    const resp = await rest.get(outagesEndpointWithQueryString || outagesEndpoint)
-
-    return resp.data
-  } catch (_err) {
-    return false
-  }
-}
-
 export {
   getNodes,
   getNodeById,
-  getNodeOutages,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage

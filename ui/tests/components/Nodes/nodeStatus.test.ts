@@ -21,7 +21,7 @@
 ///
 
 import { describe, expect, it } from 'vitest'
-import { computeNodeStatus } from '@/components/Nodes/nodeStatus'
+import { bannerSeverity, computeNodeStatus } from '@/components/Nodes/nodeStatus'
 import { Alarm } from '@/types'
 
 const UEI = {
@@ -121,5 +121,20 @@ describe('computeNodeStatus', () => {
     it('counts acknowledged outages in the headline', () => {
       expect(computeNodeStatus([alarm('MINOR', UEI.nodeLostService, true)]).message).toBe('Node has 1 service down.')
     })
+  })
+})
+
+describe('bannerSeverity', () => {
+  it.each([
+    ['CRITICAL', 'critical'],
+    ['Major', 'major'],
+    ['minor', 'minor'],
+    ['WARNING', 'warning'],
+    ['NORMAL', 'normal'],
+    ['CLEARED', 'none'],
+    ['INDETERMINATE', 'none'],
+    [undefined, 'none']
+  ])('%s -> %s', (severity, expected) => {
+    expect(bannerSeverity(severity)).toBe(expected)
   })
 })

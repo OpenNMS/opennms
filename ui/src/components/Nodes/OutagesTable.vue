@@ -15,11 +15,11 @@
     </template>
     <OnmsTable
       lazy
-      :value="nodeStore.outages"
+      :value="outages"
       paginator
       :rows="pageSize"
       :first="first"
-      :totalRecords="nodeStore.outagesTotalCount"
+      :totalRecords="totalRecords"
       :rowsPerPageOptions="[5, 10, 20, 50]"
       data-test="outages-table"
       @page="onPage"
@@ -73,7 +73,7 @@ import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStore } from '@/stores/nodeStore'
+import { useOutageStore } from '@/stores/outageStore'
 import { useRecordDownload } from './hooks/useRecordDownload'
 import {
   OUTAGE_LIST_TYPE_BOTH,
@@ -85,7 +85,7 @@ import {
 import { Outage } from '@/types'
 
 const menuStore = useMenuStore()
-const nodeStore = useNodeStore()
+const outageStore = useOutageStore()
 const route = useRoute()
 
 const { showSnackBar } = useSnackbar()
@@ -104,6 +104,13 @@ const queryParameters = ref({
   limit: DEFAULT_PAGE_SIZE,
   offset: 0
 })
+
+// The store's node slice is only replaced on a successful fetch, so it can still hold the
+// previous node's outages -- after a failed fetch, or while this node's is in flight. Show it
+// only when it is this node's.
+const isThisNode = computed<boolean>(() => outageStore.nodeOutagesNodeId === nodeId.value)
+const outages = computed<Outage[]>(() => (isThisNode.value ? outageStore.nodeOutages : []))
+const totalRecords = computed<number>(() => (isThisNode.value ? outageStore.nodeOutagesTotalCount : 0))
 
 // outtype=both so the legacy list shows current AND resolved outages, matching this panel.
 const onViewOutagesClick = () => {
@@ -129,9 +136,7 @@ const isUnresolved = (outage: Outage) => !!outage.ifLostService && !outage.ifReg
 // second request, and no way for the file to disagree with the table. Raising rows-per-page is
 // how a user takes more than the default page.
 const onDownload = (format: 'csv' | 'json') => {
-  const outages = nodeStore.outages
-
-  if (!outages || outages.length === 0) {
+  if (outages.value.length === 0) {
     showSnackBar({
       msg: `No outages found for '${format}' download for this node`,
       error: true
@@ -140,7 +145,7 @@ const onDownload = (format: 'csv' | 'json') => {
     return
   }
 
-  downloadRecords(outages, 'Outages', format)
+  downloadRecords(outages.value, 'Outages', format)
 }
 
 const onCsvDownload = () => {
@@ -152,7 +157,7 @@ const onJsonDownload = () => {
 }
 
 const fetchOutages = () => {
-  nodeStore.getNodeOutages({ id: nodeId.value, queryParameters: queryParameters.value })
+  outageStore.getNodeOutages(nodeId.value, queryParameters.value)
 }
 
 const onPage = (event: OnmsTablePageEvent) => {
