@@ -178,40 +178,128 @@ function updateConfig() {
     esac
     # Rewrite in place to keep the file's ownership and permissions
     printf '%s\n' "$result" > "$file"
+    CONFIG_WRITTEN=true
+}
+
+function resetConfig() {
+    # Undo a value written from an environment variable that is no longer set: restore
+    # the image default for the key if the image ships one, otherwise remove the key.
+    local key=$1
+    local file=$2
+    local seed
+    seed="${CONTAINER_CONFIG_ETC}/$(basename "$file")"
+
+    [ -f "$file" ] || return 0
+    local result
+    result=$(KEY="$key" SEED="$seed" awk '
+        function matches(l,   rest) {
+            sub(/^#?[ \t]*/, "", l)
+            rest = substr(l, length(key) + 1)
+            return substr(l, 1, length(key)) == key && rest ~ /^[ \t]*=/
+        }
+        BEGIN {
+            key = ENVIRON["KEY"]
+            # The image default for the key, if the image ships this file
+            while ((getline l < ENVIRON["SEED"]) > 0) {
+                if (matches(l)) { default_line = l; have_default = 1; break }
+            }
+        }
+        matches($0) { if (have_default && !restored) { print default_line; restored = 1 } next }
+        { print }
+    ' "$file")
+
+    echo "[Configuring] '$key' in '$file' reset, its environment variable is no longer set"
+    if [ -n "$result" ]; then
+      printf '%s\n' "$result" > "$file"
+    else
+      : > "$file"
+    fi
+}
+
+# Records which keys were written from which environment variable, so a key can be
+# reset once its variable is removed. Stored next to the files it describes.
+ENV_MANAGED_KEYS="${SENTINEL_HOME}/etc/.container-env-keys"
+APPLIED_ENV_KEYS=()
+
+function applyEnvConfig() {
+    local env_var=$1
+    local key=$2
+    local file=$3
+
+    CONFIG_WRITTEN=false
+    updateConfig "$key" "${!env_var}" "$file" "$env_var"
+    if [[ "$CONFIG_WRITTEN" == "true" ]]; then
+        APPLIED_ENV_KEYS+=("${env_var}"$'\t'"${key}"$'\t'"${file}")
+    fi
 }
 
 function parseEnvironment() {
-    local IFS=$'\n'
+    local env_var ipc_name es_key
+    APPLIED_ENV_KEYS=()
 
-    for VAR in $(env)
-    do
-        env_var=$(echo "$VAR" | cut -d= -f1)
-
+    # compgen -e lists variable names only, so multi-line values are handled correctly
+    while IFS= read -r env_var; do
         if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
-            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg" "$env_var"
-            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg" "$env_var"
+            ipc_name=$(echo "${env_var#KAFKA_IPC_}" | tr '[:upper:]' '[:lower:]' | tr _ .)
+            applyEnvConfig "$env_var" "$ipc_name" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
+            applyEnvConfig "$env_var" "$ipc_name" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg"
         fi
 
+        # Only known names are mapped. A catch-all would also pick up the variables
+        # Kubernetes injects for a Service named "elasticsearch" (ELASTICSEARCH_PORT=tcp://...).
         if [[ $env_var =~ ^ELASTICSEARCH_ ]]; then
-            es_name=$(echo "$env_var" | cut -d_ -f2- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            case "$es_name" in
-              url)            es_key="elasticUrl" ;;
-              index.strategy) es_key="elasticIndexStrategy" ;;
-              replicas)       es_key="settings.index.number_of_replicas" ;;
-              conn.timeout)   es_key="connTimeout" ;;
-              read.timeout)   es_key="readTimeout" ;;
-              user)           es_key="globalElasticUser" ;;
-              password)       es_key="globalElasticPassword" ;;
-              *)              es_key="$es_name" ;;
+            case "${env_var#ELASTICSEARCH_}" in
+              URL)            es_key="elasticUrl" ;;
+              INDEX_STRATEGY) es_key="elasticIndexStrategy" ;;
+              REPLICAS)       es_key="settings.index.number_of_replicas" ;;
+              CONN_TIMEOUT)   es_key="connTimeout" ;;
+              READ_TIMEOUT)   es_key="readTimeout" ;;
+              USER)           es_key="globalElasticUser" ;;
+              PASSWORD)       es_key="globalElasticPassword" ;;
+              *)
+                echo "[Configuring] Ignoring unrecognized variable ${env_var}"
+                continue
+                ;;
             esac
-            updateConfig "$es_key" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg" "$env_var"
+            applyEnvConfig "$env_var" "$es_key" "${SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg"
         fi
 
-        if [[ $env_var == "OPENNMS_INSTANCE_ID" ]]; then
-            updateConfig "org.opennms.instance.id" "${!env_var}" "${SENTINEL_HOME}/etc/custom.system.properties"
-        fi
+        case "$env_var" in
+          OPENNMS_INSTANCE_ID)
+            applyEnvConfig "$env_var" "org.opennms.instance.id" "${SENTINEL_HOME}/etc/custom.system.properties"
+            ;;
+          POSTGRES_JDBC_URL)
+            applyEnvConfig "$env_var" "datasource.url" "${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg"
+            ;;
+        esac
+    done < <(compgen -e)
+
+    resetRemovedEnvConfig
+}
+
+function resetRemovedEnvConfig() {
+    # Reset keys written on an earlier start from variables that are no longer set
+    local entry env_var key file
+    # Keyed by key and file only, so a key written again on this start is never reset
+    local -A applied=()
+    for entry in "${APPLIED_ENV_KEYS[@]}"; do
+      applied["${entry#*$'\t'}"]=1
     done
+
+    if [ -f "${ENV_MANAGED_KEYS}" ]; then
+      while IFS=$'\t' read -r env_var key file; do
+        [ -n "$key" ] || continue
+        if [ -z "${applied["${key}"$'\t'"${file}"]:-}" ]; then
+          resetConfig "$key" "$file"
+        fi
+      done < "${ENV_MANAGED_KEYS}"
+    fi
+
+    if [ "${#APPLIED_ENV_KEYS[@]}" -gt 0 ]; then
+      printf '%s\n' "${APPLIED_ENV_KEYS[@]}" > "${ENV_MANAGED_KEYS}"
+    else
+      rm -f "${ENV_MANAGED_KEYS}"
+    fi
 }
 
 function handleLegacyConfd() {
@@ -235,6 +323,35 @@ function handleLegacyConfd() {
         rm -f "${legacy_file}"
       fi
     done
+}
+
+function validateEnvironment() {
+    # Runs before anything is written, so an invalid value leaves the configuration untouched
+    case "${SENTINEL_IPC,,}" in
+      kafka|jms)
+        IPC_STRATEGY="${SENTINEL_IPC,,}"
+        ;;
+      "")
+        # Same default as the confd-based images: Kafka once a bootstrap server is configured
+        if [ -n "${KAFKA_IPC_BOOTSTRAP_SERVERS:-}" ]; then
+          IPC_STRATEGY="kafka"
+        else
+          IPC_STRATEGY="jms"
+        fi
+        ;;
+      *)
+        echo "[Startup][ERROR] Invalid SENTINEL_IPC '${SENTINEL_IPC}', expected 'jms' or 'kafka'."
+        exit ${E_ILLEGAL_ARGS}
+        ;;
+    esac
+
+    case "${SENTINEL_FLOWS_ENABLED,,}" in
+      true|false) ;;
+      *)
+        echo "[Startup][ERROR] Invalid SENTINEL_FLOWS_ENABLED '${SENTINEL_FLOWS_ENABLED}', expected 'true' or 'false'."
+        exit ${E_ILLEGAL_ARGS}
+        ;;
+    esac
 }
 
 function seedContainerConfig() {
@@ -262,23 +379,14 @@ function applyFeatureBootTemplates() {
     done
 
     apply_template() {
-        local name="$1"
-        cp "${FEATURES_BOOT_TEMPLATES_DIR}/${name}" "${FEATURES_BOOT_DIR}/${name}"
-        echo "[Features] Enabled: ${name}"
+        local template="$1"
+        local name="${2:-$1}"
+        cp "${FEATURES_BOOT_TEMPLATES_DIR}/${template}" "${FEATURES_BOOT_DIR}/${name}"
+        echo "[Features] Enabled: ${template}"
     }
 
-    case "${SENTINEL_IPC:-}" in
-      kafka)
-        echo "[Features] IPC strategy set to Kafka."
-        apply_template "sentinel-ipc.boot"
-        ;;
-      jms|"")
-        echo "[Features] IPC strategy set to JMS (default)."
-        ;;
-      *)
-        echo "[Features] Unknown IPC strategy '${SENTINEL_IPC}', using defaults."
-        ;;
-    esac
+    echo "[Features] IPC strategy set to ${IPC_STRATEGY}."
+    apply_template "sentinel-ipc-${IPC_STRATEGY}.boot" "sentinel-ipc.boot"
 
     if [[ "${SENTINEL_FLOWS_ENABLED,,}" == "true" ]]; then
         echo "[Features] Flow processing enabled."
@@ -292,6 +400,7 @@ initConfig() {
         exit ${E_ILLEGAL_ARGS}
     fi
 
+    validateEnvironment
     handleLegacyConfd
     seedContainerConfig
 

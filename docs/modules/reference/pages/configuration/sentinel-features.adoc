@@ -337,6 +337,10 @@ For settings not covered by environment variables, you can overlay individual co
 Values from environment variables are written so that Karaf reads them back unchanged, including backslashes and other special characters.
 The exception is `${`, which Karaf always expands as a placeholder; the container logs a warning when a value contains it.
 
+Settings are re-applied on every start.
+If you remove a variable that the container wrote to a configuration file, the setting is reset on the next start: the image default is restored if the image ships one, otherwise the property is removed.
+The container tracks these settings in `$\{SENTINEL_HOME}/etc/.container-env-keys`.
+
 === Controller configuration
 
 [options="header, autowidth"]
@@ -363,14 +367,17 @@ To store credentials securely, initialize a keystore file using the `-s` flag an
 === IPC strategy
 
 Set `SENTINEL_IPC` to choose the inter-process communication transport.
+The value is not case-sensitive, and the container refuses to start if it is not one of the values below.
 
 [options="header, autowidth"]
 |===
 | Value | Description
-| (unset) | Use JMS (ActiveMQ). This is the default when `SENTINEL_IPC` is not set.
-| `jms`   | Use JMS (ActiveMQ) explicitly.
+| (unset) | Use Apache Kafka if `KAFKA_IPC_BOOTSTRAP_SERVERS` is set, otherwise JMS (ActiveMQ).
+| `jms`   | Use JMS (ActiveMQ), even if Kafka variables are set.
 | `kafka` | Use Apache Kafka. Requires additional Kafka variables (see <<sentinel-kafka-config>>).
 |===
+
+The container installs the matching `sentinel-jms` or `sentinel-kafka` feature on every start.
 
 [[sentinel-kafka-config]]
 ==== Kafka configuration
@@ -396,6 +403,7 @@ The prefix is stripped, the remainder is lowercased, and underscores are convert
 | `POSTGRES_DB`       | PostgreSQL database name. | `opennms`
 | `POSTGRES_USER`     | PostgreSQL username. | `postgres`
 | `POSTGRES_PASSWORD` | PostgreSQL password. | –
+| `POSTGRES_JDBC_URL` | Complete JDBC URL, for example `jdbc:postgresql://db:5432/opennms?sslmode=require`. Replaces the URL built from `POSTGRES_HOST`, `POSTGRES_PORT`, and `POSTGRES_DB`. | –
 |===
 
 === Elasticsearch configuration
@@ -414,7 +422,7 @@ The following environment variables are written to `$\{SENTINEL_HOME}/etc/org.op
 | `ELASTICSEARCH_PASSWORD`       | Password for Elasticsearch authentication (`globalElasticPassword`). | –
 |===
 
-Any other `ELASTICSEARCH_*` variable is written with the prefix stripped, the remainder lowercased, and underscores converted to dots, so it only matches properties whose names are lowercase and dot-separated (for example, `ELASTICSEARCH_RETRIES` sets `retries`).
+Other `ELASTICSEARCH_*` variables are ignored, so the variables Kubernetes injects for a Service named `elasticsearch` (such as `ELASTICSEARCH_PORT`) do not end up in the configuration.
 To set any other property, overlay the configuration file (see <<sentinel-etc-overlay>>).
 
 === Telemetry flow adapters
@@ -422,7 +430,7 @@ To set any other property, overlay the configuration file (see <<sentinel-etc-ov
 [options="header, autowidth"]
 |===
 | Variable | Description | Default value
-| `SENTINEL_FLOWS_ENABLED` | Set to `true` to install the `sentinel-flows`, `sentinel-jsonstore-postgres`, and `sentinel-blobstore-noop` features at startup. | `false`
+| `SENTINEL_FLOWS_ENABLED` | Set to `true` to install the `sentinel-flows`, `sentinel-jsonstore-postgres`, and `sentinel-blobstore-noop` features at startup. Must be `true` or `false`. | `false`
 |===
 
 Individual adapters are defined by overlaying one configuration file per adapter into `$\{SENTINEL_HOME}/etc/` (see <<sentinel-etc-overlay>>), named
@@ -480,7 +488,9 @@ To migrate, move each setting to its environment variable or overlay file, then 
 |===
 | `sentinel-config.yaml` key | Replacement
 | `location`, `id`, `broker-url` | `SENTINEL_LOCATION`, `SENTINEL_ID`, `OPENNMS_BROKER_URL`
-| `ipc.kafka.*` | `SENTINEL_IPC=kafka` and `KAFKA_IPC_*` (see <<sentinel-kafka-config>>)
+| `datasource.url` | `POSTGRES_JDBC_URL`, or `POSTGRES_HOST`, `POSTGRES_PORT`, and `POSTGRES_DB`
+| `datasource.username`, `datasource.password`, `datasource.database-name` | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+| `ipc.kafka.*` | `KAFKA_IPC_*` (see <<sentinel-kafka-config>>); Kafka is selected automatically when `KAFKA_IPC_BOOTSTRAP_SERVERS` is set
 | `elasticsearch.*` | `ELASTICSEARCH_*`
 | `telemetry.flows.adapters` | `SENTINEL_FLOWS_ENABLED=true` and one adapter configuration file per adapter
 | `org.opennms.instance.id` | `OPENNMS_INSTANCE_ID`
