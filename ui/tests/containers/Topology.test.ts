@@ -140,8 +140,9 @@ const mountPage = async (source = 'custom') => {
 }
 
 const click = async (label: string, scope: ParentNode = document) => {
+  // An icon button has no text; its icon carries the name (OnmsIconButton's title).
   const button = Array.from(scope.querySelectorAll('button'))
-    .find(b => b.textContent?.trim() === label)
+    .find(b => b.textContent?.trim() === label || b.querySelector('svg')?.getAttribute('aria-label') === label)
   expect(button, `no "${label}" button rendered`).toBeTruthy()
   ;(button as HTMLElement).click()
   await flushPromises()
