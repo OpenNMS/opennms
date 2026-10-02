@@ -328,101 +328,177 @@ admin@sentinel> config:update
 Please note, that the file `/opt/sentinel/etc/junos-telemetry-interface.groovy` must also be provided manually,
 e.g. by manually copying it over from _{page-component-title}_.
 
-[[sentinel-oci-confd]]
-== Configure Sentinel via confd
+[[sentinel-configuration]]
+== Configure Sentinel container
 
-=== Mount
-When starting the Sentinel container, mount a YAML file to the following path `/opt/sentinel/sentinel-config.yaml`.
+The Sentinel container image reads its configuration from environment variables at startup.
+For settings not covered by environment variables, you can overlay individual configuration files directly (see <<sentinel-etc-overlay>>).
 
-Any configuration provided to confd will overwrite configuration specified as environment variables.
-Direct overlay of specific configuration files will overwrite the corresponding config provided by confd.
+Values from environment variables are written so that Karaf reads them back unchanged, including backslashes and other special characters.
+The exception is `${`, which Karaf always expands as a placeholder; the container logs a warning when a value contains it.
 
-=== Contents
-The following describes the keys available in `sentinel-config.yaml` to configure the Sentinel via confd.
+Settings are re-applied on every start.
+If you remove a variable that the container wrote to a configuration file, the setting is reset on the next start: the image default is restored if the image ships one, otherwise the property is removed.
+The container tracks these settings in `$\{SENTINEL_HOME}/etc/.container-env-keys`.
 
-==== Sentinel controller config
-[source, yaml]
-----
-broker-url: "<broker url>"
-id: "<id>"
-location: "<location>"
-----
-Config specified will be written to `etc/org.opennms.sentinel.controller.cfg`.
+=== Controller configuration
 
-==== User/password
-Supplying the broker username/password via YAML file for configuration via confd is not supported.
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `SENTINEL_ID`        | Unique identifier for this Sentinel instance. Written to the configuration on first start and kept afterwards, so changing or removing it later has no effect. | generated UUID
+| `SENTINEL_LOCATION`  | Location name associated with this Sentinel instance. | `SENTINEL`
+| `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | `tcp://127.0.0.1:61616`
+|===
 
-==== Sentinel Elasticsearch config
-[source, yaml]
-----
-elasticsearch:
-url: "http://elastic-ip:9200"
-index-strategy: "hourly"
-replicas: 0
-conn-timeout: 30000
-read-timeout: 60000
-----
-Config specified will be written to `etc/org.opennms.features.flows.persistence.elastic.cfg`.
+NOTE: You cannot supply credentials via environment variables without exposing them in `docker inspect` output and container logs.
+To store credentials securely, initialize a keystore file using the `-s` flag and mount it to `$\{SENTINEL_HOME}/etc/scv.jce`.
 
-==== Sentinel datasource config
-[source, yaml]
-----
-datasource:
-url: "jdbc:postgresql://localhost:5432/opennms"
-username: "postgres"
-password: "postgres"
-database-name: "opennms"
-----
-Config specified will be written to `etc/org.opennms.netmgt.distributed.datasource.cfg`.
+.Credentials (use only in non-production environments)
+[options="header, autowidth"]
+|===
+| Variable | Description
+| `OPENNMS_HTTP_USER`   | Username for the OpenNMS HTTP API.
+| `OPENNMS_HTTP_PASS`   | Password for the OpenNMS HTTP API.
+| `OPENNMS_BROKER_USER` | Username for ActiveMQ authentication.
+| `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication.
+|===
 
-==== Sentinel Kafka config
-[source, yaml]
-----
-ipc:
-kafka:
-bootstrap.servers: "my-kafka-ip-1:9092,my-kafka-ip-2:9092"
-group.id: "OpenNMS"
-----
-Config specified will be written to `etc/org.opennms.core.ipc.sink.kafka.cfg` and `etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.
+=== IPC strategy
 
-==== Telemetry flow adapters
-You can configure individual flow adapters and any number of uniquely named listeners.
-See the example below for how to specify parameters and parsers.
-[source, yaml]
-----
-telemetry:
-flows:
-adapters:
-NetFlow-5:
-class-name: "org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter"
-parameters:
-some-key: "some-value"
-----
-Config specified will be written to `deploy/confd-flows-feature.xml`.
+Set `SENTINEL_IPC` to choose the inter-process communication transport.
+The value is not case-sensitive, and the container refuses to start if it is not one of the values below.
 
-==== Instance ID
-[source, yaml]
-----
-org.opennms.instance.id: "<instance id>"
-----
-Config specified will be written to `etc/custom.system.properties`.
+[options="header, autowidth"]
+|===
+| Value | Description
+| (unset) | Use Apache Kafka if `KAFKA_IPC_BOOTSTRAP_SERVERS` is set, otherwise JMS (ActiveMQ).
+| `jms`   | Use JMS (ActiveMQ), even if Kafka variables are set.
+| `kafka` | Use Apache Kafka. Requires additional Kafka variables (see <<sentinel-kafka-config>>).
+|===
 
-=== JMX Prometheus Exporter
+The container installs the matching `sentinel-jms` or `sentinel-kafka` feature on every start.
 
-.JMX Exporter with a Confd YAML configuration file
-[source, yaml]
+[[sentinel-kafka-config]]
+==== Kafka configuration
+
+Environment variables prefixed with `KAFKA_IPC_` are written to both `$\{SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg` and `$\{SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.
+The prefix is stripped, the remainder is lowercased, and underscores are converted to dots before being written as property keys.
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Example value
+| `KAFKA_IPC_BOOTSTRAP_SERVERS` | Comma-separated list of Kafka broker addresses. | `kafka-1:9092,kafka-2:9092`
+| `KAFKA_IPC_GROUP_ID`          | Kafka consumer group ID. | `OpenNMS`
+| `KAFKA_IPC_*`                 | Any additional Kafka client property. | `KAFKA_IPC_AUTO_OFFSET_RESET=latest`
+|===
+
+=== Datasource configuration
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `POSTGRES_HOST`     | PostgreSQL host. | `localhost`
+| `POSTGRES_PORT`     | PostgreSQL port. | `5432`
+| `POSTGRES_DB`       | PostgreSQL database name. | `opennms`
+| `POSTGRES_USER`     | PostgreSQL username. | `postgres`
+| `POSTGRES_PASSWORD` | PostgreSQL password. | –
+| `POSTGRES_JDBC_URL` | Complete JDBC URL, for example `jdbc:postgresql://db:5432/opennms?sslmode=require`. Replaces the URL built from `POSTGRES_HOST`, `POSTGRES_PORT`, and `POSTGRES_DB`. | –
+|===
+
+=== Elasticsearch configuration
+
+The following environment variables are written to `$\{SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Example value
+| `ELASTICSEARCH_URL`            | Elasticsearch URL. | `http://localhost:9200`
+| `ELASTICSEARCH_INDEX_STRATEGY` | Index strategy. | `hourly`
+| `ELASTICSEARCH_REPLICAS`       | Number of index replicas. | `0`
+| `ELASTICSEARCH_CONN_TIMEOUT`   | Connection timeout in milliseconds. | `30000`
+| `ELASTICSEARCH_READ_TIMEOUT`   | Read timeout in milliseconds. | `60000`
+| `ELASTICSEARCH_USER`           | Username for Elasticsearch authentication (`globalElasticUser`). | `elastic`
+| `ELASTICSEARCH_PASSWORD`       | Password for Elasticsearch authentication (`globalElasticPassword`). | –
+|===
+
+Other `ELASTICSEARCH_*` variables are ignored, so the variables Kubernetes injects for a Service named `elasticsearch` (such as `ELASTICSEARCH_PORT`) do not end up in the configuration.
+To set any other property, overlay the configuration file (see <<sentinel-etc-overlay>>).
+
+=== Telemetry flow adapters
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `SENTINEL_FLOWS_ENABLED` | Set to `true` to install the `sentinel-flows`, `sentinel-jsonstore-postgres`, and `sentinel-blobstore-noop` features at startup. Must be `true` or `false`. | `false`
+|===
+
+Individual adapters are defined by overlaying one configuration file per adapter into `$\{SENTINEL_HOME}/etc/` (see <<sentinel-etc-overlay>>), named
+`org.opennms.features.telemetry.adapters-<name>.cfg`, where `<name>` uniquely identifies the adapter. This is the same factory-PID convention used to
+configure Minion listeners.
+
+.Example: `org.opennms.features.telemetry.adapters-NetFlow-5.cfg`
+[source, properties]
 ----
-java:
-  agent:
-    prom-jmx-exporter:
-      startDelaySeconds: 0
-      lowerCaseOutputName: true
-      lowercaseOutputLabelNames: true
-      autoExcludeObjectNameAttributes: true
-      includeObjectNames:
-        - "java.lang:*"
-        - "org.opennms.*:*"
-        - "kafka.producer:*"
-      excludeObjectNames:
-        - "org.apache.camel:*"
+name = NetFlow-5
+class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
+parameters.some-key = some-value
 ----
+
+=== Instance ID
+
+[options="header, autowidth"]
+|===
+| Variable | Description
+| `OPENNMS_INSTANCE_ID` | Sets `org.opennms.instance.id` in `$\{SENTINEL_HOME}/etc/custom.system.properties`.
+|===
+
+=== Prometheus JMX exporter
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `PROM_JMX_EXPORTER_ENABLED` | Set to `true` to enable the Prometheus JMX exporter. | `false`
+| `PROM_JMX_EXPORTER_PORT`    | Port on which the JMX exporter listens. | `9299`
+| `PROM_JMX_EXPORTER_CONFIG`  | Path to the exporter configuration file inside the container. | `/opt/prom-jmx-exporter/config.yaml`
+| `PROM_JMX_EXPORTER_JAR`     | Path to the JMX Prometheus agent jar inside the container. | `/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar`
+|===
+
+IMPORTANT: If you need a more sophisticated JMX configuration with custom rules, inject your own `config.yaml` file rather than relying on the default.
+
+[[sentinel-etc-overlay]]
+=== Directory conventions
+
+[options="header, autowidth"]
+|===
+| Mountpoint                   | Description
+| `/opt/sentinel-etc-overlay`  | Files copied into `$\{SENTINEL_HOME}/etc/` at startup, after environment variable processing. Direct file overlays take precedence over the corresponding environment variable settings.
+| `/opt/sentinel-overlay`      | Files copied into `$\{SENTINEL_HOME}/` at startup.
+| `/keystore`                  | Directory for the encrypted keystore file initialized with the `-s` flag.
+|===
+
+[[sentinel-confd-migration]]
+=== Migrating from confd-based images
+
+Earlier Sentinel images rendered configuration from a `$\{SENTINEL_HOME}/sentinel-config.yaml` file with confd.
+This file is no longer supported, and the container refuses to start if it is present.
+To migrate, move each setting to its environment variable or overlay file, then remove the file:
+
+[options="header, autowidth"]
+|===
+| `sentinel-config.yaml` key | Replacement
+| `location`, `id`, `broker-url` | `SENTINEL_LOCATION`, `SENTINEL_ID`, `OPENNMS_BROKER_URL`
+| `datasource.url` | `POSTGRES_JDBC_URL`, or `POSTGRES_HOST`, `POSTGRES_PORT`, and `POSTGRES_DB`
+| `datasource.username`, `datasource.password`, `datasource.database-name` | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+| `ipc.kafka.*` | `KAFKA_IPC_*` (see <<sentinel-kafka-config>>); Kafka is selected automatically when `KAFKA_IPC_BOOTSTRAP_SERVERS` is set
+| `elasticsearch.*` | `ELASTICSEARCH_*`
+| `telemetry.flows.adapters` | `SENTINEL_FLOWS_ENABLED=true` and one adapter configuration file per adapter
+| `org.opennms.instance.id` | `OPENNMS_INSTANCE_ID`
+| `java.agent.prom-jmx-exporter.*` | A mounted `config.yaml` (see `PROM_JMX_EXPORTER_CONFIG`)
+|===
+
+On startup, the container removes the files confd generated in existing volumes (`etc/featuresBoot.d/ipc-strategy.boot` and `deploy/confd-flows-feature.xml`).
+
+Configuration files written by earlier images are kept when an existing `etc` volume is reused.
+In particular, `org.opennms.sentinel.controller.cfg` and `org.opennms.netmgt.distributed.datasource.cfg` keep the values written on their first start, so later changes to `SENTINEL_LOCATION`, `OPENNMS_BROKER_URL`, or the `POSTGRES_*` variables have no effect.
+To have them follow the environment, delete those two files from the volume; they are recreated on the next start, and you must set `SENTINEL_ID` to keep the existing ID.
