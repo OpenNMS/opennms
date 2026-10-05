@@ -50,7 +50,15 @@ License.
               class="view-chooser"
               aria-label="Choose a topology view"
             />
-            <OnmsButton label="Save" :loading="store.isSaving" :disabled="!canSave" @click="onSave" />
+            <OnmsIconButton
+              :icon="SaveIcon"
+              title="Save"
+              tooltip="Save the view"
+              tooltip-position="bottom"
+              variant="filled"
+              :disabled="!canSave || store.isSaving"
+              @click="onSave"
+            />
             <span v-if="isDirty" class="unsaved-badge" role="status">Unsaved changes</span>
             <!-- The less frequent view actions sit behind one menu, so the bar
                  keeps the one button pressed many times a session. -->
@@ -302,6 +310,7 @@ import type { SourceGroup } from '@/components/Topology/sources'
 import { PLACED_PREFIX } from '@/components/Topology/nodeIds'
 import ExpandMore from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
+import SaveIcon from '@opennms/onms-ui/icons/action/Save.vue'
 import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import Fullscreen from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'

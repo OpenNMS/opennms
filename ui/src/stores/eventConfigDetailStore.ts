@@ -173,20 +173,24 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         console.error('No source selected')
         return
       }
-      this.eventsReorderMode = true
-      await this.fetchOrderedEvents()
+      // the mode turns on only once the current order has loaded, so the editor never
+      // opens on a stale previous list that the arriving fetch would then replace
+      if (await this.fetchOrderedEvents()) {
+        this.eventsReorderMode = true
+      }
     },
     stopEventsReorder() {
       this.eventsReorderMode = false
     },
-    async fetchOrderedEvents() {
+    async fetchOrderedEvents(): Promise<boolean> {
       if (!this.selectedSource) {
         console.error('No source selected')
-        return
+        return false
       }
       this.isLoading = true
       try {
         this.orderedEvents = await getOrderedEventConfigEvents(this.selectedSource.id)
+        return true
       } catch (error) {
         console.error('Error fetching ordered event configuration events:', error)
         this.orderedEvents = []
@@ -194,6 +198,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         // showing an inexplicable empty list
         this.stopEventsReorder()
         useSnackbar().showSnackBar({ msg: 'Failed to load the event order. Try again.', error: true })
+        return false
       } finally {
         this.isLoading = false
       }

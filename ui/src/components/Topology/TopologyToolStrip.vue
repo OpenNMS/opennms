@@ -60,7 +60,7 @@ License.
       />
       <span class="topology-rail__gap" />
       <OnmsIconButton
-        :icon="SelectToolIcon"
+        :icon="Pointer"
         title="Select"
         tooltip="Select and move (Esc)"
         tooltip-position="right"
@@ -78,7 +78,7 @@ License.
         @click="store.setLinkDrawMode(!store.isLinkDrawMode)"
       />
       <OnmsIconButton
-        :icon="BoxToolIcon"
+        :icon="Rectangle"
         title="Draw box"
         tooltip="Draw a box: drag on the canvas"
         tooltip-position="right"
@@ -129,7 +129,8 @@ import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import Image from '@opennms/onms-ui/icons/file/Image.vue'
 import Info from '@opennms/onms-ui/icons/action/Info.vue'
 import Nodes from '@opennms/onms-ui/icons/network/Nodes.vue'
-import { BoxToolIcon, SelectToolIcon } from '@/components/Topology/toolIcons'
+import Pointer from '@opennms/onms-ui/icons/action/Pointer.vue'
+import Rectangle from '@opennms/onms-ui/icons/action/Rectangle.vue'
 import { useTopologyStore } from '@/stores/topologyStore'
 
 // The rail: panel pages at the top, Edit tools below. Always present, so the
