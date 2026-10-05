@@ -62,6 +62,7 @@ describe('NodeDetails.vue', () => {
           NodeDetailsDialog: true,
           EventsTable: true,
           OutagesTable: true,
+          NodeDetailsNetworkTab: true,
           InterfacesTabs: true
         }
       }
@@ -182,6 +183,24 @@ describe('NodeDetails.vue', () => {
 
       expect(wrapper.findComponent({ name: 'OnmsSelectButton' }).props('modelValue')).toBe('additional')
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
+    })
+
+    it('shows the Network tab when chosen', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+      await selectTab(wrapper, 'network')
+
+      expect(wrapper.findComponent({ name: 'NodeDetailsNetworkTab' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(false)
+    })
+
+    it('offers Main, Additional and Network, in that order', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      const options = wrapper.findComponent({ name: 'OnmsSelectButton' }).props('options') as Array<{ label: string }>
+      expect(options.map(o => o.label)).toEqual(['Main', 'Additional', 'Network'])
     })
 
     it('puts the tab switch on the title row', async () => {

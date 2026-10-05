@@ -28,7 +28,7 @@ import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
 
-export type NodeDetailsTab = 'main' | 'additional'
+export type NodeDetailsTab = 'main' | 'additional' | 'network'
 
 export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])

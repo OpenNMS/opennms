@@ -49,7 +49,8 @@
         :nodeLoaded="nodeLoaded"
         :baseHref="baseHref"
       />
-      <NodeDetailsAdditionalTab v-else />
+      <NodeDetailsAdditionalTab v-else-if="activeTab === 'additional'" />
+      <NodeDetailsNetworkTab v-else />
     </KeepAlive>
 
     <NodeDetailsDialog
@@ -69,6 +70,7 @@ import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTa
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
 import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
+import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
 import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
 import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
@@ -88,7 +90,8 @@ const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
 const tabOptions: { label: string, value: NodeDetailsTab }[] = [
   { label: 'Main', value: 'main' },
-  { label: 'Additional', value: 'additional' }
+  { label: 'Additional', value: 'additional' },
+  { label: 'Network', value: 'network' }
 ]
 
 const activeTab = computed<NodeDetailsTab>({
