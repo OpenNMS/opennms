@@ -1799,7 +1799,10 @@
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management-osgi-del" description="OpenNMS :: Features :: Config :: Osgi :: Delegate" version="${project.version}">
-        <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>
+        <!-- start-level must match etc/startup.properties: otherwise a later feature install that was
+             computed before the framework reached level 80 stops this bundle to raise its start level,
+             taking ConfigurationAdmin (felix.cm.pm) down with it while the new bundles start -->
+        <bundle start-level="9">mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management-osgi-cm" description="OpenNMS :: Features :: Config :: Osgi :: CM" version="${project.version}">
         <feature>opennms-config-management</feature>
