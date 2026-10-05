@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { createLinkItemsList, linkItems, mapLink } from '@/components/Nodes/nodeActionLinks'
+import { createLinkGroups, createLinkItemsList, INFO_ITEM, linkGroups, linkItems, mapLink } from '@/components/Nodes/nodeActionLinks'
 import { Node } from '@/types'
 import { describe, expect, it } from 'vitest'
 
@@ -181,6 +181,50 @@ describe('nodeActionLinks', () => {
       const items = createLinkItemsList(requisitioned, { ...allowed, isAdmin: true })
 
       expect(items[items.length - 1].label).toBe('Edit in Requisition')
+    })
+  })
+
+  // The links row: the same actions as the menu, grouped.
+  describe('link groups', () => {
+    const groupLabels = (groups: { label: string, items: { label: string }[] }[]) =>
+      groups.map(g => [g.label, g.items.map(i => i.label)])
+
+    it('has the four menus, in order', () => {
+      expect(linkGroups.map(g => g.label)).toEqual(['Inventory', 'Monitoring', 'Graphs', 'Admin'])
+    })
+
+    // So the row and the actions menu offer the same set.
+    it('holds every action link exactly once, plus Info', () => {
+      const grouped = linkGroups.flatMap(g => g.items.map(i => i.name))
+
+      expect(grouped.filter(n => n !== INFO_ITEM).sort()).toEqual(linkItems.map(li => li.name).sort())
+      expect(new Set(grouped).size).toBe(grouped.length)
+    })
+
+    it('resolves every link for an admin, with a building, SNMP primary and requisition', () => {
+      const full = { ...node, foreignSource: 'fs', foreignId: 'fid', assetRecord: { building: 'HQ' }} as unknown as Node
+      const groups = createLinkGroups(full, {
+        isAdmin: true, snmpPrimaryIpAddress: '10.0.0.44', canEditRequisitions: true, existsInRequisition: true
+      })
+
+      expect(groupLabels(groups)).toEqual([
+        ['Inventory', ['Info', 'Assets', 'Metadata', 'Hardware Inventory', 'Surveillance Categories', 'Node Link Details']],
+        ['Monitoring', ['Alarms', 'Events', 'Outages', 'Availability', 'Site Status']],
+        ['Graphs', ['Resource Graphs', 'Topology Map']],
+        ['Admin', ['Node Rescan', 'Update SNMP Information', 'Admin / Node Management', 'Schedule an Outage', 'Edit in Requisition']]
+      ])
+      expect(groups[1].items.find(i => i.label === 'Alarms')?.link).toBe(mapLink('alarms', full))
+      expect(groups[0].items[0].link).toBe('')
+    })
+
+    it('drops the links a node or user cannot have, and an Admin menu left empty', () => {
+      const groups = createLinkGroups(node, { isAdmin: false })
+
+      expect(groupLabels(groups)).toEqual([
+        ['Inventory', ['Info', 'Assets', 'Metadata', 'Hardware Inventory', 'Node Link Details']],
+        ['Monitoring', ['Alarms', 'Events', 'Outages', 'Availability']],
+        ['Graphs', ['Resource Graphs', 'Topology Map']]
+      ])
     })
   })
 })

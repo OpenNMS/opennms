@@ -55,6 +55,11 @@ describe('NodeDetails.vue', () => {
             props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'triggerNodeInfo']
           },
           NodeDetailsHeader: true,
+          NodeDetailsLinks: {
+            name: 'NodeDetailsLinks',
+            template: '<div></div>',
+            props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'triggerNodeInfo']
+          },
           NodeNotificationsPanel: true,
           NodeStatusBox: true,
           NodeScheduledOutagesBox: true,
@@ -257,6 +262,39 @@ describe('NodeDetails.vue', () => {
       await flushPromises()
 
       expect(wrapper.findComponent({ name: 'NodeDetailsDialog' }).props('visible')).toBe(false)
+    })
+  })
+
+  describe('links row', () => {
+    it('sits under the header once the node has loaded, with what the actions menu gets', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      nodeStore.snmpPrimaryIpAddress = '10.0.0.44'
+      nodeStore.existsInRequisition = true
+      await flushPromises()
+
+      const links = wrapper.findComponent({ name: 'NodeDetailsLinks' })
+      expect(links.exists()).toBe(true)
+      expect(links.props('baseHref')).toBe('/base')
+      expect((links.props('node') as any).id).toBe('42')
+      expect(links.props('snmpPrimaryIpAddress')).toBe('10.0.0.44')
+      expect(links.props('existsInRequisition')).toBe(true)
+    })
+
+    it('is not shown before the node has loaded', async () => {
+      const { wrapper } = mountComponent('42', false)
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).exists()).toBe(false)
+    })
+
+    it('opens the info dialog from its Info item', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      ;(wrapper.findComponent({ name: 'NodeDetailsLinks' }).props('triggerNodeInfo') as () => void)()
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'NodeDetailsDialog' }).props('visible')).toBe(true)
     })
   })
 

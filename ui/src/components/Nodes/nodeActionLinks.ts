@@ -169,3 +169,77 @@ export const createLinkItemsList = (node: Node, context: NodeActionLinkContext =
   }))
     .filter(li => li.link)
 }
+
+// The Node Details links row (NodeDetailsLinks): the same actions, grouped under top-level menus.
+// Every link item appears in exactly one group, built by the same mapLink, so the row and the
+// actions menu cannot disagree about where a link goes or who may see it. `info` is not a link:
+// it opens the node info dialog, which the component handles.
+export const INFO_ITEM = 'info'
+
+export interface NodeLinkGroup {
+  label: string
+  items: { name: string, label: string }[]
+}
+
+export const linkGroups: NodeLinkGroup[] = [
+  {
+    label: 'Inventory',
+    items: [
+      { name: INFO_ITEM, label: 'Info' },
+      { name: 'assets', label: 'Assets' },
+      { name: 'metadata', label: 'Metadata' },
+      { name: 'hardware', label: 'Hardware Inventory' },
+      { name: 'surveillance-categories', label: 'Surveillance Categories' },
+      { name: 'node-link', label: 'Node Link Details' }
+    ]
+  },
+  {
+    label: 'Monitoring',
+    items: [
+      { name: 'alarms', label: 'Alarms' },
+      { name: 'events', label: 'Events' },
+      { name: 'view-outages', label: 'Outages' },
+      { name: 'availability', label: 'Availability' },
+      { name: 'siteStatus', label: 'Site Status' }
+    ]
+  },
+  {
+    label: 'Graphs',
+    items: [
+      { name: 'graphs', label: 'Resource Graphs' },
+      { name: 'topology', label: 'Topology Map' }
+    ]
+  },
+  {
+    label: 'Admin',
+    items: [
+      { name: 'rescan', label: 'Node Rescan' },
+      { name: 'updateSnmp', label: 'Update SNMP Information' },
+      { name: 'admin', label: 'Admin / Node Management' },
+      { name: 'schedule-outage', label: 'Schedule an Outage' },
+      { name: 'edit-requisition', label: 'Edit in Requisition' }
+    ]
+  }
+]
+
+export interface NodeLinkGroupItem {
+  name: string
+  label: string
+  // Empty for the info item, which is not a link.
+  link: string
+}
+
+/**
+ * The groups with each link resolved for this node and user. A link mapLink leaves out (not
+ * allowed, or nothing to link to) is dropped, and so is a group left with nothing in it -- Admin,
+ * for a user who is not an admin.
+ */
+export const createLinkGroups = (node: Node, context: NodeActionLinkContext = {}): { label: string, items: NodeLinkGroupItem[] }[] =>
+  linkGroups
+    .map(group => ({
+      label: group.label,
+      items: group.items
+        .map(item => ({ ...item, link: item.name === INFO_ITEM ? '' : mapLink(item.name, node, context) }))
+        .filter(item => item.name === INFO_ITEM || item.link)
+    }))
+    .filter(group => group.items.length > 0)

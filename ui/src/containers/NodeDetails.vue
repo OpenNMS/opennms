@@ -34,6 +34,13 @@
     >
       <div class="onms-col-12">
         <NodeDetailsHeader :node="nodeStore.node" />
+        <NodeDetailsLinks
+          :baseHref="baseHref"
+          :node="nodeStore.node"
+          :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+          :existsInRequisition="nodeStore.existsInRequisition"
+          :triggerNodeInfo="onNodeInfo"
+        />
       </div>
     </div>
 
@@ -69,6 +76,7 @@ import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
 import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
+import NodeDetailsLinks from '@/components/Nodes/NodeDetailsLinks.vue'
 import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
 import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
 import useRole from '@/composables/useRole'
