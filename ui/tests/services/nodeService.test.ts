@@ -1,0 +1,61 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { getNodeCriticalPath } from '@/services/nodeService'
+import { v2 } from '@/services/axiosInstances'
+
+vi.mock('@/services/axiosInstances', () => ({
+  rest: { get: vi.fn() },
+  v2: { get: vi.fn() }
+}))
+
+describe('nodeService.getNodeCriticalPath', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('asks v2 for the node\'s critical path', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { criticalPathIp: '10.0.0.3', criticalPathServiceName: 'ICMP' }})
+
+    const result = await getNodeCriticalPath('144')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/144/criticalPath')
+    expect(result).toEqual(expect.objectContaining({
+      success: true,
+      payload: { criticalPathIp: '10.0.0.3', criticalPathServiceName: 'ICMP' }
+    }))
+  })
+
+  // 204: the node has no critical path of its own, which is not a failure.
+  it('answers a successful null for a node with none', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 204, data: '' })
+
+    expect(await getNodeCriticalPath('161')).toEqual(expect.objectContaining({ success: true, payload: null }))
+  })
+
+  it('answers a failed result when the request fails', async () => {
+    vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
+
+    expect((await getNodeCriticalPath('161')).success).toBe(false)
+  })
+})

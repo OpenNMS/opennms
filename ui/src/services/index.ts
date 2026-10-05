@@ -23,6 +23,7 @@
 import {
   getNodes,
   getNodeById,
+  getNodeCriticalPath,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
@@ -135,6 +136,7 @@ export default {
   getEvents,
   modifyAlarm,
   getNodeById,
+  getNodeCriticalPath,
   getNodeOutages,
   getOutages,
   nodeExistsInRequisition,

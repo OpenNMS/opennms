@@ -26,10 +26,12 @@ import {
   SnmpInterfaceApiResponse,
   QueryParameters,
   IpInterfaceApiResponse,
-  NodeAvailability
+  NodeAvailability,
+  NodeCriticalPath
 } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 import { orderBy } from 'lodash'
+import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 
 const endpoint = '/nodes'
 
@@ -136,8 +138,23 @@ const getNodeAvailabilityPercentage = async (
   }
 }
 
+/**
+ * The node's critical path, for the Path Outage panel. The payload is null when the node has none
+ * of its own (204); a failed request is a failed result, so the two can be told apart.
+ */
+const getNodeCriticalPath = async (id: string): Promise<ValidationResultWithPayload<NodeCriticalPath | null>> => {
+  try {
+    const resp = await v2.get(`/nodes/${id}/criticalPath`)
+
+    return createResultWithPayload(true, '', resp.status === 204 || !resp.data ? null : resp.data as NodeCriticalPath)
+  } catch (_err) {
+    return createResultWithPayload<NodeCriticalPath | null>(false, `Unable to load the critical path for node ${id}`)
+  }
+}
+
 export {
   getNodes,
+  getNodeCriticalPath,
   getNodeById,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,

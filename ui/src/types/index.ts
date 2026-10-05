@@ -353,6 +353,12 @@ export interface IpInterface {
   snmpPrimary: string
   hostName: string
 }
+// GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
+export interface NodeCriticalPath {
+  criticalPathIp: string | null
+  criticalPathServiceName: string | null
+}
+
 export interface MonitoredService {
   id: number
   lastGood?: Date | null

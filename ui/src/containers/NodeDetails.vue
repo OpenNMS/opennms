@@ -137,6 +137,7 @@ const fetchNode = async () => {
   }
 
   nodeStore.getNodeSnmpPrimaryInterface(props.id)
+  nodeStore.getNodeCriticalPath(props.id)
 
   await nodeStore.getNodeById({ id: props.id } as Node)
 }

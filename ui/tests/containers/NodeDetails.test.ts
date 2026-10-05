@@ -31,6 +31,7 @@ describe('NodeDetails.vue', () => {
     nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
     nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
     nodeStore.getNodeExistsInRequisition = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeCriticalPath = vi.fn().mockResolvedValue(undefined)
     nodeStore.nodeDetailsTab = tab
 
     if (loaded) {
@@ -57,6 +58,7 @@ describe('NodeDetails.vue', () => {
           NodeNotificationsPanel: true,
           NodeStatusBox: true,
           NodeScheduledOutagesBox: true,
+          NodeCriticalPathPanel: true,
           NodeDetailsDialog: true,
           EventsTable: true,
           OutagesTable: true,
@@ -128,6 +130,7 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeStatusBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeScheduledOutagesBox' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeCriticalPathPanel' }).exists()).toBe(true)
   })
 
   describe('Main / Additional tabs', () => {
@@ -245,6 +248,13 @@ describe('NodeDetails.vue', () => {
     const header = wrapper.find('.header')
     expect(header.text()).toContain('Node Details for')
     expect(header.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(true)
+  })
+
+  it('asks for the node\'s critical path alongside the node', async () => {
+    const { nodeStore } = mountComponent('42')
+    await flushPromises()
+
+    expect(nodeStore.getNodeCriticalPath).toHaveBeenCalledWith('42')
   })
 
   it('calls nodeStore.getNodeById with the id prop on mount', async () => {

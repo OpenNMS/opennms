@@ -33,6 +33,7 @@ vi.mock('@/services', () => ({
     getNodeById: vi.fn(),
     getNodeIpInterfaces: vi.fn(),
     nodeExistsInRequisition: vi.fn(),
+    getNodeCriticalPath: vi.fn(),
     getNodeSnmpInterfaces: vi.fn(),
     getNodeAvailabilityPercentage: vi.fn()
   }
@@ -678,5 +679,71 @@ describe('nodeStore getNodeExistsInRequisition', () => {
     await store.getNodeById({ id: '99' } as Node)
 
     expect(store.existsInRequisition).toBe(false)
+  })
+})
+
+describe('nodeStore getNodeCriticalPath', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  const path = { criticalPathIp: '10.0.0.3', criticalPathServiceName: 'ICMP' }
+
+  it('keeps the node\'s critical path', async () => {
+    vi.mocked(API.getNodeCriticalPath).mockResolvedValue({ success: true, message: '', payload: path })
+    const store = useNodeStore()
+
+    await store.getNodeCriticalPath('144')
+
+    expect(API.getNodeCriticalPath).toHaveBeenCalledWith('144')
+    expect(store.criticalPath).toEqual(path)
+  })
+
+  it('holds none for a node without one', async () => {
+    vi.mocked(API.getNodeCriticalPath).mockResolvedValue({ success: true, message: '', payload: null })
+    const store = useNodeStore()
+    store.criticalPath = path
+
+    await store.getNodeCriticalPath('161')
+
+    expect(store.criticalPath).toBeUndefined()
+  })
+
+  it('holds none when the request fails', async () => {
+    vi.mocked(API.getNodeCriticalPath).mockResolvedValue({ success: false, message: 'boom' })
+    const store = useNodeStore()
+    store.criticalPath = path
+
+    await store.getNodeCriticalPath('161')
+
+    expect(store.criticalPath).toBeUndefined()
+  })
+
+  it('discards a superseded answer', async () => {
+    let resolveFirst: (value: unknown) => void = () => undefined
+    vi.mocked(API.getNodeCriticalPath)
+      .mockImplementationOnce(() => new Promise((r) => {
+        resolveFirst = r
+      }) as never)
+      .mockResolvedValueOnce({ success: true, message: '', payload: null })
+    const store = useNodeStore()
+
+    const first = store.getNodeCriticalPath('144')
+    await store.getNodeCriticalPath('161')
+    resolveFirst({ success: true, message: '', payload: path })
+    await first
+
+    expect(store.criticalPath).toBeUndefined()
+  })
+
+  it('is cleared when the next node fails to load', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.criticalPath = path
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.criticalPath).toBeUndefined()
   })
 })

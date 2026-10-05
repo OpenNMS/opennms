@@ -22,7 +22,7 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { IpInterface, Node, QueryParameters, SnmpInterface } from '@/types'
+import { IpInterface, Node, NodeCriticalPath, QueryParameters, SnmpInterface } from '@/types'
 import { DEFAULT_SELECTION, RangeSelection } from '@/components/Nodes/availabilityRange'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
@@ -51,6 +51,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
   // Whether the node is in its requisition, for the Edit in Requisition action. False until
   // known: offering the link and having it 404 is worse than leaving it out.
   const existsInRequisition = ref(false)
+
+  // The node's own critical path, for the Path Outage panel; undefined when it has none, or until
+  // known.
+  const criticalPath = ref<NodeCriticalPath | undefined>(undefined)
   const snmpInterfaces = ref([] as SnmpInterface[])
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
@@ -150,6 +154,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfacesTotalCount.value = 0
     snmpPrimaryIpAddress.value = undefined
     existsInRequisition.value = false
+    criticalPath.value = undefined
   }
 
   let snmpPrimaryRequestId = 0
@@ -179,6 +184,24 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
     if (resp) {
       snmpPrimaryIpAddress.value = resp.ipInterface[0]?.ipAddress
+    }
+  }
+
+  let criticalPathRequestId = 0
+
+  /**
+   * Fetch the node's critical path. Sequenced like the fetches above: a slow answer for the node
+   * the user left must not show its critical path under this one.
+   */
+  const getNodeCriticalPath = async (id: string) => {
+    const requestId = ++criticalPathRequestId
+
+    criticalPath.value = undefined
+
+    const result = await API.getNodeCriticalPath(id)
+
+    if (requestId === criticalPathRequestId && result.success) {
+      criticalPath.value = result.payload ?? undefined
     }
   }
 
@@ -364,6 +387,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeLoadFailed,
     snmpPrimaryIpAddress,
     existsInRequisition,
+    criticalPath,
     snmpInterfaces,
     snmpInterfacesTotalCount,
     ipInterfaces,
@@ -383,6 +407,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeIpInterfaces,
     getNodeSnmpPrimaryInterface,
     getNodeExistsInRequisition,
+    getNodeCriticalPath,
     setNodeQueryParameters
   }
 })
