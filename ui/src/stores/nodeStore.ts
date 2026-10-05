@@ -47,6 +47,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
   // Address of the node's SNMP-primary interface, which the node payload does not carry
   // (OnmsNode.getPrimaryInterface is @Transient @JsonIgnore). Undefined when the node has none.
   const snmpPrimaryIpAddress = ref<string | undefined>(undefined)
+
+  // Whether the node is in its requisition, for the Edit in Requisition action. False until
+  // known: offering the link and having it 404 is worse than leaving it out.
+  const existsInRequisition = ref(false)
   const snmpInterfaces = ref([] as SnmpInterface[])
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
@@ -145,6 +149,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfaces.value = []
     snmpInterfacesTotalCount.value = 0
     snmpPrimaryIpAddress.value = undefined
+    existsInRequisition.value = false
   }
 
   let snmpPrimaryRequestId = 0
@@ -174,6 +179,30 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
     if (resp) {
       snmpPrimaryIpAddress.value = resp.ipInterface[0]?.ipAddress
+    }
+  }
+
+  let existsInRequisitionRequestId = 0
+
+  /**
+   * Find out whether the node is in its requisition, which the Edit in Requisition action needs.
+   * A node with no foreign source is in none, so nothing is asked. Sequenced like the fetches
+   * above, so a slow answer for the node the user left cannot offer this one a link it does not
+   * have.
+   */
+  const getNodeExistsInRequisition = async (n: Pick<Node, 'foreignSource' | 'foreignId'>) => {
+    const requestId = ++existsInRequisitionRequestId
+
+    existsInRequisition.value = false
+
+    if (!n.foreignSource || !n.foreignId) {
+      return
+    }
+
+    const exists = await API.nodeExistsInRequisition(n.foreignSource, n.foreignId)
+
+    if (requestId === existsInRequisitionRequestId) {
+      existsInRequisition.value = exists === true
     }
   }
 
@@ -334,6 +363,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeLoaded,
     nodeLoadFailed,
     snmpPrimaryIpAddress,
+    existsInRequisition,
     snmpInterfaces,
     snmpInterfacesTotalCount,
     ipInterfaces,
@@ -352,6 +382,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeSnmpInterfaces,
     getNodeIpInterfaces,
     getNodeSnmpPrimaryInterface,
+    getNodeExistsInRequisition,
     setNodeQueryParameters
   }
 })

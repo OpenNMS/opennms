@@ -33,8 +33,11 @@ const ADMIN = { isAdmin: true }
 describe('nodeActionLinks', () => {
   // The single source of truth for the node action links, shared by the actions menu wherever
   // it is rendered.
-  it('offers Node Link Details last', () => {
-    expect(linkItems[linkItems.length - 1]).toEqual({ name: 'node-link', label: 'Node Link Details' })
+  it('offers Node Link Details, then Edit in Requisition last', () => {
+    expect(linkItems.slice(-2)).toEqual([
+      { name: 'node-link', label: 'Node Link Details' },
+      { name: 'edit-requisition', label: 'Edit in Requisition' }
+    ])
   })
 
   it('still offers Site Status', () => {
@@ -144,6 +147,40 @@ describe('nodeActionLinks', () => {
       'hardware', 'availability', 'graphs', 'topology', 'node-link'
     ])('leaves %s ungated', (name) => {
       expect(mapLink(name, node)).not.toBe('')
+    })
+  })
+
+  // As the legacy node page: only for a node in its requisition, and only for admin or provision.
+  describe('Edit in Requisition', () => {
+    const requisitioned = { ...node, foreignSource: 'Demo Stores', foreignId: 'AL/pelham#1' } as unknown as Node
+    const allowed = { canEditRequisitions: true, existsInRequisition: true }
+
+    it('links to the node in the requisition editor, encoding the foreign source and id', () => {
+      expect(mapLink('edit-requisition', requisitioned, allowed))
+        .toBe('admin/ng-requisitions/index.jsp#/requisitions/Demo%20Stores/nodes/AL%2Fpelham%231')
+    })
+
+    it.each([
+      ['a user who cannot edit requisitions', { ...allowed, canEditRequisitions: false }],
+      ['a node not in its requisition', { ...allowed, existsInRequisition: false }],
+      ['a caller that does not say (the node list)', {}]
+    ])('is left out for %s', (_case, context) => {
+      expect(mapLink('edit-requisition', requisitioned, context)).toBe('')
+    })
+
+    it('is left out for a node with no foreign source', () => {
+      expect(mapLink('edit-requisition', node, allowed)).toBe('')
+    })
+
+    // Unlike the admin-only set: a provision user who is not an admin still gets it.
+    it('does not need admin', () => {
+      expect(mapLink('edit-requisition', requisitioned, { ...allowed, isAdmin: false })).not.toBe('')
+    })
+
+    it('comes last in createLinkItemsList', () => {
+      const items = createLinkItemsList(requisitioned, { ...allowed, isAdmin: true })
+
+      expect(items[items.length - 1].label).toBe('Edit in Requisition')
     })
   })
 })

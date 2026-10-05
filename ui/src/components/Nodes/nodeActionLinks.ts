@@ -25,6 +25,12 @@ import { IpInterface, Node } from '@/types'
 
 // The node action links, shared by every place the actions menu is rendered: the Node Details
 // title row and each row of the node list.
+//
+// Intentionally left out: the extra links the legacy node page appends after these (`navEntries`
+// in element/node.jsp), which come from ConditionalPageNavEntry services registered for
+// "Page=node" in the OSGi service registry, each deciding per request and node whether to show.
+// They are rarely used and render server-built HTML; a better way to add plugin-provided node
+// actions can come later.
 export const linkItems = [
   { name: 'events', label: 'Events' },
   { name: 'alarms', label: 'Alarms' },
@@ -41,7 +47,8 @@ export const linkItems = [
   { name: 'updateSnmp', label: 'Update SNMP Information' },
   { name: 'schedule-outage', label: 'Schedule an Outage' },
   { name: 'topology', label: 'View Topology Map' },
-  { name: 'node-link', label: 'Node Link Details' }
+  { name: 'node-link', label: 'Node Link Details' },
+  { name: 'edit-requisition', label: 'Edit in Requisition' }
 ]
 
 /**
@@ -60,6 +67,11 @@ export interface NodeActionLinkContext {
   // Gates the admin-only destinations below. A boolean rather than a role list so the role
   // vocabulary stays in useRole, which already owns it.
   isAdmin?: boolean
+  // Edit in Requisition: whether the user may edit requisitions (admin or provision), and whether
+  // this node is in one. Both default to false, so a caller that cannot tell -- the node list,
+  // which would need a request per row to find out -- leaves the action out.
+  canEditRequisitions?: boolean
+  existsInRequisition?: boolean
 }
 
 // Destinations the server refuses to anyone but ROLE_ADMIN, so offering them to everyone else is
@@ -136,6 +148,16 @@ export const mapLink = (name: string, node: Node, context: NodeActionLinkContext
     // The legacy node page links to this as "View Node Link Detailed Info".
     case 'node-link':
       return `element/linkednode.jsp?node=${node.id}`
+    // As the legacy node page: offered only for a node in its requisition, to admin and provision
+    // users. Always the plain node editor; the page's vertical-layout cookie variant is not carried
+    // over.
+    case 'edit-requisition': {
+      if (!context.canEditRequisitions || !context.existsInRequisition || !node.foreignSource || !node.foreignId) {
+        return ''
+      }
+
+      return `admin/ng-requisitions/index.jsp#/requisitions/${encodeURIComponent(node.foreignSource)}/nodes/${encodeURIComponent(node.foreignId)}`
+    }
     default: return ''
   }
 }

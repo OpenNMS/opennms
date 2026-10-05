@@ -32,6 +32,7 @@ vi.mock('@/services', () => ({
     getIpInterfaces: vi.fn(),
     getNodeById: vi.fn(),
     getNodeIpInterfaces: vi.fn(),
+    nodeExistsInRequisition: vi.fn(),
     getNodeSnmpInterfaces: vi.fn(),
     getNodeAvailabilityPercentage: vi.fn()
   }
@@ -613,5 +614,69 @@ describe('nodeStore stale panel responses', () => {
 
     expect(store.ipInterfaces).toEqual([{ id: 'ip2' }])
     expect(store.ipInterfacesTotalCount).toBe(1)
+  })
+})
+
+describe('nodeStore getNodeExistsInRequisition', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  it('asks about the node\'s foreign source and id, and keeps the answer', async () => {
+    vi.mocked(API.nodeExistsInRequisition).mockResolvedValue(true)
+    const store = useNodeStore()
+
+    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'fid' })
+
+    expect(API.nodeExistsInRequisition).toHaveBeenCalledWith('fs', 'fid')
+    expect(store.existsInRequisition).toBe(true)
+  })
+
+  it('does not ask about a node with no foreign source', async () => {
+    const store = useNodeStore()
+    store.existsInRequisition = true
+
+    await store.getNodeExistsInRequisition({ foreignSource: null as never, foreignId: null as never })
+
+    expect(API.nodeExistsInRequisition).not.toHaveBeenCalled()
+    expect(store.existsInRequisition).toBe(false)
+  })
+
+  // null is "could not tell"; offering a link that may 404 is worse than leaving it out.
+  it('treats a failed check as not in a requisition', async () => {
+    vi.mocked(API.nodeExistsInRequisition).mockResolvedValue(null)
+    const store = useNodeStore()
+
+    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'fid' })
+
+    expect(store.existsInRequisition).toBe(false)
+  })
+
+  it('discards a superseded answer', async () => {
+    let resolveFirst: (value: boolean) => void = () => undefined
+    vi.mocked(API.nodeExistsInRequisition)
+      .mockImplementationOnce(() => new Promise((r) => {
+        resolveFirst = r
+      }))
+      .mockResolvedValueOnce(false)
+    const store = useNodeStore()
+
+    const first = store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'one' })
+    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'two' })
+    resolveFirst(true)
+    await first
+
+    expect(store.existsInRequisition).toBe(false)
+  })
+
+  it('is cleared when the next node fails to load', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.existsInRequisition = true
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.existsInRequisition).toBe(false)
   })
 })

@@ -197,4 +197,31 @@ describe('NodeActionsDropdown.vue', () => {
       ADMIN_ONLY.forEach(label => expect(labels).not.toContain(label))
     })
   })
+
+  describe('Edit in Requisition', () => {
+    const requisitioned = { ...node, foreignSource: 'fs', foreignId: 'fid' }
+
+    it('is offered, last, when the page says the node is in its requisition', () => {
+      const labels = labelsOf(mountIt({ node: requisitioned, existsInRequisition: true }))
+
+      expect(labels[labels.length - 1]).toBe('Edit in Requisition')
+    })
+
+    // The node list passes nothing: it cannot tell without a request per row.
+    it('is left out when the caller does not say', () => {
+      expect(labelsOf(mountIt({ node: requisitioned }))).not.toContain('Edit in Requisition')
+    })
+
+    it('is offered to a provision user who is not an admin', () => {
+      setRoles('ROLE_USER', 'ROLE_PROVISION')
+
+      expect(labelsOf(mountIt({ node: requisitioned, existsInRequisition: true }))).toContain('Edit in Requisition')
+    })
+
+    it('is left out for a user who is neither admin nor provision', () => {
+      setRoles('ROLE_USER')
+
+      expect(labelsOf(mountIt({ node: requisitioned, existsInRequisition: true }))).not.toContain('Edit in Requisition')
+    })
+  })
 })

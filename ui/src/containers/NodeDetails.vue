@@ -23,6 +23,7 @@
           :baseHref="baseHref"
           :node="nodeStore.node"
           :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+          :existsInRequisition="nodeStore.existsInRequisition"
           :triggerNodeInfo="onNodeInfo"
         />
       </div>
@@ -68,12 +69,14 @@ import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTa
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
 import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
+import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
 import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { BreadCrumb, Node } from '@/types'
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
+const { provisionRole } = useRole()
 
 const props = defineProps({
   id: {
@@ -141,6 +144,19 @@ const fetchNode = async () => {
 onMounted(fetchNode)
 
 watch(() => props.id, fetchNode)
+
+// The Edit in Requisition action needs to know whether the node is in its requisition, which the
+// node payload does not say. Asked once the node has loaded, and only of a user who could use
+// the answer; roles can arrive after the node, so both are followed.
+watch(
+  [() => (nodeStore.nodeLoaded ? nodeStore.node : undefined), provisionRole],
+  ([node, canEdit]) => {
+    if (node && canEdit) {
+      nodeStore.getNodeExistsInRequisition(node)
+    }
+  },
+  { immediate: true }
+)
 
 defineExpose({ fetchNode })
 </script>

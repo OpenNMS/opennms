@@ -39,6 +39,13 @@ const props = defineProps({
     type: String,
     default: undefined
   },
+  // Supplied by the Node Details page, which asks once for its node; the node list cannot tell
+  // without a request per row, so it omits this and the Edit in Requisition action with it.
+  existsInRequisition: {
+    required: false,
+    type: Boolean,
+    default: false
+  },
   triggerNodeInfo: {
     required: false,
     type: Function as PropType<(node: Node) => void>,
@@ -46,7 +53,7 @@ const props = defineProps({
   }
 })
 
-const { adminRole } = useRole()
+const { adminRole, provisionRole } = useRole()
 
 const menuIcon = markRaw(MoreVert)
 const menu = ref()
@@ -66,7 +73,9 @@ const items = computed<OnmsMenuItem[]>(() => {
     ...infoItem,
     ...createLinkItemsList(props.node, {
       snmpPrimaryIpAddress: props.snmpPrimaryIpAddress,
-      isAdmin: adminRole.value
+      isAdmin: adminRole.value,
+      canEditRequisitions: provisionRole.value,
+      existsInRequisition: props.existsInRequisition
     }).map(li => ({
       label: li.label,
       command: () => window.location.assign(`${props.baseHref}${li.link}`)

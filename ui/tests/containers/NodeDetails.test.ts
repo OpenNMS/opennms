@@ -6,6 +6,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { computed, ref } from 'vue'
 
 vi.mock('vue-router', () => ({
   useRoute: vi.fn(() => ({
@@ -16,6 +17,11 @@ vi.mock('vue-router', () => ({
   }))
 }))
 
+const canEditRequisitions = ref(true)
+vi.mock('@/composables/useRole', () => ({
+  default: () => ({ provisionRole: computed(() => canEditRequisitions.value) })
+}))
+
 describe('NodeDetails.vue', () => {
   const mountComponent = (id = '42', loaded = false, tab: NodeDetailsTab = 'main') => {
     const pinia = createTestingPinia({ stubActions: false })
@@ -24,6 +30,7 @@ describe('NodeDetails.vue', () => {
     const nodeStore = useNodeStore()
     nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
     nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeExistsInRequisition = vi.fn().mockResolvedValue(undefined)
     nodeStore.nodeDetailsTab = tab
 
     if (loaded) {
@@ -44,7 +51,7 @@ describe('NodeDetails.vue', () => {
           NodeActionsDropdown: {
             name: 'NodeActionsDropdown',
             template: '<div></div>',
-            props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'triggerNodeInfo']
+            props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'triggerNodeInfo']
           },
           NodeDetailsHeader: true,
           NodeNotificationsPanel: true,
@@ -63,6 +70,7 @@ describe('NodeDetails.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    canEditRequisitions.value = true
   })
 
   // node starts as {} in the store -- truthy, and undefined for every field -- so panels that
@@ -263,5 +271,47 @@ describe('NodeDetails.vue', () => {
 
     expect(wrapper.text()).not.toContain('deprecated')
     expect(wrapper.text()).not.toContain('Temp node details page')
+  })
+
+  describe('Edit in Requisition', () => {
+    it('asks whether the loaded node is in its requisition, and hands the answer to the menu', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+
+      expect(nodeStore.getNodeExistsInRequisition).toHaveBeenCalledWith(nodeStore.node)
+
+      nodeStore.existsInRequisition = true
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('existsInRequisition')).toBe(true)
+    })
+
+    it('does not ask before the node has loaded', async () => {
+      const { nodeStore } = mountComponent('42', false)
+      await flushPromises()
+
+      expect(nodeStore.getNodeExistsInRequisition).not.toHaveBeenCalled()
+    })
+
+    // The answer is only any use to someone who could follow the link.
+    it('does not ask for a user who cannot edit requisitions', async () => {
+      canEditRequisitions.value = false
+      const { nodeStore } = mountComponent('42', true)
+      await flushPromises()
+
+      expect(nodeStore.getNodeExistsInRequisition).not.toHaveBeenCalled()
+    })
+
+    // Roles can arrive after the node.
+    it('asks once the roles arrive', async () => {
+      canEditRequisitions.value = false
+      const { nodeStore } = mountComponent('42', true)
+      await flushPromises()
+
+      canEditRequisitions.value = true
+      await flushPromises()
+
+      expect(nodeStore.getNodeExistsInRequisition).toHaveBeenCalledTimes(1)
+    })
   })
 })

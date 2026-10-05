@@ -29,6 +29,7 @@ import {
 } from './nodeService'
 import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
 import { getNodeOutages, getOutages } from './outageService'
+import { nodeExistsInRequisition } from './requisitionService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
 import { getServiceTypes } from './serviceTypes'
@@ -136,6 +137,7 @@ export default {
   getNodeById,
   getNodeOutages,
   getOutages,
+  nodeExistsInRequisition,
   getNodeIfServices,
   getIpInterfaces,
   getNodeIpInterfaceQuery,
