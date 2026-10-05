@@ -1734,6 +1734,8 @@
 
     <!-- dependency versions -->
     <aaltoXmlVersion>1.3.3</aaltoXmlVersion>
+    <!-- keep in step with the stax2-api that the cxf-specs feature ships -->
+    <stax2ApiVersion>4.2.1</stax2ApiVersion>
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <asmVersion>9.7</asmVersion>
