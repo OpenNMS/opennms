@@ -46,7 +46,7 @@ public class AssetFilterTest {
     @Test
     public void acceptsAKnownAssetColumnAndBindsTheValue() {
         final AssetFilter filter = new AssetFilter("asset.serialNumber", "abc123");
-        assertTrue("column must appear in the SQL", filter.getSQLTemplate().contains("assets.serialNumber="));
+        assertTrue("column must appear in the SQL", filter.getSQLTemplate().contains("assets.serialnumber="));
         // value is bound, not inlined: JDBC template uses a placeholder, Hibernate path uses '?'
         assertTrue(filter.getSQLTemplate().contains("=%s)"));
         assertFalse(filter.getSQLTemplate().contains("abc123"));

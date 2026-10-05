@@ -78,10 +78,13 @@ public class AssetFilter extends EqualsFilter<String> {
         if (field == null || !field.startsWith(TYPE)) {
             throw new IllegalArgumentException("Asset filter field must start with '" + TYPE + "'");
         }
-        assetField = field.substring(TYPE.length());
-        if (!isValidAssetColumn(assetField)) {
-            throw new IllegalArgumentException("Unknown asset field: " + assetField);
+        final String column = field.substring(TYPE.length());
+        if (!isValidAssetColumn(column)) {
+            throw new IllegalArgumentException("Unknown asset field");
         }
+        // The SQL text gets the allow-list form of the name, not the request text. PostgreSQL folds
+        // unquoted identifiers to lower case, so the lower-case name refers to the same column.
+        assetField = column.toLowerCase(Locale.ROOT);
     }
 
     /**
