@@ -106,7 +106,7 @@
 </script>
 
 <!-- Body -->
-  <h4>Node: ${nodeLabel}</h4>
+  <h4>Node: <c:out value="${nodeLabel}"/></h4>
 
 <div class="row">
 <div class="col-md-12">
@@ -116,9 +116,9 @@
 <div class="card">
 	<div class="card-header"><span>
 <% if (bridgelinks.isEmpty()) { %>
-		No Bridge Forwarding Table Links found on ${nodeLabel} by Enhanced Linkd
+		No Bridge Forwarding Table Links found on <c:out value="${nodeLabel}"/> by Enhanced Linkd
 <% } else { %>
-        ${nodeLabel} Shared Segments found by Enhanced Linkd
+        <c:out value="${nodeLabel}"/> Shared Segments found by Enhanced Linkd
 <% } %>
  </span></div>
 		<!-- Link box -->
@@ -137,9 +137,9 @@
 	<tr>
 		<td width="30%">
 <% if (bridgelink.getBridgeLocalPortUrl() == null) {%>
-			<%=bridgelink.getBridgeLocalPort()%>
+			<%=WebSecurityUtils.sanitizeString(bridgelink.getBridgeLocalPort())%>
 <% } else { %>
- 			<a href="<%=bridgelink.getBridgeLocalPortUrl()%>"><%=bridgelink.getBridgeLocalPort()%></a>
+ 			<a href="<%=bridgelink.getBridgeLocalPortUrl()%>"><%=WebSecurityUtils.sanitizeString(bridgelink.getBridgeLocalPort())%></a>
 <% } %>
 	    </td>
        	<td width="30%">
@@ -150,15 +150,15 @@
            	<% for (BridgeLinkRemoteNode remote: bridgelink.getBridgeLinkRemoteNodes()) {%>
             	<tr><td>
          		<% if (remote.getBridgeRemoteUrl() != null) { %>
-            		<a href="<%=remote.getBridgeRemoteUrl()%>"><%=remote.getBridgeRemote()%></a>
+            		<a href="<%=remote.getBridgeRemoteUrl()%>"><%=WebSecurityUtils.sanitizeString(remote.getBridgeRemote())%></a>
 	            <% } else { %> 
-		            <%=remote.getBridgeRemote()%>
+		            <%=WebSecurityUtils.sanitizeString(remote.getBridgeRemote())%>
     			<% } %> 
     				&nbsp;
          		<% if (remote.getBridgeRemotePortUrl() != null) { %>
-            		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
+            		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=WebSecurityUtils.sanitizeString(remote.getBridgeRemotePort())%></a>
 	            <% } else if (remote.getBridgeRemotePort() != null){ %> 
-		            <%=remote.getBridgeRemotePort()%>
+		            <%=WebSecurityUtils.sanitizeString(remote.getBridgeRemotePort())%>
             	<% }%>
             	</td><tr>
            	<% }%>
@@ -169,7 +169,7 @@
 <% if (bridgelink.getBridgeInfo() == null) {%>
             	            	&nbsp;
 <% } else { %>
-          <%=bridgelink.getBridgeInfo()%>
+          <%=WebSecurityUtils.sanitizeString(bridgelink.getBridgeInfo())%>
 <% } %>
 		</td>
 		<td width="10%"><%=bridgelink.getBridgeLinkLastPollTime() %></td>
@@ -185,9 +185,9 @@
 
 <div class="card-header"><span>
 <%  if (lldpLinks.isEmpty()) { %>
-No LLDP Remote Table Links found on ${nodeLabel} by Enhanced Linkd
+No LLDP Remote Table Links found on <c:out value="${nodeLabel}"/> by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Links found by Enhanced Linkd
+<c:out value="${nodeLabel}"/> (ChassidId <%=WebSecurityUtils.sanitizeString(lldpelem.getLldpChassisId()) %>) LLDP Remote Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 		<!-- Link box -->
@@ -206,25 +206,25 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
     <tr>
 	    <td width="30%">
 	 	<% if (lldplink.getLldpLocalPortUrl() != null) { %>
-           	<a href="<%=lldplink.getLldpLocalPortUrl()%>"><%=lldplink.getLldpLocalPort()%></a>
+           	<a href="<%=lldplink.getLldpLocalPortUrl()%>"><%=WebSecurityUtils.sanitizeString(lldplink.getLldpLocalPort())%></a>
            <% } else { %> 
-                   <%=lldplink.getLldpLocalPort()%>
+                   <%=WebSecurityUtils.sanitizeString(lldplink.getLldpLocalPort())%>
    		<% } %> 
            </td>
            <td width="30%">
            <% if (lldplink.getLldpRemChassisIdUrl() != null) { %>
-           	<a href="<%=lldplink.getLldpRemChassisIdUrl()%>"><%=lldplink.getLldpRemChassisId()%></a>
+           	<a href="<%=lldplink.getLldpRemChassisIdUrl()%>"><%=WebSecurityUtils.sanitizeString(lldplink.getLldpRemChassisId())%></a>
            <% } else { %> 
-                   <%=lldplink.getLldpRemChassisId()%>
+                   <%=WebSecurityUtils.sanitizeString(lldplink.getLldpRemChassisId())%>
    			<% } %> 
    			&nbsp;
     	<% if (lldplink.getLldpRemPortUrl() != null) { %>
-           	<a href="<%=lldplink.getLldpRemPortUrl()%>"><%=lldplink.getLldpRemPort()%></a>
+           	<a href="<%=lldplink.getLldpRemPortUrl()%>"><%=WebSecurityUtils.sanitizeString(lldplink.getLldpRemPort())%></a>
            <% } else { %> 
-                   <%=lldplink.getLldpRemPort()%>
+                   <%=WebSecurityUtils.sanitizeString(lldplink.getLldpRemPort())%>
    		<% } %> 
            </td>
-	    <td width="30%"><%=lldplink.getLldpRemInfo()%></td>
+	    <td width="30%"><%=WebSecurityUtils.sanitizeString(lldplink.getLldpRemInfo())%></td>
 	    <td width="10%"><%=lldplink.getLldpLastPollTime()%></td>
     </tr>
 <% } %>
@@ -237,9 +237,9 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
 <div class="card">
 <div class="card-header"><span>
 <% if (cdpLinks.isEmpty()) { %>
-No CDP Cache Table Links found on ${nodeLabel} by Enhanced Linkd
+No CDP Cache Table Links found on <c:out value="${nodeLabel}"/> by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Links found by Enhanced Linkd
+<c:out value="${nodeLabel}"/> (Device Id <%=WebSecurityUtils.sanitizeString(cdpelem.getCdpGlobalDeviceId()) %>)CDP Cache Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 <table class="table table-sm">
@@ -255,25 +255,25 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
     <tr>
 	    <td width="30%">
  	  <% if (cdplink.getCdpLocalPortUrl() != null) { %>
-        <a href="<%=cdplink.getCdpLocalPortUrl()%>"><%=cdplink.getCdpLocalPort()%></a>
+        <a href="<%=cdplink.getCdpLocalPortUrl()%>"><%=WebSecurityUtils.sanitizeString(cdplink.getCdpLocalPort())%></a>
       <% } else { %> 
-        <%=cdplink.getCdpLocalPort()%>
+        <%=WebSecurityUtils.sanitizeString(cdplink.getCdpLocalPort())%>
       <% } %> 
         </td>
         <td width="30%">
         <% if (cdplink.getCdpCacheDeviceUrl() != null) { %>
-          <a href="<%=cdplink.getCdpCacheDeviceUrl()%>"><%=cdplink.getCdpCacheDevice()%></a>
+          <a href="<%=cdplink.getCdpCacheDeviceUrl()%>"><%=WebSecurityUtils.sanitizeString(cdplink.getCdpCacheDevice())%></a>
         <% } else { %> 
-          <%=cdplink.getCdpCacheDevice()%>
+          <%=WebSecurityUtils.sanitizeString(cdplink.getCdpCacheDevice())%>
    		<% } %> 
    		&nbsp;
     <% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
-          <a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=cdplink.getCdpCacheDevicePort()%></a>
+          <a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=WebSecurityUtils.sanitizeString(cdplink.getCdpCacheDevicePort())%></a>
       <% } else { %> 
-          <%=cdplink.getCdpCacheDevicePort()%>
+          <%=WebSecurityUtils.sanitizeString(cdplink.getCdpCacheDevicePort())%>
 	  <% } %> 
         </td>
-	    <td width="30%"><%=cdplink.getCdpCachePlatform()%></td>
+	    <td width="30%"><%=WebSecurityUtils.sanitizeString(cdplink.getCdpCachePlatform())%></td>
 	    <td width="10%"><%=cdplink.getCdpLastPollTime()%></td>
     </tr>
 <% } %>
@@ -285,9 +285,9 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
 <div class="card">
 <div class="card-header"><span>
 <%   if (ospfLinks.isEmpty()) { %>
-No OSPF Links found on ${nodeLabel} by Enhanced Linkd
+No OSPF Links found on <c:out value="${nodeLabel}"/> by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links found by Enhanced Linkd
+<c:out value="${nodeLabel}"/> (Router id <%=WebSecurityUtils.sanitizeString(ospfelem.getOspfRouterId()) %>)OSPF Nbr Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 <table class="table table-sm">
@@ -305,25 +305,25 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
     <tr>
 	    <td width="30%">
  		<% if (ospflink.getOspfLocalPortUrl() != null ) { %>
-          	<a href="<%=ospflink.getOspfLocalPortUrl()%>"><%=ospflink.getOspfLocalPort()%></a>
+          	<a href="<%=ospflink.getOspfLocalPortUrl()%>"><%=WebSecurityUtils.sanitizeString(ospflink.getOspfLocalPort())%></a>
     	<% } else { %> 
-             <%=ospflink.getOspfLocalPort()%>
+             <%=WebSecurityUtils.sanitizeString(ospflink.getOspfLocalPort())%>
 		<% } %> 
     	</td>
      	<td width="30%">
     	<% if (ospflink.getOspfRemRouterUrl() != null) { %>
-     		<a href="<%=ospflink.getOspfRemRouterUrl()%>"><%=ospflink.getOspfRemRouterId()%></a>
+     		<a href="<%=ospflink.getOspfRemRouterUrl()%>"><%=WebSecurityUtils.sanitizeString(ospflink.getOspfRemRouterId())%></a>
     	<% } else { %>
-	    	<%=ospflink.getOspfRemRouterId()%>
+	    	<%=WebSecurityUtils.sanitizeString(ospflink.getOspfRemRouterId())%>
 		<% } %> 
 		&nbsp;
  		<% if (ospflink.getOspfRemPortUrl() != null) { %>
-     		<a href="<%=ospflink.getOspfRemPortUrl()%>"><%=ospflink.getOspfRemPort()%></a>
+     		<a href="<%=ospflink.getOspfRemPortUrl()%>"><%=WebSecurityUtils.sanitizeString(ospflink.getOspfRemPort())%></a>
     	<% } else { %> 
-            <%=ospflink.getOspfRemPort()%>
+            <%=WebSecurityUtils.sanitizeString(ospflink.getOspfRemPort())%>
 		<% } %> 
         </td>
-	    <td width="30%"><%=ospflink.getOspfLinkInfo()%></td>
+	    <td width="30%"><%=WebSecurityUtils.sanitizeString(ospflink.getOspfLinkInfo())%></td>
 	    <td width="10%"><%=ospflink.getOspfLinkLastPollTime()%></td>
    </tr>
 <% } %>
@@ -338,9 +338,9 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
 	<div class="card-header">
 		<span>
 <%   if (isisLinks.isEmpty()) { %>
-No IS-IS Adjacency Links found on ${nodeLabel} by Enhanced Linkd
+No IS-IS Adjacency Links found on <c:out value="${nodeLabel}"/> by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by Enhanced Linkd
+<c:out value="${nodeLabel}"/> (id <%=WebSecurityUtils.sanitizeString(isiselem.getIsisSysID()) %>) IS-IS Adj Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 		<!-- Link box -->
@@ -357,22 +357,22 @@ ${nodeLabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by E
 		
 <% for( IsisLinkNode isislink : isisLinks) { %>
    <tr>
-    <td width="30%">circuit:<%=isislink.getIsisCircIfIndex()%> status:<%=isislink.getIsisCircAdminState()%></td>
+    <td width="30%">circuit:<%=isislink.getIsisCircIfIndex()%> status:<%=WebSecurityUtils.sanitizeString(isislink.getIsisCircAdminState())%></td>
     <td width="30%">
           <% if (isislink.getIsisISAdjNeighSysUrl() != null) { %>
-          	<a href="<%=isislink.getIsisISAdjNeighSysUrl()%>"><%=isislink.getIsisISAdjNeighSysID() %></a>
+          	<a href="<%=isislink.getIsisISAdjNeighSysUrl()%>"><%=WebSecurityUtils.sanitizeString(isislink.getIsisISAdjNeighSysID())%></a>
           <% } else { %> 
-                 <%=isislink.getIsisISAdjNeighSysID()%>
+                 <%=WebSecurityUtils.sanitizeString(isislink.getIsisISAdjNeighSysID())%>
   			<% } %> 
-    	 type:<%=isislink.getIsisISAdjNeighSysType()%>
+    	 type:<%=WebSecurityUtils.sanitizeString(isislink.getIsisISAdjNeighSysType())%>
  	<% if (isislink.getIsisISAdjUrl() != null) { %>
-          	<a href="<%=isislink.getIsisISAdjUrl()%>"><%=isislink.getIsisISAdjNeighPort()%></a>
+          	<a href="<%=isislink.getIsisISAdjUrl()%>"><%=WebSecurityUtils.sanitizeString(isislink.getIsisISAdjNeighPort())%></a>
           <% } else { %> 
-		<%=isislink.getIsisISAdjNeighPort()%>
+		<%=WebSecurityUtils.sanitizeString(isislink.getIsisISAdjNeighPort())%>
   		<% } %> 
      </td>
-    <td width="30%">adjstate:<%=isislink.getIsisISAdjState()%> 
-        adjSNPAaddr:<%=isislink.getIsisISAdjNeighSNPAAddress()%>
+    <td width="30%">adjstate:<%=WebSecurityUtils.sanitizeString(isislink.getIsisISAdjState())%> 
+        adjSNPAaddr:<%=WebSecurityUtils.sanitizeString(isislink.getIsisISAdjNeighSNPAAddress())%>
         adjNbrExtCircId:<%=isislink.getIsisISAdjNbrExtendedCircID()%>
     </td>
     <td width="10%"><%=isislink.getIsisLinkLastPollTime()%></td>

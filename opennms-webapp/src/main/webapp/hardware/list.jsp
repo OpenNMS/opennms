@@ -56,7 +56,7 @@
     public void printSnmpMetadataTable(final JspWriter out, final SnmpMetadataTable snmpMetadataTable) throws Exception {
         final String parentCls = snmpMetadataTable.getParent() == null ? "" : " treegrid-parent-" + snmpMetadataTable.getParent().getId();
         out.println("<tr class='treegrid-" + snmpMetadataTable.getId() + parentCls + "'>");
-        out.println("<td>" + snmpMetadataTable.getName() + "</td><td><table class=\"table table-sm table-bordered\">");
+        out.println("<td>" + WebSecurityUtils.sanitizeString(snmpMetadataTable.getName()) + "</td><td><table class=\"table table-sm table-bordered\">");
         out.println("</table></td></tr>");
 
         for (final SnmpMetadataEntry snmpMetadataEntry : snmpMetadataTable.getEntries()) {
@@ -65,15 +65,15 @@
     }
 
     public void printSnmpMetadataValue(final JspWriter out, final SnmpMetadataValue snmpMetadataValue) throws Exception {
-        out.println("<td width='50%'>" + snmpMetadataValue.getValue() + "&nbsp;</td>");
+        out.println("<td width='50%'>" + WebSecurityUtils.sanitizeString(snmpMetadataValue.getValue()) + "&nbsp;</td>");
     }
 
     public void printSnmpMetadataEntry(final JspWriter out, final SnmpMetadataEntry snmpMetadataEntry) throws Exception {
         final String parentCls = snmpMetadataEntry.getParent() == null ? "" : " treegrid-parent-" + snmpMetadataEntry.getParent().getId();
         out.println("<tr class='treegrid-" + snmpMetadataEntry.getId() + parentCls + "'>");
-        out.println("<td>" + ((SnmpMetadataTable)snmpMetadataEntry.getParent()).getName() +"[" + snmpMetadataEntry.getIndex() + "]" + "</td><td><table class=\"table table-sm table-bordered\">");
+        out.println("<td>" + WebSecurityUtils.sanitizeString(((SnmpMetadataTable)snmpMetadataEntry.getParent()).getName()) +"[" + snmpMetadataEntry.getIndex() + "]" + "</td><td><table class=\"table table-sm table-bordered\">");
         for(final SnmpMetadataValue snmpMetadataValue : snmpMetadataEntry.getValues()) {
-            out.println("<tr><th>" + snmpMetadataValue.getName() + "</th>");
+            out.println("<tr><th>" + WebSecurityUtils.sanitizeString(snmpMetadataValue.getName()) + "</th>");
             printSnmpMetadataValue(out, snmpMetadataValue);
             out.println("</tr>");
         }
@@ -83,7 +83,7 @@
     public void printSnmpMetadataObject(final JspWriter out, final SnmpMetadataObject snmpMetadataObject) throws Exception {
         final String parentCls = snmpMetadataObject.getParent() == null ? "" : " treegrid-parent-" + snmpMetadataObject.getParent().getId();
         out.println("<tr class='treegrid-" + snmpMetadataObject.getId() + parentCls + "'>");
-        out.println("<td>" + snmpMetadataObject.getName() + "</td><td>");
+        out.println("<td>" + WebSecurityUtils.sanitizeString(snmpMetadataObject.getName()) + "</td><td>");
         out.println("<table class=\"table table-sm table-bordered\">");
         for (final SnmpMetadataValue snmpMetadataValue : snmpMetadataObject.getValues()) {
             out.println("<tr>");
@@ -107,34 +107,34 @@
     }
 
     public String getTitle(OnmsHwEntity entity) {
-        String id = entity.getEntPhysicalName() == null ? "[Unknown]" : entity.getEntPhysicalName();
+        String id = entity.getEntPhysicalName() == null ? "[Unknown]" : WebSecurityUtils.sanitizeString(entity.getEntPhysicalName());
         return id + " (entPhysicalIndex=" + entity.getEntPhysicalIndex() + ")";
     }
 
     public String getContent(OnmsHwEntity entity) {
         StringBuffer sb = new StringBuffer();
         sb.append("<table class=\"table table-sm table-bordered\">");
-        sb.append("<tr><th>Description</th><td>" + entity.getEntPhysicalDescr() + "</td></tr>");
+        sb.append("<tr><th>Description</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalDescr()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalVendorType()))
-            sb.append("<tr><th>Vendor Type</th><td>" + entity.getEntPhysicalVendorType() + "</td></tr>");
+            sb.append("<tr><th>Vendor Type</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalVendorType()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalClass()))
-            sb.append("<tr><th>Class</th><td>" + entity.getEntPhysicalClass() + "</td></tr>");
+            sb.append("<tr><th>Class</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalClass()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalHardwareRev()))
-            sb.append("<tr><th>Hardware Revision</th><td>" + entity.getEntPhysicalHardwareRev() + "</td></tr>");
+            sb.append("<tr><th>Hardware Revision</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalHardwareRev()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalFirmwareRev()))
-            sb.append("<tr><th>Firmware Revision</th><td>" + entity.getEntPhysicalFirmwareRev() + "</td></tr>");
+            sb.append("<tr><th>Firmware Revision</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalFirmwareRev()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalSoftwareRev()))
-            sb.append("<tr><th>Software Revision</th><td>" + entity.getEntPhysicalSoftwareRev() + "</td></tr>");
+            sb.append("<tr><th>Software Revision</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalSoftwareRev()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalSerialNum()))
-            sb.append("<tr><th>Serial Number</th><td>" + entity.getEntPhysicalSerialNum() + "</td></tr>");
+            sb.append("<tr><th>Serial Number</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalSerialNum()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalMfgName()))
-            sb.append("<tr><th>Manufacturer Name</th><td>" + entity.getEntPhysicalMfgName() + "</td></tr>");
+            sb.append("<tr><th>Manufacturer Name</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalMfgName()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalModelName()))
-            sb.append("<tr><th>Model Name</th><td>" + entity.getEntPhysicalModelName() + "</td></tr>");
+            sb.append("<tr><th>Model Name</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalModelName()) + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalAlias()))
-            sb.append("<tr><th>Alias</th><td>" + entity.getEntPhysicalAlias() + "</td></tr>");
+            sb.append("<tr><th>Alias</th><td>" + WebSecurityUtils.sanitizeString(entity.getEntPhysicalAlias()) + "</td></tr>");
         for (OnmsHwEntityAttribute a : entity.getHwEntityAttributes()) {
-            sb.append("<tr><th>" +  a.getTypeName() + "</th><td>" + a.getValue() + "</td></tr>");
+            sb.append("<tr><th>" +  WebSecurityUtils.sanitizeString(a.getTypeName()) + "</th><td>" + WebSecurityUtils.sanitizeString(a.getValue()) + "</td></tr>");
         }
         sb.append("</table>");
         return sb.toString();

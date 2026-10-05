@@ -80,7 +80,7 @@ public class FormProcReportController extends AbstractController implements Init
 
         // Get Form Variables
         String action = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.action.toString()));
-        String report_title = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report_title.toString()));
+        String report_title = request.getParameter(Parameters.report_title.toString());
         String show_timespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.show_timespan.toString()));
         String show_graphtype = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.show_graphtype.toString()));
         String g_index = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graph_index.toString()));
