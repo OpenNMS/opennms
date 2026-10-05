@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -332,7 +333,7 @@ public class AssetModel {
 
         columnName = WebSecurityUtils.sanitizeDbColumnName(columnName);
 
-        if (!VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase())) {
+        if (!VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase(Locale.ROOT))) {
             return new MatchingAsset[0];
         }
 
@@ -340,7 +341,7 @@ public class AssetModel {
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement(VALID_SQL_STATEMENTS.get(columnName.toLowerCase()));
+            PreparedStatement stmt = conn.prepareStatement(VALID_SQL_STATEMENTS.get(columnName.toLowerCase(Locale.ROOT)));
             d.watch(stmt);
             stmt.setString(1, "%" + searchText.toLowerCase() + "%");
 
@@ -574,7 +575,7 @@ public class AssetModel {
     });
 
     private static final Map<String, String> VALID_SQL_STATEMENTS = Arrays.stream(s_columns)
-            .map(entry -> entry[1].toLowerCase())
+            .map(entry -> entry[1].toLowerCase(Locale.ROOT))
             .collect(Collectors.toMap(e -> e, e -> String.format("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS.%s FROM ASSETS, NODE WHERE LOWER(ASSETS.%s) LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL", e, e)));
 
     /**
@@ -582,7 +583,7 @@ public class AssetModel {
      * compared case-insensitively.
      */
     public static boolean isColumnValid(final String columnName) {
-        return columnName != null && VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase());
+        return columnName != null && VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase(Locale.ROOT));
     }
 
     private Float safeFloat(final String value) {

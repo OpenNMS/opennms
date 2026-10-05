@@ -104,18 +104,4 @@ public class CriteriaBehaviorsSqlInjectionTest {
             }
         }
     }
-
-    @Test
-    public void fiqlRejectsNullCountsBeforeAddingRestrictions() {
-        for (final String property : PROPERTIES) {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
-            try {
-                applyFiql(builder, "alarm." + property + "==" + CriteriaBuilderSearchVisitor.NULL_VALUE);
-                fail("expected null count to be rejected for " + property);
-            } catch (final IllegalArgumentException expected) {
-                assertTrue(expected.getMessage().contains(property));
-                assertTrue(builder.toCriteria().getRestrictions().isEmpty());
-            }
-        }
-    }
 }

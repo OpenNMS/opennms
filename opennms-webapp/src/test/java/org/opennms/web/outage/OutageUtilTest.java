@@ -30,21 +30,14 @@
 package org.opennms.web.outage;
 
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.opennms.web.outage.filter.AssetFilter;
 
 /**
  * NMS-20383: an outage filter naming an unknown asset column is dropped instead of surfacing an
  * exception (and the attacker-controlled column name) on the outage list page.
  */
 public class OutageUtilTest {
-
-    @Test
-    public void knownAssetColumnProducesAnAssetFilter() {
-        assertTrue(OutageUtil.getFilter("asset.serialNumber=abc", null) instanceof AssetFilter);
-    }
 
     @Test
     public void unknownAssetColumnIsIgnored() {

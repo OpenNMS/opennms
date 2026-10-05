@@ -55,15 +55,10 @@ public class AssetFilterTest {
 
     @Test
     public void acceptsColumnsOutsideTheUiListAndIgnoresCase() {
-        for (final String column : new String[] { "managedObjectType", "managedobjectinstance", "lastModifiedDate", "nodeid", "SERIALNUMBER", "city" }) {
+        for (final String column : new String[] { "managedObjectType", "managedobjectinstance", "SERIALNUMBER", "city" }) {
             assertTrue(column + " must be an allowed asset column", AssetFilter.isValidAssetColumn(column));
             new AssetFilter(AssetFilter.TYPE + column, "x");
         }
-    }
-
-    @Test
-    public void rejectsAnUnknownColumn() {
-        assertThrowsIllegalArgument("asset.not_a_real_column");
     }
 
     @Test

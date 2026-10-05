@@ -54,11 +54,18 @@ public class AssetFilter extends EqualsFilter<String> {
 
     /**
      * Columns of the assets table that are not part of the {@link AssetModel} UI column list but are
-     * still legitimate filter targets. Kept in lower case because the allow-list check is
+     * still legitimate filter targets. Only text columns qualify, because the filter compares the
+     * value as a string. Kept in lower case because the allow-list check is
      * case-insensitive.
      */
     private static final Set<String> ENTITY_ONLY_COLUMNS = Set.of(
-            "nodeid", "lastmodifieddate", "managedobjecttype", "managedobjectinstance");
+            "managedobjecttype", "managedobjectinstance");
+
+    /**
+     * Numeric columns in the {@link AssetModel} UI column list. They cannot be compared to the
+     * string value this filter binds, so they are not filter targets.
+     */
+    private static final Set<String> NON_TEXT_COLUMNS = Set.of("latitude", "longitude");
 
     /**
      * Instantiates a new asset filter.
@@ -81,11 +88,14 @@ public class AssetFilter extends EqualsFilter<String> {
      * The asset field is a SQL identifier spliced into the query and cannot be bound as a
      * parameter, so it must be validated against the known asset schema to prevent SQL
      * injection (NMS-20383). The schema is the {@link AssetModel} column list plus the few
-     * assets-table columns that list does not expose in the UI.
+     * assets-table columns that list does not expose in the UI, minus its numeric columns.
      */
     static boolean isValidAssetColumn(final String column) {
-        return AssetModel.isColumnValid(column)
-                || ENTITY_ONLY_COLUMNS.contains(column.toLowerCase(Locale.ROOT));
+        final String normalized = column.toLowerCase(Locale.ROOT);
+        if (NON_TEXT_COLUMNS.contains(normalized)) {
+            return false;
+        }
+        return AssetModel.isColumnValid(column) || ENTITY_ONLY_COLUMNS.contains(normalized);
     }
 
     /** {@inheritDoc} */
