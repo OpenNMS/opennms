@@ -90,6 +90,7 @@ import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.StringCollection;
+import org.opennms.web.rest.support.WriteOnlyPropertyGuard;
 import org.opennms.web.utils.CriteriaBuilderUtils;
 import org.opennms.web.utils.QueryParameters;
 import org.opennms.web.utils.QueryParametersBuilder;
@@ -564,6 +565,9 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(p);
         if (queryParameters.getLimit() == null) {
             queryParameters.setLimit(defaultLimit);
+        }
+        if (queryParameters.getOrder() != null) {
+            WriteOnlyPropertyGuard.check(queryParameters.getOrder().getColumn());
         }
         CriteriaBuilderUtils.applyQueryParameters(builder, queryParameters);
     }

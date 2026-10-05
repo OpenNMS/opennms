@@ -117,7 +117,7 @@
                         <%-- Password fields --%>
                         <%-- Set `autocomplete="new-password"` to prevent autocomplete.
                              See MDN: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#preventing_autofilling_with_autocompletenew-password --%>
-                        <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"
+                        <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'" placeholder="{{ field.placeholder }}"
                                ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}"
                                autocomplete="new-password">
                         <%-- Textarea fields --%>

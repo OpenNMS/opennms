@@ -54,6 +54,7 @@ import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
+import org.opennms.web.rest.support.WriteOnlyPropertyGuard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -127,8 +128,10 @@ public class OnmsRestService {
     	}
 
 	    if(params.containsKey("orderBy")) {
+	    	final String orderBy = WebSecurityUtils.sanitizeString(params.getFirst("orderBy"));
+	    	WriteOnlyPropertyGuard.check(orderBy);
 	    	builder.clearOrder();
-	    	builder.orderBy(WebSecurityUtils.sanitizeString(params.getFirst("orderBy")));
+	    	builder.orderBy(orderBy);
 			params.remove("orderBy");
 			
 			if(params.containsKey("order")) {
@@ -162,6 +165,7 @@ public class OnmsRestService {
 		final Criteria currentCriteria = builder.toCriteria();
 
 		for (final String key : params.keySet()) {
+			WriteOnlyPropertyGuard.check(key);
 			for (final String paramValue : params.get(key)) { // NOSONAR
                         // NOSONAR the interface of MultivaluedMap.class declares List<String> as return value, 
                         // the actual implementation com.sun.jersey.core.util.MultivaluedMapImpl returns a String, so this is fine in some way ...

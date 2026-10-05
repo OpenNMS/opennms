@@ -44,6 +44,7 @@ angular.module('onms-assets', [
 
   $scope.blackList = [ 'id', 'lastModifiedDate', 'lastModifiedBy', 'lastCapsdPoll', 'createTime' ];
   $scope.infoKeys = [ 'sysObjectId', 'sysName', 'sysLocation', 'sysContact', 'sysDescription' ];
+  $scope.writeOnlyKeys = [ 'password', 'enable', 'snmpcommunity' ];
   $scope.dateKeys = [ 'dateInstalled', 'leaseExpires', 'maintContractExpiration' ];
 
   $scope.dateFormat = 'yyyy-MM-dd';
@@ -140,6 +141,13 @@ angular.module('onms-assets', [
     $http.get('rest/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId)
       .then(function(response) {
         const node = response.data;
+        // The REST API never returns write-only fields, so the form only has them when the user typed a new value.
+        // Keep the requisition's existing entries otherwise, or replacing the asset list would drop them.
+        angular.forEach(node.asset, function(entry) {
+          if ($scope.writeOnlyKeys.indexOf(entry.name) !== -1 && !assets.hasOwnProperty(entry.name)) {
+            assetFields.push(entry);
+          }
+        });
         node.asset = assetFields;
         $http.post('rest/requisitions/' + $scope.foreignSource + '/nodes', node)
           .then(function() {
@@ -147,8 +155,12 @@ angular.module('onms-assets', [
           }, function() {
             growl.error('Cannot update requisition ' + $scope.foreignSource);
           });
-      }, function() {
-        growl.error('Cannot obtain node data from requisition ' + $scope.foreignSource);
+      }, function(response) {
+        if (response.status === 403) {
+          growl.error('Cannot update requisition ' + $scope.foreignSource + ': reading requisitions requires the ROLE_PROVISION or ROLE_ADMIN role.');
+        } else {
+          growl.error('Cannot obtain node data from requisition ' + $scope.foreignSource);
+        }
       });
   };
 

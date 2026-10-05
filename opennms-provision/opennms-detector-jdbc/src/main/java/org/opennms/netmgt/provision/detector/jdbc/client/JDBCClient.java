@@ -90,7 +90,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         props.setProperty("timeout", String.valueOf(timeout/1000));
         m_connection = driver.connect(url, props);
 
-        LOG.debug("Got database connection: '{}' ({}, {}, {})", m_connection, url, getUser(), getPassword());
+        LOG.debug("Got database connection: '{}' ({}, {})", m_connection, url, getUser());
     }
 
     /**

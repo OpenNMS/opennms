@@ -86,6 +86,10 @@ If `null` is passed as the value for a property, then the obvious operation will
 In other words, the comparator will be ignored for that property.
 `notnull` is handled similarly when passed as a property variable.
 
+You cannot filter or sort on the asset credential fields `assetRecord.password`, `assetRecord.enable` and `assetRecord.snmpcommunity`.
+A request that does this returns `400 Bad Request`.
+This rule also applies to FIQL searches (`_s`) in the v2 API.
+
 == Standard filter examples
 
 Using `/events` as a base, the following table shows examples of REST calls with defined filters:

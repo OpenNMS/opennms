@@ -179,7 +179,7 @@ public class RadiusAuthDetector extends BasicDetector<CompositeAttributeLists, R
     }
 
     private static RequestBuilder<CompositeAttributeLists> request(final String nasID, final String user, final String password) {
-    	LOG.debug("request: nasID = {}, user = {}, password = {}", nasID, user, password);
+    	LOG.debug("request: nasID = {}, user = {}", nasID, user);
     	
         return new RequestBuilder<CompositeAttributeLists>() {
 
@@ -197,8 +197,8 @@ public class RadiusAuthDetector extends BasicDetector<CompositeAttributeLists, R
 
     private RequestBuilder<CompositeAttributeLists> request(String nasID, String user, String password, String innerIdentity,
 	    String ttlsInnerAuthType) {
-        LOG.debug("request: nasID = {}, user = {}, password = {}, innerIdentity = {}, ttlsInnerAuthType = {}", 
-        		nasID, user, password,innerIdentity,ttlsInnerAuthType);
+        LOG.debug("request: nasID = {}, user = {}, innerIdentity = {}, ttlsInnerAuthType = {}",
+        		nasID, user, innerIdentity,ttlsInnerAuthType);
         RequestBuilder<CompositeAttributeLists> outerRequest = request(nasID,user,password);
 	    return new RequestBuilder<CompositeAttributeLists>() {
             @Override
