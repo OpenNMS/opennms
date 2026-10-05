@@ -45,15 +45,18 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -83,6 +86,12 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private PathOutageDao m_pathOutageDao;
+
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
 
     public NodeRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -695,5 +704,37 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         final JSONObject object = new JSONObject(response);
         Assert.assertEquals(Optional.ofNullable(parent.getId()), Optional.of(object.getInt("nodeParentID")));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testCriticalPath() throws Exception {
+        final JSONObject node = new JSONObject();
+        node.put("type", "A");
+        node.put("label", "TestMachine1");
+        node.put("foreignSource", "JUnit");
+        node.put("foreignId", "TestMachine1");
+        node.put("location", "Default");
+        node.put("labelSource", "H");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
+
+        // No pathoutage row of its own: nothing to report, whatever the default critical path is.
+        sendRequest(GET, "/nodes/1/criticalPath", 204);
+
+        m_transactionTemplate.execute(status -> {
+            m_pathOutageDao.save(new OnmsPathOutage(m_nodeDao.get(1), InetAddressUtils.addr("10.0.0.3"), "ICMP"));
+            m_pathOutageDao.flush();
+            return null;
+        });
+
+        final JSONObject byId = new JSONObject(sendRequest(GET, "/nodes/1/criticalPath", 200));
+        assertEquals("10.0.0.3", byId.getString("criticalPathIp"));
+        assertEquals("ICMP", byId.getString("criticalPathServiceName"));
+
+        // Addressed by foreignSource:foreignId, like the node's other resources.
+        final JSONObject byForeignId = new JSONObject(sendRequest(GET, "/nodes/JUnit:TestMachine1/criticalPath", 200));
+        assertEquals("10.0.0.3", byForeignId.getString("criticalPathIp"));
+
+        sendRequest(GET, "/nodes/999999/criticalPath", 404);
     }
 }
