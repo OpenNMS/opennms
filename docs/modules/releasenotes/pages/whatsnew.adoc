@@ -248,3 +248,6 @@ The deprecated JMS-Northbounder plugin was removed in this release.
 === Juniper TCA Collector plugin (plugin-collector-juniper-tca) removed
 The deprecated Juniper TCA Collector plugin was removed in this release.
 
+=== New Karaf shell commands for mananging foreign sources, requisitions, detectors, and nodes.
+New commands have been added to the Karaf shell for provisioning workflows, specifically: `add-detector-to-fsd`, `add-requisitioned-node`, `delete-detector-from-foreignsource`, `delete-requisitioned-node`, `delete-requisition`, `import-requisition`, `show-foreignsource-definition`, `show-requisition`, and `synchronize-requisition`.
+
