@@ -28,6 +28,7 @@
     <module>api</module>
     <module>cache</module>
     <module>camel</module>
+    <module>camel-headers</module>
     <module>cli</module>
     <module>commands</module>
     <module>config</module>

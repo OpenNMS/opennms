@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.camel;
+package org.opennms.core.camel.headers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

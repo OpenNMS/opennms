@@ -31,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.camel</artifactId>
+      <artifactId>org.opennms.core.camel.headers</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.activemq</groupId>
