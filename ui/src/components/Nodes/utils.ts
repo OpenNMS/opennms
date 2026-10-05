@@ -59,6 +59,22 @@ export const hasEgressFlow = (node: Node) => {
   return node.lastEgressFlow && isNumber(node.lastEgressFlow)
 }
 
+// How old a node's last flow may be and still count, matching the server's default for
+// org.opennms.features.telemetry.maxFlowAgeSeconds (7 days).
+export const MAX_FLOW_AGE_MS = 7 * 24 * 60 * 60 * 1000
+
+const isRecentFlow = (lastFlow: unknown, now: number) =>
+  isNumber(lastFlow) && lastFlow > 0 && now - lastFlow < MAX_FLOW_AGE_MS
+
+/**
+ * Whether the node has flow data, as the legacy node page's "flow data" badge decided it: a flow
+ * in either direction within the last 7 days. This mirrors OnmsNode.getHasFlows, which the REST
+ * payload does not carry, with the server's default settings; it will disagree only where an
+ * admin changed maxFlowAgeSeconds or set ingressAndEgressRequired.
+ */
+export const hasRecentFlows = (node: Node, now = Date.now()): boolean =>
+  isRecentFlow(node.lastIngressFlow, now) || isRecentFlow(node.lastEgressFlow, now)
+
 export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
   { id: 'label', label: 'Node Label', selected: true, order: 1 },
