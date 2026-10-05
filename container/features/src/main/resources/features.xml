@@ -384,6 +384,7 @@
     </feature>
     <feature name="opennms-distributed-core-jms" description="OpenNMS :: Distributed :: Core :: JMS" version="${project.version}">
         <feature>camel-jms</feature>
+        <feature>opennms-core-camel</feature>
         <feature>activemq-camel</feature>
         <feature>activemq-client</feature>
         <feature>jms</feature>

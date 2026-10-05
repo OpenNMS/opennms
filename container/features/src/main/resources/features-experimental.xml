@@ -47,6 +47,7 @@
 
     <feature name="opennms-activemq-component" description="OpenNMS :: Features :: ActiveMQ :: Component" version="${project.version}">
       <feature>opennms-activemq-pool</feature>
+      <feature>opennms-core-camel</feature>
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.component/${project.version}</bundle>
     </feature>
 
