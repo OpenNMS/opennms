@@ -36,7 +36,7 @@
       </OnmsColumn>
       <OnmsColumn field="severity" header="Severity">
         <template #body="{ data }">
-          <OnmsTag :value="data.severity" :severity="severityMap[data.severity?.toLowerCase()] ?? 'secondary'" />
+          <OnmsTag :value="data.severity" :severity="severityTag(data.severity)" />
         </template>
       </OnmsColumn>
       <OnmsColumn field="logMessage" header="Message">
@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
+import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
@@ -63,6 +63,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useRecordDownload } from './hooks/useRecordDownload'
+import { severityTag } from './utils'
 
 // The legacy event list page, which accepts a node filter.
 // Will need to replace with the Vue page once it's implemented.
@@ -82,16 +83,6 @@ const DEFAULT_PAGE_SIZE = 5
 const pageSize = ref(DEFAULT_PAGE_SIZE)
 const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
-
-const severityMap: Record<string, OnmsTagSeverity> = {
-  critical: 'danger',
-  major: 'danger',
-  minor: 'warn',
-  warning: 'warn',
-  normal: 'success',
-  cleared: 'success',
-  indeterminate: 'secondary'
-}
 
 const queryParameters = ref({
   limit: DEFAULT_PAGE_SIZE,

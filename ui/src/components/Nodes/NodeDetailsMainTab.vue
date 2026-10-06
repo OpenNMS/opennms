@@ -27,12 +27,14 @@
         :node="node"
         :base-href="baseHref"
       />
+      <AlarmsTable />
       <NodeCriticalPathPanel v-if="nodeLoaded" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import AlarmsTable from '@/components/Nodes/AlarmsTable.vue'
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import NodeCriticalPathPanel from '@/components/Nodes/NodeCriticalPathPanel.vue'
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'

@@ -60,6 +60,7 @@ describe('NodeDetails.vue', () => {
           NodeStatusBox: true,
           NodeScheduledOutagesBox: true,
           NodeCriticalPathPanel: true,
+          AlarmsTable: true,
           NodeDetailsDialog: true,
           EventsTable: true,
           OutagesTable: true,
@@ -133,6 +134,7 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeStatusBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeScheduledOutagesBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeCriticalPathPanel' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'AlarmsTable' }).exists()).toBe(true)
   })
 
   describe('Main / Additional tabs', () => {

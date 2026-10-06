@@ -26,6 +26,7 @@ import {
   SnmpIfStatus,
   SnmpInterface
 } from '@/types'
+import type { OnmsTagSeverity } from '@opennms/onms-ui'
 import { isNumber } from '@/lib/utils'
 import { normalizeMacSearch, type InterfaceListMode } from './hooks/useInterfaceListing'
 
@@ -366,3 +367,17 @@ export const formatIfSpeed = (ifSpeed: number | null | undefined) => {
 
   return `${ifSpeed} bps`
 }
+
+// The tag colour for an event or alarm severity (any case); grey for one it does not know.
+const SEVERITY_TAGS: Record<string, OnmsTagSeverity> = {
+  critical: 'danger',
+  major: 'danger',
+  minor: 'warn',
+  warning: 'warn',
+  normal: 'success',
+  cleared: 'success',
+  indeterminate: 'secondary'
+}
+
+export const severityTag = (severity: string | undefined): OnmsTagSeverity =>
+  SEVERITY_TAGS[(severity ?? '').toLowerCase()] ?? 'secondary'

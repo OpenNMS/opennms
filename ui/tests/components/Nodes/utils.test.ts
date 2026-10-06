@@ -23,6 +23,7 @@
 import { describe, expect, test } from 'vitest'
 import { mock } from 'vitest-mock-extended'
 import {
+  severityTag,
   hasRecentFlows,
   MAX_FLOW_AGE_MS,
   buildSnmpNarrowing,
@@ -392,5 +393,21 @@ describe('hasRecentFlows', () => {
     expect(hasRecentFlows(flows(), NOW)).toBe(false)
     expect(hasRecentFlows(flows(null, 0), NOW)).toBe(false)
     expect(hasRecentFlows(flows('yesterday'), NOW)).toBe(false)
+  })
+})
+
+describe('severityTag', () => {
+  test.each([
+    ['CRITICAL', 'danger'],
+    ['Major', 'danger'],
+    ['minor', 'warn'],
+    ['WARNING', 'warn'],
+    ['NORMAL', 'success'],
+    ['CLEARED', 'success'],
+    ['INDETERMINATE', 'secondary'],
+    ['bogus', 'secondary'],
+    [undefined, 'secondary']
+  ])('%s -> %s', (severity, tag) => {
+    expect(severityTag(severity)).toBe(tag)
   })
 })

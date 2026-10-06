@@ -58,6 +58,15 @@ export const ellipsify = (text: string, count: number) => {
 /**
  * Returns whether the object has at least one valid (non-empty) string property.
  */
+/** The text of an HTML fragment, without its markup -- for a tooltip or a title attribute. */
+export const htmlToText = (html?: string | null): string => {
+  if (!html) {
+    return ''
+  }
+
+  return (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '').replace(/\s+/g, ' ').trim()
+}
+
 export const hasNonEmptyProperty = (obj?: any) => {
   if (!obj) {
     return false
