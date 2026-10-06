@@ -697,9 +697,14 @@ describe('Topology unsaved changes', () => {
     await untilDirty(wrapper, true)
     expect(wrapper.find('.unsaved-badge').text()).toBe('Unsaved changes')
     expect(wrapper.find('.topology-page').classes()).toContain('is-dirty')
+    // The Save button itself turns red while there is unsaved work.
+    const saveButton = () => Array.from(document.querySelectorAll('button'))
+      .find(b => b.querySelector('svg')?.getAttribute('aria-label') === 'Save')!
+    expect(saveButton().classList).toContain('p-button-danger')
 
     await click('Save')
     await untilDirty(wrapper, false)
+    expect(saveButton().classList).not.toContain('p-button-danger')
   })
 
   it('asks before switching to another view while dirty, and stays when declined', async () => {
