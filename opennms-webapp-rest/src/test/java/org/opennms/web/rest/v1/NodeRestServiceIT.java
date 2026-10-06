@@ -412,6 +412,11 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("secretComm", stored.getSnmpcommunity());
 
         assertCredentialsNotInResponses();
+
+        // The asset editor sends an empty value to clear a write-only field.
+        sendPut("/nodes/1/assetRecord", "password=", 204);
+        assertEquals("", m_assetRecordDao.findByNodeId(1).getPassword());
+        assertEquals("secretEnable", m_assetRecordDao.findByNodeId(1).getEnable());
     }
 
     /**
@@ -464,6 +469,26 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // Other asset fields can still be used.
         sendRequest(GET, "/nodes", parseParamData("assetRecord.description=null"), 200);
+    }
+
+    /**
+     * Raw SQL in the 'query' parameter can read any column, so only an administrator can use it.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void rawSqlQueryRequiresAdmin() throws Exception {
+        createNode();
+        System.setProperty("org.opennms.web.rest.enableQuery", "true");
+        try {
+            setUser("lowpriv", new String[]{ "ROLE_REST" });
+            sendRequest(GET, "/nodes", parseParamData(
+                    "query={alias}.nodeid in (select nodeid from assets where password like 's%25')"), 403);
+
+            setUser("admin", new String[]{ "ROLE_ADMIN" });
+            sendRequest(GET, "/nodes", parseParamData("query={alias}.nodeid > 0"), 200);
+        } finally {
+            System.clearProperty("org.opennms.web.rest.enableQuery");
+        }
     }
 
     @Test

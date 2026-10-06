@@ -90,6 +90,9 @@ You cannot filter or sort on the asset credential fields `assetRecord.password`,
 A request that does this returns `400 Bad Request`.
 This rule also applies to FIQL searches (`_s`) in the v2 API.
 
+If the system property `org.opennms.web.rest.enableQuery` is `true`, the v1 API accepts a `query` parameter with a raw SQL restriction.
+Only users with `ROLE_ADMIN` can use this parameter.
+
 == Standard filter examples
 
 Using `/events` as a base, the following table shows examples of REST calls with defined filters:

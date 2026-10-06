@@ -40,6 +40,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.cxf.message.Message;
+import org.apache.cxf.phase.PhaseInterceptorChain;
+import org.apache.cxf.security.SecurityContext;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -50,6 +53,7 @@ import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -146,7 +150,13 @@ public class OnmsRestService {
 
 		if (Boolean.getBoolean("org.opennms.web.rest.enableQuery")) {
 			final String query = removeParameter(params, "query");
-			if (query != null) builder.sql(query);
+			if (query != null) {
+				// Raw SQL can read any column, asset credentials too. Only an administrator can use it.
+				if (!isCurrentUserAdmin()) {
+					throw getException(Status.FORBIDDEN, "The 'query' parameter requires the ROLE_ADMIN role.");
+				}
+				builder.sql(query);
+			}
 		}
 
 		final String matchType;
@@ -208,6 +218,12 @@ public class OnmsRestService {
 			}
 		}
     }
+
+	private static boolean isCurrentUserAdmin() {
+		final Message message = PhaseInterceptorChain.getCurrentMessage();
+		final SecurityContext securityContext = message == null ? null : message.get(SecurityContext.class);
+		return securityContext != null && securityContext.isUserInRole(Authentication.ROLE_ADMIN);
+	}
 
 	protected static BeanWrapper getBeanWrapperForClass(final Class<?> criteriaClass) {
 		final BeanWrapper wrapper = new BeanWrapperImpl(criteriaClass);

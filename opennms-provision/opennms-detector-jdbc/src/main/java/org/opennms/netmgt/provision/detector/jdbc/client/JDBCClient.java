@@ -81,8 +81,8 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         Driver driver = (Driver)Class.forName(getDbDriver()).newInstance();
         LOG.debug("JDBC driver loaded: '{}'", getDbDriver());
 
+        // Do not log the URL. A JDBC URL can contain credentials.
         String url = DBTools.constructUrl(getUrl(), address.getCanonicalHostName());
-        LOG.debug("Constructed JDBC url: '{}'", url);
 
         Properties props = new Properties();
         props.setProperty("user", getUser());
@@ -90,7 +90,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         props.setProperty("timeout", String.valueOf(timeout/1000));
         m_connection = driver.connect(url, props);
 
-        LOG.debug("Got database connection: '{}' ({}, {})", m_connection, url, getUser());
+        LOG.debug("Got database connection to {} as user {}", address, getUser());
     }
 
     /**

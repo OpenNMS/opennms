@@ -75,8 +75,9 @@ The biggest addition is a new Quick Start Guide that provides simple steps to se
 * support for the XML Management Protocol (XMP) has been removed
 * security-related HTTP headers (Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, Permissions-Policy, Referrer-Policy) were added in `web.xml`
 * writing OpenNMS configuration through the REST API (`POST`/`PUT`/`DELETE` on `/rest/config/**`, including the alarm northbounder configurations) now requires `ROLE_ADMIN`; previously an account with only `ROLE_REST` could write these. Update any integration that used a `ROLE_REST` account to change configuration to use a `ROLE_ADMIN` account. Reading configuration and all other `ROLE_REST` data operations are unchanged.
-* reading requisitions through the REST API (`GET` on `/rest/requisitions/**`) now requires `ROLE_PROVISION` or `ROLE_ADMIN`. Requisitions can contain asset credentials. An account with only `ROLE_REST` can still write requisitions, but it cannot read them. Give `ROLE_PROVISION` to integration accounts that read requisitions.
-* the asset record fields `password`, `enable` and `snmpcommunity` are now write-only in the REST API. Node and asset responses do not show their values: XML output omits them and JSON output shows `null`. REST queries that filter or sort on these fields return `400 Bad Request`. Global search, asset search and asset suggestions no longer include them.
+* reading requisitions through the REST API now requires `ROLE_PROVISION` or `ROLE_ADMIN`. Give `ROLE_PROVISION` to integration accounts that read requisitions.
+* the asset fields `password`, `enable` and `snmpcommunity` are now write-only in the REST API.
+* the raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
 === SNMP4J upgrade
 The SNMP4J library has been upgraded to version 2.8.15.
