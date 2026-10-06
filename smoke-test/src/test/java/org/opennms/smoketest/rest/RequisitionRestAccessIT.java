@@ -64,6 +64,7 @@ public class RequisitionRestAccessIT extends AbstractRestIT {
     private static final String PASSWORD = "nms20407-password";
     private static final String USERS_PATH = "/opennms/rest/users";
     private static final String FOREIGN_SOURCE = "nms20407";
+    private static final String REQUISITIONS_PATH = "/opennms/rest/requisitions";
 
     private static final String REQUISITION = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\""
             + " foreign-source=\"" + FOREIGN_SOURCE + "\">"
@@ -116,6 +117,13 @@ public class RequisitionRestAccessIT extends AbstractRestIT {
                 .then().log().status()
                 .assertThat().statusCode(403);
 
+        // The v1 API maps the .xml and .json suffixes to the requisitions root.
+        for (final String alias : new String[] { REQUISITIONS_PATH + ".xml", REQUISITIONS_PATH + ".json" }) {
+            given().basePath(alias).get()
+                    .then().log().status()
+                    .assertThat().statusCode(403);
+        }
+
         // The write from the ROLE_REST account was stored.
         applyDefaultCredentials();
         given().accept(ContentType.XML).get("/" + FOREIGN_SOURCE)
@@ -135,6 +143,9 @@ public class RequisitionRestAccessIT extends AbstractRestIT {
                 .then().log().status()
                 .assertThat().statusCode(200)
                 .body(containsString("foreign-id=\"n1\""));
+        given().basePath(REQUISITIONS_PATH + ".xml").get()
+                .then().log().status()
+                .assertThat().statusCode(200);
     }
 
     private void createUser(final String username, final String role) {
