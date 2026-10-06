@@ -143,4 +143,65 @@ describe('NodeDetailsLinks.vue', () => {
       expect(menus(mountLinks({ services: [{ serviceName: 'ICMP', ipAddress: '10.0.0.1' }] })).map(m => m.label)).not.toContain('Services')
     })
   })
+
+  // The legacy page's confirmAssetEdit(): a requisition sync or rescan rolls asset edits back.
+  describe('Assets confirmation', () => {
+    const assets = (wrapper: ReturnType<typeof mountLinks>) =>
+      menus(wrapper).find(m => m.label === 'Inventory')!.items!.find(i => i.label === 'Assets')!
+    const dialog = (wrapper: ReturnType<typeof mountLinks>) => wrapper.findComponent({ name: 'AssetEditConfirmDialog' })
+
+    it('asks before opening the asset editor for a node from a requisition', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      const wrapper = mountLinks()
+
+      assets(wrapper).command!()
+      await wrapper.vm.$nextTick()
+
+      expect(assign).not.toHaveBeenCalled()
+      expect(dialog(wrapper).props('visible')).toBe(true)
+      expect(dialog(wrapper).props('foreignSource')).toBe('fs')
+
+      dialog(wrapper).vm.$emit('ok')
+      await wrapper.vm.$nextTick()
+
+      expect(assign).toHaveBeenCalledWith('/opennms/asset/modify.jsp?node=42')
+      expect(dialog(wrapper).props('visible')).toBe(false)
+    })
+
+    it('stays on the page when the user cancels', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      const wrapper = mountLinks()
+
+      assets(wrapper).command!()
+      await wrapper.vm.$nextTick()
+      dialog(wrapper).vm.$emit('cancel')
+      await wrapper.vm.$nextTick()
+
+      expect(assign).not.toHaveBeenCalled()
+      expect(dialog(wrapper).props('visible')).toBe(false)
+    })
+
+    it('goes straight there for a node not from a requisition', () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      const wrapper = mountLinks({ node: { ...node, foreignSource: null }})
+
+      assets(wrapper).command!()
+
+      expect(assign).toHaveBeenCalledWith('/opennms/asset/modify.jsp?node=42')
+    })
+
+    it('goes straight there for a read-only user', () => {
+      setRoles('ROLE_USER', 'ROLE_READONLY')
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      const wrapper = mountLinks()
+
+      assets(wrapper).command!()
+
+      expect(assign).toHaveBeenCalledWith('/opennms/asset/modify.jsp?node=42')
+    })
+  })
 })

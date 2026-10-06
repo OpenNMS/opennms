@@ -167,6 +167,7 @@ export const mapLink = (name: string, node: Node, context: NodeActionLinkContext
 
 export const createLinkItemsList = (node: Node, context: NodeActionLinkContext = {}) => {
   return linkItems.map(li => ({
+    name: li.name,
     label: li.label,
     link: mapLink(li.name, node, context)
   }))
@@ -246,3 +247,10 @@ export const createLinkGroups = (node: Node, context: NodeActionLinkContext = {}
         .filter(item => item.name === INFO_ITEM || item.link)
     }))
     .filter(group => group.items.length > 0)
+
+/**
+ * Whether opening the asset editor should be confirmed first, as the legacy node page's
+ * confirmAssetEdit() decided: for a node from a requisition, whose next sync or rescan rolls the
+ * edits back -- except for a read-only user, who cannot save them anyway.
+ */
+export const needsAssetEditConfirm = (node: Node, readOnly: boolean): boolean => !!node.foreignSource && !readOnly

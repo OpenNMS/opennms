@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { createLinkGroups, createLinkItemsList, INFO_ITEM, linkGroups, linkItems, mapLink } from '@/components/Nodes/nodeActionLinks'
+import { createLinkGroups, createLinkItemsList, INFO_ITEM, linkGroups, linkItems, mapLink, needsAssetEditConfirm } from '@/components/Nodes/nodeActionLinks'
 import { Node } from '@/types'
 import { describe, expect, it } from 'vitest'
 
@@ -92,6 +92,7 @@ describe('nodeActionLinks', () => {
 
   it('createLinkItemsList keeps Update SNMP Information when the address is known', () => {
     expect(createLinkItemsList(node, { ...ADMIN, snmpPrimaryIpAddress: '10.0.0.44' })).toContainEqual({
+      name: 'updateSnmp',
       label: 'Update SNMP Information',
       link: 'admin/updateSnmp.jsp?node=42&ipaddr=10.0.0.44'
     })
@@ -105,6 +106,7 @@ describe('nodeActionLinks', () => {
     const withBuilding = { ...node, assetRecord: { building: 'HQ 1' }} as unknown as Node
 
     expect(createLinkItemsList(withBuilding)).toContainEqual({
+      name: 'siteStatus',
       label: 'Site Status',
       link: 'siteStatusView.htm?statusSite=HQ%201'
     })
@@ -225,6 +227,21 @@ describe('nodeActionLinks', () => {
         ['Monitoring', ['Alarms', 'Events', 'Outages', 'Availability']],
         ['Graphs', ['Resource Graphs', 'Topology Map']]
       ])
+    })
+  })
+
+  // The legacy page's confirmAssetEdit().
+  describe('needsAssetEditConfirm', () => {
+    it('asks for a node from a requisition', () => {
+      expect(needsAssetEditConfirm({ ...node, foreignSource: 'fs' } as unknown as Node, false)).toBe(true)
+    })
+
+    it('does not ask for a node that is not from a requisition', () => {
+      expect(needsAssetEditConfirm({ ...node, foreignSource: null } as unknown as Node, false)).toBe(false)
+    })
+
+    it('does not ask a read-only user', () => {
+      expect(needsAssetEditConfirm({ ...node, foreignSource: 'fs' } as unknown as Node, true)).toBe(false)
     })
   })
 })

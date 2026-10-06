@@ -224,4 +224,38 @@ describe('NodeActionsDropdown.vue', () => {
       expect(labelsOf(mountIt({ node: requisitioned, existsInRequisition: true }))).not.toContain('Edit in Requisition')
     })
   })
+
+  // The node list's rows: the same confirmation as the Node Details links row.
+  describe('Assets confirmation', () => {
+    const requisitioned = { ...node, foreignSource: 'fs', foreignId: 'fid' }
+    const assetsItem = (wrapper: ReturnType<typeof mountIt>) =>
+      ((wrapper.vm as any).items as Array<{ label: string, command: () => void }>).find(i => i.label === 'Assets')!
+
+    it('asks before opening the asset editor for a node from a requisition', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      const wrapper = mountIt({ node: requisitioned })
+
+      assetsItem(wrapper).command()
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'AssetEditConfirmDialog' })
+      expect(assign).not.toHaveBeenCalled()
+      expect(dialog.props('visible')).toBe(true)
+
+      dialog.vm.$emit('ok')
+      expect(assign).toHaveBeenCalledWith('/opennms/asset/modify.jsp?node=42')
+      vi.unstubAllGlobals()
+    })
+
+    it('goes straight there for a node not from a requisition', () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+
+      assetsItem(mountIt()).command()
+
+      expect(assign).toHaveBeenCalledWith('/opennms/asset/modify.jsp?node=42')
+      vi.unstubAllGlobals()
+    })
+  })
 })

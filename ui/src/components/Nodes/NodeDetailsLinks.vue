@@ -5,15 +5,22 @@
     data-test="node-details-links"
   >
     <OnmsMenubar :items="items" />
+    <AssetEditConfirmDialog
+      :visible="!!pendingAssetHref"
+      :foreignSource="node.foreignSource"
+      @ok="onAssetEditConfirmed"
+      @cancel="pendingAssetHref = undefined"
+    />
   </nav>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from 'vue'
+import { computed, PropType, ref } from 'vue'
 import { OnmsMenubar, OnmsMenuItem } from '@opennms/onms-ui'
 import useRole from '@/composables/useRole'
 import { Node } from '@/types'
-import { createLinkGroups, INFO_ITEM } from './nodeActionLinks'
+import AssetEditConfirmDialog from './AssetEditConfirmDialog.vue'
+import { createLinkGroups, INFO_ITEM, needsAssetEditConfirm } from './nodeActionLinks'
 import { buildServiceLinks, NodeLinkService } from './nodeServiceLinks'
 
 // The node's links, grouped under top-level menus in a row beneath the header. The same links as
@@ -52,7 +59,29 @@ const props = defineProps({
   }
 })
 
-const { adminRole, provisionRole } = useRole()
+const { adminRole, provisionRole, readOnlyRole } = useRole()
+
+// The asset editor waits for the confirmation dialog when the node is from a requisition.
+const pendingAssetHref = ref<string | undefined>(undefined)
+
+const navigate = (name: string, href: string) => {
+  if (name === 'assets' && needsAssetEditConfirm(props.node, readOnlyRole.value)) {
+    pendingAssetHref.value = href
+
+    return
+  }
+
+  window.location.assign(href)
+}
+
+const onAssetEditConfirmed = () => {
+  const href = pendingAssetHref.value
+  pendingAssetHref.value = undefined
+
+  if (href) {
+    window.location.assign(href)
+  }
+}
 
 // Real links rather than commands, so they can be opened in a new tab or copied like any other
 // link; the web pages open in a new tab of their own accord.
@@ -80,7 +109,7 @@ const groupMenus = computed<OnmsMenuItem[]>(() =>
           label: item.label,
           command: item.name === INFO_ITEM
             ? () => props.triggerNodeInfo?.()
-            : () => window.location.assign(`${props.baseHref}${item.link}`)
+            : () => navigate(item.name, `${props.baseHref}${item.link}`)
         }))
     }))
     .filter(group => group.items.length > 0))
