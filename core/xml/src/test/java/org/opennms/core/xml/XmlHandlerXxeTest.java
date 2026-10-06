@@ -29,32 +29,39 @@
 package org.opennms.core.xml;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.stream.XMLInputFactory;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
  * XmlHandler unmarshals XML that crosses the Minion-to-core IPC boundary, so a crafted message must
- * not be able to use a DOCTYPE or external entity (XXE) to read files or reach internal services.
- * Runs against both the JDK parser and standalone Xerces, which is the parser on the OpenNMS runtime
- * classpath.
+ * not be able to use a DTD or external entity (XXE) to read files, reach internal services or
+ * expand entities. Runs against the JDK StAX parser and Woodstox, which is the StAX parser on the
+ * OpenNMS runtime classpath.
  */
 @RunWith(Parameterized.class)
 public class XmlHandlerXxeTest {
 
-    private static final String SAX_DRIVER = "org.xml.sax.driver";
+    private static final String STAX_FACTORY = "javax.xml.stream.XMLInputFactory";
+
+    private static final String SECRET = "SECRET-FROM-DISK";
 
     @XmlRootElement(name = "probe")
     public static class Probe {
@@ -65,68 +72,72 @@ public class XmlHandlerXxeTest {
     @Parameters(name = "{0}")
     public static Collection<Object[]> parsers() {
         return Arrays.asList(new Object[][] {
-            { "com.sun.org.apache.xerces.internal.parsers.SAXParser" },
-            { "org.apache.xerces.parsers.SAXParser" },
+            { "com.sun.xml.internal.stream.XMLInputFactoryImpl" },
+            { "com.ctc.wstx.stax.WstxInputFactory" },
         });
     }
 
-    private final String m_driver;
-    private String m_previousDriver;
+    @Rule
+    public TemporaryFolder m_folder = new TemporaryFolder();
 
-    public XmlHandlerXxeTest(final String driver) {
-        m_driver = driver;
+    private final String m_factory;
+    private String m_previousFactory;
+
+    public XmlHandlerXxeTest(final String factory) {
+        m_factory = factory;
     }
 
     @Before
     public void selectParser() {
-        m_previousDriver = System.getProperty(SAX_DRIVER);
-        System.setProperty(SAX_DRIVER, m_driver);
+        m_previousFactory = System.getProperty(STAX_FACTORY);
+        System.setProperty(STAX_FACTORY, m_factory);
     }
 
     @After
     public void restoreParser() {
-        if (m_previousDriver == null) {
-            System.clearProperty(SAX_DRIVER);
+        if (m_previousFactory == null) {
+            System.clearProperty(STAX_FACTORY);
         } else {
-            System.setProperty(SAX_DRIVER, m_previousDriver);
+            System.setProperty(STAX_FACTORY, m_previousFactory);
         }
     }
 
     @Test
     public void unmarshalsAnOrdinaryMessage() {
-        final XmlHandler<Probe> handler = new XmlHandler<>(Probe.class);
-        assertEquals("hello", handler.unmarshal("<probe>hello</probe>").value);
+        assertEquals(m_factory, XMLInputFactory.newInstance().getClass().getName());
+        assertEquals("hello", new XmlHandler<>(Probe.class).unmarshal("<probe>hello</probe>").value);
     }
 
     @Test
-    public void rejectsAnExternalEntityXxe() {
-        final String xml = "<?xml version=\"1.0\"?>\n"
-                + "<!DOCTYPE probe [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
-                + "<probe>&xxe;</probe>";
-        assertDoctypeRejected(xml);
+    public void doesNotReadAnExternalEntity() throws Exception {
+        final File secret = m_folder.newFile("secret.txt");
+        Files.write(secret.toPath(), SECRET.getBytes(StandardCharsets.UTF_8));
+        assertNotLeaked("<!DOCTYPE probe [ <!ENTITY xxe SYSTEM \"" + secret.toURI() + "\"> ]>\n"
+                + "<probe>&xxe;</probe>");
     }
 
     @Test
-    public void rejectsAnyDoctype() {
-        // IPC messages never carry a DOCTYPE, so disallowing it outright blocks the XXE and
-        // entity-expansion vectors in one step.
-        final String xml = "<?xml version=\"1.0\"?>\n"
-                + "<!DOCTYPE probe [ <!ENTITY e \"x\"> ]>\n"
-                + "<probe>&e;</probe>";
-        assertDoctypeRejected(xml);
+    public void doesNotLoadAnExternalParameterEntity() throws Exception {
+        final File dtd = m_folder.newFile("external.dtd");
+        Files.write(dtd.toPath(), ("<!ENTITY leak \"" + SECRET + "\">").getBytes(StandardCharsets.UTF_8));
+        assertNotLeaked("<!DOCTYPE probe [ <!ENTITY % ext SYSTEM \"" + dtd.toURI() + "\"> %ext; ]>\n"
+                + "<probe>&leak;</probe>");
     }
 
-    private void assertDoctypeRejected(final String xml) {
+    @Test
+    public void doesNotExpandInternalEntities() {
+        // Nested internal entities ("billion laughs") must not expand.
+        assertNotLeaked("<!DOCTYPE probe [ <!ENTITY a \"" + SECRET + "\"> <!ENTITY b \"&a;&a;\"> ]>\n"
+                + "<probe>&b;</probe>");
+    }
+
+    private void assertNotLeaked(final String xml) {
+        String value;
         try {
-            new XmlHandler<>(Probe.class).unmarshal(xml);
-            fail("expected the DOCTYPE to be rejected");
+            value = new XmlHandler<>(Probe.class).unmarshal(xml).value;
         } catch (final RuntimeException e) {
-            Throwable cause = e;
-            while (cause.getCause() != null) {
-                cause = cause.getCause();
-            }
-            assertTrue("rejected for an unexpected reason: " + cause,
-                    String.valueOf(cause.getMessage()).toLowerCase().contains("doctype"));
+            value = null;
         }
+        assertFalse("the parser expanded an entity: " + value, value != null && value.contains(SECRET));
     }
 }
