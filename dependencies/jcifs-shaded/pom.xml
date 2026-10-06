@@ -54,11 +54,21 @@
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
-                    <exclude>META-INF/BC1024KE.DSA</exclude>
-                    <exclude>META-INF/BC1024KE.SF</exclude>
-                    <exclude>META-INF/BC2048KE.DSA</exclude>
-                    <exclude>META-INF/BC2048KE.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/services/java.security.Provider</exclude>
+                  </excludes>
+                </filter>
+                <!--
+                  bcprov-jdk18on is a multi-release jar. Keep only the Java 8 base classes, which
+                  are complete on their own; the versioned entries (module-info and Java 11+ extras)
+                  would not be relocated consistently.
+                -->
+                <filter>
+                  <artifact>org.bouncycastle:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/versions/**</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -84,7 +94,17 @@
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <!-- shade the same bouncycastle version the rest of the build uses instead of jcifs-ng's own -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncyCastleVersion}</version>
     </dependency>
   </dependencies>
 </project>
