@@ -71,7 +71,7 @@
     public void printSnmpMetadataEntry(final JspWriter out, final SnmpMetadataEntry snmpMetadataEntry) throws Exception {
         final String parentCls = snmpMetadataEntry.getParent() == null ? "" : " treegrid-parent-" + snmpMetadataEntry.getParent().getId();
         out.println("<tr class='treegrid-" + snmpMetadataEntry.getId() + parentCls + "'>");
-        out.println("<td>" + WebSecurityUtils.sanitizeString(((SnmpMetadataTable)snmpMetadataEntry.getParent()).getName()) +"[" + snmpMetadataEntry.getIndex() + "]" + "</td><td><table class=\"table table-sm table-bordered\">");
+        out.println("<td>" + WebSecurityUtils.sanitizeString(((SnmpMetadataTable)snmpMetadataEntry.getParent()).getName()) +"[" + WebSecurityUtils.sanitizeString(snmpMetadataEntry.getIndex()) + "]" + "</td><td><table class=\"table table-sm table-bordered\">");
         for(final SnmpMetadataValue snmpMetadataValue : snmpMetadataEntry.getValues()) {
             out.println("<tr><th>" + WebSecurityUtils.sanitizeString(snmpMetadataValue.getName()) + "</th>");
             printSnmpMetadataValue(out, snmpMetadataValue);

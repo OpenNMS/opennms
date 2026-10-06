@@ -142,7 +142,7 @@
         </tr>
           <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
               <th class="col-1">Event Source Location</th>
-              <td class="col-3"><%=WebSecurityUtils.sanitizeString(event.getLocation())%> (<%= event.getSystemId() %>)</td>
+              <td class="col-3"><%=WebSecurityUtils.sanitizeString(event.getLocation())%> (<%= WebSecurityUtils.sanitizeString(event.getSystemId()) %>)</td>
               <th class="col-1">Node Location</th>
               <td class="col-3"><%= WebSecurityUtils.sanitizeString(event.getNodeLocation()) %></td>
           </tr>
