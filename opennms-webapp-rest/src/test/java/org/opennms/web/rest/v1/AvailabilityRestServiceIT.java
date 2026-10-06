@@ -24,12 +24,15 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -197,5 +200,63 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         AvailabilityNode restNode = getXmlObject(JaxbUtils.getContextFor(AvailabilityNode.class), url, 200, AvailabilityNode.class);
         Assert.assertNotNull(restNode);
         Assert.assertTrue(an.toString() + " != " + restNode.toString(), an.equals(restNode));
+    }
+
+    /**
+     * Paging is over the node's interfaces in address order (IPv4 before IPv6), and
+     * ipinterfaceCount is the total either way, for a paginator.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodePagesInterfaces() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+
+        final JSONObject first = getNodeJson(nodeId, "limit=2&offset=0");
+        Assert.assertEquals(4, first.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.1", "192.168.1.2"), addresses(first));
+
+        final JSONObject second = getNodeJson(nodeId, "limit=2&offset=2");
+        Assert.assertEquals(4, second.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.3", "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5"), addresses(second));
+
+        // The node's own figures cover every interface, whichever page was asked for.
+        Assert.assertEquals(first.getDouble("availability"), second.getDouble("availability"), 0.0);
+        Assert.assertEquals(first.getInt("service-count"), second.getInt("service-count"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodePastTheLastPageIsEmpty() throws Exception {
+        final JSONObject past = getNodeJson(m_populator.getNode1().getId(), "limit=2&offset=10");
+
+        Assert.assertEquals(4, past.getInt("ipinterfaceCount"));
+        Assert.assertTrue(addresses(past).isEmpty());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeRejectsNegativePaging() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        sendRequest(GET, "/availability/nodes/" + nodeId, parseParamData("limit=-1"), 400);
+        sendRequest(GET, "/availability/nodes/" + nodeId, parseParamData("offset=-1"), 400);
+    }
+
+    private JSONObject getNodeJson(final int nodeId, final String query) throws Exception {
+        final MockHttpServletRequest request = createRequest(m_servletContext, GET,
+                "/availability/nodes/" + nodeId, parseParamData(query), getUser(), getUserRoles());
+        // The harness sets the parameters but not the query string, and with more than one parameter
+        // CXF does not see them all without it.
+        request.setQueryString(query);
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        return new JSONObject(sendRequest(request, 200));
+    }
+
+    private static List<String> addresses(final JSONObject node) {
+        final List<String> result = new ArrayList<>();
+        final JSONArray interfaces = node.optJSONArray("ipinterfaces");
+        for (int i = 0; interfaces != null && i < interfaces.length(); i++) {
+            result.add(interfaces.getJSONObject(i).getString("address"));
+        }
+        return result;
     }
 }
