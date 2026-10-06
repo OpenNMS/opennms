@@ -34,6 +34,7 @@ vi.mock('@/services', () => ({
     getNodeIpInterfaces: vi.fn(),
     nodeExistsInRequisition: vi.fn(),
     getNodeCriticalPath: vi.fn(),
+    getNodeServicesByName: vi.fn(),
     getNodeSnmpInterfaces: vi.fn(),
     getNodeAvailabilityPercentage: vi.fn()
   }
@@ -745,5 +746,61 @@ describe('nodeStore getNodeCriticalPath', () => {
     await store.getNodeById({ id: '99' } as Node)
 
     expect(store.criticalPath).toBeUndefined()
+  })
+})
+
+describe('nodeStore getNodeLinkServices', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  const ssh = [{ serviceName: 'SSH', ipAddress: '10.0.0.1' }]
+
+  it('asks for the six link services and keeps them', async () => {
+    vi.mocked(API.getNodeServicesByName).mockResolvedValue({ success: true, message: '', payload: ssh })
+    const store = useNodeStore()
+
+    await store.getNodeLinkServices('152')
+
+    expect(API.getNodeServicesByName).toHaveBeenCalledWith('152', ['Telnet', 'SSH', 'HTTP', 'HTTPS', 'Dell-OpenManage', 'MS-RDP'])
+    expect(store.linkServices).toEqual(ssh)
+  })
+
+  it('holds none when the request fails', async () => {
+    vi.mocked(API.getNodeServicesByName).mockResolvedValue({ success: false, message: 'boom' })
+    const store = useNodeStore()
+    store.linkServices = ssh
+
+    await store.getNodeLinkServices('152')
+
+    expect(store.linkServices).toEqual([])
+  })
+
+  it('discards a superseded answer', async () => {
+    let resolveFirst: (value: unknown) => void = () => undefined
+    vi.mocked(API.getNodeServicesByName)
+      .mockImplementationOnce(() => new Promise((r) => {
+        resolveFirst = r
+      }) as never)
+      .mockResolvedValueOnce({ success: true, message: '', payload: [] })
+    const store = useNodeStore()
+
+    const first = store.getNodeLinkServices('152')
+    await store.getNodeLinkServices('161')
+    resolveFirst({ success: true, message: '', payload: ssh })
+    await first
+
+    expect(store.linkServices).toEqual([])
+  })
+
+  it('is cleared when the next node fails to load', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.linkServices = ssh
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.linkServices).toEqual([])
   })
 })

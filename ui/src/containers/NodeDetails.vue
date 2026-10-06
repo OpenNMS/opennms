@@ -18,14 +18,6 @@
           aria-label="Node details view"
           data-test="node-details-tab-select"
         />
-        <NodeActionsDropdown
-          v-if="nodeLoaded"
-          :baseHref="baseHref"
-          :node="nodeStore.node"
-          :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
-          :existsInRequisition="nodeStore.existsInRequisition"
-          :triggerNodeInfo="onNodeInfo"
-        />
       </div>
     </div>
     <div
@@ -39,6 +31,7 @@
           :node="nodeStore.node"
           :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
           :existsInRequisition="nodeStore.existsInRequisition"
+          :services="nodeStore.linkServices"
           :triggerNodeInfo="onNodeInfo"
         />
       </div>
@@ -72,7 +65,6 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
 import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
@@ -149,6 +141,7 @@ const fetchNode = async () => {
 
   nodeStore.getNodeSnmpPrimaryInterface(props.id)
   nodeStore.getNodeCriticalPath(props.id)
+  nodeStore.getNodeLinkServices(props.id)
 
   await nodeStore.getNodeById({ id: props.id } as Node)
 }

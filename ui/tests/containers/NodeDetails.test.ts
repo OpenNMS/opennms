@@ -32,6 +32,7 @@ describe('NodeDetails.vue', () => {
     nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
     nodeStore.getNodeExistsInRequisition = vi.fn().mockResolvedValue(undefined)
     nodeStore.getNodeCriticalPath = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeLinkServices = vi.fn().mockResolvedValue(undefined)
     nodeStore.nodeDetailsTab = tab
 
     if (loaded) {
@@ -49,16 +50,11 @@ describe('NodeDetails.vue', () => {
         stubs: {
           BreadCrumbs: true,
           NodeAvailabilityGraph: true,
-          NodeActionsDropdown: {
-            name: 'NodeActionsDropdown',
-            template: '<div></div>',
-            props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'triggerNodeInfo']
-          },
           NodeDetailsHeader: true,
           NodeDetailsLinks: {
             name: 'NodeDetailsLinks',
             template: '<div></div>',
-            props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'triggerNodeInfo']
+            props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'services', 'triggerNodeInfo']
           },
           NodeNotificationsPanel: true,
           NodeStatusBox: true,
@@ -89,7 +85,7 @@ describe('NodeDetails.vue', () => {
     await flushPromises()
 
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(false)
-    expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
   })
@@ -112,7 +108,7 @@ describe('NodeDetails.vue', () => {
 
   // The Update SNMP action needs the SNMP-primary address, which the node payload does not
   // carry and the IP Interfaces table only holds a page of, so the page asks for it directly.
-  it('asks for the node SNMP-primary address and hands it to the actions menu', async () => {
+  it('asks for the node SNMP-primary address and hands it to the links row', async () => {
     const { wrapper, nodeStore } = mountComponent('42', true)
     await flushPromises()
 
@@ -121,7 +117,7 @@ describe('NodeDetails.vue', () => {
     nodeStore.snmpPrimaryIpAddress = '10.0.0.44'
     await flushPromises()
 
-    expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('snmpPrimaryIpAddress'))
+    expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).props('snmpPrimaryIpAddress'))
       .toBe('10.0.0.44')
   })
 
@@ -167,7 +163,7 @@ describe('NodeDetails.vue', () => {
 
       expect(wrapper.findComponent({ name: 'BreadCrumbs' }).exists()).toBe(true)
       expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
-      expect(wrapper.find('.header').findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).exists()).toBe(true)
     })
 
     // KeepAlive: going back to Main reuses the mounted tab rather than rebuilding it.
@@ -236,11 +232,11 @@ describe('NodeDetails.vue', () => {
       expect(nodeStore.getIpInterfacesForNodes).not.toHaveBeenCalled()
     })
 
-    it('hands the actions menu a handler that opens the dialog on this node', async () => {
+    it('hands the links row a handler that opens the dialog on this node', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
 
-      const dropdown = wrapper.findComponent({ name: 'NodeActionsDropdown' })
+      const dropdown = wrapper.findComponent({ name: 'NodeDetailsLinks' })
       const trigger = dropdown.props('triggerNodeInfo') as () => void
       expect(trigger).toBeTypeOf('function')
 
@@ -255,7 +251,7 @@ describe('NodeDetails.vue', () => {
     it('closes the dialog when it asks to be closed', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
-      ;(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('triggerNodeInfo') as () => void)()
+      ;(wrapper.findComponent({ name: 'NodeDetailsLinks' }).props('triggerNodeInfo') as () => void)()
       await flushPromises()
 
       wrapper.findComponent({ name: 'NodeDetailsDialog' }).vm.$emit('close')
@@ -298,13 +294,27 @@ describe('NodeDetails.vue', () => {
     })
   })
 
-  it('puts the node actions menu on the title row', async () => {
+  // The links row under the header replaced the title row's actions menu.
+  it('has no actions menu on the title row', async () => {
     const { wrapper } = mountComponent('42', true)
     await flushPromises()
 
     const header = wrapper.find('.header')
     expect(header.text()).toContain('Node Details for')
-    expect(header.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(true)
+    expect(header.findComponent({ name: 'NodeActionsDropdown' }).exists()).toBe(false)
+    expect(header.find('[data-test="node-details-tab-select"]').exists()).toBe(true)
+  })
+
+  it('asks for the node\'s Services links alongside the node, and hands them to the links row', async () => {
+    const { wrapper, nodeStore } = mountComponent('42', true)
+    await flushPromises()
+
+    expect(nodeStore.getNodeLinkServices).toHaveBeenCalledWith('42')
+
+    nodeStore.linkServices = [{ serviceName: 'SSH', ipAddress: '10.0.0.1' }]
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).props('services')).toEqual([{ serviceName: 'SSH', ipAddress: '10.0.0.1' }])
   })
 
   it('asks for the node\'s critical path alongside the node', async () => {
@@ -341,7 +351,7 @@ describe('NodeDetails.vue', () => {
   })
 
   describe('Edit in Requisition', () => {
-    it('asks whether the loaded node is in its requisition, and hands the answer to the menu', async () => {
+    it('asks whether the loaded node is in its requisition, and hands the answer to the links row', async () => {
       const { wrapper, nodeStore } = mountComponent('42', true)
       await flushPromises()
 
@@ -350,7 +360,7 @@ describe('NodeDetails.vue', () => {
       nodeStore.existsInRequisition = true
       await flushPromises()
 
-      expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('existsInRequisition')).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).props('existsInRequisition')).toBe(true)
     })
 
     it('does not ask before the node has loaded', async () => {

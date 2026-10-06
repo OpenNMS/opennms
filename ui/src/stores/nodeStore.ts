@@ -24,6 +24,7 @@ import { defineStore } from 'pinia'
 import API from '@/services'
 import { IpInterface, Node, NodeCriticalPath, QueryParameters, SnmpInterface } from '@/types'
 import { DEFAULT_SELECTION, RangeSelection } from '@/components/Nodes/availabilityRange'
+import { NodeLinkService, SERVICE_LINK_NAMES } from '@/components/Nodes/nodeServiceLinks'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
@@ -55,6 +56,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
   // The node's own critical path, for the Path Outage panel; undefined when it has none, or until
   // known.
   const criticalPath = ref<NodeCriticalPath | undefined>(undefined)
+
+  // The node's remote-access and web services (Telnet, SSH, HTTP, ...) and where they run, for the
+  // links row's Services menu.
+  const linkServices = ref<NodeLinkService[]>([])
   const snmpInterfaces = ref([] as SnmpInterface[])
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
@@ -155,6 +160,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpPrimaryIpAddress.value = undefined
     existsInRequisition.value = false
     criticalPath.value = undefined
+    linkServices.value = []
   }
 
   let snmpPrimaryRequestId = 0
@@ -184,6 +190,24 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
     if (resp) {
       snmpPrimaryIpAddress.value = resp.ipInterface[0]?.ipAddress
+    }
+  }
+
+  let linkServicesRequestId = 0
+
+  /**
+   * Fetch the node's services that the Services menu links to. Sequenced like the fetches above,
+   * so a slow answer for the node the user left cannot link this one to another node's address.
+   */
+  const getNodeLinkServices = async (id: string) => {
+    const requestId = ++linkServicesRequestId
+
+    linkServices.value = []
+
+    const result = await API.getNodeServicesByName(id, SERVICE_LINK_NAMES)
+
+    if (requestId === linkServicesRequestId && result.success) {
+      linkServices.value = result.payload ?? []
     }
   }
 
@@ -388,6 +412,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpPrimaryIpAddress,
     existsInRequisition,
     criticalPath,
+    linkServices,
     snmpInterfaces,
     snmpInterfacesTotalCount,
     ipInterfaces,
@@ -408,6 +433,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     getNodeSnmpPrimaryInterface,
     getNodeExistsInRequisition,
     getNodeCriticalPath,
+    getNodeLinkServices,
     setNodeQueryParameters
   }
 })

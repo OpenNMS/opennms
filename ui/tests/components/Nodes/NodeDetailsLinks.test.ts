@@ -116,4 +116,31 @@ describe('NodeDetailsLinks.vue', () => {
     const admin = menus(mountLinks({ existsInRequisition: true })).find(m => m.label === 'Admin')
     expect(admin?.items!.map(i => i.label)).toEqual(['Edit in Requisition'])
   })
+
+  describe('Services menu', () => {
+    const services = [
+      { serviceName: 'HTTP', ipAddress: '10.0.0.1' },
+      { serviceName: 'SSH', ipAddress: '10.0.0.1' }
+    ]
+
+    it('comes just before Admin, with a link per service the node has', () => {
+      const all = menus(mountLinks({ services }))
+
+      expect(all.map(m => m.label)).toEqual(['Inventory', 'Monitoring', 'Graphs', 'Services', 'Admin'])
+      expect(all.find(m => m.label === 'Services')!.items).toEqual([
+        { label: 'SSH', url: 'ssh://10.0.0.1' },
+        { label: 'HTTP', url: 'http://10.0.0.1/', target: '_blank' }
+      ])
+    })
+
+    it('comes last when there is no Admin menu', () => {
+      setRoles('ROLE_USER')
+
+      expect(menus(mountLinks({ services })).map(m => m.label)).toEqual(['Inventory', 'Monitoring', 'Graphs', 'Services'])
+    })
+
+    it('is left out for a node with none of the services', () => {
+      expect(menus(mountLinks({ services: [{ serviceName: 'ICMP', ipAddress: '10.0.0.1' }] })).map(m => m.label)).not.toContain('Services')
+    })
+  })
 })

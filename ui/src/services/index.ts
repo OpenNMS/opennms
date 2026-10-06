@@ -61,7 +61,7 @@ import { getAliases, getAllCredentials, getCredentialsByAlias, addCredentials, u
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
-import { getNodeIfServices } from './ifService'
+import { getNodeIfServices, getNodeServicesByName } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { getSnmpInterfaces, getNodeSnmpInterfaceQuery } from './snmpInterfaceService'
 import { getFlowGraphUrl } from './flowService'
@@ -143,6 +143,7 @@ export default {
   nodeExistsInRequisition,
   getNodeEnlinkdElements,
   getNodeIfServices,
+  getNodeServicesByName,
   getIpInterfaces,
   getNodeIpInterfaceQuery,
   getSnmpInterfaces,

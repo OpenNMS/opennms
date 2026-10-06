@@ -353,6 +353,13 @@ export interface IpInterface {
   snmpPrimary: string
   hostName: string
 }
+// A monitored service on a node and the address it runs on, from /api/v2/ifservices: what the
+// Node Details Services menu links to.
+export interface NodeLinkService {
+  serviceName: string
+  ipAddress: string
+}
+
 // GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
 export interface NodeCriticalPath {
   criticalPathIp: string | null

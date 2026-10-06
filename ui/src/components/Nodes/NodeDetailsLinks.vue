@@ -14,6 +14,7 @@ import { OnmsMenubar, OnmsMenuItem } from '@opennms/onms-ui'
 import useRole from '@/composables/useRole'
 import { Node } from '@/types'
 import { createLinkGroups, INFO_ITEM } from './nodeActionLinks'
+import { buildServiceLinks, NodeLinkService } from './nodeServiceLinks'
 
 // The node's links, grouped under top-level menus in a row beneath the header. The same links as
 // the title row's actions menu (NodeActionsDropdown), from the same nodeActionLinks, so the two
@@ -38,6 +39,12 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  // The node's remote-access and web services, for the Services menu.
+  services: {
+    required: false,
+    type: Array as PropType<NodeLinkService[]>,
+    default: () => []
+  },
   triggerNodeInfo: {
     required: false,
     type: Function as PropType<() => void>,
@@ -47,7 +54,17 @@ const props = defineProps({
 
 const { adminRole, provisionRole } = useRole()
 
-const items = computed<OnmsMenuItem[]>(() =>
+// Real links rather than commands, so they can be opened in a new tab or copied like any other
+// link; the web pages open in a new tab of their own accord.
+const servicesMenu = computed<OnmsMenuItem | undefined>(() => {
+  const links = buildServiceLinks(props.services)
+
+  return links.length > 0
+    ? { label: 'Services', items: links.map(link => ({ label: link.label, url: link.url, ...(link.newTab ? { target: '_blank' } : {}) })) }
+    : undefined
+})
+
+const groupMenus = computed<OnmsMenuItem[]>(() =>
   createLinkGroups(props.node, {
     snmpPrimaryIpAddress: props.snmpPrimaryIpAddress,
     isAdmin: adminRole.value,
@@ -67,6 +84,18 @@ const items = computed<OnmsMenuItem[]>(() =>
         }))
     }))
     .filter(group => group.items.length > 0))
+
+// Services sits just before Admin, or last when there is no Admin menu.
+const items = computed<OnmsMenuItem[]>(() => {
+  const menus = [...groupMenus.value]
+
+  if (servicesMenu.value) {
+    const admin = menus.findIndex(menu => menu.label === 'Admin')
+    menus.splice(admin === -1 ? menus.length : admin, 0, servicesMenu.value)
+  }
+
+  return menus
+})
 
 defineExpose({ items })
 </script>
