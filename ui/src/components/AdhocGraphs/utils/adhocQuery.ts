@@ -38,6 +38,14 @@ export const MAX_RESOLUTION = 4000
 const MIN_STEP_MS = 1000
 
 /**
+ * The most series a filter combination may produce. A rule matching a few hundred
+ * nodes, times their interfaces, times a couple of attributes is tens of thousands
+ * of sources: more than the measurements API should be asked for in one request,
+ * and far more than a plot can show. Past this the page explains rather than tries.
+ */
+export const MAX_SERIES = 200
+
+/**
  * Reduce a node/resource/attribute triple to a legal JEXL identifier.
  *
  * A source label is not cosmetic here: it is the name an expression refers to, and

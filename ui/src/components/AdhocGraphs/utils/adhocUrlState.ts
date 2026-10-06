@@ -20,10 +20,17 @@
 /// License.
 ///
 
-import { AdhocExpression, AdhocGraphConfig, AdhocSeries, AdhocSeriesStyle } from '@/types/adhocGraph'
+import {
+  AdhocExpression,
+  AdhocGraphConfig,
+  AdhocSelectionState,
+  AdhocSeriesOverride,
+  AdhocSeriesStyle
+} from '@/types/adhocGraph'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
 import { RelativeTimeRange, StartEndTime } from '@/types'
 import { RANGE_UNITS } from '@/components/Common/utils/timeRangeOptions'
+import { datasourceKey, nodeCriteriaOf, splitDatasourceKey } from './adhocIds'
 import { DEFAULT_RESOLUTION } from './adhocQuery'
 
 /** Field separator inside one entry. */
@@ -62,9 +69,22 @@ const STYLES: AdhocSeriesStyle[] = ['line', 'line2', 'line3', 'area', 'stack']
 
 const AGGREGATIONS = Object.values(ConsolidationFunctionType)
 
+/**
+ * Everything a link carries besides the graph config and time range: the picker
+ * (filters and picks), the per-series edits to re-apply once the picker has been
+ * evaluated, and how many series the graph had when the link was made, so the
+ * page can say when a re-evaluated link now draws something different.
+ */
+export interface AdhocLinkState {
+  selection: AdhocSelectionState
+  overrides: Record<string, AdhocSeriesOverride>
+  seriesCount: number
+}
+
 export interface AdhocUrlState {
   config: AdhocGraphConfig
   time: StartEndTime
+  link: AdhocLinkState
 }
 
 /**
@@ -88,13 +108,12 @@ const many = (value: RouteQuery[string]): string[] => {
   return typeof value === 'string' ? [value] : []
 }
 
-const asStyle = (value: string): AdhocSeriesStyle =>
-  (STYLES.includes(value as AdhocSeriesStyle) ? value as AdhocSeriesStyle : 'line')
+const isStyle = (value: string): value is AdhocSeriesStyle => STYLES.includes(value as AdhocSeriesStyle)
 
-const asAggregation = (value: string): ConsolidationFunctionType =>
-  (AGGREGATIONS.includes(value as ConsolidationFunctionType) ?
-    value as ConsolidationFunctionType :
-    ConsolidationFunctionType.AVERAGE)
+const asStyle = (value: string): AdhocSeriesStyle => (isStyle(value) ? value : 'line')
+
+const isAggregation = (value: string): value is ConsolidationFunctionType =>
+  AGGREGATIONS.includes(value as ConsolidationFunctionType)
 
 const asColor = (value: string): string =>
   (/^#[0-9a-fA-F]{6}$/.test(value) ? value.toLowerCase() : '')
@@ -127,13 +146,80 @@ const asPositiveInt = (value: string, fallback: number): number => {
 }
 
 /**
- * Encode a config + time range as a flat route query.
+ * One override entry: `resourceId~attribute~aggregation~label~style~color~hidden`,
+ * with a blank for anything not overridden. The same positional shape the old
+ * static `s` entries used, so a legacy link reads as a set of fully-specified
+ * overrides.
+ */
+const encodeOverride = (key: string, override: AdhocSeriesOverride): string | null => {
+  const { resourceId, attribute } = splitDatasourceKey(key)
+
+  if (!attribute) {
+    return null
+  }
+
+  const fields = [
+    resourceId,
+    attribute,
+    override.aggregation ?? '',
+    override.label ?? '',
+    override.style ?? '',
+    override.color ?? '',
+    override.hidden === undefined ? '' : (override.hidden ? '1' : '0')
+  ]
+
+  // Nothing overridden means nothing to carry.
+  if (fields.slice(2).every(field => field === '')) {
+    return null
+  }
+
+  return fields.map(escapeField).join(FIELD)
+}
+
+const decodeOverride = (entry: string): [string, AdhocSeriesOverride] | null => {
+  const [resourceId, attribute, aggregation, label, style, color, hidden] = entry.split(FIELD).map(unescapeField)
+
+  if (!resourceId || !attribute) {
+    return null
+  }
+
+  const override: AdhocSeriesOverride = {}
+
+  if (aggregation && isAggregation(aggregation)) {
+    override.aggregation = aggregation
+  }
+
+  if (label) {
+    override.label = label
+  }
+
+  if (style && isStyle(style)) {
+    override.style = style
+  }
+
+  if (color && asColor(color)) {
+    override.color = asColor(color)
+  }
+
+  if (hidden === '1' || hidden === '0') {
+    override.hidden = hidden === '1'
+  }
+
+  return [datasourceKey(resourceId, attribute), override]
+}
+
+/**
+ * Encode a config + time range + picker as a flat route query.
  *
  * Deliberately positional rather than JSON: a JSON blob of twenty series
  * percent-encodes into something several times longer than the cap, and the point
  * of this state is that a user can copy the address bar and send it to someone.
+ *
+ * The series themselves are NOT written. They are whatever the filters and picks
+ * produce when the link is opened, which is what makes a link to "all production
+ * routers" follow inventory. Only the per-series edits travel, keyed by series.
  */
-export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime): RouteQuery => {
+export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime, link: AdhocLinkState): RouteQuery => {
   // A relative window travels as the range itself, NOT as the instants it happened
   // to resolve to — otherwise a bookmarked "last two days" is frozen to the two
   // days that were current when the link was made. Only an explicit custom range
@@ -146,16 +232,42 @@ export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime): 
       fmt: time.format
     }
 
-  if (config.series.length) {
-    query.s = config.series.map(series => [
-      series.resourceId,
-      series.attribute,
-      series.aggregation,
-      series.label,
-      series.style,
-      series.color,
-      series.hidden ? '1' : '0'
-    ].map(escapeField).join(FIELD))
+  const { selection, overrides, seriesCount } = link
+
+  if (selection.nodeFilter) {
+    query.nf = selection.nodeFilter
+  }
+
+  if (selection.resourceFilter) {
+    query.rf = selection.resourceFilter
+  }
+
+  if (selection.datasourceFilter) {
+    query.df = selection.datasourceFilter
+  }
+
+  if (selection.pickedNodeIds.length) {
+    query.pn = selection.pickedNodeIds
+  }
+
+  if (selection.pickedResourceIds.length) {
+    query.pr = selection.pickedResourceIds
+  }
+
+  if (selection.pickedDatasourceKeys.length) {
+    query.pd = selection.pickedDatasourceKeys
+  }
+
+  const encodedOverrides = Object.entries(overrides)
+    .map(([key, override]) => encodeOverride(key, override))
+    .filter((entry): entry is string => entry !== null)
+
+  if (encodedOverrides.length) {
+    query.o = encodedOverrides
+  }
+
+  if (seriesCount > 0) {
+    query.n = String(seriesCount)
   }
 
   if (config.expressions.length) {
@@ -198,52 +310,69 @@ export const encodedQueryLength = (query: RouteQuery): number =>
   }, 0)
 
 /**
- * Rebuild a config + time range from a route query.
+ * Rebuild a config + time range + picker from a route query.
  *
- * Never throws and never returns a half-built series: a hand-edited or truncated
+ * Never throws and never returns a half-built entry: a hand-edited or truncated
  * link should degrade to "the parts that parsed" rather than to a blank page.
  * Returns null when the query carries no ad-hoc state at all.
+ *
+ * A link from before filters existed carries its series as `s` entries. Those are
+ * read as explicit picks of each node, resource and datasource plus a full set of
+ * overrides, which draws exactly the graph the link was made for.
  */
 export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
-  const rawSeries = many(query.s)
+  const legacySeries = many(query.s)
+  const rawOverrides = many(query.o)
   const rawExpressions = many(query.e)
   const start = first(query.start)
   const end = first(query.end)
   const range = asRange(first(query.range))
 
-  if (!rawSeries.length && !rawExpressions.length && !start && !range) {
+  const selection: AdhocSelectionState = {
+    nodeFilter: first(query.nf),
+    resourceFilter: first(query.rf),
+    datasourceFilter: first(query.df),
+    pickedNodeIds: many(query.pn),
+    pickedResourceIds: many(query.pr),
+    pickedDatasourceKeys: many(query.pd)
+  }
+
+  const hasSelection = Boolean(selection.nodeFilter || selection.resourceFilter || selection.datasourceFilter ||
+    selection.pickedNodeIds.length || selection.pickedResourceIds.length || selection.pickedDatasourceKeys.length)
+
+  if (!legacySeries.length && !rawOverrides.length && !rawExpressions.length && !start && !range && !hasSelection) {
     return null
   }
 
-  const series: AdhocSeries[] = []
-  const takenKeys = new Set<string>()
+  const overrides: Record<string, AdhocSeriesOverride> = {}
 
-  for (const entry of rawSeries) {
-    const [resourceId, attribute, aggregation, label, style, color, hidden] =
-      entry.split(FIELD).map(unescapeField)
+  for (const entry of [...legacySeries, ...rawOverrides]) {
+    const decoded = decodeOverride(entry)
 
-    // resourceId + attribute identify the series; without both there is nothing to query.
-    if (!resourceId || !attribute) {
-      continue
+    if (decoded) {
+      overrides[decoded[0]] = { ...overrides[decoded[0]], ...decoded[1] }
+    }
+  }
+
+  // Legacy series become picks at every level, so the three panes show them and
+  // the graph is exactly what was shared.
+  if (legacySeries.length && !hasSelection) {
+    const keys = new Set<string>()
+
+    for (const entry of legacySeries) {
+      const decoded = decodeOverride(entry)
+
+      if (decoded) {
+        keys.add(decoded[0])
+      }
     }
 
-    const key = `${resourceId}|${attribute}`
+    const resourceIds = [...new Set([...keys].map(key => splitDatasourceKey(key).resourceId))]
+    const nodeIds = [...new Set(resourceIds.map(id => nodeCriteriaOf(id) ?? '').filter(Boolean))]
 
-    if (takenKeys.has(key)) {
-      continue
-    }
-    takenKeys.add(key)
-
-    series.push({
-      key,
-      label: label || attribute,
-      resourceId,
-      attribute,
-      aggregation: asAggregation(aggregation ?? ''),
-      color: asColor(color ?? ''),
-      style: asStyle(style ?? ''),
-      hidden: hidden === '1'
-    })
+    selection.pickedDatasourceKeys = [...keys]
+    selection.pickedResourceIds = resourceIds
+    selection.pickedNodeIds = nodeIds
   }
 
   const expressions: AdhocExpression[] = []
@@ -269,7 +398,7 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
 
   return {
     config: {
-      series,
+      series: [],
       expressions,
       title: first(query.title),
       verticalLabel: first(query.vlabel),
@@ -283,6 +412,11 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
       endTime,
       format: first(query.fmt) || 'hours',
       ...(range ? { range } : {})
+    },
+    link: {
+      selection,
+      overrides,
+      seriesCount: asPositiveInt(first(query.n), 0)
     }
   }
 }

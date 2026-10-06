@@ -21,20 +21,23 @@
 ///
 
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import API from '@/services'
-import { GraphMetricsPayload, GraphMetricsResponse, QueryParameters, Resource, SORT } from '@/types'
-import { AdhocDatasourceOption, AdhocNodeOption, AdhocResourceOption } from '@/types/adhocGraph'
+import { GraphMetricsPayload, GraphMetricsResponse, Node, QueryParameters, Resource, SORT } from '@/types'
+import {
+  AdhocDatasourceOption,
+  AdhocNodeOption,
+  AdhocResourceOption,
+  AdhocSelectionState
+} from '@/types/adhocGraph'
+import {
+  datasourceKey,
+  nodeCriteriaOf,
+  resourceShortId,
+  splitDatasourceKey
+} from '@/components/AdhocGraphs/utils/adhocIds'
 
-/**
- * The node a resource belongs to, as `m_nodeDao.get()` accepts it — a bare node id
- * from `node[1].interfaceSnmp[eth0]`, or a foreign-source pair from
- * `nodeSource[Demo:1].interfaceSnmp[eth0]`.
- */
-export const nodeCriteriaOf = (resourceId: string): string | null => {
-  const match = /^(?:node|nodeSource)\[([^\]]+)\]/.exec(resourceId)
-  return match?.[1] ?? null
-}
+export { nodeCriteriaOf, resourceShortId }
 
 /**
  * Characters that are FIQL syntax rather than data: the boolean separators, the
@@ -51,31 +54,116 @@ const FIQL_SYNTAX = /[,;()=!<>~*]/g
  *
  * The offending characters are dropped rather than escaped: they are FIQL
  * grammar, not values, and node labels are host names that do not contain them.
- * Dropping them searches for the rest of what was typed, which is what a search
- * box is expected to do. (If CXF's FIQL parser turns out to support quoted
- * values, quoting would be strictly better — this is a guard, not real escaping.)
  */
 export const toFiqlSearchTerm = (term: string): string =>
   term.replace(FIQL_SYNTAX, ' ').trim().replace(/\s+/g, ' ')
 
-/** Page size for the node picker's server-side search. */
-const NODE_SEARCH_LIMIT = 100
+/**
+ * Whether the node box holds a filter rule rather than a label fragment.
+ *
+ * There is no toggle: the one box takes both, and this decides which. Anything
+ * with the rule grammar's operators (`&`, `|`, `!`, `=`, parentheses, quotes,
+ * comparisons) or one of its keywords (`catincX`, `isSNMP`, `LIKE`, `IPLIKE`) is a
+ * rule; a bare host-name fragment is not. A fragment could be rewritten as
+ * `nodeLabel LIKE '%x%'`, but SQL LIKE is case-sensitive and the label search is
+ * not, so fragments keep going to the label search.
+ */
+export const looksLikeFilterRule = (text: string): boolean => {
+  const trimmed = text.trim()
+
+  if (!trimmed) {
+    return false
+  }
+
+  if (/[&|!=()'"<>]/.test(trimmed)) {
+    return true
+  }
+
+  return /(^|\s)(catinc\w+|is[A-Z]\w*|notis\w+)(\s|$)/.test(trimmed) || /\b(IPLIKE|LIKE)\b/i.test(trimmed)
+}
 
 /**
- * How many resource/datasource lookups run at once. Each selected resource costs
- * one GET, so a "select all" on a switch with 400 interfaces would otherwise open
- * 400 sockets at once and get throttled or dropped.
+ * The rule actually handed to the filter engine, or '' when the box does not hold
+ * one. A pasted Grafana `nodeFilter(catincRouters, labelFormat=id:label)` is
+ * unwrapped, and its `labelFormat=`/`valueFormat=` arguments dropped: they are
+ * dropdown display hints with no meaning here.
+ */
+export const composeFilterRule = (text: string): string => {
+  let rule = text.trim()
+  const call = /^nodeFilter\s*\((.*)\)\s*$/s.exec(rule)
+
+  if (call) {
+    rule = call[1]
+      .split(',')
+      .filter(part => !/^\s*(labelFormat|valueFormat)\s*=/.test(part))
+      .join(',')
+      .trim()
+
+    // `nodeFilter()` is "every node"; the filter engine spells that as a rule
+    // that is true for any node with an address.
+    return rule || 'IPADDR != \'0.0.0.0\''
+  }
+
+  return looksLikeFilterRule(rule) ? rule : ''
+}
+
+/**
+ * A matcher for the resource and datasource boxes, compiled once per pattern.
+ *
+ * They share one small dialect, the one the Grafana perf datasource already uses
+ * inside resource ids: `*` matches anything and `?` one character, anchored to the
+ * whole field, so `interfaceSnmp[eth*]` means what it says and `ifHC*Octets` picks
+ * both directions. Square brackets are literal, because resource ids are full of
+ * them. A pattern with no wildcard is an ordinary case-insensitive substring match,
+ * so a bare `eth0` still finds things.
+ */
+export const matcherFor = (pattern: string): ((fields: string[]) => boolean) => {
+  const trimmed = pattern.trim()
+
+  if (!trimmed) {
+    return () => true
+  }
+
+  if (/[*?]/.test(trimmed)) {
+    const expression = new RegExp(
+      `^${trimmed.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.')}$`,
+      'i'
+    )
+    return fields => fields.some(field => expression.test(field))
+  }
+
+  const needle = trimmed.toLowerCase()
+  return fields => fields.some(field => field.toLowerCase().includes(needle))
+}
+
+/** `matcherFor` applied once; for callers with a single thing to test. */
+export const textMatches = (pattern: string, fields: string[]): boolean => matcherFor(pattern)(fields)
+
+/** Page size for a label search; a rule is never paged. */
+export const NODE_SEARCH_LIMIT = 100
+
+/**
+ * The most nodes a graph may be built from. A rule can match an entire estate,
+ * and every effective node costs a resource request; past this the picker stops
+ * and says so rather than opening thousands of connections for a graph that the
+ * series cap would refuse anyway.
+ */
+export const MAX_GRAPH_NODES = 200
+
+/**
+ * How many resource lookups run at once. Each effective node costs one GET, so a
+ * rule matching 200 nodes would otherwise open 200 sockets at once and get
+ * throttled or dropped.
  */
 const FETCH_CONCURRENCY = 6
 
+const INVALID_RULE_MESSAGE = 'That filter rule could not be parsed.'
+const FAILED_RULE_MESSAGE = 'The filter rule could not be evaluated.'
+
 /**
  * Run `worker` over `items`, at most `limit` in flight, preserving input order.
- *
  * Each item is isolated: a worker that rejects yields `null` for that item and the
- * rest still complete. Without this the whole batch rides on the service functions
- * never throwing — and one rejection would escape Promise.all, propagate out of
- * loadResources, and strand `resourcesLoading` at true with a spinner that never
- * stops. One unreachable resource should cost that resource, not the page.
+ * rest still complete, so one unreachable node costs that node, not the page.
  */
 const mapWithConcurrency = async <T, R>(
   items: T[],
@@ -104,345 +192,437 @@ const mapWithConcurrency = async <T, R>(
   return results
 }
 
+/**
+ * The picker's view of a node. The foreign-source pair and location ride along
+ * only when the server reported them, so a node that has neither still compares
+ * equal to the bare `{ id, label }` shape.
+ */
+const toNodeOption = (node: Node): AdhocNodeOption => {
+  const option: AdhocNodeOption = { id: String(node.id), label: node.label }
+
+  if (node.foreignSource && node.foreignId) {
+    option.foreignSource = node.foreignSource
+    option.foreignId = node.foreignId
+  }
+
+  if (node.location) {
+    option.location = node.location
+  }
+
+  return option
+}
+
+/**
+ * Every id the server might know a node by. A node found by search carries its
+ * database id and, when requisitioned, its foreign-source pair; a node restored
+ * from a link carries whichever form its resource ids used. The same node can
+ * therefore arrive under two names, and anything that compares nodes has to
+ * compare all of them.
+ */
+const nodeIdForms = (node: AdhocNodeOption): string[] =>
+  (node.foreignSource && node.foreignId ? [node.id, `${node.foreignSource}:${node.foreignId}`] : [node.id])
+
+/**
+ * Every graphable resource under a node resource, however deep. A resource is
+ * graphable when it carries attributes; the intermediate ones that merely group
+ * children are skipped, as the Grafana plugin skips them.
+ */
+const graphableDescendants = (node: AdhocNodeOption, nodeLabel: string, resource: Resource): AdhocResourceOption[] => {
+  const found: AdhocResourceOption[] = []
+
+  for (const child of resource.children?.resource ?? []) {
+    const attributes = Object.keys(child.rrdGraphAttributes ?? {}).sort()
+
+    if (attributes.length) {
+      found.push({
+        id: child.id,
+        label: child.label,
+        name: child.name ?? '',
+        typeLabel: child.typeLabel || 'Other',
+        nodeId: node.id,
+        nodeLabel,
+        attributes
+      })
+    }
+
+    found.push(...graphableDescendants(node, nodeLabel, child))
+  }
+
+  return found
+}
+
+/** A resource known only by id, from a link; filled in once its node loads. */
+const resourceStandIn = (id: string): AdhocResourceOption => ({
+  id,
+  label: resourceShortId(id),
+  name: '',
+  typeLabel: '',
+  nodeId: nodeCriteriaOf(id) ?? '',
+  nodeLabel: '',
+  attributes: []
+})
+
+const datasourceOf = (resource: AdhocResourceOption, attribute: string): AdhocDatasourceOption => ({
+  key: datasourceKey(resource.id, attribute),
+  resourceId: resource.id,
+  resourceLabel: resource.label,
+  nodeId: resource.nodeId,
+  nodeLabel: resource.nodeLabel,
+  attribute
+})
+
+/** A datasource known only by key, from a link; filled in once its resource loads. */
+const datasourceStandIn = (key: string): AdhocDatasourceOption => {
+  const { resourceId, attribute } = splitDatasourceKey(key)
+  return datasourceOf(resourceStandIn(resourceId), attribute)
+}
+
+/** Items in `matches` not already present among `picked`, by any of their keys. */
+const notPicked = <T>(picked: T[], matches: T[], keysOf: (item: T) => string[]): T[] => {
+  const pickedKeys = new Set(picked.flatMap(keysOf))
+  return matches.filter(item => !keysOf(item).some(key => pickedKeys.has(key)))
+}
+
 export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
-  const nodeOptions = ref<AdhocNodeOption[]>([])
-  const selectedNodes = ref<AdhocNodeOption[]>([])
+  // ---- Nodes ---------------------------------------------------------------
+  /** The node box: a filter rule, or a label fragment (see looksLikeFilterRule). */
+  const nodeFilter = ref('')
+  /** What the node box currently matches on the server. */
+  const nodeMatches = ref<AdhocNodeOption[]>([])
   const nodesLoading = ref(false)
+  /** Why the last rule produced nothing, or '' when it worked. */
+  const nodeFilterError = ref('')
+  /** How many more nodes a label search matched than it listed (a rule is never paged). */
+  const nodeMatchOverflow = ref(0)
+  const pickedNodes = ref<AdhocNodeOption[]>([])
 
-  const resourceOptions = ref<AdhocResourceOption[]>([])
-  const selectedResources = ref<AdhocResourceOption[]>([])
+  /**
+   * The nodes the graph is built from: the picks when there are any, otherwise
+   * everything the filter matches. An empty box matches nothing on purpose; the
+   * list it shows is for browsing and picking, not an invitation to graph the
+   * first hundred nodes in inventory.
+   */
+  const effectiveNodes = computed<AdhocNodeOption[]>(() => {
+    if (pickedNodes.value.length) {
+      return pickedNodes.value
+    }
+
+    return nodeFilter.value.trim() ? nodeMatches.value : []
+  })
+
+  /** Every id form of every effective node, for membership tests. */
+  const effectiveNodeForms = computed<Set<string>>(() => new Set(effectiveNodes.value.flatMap(nodeIdForms)))
+
+  /** More effective nodes than a graph may be built from; 0 when within the limit. */
+  const nodeLimitExceeded = computed<number>(() =>
+    (effectiveNodes.value.length > MAX_GRAPH_NODES ? effectiveNodes.value.length : 0))
+
+  /**
+   * What the node column lists: picks pinned on top, then the other matches. A
+   * match that is the same node as a pick under another id form is not listed
+   * again, or a legacy link's `Demo:r1` and a search's `7` would both show.
+   */
+  const nodeOptions = computed<AdhocNodeOption[]>(() =>
+    [...pickedNodes.value, ...notPicked(pickedNodes.value, nodeMatches.value, nodeIdForms)])
+
+  // ---- Resources -----------------------------------------------------------
+  const resourceFilter = ref('')
+  /** Every graphable resource under every effective node. */
+  const resourceCandidates = ref<AdhocResourceOption[]>([])
   const resourcesLoading = ref(false)
+  const pickedResources = ref<AdhocResourceOption[]>([])
 
-  const datasourceOptions = ref<AdhocDatasourceOption[]>([])
-  const selectedDatasources = ref<AdhocDatasourceOption[]>([])
-  const datasourcesLoading = ref(false)
+  /** fornode responses by node id, so re-running a filter does not refetch. */
+  const nodeResourceCache = new Map<string, { label: string, resources: AdhocResourceOption[] }>()
 
+  const resourceCandidateById = computed<Map<string, AdhocResourceOption>>(() =>
+    new Map(resourceCandidates.value.map(resource => [resource.id, resource])))
+
+  const resourceMatches = computed<AdhocResourceOption[]>(() => {
+    const pattern = resourceFilter.value
+
+    if (!pattern.trim()) {
+      return resourceCandidates.value
+    }
+
+    const matches = matcherFor(pattern)
+
+    return resourceCandidates.value.filter(resource =>
+      matches([resourceShortId(resource.id), resource.label, resource.name, resource.typeLabel]))
+  })
+
+  /** A pick is shown with live data when there is any. */
+  const freshResource = (pick: AdhocResourceOption): AdhocResourceOption =>
+    resourceCandidateById.value.get(pick.id) ?? pick
+
+  /**
+   * Whether a picked resource belongs to a node that is in the graph right now.
+   * Known live, by its candidate; or by its node, under any id form the node goes
+   * by, which is what keeps a `nodeSource[fs:fid]` pick attached to the node that
+   * search listed by database id.
+   */
+  const resourceIsReachable = (pick: AdhocResourceOption): boolean =>
+    resourceCandidateById.value.has(pick.id) ||
+    effectiveNodeForms.value.has(pick.nodeId) ||
+    effectiveNodeForms.value.has(nodeCriteriaOf(pick.id) ?? '')
+
+  /**
+   * The picks that currently count: those under an effective node. The rest are
+   * kept, not dropped. A pick under a node the filter stopped matching comes back
+   * when the filter matches the node again; pruning here would make a mistyped
+   * rule, or a 400 from the engine mid-typing, destroy a carefully built selection.
+   */
+  const reachablePickedResources = computed<AdhocResourceOption[]>(() =>
+    pickedResources.value.filter(resourceIsReachable).map(freshResource))
+
+  const effectiveResources = computed<AdhocResourceOption[]>(() => {
+    if (pickedResources.value.length) {
+      return reachablePickedResources.value
+    }
+
+    return resourceFilter.value.trim() ? resourceMatches.value : []
+  })
+
+  const resourceOptions = computed<AdhocResourceOption[]>(() => [
+    ...reachablePickedResources.value,
+    ...notPicked(pickedResources.value, resourceMatches.value, resource => [resource.id])
+  ])
+
+  // ---- Datasources ---------------------------------------------------------
+  const datasourceFilter = ref('')
+  const pickedDatasources = ref<AdhocDatasourceOption[]>([])
+
+  /** Every attribute of every effective resource; no request needed. */
+  const datasourceCandidates = computed<AdhocDatasourceOption[]>(() =>
+    effectiveResources.value.flatMap(resource => resource.attributes.map(attribute => datasourceOf(resource, attribute))))
+
+  const datasourceCandidateByKey = computed<Map<string, AdhocDatasourceOption>>(() =>
+    new Map(datasourceCandidates.value.map(datasource => [datasource.key, datasource])))
+
+  const effectiveResourceIds = computed<Set<string>>(() => new Set(effectiveResources.value.map(resource => resource.id)))
+
+  const datasourceMatches = computed<AdhocDatasourceOption[]>(() => {
+    const pattern = datasourceFilter.value
+
+    if (!pattern.trim()) {
+      return datasourceCandidates.value
+    }
+
+    const matches = matcherFor(pattern)
+
+    return datasourceCandidates.value.filter(datasource => matches([datasource.attribute]))
+  })
+
+  const freshDatasource = (pick: AdhocDatasourceOption): AdhocDatasourceOption =>
+    datasourceCandidateByKey.value.get(pick.key) ?? pick
+
+  /** Datasource picks follow their resources the same way resource picks follow nodes. */
+  const reachablePickedDatasources = computed<AdhocDatasourceOption[]>(() =>
+    pickedDatasources.value
+      .filter(pick => datasourceCandidateByKey.value.has(pick.key) || effectiveResourceIds.value.has(pick.resourceId))
+      .map(freshDatasource))
+
+  /** The series the graph plots, before styling. */
+  const effectiveDatasources = computed<AdhocDatasourceOption[]>(() => {
+    if (pickedDatasources.value.length) {
+      return reachablePickedDatasources.value
+    }
+
+    return datasourceFilter.value.trim() ? datasourceMatches.value : []
+  })
+
+  const datasourceOptions = computed<AdhocDatasourceOption[]>(() => [
+    ...reachablePickedDatasources.value,
+    ...notPicked(pickedDatasources.value, datasourceMatches.value, datasource => [datasource.key])
+  ])
+
+  // ---- Measurements --------------------------------------------------------
   const measurements = ref<GraphMetricsResponse | null>(null)
   const queryLoading = ref(false)
   const queryError = ref('')
 
-  // Monotonic request ids, following the pattern in nodeStore: a response is only
-  // applied when no newer request of the same kind has started since it was issued.
-  // Every list here is driven by free-text typing or multi-select clicks, so
-  // out-of-order responses are the normal case, not an edge case.
+  // Monotonic request ids: a response is only applied when no newer request of the
+  // same kind has started since it was issued. Every list here is driven by
+  // typing, so out-of-order responses are the normal case, not an edge case.
   let nodeRequestId = 0
   let resourceRequestId = 0
-  let datasourceRequestId = 0
   let queryRequestId = 0
 
   /**
-   * Search nodes server-side. The picker never pulls the whole node table — an
-   * install with six figures of nodes has to stay usable — so the list is always
-   * the top `NODE_SEARCH_LIMIT` matches for the current term.
+   * Load the resources of every effective node, from cache where possible, one
+   * fornode request per node otherwise. fornode already carries each child's
+   * attributes, so this is the only request the resource and datasource columns
+   * ever need. Over the node limit nothing is fetched: the graph cannot be built
+   * from that many nodes, and the column says so.
    */
-  const searchNodes = async (term: string) => {
+  const loadResources = async () => {
+    const requestId = ++resourceRequestId
+    const nodes = nodeLimitExceeded.value ? [] : [...effectiveNodes.value]
+    const missing = nodes.filter(node => !nodeResourceCache.has(node.id))
+
+    if (missing.length) {
+      resourcesLoading.value = true
+
+      const responses = await mapWithConcurrency(
+        missing,
+        FETCH_CONCURRENCY,
+        node => API.getResourceForNode(node.id).then(resource => ({ node, resource }))
+      )
+
+      for (const response of responses) {
+        if (response?.resource) {
+          const label = response.resource.label || response.node.label
+          nodeResourceCache.set(response.node.id, {
+            label,
+            resources: graphableDescendants(response.node, label, response.resource)
+          })
+        }
+      }
+
+      if (requestId !== resourceRequestId) {
+        return
+      }
+    }
+
+    // One entry per resource id: the same node asked for under two id forms
+    // answers twice, and a resource must never be listed, or graphed, twice.
+    const seen = new Set<string>()
+    resourceCandidates.value = nodes
+      .flatMap(node => nodeResourceCache.get(node.id)?.resources ?? [])
+      .filter(resource => (seen.has(resource.id) ? false : (seen.add(resource.id), true)))
+    resourcesLoading.value = false
+
+    // A node restored from a link is known only by id until its resources load.
+    pickedNodes.value = pickedNodes.value.map(node => (node.label === node.id && nodeResourceCache.has(node.id) ?
+      { ...node, label: nodeResourceCache.get(node.id)?.label ?? node.id } :
+      node))
+  }
+
+  /**
+   * Re-run the node box against the server. A rule goes to the filter engine and
+   * is unbounded, because a rule names a set and the graph wants all of it. A
+   * label fragment (or an empty box) goes to the label search, which pages, so the
+   * picker stays usable on an install with six figures of nodes.
+   */
+  const evaluateNodes = async () => {
     const requestId = ++nodeRequestId
     nodesLoading.value = true
 
-    const queryParameters: QueryParameters = {
-      limit: NODE_SEARCH_LIMIT,
-      offset: 0,
-      orderBy: 'label',
-      order: SORT.ASCENDING
+    let found: AdhocNodeOption[] = []
+    let error = ''
+    let overflow = 0
+
+    const rule = composeFilterRule(nodeFilter.value)
+
+    if (rule) {
+      const result = await API.getNodesByFilterRule(rule)
+
+      if ('error' in result) {
+        error = result.error === 'invalid' ? INVALID_RULE_MESSAGE : FAILED_RULE_MESSAGE
+      } else {
+        found = result.nodes.map(toNodeOption)
+      }
+    } else {
+      const queryParameters: QueryParameters = {
+        limit: NODE_SEARCH_LIMIT,
+        offset: 0,
+        orderBy: 'label',
+        order: SORT.ASCENDING
+      }
+      const searchable = toFiqlSearchTerm(nodeFilter.value)
+
+      if (searchable) {
+        queryParameters._s = `label==*${searchable}*`
+      }
+
+      const resp = await API.getNodes(queryParameters)
+
+      if (resp) {
+        found = resp.node.map(toNodeOption)
+        overflow = Math.max(0, (resp.totalCount ?? found.length) - found.length)
+      }
     }
-
-    const searchable = toFiqlSearchTerm(term)
-
-    if (searchable) {
-      queryParameters._s = `label==*${searchable}*`
-    }
-
-    const resp = await API.getNodes(queryParameters)
 
     if (requestId !== nodeRequestId) {
       return
     }
 
-    const found = resp ? resp.node.map(node => ({ id: String(node.id), label: node.label })) : []
-    const selectedIds = new Set(selectedNodes.value.map(node => node.id))
-
-    // Selected nodes are pinned to the top and never dropped by a later search.
-    // Without this, choosing a node and then searching for a different one hides
-    // the first — and a restored link, whose nodes are rarely in the default page,
-    // would show nothing selected at all.
-    nodeOptions.value = [
-      ...selectedNodes.value,
-      ...found.filter(node => !selectedIds.has(node.id))
-    ]
+    nodeMatches.value = found
+    nodeFilterError.value = error
+    nodeMatchOverflow.value = overflow
     nodesLoading.value = false
-  }
 
-  /**
-   * Replace the resource list with the children of every selected node.
-   *
-   * Selections below this level are pruned rather than cleared: dropping one node
-   * must not throw away the resources and datasources chosen on the others.
-   */
-  const loadResources = async () => {
-    const requestId = ++resourceRequestId
-    const nodes = [...selectedNodes.value]
-
-    if (!nodes.length) {
-      resourceOptions.value = []
-      resourcesLoading.value = false
-      await pruneResourceSelection()
-      return
-    }
-
-    resourcesLoading.value = true
-
-    let responses
-    try {
-      responses = await mapWithConcurrency(
-        nodes,
-        FETCH_CONCURRENCY,
-        node => API.getResourceForNode(node.id).then(resource => ({ node, resource }))
-      )
-    } catch (_error) {
-      // mapWithConcurrency isolates per item, so this is unreachable in practice —
-      // it is here so no future change can leave the spinner running forever.
-      resourcesLoading.value = false
-      return
-    }
-
-    if (requestId !== resourceRequestId) {
-      return
-    }
-
-    const options: AdhocResourceOption[] = []
-
-    for (const response of responses) {
-      // null means that node's lookup failed; the others still populate.
-      if (!response) {
-        continue
-      }
-
-      const { node, resource } = response
-      const children = (resource as Resource | null)?.children?.resource ?? []
-
-      for (const child of children) {
-        options.push({
-          id: child.id,
-          label: child.label,
-          typeLabel: child.typeLabel || 'Other',
-          nodeId: node.id,
-          nodeLabel: resource?.label || node.label
-        })
-      }
-    }
-
-    resourceOptions.value = options
-    resourcesLoading.value = false
-    await pruneResourceSelection()
-  }
-
-  const pruneResourceSelection = async () => {
-    const available = new Set(resourceOptions.value.map(option => option.id))
-    const kept = selectedResources.value.filter(resource => available.has(resource.id))
-
-    if (kept.length !== selectedResources.value.length) {
-      selectedResources.value = kept
-    }
-
-    await loadDatasources()
-  }
-
-  /** Replace the datasource list with the graphable attributes of every selected resource. */
-  const loadDatasources = async () => {
-    const requestId = ++datasourceRequestId
-    const resources = [...selectedResources.value]
-
-    if (!resources.length) {
-      datasourceOptions.value = []
-      datasourcesLoading.value = false
-      pruneDatasourceSelection()
-      return
-    }
-
-    datasourcesLoading.value = true
-
-    let responses
-    try {
-      responses = await mapWithConcurrency(
-        resources,
-        FETCH_CONCURRENCY,
-        resource => API.getResourceById(resource.id).then(detail => ({ resource, detail }))
-      )
-    } catch (_error) {
-      datasourcesLoading.value = false
-      return
-    }
-
-    if (requestId !== datasourceRequestId) {
-      return
-    }
-
-    const options: AdhocDatasourceOption[] = []
-
-    for (const response of responses) {
-      if (!response) {
-        continue
-      }
-
-      const { resource, detail } = response
-      const attributes = Object.keys((detail as Resource | null)?.rrdGraphAttributes ?? {}).sort()
-
-      for (const attribute of attributes) {
-        options.push({
-          key: `${resource.id}|${attribute}`,
-          resourceId: resource.id,
-          resourceLabel: resource.label,
-          nodeId: resource.nodeId,
-          nodeLabel: resource.nodeLabel,
-          attribute
-        })
-      }
-    }
-
-    datasourceOptions.value = options
-    datasourcesLoading.value = false
-    pruneDatasourceSelection()
-  }
-
-  const pruneDatasourceSelection = () => {
-    const available = new Set(datasourceOptions.value.map(option => option.key))
-    const kept = selectedDatasources.value.filter(datasource => available.has(datasource.key))
-
-    if (kept.length !== selectedDatasources.value.length) {
-      selectedDatasources.value = kept
-    }
-  }
-
-  const setSelectedNodes = async (nodes: AdhocNodeOption[]) => {
-    selectedNodes.value = nodes
     await loadResources()
   }
 
-  const setSelectedResources = async (resources: AdhocResourceOption[]) => {
-    selectedResources.value = resources
-    await loadDatasources()
+  const setNodeFilter = async (text: string) => {
+    nodeFilter.value = text
+    await evaluateNodes()
   }
 
-  const setSelectedDatasources = (datasources: AdhocDatasourceOption[]) => {
-    selectedDatasources.value = datasources
+  const setResourceFilter = (text: string) => {
+    resourceFilter.value = text
   }
 
-  /**
-   * Adopt datasources directly, without walking the cascade.
-   *
-   * Used as the fallback when a link names a resource the server no longer has:
-   * the stand-in keeps the series in the picker and in the graph (the query is
-   * relaxed, so it comes back as NaN) instead of silently dropping it.
-   */
-  const adoptDatasources = (datasources: AdhocDatasourceOption[]) => {
-    const byKey = new Map(datasourceOptions.value.map(option => [option.key, option]))
-
-    for (const datasource of datasources) {
-      if (!byKey.has(datasource.key)) {
-        byKey.set(datasource.key, datasource)
-      }
-    }
-
-    datasourceOptions.value = [...byKey.values()]
-    selectedDatasources.value = datasources.map(datasource => byKey.get(datasource.key) as AdhocDatasourceOption)
+  const setDatasourceFilter = (text: string) => {
+    datasourceFilter.value = text
   }
 
   /**
-   * Rebuild the whole selection from the resource/attribute pairs in a shared link.
-   *
-   * A link carries only resource ids and attribute names, so the node and resource
-   * panes have nothing to show unless the cascade is walked backwards: derive the
-   * node from each resource id, fetch it for its label and children, then mark the
-   * referenced resources and datasources as selected. Anything the server no longer
-   * knows about falls back to a stand-in rather than vanishing from the graph.
+   * Deselecting a node by hand takes its resource picks with it; that is what
+   * the user meant. Clearing every node pick does not: the graph falls back to
+   * the filter, and picks under nodes it still matches should survive.
    */
-  const restoreSelection = async (sources: { resourceId: string, attribute: string }[]) => {
-    const resourceIds = [...new Set(sources.map(source => source.resourceId))]
-    const criteria = [...new Set(
-      resourceIds.map(nodeCriteriaOf).filter((value): value is string => Boolean(value))
-    )]
-
-    const wantedKeys = new Set(sources.map(source => `${source.resourceId}|${source.attribute}`))
-
-    const standIns = (): AdhocDatasourceOption[] => sources.map(source => ({
-      key: `${source.resourceId}|${source.attribute}`,
-      resourceId: source.resourceId,
-      resourceLabel: source.resourceId,
-      nodeId: nodeCriteriaOf(source.resourceId) ?? '',
-      nodeLabel: '',
-      attribute: source.attribute
-    }))
-
-    if (!criteria.length) {
-      adoptDatasources(standIns())
-      return
+  const setPickedNodes = async (nodes: AdhocNodeOption[]) => {
+    if (nodes.length) {
+      const forms = new Set(nodes.flatMap(nodeIdForms))
+      pickedResources.value = pickedResources.value.filter(resource =>
+        forms.has(resource.nodeId) || forms.has(nodeCriteriaOf(resource.id) ?? ''))
     }
 
-    // Claim the cascade so a search or selection made while this is in flight wins.
-    const requestId = ++resourceRequestId
-    resourcesLoading.value = true
+    pickedNodes.value = nodes
+    await loadResources()
+  }
 
-    const responses = await mapWithConcurrency(
-      criteria,
-      FETCH_CONCURRENCY,
-      criterion => API.getResourceForNode(criterion).then(resource => ({ criterion, resource }))
-    )
-
-    if (requestId !== resourceRequestId) {
-      return
+  /** Likewise, deselecting a resource by hand drops its datasource picks. */
+  const setPickedResources = (resources: AdhocResourceOption[]) => {
+    if (resources.length) {
+      const resourceIds = new Set(resources.map(resource => resource.id))
+      pickedDatasources.value = pickedDatasources.value.filter(datasource => resourceIds.has(datasource.resourceId))
     }
 
-    const nodes: AdhocNodeOption[] = []
-    const options: AdhocResourceOption[] = []
+    pickedResources.value = resources
+  }
 
-    for (const response of responses) {
-      if (!response?.resource) {
-        continue
-      }
+  const setPickedDatasources = (datasources: AdhocDatasourceOption[]) => {
+    pickedDatasources.value = datasources
+  }
 
-      const { criterion, resource } = response
+  /** The selection as a link carries it. */
+  const selectionState = computed<AdhocSelectionState>(() => ({
+    nodeFilter: nodeFilter.value,
+    resourceFilter: resourceFilter.value,
+    datasourceFilter: datasourceFilter.value,
+    pickedNodeIds: pickedNodes.value.map(node => node.id),
+    pickedResourceIds: pickedResources.value.map(resource => resource.id),
+    pickedDatasourceKeys: pickedDatasources.value.map(datasource => datasource.key)
+  }))
 
-      nodes.push({ id: criterion, label: resource.label })
+  /**
+   * Rebuild the picker from a link, then evaluate it against the server as it is
+   * now. Picks arrive as bare ids and are listed as stand-ins until their data
+   * loads, so a link to a resource the server no longer has still shows the series
+   * (relaxed, so it comes back as NaN) instead of silently dropping it.
+   */
+  const restore = async (state: AdhocSelectionState) => {
+    nodeFilter.value = state.nodeFilter
+    resourceFilter.value = state.resourceFilter
+    datasourceFilter.value = state.datasourceFilter
+    pickedNodes.value = state.pickedNodeIds.map(id => ({ id, label: id }))
+    pickedResources.value = state.pickedResourceIds.map(resourceStandIn)
+    pickedDatasources.value = state.pickedDatasourceKeys.map(datasourceStandIn)
 
-      for (const child of resource.children?.resource ?? []) {
-        options.push({
-          id: child.id,
-          label: child.label,
-          typeLabel: child.typeLabel || 'Other',
-          nodeId: criterion,
-          nodeLabel: resource.label
-        })
-      }
-    }
-
-    selectedNodes.value = nodes
-
-    // Show the restored nodes at the top of the picker. They are rarely in the
-    // default first page of results, so without this the pane would look empty
-    // even though the nodes are selected.
-    const restoredIds = new Set(nodes.map(node => node.id))
-    nodeOptions.value = [
-      ...nodes,
-      ...nodeOptions.value.filter(node => !restoredIds.has(node.id))
-    ]
-
-    resourceOptions.value = options
-    selectedResources.value = options.filter(option => resourceIds.includes(option.id))
-    resourcesLoading.value = false
-
-    await loadDatasources()
-
-    const available = new Map(datasourceOptions.value.map(option => [option.key, option]))
-    const missing = standIns().filter(standIn => !available.has(standIn.key))
-
-    if (missing.length) {
-      for (const standIn of missing) {
-        available.set(standIn.key, standIn)
-      }
-      datasourceOptions.value = [...available.values()]
-    }
-
-    selectedDatasources.value = [...available.values()].filter(option => wantedKeys.has(option.key))
+    await evaluateNodes()
   }
 
   const runQuery = async (payload: GraphMetricsPayload) => {
@@ -471,42 +651,61 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     // repopulating the lists the user just cleared.
     nodeRequestId++
     resourceRequestId++
-    datasourceRequestId++
     queryRequestId++
 
-    selectedNodes.value = []
-    selectedResources.value = []
-    selectedDatasources.value = []
-    resourceOptions.value = []
-    datasourceOptions.value = []
+    nodeFilter.value = ''
+    resourceFilter.value = ''
+    datasourceFilter.value = ''
+    nodeMatches.value = []
+    pickedNodes.value = []
+    pickedResources.value = []
+    pickedDatasources.value = []
+    resourceCandidates.value = []
+    nodeResourceCache.clear()
     measurements.value = null
     queryError.value = ''
+    nodeFilterError.value = ''
+    nodeMatchOverflow.value = 0
+    nodesLoading.value = false
     resourcesLoading.value = false
-    datasourcesLoading.value = false
     queryLoading.value = false
   }
 
   return {
+    nodeFilter,
+    nodeMatches,
     nodeOptions,
-    selectedNodes,
     nodesLoading,
+    nodeFilterError,
+    nodeMatchOverflow,
+    nodeLimitExceeded,
+    pickedNodes,
+    effectiveNodes,
+    resourceFilter,
+    resourceMatches,
     resourceOptions,
-    selectedResources,
     resourcesLoading,
+    pickedResources,
+    reachablePickedResources,
+    effectiveResources,
+    datasourceFilter,
+    datasourceMatches,
     datasourceOptions,
-    selectedDatasources,
-    datasourcesLoading,
+    pickedDatasources,
+    reachablePickedDatasources,
+    effectiveDatasources,
+    selectionState,
     measurements,
     queryLoading,
     queryError,
-    searchNodes,
-    loadResources,
-    loadDatasources,
-    setSelectedNodes,
-    setSelectedResources,
-    setSelectedDatasources,
-    adoptDatasources,
-    restoreSelection,
+    evaluateNodes,
+    setNodeFilter,
+    setResourceFilter,
+    setDatasourceFilter,
+    setPickedNodes,
+    setPickedResources,
+    setPickedDatasources,
+    restore,
     runQuery,
     clearAll
   }

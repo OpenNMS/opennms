@@ -23,6 +23,7 @@
 import { v2, rest } from './axiosInstances'
 import {
   NodeApiResponse,
+  NodeFilterRuleResult,
   SnmpInterfaceApiResponse,
   QueryParameters,
   IpInterfaceApiResponse,
@@ -33,6 +34,32 @@ import { queryParametersHandler } from './serviceHelpers'
 import { orderBy } from 'lodash'
 
 const endpoint = '/nodes'
+
+/**
+ * Every node matching an OpenNMS filter rule (`catincRouters & location='Default'`),
+ * via the v1 endpoint: the filter engine lives there, not in v2.
+ *
+ * Unbounded on purpose: this is the Grafana plugin's `nodeFilter()` and a rule is
+ * meant to name a whole set, so paging it would silently drop part of the answer.
+ * The one failure worth telling apart is a rule the engine cannot parse, which the
+ * server reports as 400 with a fixed message; everything else is `failed`.
+ */
+const getNodesByFilterRule = async (rule: string): Promise<NodeFilterRuleResult> => {
+  try {
+    const resp = await rest.get(endpoint, {
+      params: { filterRule: rule, limit: 0, orderBy: 'label', order: 'asc' }
+    })
+
+    if (resp.status === 204 || !resp.data) {
+      return { nodes: [] }
+    }
+
+    return { nodes: (resp.data as NodeApiResponse).node ?? [] }
+  } catch (err) {
+    const status = (err as { response?: { status?: number }})?.response?.status
+    return { error: status === 400 ? 'invalid' : 'failed' }
+  }
+}
 
 const getNodes = async (queryParameters?: QueryParameters): Promise<NodeApiResponse | false> => {
   let endpointWithQueryString = ''
@@ -144,6 +171,7 @@ const getNodeOutages = async (id: string, queryParameters?: QueryParameters): Pr
 
 export {
   getNodes,
+  getNodesByFilterRule,
   getNodeById,
   getNodeOutages,
   getNodeIpInterfaces,

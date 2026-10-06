@@ -165,6 +165,14 @@ export interface Node {
   sysLocation: string
 }
 
+/**
+ * Outcome of a filter-rule node lookup. `invalid` is the server rejecting the rule
+ * itself (HTTP 400), which the caller shows as such; `failed` is anything else.
+ */
+export type NodeFilterRuleResult =
+  | { nodes: Node[] }
+  | { error: 'invalid' | 'failed' }
+
 export interface NodeColumnSelectionItem {
   id: string
   label: string

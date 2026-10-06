@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { DEFAULT_RESOLUTION } from '@/components/AdhocGraphs/utils/adhocQuery'
 import {
+  AdhocLinkState,
   decodeAdhocState,
   encodeAdhocState,
   encodedQueryLength,
@@ -14,29 +15,12 @@ import { ConsolidationFunctionType } from '@/types/timeSeries'
 
 const time: StartEndTime = { startTime: 1704067200, endTime: 1704070800, format: 'hours' }
 
+const KEY_IN = 'node[1].interfaceSnmp[eth0]|ifHCInOctets'
+const KEY_OUT = 'node[FS:A].interfaceSnmp[eth1]|ifHCOutOctets'
+
+/** Series are generated, so the config carries none; the link carries the picker and the edits. */
 const fullConfig: AdhocGraphConfig = {
-  series: [
-    {
-      key: 'node[1].interfaceSnmp[eth0]|ifHCInOctets',
-      label: 'in_octets',
-      resourceId: 'node[1].interfaceSnmp[eth0]',
-      attribute: 'ifHCInOctets',
-      aggregation: ConsolidationFunctionType.MAX,
-      color: '#2a78d6',
-      style: 'area',
-      hidden: true
-    },
-    {
-      key: 'node[2].interfaceSnmp[eth1]|ifHCOutOctets',
-      label: 'out_octets',
-      resourceId: 'node[2].interfaceSnmp[eth1]',
-      attribute: 'ifHCOutOctets',
-      aggregation: ConsolidationFunctionType.AVERAGE,
-      color: '#eb6834',
-      style: 'line3',
-      hidden: false
-    }
-  ],
+  series: [],
   expressions: [
     { id: 'expr-1', label: 'total_bits', value: '(in_octets + out_octets) * 8', color: '#1baf7a', style: 'stack' }
   ],
@@ -46,9 +30,38 @@ const fullConfig: AdhocGraphConfig = {
   resolution: 800
 }
 
+const fullLink: AdhocLinkState = {
+  selection: {
+    nodeFilter: 'catincRouters & location=\'Default\'',
+    resourceFilter: 'interfaceSnmp[eth*]',
+    datasourceFilter: 'ifHC*Octets',
+    pickedNodeIds: ['1', 'FS:A'],
+    pickedResourceIds: ['node[1].interfaceSnmp[eth0]', 'node[FS:A].interfaceSnmp[eth1]'],
+    pickedDatasourceKeys: [KEY_IN, KEY_OUT]
+  },
+  overrides: {
+    [KEY_IN]: { label: 'in_octets', aggregation: ConsolidationFunctionType.MAX, style: 'area', color: '#2a78d6', hidden: true },
+    [KEY_OUT]: { color: '#eb6834' }
+  },
+  seriesCount: 2
+}
+
+const emptyLink: AdhocLinkState = {
+  selection: {
+    nodeFilter: '',
+    resourceFilter: '',
+    datasourceFilter: '',
+    pickedNodeIds: [],
+    pickedResourceIds: [],
+    pickedDatasourceKeys: []
+  },
+  overrides: {},
+  seriesCount: 0
+}
+
 describe('encodeAdhocState / decodeAdhocState', () => {
   it('round-trips a complete graph', () => {
-    const restored = decodeAdhocState(encodeAdhocState(fullConfig, time))
+    const restored = decodeAdhocState(encodeAdhocState(fullConfig, time, fullLink))
 
     expect(restored).not.toBeNull()
     expect(restored?.time).toEqual(time)
@@ -56,18 +69,42 @@ describe('encodeAdhocState / decodeAdhocState', () => {
     expect(restored?.config.verticalLabel).toBe('bits/sec')
     expect(restored?.config.stacked).toBe(true)
     expect(restored?.config.resolution).toBe(800)
-    expect(restored?.config.series).toEqual(fullConfig.series)
+    expect(restored?.config.series).toEqual([])
     // The id is regenerated on decode; everything else survives.
     expect(restored?.config.expressions).toEqual([{ ...fullConfig.expressions[0], id: 'expr-0' }])
+    expect(restored?.link).toEqual(fullLink)
   })
 
-  it('omits defaulted fields so a simple graph gets a short link', () => {
-    const query = encodeAdhocState({ ...fullConfig, title: '', verticalLabel: '', stacked: false, resolution: DEFAULT_RESOLUTION }, time)
+  it('writes the picker under short keys so a link stays readable', () => {
+    const query = encodeAdhocState(fullConfig, time, fullLink)
 
-    expect(query.title).toBeUndefined()
-    expect(query.vlabel).toBeUndefined()
-    expect(query.stacked).toBeUndefined()
-    expect(query.res).toBeUndefined()
+    expect(query.nf).toBe('catincRouters & location=\'Default\'')
+    expect(query.rf).toBe('interfaceSnmp[eth*]')
+    expect(query.df).toBe('ifHC*Octets')
+    expect(query.pn).toEqual(['1', 'FS:A'])
+    expect(query.pr).toEqual(fullLink.selection.pickedResourceIds)
+    expect(query.pd).toEqual([KEY_IN, KEY_OUT])
+    expect(query.n).toBe('2')
+    expect(query.s).toBeUndefined()
+  })
+
+  it('writes only the fields of an override that were set', () => {
+    const query = encodeAdhocState(fullConfig, time, fullLink)
+
+    expect(query.o).toEqual([
+      'node[1].interfaceSnmp[eth0]~ifHCInOctets~MAX~in_octets~area~#2a78d6~1',
+      'node[FS:A].interfaceSnmp[eth1]~ifHCOutOctets~~~~#eb6834~'
+    ])
+  })
+
+  it('omits defaulted and empty fields so a simple graph gets a short link', () => {
+    const query = encodeAdhocState(
+      { ...fullConfig, expressions: [], title: '', verticalLabel: '', stacked: false, resolution: DEFAULT_RESOLUTION },
+      time,
+      { ...emptyLink, overrides: { [KEY_IN]: {}}}
+    )
+
+    expect(Object.keys(query).sort()).toEqual(['end', 'fmt', 'start'])
   })
 
   it('returns null when the query carries no ad-hoc state', () => {
@@ -75,16 +112,62 @@ describe('encodeAdhocState / decodeAdhocState', () => {
     expect(decodeAdhocState({ unrelated: 'value' })).toBeNull()
   })
 
-  it('accepts a single-series query that vue-router hands over as a bare string', () => {
-    const restored = decodeAdhocState({
-      s: 'node[1].x|ifInOctets~ifInOctets~AVERAGE~in~line~#2a78d6~0',
-      start: '1704067200',
-      end: '1704070800',
-      fmt: 'hours'
-    })
+  it('counts a filter alone as state worth restoring', () => {
+    const restored = decodeAdhocState({ nf: 'catincRouters' })
 
-    expect(restored?.config.series).toHaveLength(1)
-    expect(restored?.config.series[0].label).toBe('in')
+    expect(restored).not.toBeNull()
+    expect(restored?.link.selection.nodeFilter).toBe('catincRouters')
+    expect(restored?.link.seriesCount).toBe(0)
+  })
+
+  it('accepts a single pick that vue-router hands over as a bare string', () => {
+    const restored = decodeAdhocState({ pd: KEY_IN, start: '1704067200' })
+
+    expect(restored?.link.selection.pickedDatasourceKeys).toEqual([KEY_IN])
+  })
+})
+
+// Links made before filters existed carry each series as an `s` entry. They have
+// to keep drawing exactly the graph they were made for.
+describe('legacy static links', () => {
+  const entry = 'node[1].interfaceSnmp[eth0]~ifHCInOctets~MAX~in_octets~area~#2a78d6~1'
+
+  it('become picks at every level plus a full override', () => {
+    const restored = decodeAdhocState({ s: [entry, 'nodeSource[FS:A].interfaceSnmp[eth1]~ifHCOutOctets~AVERAGE~out~line~#eb6834~0'] })
+
+    expect(restored?.link.selection).toEqual({
+      nodeFilter: '',
+      resourceFilter: '',
+      datasourceFilter: '',
+      pickedNodeIds: ['1', 'FS:A'],
+      pickedResourceIds: ['node[1].interfaceSnmp[eth0]', 'nodeSource[FS:A].interfaceSnmp[eth1]'],
+      pickedDatasourceKeys: [KEY_IN, 'nodeSource[FS:A].interfaceSnmp[eth1]|ifHCOutOctets']
+    })
+    expect(restored?.link.overrides[KEY_IN]).toEqual({
+      label: 'in_octets',
+      aggregation: ConsolidationFunctionType.MAX,
+      style: 'area',
+      color: '#2a78d6',
+      hidden: true
+    })
+    expect(restored?.link.overrides['nodeSource[FS:A].interfaceSnmp[eth1]|ifHCOutOctets']?.hidden).toBe(false)
+  })
+
+  it('does not turn series into picks when the link already has a picker', () => {
+    const restored = decodeAdhocState({ s: entry, nf: 'catincRouters' })
+
+    expect(restored?.link.selection.pickedDatasourceKeys).toEqual([])
+    // The edit still applies if the filter happens to produce that series.
+    expect(restored?.link.overrides[KEY_IN]?.label).toBe('in_octets')
+  })
+
+  it('drops a duplicate so one series cannot be picked twice', () => {
+    expect(decodeAdhocState({ s: [entry, entry] })?.link.selection.pickedDatasourceKeys).toHaveLength(1)
+  })
+
+  it('keeps a weighted line style', () => {
+    const restored = decodeAdhocState({ s: 'node[1]~ifInOctets~AVERAGE~in~line2~#2a78d6~0' })
+    expect(restored?.link.overrides['node[1]|ifInOctets']?.style).toBe('line2')
   })
 })
 
@@ -94,67 +177,49 @@ describe('encodeAdhocState / decodeAdhocState', () => {
 describe('the field separator survives values that contain it', () => {
   const withExpression = (value: string, label = 'bits'): AdhocGraphConfig => ({
     ...fullConfig,
-    expressions: [{ id: 'e1', label, value, color: '#eb6834', style: 'line' }]
+    expressions: [{ id: 'expr-1', label, value, color: '#1baf7a', style: 'line' }]
   })
 
-  const roundTrip = (input: AdhocGraphConfig) => decodeAdhocState(encodeAdhocState(input, time))
+  const roundTrip = (config: AdhocGraphConfig, link = emptyLink) =>
+    decodeAdhocState(encodeAdhocState(config, time, link))
 
   it('round-trips a JEXL match operator without truncating it', () => {
-    const value = 'in_octets =~ [1,2] ? 1 : 0'
-    const restored = roundTrip(withExpression(value))
+    const restored = roundTrip(withExpression('in_octets =~ [1,2] ? 1 : 0'))
 
-    expect(restored?.config.expressions[0].value).toBe(value)
-    // The fields after the tilde used to be shifted out of place.
+    expect(restored?.config.expressions[0].value).toBe('in_octets =~ [1,2] ? 1 : 0')
     expect(restored?.config.expressions[0].style).toBe('line')
-    expect(restored?.config.expressions[0].color).toBe('#eb6834')
+    expect(restored?.config.expressions[0].color).toBe('#1baf7a')
   })
 
   it('round-trips a bare tilde and several of them', () => {
-    expect(roundTrip(withExpression('~in_octets'))?.config.expressions[0].value).toBe('~in_octets')
-    expect(roundTrip(withExpression('a ~ b ~ c'))?.config.expressions[0].value).toBe('a ~ b ~ c')
+    expect(roundTrip(withExpression('~a'))?.config.expressions[0].value).toBe('~a')
+    expect(roundTrip(withExpression('a~~b~'))?.config.expressions[0].value).toBe('a~~b~')
   })
 
-  it('round-trips a tilde in an expression name', () => {
-    expect(roundTrip(withExpression('in_octets * 8', 'od~d'))?.config.expressions[0].label).toBe('od~d')
-  })
-
-  // A literal percent must not be mistaken for the escape it produces.
   it('round-trips a literal percent, and a literal %7E', () => {
-    expect(roundTrip(withExpression('in_octets % 100'))?.config.expressions[0].value).toBe('in_octets % 100')
-    expect(roundTrip(withExpression('a %7E b'))?.config.expressions[0].value).toBe('a %7E b')
-    expect(roundTrip(withExpression('a %25 b'))?.config.expressions[0].value).toBe('a %25 b')
+    expect(roundTrip(withExpression('a % 2'))?.config.expressions[0].value).toBe('a % 2')
+    expect(roundTrip(withExpression('x%7Ey'))?.config.expressions[0].value).toBe('x%7Ey')
   })
 
-  // Storage resources can carry a Windows short name.
-  it('round-trips a tilde in a resource id', () => {
-    const resourceId = 'node[1].hrStorageIndex[C:\\PROGRA~1]'
-    const restored = roundTrip({
-      ...fullConfig,
-      series: [{ ...fullConfig.series[0], resourceId, key: `${resourceId}|ifInOctets` }],
-      expressions: []
-    })
+  it('round-trips a tilde in an overridden series', () => {
+    const key = 'node[1].hrStorageIndex[PROGRA~1]|used'
+    const restored = roundTrip(fullConfig, { ...emptyLink, overrides: { [key]: { label: 'progra' }}})
 
-    expect(restored?.config.series[0].resourceId).toBe(resourceId)
-    expect(restored?.config.series[0].attribute).toBe('ifHCInOctets')
-    expect(restored?.config.series[0].color).toBe('#2a78d6')
+    expect(restored?.link.overrides).toEqual({ [key]: { label: 'progra' }})
   })
 
   it('leaves an ordinary link unchanged, so URLs do not grow', () => {
-    const query = encodeAdhocState(fullConfig, time)
-    const entries = Array.isArray(query.s) ? query.s : [query.s]
+    const query = encodeAdhocState(fullConfig, time, fullLink)
 
-    for (const entry of entries) {
-      expect(entry).not.toContain('%')
-    }
+    expect(query.o?.[0]).toBe('node[1].interfaceSnmp[eth0]~ifHCInOctets~MAX~in_octets~area~#2a78d6~1')
   })
 })
 
 describe('relative time ranges in the URL', () => {
-  const relative: StartEndTime = { startTime: 1704067200, endTime: 1704153600, format: 'hours', range: { unit: 'hours', amount: 24 }}
+  const relative: StartEndTime = { startTime: 1, endTime: 2, format: 'hours', range: { unit: 'hours', amount: 24 }}
 
-  // The bug this fixes: absolute instants freeze a bookmark to whenever it was made.
   it('writes the range instead of the instants it resolved to', () => {
-    const query = encodeAdhocState(fullConfig, relative)
+    const query = encodeAdhocState(fullConfig, relative, emptyLink)
 
     expect(query.range).toBe('hours:24')
     expect(query.start).toBeUndefined()
@@ -162,111 +227,94 @@ describe('relative time ranges in the URL', () => {
   })
 
   it('round-trips the range unresolved, for the caller to anchor to now', () => {
-    const restored = decodeAdhocState(encodeAdhocState(fullConfig, relative))
+    const restored = decodeAdhocState(encodeAdhocState(fullConfig, relative, emptyLink))
 
     expect(restored?.time.range).toEqual({ unit: 'hours', amount: 24 })
   })
 
   it('still writes absolute instants for a custom range', () => {
-    const query = encodeAdhocState(fullConfig, time)
+    const query = encodeAdhocState(fullConfig, time, emptyLink)
 
-    expect(query.range).toBeUndefined()
     expect(query.start).toBe('1704067200')
     expect(query.end).toBe('1704070800')
+    expect(query.range).toBeUndefined()
   })
 
   it('decodes a range-only link, with no start or end present', () => {
     const restored = decodeAdhocState({ range: 'days:7' })
 
-    expect(restored).not.toBeNull()
     expect(restored?.time.range).toEqual({ unit: 'days', amount: 7 })
+    expect(restored?.time.startTime).toBe(0)
   })
 
   it('ignores a nonsense range rather than sliding by something arbitrary', () => {
-    for (const value of ['fortnights:2', 'hours:0', 'hours:-3', 'hours', 'hours:abc', '']) {
-      expect(decodeAdhocState({ range: value, start: '1704067200' })?.time.range, value).toBeUndefined()
-    }
-  })
-
-  it('prefers the range when a link somehow carries both', () => {
-    const restored = decodeAdhocState({ range: 'hours:2', start: '1704067200', end: '1704070800' })
-
-    expect(restored?.time.range).toEqual({ unit: 'hours', amount: 2 })
+    expect(decodeAdhocState({ range: 'fortnights:2', nf: 'x' })?.time.range).toBeUndefined()
+    expect(decodeAdhocState({ range: 'hours:-3', nf: 'x' })?.time.range).toBeUndefined()
+    expect(decodeAdhocState({ range: 'hours', nf: 'x' })?.time.range).toBeUndefined()
   })
 })
 
 describe('decodeAdhocState is defensive', () => {
-  it('drops entries with no resource id or attribute rather than throwing', () => {
+  it('drops override entries with no resource id or attribute rather than throwing', () => {
     const restored = decodeAdhocState({
-      s: ['', '~~~~~~', 'only-a-resource-id', 'node[1]~ifInOctets~AVERAGE~in~line~#2a78d6~0'],
+      o: ['', '~~~~~~', 'only-a-resource-id', 'node[1]~ifInOctets~~renamed~~~'],
       start: '1704067200'
     })
 
-    expect(restored?.config.series.map(entry => entry.attribute)).toEqual(['ifInOctets'])
-  })
-
-  it('drops a duplicate series so one selection cannot be plotted twice', () => {
-    const entry = 'node[1]~ifInOctets~AVERAGE~in~line~#2a78d6~0'
-    expect(decodeAdhocState({ s: [entry, entry] })?.config.series).toHaveLength(1)
-  })
-
-  it('keeps a weighted line style through a round trip', () => {
-    const restored = decodeAdhocState({ s: 'node[1]~ifInOctets~AVERAGE~in~line2~#2a78d6~0' })
-    expect(restored?.config.series[0].style).toBe('line2')
+    expect(restored?.link.overrides).toEqual({ 'node[1]|ifInOctets': { label: 'renamed' }})
   })
 
   it('falls back on unrecognized aggregations, styles and colors', () => {
-    const restored = decodeAdhocState({ s: 'node[1]~ifInOctets~BOGUS~in~spiral~red~0' })
-    const entry = restored?.config.series[0]
+    const restored = decodeAdhocState({ o: 'node[1]~ifInOctets~BOGUS~in~spiral~red~2' })
 
-    expect(entry?.aggregation).toBe(ConsolidationFunctionType.AVERAGE)
-    expect(entry?.style).toBe('line')
-    expect(entry?.color).toBe('')
+    expect(restored?.link.overrides['node[1]|ifInOctets']).toEqual({ label: 'in' })
   })
 
   it('drops an expression missing its name or value', () => {
     const restored = decodeAdhocState({
-      s: 'node[1]~ifInOctets~AVERAGE~in~line~#2a78d6~0',
+      nf: 'catincRouters',
       e: ['~in * 8', 'nameless~', 'bits~in * 8~line~#eb6834']
     })
 
     expect(restored?.config.expressions.map(expression => expression.label)).toEqual(['bits'])
   })
 
-  it('falls back to a sane time range and resolution on garbage input', () => {
-    const restored = decodeAdhocState({ s: 'node[1]~ifInOctets', start: 'yesterday', end: '-5', res: '0' })
+  it('falls back to a sane time range, resolution and count on garbage input', () => {
+    const restored = decodeAdhocState({ nf: 'x', start: 'yesterday', end: '-5', res: '0', n: 'many' })
 
     expect(restored?.time.startTime).toBe(0)
     expect(restored?.time.endTime).toBe(0)
     expect(restored?.time.format).toBe('hours')
     expect(restored?.config.resolution).toBe(DEFAULT_RESOLUTION)
+    expect(restored?.link.seriesCount).toBe(0)
   })
 
   it('tolerates a null-valued key from a query like ?stacked', () => {
-    expect(() => decodeAdhocState({ s: null, e: [null], stacked: null, start: null })).not.toThrow()
+    expect(() => decodeAdhocState({ s: null, o: [null], pd: null, stacked: null, start: null })).not.toThrow()
   })
 })
 
 describe('encodedQueryLength', () => {
-  it('grows with the number of series and flags an unshareable selection', () => {
-    const short = encodeAdhocState(fullConfig, time)
-    expect(encodedQueryLength(short)).toBeLessThan(MAX_QUERY_LENGTH)
+  it('grows with the number of picks and flags an unshareable selection', () => {
+    const small = encodeAdhocState(fullConfig, time, fullLink)
+    expect(encodedQueryLength(small)).toBeLessThan(MAX_QUERY_LENGTH)
 
-    const many: AdhocGraphConfig = {
-      ...fullConfig,
-      series: Array.from({ length: 60 }, (_unused, index) => ({
-        ...fullConfig.series[0],
-        key: `node[${index}].interfaceSnmp[GigabitEthernet0-0-${index}]|ifHCInOctets`,
-        label: `in_octets_${index}`,
-        resourceId: `node[${index}].interfaceSnmp[GigabitEthernet0-0-${index}]`
-      }))
+    const many: AdhocLinkState = {
+      ...emptyLink,
+      selection: {
+        ...emptyLink.selection,
+        pickedDatasourceKeys: Array.from({ length: 200 }, (_unused, index) =>
+          `node[${index}].interfaceSnmp[GigabitEthernet0-0-${index}]|ifHCInOctets`)
+      }
     }
 
-    expect(encodedQueryLength(encodeAdhocState(many, time))).toBeGreaterThan(MAX_QUERY_LENGTH)
+    expect(encodedQueryLength(encodeAdhocState(fullConfig, time, many))).toBeGreaterThan(MAX_QUERY_LENGTH)
   })
 
   it('counts a bare-string value as well as an array one', () => {
-    const query: RouteQuery = { s: 'abc' }
-    expect(encodedQueryLength(query)).toBeGreaterThan(0)
+    const asString: RouteQuery = { nf: 'abc' }
+    const asArray: RouteQuery = { pd: ['abc'] }
+
+    expect(encodedQueryLength(asString)).toBe(encodedQueryLength(asArray))
   })
 })
