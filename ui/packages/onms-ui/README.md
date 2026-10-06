@@ -167,6 +167,10 @@ Where these diverge from PrimeVue, deliberately:
   top-level items in a row, each opening its nested `items` as a dropdown. It
   takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
   `#end` for content around the items.
+- **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
+  for content that is not an `OnmsTable` (which has its own). `page` emits the
+  same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
+  `PageState`.
 - **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
   `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
   4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value

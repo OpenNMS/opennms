@@ -30,7 +30,6 @@ import {
   NodeCriticalPath
 } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
-import { orderBy } from 'lodash'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 
 const endpoint = '/nodes'
@@ -119,18 +118,31 @@ const getNodeIpInterfaces = async (
  * Node availability by interface and service. With `startMs`/`endMs` the figures cover that window;
  * without them they cover the last 24 hours, which is the legacy behaviour and still what every
  * caller but the availability panel wants.
+ *
+ * `page` asks for one page of the node's interfaces (in address order, as the server sorts them):
+ * only that page's figures are computed, each being a query of its own. `ipinterfaceCount` in the
+ * answer is the node's total, for a paginator.
  */
 const getNodeAvailabilityPercentage = async (
   id: string,
   startMs?: number,
-  endMs?: number
+  endMs?: number,
+  page?: { limit: number, offset: number }
 ): Promise<NodeAvailability | false> => {
   try {
-    const params = (startMs !== undefined && endMs !== undefined)
-      ? { params: { start: startMs, end: endMs }}
-      : undefined
-    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`, params)
-    resp.data.ipinterfaces = orderBy(resp.data.ipinterfaces, 'address')
+    const params: Record<string, number> = {}
+
+    if (startMs !== undefined && endMs !== undefined) {
+      params.start = startMs
+      params.end = endMs
+    }
+
+    if (page) {
+      params.limit = page.limit
+      params.offset = page.offset
+    }
+
+    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`, Object.keys(params).length ? { params } : undefined)
 
     return resp.data
   } catch (_err) {

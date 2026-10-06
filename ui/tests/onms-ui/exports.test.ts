@@ -52,6 +52,7 @@ const EXPECTED_RUNTIME_EXPORTS = [
   'OnmsMenubar',
   'OnmsMessageDialog',
   'OnmsMultiSelect',
+  'OnmsPaginator',
   'OnmsPanel',
   'OnmsPassword',
   'OnmsPopover',

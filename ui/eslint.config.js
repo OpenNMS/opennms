@@ -127,6 +127,7 @@ export default tseslint.config(
           { name: 'primevue/listbox', message: 'Use OnmsListbox from @opennms/onms-ui.' },
           { name: 'primevue/menu', message: 'Use OnmsMenu from @opennms/onms-ui.' },
           { name: 'primevue/menuitem', message: 'Use the OnmsMenuItem type from @opennms/onms-ui.' },
+          { name: 'primevue/paginator', message: 'Use OnmsPaginator from @opennms/onms-ui (or OnmsTable\'s built-in paginator).' },
           { name: 'primevue/menubar', message: 'Use OnmsMenubar from @opennms/onms-ui.' },
           { name: 'primevue/multiselect', message: 'Use OnmsMultiSelect from @opennms/onms-ui.' },
           { name: 'primevue/panel', message: 'Use OnmsPanel from @opennms/onms-ui.' },

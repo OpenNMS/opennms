@@ -466,6 +466,8 @@ export interface NodeAvailability {
   ipinterfaces: NodeAvailabilityInterface[]
   'service-count': number
   'service-down-count': number
+  // The node's total interfaces, when `ipinterfaces` may hold only a page of them.
+  ipinterfaceCount?: number
 }
 
 export interface FileEditorResponseLog {

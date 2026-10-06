@@ -568,4 +568,106 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(hrefs).toContain('/opennms/outage/detail.htm?id=9999')
     expect(hrefs).not.toContain('/opennms/outage/detail.htm?id=3543')
   })
+
+  // The roster's figures are a query each, so the server computes one page of interfaces at a time.
+  describe('interface paging', () => {
+    // A roster page answering for `count` interfaces in all, of which this page holds `onPage`.
+    const page = (count: number, onPage = Math.min(count, 10)) => availabilityDoc({
+      ipinterfaceCount: count,
+      ipinterfaces: Array.from({ length: onPage }, (_, i) => ({
+        address: `10.0.0.${i + 1}`,
+        availability: 100,
+        id: i + 1,
+        services: [{ id: 100 + i, name: 'ICMP', serviceId: 1, availability: 100 }]
+      }))
+    })
+
+    it('asks for the first page of 10 interfaces', async () => {
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0 })
+    })
+
+    it('shows no paginator when the node has 10 interfaces or fewer', async () => {
+      getAvailability.mockResolvedValue(page(10))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(false)
+    })
+
+    it('shows a paginator over the node\'s total when it has more', async () => {
+      getAvailability.mockResolvedValue(page(23))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      const paginator = wrapper.findComponent({ name: 'OnmsPaginator' })
+      expect(paginator.exists()).toBe(true)
+      expect(paginator.props('totalRecords')).toBe(23)
+      expect(paginator.props('rows')).toBe(10)
+    })
+
+    it('fetches the chosen page, with the timeline for the same window', async () => {
+      getAvailability.mockResolvedValue(page(23))
+      wrapper = mountPanel()
+      await flushPromises()
+      vi.clearAllMocks()
+      getAvailability.mockResolvedValue(page(23, 3))
+      getTimeline.mockResolvedValue(timelineDoc())
+
+      wrapper.findComponent({ name: 'OnmsPaginator' }).vm.$emit('page', { page: 2, first: 20, rows: 10, pageCount: 3 })
+      await flushPromises()
+
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 20 })
+      expect(getTimeline).toHaveBeenCalledTimes(1)
+      expect(getAvailability.mock.calls[0][1]).toBe(getTimeline.mock.calls[0][1])
+      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).props('first')).toBe(20)
+    })
+
+    it('keeps the page when the range changes', async () => {
+      getAvailability.mockResolvedValue(page(23))
+      wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
+      await flushPromises()
+      wrapper.findComponent({ name: 'OnmsPaginator' }).vm.$emit('page', { page: 1, first: 10, rows: 10, pageCount: 3 })
+      await flushPromises()
+      vi.clearAllMocks()
+      getAvailability.mockResolvedValue(page(23))
+      getTimeline.mockResolvedValue(timelineDoc())
+
+      await wrapper.find('button').trigger('click')
+      await flushPromises()
+
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 10 })
+    })
+
+    it('starts a new node on its first page', async () => {
+      getAvailability.mockResolvedValue(page(23))
+      wrapper = mountPanel()
+      await flushPromises()
+      wrapper.findComponent({ name: 'OnmsPaginator' }).vm.$emit('page', { page: 1, first: 10, rows: 10, pageCount: 3 })
+      await flushPromises()
+      vi.clearAllMocks()
+      getAvailability.mockResolvedValue(page(23))
+      getTimeline.mockResolvedValue(timelineDoc())
+
+      await wrapper.setProps({ node: { id: '202' } as any })
+      await flushPromises()
+
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0 })
+    })
+  })
+
+  // The legacy Availability page, which lists every interface and service.
+  it('links its View Availability button to the legacy availability page for the node', async () => {
+    const assign = vi.fn()
+    vi.stubGlobal('location', { assign } as any)
+    wrapper = mountPanel()
+    await flushPromises()
+
+    await wrapper.find('[data-test="availability-details-button"]').trigger('click')
+
+    expect(assign).toHaveBeenCalledWith('/opennms/element/availability.jsp?node=101')
+    vi.unstubAllGlobals()
+  })
 })
