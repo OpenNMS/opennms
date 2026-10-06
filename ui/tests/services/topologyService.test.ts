@@ -34,6 +34,7 @@ import {
   getNodeInfoPanel,
   getNodeCategories,
   getNodeIconIds,
+  getNodeIconsAndLocations,
   getNodeSeverities,
   assetUrl,
   listAssets,
@@ -483,6 +484,29 @@ describe('topologyService discovered graph (Graph REST API)', () => {
       expect(await getNodeInfoPanel(2)).toEqual([])
       vi.mocked(v2.get).mockResolvedValue({ data: null })
       expect(await getNodeInfoPanel(2)).toEqual([])
+    })
+  })
+
+  describe('getNodeIconsAndLocations', () => {
+    it('reads asset lat/long, leaving out nodes without one', async () => {
+      vi.mocked(nodeService.getNodes).mockResolvedValue({
+        node: [
+          { id: '4', sysObjectId: '.1.3.6.1.4.1.9.1.559', assetRecord: { latitude: 41.85, longitude: -87.62 }},
+          { id: '5', assetRecord: { latitude: null, longitude: null }}
+        ]
+      } as never)
+      expect(await getNodeIconsAndLocations([4, 5])).toEqual({
+        locations: { 4: { lat: 41.85, lon: -87.62 }},
+        icons: { 4: 'router' },
+        failed: []
+      })
+      // One read serves both.
+      expect(nodeService.getNodes).toHaveBeenCalledTimes(1)
+    })
+
+    it('reports the ids of a chunk whose request failed', async () => {
+      vi.mocked(nodeService.getNodes).mockResolvedValue(false)
+      expect(await getNodeIconsAndLocations([4, 5])).toEqual({ locations: {}, icons: {}, failed: [4, 5] })
     })
   })
 

@@ -20,12 +20,12 @@
 /// License.
 ///
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { flushPromises } from '@vue/test-utils'
 import { useTopologyStore } from '@/stores/topologyStore'
 import {
-  saveView, listViews, getView, getNodeSeverities, loadDiscoveredGraph
+  saveView, listViews, getView, getNodeSeverities, getNodeIconIds, getNodeIconsAndLocations, loadDiscoveredGraph
 } from '@/services/topologyService'
 import type { TopologyView } from '@/types/topology'
 
@@ -36,6 +36,7 @@ vi.mock('@/services/topologyService', () => ({
   deleteView: vi.fn(),
   getNodeSeverities: vi.fn(),
   getNodeIconIds: vi.fn(),
+  getNodeIconsAndLocations: vi.fn(),
   loadDiscoveredGraph: vi.fn()
 }))
 
@@ -92,6 +93,18 @@ describe('useTopologyStore - saveCurrentViewAs (Save As)', () => {
     store.currentView = null
     expect(await store.saveCurrentViewAs('Whatever', snapshot)).toBe(false)
     expect(saveView).not.toHaveBeenCalled()
+  })
+
+  it('names the saved id as the canvas graph\'s, and leaves it on failure', async () => {
+    store.currentView = existingView()
+    vi.mocked(saveView).mockResolvedValueOnce({ ...existingView(), id: '9', name: 'Copy' })
+    vi.mocked(listViews).mockResolvedValue([])
+    await store.saveCurrentViewAs('Copy', snapshot)
+    expect(store.lastSavedViewId).toBe('9')
+
+    vi.mocked(saveView).mockResolvedValueOnce(false)
+    await store.saveCurrentViewAs('Taken', snapshot)
+    expect(store.lastSavedViewId).toBe('9')
   })
 })
 
@@ -458,5 +471,102 @@ describe('useTopologyStore - the gate re-arms per load', () => {
     // Loading again -- a different source, a variant switch, or Refresh Graph.
     await store.loadDiscoveredSource({ container: 'enlinkd', namespace: 'nodes:Lldp' } as never)
     expect(store.isLargeGraphGated).toBe(true)
+  })
+})
+
+describe('useTopologyStore - geomap node locations', () => {
+  let store: ReturnType<typeof useTopologyStore>
+
+  beforeEach(async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    setActivePinia(createPinia())
+    store = useTopologyStore()
+    vi.clearAllMocks()
+    vi.mocked(getNodeIconsAndLocations).mockResolvedValue({ locations: {}, icons: {}, failed: [] })
+    store.currentView = { ...existingView(), background: { type: 'geomap' }}
+    store.setPlacedNodeIds(['1', '2'])
+    // Placing nodes looks them up on its own; start each test from none.
+    await flushPromises()
+    store.nodeLocations = {}
+    vi.mocked(getNodeIconsAndLocations).mockClear()
+  })
+
+  afterEach(() => {
+    vi.clearAllTimers()
+    vi.useRealTimers()
+  })
+
+  it('records a location, or null for none, and asks only for what it has not seen', async () => {
+    vi.mocked(getNodeIconsAndLocations).mockResolvedValueOnce({ locations: { 1: { lat: 41.9, lon: -87.6 }}, icons: {}, failed: [] })
+    await store.refreshNodeLocations()
+    expect(store.nodeLocations).toEqual({ 1: { lat: 41.9, lon: -87.6 }, 2: null })
+
+    vi.mocked(getNodeIconsAndLocations).mockClear()
+    store.nodeLocations = { 1: null }
+    await store.refreshNodeLocations()
+    expect(getNodeIconsAndLocations).toHaveBeenLastCalledWith([2])
+  })
+
+  it('reads icons and locations in one lookup when the nodes on a geomap view change', async () => {
+    vi.mocked(getNodeIconsAndLocations).mockResolvedValueOnce({ locations: {}, icons: { 3: 'router' }, failed: [] })
+    store.setPlacedNodeIds(['1', '2', '3'])
+    await flushPromises()
+    expect(getNodeIconsAndLocations).toHaveBeenCalledTimes(1)
+    expect(getNodeIconsAndLocations).toHaveBeenLastCalledWith([1, 2, 3])
+    expect(getNodeIconIds).not.toHaveBeenCalled()
+    expect(store.nodeIconIds).toEqual({ 3: 'router' })
+  })
+
+  it('shares a lookup already in flight for the same nodes', async () => {
+    await Promise.all([store.refreshNodeLocations(true), store.refreshNodeLocations(true)])
+    expect(getNodeIconsAndLocations).toHaveBeenCalledTimes(1)
+  })
+
+  it('asks for every node again when told to', async () => {
+    store.nodeLocations = { 1: null, 2: null }
+    await store.refreshNodeLocations(true)
+    expect(getNodeIconsAndLocations).toHaveBeenLastCalledWith([1, 2])
+  })
+
+  it('leaves a failed lookup to be retried rather than recording no location', async () => {
+    vi.mocked(getNodeIconsAndLocations).mockResolvedValueOnce({ locations: {}, icons: {}, failed: [2] })
+    await store.refreshNodeLocations()
+    expect(store.nodeLocations).toEqual({ 1: null })
+    await store.refreshNodeLocations()
+    expect(getNodeIconsAndLocations).toHaveBeenLastCalledWith([2])
+  })
+
+  it('records a failed lookup, retries it on a backoff, and clears it once answered', async () => {
+    vi.mocked(getNodeIconsAndLocations).mockResolvedValueOnce({ locations: { 1: { lat: 1, lon: 2 }}, icons: {}, failed: [2] })
+    await store.refreshNodeLocations()
+    expect([...store.nodeLocationFailures]).toEqual([2])
+
+    vi.mocked(getNodeIconsAndLocations).mockResolvedValueOnce({ locations: {}, icons: {}, failed: [2] })
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(getNodeIconsAndLocations).toHaveBeenLastCalledWith([2])
+    expect(getNodeIconsAndLocations).toHaveBeenCalledTimes(2)
+
+    // The next wait doubles.
+    vi.mocked(getNodeIconsAndLocations).mockResolvedValueOnce({ locations: { 2: { lat: 3, lon: 4 }}, icons: {}, failed: [] })
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(getNodeIconsAndLocations).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(getNodeIconsAndLocations).toHaveBeenCalledTimes(3)
+    expect(store.nodeLocationFailures.size).toBe(0)
+    expect(store.nodeLocations[2]).toEqual({ lat: 3, lon: 4 })
+
+    await vi.advanceTimersByTimeAsync(120000)
+    expect(getNodeIconsAndLocations).toHaveBeenCalledTimes(3)
+  })
+
+  it('does nothing without a geomap background', async () => {
+    store.currentView = existingView()
+    await store.refreshNodeLocations(true)
+    expect(getNodeIconsAndLocations).not.toHaveBeenCalled()
+  })
+
+  it('clearing a discovered graph drops the nodes it placed', () => {
+    store.clearDiscovered()
+    expect(store.placedNodeIds.size).toBe(0)
   })
 })

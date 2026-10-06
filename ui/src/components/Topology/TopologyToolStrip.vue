@@ -80,8 +80,9 @@ License.
       <OnmsIconButton
         :icon="Rectangle"
         title="Draw box"
-        tooltip="Draw a box: drag on the canvas"
+        :tooltip="store.isGeomapShown ? 'Boxes are hidden on a geographic background' : 'Draw a box: drag on the canvas'"
         tooltip-position="right"
+        :disabled="store.isGeomapShown"
         :variant="store.isShapeDrawMode ? 'filled' : 'text'"
         :aria-pressed="store.isShapeDrawMode"
         @click="store.setShapeDrawMode(!store.isShapeDrawMode)"
