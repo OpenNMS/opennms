@@ -21,8 +21,8 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNodeCriticalPath } from '@/services/nodeService'
-import { v2 } from '@/services/axiosInstances'
+import { getNodeAvailabilityPercentage, getNodeCriticalPath } from '@/services/nodeService'
+import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
   rest: { get: vi.fn() },
@@ -57,5 +57,38 @@ describe('nodeService.getNodeCriticalPath', () => {
     vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
 
     expect((await getNodeCriticalPath('161')).success).toBe(false)
+  })
+})
+
+describe('nodeService.getNodeAvailabilityPercentage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(rest.get).mockResolvedValue({ data: { ipinterfaces: [] }})
+  })
+
+  it('sends no parameters for the plain rolling roster', async () => {
+    await getNodeAvailabilityPercentage('144')
+
+    expect(rest.get).toHaveBeenCalledWith('/availability/nodes/144', undefined)
+  })
+
+  it('sends the window and the page', async () => {
+    await getNodeAvailabilityPercentage('144', 1000, 2000, { limit: 10, offset: 20 })
+
+    expect(rest.get).toHaveBeenCalledWith('/availability/nodes/144', { params: { start: 1000, end: 2000, limit: 10, offset: 20 }})
+  })
+
+  it('asks for monitored interfaces only when told to', async () => {
+    await getNodeAvailabilityPercentage('144', 1000, 2000, { limit: 10, offset: 0, withServices: true })
+
+    expect(rest.get).toHaveBeenCalledWith('/availability/nodes/144', {
+      params: { start: 1000, end: 2000, limit: 10, offset: 0, withServices: true }
+    })
+  })
+
+  it('answers false when the request fails', async () => {
+    vi.mocked(rest.get).mockRejectedValue(new Error('boom'))
+
+    expect(await getNodeAvailabilityPercentage('144')).toBe(false)
   })
 })

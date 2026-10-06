@@ -40,8 +40,9 @@
         :content="errorContent"
         data-test="availability-error"
       />
+      <!-- From the node's total, not this page: an empty page is not a node with nothing monitored. -->
       <EmptyList
-        v-else-if="hasLoaded && (!model || model.interfaces.length === 0)"
+        v-else-if="hasLoaded && totalInterfaces === 0"
         :content="emptyContent"
         data-test="availability-empty"
       />
@@ -60,15 +61,16 @@
           :node-id="node.id"
           :range-label="rangeLabel"
         />
-        <OnmsPaginator
-          v-if="totalInterfaces > PAGE_SIZE"
-          :first="first"
-          :rows="PAGE_SIZE"
-          :totalRecords="totalInterfaces"
-          data-test="availability-paginator"
-          @page="onPage"
-        />
       </template>
+      <!-- Outside the branch above, so a page that comes back empty can still be paged away from. -->
+      <OnmsPaginator
+        v-if="!loadFailed && totalInterfaces > PAGE_SIZE"
+        :first="first"
+        :rows="PAGE_SIZE"
+        :totalRecords="totalInterfaces"
+        data-test="availability-paginator"
+        @page="onPage"
+      />
     </template>
   </NodeDetailsPanel>
 </template>
@@ -186,7 +188,9 @@ const fetchAll = async () => {
 
   try {
     const [avail, outages] = await Promise.all([
-      API.getNodeAvailabilityPercentage(String(id), start, end, { limit: PAGE_SIZE, offset: first.value }),
+      // withServices: the timeline drops interfaces with no monitored services, so the server pages
+      // over the others only -- otherwise a page of unmonitored interfaces would show as empty.
+      API.getNodeAvailabilityPercentage(String(id), start, end, { limit: PAGE_SIZE, offset: first.value, withServices: true }),
       API.getNodeOutageTimeline(id, start, end)
     ])
 
@@ -211,7 +215,8 @@ const fetchAll = async () => {
     rangeLabel.value = requestedLabel
     availability.value = avail
     timeline.value = outages
-    totalInterfaces.value = avail.ipinterfaceCount ?? avail.ipinterfaces.length
+    // A server without the count sends every interface: count the ones the timeline would show.
+    totalInterfaces.value = avail.ipinterfaceCount ?? avail.ipinterfaces.filter(iface => (iface.services ?? []).length > 0).length
   } finally {
     stopLoading()
   }

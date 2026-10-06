@@ -121,13 +121,14 @@ const getNodeIpInterfaces = async (
  *
  * `page` asks for one page of the node's interfaces (in address order, as the server sorts them):
  * only that page's figures are computed, each being a query of its own. `ipinterfaceCount` in the
- * answer is the node's total, for a paginator.
+ * answer is the node's total, for a paginator. `withServices` counts and pages only the interfaces
+ * with monitored services.
  */
 const getNodeAvailabilityPercentage = async (
   id: string,
   startMs?: number,
   endMs?: number,
-  page?: { limit: number, offset: number }
+  page?: { limit: number, offset: number, withServices?: boolean }
 ): Promise<NodeAvailability | false> => {
   try {
     const params: Record<string, number> = {}
@@ -142,7 +143,9 @@ const getNodeAvailabilityPercentage = async (
       params.offset = page.offset
     }
 
-    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`, Object.keys(params).length ? { params } : undefined)
+    const query: Record<string, number | boolean> = page?.withServices ? { ...params, withServices: true } : params
+
+    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`, Object.keys(query).length ? { params: query } : undefined)
 
     return resp.data
   } catch (_err) {

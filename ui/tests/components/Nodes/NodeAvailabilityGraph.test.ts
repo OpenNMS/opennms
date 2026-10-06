@@ -586,7 +586,54 @@ describe('NodeAvailabilityGraph.vue', () => {
       wrapper = mountPanel()
       await flushPromises()
 
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0 })
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0, withServices: true })
+    })
+
+    // The timeline drops interfaces with no monitored services, so the server must page over the
+    // others only -- or a page of unmonitored interfaces comes back empty.
+    it('asks the server to page over monitored interfaces only', async () => {
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(getAvailability.mock.calls[0][3]).toEqual(expect.objectContaining({ withServices: true }))
+    })
+
+    // An empty page is not a node with nothing monitored, and must not strand the user on it.
+    it('keeps the paginator, and makes no empty claim, on a page that comes back empty', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 23, ipinterfaces: [] }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(true)
+    })
+
+    it('says the node has no monitored services only when its total is 0', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 0, ipinterfaces: [] }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(false)
+    })
+
+    // Without ipinterfaceCount the panel counts what it would show itself.
+    it('without a count from the server, counts only interfaces with services', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        ipinterfaces: [{ address: '10.0.0.1', availability: 100, id: 1, services: [] }]
+      }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
+    })
+
+    it('hides the paginator when the load fails', async () => {
+      getAvailability.mockResolvedValue(false)
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(false)
     })
 
     it('shows no paginator when the node has 10 interfaces or fewer', async () => {
@@ -619,7 +666,7 @@ describe('NodeAvailabilityGraph.vue', () => {
       wrapper.findComponent({ name: 'OnmsPaginator' }).vm.$emit('page', { page: 2, first: 20, rows: 10, pageCount: 3 })
       await flushPromises()
 
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 20 })
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 20, withServices: true })
       expect(getTimeline).toHaveBeenCalledTimes(1)
       expect(getAvailability.mock.calls[0][1]).toBe(getTimeline.mock.calls[0][1])
       expect(wrapper.findComponent({ name: 'OnmsPaginator' }).props('first')).toBe(20)
@@ -638,7 +685,7 @@ describe('NodeAvailabilityGraph.vue', () => {
       await wrapper.find('button').trigger('click')
       await flushPromises()
 
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 10 })
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 10, withServices: true })
     })
 
     it('starts a new node on its first page', async () => {
@@ -654,7 +701,7 @@ describe('NodeAvailabilityGraph.vue', () => {
       await wrapper.setProps({ node: { id: '202' } as any })
       await flushPromises()
 
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0 })
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0, withServices: true })
     })
   })
 
