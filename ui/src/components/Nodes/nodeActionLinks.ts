@@ -27,10 +27,13 @@ import { IpInterface, Node } from '@/types'
 // title row and each row of the node list.
 //
 // Intentionally left out: the extra links the legacy node page appends after these (`navEntries`
-// in element/node.jsp), which come from ConditionalPageNavEntry services registered for
-// "Page=node" in the OSGi service registry, each deciding per request and node whether to show.
-// They are rarely used and render server-built HTML; a better way to add plugin-provided node
-// actions can come later.
+// in element/node.jsp). Those come from ConditionalPageNavEntry services registered for
+// "Page=node": any OSGi bundle can register one with `registration.export=true`, and
+// OnmsOSGiBridgeActivator copies it into the core ServiceRegistry, where the page finds it and
+// asks it, per request and node, whether to show. They are code, not user configuration. The only
+// one in this codebase is TopoMapNavEntry ("View in Topology", the topology app's blueprint.xml),
+// whose URL is the same as the 'topology' link below. Supporting third-party ones would need a
+// REST endpoint that evaluates them on the server; that can come later if needed.
 export const linkItems = [
   { name: 'events', label: 'Events' },
   { name: 'alarms', label: 'Alarms' },
