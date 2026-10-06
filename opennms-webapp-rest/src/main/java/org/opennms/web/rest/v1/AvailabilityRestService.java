@@ -394,6 +394,8 @@ public class AvailabilityRestService extends OnmsRestService {
         the page's interfaces and services have their availability computed -- each figure is a query of its
         own, so a node with many interfaces is far cheaper a page at a time. `ipinterfaceCount` is the node's
         total, for a paginator; the node's own figures and service counts always cover every interface.
+        `withServices=true` leaves out interfaces with no monitored services before counting and paging,
+        for a caller that shows only monitored interfaces and would otherwise get short or empty pages.
 
         With neither `start` nor `end`, the figures are the rolling last-24-hours values, unchanged. Supplying
         either one computes the figures over that window instead; the missing bound defaults to now, or to 24
@@ -456,7 +458,10 @@ public class AvailabilityRestService extends OnmsRestService {
             @Parameter(description = "Most interfaces to return; 0 or absent for all of them.", example = "10")
             @QueryParam("limit") final Integer limit,
             @Parameter(description = "Interfaces to skip, in address order.", example = "0")
-            @QueryParam("offset") final Integer offset) {
+            @QueryParam("offset") final Integer offset,
+            @Parameter(description = "Only interfaces with at least one monitored service, both in the page "
+                    + "and in `ipinterfaceCount`.", example = "true")
+            @QueryParam("withServices") final Boolean withServices) {
 
         // Resolved and validated before the try: the catch-all below rewraps every exception,
         // including a WebApplicationException, as a 500.
@@ -469,8 +474,8 @@ public class AvailabilityRestService extends OnmsRestService {
 
         try {
             final AvailabilityNode avail = (window == null)
-                    ? getAvailabilityNode(nodeId, null, null, pageOffset, pageLimit)
-                    : getAvailabilityNode(nodeId, window[0], window[1], pageOffset, pageLimit);
+                    ? getAvailabilityNode(nodeId, null, null, pageOffset, pageLimit, Boolean.TRUE.equals(withServices))
+                    : getAvailabilityNode(nodeId, window[0], window[1], pageOffset, pageLimit, Boolean.TRUE.equals(withServices));
             if (avail == null) {
                 throw getException(Status.NOT_FOUND, "Node {} was not found.", Integer.toString(nodeId));
             }
@@ -490,14 +495,16 @@ public class AvailabilityRestService extends OnmsRestService {
      * @param end window end, ignored when start is null
      */
     AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end) throws Exception {
-        return getAvailabilityNode(id, start, end, 0, 0);
+        return getAvailabilityNode(id, start, end, 0, 0, false);
     }
 
     /**
      * @param offset interfaces to skip, in address order
      * @param limit most interfaces to include, or 0 for all of them
+     * @param withServices count and page only the interfaces with at least one monitored service
      */
-    AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end, final int offset, final int limit) throws Exception {
+    AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end, final int offset, final int limit,
+            final boolean withServices) throws Exception {
 
         final OnmsNode dbNode = m_nodeDao.get(id);
         initialize(dbNode);
@@ -517,10 +524,14 @@ public class AvailabilityRestService extends OnmsRestService {
         // In address order, so a page is stable from one request to the next. Only the page's
         // interfaces are evaluated below: every figure is a query of its own.
         final List<OnmsIpInterface> interfaces = new ArrayList<>(dbNode.getIpInterfaces());
+        if (withServices) {
+            interfaces.removeIf(iface -> iface.getMonitoredServices().isEmpty());
+        }
         interfaces.sort(Comparator.comparing(OnmsIpInterface::getIpAddress, new InetAddressComparator()));
         node.setIpInterfaceCount((long) interfaces.size());
         final int from = Math.min(offset, interfaces.size());
-        final int to = limit > 0 ? Math.min(from + limit, interfaces.size()) : interfaces.size();
+        // Not from + limit, which overflows for a large limit: compare against what is left instead.
+        final int to = (limit > 0 && limit < interfaces.size() - from) ? from + limit : interfaces.size();
 
         for (final OnmsIpInterface iface : interfaces.subList(from, to)) {
             final String addr = str(iface.getIpAddress());

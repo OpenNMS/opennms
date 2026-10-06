@@ -42,6 +42,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.category.AvailabilityNode;
@@ -239,6 +240,42 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         final int nodeId = m_populator.getNode1().getId();
         sendRequest(GET, "/availability/nodes/" + nodeId, parseParamData("limit=-1"), 400);
         sendRequest(GET, "/availability/nodes/" + nodeId, parseParamData("offset=-1"), 400);
+    }
+
+    /**
+     * An interface with no monitored services has nothing for the availability panel to show, which
+     * drops it. Paged over every interface, a page of such interfaces came back empty -- here the
+     * unmonitored 192.168.1.0 sorts first and would fill the start of page 1 -- so withServices leaves
+     * them out before counting and paging.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithServicesPagesOnlyMonitoredInterfaces() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        m_template.execute(status -> {
+            final OnmsNode node = m_populator.getNodeDao().get(nodeId);
+            m_populator.getIpInterfaceDao().save(new OnmsIpInterface("192.168.1.0", node));
+            m_populator.getIpInterfaceDao().flush();
+            return null;
+        });
+
+        final JSONObject all = getNodeJson(nodeId, "limit=2&offset=0");
+        Assert.assertEquals(5, all.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.0", "192.168.1.1"), addresses(all));
+
+        final JSONObject monitored = getNodeJson(nodeId, "limit=2&offset=0&withServices=true");
+        Assert.assertEquals(4, monitored.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.1", "192.168.1.2"), addresses(monitored));
+    }
+
+    // offset + limit overflows an int here; the remaining interfaces come back, not a 500.
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithAHugeLimit() throws Exception {
+        final JSONObject node = getNodeJson(m_populator.getNode1().getId(), "limit=2147483647&offset=1");
+
+        Assert.assertEquals(4, node.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.2", "192.168.1.3", "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5"), addresses(node));
     }
 
     private JSONObject getNodeJson(final int nodeId, final String query) throws Exception {
