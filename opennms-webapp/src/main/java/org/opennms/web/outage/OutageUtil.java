@@ -59,8 +59,6 @@ import org.opennms.web.outage.filter.PerspectiveLocationFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateAfterFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
 import org.opennms.web.outage.filter.ServiceFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract OutageUtil class.</p>
@@ -70,8 +68,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.8.1
  */
 public abstract class OutageUtil extends Object {
-    private static final Logger LOG = LoggerFactory.getLogger(OutageUtil.class);
-
     /** Constant <code>DOWN_COLOR="red"</code> */
     protected static final String DOWN_COLOR = "red";
 
@@ -128,12 +124,7 @@ public abstract class OutageUtil extends Object {
         } else if (type.equals(RegainedServiceDateAfterFilter.TYPE)) {
             filter = new RegainedServiceDateAfterFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.startsWith(AssetFilter.TYPE)) {
-            try {
-                filter = new AssetFilter(type, value);
-            } catch (IllegalArgumentException e) {
-                // Unknown asset column: ignore the filter rather than failing the whole page
-                LOG.warn("Ignoring outage filter with an invalid asset field: {}", e.getMessage());
-            }
+            filter = new AssetFilter(type, value);
         } else if (type.startsWith(LocationFilter.TYPE)) {
             filter = new LocationFilter(value);
         } else if (type.startsWith(NegativeLocationFilter.TYPE)) {
