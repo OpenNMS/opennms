@@ -56,10 +56,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.Graph;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,10 +84,10 @@ public class KscRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(KscRestService.class);
 
     @Autowired
-    private KscReportService m_kscReportService;
+    private GraphCollectionService m_graphCollectionService;
 
     @Autowired
-    private KSC_PerformanceReportFactory m_kscReportFactory;
+    private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -128,7 +128,7 @@ public class KscRestService extends OnmsRestService {
                     })
     })
     public KscReportCollection getReports() throws ParseException {
-        final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), true);
+        final KscReportCollection reports = new KscReportCollection(m_graphCollectionService.getCollectionMap(), true);
         reports.setTotalCount(reports.size());
         return reports;
     }
@@ -183,8 +183,8 @@ public class KscRestService extends OnmsRestService {
     public KscReport getReport(
             @Parameter(description = "Report id, as assigned when the report was created.", required = true, example = "8100")
             @PathParam("reportId") final Integer reportId) {
-        final Map<Integer, Report> reportList = m_kscReportService.getReportMap();
-        final Report report = reportList.get(reportId);
+        final Map<Integer, GraphCollection> reportList = m_graphCollectionService.getCollectionMap();
+        final GraphCollection report = reportList.get(reportId);
         if (report == null) {
             throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
         }
@@ -211,7 +211,7 @@ public class KscRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "1")))
     })
     public String getCount() {
-        return Integer.toString(m_kscReportService.getReportList().size());
+        return Integer.toString(m_graphCollectionService.getCollectionTitles().size());
     }
 
     @PUT
@@ -233,7 +233,7 @@ public class KscRestService extends OnmsRestService {
     public Response reloadConfiguration() {
         writeLock();
         try {
-            KSC_PerformanceReportFactory.getInstance().reload();
+            GraphCollectionConfigFactory.getInstance().reload();
             return Response.noContent().build();
         } catch (Exception e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, e);
@@ -296,7 +296,7 @@ public class KscRestService extends OnmsRestService {
             if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
                 throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
             }
-            final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
+            final GraphCollection report = m_graphCollectionConfigFactory.getCollectionById(kscReportId);
             if (report == null) {
                 throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: {}.", Integer.toString(kscReportId));
             }
@@ -306,7 +306,7 @@ public class KscRestService extends OnmsRestService {
             }
 
             boolean found = false;
-            for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+            for (final String valid : GraphCollectionConfigFactory.TIMESPAN_OPTIONS) {
                 if (valid.equals(timespan)) {
                     found = true;
                     break;
@@ -322,9 +322,9 @@ public class KscRestService extends OnmsRestService {
             graph.setResourceId(resourceId);
             graph.setTimespan(timespan);
             report.addGraph(graph);
-            m_kscReportFactory.setReport(kscReportId, report);
+            m_graphCollectionConfigFactory.setCollection(kscReportId, report);
             try {
-                m_kscReportFactory.saveCurrent();
+                m_graphCollectionConfigFactory.saveCurrent();
             } catch (final Exception e) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot save report with Id {} : {} ", kscReportId.toString(), e.getMessage());
             }
@@ -379,11 +379,11 @@ public class KscRestService extends OnmsRestService {
         writeLock();
         try {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
-            Report report = m_kscReportFactory.getReportByIndex(kscReport.getId());
+            GraphCollection report = m_graphCollectionConfigFactory.getCollectionById(kscReport.getId());
             if (report != null) {
                 throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: {}.", Integer.toString(kscReport.getId()));
             }
-            report = new Report();
+            report = new GraphCollection();
             report.setId(kscReport.getId());
             report.setTitle(kscReport.getLabel());
             if (kscReport.getShowGraphtypeButton() != null) {
@@ -402,9 +402,9 @@ public class KscRestService extends OnmsRestService {
                 }
             }
 
-            m_kscReportFactory.addReport(report);
+            m_graphCollectionConfigFactory.addCollection(report);
             try {
-                m_kscReportFactory.saveCurrent();
+                m_graphCollectionConfigFactory.saveCurrent();
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
@@ -427,9 +427,9 @@ public class KscRestService extends OnmsRestService {
             super(reports);
         }
 
-        public KscReportCollection(final Map<Integer, Report> reportList, boolean terse) {
+        public KscReportCollection(final Map<Integer, GraphCollection> reportList, boolean terse) {
             super();
-            for (final Report report : reportList.values()) {
+            for (final GraphCollection report : reportList.values()) {
                 if (terse) {
                     add(new KscReport(report.getId(), report.getTitle()));
                 } else {
@@ -480,7 +480,7 @@ public class KscRestService extends OnmsRestService {
             m_label = label;
         }
 
-        public KscReport(Report report) {
+        public KscReport(GraphCollection report) {
             m_id = report.getId();
             m_label = report.getTitle();
             m_show_timespan_button = report.getShowTimespanButton().orElse(null);
@@ -602,7 +602,7 @@ public class KscRestService extends OnmsRestService {
 
         public Graph buildGraph() {
             boolean found = false;
-            for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+            for (final String valid : GraphCollectionConfigFactory.TIMESPAN_OPTIONS) {
                 if (valid.equals(m_timespan)) {
                     found = true;
                     break;

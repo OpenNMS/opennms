@@ -27,36 +27,36 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.search.api.SearchContext;
 import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
 import org.opennms.netmgt.search.api.QueryUtils;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 
-public class KscReportSearchProvider implements SearchProvider {
+public class GraphCollectionSearchProvider implements SearchProvider {
 
     private final SearchContext CONTEXT = new SearchContext("Graph Collection");
 
-    private final KscReportService kscReportService;
+    private final GraphCollectionService graphCollectionService;
 
     @Override
     public SearchContext getContext() {
         return CONTEXT;
     }
 
-    public KscReportSearchProvider(KscReportService kscReportService) {
-        this.kscReportService = Objects.requireNonNull(kscReportService);
+    public GraphCollectionSearchProvider(GraphCollectionService graphCollectionService) {
+        this.graphCollectionService = Objects.requireNonNull(graphCollectionService);
     }
 
     @Override
     public SearchResult query(SearchQuery query) {
-        final Collection<Report> reportList = kscReportService.getReportMap().values();
+        final Collection<GraphCollection> reportList = graphCollectionService.getCollectionMap().values();
         final List<SearchResultItem> results = reportList.stream()
                 .filter(report -> QueryUtils.matches(report.getTitle(), query.getInput()))
-                .sorted(Comparator.comparing(Report::getTitle))
+                .sorted(Comparator.comparing(GraphCollection::getTitle))
                 .map(report -> {
                     final SearchResultItem result = new SearchResultItem();
                     result.setLabel(report.getTitle());

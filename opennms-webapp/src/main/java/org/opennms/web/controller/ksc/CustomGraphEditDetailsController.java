@@ -26,13 +26,13 @@ import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -53,8 +53,8 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         graphtype
     }
     
-    private KSC_PerformanceReportFactory m_kscReportFactory;
-    private KscReportService m_kscReportService;
+    private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
+    private GraphCollectionService m_graphCollectionService;
     private ResourceService m_resourceService;
 
     /** {@inheritDoc} */
@@ -70,8 +70,8 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         
         KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
         
-        Report report = editor.getWorkingReport(); 
-        org.opennms.netmgt.config.kscReports.Graph sample_graph = editor.getWorkingGraph(); 
+        GraphCollection report = editor.getWorkingReport(); 
+        org.opennms.netmgt.config.graphcollections.Graph sample_graph = editor.getWorkingGraph(); 
         if (sample_graph == null) {
             throw new IllegalArgumentException("Invalid working graph argument -- null pointer. Possibly missing prefab report in snmp-graph.properties?");
         }
@@ -79,7 +79,7 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         // Set the resourceId in the working graph in case it changed
         sample_graph.setResourceId(resourceId);
         
-        OnmsResource resource = getKscReportService().getResourceFromGraph(sample_graph);
+        OnmsResource resource = getGraphCollectionService().getResourceFromGraph(sample_graph);
         PrefabGraph[] graph_options = getResourceService().findPrefabGraphsForResource(resource);
 
         PrefabGraph display_graph = null;
@@ -93,7 +93,7 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         
         Calendar begin_time = Calendar.getInstance();
         Calendar end_time = Calendar.getInstance();
-        KSC_PerformanceReportFactory.getBeginEndTime(sample_graph.getTimespan(), begin_time, end_time);
+        GraphCollectionConfigFactory.getBeginEndTime(sample_graph.getTimespan(), begin_time, end_time);
         
         KscResultSet resultSet = new KscResultSet(sample_graph.getTitle(), begin_time.getTime(), end_time.getTime(), resource, display_graph);
         
@@ -103,7 +103,7 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         
         modelAndView.addObject("prefabGraphs", graph_options);
         
-        modelAndView.addObject("timeSpans", getKscReportService().getTimeSpans(false));
+        modelAndView.addObject("timeSpans", getGraphCollectionService().getTimeSpans(false));
         modelAndView.addObject("timeSpan", sample_graph.getTimespan());
         
         int graph_index = editor.getWorkingGraphIndex(); 
@@ -152,39 +152,39 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
     }
 
     /**
-     * <p>getKscReportFactory</p>
+     * <p>getGraphCollectionConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @return a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public KSC_PerformanceReportFactory getKscReportFactory() {
-        return m_kscReportFactory;
+    public GraphCollectionConfigFactory getGraphCollectionConfigFactory() {
+        return m_graphCollectionConfigFactory;
     }
 
     /**
-     * <p>setKscReportFactory</p>
+     * <p>setGraphCollectionConfigFactory</p>
      *
-     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param graphCollectionConfigFactory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
-        m_kscReportFactory = kscReportFactory;
+    public void setGraphCollectionConfigFactory(GraphCollectionConfigFactory graphCollectionConfigFactory) {
+        m_graphCollectionConfigFactory = graphCollectionConfigFactory;
     }
 
     /**
-     * <p>getKscReportService</p>
+     * <p>getGraphCollectionService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public KscReportService getKscReportService() {
-        return m_kscReportService;
+    public GraphCollectionService getGraphCollectionService() {
+        return m_graphCollectionService;
     }
 
     /**
-     * <p>setKscReportService</p>
+     * <p>setGraphCollectionService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @param graphCollectionService a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public void setKscReportService(KscReportService kscReportService) {
-        m_kscReportService = kscReportService;
+    public void setGraphCollectionService(GraphCollectionService graphCollectionService) {
+        m_graphCollectionService = graphCollectionService;
     }
 
     /**
@@ -195,8 +195,8 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "property resourceService must be set");
-        Assert.state(m_kscReportService != null, "property kscReportService must be set");
-        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
+        Assert.state(m_graphCollectionService != null, "property graphCollectionService must be set");
+        Assert.state(m_graphCollectionConfigFactory != null, "property graphCollectionConfigFactory must be set");
     }
 
 }
