@@ -18,6 +18,13 @@
           ref="fileInput"
           :disabled="isLoading"
         />
+        <p
+          class="upload-hint"
+          data-test="upload-hint"
+        >
+          Accepted file types: {{ VALID_FILE_EXTENSION.join(', ') }}. The limit for each file is {{ MAX_FILE_SIZE / (1024 * 1024) }} MB.
+          Rename a MIB file without an extension before you upload it.
+        </p>
       </div>
       <div>
         <OnmsButton
@@ -109,7 +116,7 @@ import CheckCircleIcon from '@opennms/onms-ui/icons/action/CheckCircle.vue'
 import ErrorIcon from '@opennms/onms-ui/icons/notification/Error.vue'
 import WarningIcon from '@opennms/onms-ui/icons/notification/Warning.vue'
 import { format as fnsFormat } from 'date-fns'
-import { getGeneralErrorMessage, isValidMibExtension, mibFilesValidator, VALID_FILE_EXTENSION } from './mibFilesValidator'
+import { getGeneralErrorMessage, isValidMibExtension, MAX_FILE_SIZE, mibFilesValidator, VALID_FILE_EXTENSION } from './mibFilesValidator'
 
 const isLoading = ref(false)
 const store = useMibCompilerStore()
@@ -225,6 +232,12 @@ const handleUpload = async (e: Event) => {
 
     input[type='file'] {
       display: none;
+    }
+
+    .upload-hint {
+      margin: 8px 0 0;
+      color: var(--p-text-muted-color);
+      font-size: 13px;
     }
   }
 

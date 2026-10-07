@@ -37,6 +37,8 @@ public class MibParseResultDto {
     private String mibName;
     private String errors;
     private List<String> missingDependencies;
+    // missing dependencies that are already uploaded to the pending directory
+    private List<String> pendingDependencies;
 
     public boolean isSuccess() {
         return success;
@@ -68,5 +70,13 @@ public class MibParseResultDto {
 
     public void setMissingDependencies(List<String> missingDependencies) {
         this.missingDependencies = missingDependencies;
+    }
+
+    public List<String> getPendingDependencies() {
+        return pendingDependencies;
+    }
+
+    public void setPendingDependencies(List<String> pendingDependencies) {
+        this.pendingDependencies = pendingDependencies;
     }
 }

@@ -90,6 +90,12 @@
               @click="emit('compile', data)"
             />
             <OnmsIconButton
+              :title="`Delete ${data.name}`"
+              data-test="delete-button"
+              :icon="DeleteIcon"
+              @click="emit('delete', data)"
+            />
+            <OnmsIconButton
               v-if="location === 'compiled'"
               aria-haspopup="true"
               :aria-controls="`${location}-row-menu`"
@@ -97,12 +103,6 @@
               data-test="row-menu-button"
               :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            />
-            <OnmsIconButton
-              :title="`Delete ${data.name}`"
-              data-test="delete-button"
-              :icon="DeleteIcon"
-              @click="emit('delete', data)"
             />
           </div>
         </template>

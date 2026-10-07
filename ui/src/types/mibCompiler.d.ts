@@ -26,6 +26,7 @@ export interface MibParseResult {
   mibName?: string
   errors?: string
   missingDependencies?: string[]
+  pendingDependencies?: string[]
 }
 
 export interface MibCompileResult extends MibParseResult {

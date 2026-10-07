@@ -177,8 +177,20 @@ public class MibFileServiceTest {
         assertFalse(result.isSuccess());
         assertNotNull(result.getErrors());
         assertEquals(List.of("SONUS-SMI", "SONUS-TC"), result.getMissingDependencies());
+        assertEquals(List.of(), result.getPendingDependencies());
         // failed compilation must leave the pending file in place
         assertTrue(new File(pendingDir, "SONUS-COMMON-MIB.txt").exists());
+    }
+
+    @Test
+    public void testCompileReportsMissingDependenciesFoundInPending() throws Exception {
+        addPending("SONUS-COMMON-MIB.txt");
+        // name matching must be case-insensitive and honor the parser's suffixes
+        Files.writeString(new File(pendingDir, "sonus-smi.TXT").toPath(), "-- placeholder", StandardCharsets.UTF_8);
+        final MibCompileResultDto result = service.compile("SONUS-COMMON-MIB.txt", false);
+        assertFalse(result.isSuccess());
+        assertEquals(List.of("SONUS-SMI", "SONUS-TC"), result.getMissingDependencies());
+        assertEquals(List.of("SONUS-SMI"), result.getPendingDependencies());
     }
 
     @Test

@@ -55,6 +55,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -74,6 +75,8 @@ public class MibFileService {
     public static final String COMPILED = "compiled";
 
     private static final String MIB_FILE_EXTENSION = ".mib";
+    // keep in sync with JsmiMibParser.MIB_SUFFIXES
+    private static final String[] DEPENDENCY_SUFFIXES = {"", ".txt", ".mib", ".my"};
     private static final long MAX_MIB_FILE_SIZE = 10L * 1024 * 1024;
 
     private File mibsRootDir = new File(ConfigFileConstants.getHome(), "share" + File.separatorChar + "mibs");
@@ -284,6 +287,34 @@ public class MibFileService {
         result.setSuccess(false);
         result.setErrors(parser.getFormattedErrors());
         result.setMissingDependencies(parser.getMissingDependencies());
+        result.setPendingDependencies(findInPendingDirectory(parser.getMissingDependencies()));
+    }
+
+    /**
+     * The parser resolves dependencies against the compiled directory only. A missing
+     * dependency that is already uploaded but not compiled sits in the pending directory;
+     * report those so the UI can tell the user to compile them first. The name matching
+     * mirrors the parser's lookup: case-insensitive, with the same optional suffixes.
+     */
+    private List<String> findInPendingDirectory(List<String> missingDependencies) {
+        if (missingDependencies == null || missingDependencies.isEmpty()) {
+            return List.of();
+        }
+        final File[] pendingFiles = directoryFor(PENDING).listFiles(File::isFile);
+        if (pendingFiles == null) {
+            return List.of();
+        }
+        final List<String> found = new ArrayList<>();
+        for (final String dependency : missingDependencies) {
+            for (final String suffix : DEPENDENCY_SUFFIXES) {
+                final String candidate = dependency + suffix;
+                if (Arrays.stream(pendingFiles).anyMatch(file -> file.getName().equalsIgnoreCase(candidate))) {
+                    found.add(dependency);
+                    break;
+                }
+            }
+        }
+        return found;
     }
 
     private File directoryFor(String dir) {
