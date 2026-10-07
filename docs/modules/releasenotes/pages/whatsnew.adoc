@@ -216,6 +216,16 @@ Writing OpenNMS configuration through the REST API (`POST`/`PUT`/`DELETE` on `/r
 Update any integration that used a `ROLE_REST` account to change configuration to use a `ROLE_ADMIN` account.
 Reading configuration and all other `ROLE_REST` data operations are unchanged.
 
+=== REST API requisition reads require ROLE_PROVISION
+Reading requisitions through the REST API now requires `ROLE_PROVISION` or `ROLE_ADMIN`.
+Give `ROLE_PROVISION` to integration accounts that read requisitions.
+
+=== Write-only asset fields in the REST API
+The asset fields `password`, `enable` and `snmpcommunity` are now write-only in the REST API.
+
+=== Raw SQL query parameter requires ROLE_ADMIN
+The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
+
 === Ops Board and Wallboard removed
 
 The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
