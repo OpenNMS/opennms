@@ -62,10 +62,6 @@ public class HaConfigCommand implements Action {
             description = "Set the failover threshold in seconds (minimum 20).")
     private Integer failoverThreshold;
 
-    @Option(name = "--partner-rest-url",
-            description = "Set the partner REST URL (e.g. http://partner:8980/opennms).")
-    private String partnerRestUrl;
-
     @Override
     public Object execute() throws Exception {
         HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
@@ -82,8 +78,7 @@ public class HaConfigCommand implements Action {
         boolean modified = syncEnabled != null
                 || syncInterval != null
                 || heartbeatInterval != null
-                || failoverThreshold != null
-                || partnerRestUrl != null;
+                || failoverThreshold != null;
 
         if (modified) {
             HaConfiguration newCfg = copyOf(coord.getConfig());
@@ -91,7 +86,6 @@ public class HaConfigCommand implements Action {
             if (syncInterval != null)       newCfg.setSyncIntervalSeconds(syncInterval);
             if (heartbeatInterval != null)  newCfg.setHeartbeatIntervalSeconds(heartbeatInterval);
             if (failoverThreshold != null)  newCfg.setFailoverThresholdSeconds(failoverThreshold);
-            if (partnerRestUrl != null)     newCfg.setPartnerRestUrl(partnerRestUrl);
 
             try {
                 coord.writeConfig(newCfg); // writes to disk and applies in one step

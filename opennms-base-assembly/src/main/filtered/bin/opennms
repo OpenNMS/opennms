@@ -374,6 +374,11 @@ doStart(){
 			return 0
 			;;
 
+		161)
+			echo "${install.package.description} is already running, held at a startup gate." >&2
+			return 0
+			;;
+
 		160)
 			echo "${install.package.description} is partially running." >&2
 			echo "If you have just attempted starting ${install.package.description}, please try again in a few" >&2
@@ -490,7 +495,7 @@ doStart(){
 	STATUS_ATTEMPTS=0
 	while [ "$STATUS_ATTEMPTS" -lt "$START_TIMEOUT" ]; do
 		sleep $STATUS_WAIT
-		if doStatus "$@"; then
+		if isUpOrGated "$@"; then
 			return 0
 		fi
 		if isRunning "$(getPid)"; then
@@ -504,6 +509,13 @@ doStart(){
 
 	echo "Started ${install.package.description}, but it has not finished starting up" >&2
 	return 1
+}
+
+# True when the process is up, whether or not its services have started.
+isUpOrGated() {
+	doStatus "$@"
+	_up_rc=$?
+	[ "$_up_rc" -eq 0 ] || [ "$_up_rc" -eq 161 ]
 }
 
 doPause(){
@@ -549,7 +561,7 @@ doResume(){
 }
 
 doCheck() {
-	if doStatus "$@"; then
+	if isUpOrGated "$@"; then
 		# do nothing.. it's running
 		exit 0
 	fi
@@ -607,7 +619,7 @@ doStop() {
 }
 
 doKill(){
-	if doStatus "$@"; then
+	if isUpOrGated "$@"; then
 		# If there is a PID file for OpenNMS, specify the PID
 		PID="$(getPid)"
 		if [ "$PID" -gt 0 ]; then
@@ -689,6 +701,13 @@ doStatus(){
 		if [ "${_status_filename}" -nt "${_status_temp_filename}" ]; then
 			if [ "$VERBOSE" -gt 0 ]; then
 				cat "${_status_filename}"
+			fi
+
+			# A process that is up but whose services have not started (e.g.
+			# held at a startup gate) reports this instead of a service list.
+			if grep -q -x 'OpenNMS: gated' "${_status_filename}"; then
+				rm "${_status_temp_filename}"
+				return 161
 			fi
 
 			_running_count="$(grep -i -c -E ' running$' "${_status_filename}")"
@@ -1157,6 +1176,10 @@ case "$COMMAND" in
 
 				160)
 					echo "${NAME} is partially running"
+					;;
+
+				161)
+					echo "${NAME} is running but its services are not started (gated)"
 					;;
 
 				*)

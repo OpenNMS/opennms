@@ -137,6 +137,36 @@ While non-ACTIVE, a node replicates `etc/` from the active node every `sync-inte
 On identically installed nodes leave `<sync-excludes>` empty; list only files that genuinely differ per node (for example a host-specific certificate store).
 A file excluded on either node is neither overwritten nor deleted by sync.
 
+`<sync-roots>` selects which directories under `$OPENNMS_HOME` are replicated — `etc` by default, plus `deploy` to replicate plugins, which land while the standby's Karaf is stopped and install when it promotes.
+Never list `data`: it is each node's own Karaf cache.
+
+Both nodes must run the same release: the manifest advertises the serving node's version, and a standby skips the cycle with a warning while the versions differ, so a rolling upgrade never mixes configuration formats.
+
+Startup-only files sync like any other, but the running process keeps the values it booted with, so that node reports `RESTART REQUIRED` until restarted.
+In practice this means `opennms.properties.d/`, where your own settings belong; `opennms.properties` itself is product-owned, is replaced by upgrades, and is identical across nodes of the same release.
+The credential vault is exempt — it reloads when the file changes, so a rotated credential needs no restart.
+After installing a standby, let one sync cycle finish and restart it once, so it boots with the active node's configuration.
+
+=== Read the status output
+
+`opennms:ha-status` prints one row per node, then a `Config sync` block:
+
+[source]
+----
+INSTANCE          | ROLE      | STATE   | HEARTBEAT AGE | STALE
+opennms-primary   | PRIMARY   | ACTIVE  | 3s ago        | no
+opennms-secondary | SECONDARY | STANDBY | 2s ago        | no
+
+Config sync
+===========
+  opennms-secondary  last success 45s ago
+  opennms-primary    NEVER SUCCEEDED — credentials not available
+----
+
+`STALE` means only that a heartbeat is older than the failover threshold; role and state are reported as they are, so a completed failover (a SECONDARY holding ACTIVE) is not a fault.
+`NEVER SUCCEEDED` is the line to act on: nothing is being replicated, and a promotion would start from divergent configuration.
+`GET /rest/ha/status` reports the same as `heartbeat-stale`, `last-sync-success`, `last-sync-error` and `restart-required`.
+
 == Supervision modes
 
 `<mode>coordinator</mode>` (default) — the node runs the HA state machine described above itself.

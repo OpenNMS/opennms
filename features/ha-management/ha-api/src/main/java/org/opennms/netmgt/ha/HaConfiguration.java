@@ -49,6 +49,9 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.NONE)
 public class HaConfiguration implements Serializable {
 
+    /** The sync root every pair replicates; others are opt-in. */
+    public static final String DEFAULT_SYNC_ROOT = "etc";
+
     private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "enabled", defaultValue = "false")
@@ -123,6 +126,15 @@ public class HaConfiguration implements Serializable {
      * relative to {@code $OPENNMS_HOME/etc}. A trailing {@code /} excludes a
      * subtree. {@code ha-configuration.xml} is always excluded regardless.
      */
+    /**
+     * Directories under {@code $OPENNMS_HOME} to synchronize. Defaults to
+     * {@code etc} alone; add {@code deploy} to replicate installed plugins.
+     * {@code data} must never be listed — it is each node's own Karaf cache.
+     */
+    @XmlElementWrapper(name = "sync-roots")
+    @XmlElement(name = "root")
+    private List<String> syncRoots;
+
     @XmlElementWrapper(name = "sync-excludes")
     @XmlElement(name = "exclude")
     private List<String> syncExcludes = new ArrayList<>();
@@ -225,6 +237,14 @@ public class HaConfiguration implements Serializable {
 
     public List<String> getSyncExcludes() {
         return syncExcludes == null ? new ArrayList<>() : syncExcludes;
+    }
+
+    public List<String> getSyncRoots() {
+        return syncRoots == null || syncRoots.isEmpty() ? List.of(DEFAULT_SYNC_ROOT) : syncRoots;
+    }
+
+    public void setSyncRoots(List<String> syncRoots) {
+        this.syncRoots = syncRoots;
     }
 
     public void setSyncExcludes(List<String> syncExcludes) {
