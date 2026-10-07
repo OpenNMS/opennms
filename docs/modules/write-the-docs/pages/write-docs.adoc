@@ -241,7 +241,7 @@ The following syntax highlighters are available:
 * Bash, Console, or Shell
 * Groovy
 * Java
-* Javascript
+* JavaScript
 * JSON
 * Karaf
 * Properties

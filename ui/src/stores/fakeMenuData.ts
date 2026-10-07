@@ -39,8 +39,9 @@ export const defaultNotificationSummary = {
         ipAddress: '127.0.0.1',
         nodeLabel: 'localhost',
         notificationName: 'name1',
-        pageTime: new Date(),
+        pageTime: Date.now(),
         serviceType: {
+          id: 1,
           name: 'service1'
         },
         severity: 'major'
@@ -50,8 +51,9 @@ export const defaultNotificationSummary = {
         ipAddress: '127.0.0.1',
         nodeLabel: 'localhost',
         notificationName: 'name2',
-        pageTime: new Date(),
+        pageTime: Date.now(),
         serviceType: {
+          id: 2,
           name: 'service2'
         },
         severity: 'minor'
@@ -61,8 +63,9 @@ export const defaultNotificationSummary = {
         ipAddress: '127.0.0.1',
         nodeLabel: 'localhost',
         notificationName: 'name3',
-        pageTime: new Date(),
+        pageTime: Date.now(),
         serviceType: {
+          id: 2,
           name: 'service2'
         },
         severity: null

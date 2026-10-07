@@ -22,8 +22,17 @@
 
 import API from '@/services'
 import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, PathOutage, PathOutagePreview, PathOutageRequest } from '@/types/notificationConfig'
+import { createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
+// Event Notifications and Destination Paths tabs: the table, or the editor
+// panel in place of it.
+export enum NotificationConfigEditMode {
+  Table = 'table',
+  Edit = 'edit',
+  Create = 'create'
+}
 
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
@@ -35,13 +44,48 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
   const groups = ref([] as string[])
   const roles = ref([] as string[])
   const pathOutages = ref([] as PathOutage[])
+  const eventNotificationEditMode = ref(NotificationConfigEditMode.Table)
+  // the notification being edited; null while creating or on the table
+  const currentEventNotification = ref<EventNotification | null>(null)
+  const destinationPathEditMode = ref(NotificationConfigEditMode.Table)
+  // the path being edited; null while creating or on the table
+  const currentDestinationPath = ref<DestinationPath | null>(null)
 
-  const getStatus = async (): Promise<boolean> => {
-    notifdStatus.value = await API.getNotificationConfigStatus()
-    return notifdStatus.value !== null
+  // null opens the editor on a new notification
+  const openEventNotificationEditor = (notification: EventNotification | null) => {
+    currentEventNotification.value = notification
+    eventNotificationEditMode.value = notification ? NotificationConfigEditMode.Edit : NotificationConfigEditMode.Create
   }
 
-  const setStatus = async (status: NotifdStatus) => {
+  const closeEventNotificationEditor = () => {
+    currentEventNotification.value = null
+    eventNotificationEditMode.value = NotificationConfigEditMode.Table
+  }
+
+  // null opens the editor on a new path
+  const openDestinationPathEditor = (path: DestinationPath | null) => {
+    currentDestinationPath.value = path
+    destinationPathEditMode.value = path ? NotificationConfigEditMode.Edit : NotificationConfigEditMode.Create
+  }
+
+  const closeDestinationPathEditor = () => {
+    currentDestinationPath.value = null
+    destinationPathEditMode.value = NotificationConfigEditMode.Table
+  }
+
+  // Reads return a ValidationResult: success false carries the message to show.
+  // Mutations that refresh a list afterwards report a failed refresh in
+  // `errors` of an otherwise successful result, so the caller can show both.
+  const refreshed = (result: ValidationResult, refresh: ValidationResult): ValidationResult =>
+    refresh.success ? result : { ...result, errors: [refresh.message] }
+
+  const getStatus = async (): Promise<ValidationResult> => {
+    const result = await API.getNotificationConfigStatus()
+    notifdStatus.value = result.payload ?? null
+    return result
+  }
+
+  const setStatus = async (status: NotifdStatus): Promise<boolean> => {
     const ok = await API.setNotificationConfigStatus(status)
     if (ok) {
       notifdStatus.value = status
@@ -49,16 +93,15 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     return ok
   }
 
-  const getEventNotifications = async (): Promise<boolean> => {
+  const getEventNotifications = async (): Promise<ValidationResult> => {
     const result = await API.getEventNotifications()
-    if (result === null) {
-      return false
+    if (result.success) {
+      eventNotifications.value = result.payload ?? []
     }
-    eventNotifications.value = result
-    return true
+    return result
   }
 
-  const setEventNotificationStatus = async (name: string, status: NotifdStatus) => {
+  const setEventNotificationStatus = async (name: string, status: NotifdStatus): Promise<boolean> => {
     const ok = await API.setEventNotificationStatus(name, status)
     if (ok) {
       const notification = eventNotifications.value.find(n => n.name === name)
@@ -69,117 +112,92 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     return ok
   }
 
-  const getPathOutages = async (): Promise<boolean> => {
+  const getPathOutages = async (): Promise<ValidationResult> => {
     const result = await API.getPathOutages()
-    if (result === null) {
-      return false
+    if (result.success) {
+      pathOutages.value = result.payload ?? []
     }
-    pathOutages.value = result
-    return true
+    return result
   }
 
-  const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | null> => {
+  const previewPathOutageRule = async (rule: string): Promise<ValidationResultWithPayload<PathOutagePreview>> => {
     return await API.previewPathOutageRule(rule)
   }
 
-  const applyPathOutage = async (request: PathOutageRequest) => {
-    const ok = await API.applyPathOutage(request)
-    if (ok) {
-      await getPathOutages()
-    }
-    return ok
+  const applyPathOutage = async (request: PathOutageRequest): Promise<ValidationResult> => {
+    const result = await API.applyPathOutage(request)
+    return result.success ? refreshed(result, await getPathOutages()) : result
   }
 
-  const addEventNotification = async (notification: EventNotification) => {
-    const ok = await API.addEventNotification(notification)
-    if (ok) {
-      await getEventNotifications()
-    }
-    return ok
+  const addEventNotification = async (notification: EventNotification): Promise<ValidationResult> => {
+    const result = await API.addEventNotification(notification)
+    return result.success ? refreshed(result, await getEventNotifications()) : result
   }
 
-  const deletePathOutage = async (nodeId: number) => {
-    const ok = await API.deletePathOutage(nodeId)
-    if (ok) {
-      await getPathOutages()
-    }
-    return ok
+  const deletePathOutage = async (nodeId: number): Promise<ValidationResult> => {
+    const result = await API.deletePathOutage(nodeId)
+    return result.success ? refreshed(result, await getPathOutages()) : result
   }
 
-  const updateEventNotification = async (originalName: string, notification: EventNotification) => {
-    const ok = await API.updateEventNotification(originalName, notification)
-    if (ok) {
-      await getEventNotifications()
-    }
-    return ok
+  const updateEventNotification = async (originalName: string, notification: EventNotification): Promise<ValidationResult> => {
+    const result = await API.updateEventNotification(originalName, notification)
+    return result.success ? refreshed(result, await getEventNotifications()) : result
   }
 
-  const deleteEventNotification = async (name: string) => {
-    const ok = await API.deleteEventNotification(name)
-    if (ok) {
-      await getEventNotifications()
-    }
-    return ok
+  const deleteEventNotification = async (name: string): Promise<ValidationResult> => {
+    const result = await API.deleteEventNotification(name)
+    return result.success ? refreshed(result, await getEventNotifications()) : result
   }
 
-  const getDestinationPaths = async (): Promise<boolean> => {
+  const getDestinationPaths = async (): Promise<ValidationResult> => {
     const result = await API.getDestinationPaths()
-    if (result === null) {
-      return false
+    if (result.success) {
+      destinationPaths.value = result.payload ?? []
     }
-    destinationPaths.value = result
-    return true
+    return result
   }
 
-  const addDestinationPath = async (path: DestinationPath) => {
-    const ok = await API.addDestinationPath(path)
-    if (ok) {
-      await getDestinationPaths()
-    }
-    return ok
+  const addDestinationPath = async (path: DestinationPath): Promise<ValidationResult> => {
+    const result = await API.addDestinationPath(path)
+    return result.success ? refreshed(result, await getDestinationPaths()) : result
   }
 
-  const updateDestinationPath = async (originalName: string, path: DestinationPath) => {
-    const ok = await API.updateDestinationPath(originalName, path)
-    if (ok) {
-      await getDestinationPaths()
-    }
-    return ok
+  const updateDestinationPath = async (originalName: string, path: DestinationPath): Promise<ValidationResult> => {
+    const result = await API.updateDestinationPath(originalName, path)
+    return result.success ? refreshed(result, await getDestinationPaths()) : result
   }
 
-  const getUsersAndGroups = async (): Promise<boolean> => {
+  // One result for the three picker lookups: the first failure, if any. Each
+  // list that did load is still kept.
+  const getUsersAndGroups = async (): Promise<ValidationResult> => {
     const [u, g, r] = await Promise.all([API.getNotificationUsers(), API.getNotificationGroups(), API.getOnCallRoles()])
-    if (u) {
-      users.value = u
+    if (u.success) {
+      users.value = u.payload ?? []
     }
-    if (g) {
-      groups.value = g
+    if (g.success) {
+      groups.value = g.payload ?? []
     }
-    if (r) {
-      roles.value = r
+    if (r.success) {
+      roles.value = r.payload ?? []
     }
-    return u !== null && g !== null && r !== null
+    return [u, g, r].find(result => !result.success) ?? createSuccessResponse()
   }
 
-  const deleteDestinationPath = async (name: string) => {
-    const ok = await API.deleteDestinationPath(name)
-    if (ok) {
-      await getDestinationPaths()
-    }
-    return ok
+  const deleteDestinationPath = async (name: string): Promise<ValidationResult> => {
+    const result = await API.deleteDestinationPath(name)
+    return result.success ? refreshed(result, await getDestinationPaths()) : result
   }
 
-  const testDestinationPath = async (name: string) => {
+  const testDestinationPath = async (name: string): Promise<boolean> => {
     return await API.testDestinationPath(name)
   }
 
-  const getCommands = async (): Promise<boolean> => {
+  const getCommands = async (): Promise<ValidationResult> => {
     const result = await API.getNotificationCommands()
-    if (result === null) {
-      return false
+    if (result.success) {
+      commands.value = result.payload ?? []
     }
-    commands.value = result
-    return true
+    return result
   }
 
   return {
@@ -191,6 +209,14 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     groups,
     roles,
     pathOutages,
+    eventNotificationEditMode,
+    currentEventNotification,
+    openEventNotificationEditor,
+    closeEventNotificationEditor,
+    destinationPathEditMode,
+    currentDestinationPath,
+    openDestinationPathEditor,
+    closeDestinationPathEditor,
     getStatus,
     setStatus,
     getEventNotifications,

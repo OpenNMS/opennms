@@ -1,13 +1,20 @@
 <template>
-  <OnmsDialog
-    :visible="visible"
-    modal
-    :header="isEditing ? `Edit Destination Path: ${originalName}` : 'New Destination Path'"
-    class="destination-path-editor-dialog"
-    width="min(900px, 95vw)"
-    data-test="destination-path-editor-dialog"
-    @update:visible="(value: boolean) => emit('update:visible', value)"
+  <TableCard
+    class="destination-path-editor-panel"
+    data-test="destination-path-editor-panel"
   >
+    <div class="panel-header">
+      <OnmsButton
+        variant="text"
+        class="back-button"
+        data-test="back-button"
+        @click="emit('close')"
+      >
+        <OnmsIcon :icon="ArrowBack" />
+        Back
+      </OnmsButton>
+      <h2 class="card-title">{{ isEditing ? `Edit Destination Path: ${originalName}` : 'New Destination Path' }}</h2>
+    </div>
     <div class="editor-body">
       <div class="form-row">
         <FormField
@@ -42,22 +49,11 @@
 
       <div class="section">
         <div class="section-header">
-          <div class="section-title">Initial Targets</div>
-          <OnmsButton
-            variant="outlined"
-            size="small"
-            label="Add Target"
-            icon="pi pi-plus"
-            data-test="add-target-button"
-            @click="addTarget(targets)"
-          />
+          <div class="section-title">
+            Initial Targets
+            <HelpBadge :content="initialTargetsHelp" ariaLabel="Initial Targets help" />
+          </div>
         </div>
-        <p class="section-hint">
-          Who gets notified first, and how. Each target is notified via the selected methods;
-          Email and Browser (on-screen, for logged-in users) methods are fully supported today —
-          the remaining methods are shown for completeness and will be enabled as their
-          configuration screens land.
-        </p>
         <TargetRowEditor
           v-for="(row, index) in targets"
           :key="row.key"
@@ -69,24 +65,25 @@
           :removable="targets.length > 1"
           @remove="targets.splice(index, 1)"
         />
+        <div class="section-actions">
+          <OnmsButton
+            variant="outlined"
+            size="small"
+            label="Add Target"
+            icon="pi pi-plus"
+            data-test="add-target-button"
+            @click="addTarget(targets)"
+          />
+        </div>
       </div>
 
       <div class="section">
         <div class="section-header">
-          <div class="section-title">Escalations</div>
-          <OnmsButton
-            variant="outlined"
-            size="small"
-            label="Add Escalation"
-            icon="pi pi-plus"
-            data-test="add-escalation-button"
-            @click="addEscalation"
-          />
+          <div class="section-title">
+            Escalations
+            <HelpBadge :content="escalationsHelp" ariaLabel="Escalations help" />
+          </div>
         </div>
-        <p class="section-hint">
-          If the notice is still unacknowledged after the delay, the escalation's targets are
-          notified next.
-        </p>
         <div
           v-for="(escalation, eIndex) in escalations"
           :key="escalation.key"
@@ -98,9 +95,6 @@
               :for="`escalation-delay-${eIndex}`"
               :error="escalationDelayError(escalation.delay)"
             >
-              <template #label-suffix>
-                <HelpBadge :content="escalateHelp" ariaLabel="Escalate After help" />
-              </template>
               <OnmsSelect
                 v-model="escalation.delay"
                 :inputId="`escalation-delay-${eIndex}`"
@@ -109,24 +103,6 @@
                 data-test="escalation-delay-select"
               />
             </FormField>
-            <div class="escalation-actions">
-              <OnmsButton
-                variant="outlined"
-                size="small"
-                label="Add Target"
-                icon="pi pi-plus"
-                data-test="add-escalation-target-button"
-                @click="addTarget(escalation.targets)"
-              />
-              <OnmsButton
-                variant="text"
-                size="small"
-                label="Remove Escalation"
-                severity="danger"
-                data-test="remove-escalation-button"
-                @click="escalations.splice(eIndex, 1)"
-              />
-            </div>
           </div>
           <TargetRowEditor
             v-for="(row, tIndex) in escalation.targets"
@@ -139,16 +115,44 @@
             :removable="escalation.targets.length > 1"
             @remove="escalation.targets.splice(tIndex, 1)"
           />
+          <div class="escalation-actions">
+            <OnmsButton
+              variant="outlined"
+              size="small"
+              label="Add Target"
+              icon="pi pi-plus"
+              data-test="add-escalation-target-button"
+              @click="addTarget(escalation.targets)"
+            />
+            <OnmsButton
+              variant="ghost"
+              size="small"
+              label="Remove Escalation"
+              severity="danger"
+              data-test="remove-escalation-button"
+              @click="escalations.splice(eIndex, 1)"
+            />
+          </div>
+        </div>
+        <div class="section-actions">
+          <OnmsButton
+            variant="outlined"
+            size="small"
+            label="Add Escalation"
+            icon="pi pi-plus"
+            data-test="add-escalation-button"
+            @click="addEscalation"
+          />
         </div>
       </div>
     </div>
 
-    <template #footer>
+    <div class="panel-footer">
       <OnmsButton
-        variant="text"
+        variant="ghost"
         label="Cancel"
         data-test="cancel-button"
-        @click="emit('update:visible', false)"
+        @click="emit('close')"
       />
       <OnmsButton
         :label="isEditing ? 'Save Path' : 'Add Path'"
@@ -156,30 +160,37 @@
         data-test="save-button"
         @click="save"
       />
-    </template>
-  </OnmsDialog>
+    </div>
+  </TableCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
-import TargetRowEditor, { MethodOption, TargetRow } from '@/components/AdminNotifications/TargetRowEditor.vue'
+import TargetRowEditor, { MethodOption, TargetRow } from '@/components/Notifications/TargetRowEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
+import TableCard from '@/components/Common/TableCard.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import { NOTIFD_DURATION_HINT, UNADDRESSABLE_NAME_HINT, isPathAddressable, isValidNotifdDuration } from '@/lib/adminValidation'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { DestinationPath, DestinationPathTarget } from '@/types/notificationConfig'
 
+// Rendered in place of the Destination Paths table (see DestinationPathsTab);
+// `path` is null when creating. Emits `close` on Back, Cancel, or a successful save.
 const props = defineProps<{
-  visible: boolean
   path: DestinationPath | null
 }>()
 
-const emit = defineEmits(['update:visible'])
+const emit = defineEmits<{
+  close: []
+}>()
 
 const store = useNotificationConfigStore()
+const { withSpinner, report } = useActionFeedback()
 
 // Methods with a working configuration today. The rest of the commands from
 // notificationCommands.xml are listed but disabled until their config lands.
@@ -191,8 +202,11 @@ const HIDDEN_METHODS = new Set([
   'ircCat', 'microblogDM', 'microblogReply', 'microblogUpdate', 'xmppMessage', 'xmppGroupMessage'
 ])
 
-const delayHelp = 'How long to wait after the notice is created before the first targets are notified (e.g. 30s, 5m, 1h). 0s notifies immediately.'
-const escalateHelp = 'If the notice is still unacknowledged after this delay, this escalation’s targets are notified next.'
+const delayHelp = 'How long to wait after the notification is created before the first targets are notified (e.g. 30s, 5m, 1h). 0s notifies immediately.'
+const initialTargetsHelp = 'Who gets notified first, and how. Each target is notified via the selected methods; '
+  + 'Email and Browser (on-screen, for logged-in users) methods are fully supported today — the remaining '
+  + 'methods are shown for completeness and will be enabled as their configuration screens land.'
+const escalationsHelp = 'If the notification is still unacknowledged after the delay, the escalation’s targets are notified next.'
 
 const METHOD_LABELS: Record<string, string> = {
   javaEmail: 'Email',
@@ -276,21 +290,30 @@ const inferType = (targetName: string): TargetRow['type'] => {
   return 'user'
 }
 
-const toRow = (target: DestinationPathTarget): TargetRow => ({
-  key: rowKey++,
-  type: inferType(target.name),
-  name: target.name,
-  commands: [...(target.command ?? [])],
-  interval: target.interval ?? undefined,
-  autoNotify: target.autoNotify ?? undefined
-})
+// A loaded target's type is inferred from the group/role lists, which the tab
+// fetches alongside the paths and can land after this panel opens. Remember what
+// each loaded row was inferred as so it can be corrected once the lists arrive.
+const inferredRows = new Map<number, { name: string, type: TargetRow['type'] }>()
 
+const toRow = (target: DestinationPathTarget): TargetRow => {
+  const row: TargetRow = {
+    key: rowKey++,
+    type: inferType(target.name),
+    name: target.name,
+    commands: [...(target.command ?? [])],
+    interval: target.interval ?? undefined,
+    autoNotify: target.autoNotify ?? undefined
+  }
+  inferredRows.set(row.key, { name: row.name, type: row.type })
+  return row
+}
+
+// Mounted fresh each time the panel opens, so the form is filled once from
+// `path`; the watch only matters if the caller swaps paths while it is open.
 watch(
-  () => props.visible,
-  (isVisible) => {
-    if (!isVisible) {
-      return
-    }
+  () => props.path,
+  () => {
+    inferredRows.clear()
     if (props.path) {
       name.value = props.path.name
       initialDelay.value = props.path['initial-delay'] ?? '0s'
@@ -321,8 +344,24 @@ watch(
       escalations.value = []
       originalLegacyCommands.value = new Set()
     }
-  }
+  },
+  { immediate: true }
 )
+
+// Re-infer loaded rows when the lookups change. A row the user has touched is
+// left alone: changing a row's type clears its name, so an untouched row still
+// has both its loaded name and its inferred type.
+watch([() => store.groups, () => store.roles], () => {
+  const rows = [...targets.value, ...escalations.value.flatMap(esc => esc.targets)]
+  for (const row of rows) {
+    const loaded = inferredRows.get(row.key)
+    if (!loaded || row.name !== loaded.name || row.type !== loaded.type) {
+      continue
+    }
+    row.type = inferType(row.name)
+    loaded.type = row.type
+  }
+})
 
 const rowIsValid = (row: TargetRow) =>
   !!row.name.trim() && row.commands.length > 0 && isValidNotifdDuration(row.interval)
@@ -377,11 +416,11 @@ const save = async () => {
         target: esc.targets.map(toTarget)
       }))
     }
-    const ok = isEditing.value
-      ? await store.updateDestinationPath(originalName.value, path)
-      : await store.addDestinationPath(path)
-    if (ok) {
-      emit('update:visible', false)
+    const result = await withSpinner(() => isEditing.value
+      ? store.updateDestinationPath(originalName.value, path)
+      : store.addDestinationPath(path))
+    if (report(result, `Destination path '${path.name}' ${isEditing.value ? 'updated' : 'added'}.`)) {
+      emit('close')
     }
   } finally {
     saving.value = false
@@ -390,11 +429,41 @@ const save = async () => {
 </script>
 
 <style lang="scss" scoped>
+.destination-path-editor-panel {
+  padding: 25px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  .back-button {
+    padding-left: 0;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
 .editor-body {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   padding-top: 0.5rem;
+  max-width: 900px;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  max-width: 900px;
 }
 
 .form-row {
@@ -421,11 +490,9 @@ const save = async () => {
     }
   }
 
-  .section-hint {
-    margin: 0 0 0.75rem 0;
-    font-size: 0.875rem;
-    color: var(--p-text-muted-color);
-    max-width: 80ch;
+  // add buttons follow the rows they add to
+  .section-actions {
+    margin-top: 1rem;
   }
 }
 
@@ -446,11 +513,15 @@ const save = async () => {
     :deep(.p-select) {
       min-width: 160px;
     }
+  }
 
-    .escalation-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
+  // Add Target, then Remove Escalation as the block's last control
+  .escalation-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 }
 </style>

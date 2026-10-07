@@ -35,6 +35,7 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     EventConfEvent findByUei(String uei);
 
+    /** The source's events whose UEI matches exactly, in evaluation order (eventOrder, then id). */
     List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId);
 
     int countBySourceId(Long sourceId);
@@ -47,13 +48,15 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int offset, int limit);
 
-    void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
+    /** Flips the events' enabled flag, stamping lastModified and {@code modifiedBy} on each. */
+    void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled, String modifiedBy);
 
     /**
      * Pages the events of a source. {@code eventSortBy} may be uei, eventLabel, description, severity,
      * enabled, createdTime or eventOrder; anything else (including null) sorts by eventOrder, the
      * evaluation order within the source. {@code sortDirection} is asc or desc; when absent, eventOrder is
      * ascending (first evaluated first) and every other field descending. An unknown source yields an empty page.
+     * A null or zero {@code limit} returns every matching event in one page; a null {@code offset} means 0.
      */
     Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String sortDirection, Integer totalRecords, Integer offset, Integer limit);
 
@@ -86,4 +89,31 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
      * preserving the current relative order (by eventOrder, then id).
      */
     void compactEventOrder(Long sourceId);
+
+    /**
+     * Adds {@code delta} to the {@code eventOrder} of the source's events whose order lies in
+     * {@code [from, to]} (inclusive). Intermediate duplicates are tolerated by the deferred unique
+     * constraint; the caller is responsible for a consistent end state at commit.
+     *
+     * @return the number of events shifted
+     */
+    int shiftEventOrder(Long sourceId, int from, int to, int delta);
+
+    /**
+     * Sets the {@code eventOrder} of one event of the source (and touches its lastModified).
+     */
+    void updateEventOrder(Long sourceId, Long eventId, int eventOrder);
+
+    /**
+     * @param previous true for the event immediately before the given order within the source
+     *                 (the next-lower {@code eventOrder}), false for the one immediately after
+     * @return the neighbouring event, or null when the given order is already at that edge
+     */
+    EventConfEvent findNeighbourByOrder(Long sourceId, int eventOrder, boolean previous);
+
+    /**
+     * The source's events in evaluation order, without their XML payloads: one row per event as
+     * {@code [id, uei, eventLabel, severity, enabled, eventOrder]}.
+     */
+    List<Object[]> findEventOrderSummaries(Long sourceId);
 }
