@@ -64,7 +64,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -80,6 +79,7 @@ import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import { useRecordDownload } from './hooks/useRecordDownload'
 import { severityTag } from './utils'
+import useActiveNodeId from './hooks/useActiveNodeId'
 
 // The node's alarms, most recent first, a few at a time to fit the Main tab's column.
 //
@@ -90,12 +90,11 @@ const PAGE_SIZE = 5
 
 const alarmStore = useAlarmStore()
 const menuStore = useMenuStore()
-const route = useRoute()
 
 const { showSnackBar } = useSnackbar()
 const { downloadRecords } = useRecordDownload()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 // The time on its own line under the date, so the column stays narrow.

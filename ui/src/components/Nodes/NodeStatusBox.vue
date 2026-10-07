@@ -30,12 +30,12 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import useVisiblePolling from '@/composables/useVisiblePolling'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
 import NodeDetailsBanner from './NodeDetailsBanner.vue'
 import { BannerSeverity, bannerSeverity, computeNodeStatus, NodeStatus } from './nodeStatus'
+import useActiveNodeId from './hooks/useActiveNodeId'
 
 // How often the status is refreshed while it is on screen. The JSP worked it out once per page
 // load; the alarms behind it change without the page knowing, so this one keeps up.
@@ -43,9 +43,8 @@ const POLL_INTERVAL_MS = 60_000
 
 const alarmStore = useAlarmStore()
 const menuStore = useMenuStore()
-const route = useRoute()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 
 // The store's node slice is only replaced on success, so it may still be the previous node's.
 const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmsNodeId === nodeId.value)

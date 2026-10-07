@@ -53,7 +53,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -65,6 +64,7 @@ import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useRecordDownload } from './hooks/useRecordDownload'
 import { severityTag } from './utils'
+import useActiveNodeId from './hooks/useActiveNodeId'
 
 // The legacy event list page, which accepts a node filter.
 // Will need to replace with the Vue page once it's implemented.
@@ -72,12 +72,11 @@ const EVENT_LIST_PATH = 'event/list'
 
 const eventStore = useEventStore()
 const menuStore = useMenuStore()
-const route = useRoute()
 
 const { showSnackBar } = useSnackbar()
 const { downloadRecords } = useRecordDownload()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 
 const DEFAULT_PAGE_SIZE = 5
 

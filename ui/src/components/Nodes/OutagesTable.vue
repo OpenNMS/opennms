@@ -65,7 +65,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -83,15 +82,15 @@ import {
   serviceLink as buildServiceLink
 } from '@/lib/linkUtils'
 import { Outage } from '@/types'
+import useActiveNodeId from './hooks/useActiveNodeId'
 
 const menuStore = useMenuStore()
 const outageStore = useOutageStore()
-const route = useRoute()
 
 const { showSnackBar } = useSnackbar()
 const { downloadRecords } = useRecordDownload()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const DEFAULT_PAGE_SIZE = 5

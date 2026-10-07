@@ -27,12 +27,12 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import useRole from '@/composables/useRole'
 import useVisiblePolling from '@/composables/useVisiblePolling'
 import { useScheduledOutageStore } from '@/stores/scheduledOutageStore'
 import { ScheduledOutage } from '@/types/scheduledOutage'
 import NodeDetailsBanner from './NodeDetailsBanner.vue'
+import useActiveNodeId from './hooks/useActiveNodeId'
 
 // The legacy includes this in the node page only when something applies, and so does this: a
 // node with no scheduled outage in effect -- or one whose check failed -- shows nothing. Polled on
@@ -40,10 +40,9 @@ import NodeDetailsBanner from './NodeDetailsBanner.vue'
 const POLL_INTERVAL_MS = 60_000
 
 const scheduledOutageStore = useScheduledOutageStore()
-const route = useRoute()
 const { adminRole } = useRole()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 
 // The store's slice is only replaced on success, so it may still be the previous node's.
 const outages = computed<ScheduledOutage[]>(() =>

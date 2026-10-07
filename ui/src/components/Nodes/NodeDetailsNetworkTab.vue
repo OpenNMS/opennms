@@ -77,20 +77,20 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { useEnlinkdStore } from '@/stores/enlinkdStore'
 import { NodeEnlinkdElements } from '@/types/enlinkd'
 import NodeDetailsFieldList from './NodeDetailsFieldList.vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import { BridgeGroup, bridgeGroup, cdpFields, isisFields, lldpFields, ospfFields } from './nodeEnlinkdFields'
+import useActiveNodeId from './hooks/useActiveNodeId'
 
 // The legacy node page's Enlinkd boxes (LLDP, CDP, OSPF, IS-IS, bridge), each a panel shown only
 // when Enlinkd found something for it. Fetched when the tab is first opened, and again as the
-// page moves between nodes: like the Additional tab's tables, this follows the route id.
+// page moves between nodes: like the Additional tab's tables, this follows the route id -- but
+// only while the tab is showing (see useActiveNodeId).
 const enlinkdStore = useEnlinkdStore()
-const route = useRoute()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 
 const lastFetchFailed = ref(false)
 

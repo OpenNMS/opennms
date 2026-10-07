@@ -39,8 +39,8 @@
 
     <!--
       KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
-      paging and sorting when the user switches away and back. Cached tabs still follow the route,
-      so moving to another node refreshes them too.
+      paging and sorting when the user switches away and back. A hidden tab does not follow the
+      route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
     -->
     <KeepAlive>
       <NodeDetailsMainTab
