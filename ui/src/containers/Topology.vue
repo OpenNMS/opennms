@@ -50,28 +50,6 @@ License.
               class="view-chooser"
               aria-label="Choose a topology view"
             />
-            <OnmsIconButton
-              :icon="SaveIcon"
-              title="Save"
-              tooltip="Save the view"
-              tooltip-position="bottom"
-              variant="filled"
-              :disabled="!canSave || store.isSaving"
-              @click="onSave"
-            />
-            <span v-if="isDirty" class="unsaved-badge" role="status">Unsaved changes</span>
-            <!-- The less frequent view actions sit behind one menu, so the bar
-                 keeps the one button pressed many times a session. -->
-            <OnmsIconButton
-              :icon="MoreVert"
-              title="View actions"
-              tooltip="New, Save As, Rename, Delete"
-              tooltip-position="bottom"
-              variant="outlined"
-              aria-haspopup="true"
-              @click="viewMenuRef?.toggle($event)"
-            />
-            <OnmsTieredMenu ref="viewMenuRef" :items="viewMenuModel" />
           </template>
           <template v-else>
             <!-- Variant picker: which representation of this discovered source
@@ -198,6 +176,34 @@ License.
             variant="outlined"
             @click="onExport"
           />
+          <!-- The view's own actions close the bar, set apart from the canvas
+               controls: Save is pressed many times a session, the menu holds
+               the less frequent New, Save As, Rename and Delete. -->
+          <template v-if="!isDiscovered">
+            <span class="toolbar-divider" aria-hidden="true" />
+            <!-- Unsaved work shows as a red Save button; this says it to screen readers. -->
+            <span v-if="isDirty" class="unsaved-badge" role="status">Unsaved changes</span>
+            <OnmsIconButton
+              :icon="SaveIcon"
+              title="Save"
+              :tooltip="isDirty ? 'Unsaved changes' : 'Save the view'"
+              tooltip-position="left"
+              variant="filled"
+              :severity="isDirty ? 'danger' : 'primary'"
+              :disabled="!canSave || store.isSaving"
+              @click="onSave"
+            />
+            <OnmsIconButton
+              :icon="MoreVert"
+              title="View actions"
+              tooltip="New, Save As, Rename, Delete"
+              tooltip-position="left"
+              variant="outlined"
+              aria-haspopup="true"
+              @click="viewMenuRef?.toggle($event)"
+            />
+            <OnmsTieredMenu ref="viewMenuRef" :items="viewMenuModel" />
+          </template>
       </div>
     </div>
 
@@ -1300,11 +1306,24 @@ const confirmDelete = async () => {
   border-top-color: var(--onms-error, #a5021f);
 }
 
+.toolbar-divider {
+  align-self: stretch;
+  width: 1px;
+  margin: 0.25rem 0.25rem;
+  background: var(--onms-border-on-surface);
+}
+
+/* Visually hidden, still announced. */
 .unsaved-badge {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--onms-error, #a5021f);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
   white-space: nowrap;
+  border: 0;
 }
 
 .topology-title {
