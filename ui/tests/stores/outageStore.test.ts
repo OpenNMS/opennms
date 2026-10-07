@@ -115,4 +115,38 @@ describe('outageStore', () => {
       expect(store.nodeOutages).toEqual([{ id: 99 }])
     })
   })
+
+  // What the Node Details tables need to tell a page that failed from a page that loaded.
+  describe('getNodeOutages: page and failure state', () => {
+    it('records the page it holds on success', async () => {
+      vi.mocked(API.getNodeOutages).mockResolvedValue(response([]))
+      const store = useOutageStore()
+
+      await store.getNodeOutages('42', { offset: 10, limit: 5 })
+
+      expect(store.nodeOutagesPage).toEqual({ offset: 10, limit: 5 })
+      expect(store.nodeOutagesFailedNodeId).toBeUndefined()
+    })
+
+    it('keeps the page and marks the node failed when a fetch fails', async () => {
+      vi.mocked(API.getNodeOutages).mockResolvedValueOnce(response([])).mockResolvedValueOnce(false)
+      const store = useOutageStore()
+
+      await store.getNodeOutages('42', { offset: 0, limit: 5 })
+      await store.getNodeOutages('42', { offset: 5, limit: 5 })
+
+      expect(store.nodeOutagesPage).toEqual({ offset: 0, limit: 5 })
+      expect(store.nodeOutagesFailedNodeId).toBe('42')
+    })
+
+    it('clears another node\'s failure as soon as a fetch for a new node starts', async () => {
+      vi.mocked(API.getNodeOutages).mockResolvedValueOnce(false).mockImplementationOnce(() => new Promise(() => undefined) as never)
+      const store = useOutageStore()
+
+      await store.getNodeOutages('42')
+      void store.getNodeOutages('99')
+
+      expect(store.nodeOutagesFailedNodeId).toBeUndefined()
+    })
+  })
 })

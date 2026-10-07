@@ -111,6 +111,40 @@ describe('eventStore', () => {
     })
   })
 
+  // What the Node Details tables need to tell a page that failed from a page that loaded.
+  describe('getNodeEvents: page and failure state', () => {
+    it('records the page it holds on success', async () => {
+      vi.mocked(API.getEvents).mockResolvedValue({ event: [], totalCount: 0, count: 0, offset: 0 } as never)
+      const store = useEventStore()
+
+      await store.getNodeEvents('42', { offset: 10, limit: 5 })
+
+      expect(store.nodeEventsPage).toEqual({ offset: 10, limit: 5 })
+      expect(store.nodeEventsFailedNodeId).toBeUndefined()
+    })
+
+    it('keeps the page and marks the node failed when a fetch fails', async () => {
+      vi.mocked(API.getEvents).mockResolvedValueOnce({ event: [], totalCount: 0, count: 0, offset: 0 } as never).mockResolvedValueOnce(false)
+      const store = useEventStore()
+
+      await store.getNodeEvents('42', { offset: 0, limit: 5 })
+      await store.getNodeEvents('42', { offset: 5, limit: 5 })
+
+      expect(store.nodeEventsPage).toEqual({ offset: 0, limit: 5 })
+      expect(store.nodeEventsFailedNodeId).toBe('42')
+    })
+
+    it('clears another node\'s failure as soon as a fetch for a new node starts', async () => {
+      vi.mocked(API.getEvents).mockResolvedValueOnce(false).mockImplementationOnce(() => new Promise(() => undefined) as never)
+      const store = useEventStore()
+
+      await store.getNodeEvents('42')
+      void store.getNodeEvents('99')
+
+      expect(store.nodeEventsFailedNodeId).toBeUndefined()
+    })
+  })
+
   // Fired per node id as the user moves between nodes, and per page as the paginator moves:
   // a page-2-then-page-3 click can land page 2's rows under page 3's paginator state.
   describe('stale responses', () => {

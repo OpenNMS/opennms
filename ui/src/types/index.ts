@@ -427,6 +427,12 @@ export interface Category {
   name: string
 }
 
+// The page a node slice holds: what its query asked for. A limit of 0 is every row.
+export interface NodePage {
+  offset: number
+  limit: number
+}
+
 export interface QueryParameters {
   limit?: number
   offset?: number

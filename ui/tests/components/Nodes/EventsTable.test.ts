@@ -346,6 +346,40 @@ describe('EventsTable.vue', () => {
     })
   })
 
+  describe('Loading and failure', () => {
+    // Another node's slice is not this node's: nothing to show yet, and not "no results".
+    it('says it is loading while this node\'s events are in flight', async () => {
+      setNodeEvents([], 0, 'some-other-node')
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Loading events…')
+      expect(wrapper.text()).not.toContain('No results found.')
+    })
+
+    it('says the events could not be loaded when this node\'s fetch failed', async () => {
+      setNodeEvents([], 0, 'some-other-node')
+      eventStore.nodeEventsFailedNodeId = mockNodeId
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Unable to load events for this node.')
+      expect(wrapper.text()).not.toContain('No results found.')
+    })
+
+    // The slice still holds page one, so the paginator must not say page two.
+    it('goes back to the page on screen when a page change fails', async () => {
+      setNodeEvents(Array.from({ length: 5 }, (_, i) => ({ id: i + 1 })), 12)
+      eventStore.nodeEventsPage = { offset: 0, limit: 5 }
+      eventStore.getNodeEvents = vi.fn().mockResolvedValue({ success: false, message: 'nope' })
+      await nextTick()
+
+      await wrapper.findAll('.p-paginator-page')[1].trigger('click')
+      await flushPromises()
+
+      expect(eventStore.getNodeEvents).toHaveBeenCalledWith(mockNodeId, { offset: 5, limit: 5 })
+      expect(wrapper.find('.p-paginator-page-selected').text()).toBe('1')
+    })
+  })
+
   describe('Empty state', () => {
     it('shows EmptyList when there are no rows', async () => {
       setNodeEvents([], 0)

@@ -181,6 +181,40 @@ describe('alarmStore', () => {
     })
   })
 
+  // What the Node Details tables need to tell a page that failed from a page that loaded.
+  describe('getNodeAlarms: page and failure state', () => {
+    it('records the page it holds on success', async () => {
+      vi.mocked(API.getAlarms).mockResolvedValue(response([]))
+      const store = useAlarmStore()
+
+      await store.getNodeAlarms('42', { offset: 10, limit: 5 })
+
+      expect(store.nodeAlarmsPage).toEqual({ offset: 10, limit: 5 })
+      expect(store.nodeAlarmsFailedNodeId).toBeUndefined()
+    })
+
+    it('keeps the page and marks the node failed when a fetch fails', async () => {
+      vi.mocked(API.getAlarms).mockResolvedValueOnce(response([])).mockResolvedValueOnce(false)
+      const store = useAlarmStore()
+
+      await store.getNodeAlarms('42', { offset: 0, limit: 5 })
+      await store.getNodeAlarms('42', { offset: 5, limit: 5 })
+
+      expect(store.nodeAlarmsPage).toEqual({ offset: 0, limit: 5 })
+      expect(store.nodeAlarmsFailedNodeId).toBe('42')
+    })
+
+    it('clears another node\'s failure as soon as a fetch for a new node starts', async () => {
+      vi.mocked(API.getAlarms).mockResolvedValueOnce(false).mockImplementationOnce(() => new Promise(() => undefined) as never)
+      const store = useAlarmStore()
+
+      await store.getNodeAlarms('42')
+      void store.getNodeAlarms('99')
+
+      expect(store.nodeAlarmsFailedNodeId).toBeUndefined()
+    })
+  })
+
   describe('getNodeAlarmStatus', () => {
     const status = { severity: 'MAJOR', nodeDown: false, interfacesDown: 0, servicesDown: 1, acknowledgedCount: 0, unacknowledgedCount: 1 }
     const ok = (payload = status) => ({ success: true, message: '', payload }) as never

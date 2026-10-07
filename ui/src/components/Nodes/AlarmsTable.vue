@@ -65,8 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent } from '@opennms/onms-ui'
+import { computed, watch } from 'vue'
+import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -85,6 +85,7 @@ import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import { useRecordDownload } from './hooks/useRecordDownload'
 import { severityTag } from './utils'
 import useActiveNodeId from './hooks/useActiveNodeId'
+import useNodeTablePaging from './hooks/useNodeTablePaging'
 
 // The node's alarms, most recent first, a few at a time to fit the Main tab's column. Each page is
 // fetched from the server -- the status banner above has its own summary -- and refreshed on the
@@ -104,8 +105,6 @@ const baseHref = computed(() => menuStore.mainMenu.baseHref)
 // The time on its own line under the date, so the column stays narrow.
 const dateAndTime = (value: number) => formatDateAndTimeInDisplayZone(value)
 
-const first = ref(0)
-
 // The slice may still be the previous node's while this one's is in flight.
 const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmsNodeId === nodeId.value)
 
@@ -123,41 +122,20 @@ const emptyListContent = computed(() => {
     : { msg: 'Loading alarms…' }
 })
 
-const fetchPage = async () => {
-  const id = nodeId.value
-
-  if (!id) {
-    return
-  }
-
-  const result = await alarmStore.getNodeAlarms(id, {
-    limit: PAGE_SIZE,
-    offset: first.value,
+const { first, fetchPage, onPage, firstPage } = useNodeTablePaging({
+  pageSize: PAGE_SIZE,
+  load: page => alarmStore.getNodeAlarms(nodeId.value, {
+    ...page,
     orderBy: 'lastEventTime',
     order: SORT.DESCENDING
-  })
-
-  // A refresh can leave fewer alarms than the page shown: step back to the last page that has any.
-  const total = alarmStore.nodeAlarmsTotalCount
-
-  if (result.success && id === nodeId.value && first.value > 0 && first.value >= total) {
-    first.value = Math.max(0, Math.floor((total - 1) / PAGE_SIZE) * PAGE_SIZE)
-    await fetchPage()
-  }
-}
-
-const onPage = (event: OnmsTablePageEvent) => {
-  first.value = event.first
-  fetchPage()
-}
+  }),
+  shownPage: () => (isThisNode.value ? alarmStore.nodeAlarmsPage : undefined),
+  total: () => totalRecords.value
+})
 
 useVisiblePolling(fetchPage, POLL_INTERVAL_MS)
 
-// A new node starts on its first page.
-watch(nodeId, () => {
-  first.value = 0
-  fetchPage()
-}, { immediate: true })
+watch(nodeId, firstPage, { immediate: true })
 
 const onViewAlarmsClick = () => {
   window.location.assign(nodeAlarmListLink(baseHref.value, nodeId.value))

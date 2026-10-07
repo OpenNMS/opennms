@@ -22,8 +22,8 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { withNodeFilter } from '@/services/serviceHelpers'
-import { Alarm, NodeAlarmStatus, QueryParameters } from '@/types'
+import { nodePageOf, withNodeFilter } from '@/services/serviceHelpers'
+import { Alarm, NodeAlarmStatus, NodePage, QueryParameters } from '@/types'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { ref } from 'vue'
 
@@ -48,6 +48,8 @@ export const useAlarmStore = defineStore('alarmStore', () => {
   // The node whose latest fetch failed, if any. Kept by node id so that one node's failure never
   // reads as another's, and in the store so that every panel sharing the slice agrees on it.
   const nodeAlarmsFailedNodeId = ref<string | undefined>(undefined)
+  // The page the node slice holds, so a table's paginator can match the rows on screen.
+  const nodeAlarmsPage = ref<NodePage | undefined>(undefined)
 
   const nodeAlarmStatus = ref<NodeAlarmStatus | undefined>(undefined)
   const nodeAlarmStatusNodeId = ref<string | undefined>(undefined)
@@ -108,6 +110,7 @@ export const useAlarmStore = defineStore('alarmStore', () => {
     nodeAlarms.value = resp.alarm
     nodeAlarmsTotalCount.value = resp.totalCount
     nodeAlarmsNodeId.value = nodeId
+    nodeAlarmsPage.value = nodePageOf(queryParameters)
     nodeAlarmsFailedNodeId.value = undefined
 
     return createResultWithPayload(true, '', resp.alarm)
@@ -150,6 +153,7 @@ export const useAlarmStore = defineStore('alarmStore', () => {
     nodeAlarmsTotalCount,
     nodeAlarmsNodeId,
     nodeAlarmsFailedNodeId,
+    nodeAlarmsPage,
     nodeAlarmStatus,
     nodeAlarmStatusNodeId,
     nodeAlarmStatusFailedNodeId,

@@ -22,7 +22,8 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { Outage, QueryParameters } from '@/types'
+import { nodePageOf } from '@/services/serviceHelpers'
+import { NodePage, Outage, QueryParameters } from '@/types'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { ref } from 'vue'
 
@@ -45,6 +46,9 @@ export const useOutageStore = defineStore('outageStore', () => {
   const nodeOutages = ref([] as Outage[])
   const nodeOutagesTotalCount = ref(0)
   const nodeOutagesNodeId = ref<string | undefined>(undefined)
+  // As in the event store.
+  const nodeOutagesPage = ref<NodePage | undefined>(undefined)
+  const nodeOutagesFailedNodeId = ref<string | undefined>(undefined)
 
   // One request counter per slice; see the event store.
   let outagesRequestId = 0
@@ -77,6 +81,10 @@ export const useOutageStore = defineStore('outageStore', () => {
   const getNodeOutages = async (nodeId: string, queryParameters?: QueryParameters): Promise<ValidationResultWithPayload<Outage[]>> => {
     const requestId = ++nodeOutagesRequestId
 
+    if (nodeOutagesFailedNodeId.value !== nodeId) {
+      nodeOutagesFailedNodeId.value = undefined
+    }
+
     const resp = await API.getNodeOutages(nodeId, queryParameters)
 
     if (requestId !== nodeOutagesRequestId) {
@@ -84,12 +92,16 @@ export const useOutageStore = defineStore('outageStore', () => {
     }
 
     if (!resp) {
+      nodeOutagesFailedNodeId.value = nodeId
+
       return createResultWithPayload(false, `Unable to load outages for node ${nodeId}`)
     }
 
     nodeOutages.value = resp.outage
     nodeOutagesTotalCount.value = resp.totalCount
     nodeOutagesNodeId.value = nodeId
+    nodeOutagesPage.value = nodePageOf(queryParameters)
+    nodeOutagesFailedNodeId.value = undefined
 
     return createResultWithPayload(true, '', resp.outage)
   }
@@ -100,6 +112,8 @@ export const useOutageStore = defineStore('outageStore', () => {
     nodeOutages,
     nodeOutagesTotalCount,
     nodeOutagesNodeId,
+    nodeOutagesPage,
+    nodeOutagesFailedNodeId,
     getOutages,
     getNodeOutages
   }

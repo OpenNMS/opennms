@@ -22,8 +22,8 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { withNodeFilter } from '@/services/serviceHelpers'
-import { Event, QueryParameters } from '@/types'
+import { nodePageOf, withNodeFilter } from '@/services/serviceHelpers'
+import { Event, NodePage, QueryParameters } from '@/types'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { ref } from 'vue'
 
@@ -46,6 +46,10 @@ export const useEventStore = defineStore('eventStore', () => {
   const nodeEvents = ref([] as Event[])
   const nodeEventsTotalCount = ref(0)
   const nodeEventsNodeId = ref<string | undefined>(undefined)
+  // The page the node slice holds, so a table's paginator can match the rows on screen.
+  const nodeEventsPage = ref<NodePage | undefined>(undefined)
+  // The node whose latest fetch failed, if any; see the alarm store.
+  const nodeEventsFailedNodeId = ref<string | undefined>(undefined)
 
   // Monotonic ids sequencing each slice's requests: a table fires one per page and, on the node
   // page, one per node as the user moves between them, so a slow response from a superseded
@@ -81,6 +85,10 @@ export const useEventStore = defineStore('eventStore', () => {
   const getNodeEvents = async (nodeId: string, queryParameters?: QueryParameters): Promise<ValidationResultWithPayload<Event[]>> => {
     const requestId = ++nodeEventsRequestId
 
+    if (nodeEventsFailedNodeId.value !== nodeId) {
+      nodeEventsFailedNodeId.value = undefined
+    }
+
     const resp = await API.getEvents(withNodeFilter(nodeId, queryParameters))
 
     if (requestId !== nodeEventsRequestId) {
@@ -88,12 +96,16 @@ export const useEventStore = defineStore('eventStore', () => {
     }
 
     if (!resp) {
+      nodeEventsFailedNodeId.value = nodeId
+
       return createResultWithPayload(false, `Unable to load events for node ${nodeId}`)
     }
 
     nodeEvents.value = resp.event
     nodeEventsTotalCount.value = resp.totalCount
     nodeEventsNodeId.value = nodeId
+    nodeEventsPage.value = nodePageOf(queryParameters)
+    nodeEventsFailedNodeId.value = undefined
 
     return createResultWithPayload(true, '', resp.event)
   }
@@ -104,6 +116,8 @@ export const useEventStore = defineStore('eventStore', () => {
     nodeEvents,
     nodeEventsTotalCount,
     nodeEventsNodeId,
+    nodeEventsPage,
+    nodeEventsFailedNodeId,
     getEvents,
     getNodeEvents
   }

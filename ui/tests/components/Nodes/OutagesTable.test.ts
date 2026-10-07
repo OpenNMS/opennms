@@ -376,6 +376,40 @@ describe('OutagesTable.vue', () => {
     })
   })
 
+  describe('Loading and failure', () => {
+    // Another node's slice is not this node's: nothing to show yet, and not "no results".
+    it('says it is loading while this node\'s outages are in flight', async () => {
+      setNodeOutages([], 0, 'some-other-node')
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Loading outages…')
+      expect(wrapper.text()).not.toContain('No results found.')
+    })
+
+    it('says the outages could not be loaded when this node\'s fetch failed', async () => {
+      setNodeOutages([], 0, 'some-other-node')
+      outageStore.nodeOutagesFailedNodeId = mockNodeId
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Unable to load outages for this node.')
+      expect(wrapper.text()).not.toContain('No results found.')
+    })
+
+    // The slice still holds page one, so the paginator must not say page two.
+    it('goes back to the page on screen when a page change fails', async () => {
+      setNodeOutages(Array.from({ length: 5 }, (_, i) => ({ id: i + 1 })), 12)
+      outageStore.nodeOutagesPage = { offset: 0, limit: 5 }
+      outageStore.getNodeOutages = vi.fn().mockResolvedValue({ success: false, message: 'nope' })
+      await nextTick()
+
+      await wrapper.findAll('.p-paginator-page')[1].trigger('click')
+      await flushPromises()
+
+      expect(outageStore.getNodeOutages).toHaveBeenCalledWith(mockNodeId, { offset: 5, limit: 5 })
+      expect(wrapper.find('.p-paginator-page-selected').text()).toBe('1')
+    })
+  })
+
   describe('Empty state', () => {
     it('shows EmptyList when there are no rows', async () => {
       setNodeOutages([], 0)
