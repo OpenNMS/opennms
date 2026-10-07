@@ -28,13 +28,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.Graph;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceId;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,25 +42,25 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * <p>DefaultKscReportService class.</p>
+ * <p>DefaultGraphCollectionService class.</p>
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  * @since 1.8.1
  */
-public class DefaultKscReportService implements KscReportService, InitializingBean {
+public class DefaultGraphCollectionService implements GraphCollectionService, InitializingBean {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultKscReportService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphCollectionService.class);
 
     private ResourceService m_resourceService;
-    private KSC_PerformanceReportFactory m_kscReportFactory;
+    private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
 
     private static final Map<String, String> s_timeSpans = new LinkedHashMap<String, String>();
     private static final Map<String, String> s_timeSpansWithNone = new LinkedHashMap<String, String>();
 
     /** {@inheritDoc} */
     @Override
-    public Report buildDomainReport(String domain) {
+    public GraphCollection buildDomainCollection(String domain) {
         ResourceId resourceId = ResourceId.get("domain", domain);
         OnmsResource res = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), res, "Domain Report for Domain " + domain);
@@ -68,7 +68,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
     /** {@inheritDoc} */
     @Override
-    public Report buildNodeReport(int node_id) {
+    public GraphCollection buildNodeCollection(int node_id) {
         ResourceId resourceId = ResourceId.get("node", Integer.toString(node_id));
         OnmsResource node = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), node, "Node Report for Node Number " + node_id);
@@ -76,14 +76,14 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
     /** {@inheritDoc} */
     @Override
-    public Report buildNodeSourceReport(String nodeSource) {
+    public GraphCollection buildNodeSourceCollection(String nodeSource) {
         ResourceId resourceId = ResourceId.get("nodeSource", nodeSource);
         OnmsResource res = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), res, "Node Report for Foreign Source:Id " + nodeSource);
     }
 
-    private static Report buildResourceReport(ResourceService service, OnmsResource parentResource, String title) {
-        Report report = new Report();
+    private static GraphCollection buildResourceReport(ResourceService service, OnmsResource parentResource, String title) {
+        GraphCollection report = new GraphCollection();
         report.setTitle(title);
         report.setShowTimespanButton(true);
         report.setShowGraphtypeButton(true);
@@ -161,7 +161,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
     private void initTimeSpans() {
-        for (String timeSpan : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+        for (String timeSpan : GraphCollectionConfigFactory.TIMESPAN_OPTIONS) {
             s_timeSpans.put(timeSpan, timeSpan);
         }
 
@@ -180,13 +180,13 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
     /**
-     * <p>getReportList</p>
+     * <p>getCollectionTitles</p>
      *
      * @return a {@link java.util.Map} object.
      */
     @Override
-    public Map<Integer, String> getReportList() {
-        return m_kscReportFactory.getReportList();
+    public Map<Integer, String> getCollectionTitles() {
+        return m_graphCollectionConfigFactory.getCollectionTitles();
     }
 
     /**
@@ -208,21 +208,21 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
     /**
-     * <p>getKscReportFactory</p>
+     * <p>getGraphCollectionConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @return a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public KSC_PerformanceReportFactory getKscReportFactory() {
-        return m_kscReportFactory;
+    public GraphCollectionConfigFactory getGraphCollectionConfigFactory() {
+        return m_graphCollectionConfigFactory;
     }
 
     /**
-     * <p>setKscReportFactory</p>
+     * <p>setGraphCollectionConfigFactory</p>
      *
-     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param graphCollectionConfigFactory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
-        m_kscReportFactory = kscReportFactory;
+    public void setGraphCollectionConfigFactory(GraphCollectionConfigFactory graphCollectionConfigFactory) {
+        m_graphCollectionConfigFactory = graphCollectionConfigFactory;
     }
 
     /**
@@ -233,19 +233,19 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "resourceService property has not been set");
-        Assert.state(m_kscReportFactory != null, "kscReportFactory property has not been set");
+        Assert.state(m_graphCollectionConfigFactory != null, "graphCollectionConfigFactory property has not been set");
 
         initTimeSpans();
     }
 
     /**
-     * <p>getReportMap</p>
+     * <p>getCollectionMap</p>
      *
      * @return a {@link java.util.Map} object.
      */
     @Override
-    public Map<Integer, Report> getReportMap() {
-        return m_kscReportFactory.getReportMap();
+    public Map<Integer, GraphCollection> getCollectionMap() {
+        return m_graphCollectionConfigFactory.getCollectionMap();
     }
 
 

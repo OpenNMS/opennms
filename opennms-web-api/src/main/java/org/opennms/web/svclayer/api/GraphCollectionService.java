@@ -23,45 +23,45 @@ package org.opennms.web.svclayer.api;
 
 import java.util.Map;
 
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.graphcollections.Graph;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.model.OnmsResource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * <p>KscReportService interface.</p>
+ * <p>GraphCollectionService interface.</p>
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  * @since 1.8.1
  */
 @Transactional(readOnly = true)
-public interface KscReportService {
+public interface GraphCollectionService {
     /**
-     * <p>buildNodeReport</p>
+     * <p>buildNodeCollection</p>
      *
      * @param nodeId a int.
-     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     * @return a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public Report buildNodeReport(int nodeId);
+    public GraphCollection buildNodeCollection(int nodeId);
     /**
-     * <p>buildNodeSourceReport</p>
+     * <p>buildNodeSourceCollection</p>
      *
      * @param nodeSource a String.
-     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     * @return a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public Report buildNodeSourceReport(String nodeSource);
+    public GraphCollection buildNodeSourceCollection(String nodeSource);
     /**
-     * <p>buildDomainReport</p>
+     * <p>buildDomainCollection</p>
      *
      * @param domain a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     * @return a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public Report buildDomainReport(String domain);
+    public GraphCollection buildDomainCollection(String domain);
     /**
      * <p>getResourceFromGraph</p>
      *
-     * @param graph a {@link org.opennms.netmgt.config.kscReports.Graph} object.
+     * @param graph a {@link org.opennms.netmgt.config.graphcollections.Graph} object.
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
     public OnmsResource getResourceFromGraph(Graph graph);
@@ -73,16 +73,16 @@ public interface KscReportService {
      */
     public Map<String, String> getTimeSpans(boolean includeNone);
     /**
-     * <p>getReportList</p>
+     * <p>getCollectionTitles</p>
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, String> getReportList();
+    public Map<Integer, String> getCollectionTitles();
 
     /**
-     * <p>getReportMap</p>
+     * <p>getCollectionMap</p>
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, Report> getReportMap();
+    public Map<Integer, GraphCollection> getCollectionMap();
 }

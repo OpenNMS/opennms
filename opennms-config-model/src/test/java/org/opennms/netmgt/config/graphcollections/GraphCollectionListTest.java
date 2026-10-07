@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.config.kscReports;
+package org.opennms.netmgt.config.graphcollections;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -28,9 +28,9 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class ReportsListTest extends XmlTestNoCastor<ReportsList> {
+public class GraphCollectionListTest extends XmlTestNoCastor<GraphCollectionList> {
 
-    public ReportsListTest(ReportsList sampleObject, Object sampleXml) {
+    public GraphCollectionListTest(GraphCollectionList sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/ksc-performance-reports.xsd");
     }
 
@@ -38,7 +38,7 @@ public class ReportsListTest extends XmlTestNoCastor<ReportsList> {
     public static Collection<Object[]> data() throws ParseException {
         return Arrays.asList(new Object[][] {
             {
-                getReportsList(),
+                getGraphCollectionList(),
                 "<ReportsList>\n" + 
                 "    <Report id=\"99\" title=\"New Report Title\" show_timespan_button=\"false\"\n" + 
                 "        show_graphtype_button=\"true\" graphs_per_line=\"1\">\n" + 
@@ -49,21 +49,21 @@ public class ReportsListTest extends XmlTestNoCastor<ReportsList> {
                 "</ReportsList>"
             },
             {
-                new ReportsList(),
+                new GraphCollectionList(),
                 "<ReportsList/>"
             }
         });
     }
 
-    private static ReportsList getReportsList() {
-        ReportsList reports = new ReportsList();
-        Report report = new Report();
+    private static GraphCollectionList getGraphCollectionList() {
+        GraphCollectionList reports = new GraphCollectionList();
+        GraphCollection report = new GraphCollection();
         report.setId(99);
         report.setTitle("New Report Title");
         report.setShowTimespanButton(false);
         report.setShowGraphtypeButton(true);
         report.setGraphsPerLine(1);
-        reports.addReport(report);
+        reports.addCollection(report);
         
         Graph graph = new Graph();
         graph.setTitle("");

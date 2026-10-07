@@ -25,10 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.Graph;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,8 +51,8 @@ public class FormProcGraphController extends AbstractController implements Initi
         graphindex
     }
 
-    private KSC_PerformanceReportFactory m_kscReportFactory;
-    private KscReportService m_kscReportService;
+    private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
+    private GraphCollectionService m_graphCollectionService;
 
     /** {@inheritDoc} */
     @Override
@@ -76,7 +76,7 @@ public class FormProcGraphController extends AbstractController implements Initi
         graph.setTimespan(timespan);
         graph.setGraphtype(graphtype);
         
-        OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
+        OnmsResource resource = getGraphCollectionService().getResourceFromGraph(graph);
 
         if (action.equals("Save")) {
             // The working graph is complete now... lets save working graph to working report 
@@ -101,40 +101,40 @@ public class FormProcGraphController extends AbstractController implements Initi
     }
 
     /**
-     * <p>getKscReportFactory</p>
+     * <p>getGraphCollectionConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @return a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public KSC_PerformanceReportFactory getKscReportFactory() {
-        return m_kscReportFactory;
+    public GraphCollectionConfigFactory getGraphCollectionConfigFactory() {
+        return m_graphCollectionConfigFactory;
     }
 
     /**
-     * <p>setKscReportFactory</p>
+     * <p>setGraphCollectionConfigFactory</p>
      *
-     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param graphCollectionConfigFactory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
-        m_kscReportFactory = kscReportFactory;
+    public void setGraphCollectionConfigFactory(GraphCollectionConfigFactory graphCollectionConfigFactory) {
+        m_graphCollectionConfigFactory = graphCollectionConfigFactory;
     }
 
 
     /**
-     * <p>getKscReportService</p>
+     * <p>getGraphCollectionService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public KscReportService getKscReportService() {
-        return m_kscReportService;
+    public GraphCollectionService getGraphCollectionService() {
+        return m_graphCollectionService;
     }
 
     /**
-     * <p>setKscReportService</p>
+     * <p>setGraphCollectionService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @param graphCollectionService a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public void setKscReportService(KscReportService kscReportService) {
-        m_kscReportService = kscReportService;
+    public void setGraphCollectionService(GraphCollectionService graphCollectionService) {
+        m_graphCollectionService = graphCollectionService;
     }
 
     /**
@@ -144,7 +144,7 @@ public class FormProcGraphController extends AbstractController implements Initi
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
-        Assert.state(m_kscReportService != null, "property kscReportService must be set");
+        Assert.state(m_graphCollectionConfigFactory != null, "property graphCollectionConfigFactory must be set");
+        Assert.state(m_graphCollectionService != null, "property graphCollectionService must be set");
     }
 }
