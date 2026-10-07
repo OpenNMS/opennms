@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
-import { NODE_LOOKUP_CHUNK, deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinion, getMinionNodeIds, isFiqlSafeId, listMinions, updateMinion } from '@/services/minionAdminService'
+import { NODE_LOOKUP_CHUNK, deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, isFiqlSafeId, listMinions } from '@/services/minionAdminService'
 import { rest, v2 } from '@/services/axiosInstances'
 
-vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }, rest: { get: vi.fn() }}))
+vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), delete: vi.fn() }, rest: { get: vi.fn() }}))
 
 const http = (status: number) => {
   const e = new AxiosError('x')
@@ -76,39 +76,6 @@ describe('minionAdminService', () => {
     expect(await getMinionNodeIds([minion('m1')])).toEqual({})
   })
 
-  it('updateMinion reads the current row and changes only label/location/properties', async () => {
-    // fresh server row has a NEWER status than any client snapshot
-    vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1', label: 'old', location: 'Default', type: 'Minion', status: 'DOWN', version: '2.0', date: 999, properties: {}}})
-    vi.mocked(v2.put).mockResolvedValue({})
-
-    const result = await updateMinion({ id: 'm1', label: 'new label', location: 'RemoteA', properties: { k: 'v' }})
-    expect(result.success).toBe(true)
-
-    const [, body] = vi.mocked(v2.put).mock.calls[0]
-    expect(body).toMatchObject({
-      id: 'm1', label: 'new label', location: 'RemoteA', properties: { k: 'v' },
-      status: 'DOWN', version: '2.0', date: 999 // server-maintained fields from the FRESH read, not clobbered
-    })
-  })
-
-  it('updateMinion returns a failure result with the server detail when it is a short plain message', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1' }})
-    const err = http(400)
-    err.response!.data = 'Location does not exist'
-    vi.mocked(v2.put).mockRejectedValue(err)
-    expect(await updateMinion({ id: 'm1', label: null, location: 'Nope', properties: {}})).toEqual({ success: false, message: 'Location does not exist' })
-  })
-
-  it('updateMinion falls back to a generic message for an HTML error page', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1' }})
-    const err = http(500)
-    err.response!.data = '<html><body>Server Error</body></html>'
-    vi.mocked(v2.put).mockRejectedValue(err)
-    const result = await updateMinion({ id: 'm1', label: 'One', location: 'Default', properties: {}})
-    expect(result.success).toBe(false)
-    expect(result.message).toBe('Failed to update minion \'One\'.')
-  })
-
   it('getMinion reads one row by id', async () => {
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: minion('a/b') } as any)
     expect(await getMinion('a/b')).toEqual(minion('a/b'))
@@ -151,27 +118,5 @@ describe('minionAdminService', () => {
     expect(await getCoreVersion()).toBeNull()
     vi.mocked(rest.get).mockResolvedValueOnce({ data: {}} as any)
     expect(await getCoreVersion()).toBeNull()
-  })
-
-  it('getAlarmCountForMinion asks for a one-row page of alarms filtered by distPoller and reads totalCount', async () => {
-    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { totalCount: 12, alarm: [{ id: 1 }] }} as any)
-    expect(await getAlarmCountForMinion('minion-01')).toBe(12)
-    const url = vi.mocked(v2.get).mock.calls[0][0] as string
-    expect(url.startsWith('/alarms?')).toBe(true)
-    expect(url).toContain('limit=1')
-    expect(decodeURIComponent(url)).toContain('_s=distPoller.id==minion-01')
-    vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 } as any)
-    expect(await getAlarmCountForMinion('minion-01')).toBe(0)
-  })
-
-  it('getAlarmCountForMinion is null on failure, a missing total, or an id that would alter the FIQL query', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.mocked(v2.get).mockRejectedValueOnce(http(500))
-    expect(await getAlarmCountForMinion('m1')).toBeNull()
-    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}} as any)
-    expect(await getAlarmCountForMinion('m1')).toBeNull()
-    expect(await getAlarmCountForMinion('a,b')).toBeNull()
-    expect(await getAlarmCountForMinion('m1 (old)')).toBeNull()
-    expect(v2.get).toHaveBeenCalledTimes(2)
   })
 })

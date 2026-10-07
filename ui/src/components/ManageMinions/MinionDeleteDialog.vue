@@ -2,7 +2,7 @@
   <OnmsDialog
     :visible="visible"
     modal
-    :header="`Delete ${minion?.id ?? ''}?`"
+    header="Delete Minion?"
     class="minion-delete-dialog"
     width="min(640px, 95vw)"
     data-test="minion-delete-dialog"
@@ -11,23 +11,30 @@
     <div class="body">
       <p class="subtitle">Use this for Minions you have decommissioned. It cannot be undone.</p>
 
+      <dl class="details">
+        <dt>Minion</dt>
+        <dd><code data-test="minion-id">{{ minion?.id }}</code></dd>
+        <dt>Last heartbeat</dt>
+        <dd :title="formatAbsolute(lastDate)" data-test="last-heartbeat">{{ relativeTimeSince(lastDate, checkedAt) ?? '-' }}</dd>
+      </dl>
+
       <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
 
       <div v-if="loading" class="loading" data-test="loading">
         <OnmsSpinner size="1.5rem" strokeWidth="6" />
-        <span>Checking the status of <code>{{ minion?.id }}</code>…</span>
+        <span>Checking the status of this Minion…</span>
       </div>
 
       <OnmsMessage v-else-if="state === 'up'" severity="error" data-test="status-callout">
-        <strong>{{ minion?.id }} is <OnmsTag value="UP" severity="success" class="status-tag" /></strong>
+        <strong>The Minion is <OnmsTag value="UP" severity="success" class="status-tag" /></strong>
         — a running Minion cannot be deleted.
       </OnmsMessage>
-      <OnmsMessage v-else-if="state === 'down'" severity="success" data-test="status-callout">
-        <strong>{{ minion?.id }} is <OnmsTag value="DOWN" severity="danger" class="status-tag" /></strong>
+      <OnmsMessage v-else-if="state === 'down'" severity="info" data-test="status-callout">
+        <strong>The Minion is <OnmsTag value="DOWN" severity="danger" class="status-tag" /></strong>
         — it can be deleted.
       </OnmsMessage>
-      <OnmsMessage v-else severity="warn" data-test="status-callout">
-        <strong>{{ minion?.id }} is <OnmsTag value="UNKNOWN" severity="warn" class="status-tag" /></strong>
+      <OnmsMessage v-else severity="info" data-test="status-callout">
+        <strong>The Minion is <OnmsTag value="UNKNOWN" severity="secondary" class="status-tag" /></strong>
         — it can be deleted.
       </OnmsMessage>
     </div>
@@ -51,6 +58,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsMessage, OnmsSpinner, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
 import { MinionState, minionState } from '@/lib/minionStatus'
+import { formatAbsolute, relativeTimeSince } from '@/lib/relativeTime'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { Minion } from '@/types/minionAdmin'
 
@@ -74,9 +82,12 @@ const deleting = ref(false)
 const errorText = ref('')
 // the status actually read for this open, never the paused list
 const lastStatus = ref<Minion['status']>(null)
+// shown for information only; the decision follows the status
+const lastDate = ref<Minion['date']>(null)
+const checkedAt = ref(Date.now())
 
-// the same up / down / unknown the table shows; only UP refuses, since a Minion
-// not heard from since the core started is exactly the decommissioned case
+// the same up / down / unknown the table shows; only UP refuses. Unknown means the
+// Minion has no node in the Minions requisition, so OpenNMS does not monitor it
 const state = computed<MinionState>(() => minionState(lastStatus.value))
 
 const canDelete = computed(() => !loading.value && !deleting.value && state.value !== 'up' && !!props.minion)
@@ -96,6 +107,8 @@ const readMinion = async (id: string, request: number) => {
     return
   }
   lastStatus.value = fresh.status ?? null
+  lastDate.value = fresh.date ?? null
+  checkedAt.value = Date.now()
 }
 
 watch(() => props.visible, async (isVisible) => {
@@ -107,6 +120,8 @@ watch(() => props.visible, async (isVisible) => {
   const id = props.minion.id
   errorText.value = ''
   lastStatus.value = props.minion.status ?? null
+  lastDate.value = props.minion.date ?? null
+  checkedAt.value = Date.now()
   loading.value = true
   await readMinion(id, request)
   if (request !== openRequest) {
@@ -150,6 +165,22 @@ const confirmDelete = async () => {
 .subtitle {
   margin: 0;
   color: var(--p-text-muted-color);
+}
+
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+
+  dt {
+    color: var(--p-text-muted-color);
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
 }
 
 .loading {

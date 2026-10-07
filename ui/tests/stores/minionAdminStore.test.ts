@@ -5,7 +5,7 @@ import API from '@/services'
 import { Minion } from '@/types/minionAdmin'
 
 vi.mock('@/services', () => ({
-  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn(), getAlarmCountForMinion: vi.fn(), getMinion: vi.fn() }
+  default: { listMinions: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn(), getMinion: vi.fn() }
 }))
 
 const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {}})
@@ -50,18 +50,6 @@ describe('useMinionAdminStore', () => {
     expect(store.nodeIdFor(minion('m1', 'Default'))).toBeUndefined()
   })
 
-  it('updateMinion refreshes on success, not on failure', async () => {
-    const edit = { id: 'm1', label: 'm1', location: 'Default', properties: {}}
-    vi.mocked(API.updateMinion).mockResolvedValue(ok)
-    vi.mocked(API.listMinions).mockResolvedValue(listResult([minion('m1')]))
-    expect((await store.updateMinion(edit)).success).toBe(true)
-    expect(API.listMinions).toHaveBeenCalledTimes(1)
-    vi.clearAllMocks()
-    vi.mocked(API.updateMinion).mockResolvedValue(failed('boom'))
-    expect(await store.updateMinion(edit)).toEqual({ success: false, message: 'boom' })
-    expect(API.listMinions).not.toHaveBeenCalled()
-  })
-
   it('deleteMinion refreshes on success', async () => {
     vi.mocked(API.deleteMinion).mockResolvedValue(ok)
     vi.mocked(API.listMinions).mockResolvedValue(listResult([]))
@@ -90,12 +78,6 @@ describe('useMinionAdminStore', () => {
     expect(Object.keys(store.byLocation).sort()).toEqual(['', 'Default', 'RemoteA'])
     expect(store.byLocation.RemoteA.map(m => m.id)).toEqual(['m2', 'm3'])
     expect(store.byLocation.Default.map(m => m.id)).toEqual(['m1'])
-  })
-
-  it('getAlarmCount passes through to the service', async () => {
-    vi.mocked(API.getAlarmCountForMinion).mockResolvedValue(7)
-    expect(await store.getAlarmCount('m1')).toBe(7)
-    expect(API.getAlarmCountForMinion).toHaveBeenCalledWith('m1')
   })
 
   it('getMinion passes through to the service without touching the list', async () => {

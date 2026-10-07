@@ -34,6 +34,11 @@ export const normalizeVersion = (value: unknown): string | null => {
   return match ? match[1] : null
 }
 
+// The sort key for a version column: the bare triple, so "v35.0.2" sorts among
+// "36.0.9" and "36.0.10" under the table's numeric collation instead of after them.
+export const versionSortKey = (value: unknown): string =>
+  normalizeVersion(value) ?? (typeof value === 'string' ? value : '')
+
 // false when either side cannot be normalised, so nothing is flagged on a guess
 export const sameVersion = (a: unknown, b: unknown): boolean => {
   const left = normalizeVersion(a)

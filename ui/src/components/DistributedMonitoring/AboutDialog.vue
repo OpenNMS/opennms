@@ -3,7 +3,7 @@
     <div class="help-section" data-test="about-minions">
       <div class="section-heading">Minions</div>
       <div class="section-title">Status</div>
-      <p>Up when heartbeats arrive, down when they stop, unknown when the Minion has not been heard from since the core started.</p>
+      <p>Up when heartbeats arrive and RPC works. Down when heartbeats stop or RPC fails. Unknown when OpenNMS has no node for the Minion in the Minions requisition, so it does not monitor the Minion.</p>
       <div class="section-title">Monitoring location and version</div>
       <p>Reported by the Minion itself. Change the location in its <code>org.opennms.minion.controller</code> config.</p>
       <div class="section-title">Delete</div>

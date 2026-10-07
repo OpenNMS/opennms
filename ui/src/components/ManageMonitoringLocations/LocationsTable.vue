@@ -5,14 +5,14 @@
       <div class="filters">
         <template v-if="nameFilter">
           <OnmsChip
-            :label="`Location: ${nameFilter}`"
+            :label="`Monitoring location: ${nameFilter}`"
             data-test="name-filter-chip"
           />
           <OnmsButton
             variant="text"
             size="small"
             label="Clear"
-            aria-label="Clear name filter"
+            aria-label="Clear monitoring location filter"
             data-test="clear-name-filter"
             @click="nameFilter = null"
           />
@@ -22,8 +22,8 @@
         <OnmsSearchInput
           v-if="store.locations.length"
           v-model="search"
-          placeholder="Locations"
-          ariaLabel="Search locations"
+          placeholder="Monitoring locations"
+          ariaLabel="Search monitoring locations"
           dataTest="location-search"
           class="search"
         />
@@ -49,33 +49,21 @@
       v-model:filters="filters"
       :globalFilterFields="['location-name', 'monitoring-area']"
       :loading="store.loading && !store.locations.length"
-      :paginator="visibleLocations.length > 0"
+      :paginator="visibleLocations.length > PAGE_SIZE"
       :rowClass="rowClass"
       dataKey="location-name"
       sortField="location-name"
       :sortOrder="1"
-      :rows="10"
-      :rowsPerPageOptions="[10, 20, 50, 100]"
+      :rows="PAGE_SIZE"
+      :rowsPerPageOptions="[PAGE_SIZE, 50, 100]"
       class="data-table"
       data-test="locations-table"
     >
       <template #empty>
         <EmptyList :content="emptyContent" data-test="empty-list" />
       </template>
-      <OnmsColumn field="location-name" header="Location Name" sortable />
+      <OnmsColumn field="location-name" header="Monitoring location" sortable />
       <OnmsColumn field="monitoring-area" header="Description" sortable />
-      <!-- geolocation, coordinates and priority are hidden for now (NMS-20364)
-      <OnmsColumn field="geolocation" header="Geolocation" sortable>
-        <template #body="{ data }">{{ data.geolocation ?? '-' }}</template>
-      </OnmsColumn>
-      <OnmsColumn field="latitude" header="Latitude" sortable>
-        <template #body="{ data }">{{ data.latitude ?? '-' }}</template>
-      </OnmsColumn>
-      <OnmsColumn field="longitude" header="Longitude" sortable>
-        <template #body="{ data }">{{ data.longitude ?? '-' }}</template>
-      </OnmsColumn>
-      <OnmsColumn field="priority" header="Priority" sortable />
-      -->
       <OnmsColumn header="Minions">
         <template #body="{ data }">
           <div v-if="minionSummary(data['location-name']).total" class="minion-summary">
@@ -95,7 +83,7 @@
             <OnmsTag
               v-if="minionSummary(data['location-name']).unknown"
               :value="`${minionSummary(data['location-name']).unknown} unknown`"
-              severity="warn"
+              severity="secondary"
               data-test="minions-unknown-tag"
             />
           </div>
@@ -195,6 +183,9 @@ const showDeletedDialog = ref(false)
 const deletedSummary = ref<LocationDeletedSummary | null>(null)
 
 watch(() => showEditor.value || showDeleteDialog.value || showDeletedDialog.value, open => emit('dialogOpen', open))
+
+// the paginator only appears once the rows fill more than one page
+const PAGE_SIZE = 25
 
 const emptyListContent = { msg: 'No monitoring locations found.' }
 const filteredOutContent = { msg: 'No monitoring locations match the current filter.' }

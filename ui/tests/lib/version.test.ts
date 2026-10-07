@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeVersion, sameVersion } from '@/lib/version'
+import { normalizeVersion, sameVersion, versionSortKey } from '@/lib/version'
 
 describe('version', () => {
   it('normalizes a Minion VersionBean string and a /rest/info version to the same triple', () => {
@@ -23,5 +23,14 @@ describe('version', () => {
     expect(sameVersion('v36.0.2', '37.0.0')).toBe(false)
     expect(sameVersion('1.0', '37.0.0')).toBe(false)
     expect(sameVersion('37.0.0', null)).toBe(false)
+  })
+
+  it('sorts on the bare triple, so a leading v no longer pushes a version past every unprefixed one', () => {
+    const collate = new Intl.Collator(undefined, { numeric: true }).compare
+    const sorted = ['36.0.10', 'v37.0.0-SNAPSHOT', '36.0.9', 'v35.0.2']
+      .sort((a, b) => collate(versionSortKey(a), versionSortKey(b)))
+    expect(sorted).toEqual(['v35.0.2', '36.0.9', '36.0.10', 'v37.0.0-SNAPSHOT'])
+    expect(versionSortKey('1.0')).toBe('1.0')
+    expect(versionSortKey(null)).toBe('')
   })
 })

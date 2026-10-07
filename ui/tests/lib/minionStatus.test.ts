@@ -15,8 +15,8 @@ describe('minionStatus', () => {
   it('maps the state onto the tag severities', () => {
     expect(minionStateSeverity('Up')).toBe('success')
     expect(minionStateSeverity('down')).toBe('danger')
-    expect(minionStateSeverity('unknown')).toBe('warn')
-    expect(minionStateSeverity('weird')).toBe('warn')
-    expect(minionStateSeverity(null)).toBe('warn')
+    expect(minionStateSeverity('unknown')).toBe('secondary')
+    expect(minionStateSeverity('weird')).toBe('secondary')
+    expect(minionStateSeverity(null)).toBe('secondary')
   })
 })

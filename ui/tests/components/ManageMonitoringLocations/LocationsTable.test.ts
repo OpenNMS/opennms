@@ -64,7 +64,7 @@ describe('LocationsTable.vue', () => {
   it('renders the Description, Minions and Nodes columns and hides the map fields', async () => {
     ctx.store.locations = []
     await ctx.wrapper.vm.$nextTick()
-    expect(headerText(ctx.wrapper)).toEqual(['Location Name', 'Description', 'Minions', 'Nodes', 'Actions'])
+    expect(headerText(ctx.wrapper)).toEqual(['Monitoring location', 'Description', 'Minions', 'Nodes', 'Actions'])
     expect(ctx.wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
   })
 
@@ -88,7 +88,7 @@ describe('LocationsTable.vue', () => {
     expect(eastRow.find('[data-test="minions-down-tag"]').text()).toBe('1 down')
     expect(eastRow.find('[data-test="minions-down-tag"]').classes()).toContain('p-tag-danger')
     expect(eastRow.find('[data-test="minions-unknown-tag"]').text()).toBe('2 unknown')
-    expect(eastRow.find('[data-test="minions-unknown-tag"]').classes()).toContain('p-tag-warn')
+    expect(eastRow.find('[data-test="minions-unknown-tag"]').classes()).toContain('p-tag-secondary')
     expect(westRow.find('[data-test="location-minions-link"]').text()).toBe('1 Minion')
     expect(westRow.find('[data-test="minions-down-tag"]').exists()).toBe(false)
     expect(westRow.find('[data-test="minions-unknown-tag"]').exists()).toBe(false)
@@ -158,6 +158,24 @@ describe('LocationsTable.vue', () => {
     expect(ctx.wrapper.find('[data-test="location-search"]').exists()).toBe(true)
   })
 
+  it('shows the paginator only when the rows fill more than one page of 25', async () => {
+    ctx.store.locations = Array.from({ length: 25 }, (_, i) => loc(`L${String(i).padStart(2, '0')}`)) as any
+    await ctx.wrapper.vm.$nextTick()
+    expect(ctx.wrapper.find('.p-paginator').exists()).toBe(false)
+    expect(rows(ctx.wrapper)).toHaveLength(25)
+    ctx.store.locations = Array.from({ length: 26 }, (_, i) => loc(`L${String(i).padStart(2, '0')}`)) as any
+    await ctx.wrapper.vm.$nextTick()
+    expect(ctx.wrapper.find('.p-paginator').exists()).toBe(true)
+    expect(rows(ctx.wrapper)).toHaveLength(25)
+  })
+
+  it('says monitoring locations in the search box', async () => {
+    ctx.store.locations = [loc('Raleigh')] as any
+    await ctx.wrapper.vm.$nextTick()
+    const input = ctx.wrapper.find('[data-test="location-search"] input')
+    expect((input.exists() ? input : ctx.wrapper.find('[data-test="location-search"]')).attributes('placeholder')).toBe('Monitoring locations')
+  })
+
   describe('searchFor (hand-off from the Minions tab)', () => {
     beforeEach(async () => {
       ctx.store.locations = [loc('Raleigh'), loc('Zed'), loc('Zed-2')] as any
@@ -167,12 +185,12 @@ describe('LocationsTable.vue', () => {
     it('narrows the rows to the exact name and shows a chip with a focusable Clear button', async () => {
       ;(ctx.wrapper.vm as any).searchFor('Zed')
       await ctx.wrapper.vm.$nextTick()
-      expect(ctx.wrapper.find('[data-test="name-filter-chip"]').text()).toContain('Location: Zed')
+      expect(ctx.wrapper.find('[data-test="name-filter-chip"]').text()).toContain('Monitoring location: Zed')
       expect(ctx.wrapper.find('[data-test="name-filter-chip"] .p-chip-remove-icon').exists()).toBe(false)
       expect(rows(ctx.wrapper)).toHaveLength(1)
       expect(rows(ctx.wrapper)[0].text()).toContain('Zed')
       const clear = ctx.wrapper.find('button[data-test="clear-name-filter"]')
-      expect(clear.attributes('aria-label')).toBe('Clear name filter')
+      expect(clear.attributes('aria-label')).toBe('Clear monitoring location filter')
       await clear.trigger('click')
       expect(ctx.wrapper.find('[data-test="name-filter-chip"]').exists()).toBe(false)
       expect(ctx.wrapper.find('[data-test="clear-name-filter"]').exists()).toBe(false)

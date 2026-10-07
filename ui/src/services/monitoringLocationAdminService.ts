@@ -74,10 +74,8 @@ const createMonitoringLocation = async (location: MonitoringLocation): Promise<V
 // The editable fields on this page. The v2 doUpdate does a full replace, so we
 // read the current server row first and patch only these — otherwise a stale
 // page snapshot would clobber fields this page never edits (e.g. tags) that
-// changed concurrently.
-// geolocation, priority, latitude and longitude are not exposed by the editor
-// (NMS-20364), so they always round-trip from the fresh read.
-const EDITABLE_FIELDS = ['location-name', 'monitoring-area' /* , 'geolocation', 'priority', 'latitude', 'longitude' */] as const
+// changed concurrently, and geolocation, coordinates and priority round-trip.
+const EDITABLE_FIELDS = ['location-name', 'monitoring-area'] as const
 
 // the v2 doUpdate requires a JSON body whose location-name matches the path id
 const updateMonitoringLocation = async (location: MonitoringLocation): Promise<ValidationResult> => {

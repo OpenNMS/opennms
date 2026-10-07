@@ -119,8 +119,8 @@ describe('MinionsTable.vue', () => {
     expect(tags.map(t => t.text())).toEqual(['UP', 'DOWN', 'UNKNOWN', 'DEGRADED'])
     expect(tags[0].classes()).toContain('p-tag-success')
     expect(tags[1].classes()).toContain('p-tag-danger')
-    expect(tags[2].classes()).toContain('p-tag-warn')
-    expect(tags[3].classes()).toContain('p-tag-warn')
+    expect(tags[2].classes()).toContain('p-tag-secondary')
+    expect(tags[3].classes()).toContain('p-tag-secondary')
     expect(quickFilterLabels(ctx.wrapper)[1]).toBe('Down or unknown (3)')
   })
 
@@ -167,6 +167,30 @@ describe('MinionsTable.vue', () => {
     expect(tags[2].classes()).toContain('p-tag-secondary')
     expect(tags[2].attributes('title')).toBe('Version format not recognised')
     expect(quickFilterLabels(ctx.wrapper)[3]).toBe('Version differs from core (1)')
+  })
+
+  it('sorts the Version column by number, ignoring a leading v', async () => {
+    ctx.store.minions = [
+      minion('m1', { version: '36.0.10' }), minion('m2', { version: 'v37.0.0-SNAPSHOT' }),
+      minion('m3', { version: '36.0.9' }), minion('m4', { version: 'v35.0.2' })
+    ] as any
+    await ctx.wrapper.vm.$nextTick()
+    const versionHeader = ctx.wrapper.findAll('th').find(th => th.text().trim() === 'Version')!
+    await versionHeader.trigger('click')
+    expect(rowIds(ctx.wrapper)).toEqual(['m4', 'm3', 'm1', 'm2'])
+    await versionHeader.trigger('click')
+    expect(rowIds(ctx.wrapper)).toEqual(['m2', 'm1', 'm3', 'm4'])
+  })
+
+  it('shows the paginator only when the rows fill more than one page of 25', async () => {
+    ctx.store.minions = Array.from({ length: 25 }, (_, i) => minion(`m${String(i).padStart(2, '0')}`)) as any
+    await ctx.wrapper.vm.$nextTick()
+    expect(ctx.wrapper.find('.p-paginator').exists()).toBe(false)
+    expect(ctx.wrapper.findAll('tbody tr')).toHaveLength(25)
+    ctx.store.minions = Array.from({ length: 26 }, (_, i) => minion(`m${String(i).padStart(2, '0')}`)) as any
+    await ctx.wrapper.vm.$nextTick()
+    expect(ctx.wrapper.find('.p-paginator').exists()).toBe(true)
+    expect(ctx.wrapper.findAll('tbody tr')).toHaveLength(25)
   })
 
   it('leaves the version neutral and counts no difference while the core version is unknown', async () => {
@@ -231,7 +255,7 @@ describe('MinionsTable.vue', () => {
       ctx.store.minions = [minion('m1', { location: 'dc-east' }), minion('m2', { location: 'dc-west', status: 'down' })] as any
       await ctx.wrapper.setProps({ locationFilter: 'dc-east' })
       const chip = ctx.wrapper.find('[data-test="location-filter-chip"]')
-      expect(chip.text()).toContain('Location: dc-east')
+      expect(chip.text()).toContain('Monitoring location: dc-east')
       expect(rowIds(ctx.wrapper)).toEqual(['m1'])
       expect(quickFilterLabels(ctx.wrapper)[0]).toBe('All (1)')
       expect(quickFilterLabels(ctx.wrapper)[1]).toBe('Down or unknown (0)')
@@ -253,7 +277,7 @@ describe('MinionsTable.vue', () => {
       await ctx.wrapper.setProps({ locationFilter: 'dc-east' })
       expect(ctx.wrapper.find('[data-test="location-filter-chip"] .p-chip-remove-icon').exists()).toBe(false)
       const clear = ctx.wrapper.find('button[data-test="clear-location-filter"]')
-      expect(clear.attributes('aria-label')).toBe('Clear location filter')
+      expect(clear.attributes('aria-label')).toBe('Clear monitoring location filter')
       await clear.trigger('click')
       expect(ctx.wrapper.emitted('update:locationFilter')).toEqual([[null]])
       await ctx.wrapper.setProps({ locationFilter: null })
@@ -273,12 +297,12 @@ describe('MinionsTable.vue', () => {
         await ctx.wrapper.vm.$nextTick()
       })
 
-      it('sits on the filter row, with no location dropdown, and says Minions, Locations', () => {
+      it('sits on the filter row, with no location dropdown, and says Minions, Monitoring locations', () => {
         expect(ctx.wrapper.find('[data-test="location-select"]').exists()).toBe(false)
         expect(ctx.wrapper.find('.toolbar [data-test="quick-filters"]').exists()).toBe(true)
         expect(ctx.wrapper.find('.toolbar [data-test="minion-search-box"]').exists()).toBe(true)
-        expect(input().attributes('placeholder')).toBe('Minions, Locations')
-        expect(input().attributes('aria-label')).toBe('Search minions, or choose a location to filter by')
+        expect(input().attributes('placeholder')).toBe('Minions, Monitoring locations')
+        expect(input().attributes('aria-label')).toBe('Search minions, or choose a monitoring location to filter by')
         expect(auto().props('showEmptyMessage')).toBe(false)
       })
 
@@ -295,7 +319,7 @@ describe('MinionsTable.vue', () => {
         auto().vm.$emit('complete', { query: 'dc' })
         await ctx.wrapper.vm.$nextTick()
         expect(auto().props('suggestions')).toEqual([
-          { kind: 'location', name: 'dc-east', label: 'Location: dc-east' }, { kind: 'location', name: 'dc-west', label: 'Location: dc-west' }
+          { kind: 'location', name: 'dc-east', label: 'Monitoring location: dc-east' }, { kind: 'location', name: 'dc-west', label: 'Monitoring location: dc-west' }
         ])
         auto().vm.$emit('complete', { query: 'M' })
         await ctx.wrapper.vm.$nextTick()
@@ -305,7 +329,7 @@ describe('MinionsTable.vue', () => {
         ])
         auto().vm.$emit('complete', { query: 'WEST' })
         await ctx.wrapper.vm.$nextTick()
-        expect(auto().props('suggestions')).toEqual([{ kind: 'location', name: 'dc-west', label: 'Location: dc-west' }])
+        expect(auto().props('suggestions')).toEqual([{ kind: 'location', name: 'dc-west', label: 'Monitoring location: dc-west' }])
         auto().vm.$emit('complete', { query: '  ' })
         await ctx.wrapper.vm.$nextTick()
         expect(auto().props('suggestions')).toEqual([])
@@ -321,12 +345,12 @@ describe('MinionsTable.vue', () => {
 
       it('choosing a location sets the same filter as the chip and empties the box', async () => {
         await input().setValue('dc-w')
-        auto().vm.$emit('option-select', { value: { kind: 'location', name: 'dc-west', label: 'Location: dc-west' }})
+        auto().vm.$emit('option-select', { value: { kind: 'location', name: 'dc-west', label: 'Monitoring location: dc-west' }})
         await flushPromises()
         expect(ctx.wrapper.emitted('update:locationFilter')).toEqual([['dc-west']])
         expect((input().element as HTMLInputElement).value).toBe('')
         await ctx.wrapper.setProps({ locationFilter: 'dc-west' })
-        expect(ctx.wrapper.find('[data-test="location-filter-chip"]').text()).toContain('Location: dc-west')
+        expect(ctx.wrapper.find('[data-test="location-filter-chip"]').text()).toContain('Monitoring location: dc-west')
         expect(rowIds(ctx.wrapper)).toEqual(['m1', 'm3'])
       })
 
@@ -357,17 +381,16 @@ describe('MinionsTable.vue', () => {
   })
 
   describe('delete', () => {
-    it('greys out Delete for a Minion that is UP and says why', async () => {
+    it('shows Delete only for a Minion that is not UP', async () => {
       ctx.store.minions = [minion('up1', { status: 'up' }), minion('down1', { status: 'down' }), minion('unk1', { status: 'unknown' })] as any
       await ctx.wrapper.vm.$nextTick()
+      expect(rowIds(ctx.wrapper)).toEqual(['down1', 'unk1', 'up1'])
       const buttons = ctx.wrapper.findAll('[data-test="delete-minion-button"]')
-      expect(buttons.map(b => b.attributes('disabled') !== undefined)).toEqual([false, false, true])
-      // the tooltip lives on the wrapper, which still receives the hover when the button is disabled
-      const wraps = ctx.wrapper.findAll('[data-test="delete-minion-wrap"]')
-      expect(wraps).toHaveLength(3)
-      expect(tooltipText).toHaveBeenNthCalledWith(1, 'Delete down1')
-      expect(tooltipText).toHaveBeenNthCalledWith(3, 'up1 is up; a running Minion cannot be deleted')
-      expect(buttons[2].attributes('aria-label')).toBe('up1 is up; a running Minion cannot be deleted')
+      expect(buttons).toHaveLength(2)
+      expect(buttons.map(b => b.attributes('disabled'))).toEqual([undefined, undefined])
+      expect(buttons.map(b => b.attributes('aria-label'))).toEqual(['Delete down1', 'Delete unk1'])
+      expect(tooltipText.mock.calls.map(call => call[0])).toEqual(['Delete down1', 'Delete unk1'])
+      expect(ctx.wrapper.findAll('tbody tr')[2].find('[data-test="delete-minion-wrap"]').exists()).toBe(false)
     })
 
     it('opens the delete dialog for the row and reports the dialog state', async () => {

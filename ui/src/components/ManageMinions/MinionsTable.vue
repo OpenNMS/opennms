@@ -7,7 +7,7 @@
       Showing the first {{ store.minions.length }} of {{ store.totalCount }} minions. Use search to narrow the list.
     </p>
 
-    <!-- the quick filters, the location chip and the search box narrow the same list together -->
+    <!-- the quick filters, the monitoring location chip and the search box narrow the same list together -->
     <div v-if="store.minions.length" class="toolbar">
       <div class="filters">
         <OnmsSelectButton
@@ -21,30 +21,30 @@
         <!-- the chip's own remove icon is not focusable, so a real button clears it -->
         <template v-if="locationFilter">
           <OnmsChip
-            :label="`Location: ${locationFilter}`"
+            :label="`Monitoring location: ${locationFilter}`"
             data-test="location-filter-chip"
           />
           <OnmsButton
             variant="text"
             size="small"
             label="Clear"
-            aria-label="Clear location filter"
+            aria-label="Clear monitoring location filter"
             data-test="clear-location-filter"
             @click="emit('update:locationFilter', null)"
           />
         </template>
       </div>
-      <!-- one box does both: the text narrows the rows as it is typed, and the Minions
-           and locations it matches are offered as "Minion: id" / "Location: name" to pick one exactly;
+      <!-- one box does both: the text narrows the rows as it is typed, and the Minions and monitoring
+           locations it matches are offered as "Minion: id" / "Monitoring location: name" to pick one exactly;
            showEmptyMessage falls through to the PrimeVue root so no overlay opens for plain text -->
       <OnmsAutoComplete
         ref="searchBox"
         :modelValue="search"
         :suggestions="locationSuggestions"
         optionLabel="label"
-        placeholder="Minions, Locations"
+        placeholder="Minions, Monitoring locations"
         :showEmptyMessage="false"
-        :unsafePt="{ pcInputText: { root: { 'aria-label': 'Search minions, or choose a location to filter by', 'data-test': 'minion-search' }}}"
+        :unsafePt="{ pcInputText: { root: { 'aria-label': 'Search minions, or choose a monitoring location to filter by', 'data-test': 'minion-search' }}}"
         class="search"
         data-test="minion-search-box"
         @update:modelValue="onSearchInput"
@@ -57,12 +57,12 @@
       :value="visibleMinions"
       v-model:filters="filters"
       :globalFilterFields="['id', 'location', 'status', 'version']"
-      :paginator="visibleMinions.length > 0"
+      :paginator="visibleMinions.length > PAGE_SIZE"
       dataKey="id"
       sortField="id"
       :sortOrder="1"
-      :rows="10"
-      :rowsPerPageOptions="[10, 20, 50, 100]"
+      :rows="PAGE_SIZE"
+      :rowsPerPageOptions="[PAGE_SIZE, 50, 100]"
       class="data-table"
       data-test="minions-table"
     >
@@ -79,21 +79,19 @@
           <span v-else>{{ data.id }}</span>
         </template>
       </OnmsColumn>
-      <!-- <OnmsColumn field="label" header="Label" sortable /> -->
       <OnmsColumn field="location" header="Monitoring location" sortable>
         <template #body="{ data }">
           <button
             v-if="data.location"
             type="button"
             class="link-button"
-            :title="`Show location ${data.location}`"
+            :title="`Show monitoring location ${data.location}`"
             data-test="minion-location-link"
             @click="emit('showLocation', data.location)"
           >{{ data.location }}</button>
           <span v-else>-</span>
         </template>
       </OnmsColumn>
-      <!-- <OnmsColumn field="type" header="Type" sortable /> -->
       <!-- the API only reports up / down / unknown; there is no degraded state or reason to show -->
       <OnmsColumn field="status" header="Status" sortable>
         <template #body="{ data }">
@@ -104,7 +102,7 @@
           />
         </template>
       </OnmsColumn>
-      <OnmsColumn field="version" header="Version" sortable>
+      <OnmsColumn field="version" :sortField="versionSortField" header="Version" sortable>
         <template #body="{ data }">
           <OnmsTag
             :value="versionLabel(data.version)"
@@ -124,36 +122,20 @@
           />
         </template>
       </OnmsColumn>
-      <!--
-      <OnmsColumn header="Properties">
-        <template #body="{ data }">
-          <span class="props-count">{{ Object.keys(data.properties ?? {}).length }} propert{{ Object.keys(data.properties ?? {}).length === 1 ? 'y' : 'ies' }}</span>
-        </template>
-      </OnmsColumn>
-      -->
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <!-- editing is disabled for now (NMS-20364)
-            <OnmsIconButton
-              :icon="Edit"
-              :title="`Edit ${data.id}`"
-              :aria-label="`Edit ${data.id}`"
-              data-test="edit-minion-button"
-              @click="openEditor(data)"
-            />
-            -->
-            <!-- a disabled button gets no mouse events, so the wrapper carries the tooltip -->
+            <!-- only a Minion that is not up can be deleted, so the others show no icon -->
             <span
-              v-onms-tooltip.top="isUp(data) ? `${data.id} is up; a running Minion cannot be deleted` : `Delete ${data.id}`"
+              v-if="!isUp(data)"
+              v-onms-tooltip.top="`Delete ${data.id}`"
               class="delete-wrap"
               data-test="delete-minion-wrap"
             >
               <OnmsIconButton
                 :icon="Delete"
                 severity="danger"
-                :disabled="isUp(data)"
-                :aria-label="isUp(data) ? `${data.id} is up; a running Minion cannot be deleted` : `Delete ${data.id}`"
+                :aria-label="`Delete ${data.id}`"
                 data-test="delete-minion-button"
                 @click="askDelete(data)"
               />
@@ -164,9 +146,6 @@
     </OnmsTable>
   </TableCard>
 
-  <!-- editing is disabled for now (NMS-20364)
-  <MinionEditorDialog v-model:visible="showEditor" :minion="minionToEdit" />
-  -->
   <MinionDeleteDialog
     v-model:visible="showDeleteDialog"
     :minion="minionToDelete"
@@ -180,15 +159,12 @@ import { OnmsAutoComplete, OnmsButton, OnmsChip, OnmsColumn, OnmsIconButton, Onm
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
-// editing is disabled for now (NMS-20364)
-// import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-// import MinionEditorDialog from '@/components/ManageMinions/MinionEditorDialog.vue'
 import MinionDeleteDialog from '@/components/ManageMinions/MinionDeleteDialog.vue'
 import { legacyUrl } from '@/lib/legacyUrl'
 import { minionState, minionStateSeverity } from '@/lib/minionStatus'
 import { ageSeverity, formatAbsolute, isOlderThan, relativeTimeSince } from '@/lib/relativeTime'
-import { normalizeVersion, sameVersion } from '@/lib/version'
+import { normalizeVersion, sameVersion, versionSortKey } from '@/lib/version'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { Minion } from '@/types/minionAdmin'
 
@@ -211,13 +187,13 @@ const store = useMinionAdminStore()
 
 const nodeUrl = (id?: number) => legacyUrl(`element/node.jsp?node=${id}`)
 
-// editing is disabled for now (NMS-20364)
-// const showEditor = ref(false)
-// const minionToEdit = ref<Minion | null>(null)
 const showDeleteDialog = ref(false)
 const minionToDelete = ref<Minion | null>(null)
 
 watch(showDeleteDialog, open => emit('dialogOpen', open))
+
+// the paginator only appears once the rows fill more than one page
+const PAGE_SIZE = 25
 
 const emptyListContent = { msg: 'No minions found.' }
 const filteredOutContent = { msg: 'No minions match the current filter.' }
@@ -260,7 +236,7 @@ const suggestLocations = (query: string) => {
     .map(name => ({ kind: 'minion' as const, name, label: `Minion: ${name}` }))
   const locations = locationOptions.value
     .filter(name => name.toLowerCase().includes(needle))
-    .map(name => ({ kind: 'location' as const, name, label: `Location: ${name}` }))
+    .map(name => ({ kind: 'location' as const, name, label: `Monitoring location: ${name}` }))
   locationSuggestions.value = [...minions, ...locations]
 }
 
@@ -312,6 +288,7 @@ const versionState = (version?: string | null): VersionState => {
 
 const isUp = (minion: Minion) => minionState(minion.status) === 'up'
 const versionDiffers = (minion: Minion) => versionState(minion.version) === 'differs'
+const versionSortField = (minion: Minion) => versionSortKey(minion.version)
 
 const matchers: Record<QuickFilter, (minion: Minion) => boolean> = {
   all: () => true,
@@ -359,12 +336,6 @@ const versionTitle = (version?: string | null) => {
     default: return `The core runs ${store.coreVersion}`
   }
 }
-
-// editing is disabled for now (NMS-20364)
-// const openEditor = (minion: Minion) => {
-//   minionToEdit.value = minion
-//   showEditor.value = true
-// }
 
 const askDelete = (minion: Minion) => {
   minionToDelete.value = minion

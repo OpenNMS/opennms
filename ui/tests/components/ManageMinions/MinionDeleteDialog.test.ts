@@ -50,13 +50,14 @@ const status = (wrapper: VueWrapper<any>) => wrapper.find('[data-test="status-ca
 describe('MinionDeleteDialog.vue', () => {
   beforeEach(() => {
     showToast.mockClear()
-    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'], now: NOW })
   })
   afterEach(() => vi.useRealTimers())
 
-  it('names the Minion in the title, re-reads its row on open and asks for no typed confirmation', async () => {
+  it('keeps the id out of the title, names it in the body, re-reads its row on open and asks for no typed confirmation', async () => {
     const { wrapper, store } = await mountDialog()
-    expect(wrapper.find('[data-test="header"]').text()).toBe('Delete m1?')
+    expect(wrapper.find('[data-test="header"]').text()).toBe('Delete Minion?')
+    expect(wrapper.find('[data-test="minion-id"]').text()).toBe('m1')
     expect(wrapper.text()).toContain('Use this for Minions you have decommissioned. It cannot be undone.')
     expect(store.getMinion).toHaveBeenCalledWith('m1')
     expect(wrapper.find('[data-test="confirm-input"]').exists()).toBe(false)
@@ -68,36 +69,49 @@ describe('MinionDeleteDialog.vue', () => {
   it('refuses a Minion that is UP in one short line', async () => {
     const { wrapper } = await mountDialog({ status: 'up', date: NOW - 36_000 })
     expect(status(wrapper).classes()).toContain('p-message-error')
-    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
+    expect(status(wrapper).text()).toBe('The Minion is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
   it('refuses an UP Minion whatever its heartbeat age, as the table does', async () => {
     const { wrapper } = await mountDialog({ status: 'up', date: NOW - 10 * MIN })
-    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
+    expect(status(wrapper).text()).toBe('The Minion is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
   it('allows a Minion that is DOWN', async () => {
     const { wrapper } = await mountDialog({ status: 'down', date: NOW - 10 * MIN })
-    expect(status(wrapper).classes()).toContain('p-message-success')
-    expect(status(wrapper).text()).toBe('m1 is DOWN — it can be deleted.')
+    expect(status(wrapper).classes()).toContain('p-message-info')
+    expect(status(wrapper).text()).toBe('The Minion is DOWN — it can be deleted.')
     expect(deleteDisabled(wrapper)).toBe(false)
   })
 
-  it('allows a Minion whose status is unknown, since it has not been heard from since the core started', async () => {
+  it('allows a Minion whose status is unknown, since OpenNMS has no node for it in the Minions requisition', async () => {
     const { wrapper } = await mountDialog({ status: 'unknown', date: NOW - 30_000 })
-    expect(status(wrapper).classes()).toContain('p-message-warn')
-    expect(status(wrapper).text()).toBe('m1 is UNKNOWN — it can be deleted.')
+    expect(status(wrapper).classes()).toContain('p-message-info')
+    expect(status(wrapper).find('.p-tag').classes()).toContain('p-tag-secondary')
+    expect(status(wrapper).text()).toBe('The Minion is UNKNOWN — it can be deleted.')
     expect(deleteDisabled(wrapper)).toBe(false)
     const missing = (await mountDialog({ status: null, date: null })).wrapper
-    expect(status(missing).text()).toBe('m1 is UNKNOWN — it can be deleted.')
+    expect(status(missing).text()).toBe('The Minion is UNKNOWN — it can be deleted.')
     expect(deleteDisabled(missing)).toBe(false)
+  })
+
+  it('shows the last heartbeat for information only, from the freshly read row', async () => {
+    const down = (await mountDialog({ status: 'down', date: NOW - 10 * MIN }, { fresh: minion({ status: 'down', date: NOW - 3 * MIN }) })).wrapper
+    expect(down.find('[data-test="last-heartbeat"]').text()).toBe('3 min ago')
+    expect(down.find('[data-test="last-heartbeat"]').attributes('title')).toBe(new Date(NOW - 3 * MIN).toLocaleString())
+    expect(deleteDisabled(down)).toBe(false)
+    const unknown = (await mountDialog({ status: 'unknown', date: NOW - 20_000 })).wrapper
+    expect(unknown.find('[data-test="last-heartbeat"]').text()).toBe('20 s ago')
+    expect(deleteDisabled(unknown)).toBe(false)
+    const never = (await mountDialog({ status: 'unknown', date: null })).wrapper
+    expect(never.find('[data-test="last-heartbeat"]').text()).toBe('-')
   })
 
   it('gates on the freshly read row, not on the row the paused list passed in', async () => {
     const { wrapper } = await mountDialog({ status: 'down' }, { fresh: minion({ status: 'up', date: NOW - 20_000 }) })
-    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
+    expect(status(wrapper).text()).toBe('The Minion is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
@@ -108,7 +122,7 @@ describe('MinionDeleteDialog.vue', () => {
     vi.advanceTimersByTime(RECHECK)
     await flushPromises()
     expect(store.getMinion).toHaveBeenCalledTimes(2)
-    expect(status(wrapper).classes()).toContain('p-message-success')
+    expect(status(wrapper).classes()).toContain('p-message-info')
     expect(deleteDisabled(wrapper)).toBe(false)
     vi.mocked(store.getMinion).mockResolvedValue(minion({ status: 'up', date: NOW }) as any)
     vi.advanceTimersByTime(RECHECK)
@@ -122,7 +136,7 @@ describe('MinionDeleteDialog.vue', () => {
     vi.mocked(store.getMinion).mockResolvedValue(null)
     vi.advanceTimersByTime(RECHECK)
     await flushPromises()
-    expect(status(wrapper).text()).toBe('m1 is UP — a running Minion cannot be deleted.')
+    expect(status(wrapper).text()).toBe('The Minion is UP — a running Minion cannot be deleted.')
     expect(deleteDisabled(wrapper)).toBe(true)
   })
 
@@ -153,7 +167,7 @@ describe('MinionDeleteDialog.vue', () => {
     resolveRow(minion())
     await flushPromises()
     expect(wrapper.find('[data-test="loading"]').exists()).toBe(false)
-    expect(status(wrapper).classes()).toContain('p-message-success')
+    expect(status(wrapper).classes()).toContain('p-message-info')
     expect(deleteDisabled(wrapper)).toBe(false)
   })
 

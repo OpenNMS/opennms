@@ -20,7 +20,7 @@
 /// License.
 ///
 import API from '@/services'
-import { Minion, MinionEdit } from '@/types/minionAdmin'
+import { Minion } from '@/types/minionAdmin'
 import { minionNodeKey } from '@/services/minionAdminService'
 import { ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
@@ -74,16 +74,6 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
     return coreVersion.value
   }
 
-  const updateMinion = async (edit: MinionEdit): Promise<ValidationResult> => {
-    const result = await API.updateMinion(edit)
-    if (result.success) {
-      await getMinions()
-    }
-    return result
-  }
-
-  const getAlarmCount = (id: string) => API.getAlarmCountForMinion(id)
-
   const getMinion = (id: string) => API.getMinion(id)
 
   const deleteMinion = async (id: string): Promise<ValidationResult> => {
@@ -105,8 +95,6 @@ export const useMinionAdminStore = defineStore('minionAdminStore', () => {
     nodeIdFor,
     getMinions,
     getCoreVersion,
-    updateMinion,
-    getAlarmCount,
     getMinion,
     deleteMinion
   }

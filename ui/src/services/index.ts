@@ -86,7 +86,7 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
-import { deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions, updateMinion } from './minionAdminService'
+import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
@@ -137,9 +137,7 @@ export default {
   getMinionNodeIds,
   getCoreVersion,
   listMinions,
-  updateMinion,
   deleteMinion,
-  getAlarmCountForMinion,
   getMinion,
   search,
   getSystemReportPlugins,

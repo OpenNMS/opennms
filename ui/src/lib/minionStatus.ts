@@ -29,7 +29,8 @@ export const minionState = (status: string | null | undefined): MinionState => {
   return s === 'up' ? 'up' : s === 'down' ? 'down' : 'unknown'
 }
 
-export const minionStateSeverity = (status: string | null | undefined): 'success' | 'danger' | 'warn' => {
+// unknown is a setup state (no node in the Minions requisition), not a fault, so it is grey
+export const minionStateSeverity = (status: string | null | undefined): 'success' | 'danger' | 'secondary' => {
   const state = minionState(status)
-  return state === 'up' ? 'success' : state === 'down' ? 'danger' : 'warn'
+  return state === 'up' ? 'success' : state === 'down' ? 'danger' : 'secondary'
 }

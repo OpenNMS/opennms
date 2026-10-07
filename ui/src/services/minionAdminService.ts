@@ -19,7 +19,7 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-import { Minion, MinionEdit } from '@/types/minionAdmin'
+import { Minion } from '@/types/minionAdmin'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
 
@@ -117,27 +117,6 @@ const getMinion = async (id: string): Promise<Minion | null> => {
   }
 }
 
-// Read-before-write: the v2 PUT is a whole-object saveOrUpdate, so we must send
-// the CURRENT server row with only label/location/properties changed — spreading
-// a stale list snapshot would revert the server-maintained status/version/date.
-const updateMinion = async (edit: MinionEdit): Promise<ValidationResult> => {
-  try {
-    const current = await v2.get(`${endpoint}/${encodeURIComponent(edit.id)}`)
-    const fresh = (current.data ?? {}) as Minion
-    const payload: Minion = {
-      ...fresh,
-      label: edit.label,
-      location: edit.location,
-      properties: edit.properties
-    }
-    await v2.put(`${endpoint}/${encodeURIComponent(edit.id)}`, payload)
-    return createSuccessResponse()
-  } catch (err: any) {
-    console.error('Error updating minion:', err)
-    return createFailureResult(errorMessage(err, `Failed to update minion '${edit.label ?? edit.id}'.`))
-  }
-}
-
 const deleteMinion = async (id: string): Promise<ValidationResult> => {
   try {
     await v2.delete(`${endpoint}/${encodeURIComponent(id)}`)
@@ -166,24 +145,4 @@ const getCoreVersion = async (): Promise<string | null> => {
   }
 }
 
-// Alarms raised through this minion (distPoller is the reporting monitoring
-// system), read from totalCount of a one-row page of /api/v2/alarms. null when
-// the count could not be determined.
-const getAlarmCountForMinion = async (id: string): Promise<number | null> => {
-  if (!isFiqlSafeId(id)) {
-    return null
-  }
-  try {
-    const resp = await v2.get(`/alarms?_s=${encodeURIComponent(`distPoller.id==${id}`)}&limit=1`)
-    if (resp.status === 204) {
-      return 0
-    }
-    const total = Number(resp.data?.totalCount)
-    return Number.isFinite(total) ? total : null
-  } catch (err) {
-    console.error(`Error counting alarms for minion '${id}':`, err)
-    return null
-  }
-}
-
-export { deleteMinion, getAlarmCountForMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }
+export { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions, minionNodeKey }

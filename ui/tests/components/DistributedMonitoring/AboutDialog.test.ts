@@ -49,6 +49,7 @@ describe('AboutDialog.vue', () => {
     const sections = wrapper.findAll('.help-section').map(s => s.find('.section-heading').text())
     expect(sections).toEqual(['Minions', 'Monitoring locations'])
     const minions = wrapper.find('[data-test="about-minions"]').text()
+    expect(minions).toContain('Unknown when OpenNMS has no node for the Minion in the Minions requisition, so it does not monitor the Minion.')
     expect(minions).toContain('org.opennms.minion.controller')
     expect(minions).toContain('a Minion that is up cannot be deleted')
     const locations = wrapper.find('[data-test="about-locations"]').text()

@@ -21,8 +21,8 @@
 ///
 
 // Wire shape of an OnmsMinion from /api/v2/minions (OnmsMonitoringSystem +
-// status/version). type/status/date are server-maintained (read-only); only
-// label, location and properties are editable, matching the legacy page.
+// status/version). type/status/date are server-maintained; the page reads
+// Minions and deletes them, and never writes one.
 export interface Minion {
   id: string
   label: string | null
@@ -39,12 +39,4 @@ export interface MinionApiResponse {
   totalCount: number
   count: number
   offset: number
-}
-
-// What the editor may change; the service merges it onto the current server row.
-export interface MinionEdit {
-  id: string
-  label: string | null
-  location: string
-  properties: Record<string, string>
 }
