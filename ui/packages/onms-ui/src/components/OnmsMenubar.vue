@@ -1,7 +1,7 @@
 <template>
   <Menubar
     :model="items as never"
-    :pt="unsafePt as never"
+    :pt="pt as never"
   >
     <template
       v-if="$slots.start"
@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import Menubar from 'primevue/menubar'
 import { OnmsMenuItem } from '../types'
 
@@ -39,11 +40,19 @@ import { OnmsMenuItem } from '../types'
 // The #item slot forwards the underlying slot props ({ item, props, ... }) -- the same accepted
 // seam leakage as OnmsMenu and OnmsTieredMenu, documented in the README. #start and #end place
 // content before and after the items. `items as never` on :model -- see the note in OnmsMenu.vue.
-withDefaults(defineProps<{
+//
+// An item with `target: '_blank'` gets rel="noopener noreferrer" on its link: PrimeVue renders the
+// target but has no rel of its own. An `itemLink` in unsafePt replaces this.
+const props = withDefaults(defineProps<{
   items?: OnmsMenuItem[]
   unsafePt?: unknown
 }>(), {
   items: undefined,
   unsafePt: undefined
 })
+
+const relForNewTab = ({ context }: { context?: { item?: OnmsMenuItem }}) =>
+  (context?.item?.target === '_blank' ? { rel: 'noopener noreferrer' } : {})
+
+const pt = computed(() => ({ itemLink: relForNewTab, ...(props.unsafePt as object | undefined) }))
 </script>

@@ -61,6 +61,19 @@ describe('OnmsMenubar contract', () => {
   it('passes unsafePt through as pt', () => {
     const pt = { root: { class: 'escape-hatch' }}
 
-    expect(mountBar({ unsafePt: pt }).findComponent({ name: 'Menubar' }).props('pt')).toEqual(pt)
+    expect(mountBar({ unsafePt: pt }).findComponent({ name: 'Menubar' }).props('pt')).toEqual(expect.objectContaining(pt))
+  })
+
+  // PrimeVue renders the target but no rel, so a new tab could reach back through window.opener.
+  it('adds rel="noopener noreferrer" to an item that opens in a new tab, and only to that one', () => {
+    const wrapper = mountBar({ items: [
+      { label: 'Docs', url: 'https://example.com', target: '_blank' },
+      { label: 'Here', url: '/here' }
+    ] })
+
+    const links = wrapper.findAll('a.p-menubar-item-link')
+    expect(links[0].attributes('target')).toBe('_blank')
+    expect(links[0].attributes('rel')).toBe('noopener noreferrer')
+    expect(links[1].attributes('rel')).toBeUndefined()
   })
 })

@@ -166,7 +166,8 @@ Where these diverge from PrimeVue, deliberately:
 - **`OnmsMenubar`** (added later, NMS-20303) is the inline, horizontal form:
   top-level items in a row, each opening its nested `items` as a dropdown. It
   takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
-  `#end` for content around the items.
+  `#end` for content around the items. An item with `target: '_blank'` gets
+  `rel="noopener noreferrer"`, which PrimeVue does not add.
 - **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
   for content that is not an `OnmsTable` (which has its own). `page` emits the
   same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
