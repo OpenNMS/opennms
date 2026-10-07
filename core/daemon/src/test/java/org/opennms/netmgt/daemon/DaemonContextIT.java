@@ -21,16 +21,30 @@
  */
 package org.opennms.netmgt.daemon;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import javax.jms.Connection;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
 import javax.jms.QueueConnection;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
+import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.nms20397.DeserializationProbe;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsComponent;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -81,4 +95,91 @@ public class DaemonContextIT {
 	    assertFalse(queuingservice.getHeaderFilterStrategy().applyFilterToExternalHeaders("JmsQueueName", "x", null));
 	}
 
+	/**
+	* A producer on the broker sets Camel internal headers, in plain, case-variant and
+	* JMS-encoded form, on a message consumed through queuingservice (CVE-2026-40453).
+	*/
+	@Test
+	public void queuingserviceDropsInboundCamelHeadersEndToEnd() throws Exception {
+	    final DefaultCamelContext camel = new DefaultCamelContext();
+	    camel.addComponent("queuingservice", queuingservice);
+	    camel.addRoutes(new RouteBuilder() {
+	        @Override
+	        public void configure() {
+	            from("queuingservice:queue:NMS-20397.headers").to("mock:headers");
+	        }
+	    });
+	    camel.start();
+	    try {
+	        final MockEndpoint mock = camel.getEndpoint("mock:headers", MockEndpoint.class);
+	        mock.expectedMessageCount(1);
+	        sendRaw("NMS-20397.headers", session -> {
+	            final TextMessage m = session.createTextMessage("payload");
+	            m.setStringProperty("CamelExecCommandExecutable", "/bin/sh");
+	            m.setStringProperty("cAMELJmsDestinationName", "somewhere-else");
+	            m.setStringProperty("org_DOT_apache_DOT_camel_DOT_Foo", "x");
+	            m.setStringProperty("SystemId", "minion-1");
+	            return m;
+	        });
+	        mock.assertIsSatisfied(10000);
+	        final org.apache.camel.Message in = mock.getExchanges().get(0).getIn();
+	        for (String name : new String[] { "CamelExecCommandExecutable", "cAMELJmsDestinationName",
+	                "CamelJmsDestinationName", "org.apache.camel.Foo", "org_DOT_apache_DOT_camel_DOT_Foo" }) {
+	            assertNull(name, in.getHeader(name));
+	        }
+	        assertEquals("minion-1", in.getHeader("SystemId"));
+	        assertEquals("payload", in.getBody(String.class));
+	    } finally {
+	        camel.stop();
+	    }
+	}
+
+	/**
+	* A producer on the broker sends an ObjectMessage; Camel's JmsBinding would call
+	* getObject() on it, so the connection factory must refuse to deserialize (CVE-2026-40860).
+	*/
+	@Test
+	public void queuingserviceDoesNotDeserializeObjectMessages() throws Exception {
+	    final DefaultCamelContext camel = new DefaultCamelContext();
+	    camel.getShutdownStrategy().setTimeout(5);
+	    camel.addComponent("queuingservice", queuingservice);
+	    // the JMS body is extracted lazily; catch in the route so the message is not redelivered
+	    final BlockingQueue<Object> outcomes = new LinkedBlockingQueue<>();
+	    camel.addRoutes(new RouteBuilder() {
+	        @Override
+	        public void configure() {
+	            from("queuingservice:queue:NMS-20397.objects").process(exchange -> {
+	                try {
+	                    outcomes.add(exchange.getIn().getBody(String.class));
+	                } catch (RuntimeException e) {
+	                    outcomes.add(e);
+	                }
+	            });
+	        }
+	    });
+	    camel.start();
+	    try {
+	        sendRaw("NMS-20397.objects", session -> session.createObjectMessage(new DeserializationProbe()));
+	        final Object outcome = outcomes.poll(10, TimeUnit.SECONDS);
+	        assertTrue(String.valueOf(outcome), outcome instanceof Exception
+	                && String.valueOf(outcome).contains("not trusted to be serialized"));
+	        assertFalse("payload must not be deserialized", DeserializationProbe.DESERIALIZED.get());
+	    } finally {
+	        camel.stop();
+	    }
+	}
+
+	private interface MessageFactory {
+	    Message create(Session session) throws Exception;
+	}
+
+	/** Sends with a plain client connection, marshalling the message as a remote producer would. */
+	private void sendRaw(final String queue, final MessageFactory factory) throws Exception {
+	    final ActiveMQConnectionFactory producerFactory = new ActiveMQConnectionFactory("vm://localhost?create=false&marshal=true");
+	    try (Connection connection = producerFactory.createConnection()) {
+	        final Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+	        final MessageProducer producer = session.createProducer(session.createQueue(queue));
+	        producer.send(factory.create(session));
+	    }
+	}
 }

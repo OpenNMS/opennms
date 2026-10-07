@@ -31,6 +31,8 @@
 		<property name="brokerURL" value="$[org.opennms.activemq.broker.url]" />
 		<property name="userName" value="$[org.opennms.activemq.broker.username]" />
 		<property name="password" value="$[org.opennms.activemq.broker.password]" />
+		<!-- Camel's JmsBinding deserializes ObjectMessage payloads; OpenNMS never sends any (CVE-2026-40860) -->
+		<property name="trustedPackages"><list/></property>
 	</bean>
 
 	<!-- Setup JMS connection pooling -->
