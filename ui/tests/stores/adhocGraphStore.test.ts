@@ -2,6 +2,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  classifyNodeText,
   composeFilterRule,
   looksLikeFilterRule,
   nodeCriteriaOf,
@@ -106,26 +107,33 @@ describe('useAdhocGraphStore', () => {
   })
 
   // One box, no toggle: this is what decides whether the text is a rule.
-  describe('looksLikeFilterRule', () => {
-    it('is false for a label fragment or nothing', () => {
-      for (const text of ['', '   ', 'core-sw', 'island', 'Isis-router', 'switch 01']) {
+  describe('classifyNodeText', () => {
+    it('is a search for a label fragment, nothing, or a host name that merely contains a quote or a keyword', () => {
+      for (const text of ['', '   ', 'core-sw', 'island', 'Isis-router', 'switch 01', 'O\'Brien', 'like', 'LIKE', 'unlike-01']) {
+        expect(classifyNodeText(text), text).toBe('search')
         expect(looksLikeFilterRule(text), text).toBe(false)
       }
     })
 
-    it('is true for anything using the rule grammar', () => {
+    it('is a rule for anything using the grammar\'s operators or an infix LIKE', () => {
       for (const text of [
-        'catincRouters',
         'catincRouters & catincSNMP',
         'catincProduction | catincStaging',
         '!catincRetired',
         'location=\'Default\'',
         'IPADDR IPLIKE 10.*.*.*',
-        'isSNMP',
-        'notisICMP',
         'nodeLabel LIKE \'%core%\'',
-        '(catincA)'
+        '(catincA)',
+        'nodeid > 0'
       ]) {
+        expect(classifyNodeText(text), text).toBe('rule')
+        expect(looksLikeFilterRule(text), text).toBe(true)
+      }
+    })
+
+    it('is a guess for a lone keyword, which a host name can also look like', () => {
+      for (const text of ['catincRouters', 'isSNMP', 'notisICMP', 'isLab']) {
+        expect(classifyNodeText(text), text).toBe('guess')
         expect(looksLikeFilterRule(text), text).toBe(true)
       }
     })
@@ -144,8 +152,9 @@ describe('useAdhocGraphStore', () => {
       expect(composeFilterRule('nodeFilter(catincRouters, labelFormat=id:label, valueFormat=id)')).toBe('catincRouters')
     })
 
-    it('turns an empty nodeFilter() into the every-node rule', () => {
-      expect(composeFilterRule('nodeFilter()')).toBe('IPADDR != \'0.0.0.0\'')
+    it('turns an empty nodeFilter() into a rule the node table alone can answer', () => {
+      // An address-based rule would silently drop nodes that have no IP interface.
+      expect(composeFilterRule('nodeFilter()')).toBe('nodeid > 0')
     })
   })
 
@@ -215,7 +224,8 @@ describe('useAdhocGraphStore', () => {
 
       await store.setNodeFilter('catincRouters')
 
-      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters')
+      // Capped at the node limit: the service counts first and never fetches more.
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
       expect(getNodes).not.toHaveBeenCalled()
       expect(store.nodeMatchOverflow).toBe(0)
       expect(store.effectiveNodes).toEqual([
@@ -240,6 +250,51 @@ describe('useAdhocGraphStore', () => {
       getNodesByFilterRule.mockResolvedValueOnce({ nodes: [{ id: '1', label: 'a' }] })
       await store.setNodeFilter('catincRouters')
       expect(store.nodeFilterError).toBe('')
+    })
+
+    it('reports a rule that matches more nodes than a graph may use, without listing any', async () => {
+      getNodesByFilterRule.mockResolvedValue({ error: 'too-many', count: 4812 })
+
+      await store.setNodeFilter('catincEverything')
+
+      expect(store.nodeLimitExceeded).toBe(4812)
+      expect(store.nodeOptions).toEqual([])
+      expect(store.nodeFilterError).toBe('')
+      expect(getResourceForNode).not.toHaveBeenCalled()
+
+      // Picking is still possible from an earlier list, and clears the overflow.
+      await store.setPickedNodes([{ id: '1', label: 'a' }])
+      expect(store.nodeLimitExceeded).toBe(0)
+    })
+
+    it('retries a lone keyword the engine rejects as a label search', async () => {
+      getNodesByFilterRule.mockResolvedValue({ error: 'invalid' })
+      getNodes.mockResolvedValue({ node: [{ id: '5', label: 'isLab-01' }], totalCount: 1, count: 1 })
+
+      await store.setNodeFilter('isLab')
+
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('isLab', 200)
+      expect(getNodes.mock.calls[0][0]._s).toBe('label==*isLab*')
+      expect(store.nodeFilterError).toBe('')
+      expect(store.nodeOptions).toEqual([{ id: '5', label: 'isLab-01' }])
+    })
+
+    it('does not retry a real rule the engine rejects', async () => {
+      getNodesByFilterRule.mockResolvedValue({ error: 'invalid' })
+
+      await store.setNodeFilter('catincRouters &')
+
+      expect(getNodes).not.toHaveBeenCalled()
+      expect(store.nodeFilterError).toMatch(/could not be parsed/)
+    })
+
+    it('reports a label search that fails, rather than showing an empty list', async () => {
+      getNodes.mockResolvedValue(false)
+
+      await store.setNodeFilter('core')
+
+      expect(store.nodeFilterError).toMatch(/search failed/)
+      expect(store.nodeOptions).toEqual([])
     })
 
     it('ignores a superseded search', async () => {
@@ -390,12 +445,58 @@ describe('useAdhocGraphStore', () => {
 
     it('drop their picks when their node is deselected by hand', async () => {
       await store.setNodeFilter('catincRouters')
+      await store.setPickedNodes([{ id: '1', label: 'a' }, { id: '2', label: 'b' }])
       store.setPickedResources([store.resourceOptions[0], store.resourceOptions[2]])
       expect(ids(store.pickedResources)).toEqual(['node[1].interfaceSnmp[eth0]', 'node[2].interfaceSnmp[eth0]'])
 
       await store.setPickedNodes([{ id: '1', label: 'a' }])
 
       expect(ids(store.pickedResources)).toEqual(['node[1].interfaceSnmp[eth0]'])
+    })
+
+    // Going from "all matching" to a first pick is narrowing, not deselecting:
+    // picks under the other matched nodes are set aside, and come back.
+    it('keep their picks when a first node pick narrows a filter match', async () => {
+      await store.setNodeFilter('catincRouters')
+      store.setPickedResources([store.resourceOptions[0], store.resourceOptions[2]])
+
+      await store.setPickedNodes([{ id: '1', label: 'a' }])
+      expect(ids(store.pickedResources)).toEqual(['node[1].interfaceSnmp[eth0]', 'node[2].interfaceSnmp[eth0]'])
+      expect(ids(store.effectiveResources)).toEqual(['node[1].interfaceSnmp[eth0]'])
+
+      await store.setPickedNodes([])
+      expect(ids(store.effectiveResources)).toEqual(['node[1].interfaceSnmp[eth0]', 'node[2].interfaceSnmp[eth0]'])
+    })
+
+    it('that belong to no node at all are always reachable, as an old link may name', async () => {
+      await store.restore({
+        nodeFilter: '',
+        resourceFilter: '',
+        datasourceFilter: '',
+        pickedNodeIds: [],
+        pickedResourceIds: ['nodeless[thing]'],
+        pickedDatasourceKeys: ['nodeless[thing]|value']
+      })
+
+      expect(ids(store.effectiveResources)).toEqual(['nodeless[thing]'])
+      expect(keys(store.effectiveDatasources)).toEqual(['nodeless[thing]|value'])
+    })
+
+    it('remember a node that failed to load, count it, and do not ask again', async () => {
+      getResourceForNode.mockImplementation((criterion: string) => (criterion === '1' ?
+        Promise.reject(new Error('boom')) :
+        twoInterfaces(criterion)))
+
+      await store.setNodeFilter('catincRouters')
+      expect(store.failedNodeLoads).toBe(1)
+      expect(getResourceForNode).toHaveBeenCalledTimes(2)
+
+      await store.setNodeFilter('catincRouters & catincSNMP')
+      expect(getResourceForNode).toHaveBeenCalledTimes(2)
+      expect(store.failedNodeLoads).toBe(1)
+
+      await store.setPickedNodes([{ id: '2', label: 'b' }])
+      expect(store.failedNodeLoads).toBe(0)
     })
 
     // A pause mid-rule gets a 400 from the engine and, for a moment, no effective
@@ -558,12 +659,15 @@ describe('useAdhocGraphStore', () => {
       expect(store.effectiveDatasources).toHaveLength(2)
     })
 
-    it('drop a pick whose resource is deselected by hand', () => {
+    it('drop a pick whose resource is deselected by hand, but not one merely narrowed around', () => {
       store.setDatasourceFilter('ifHC*Octets')
       store.setPickedDatasources([store.datasourceOptions[0], store.datasourceOptions[2]])
 
       store.setPickedResources([store.resourceOptions[0]])
+      expect(store.pickedDatasources).toHaveLength(2)
 
+      store.setPickedResources([store.resourceOptions[0], store.resourceOptions[1]])
+      store.setPickedResources([store.resourceOptions[0]])
       expect(keys(store.pickedDatasources)).toEqual(['node[1].interfaceSnmp[eth0]|ifHCInOctets'])
     })
   })
@@ -581,7 +685,7 @@ describe('useAdhocGraphStore', () => {
         pickedDatasourceKeys: []
       })
 
-      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters')
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
       expect(keys(store.effectiveDatasources)).toEqual([
         'node[1].interfaceSnmp[eth0]|ifHCInOctets',
         'node[2].interfaceSnmp[eth0]|ifHCInOctets'

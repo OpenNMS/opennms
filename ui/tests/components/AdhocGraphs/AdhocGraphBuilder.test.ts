@@ -209,7 +209,7 @@ describe('AdhocGraphBuilder', () => {
 
       await filterAll(store)
 
-      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters')
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
       expect(wrapper.find('[data-test="nodes-count"]').text()).toBe('all 1 matching')
       expect(wrapper.find('[data-test="resources-count"]').text()).toBe('all 1 matching')
       expect(wrapper.find('[data-test="datasources-count"]').text()).toBe('all 2 matching')
@@ -233,7 +233,90 @@ describe('AdhocGraphBuilder', () => {
       expect(wrapper.find('[data-test="nodes-count"]').text()).toBe('1 available')
 
       await waitFor(() => getNodesByFilterRule.mock.calls.length > 0)
-      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters')
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
+    })
+
+    it('settles the resource and datasource boxes too, rather than rebuilding on every keystroke', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+
+      await wrapper.find('input[data-test="resources-filter"]').setValue('interfaceSnmp[*]')
+      expect(store.resourceFilter).toBe('')
+
+      await waitFor(() => store.resourceFilter === 'interfaceSnmp[*]')
+    })
+
+    it('drops a filter still settling when the user clears, and empties the box', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      const input = wrapper.find('input[data-test="nodes-filter"]')
+      await input.setValue('catincRouters')
+      await wrapper.find('[data-test="toolbar-clear"]').trigger('click')
+      await new Promise(resolve => setTimeout(resolve, 700))
+      await flushPromises()
+
+      expect(getNodesByFilterRule).not.toHaveBeenCalled()
+      expect(store.nodeFilter).toBe('')
+      expect((input.element as HTMLInputElement).value).toBe('')
+    })
+
+    it('tells the user when selecting turns a filtered column into a fixed list', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      await wrapper.find('[data-test="datasources-select-all"]').trigger('click')
+      await flushPromises()
+
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/Datasources are now a fixed selection of 2/) }))
+      expect(store.pickedDatasources).toHaveLength(2)
+
+      // Already a fixed list: no second notice for a further change.
+      showSnackBar.mockClear()
+      store.setPickedDatasources([store.datasourceOptions[0]])
+      await flushPromises()
+      expect(showSnackBar).not.toHaveBeenCalled()
+    })
+
+    // A rule that starts matching a node whose series sorts first must not
+    // renumber the series an expression already refers to.
+    it('keeps a generated label when a newcomer would otherwise take it', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+      expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCInOctets', 'switch_01_eth0_ifHCOutOctets'])
+
+      // A second node with the same label, sorting first.
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '0', label: 'switch-01' }, { id: '1', label: 'switch-01' }] })
+      getResourceForNode.mockImplementation((id: string) => Promise.resolve({
+        ...NODE_RESOURCE,
+        id: `node[${id}]`,
+        children: { resource: NODE_RESOURCE.children.resource.map(child => ({ ...child, id: child.id.replace('node[1]', `node[${id}]`) })) }
+      }))
+      await store.setNodeFilter('catincRouters & catincSNMP')
+      await flushPromises()
+
+      expect(seriesLabels(wrapper)).toEqual([
+        'switch_01_eth0_ifHCInOctets_2',
+        'switch_01_eth0_ifHCOutOctets_2',
+        'switch_01_eth0_ifHCInOctets',
+        'switch_01_eth0_ifHCOutOctets'
+      ])
+    })
+
+    it('says how many nodes would not give up their resources', async () => {
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }, { id: '2', label: 'switch-02' }] })
+      getResourceForNode.mockImplementation((id: string) => (id === '2' ? Promise.reject(new Error('boom')) : Promise.resolve(NODE_RESOURCE)))
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="resources-note"]').text()).toBe('Resources could not be loaded for 1 node.')
     })
 
     it('narrows a column to its picks, and picking is still available at every level', async () => {
@@ -258,6 +341,7 @@ describe('AdhocGraphBuilder', () => {
 
       expect(store.pickedDatasources.map(datasource => datasource.key)).toEqual([KEY_OUT])
       expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCOutOctets'])
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/fixed selection of 1/) }))
     })
 
     it('keeps an edited label when the filters re-evaluate', async () => {
@@ -465,7 +549,7 @@ describe('AdhocGraphBuilder', () => {
       const { wrapper, store } = mountBuilder()
       await flushPromises()
 
-      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters')
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
       expect(getNodes).not.toHaveBeenCalled()
       expect((wrapper.find('input[data-test="nodes-filter"]').element as HTMLInputElement).value).toBe('catincRouters')
       expect((wrapper.find('input[data-test="resources-filter"]').element as HTMLInputElement).value).toBe('interfaceSnmp[eth*]')
@@ -486,6 +570,36 @@ describe('AdhocGraphBuilder', () => {
       await flushPromises()
 
       expect(showSnackBar).not.toHaveBeenCalled()
+    })
+
+    it('does not blame a fetch failure on inventory', async () => {
+      routeQuery = { nf: 'catincRouters', rf: 'interfaceSnmp[eth*]', df: 'ifHC*Octets', n: '2', range: 'hours:1' }
+      getResourceForNode.mockRejectedValue(new Error('boom'))
+
+      mountBuilder()
+      await flushPromises()
+
+      expect(showSnackBar).not.toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/now matches/) }))
+    })
+
+    it('carries a generated label an expression depends on, so the reopened graph keeps it', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      await wrapper.find('[data-test="expressions-panel"] button').trigger('click')
+      const expressions = component(wrapper, '[data-test="expressions-panel"]')
+      expressions.findComponent({ name: 'ExpressionEditor' }).vm.$emit('add')
+      await flushPromises()
+      expressions.findComponent({ name: 'ExpressionEditor' }).vm.$emit('update', 'expr-1', { value: 'switch_01_eth0_ifHCInOctets * 8' })
+      await flushPromises()
+
+      await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+      await flushPromises()
+
+      const params = new URLSearchParams((copyToClipboard.mock.calls[0][0] as string).split('?')[1])
+      expect(params.getAll('o')).toEqual([`${RESOURCE_ID}~ifHCInOctets~~switch_01_eth0_ifHCInOctets~~~`])
     })
 
     // The series are generated against stand-ins first, then against real data.

@@ -59,28 +59,33 @@ export const toFiqlSearchTerm = (term: string): string =>
   term.replace(FIQL_SYNTAX, ' ').trim().replace(/\s+/g, ' ')
 
 /**
- * Whether the node box holds a filter rule rather than a label fragment.
+ * What the node box holds: a filter rule, something that is probably one, or a
+ * label fragment. There is no toggle; the one box takes both, and this decides.
  *
- * There is no toggle: the one box takes both, and this decides which. Anything
- * with the rule grammar's operators (`&`, `|`, `!`, `=`, parentheses, quotes,
- * comparisons) or one of its keywords (`catincX`, `isSNMP`, `LIKE`, `IPLIKE`) is a
- * rule; a bare host-name fragment is not. A fragment could be rewritten as
- * `nodeLabel LIKE '%x%'`, but SQL LIKE is case-sensitive and the label search is
- * not, so fragments keep going to the label search.
+ * `rule`: the rule grammar's operators (`&`, `|`, `=`, parentheses, comparisons,
+ * a leading `!`) or an infix `LIKE`/`IPLIKE`. A quote on its own is not enough:
+ * `O'Brien` is a host name.
+ * `guess`: the whole text is one keyword of the grammar, `catincRouters` or
+ * `isSNMP`. A host name can look like that (`isLab`), so a guess that the engine
+ * rejects is retried as a label search rather than reported as a parse error.
+ * `search`: anything else. A fragment could be rewritten as `nodeLabel LIKE
+ * '%x%'`, but SQL LIKE is case-sensitive and the label search is not.
  */
-export const looksLikeFilterRule = (text: string): boolean => {
+export const classifyNodeText = (text: string): 'rule' | 'guess' | 'search' => {
   const trimmed = text.trim()
 
   if (!trimmed) {
-    return false
+    return 'search'
   }
 
-  if (/[&|!=()'"<>]/.test(trimmed)) {
-    return true
+  if (/[&|=()<>]/.test(trimmed) || /^!/.test(trimmed) || /\S\s+(IPLIKE|LIKE)\s+\S/i.test(trimmed)) {
+    return 'rule'
   }
 
-  return /(^|\s)(catinc\w+|is[A-Z]\w*|notis\w+)(\s|$)/.test(trimmed) || /\b(IPLIKE|LIKE)\b/i.test(trimmed)
+  return /^(catinc\w+|notis\w+|is[A-Z]\w+)$/.test(trimmed) ? 'guess' : 'search'
 }
+
+export const looksLikeFilterRule = (text: string): boolean => classifyNodeText(text) !== 'search'
 
 /**
  * The rule actually handed to the filter engine, or '' when the box does not hold
@@ -99,9 +104,10 @@ export const composeFilterRule = (text: string): string => {
       .join(',')
       .trim()
 
-    // `nodeFilter()` is "every node"; the filter engine spells that as a rule
-    // that is true for any node with an address.
-    return rule || 'IPADDR != \'0.0.0.0\''
+    // `nodeFilter()` is "every node". The rule has to be one the engine can
+    // evaluate against the node table alone: anything mentioning an address joins
+    // ipinterface and silently drops nodes that have none.
+    return rule || 'nodeid > 0'
   }
 
   return looksLikeFilterRule(rule) ? rule : ''
@@ -159,6 +165,7 @@ const FETCH_CONCURRENCY = 6
 
 const INVALID_RULE_MESSAGE = 'That filter rule could not be parsed.'
 const FAILED_RULE_MESSAGE = 'The filter rule could not be evaluated.'
+const FAILED_SEARCH_MESSAGE = 'The node search failed.'
 
 /**
  * Run `worker` over `items`, at most `limit` in flight, preserving input order.
@@ -292,8 +299,10 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   const nodesLoading = ref(false)
   /** Why the last rule produced nothing, or '' when it worked. */
   const nodeFilterError = ref('')
-  /** How many more nodes a label search matched than it listed (a rule is never paged). */
+  /** How many more nodes a label search matched than it listed. */
   const nodeMatchOverflow = ref(0)
+  /** How many nodes the rule matched when that was more than a graph may use; 0 otherwise. */
+  const ruleOverflow = ref(0)
   const pickedNodes = ref<AdhocNodeOption[]>([])
 
   /**
@@ -313,9 +322,22 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   /** Every id form of every effective node, for membership tests. */
   const effectiveNodeForms = computed<Set<string>>(() => new Set(effectiveNodes.value.flatMap(nodeIdForms)))
 
-  /** More effective nodes than a graph may be built from; 0 when within the limit. */
-  const nodeLimitExceeded = computed<number>(() =>
-    (effectiveNodes.value.length > MAX_GRAPH_NODES ? effectiveNodes.value.length : 0))
+  /**
+   * More nodes than a graph may be built from; 0 when within the limit. A rule
+   * that overflowed was never fetched, so the count comes from the server; picks,
+   * which can only be made from a list that fitted, override that.
+   */
+  const nodeLimitExceeded = computed<number>(() => {
+    if (pickedNodes.value.length) {
+      return pickedNodes.value.length > MAX_GRAPH_NODES ? pickedNodes.value.length : 0
+    }
+
+    if (ruleOverflow.value) {
+      return ruleOverflow.value
+    }
+
+    return effectiveNodes.value.length > MAX_GRAPH_NODES ? effectiveNodes.value.length : 0
+  })
 
   /**
    * What the node column lists: picks pinned on top, then the other matches. A
@@ -332,8 +354,14 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   const resourcesLoading = ref(false)
   const pickedResources = ref<AdhocResourceOption[]>([])
 
-  /** fornode responses by node id, so re-running a filter does not refetch. */
-  const nodeResourceCache = new Map<string, { label: string, resources: AdhocResourceOption[] }>()
+  /**
+   * fornode responses by node id, so re-running a filter does not refetch. A
+   * failure is cached as null: retrying it on every keystroke would not make the
+   * node answer, and the column says how many are missing instead.
+   */
+  const nodeResourceCache = new Map<string, { label: string, resources: AdhocResourceOption[] } | null>()
+  /** Effective nodes whose resources could not be loaded. */
+  const failedNodeLoads = ref(0)
 
   const resourceCandidateById = computed<Map<string, AdhocResourceOption>>(() =>
     new Map(resourceCandidates.value.map(resource => [resource.id, resource])))
@@ -362,6 +390,9 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
    * search listed by database id.
    */
   const resourceIsReachable = (pick: AdhocResourceOption): boolean =>
+    // A resource that belongs to no node (an old link to one) has no node to be
+    // unreachable through; it is graphed straight from its id, as it always was.
+    nodeCriteriaOf(pick.id) === null ||
     resourceCandidateById.value.has(pick.id) ||
     effectiveNodeForms.value.has(pick.nodeId) ||
     effectiveNodeForms.value.has(nodeCriteriaOf(pick.id) ?? '')
@@ -469,15 +500,17 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
         node => API.getResourceForNode(node.id).then(resource => ({ node, resource }))
       )
 
-      for (const response of responses) {
+      responses.forEach((response, index) => {
         if (response?.resource) {
           const label = response.resource.label || response.node.label
           nodeResourceCache.set(response.node.id, {
             label,
             resources: graphableDescendants(response.node, label, response.resource)
           })
+        } else {
+          nodeResourceCache.set(missing[index].id, null)
         }
-      }
+      })
 
       if (requestId !== resourceRequestId) {
         return
@@ -491,9 +524,10 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
       .flatMap(node => nodeResourceCache.get(node.id)?.resources ?? [])
       .filter(resource => (seen.has(resource.id) ? false : (seen.add(resource.id), true)))
     resourcesLoading.value = false
+    failedNodeLoads.value = nodes.filter(node => nodeResourceCache.get(node.id) === null).length
 
     // A node restored from a link is known only by id until its resources load.
-    pickedNodes.value = pickedNodes.value.map(node => (node.label === node.id && nodeResourceCache.has(node.id) ?
+    pickedNodes.value = pickedNodes.value.map(node => (node.label === node.id && nodeResourceCache.get(node.id) ?
       { ...node, label: nodeResourceCache.get(node.id)?.label ?? node.id } :
       node))
   }
@@ -511,18 +545,28 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     let found: AdhocNodeOption[] = []
     let error = ''
     let overflow = 0
+    let tooMany = 0
 
     const rule = composeFilterRule(nodeFilter.value)
+    let searchLabels = !rule
 
     if (rule) {
-      const result = await API.getNodesByFilterRule(rule)
+      const result = await API.getNodesByFilterRule(rule, MAX_GRAPH_NODES)
 
-      if ('error' in result) {
-        error = result.error === 'invalid' ? INVALID_RULE_MESSAGE : FAILED_RULE_MESSAGE
-      } else {
+      if (!('error' in result)) {
         found = result.nodes.map(toNodeOption)
+      } else if (result.error === 'too-many') {
+        tooMany = result.count
+      } else if (result.error === 'invalid' && classifyNodeText(nodeFilter.value) === 'guess') {
+        // A lone word that only looked like a keyword: treat it as the host name
+        // fragment it probably is.
+        searchLabels = true
+      } else {
+        error = result.error === 'invalid' ? INVALID_RULE_MESSAGE : FAILED_RULE_MESSAGE
       }
-    } else {
+    }
+
+    if (searchLabels) {
       const queryParameters: QueryParameters = {
         limit: NODE_SEARCH_LIMIT,
         offset: 0,
@@ -540,6 +584,8 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
       if (resp) {
         found = resp.node.map(toNodeOption)
         overflow = Math.max(0, (resp.totalCount ?? found.length) - found.length)
+      } else {
+        error = FAILED_SEARCH_MESSAGE
       }
     }
 
@@ -550,6 +596,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     nodeMatches.value = found
     nodeFilterError.value = error
     nodeMatchOverflow.value = overflow
+    ruleOverflow.value = tooMany
     nodesLoading.value = false
 
     await loadResources()
@@ -570,11 +617,12 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
 
   /**
    * Deselecting a node by hand takes its resource picks with it; that is what
-   * the user meant. Clearing every node pick does not: the graph falls back to
-   * the filter, and picks under nodes it still matches should survive.
+   * the user meant. Neither narrowing a filter match to a first pick nor
+   * clearing every pick does: in both the graph is being reshaped around the
+   * filter, and picks under nodes it still matches should survive.
    */
   const setPickedNodes = async (nodes: AdhocNodeOption[]) => {
-    if (nodes.length) {
+    if (pickedNodes.value.length && nodes.length) {
       const forms = new Set(nodes.flatMap(nodeIdForms))
       pickedResources.value = pickedResources.value.filter(resource =>
         forms.has(resource.nodeId) || forms.has(nodeCriteriaOf(resource.id) ?? ''))
@@ -586,7 +634,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
 
   /** Likewise, deselecting a resource by hand drops its datasource picks. */
   const setPickedResources = (resources: AdhocResourceOption[]) => {
-    if (resources.length) {
+    if (pickedResources.value.length && resources.length) {
       const resourceIds = new Set(resources.map(resource => resource.id))
       pickedDatasources.value = pickedDatasources.value.filter(datasource => resourceIds.has(datasource.resourceId))
     }
@@ -666,6 +714,8 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     queryError.value = ''
     nodeFilterError.value = ''
     nodeMatchOverflow.value = 0
+    ruleOverflow.value = 0
+    failedNodeLoads.value = 0
     nodesLoading.value = false
     resourcesLoading.value = false
     queryLoading.value = false
@@ -679,6 +729,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     nodeFilterError,
     nodeMatchOverflow,
     nodeLimitExceeded,
+    failedNodeLoads,
     pickedNodes,
     effectiveNodes,
     resourceFilter,

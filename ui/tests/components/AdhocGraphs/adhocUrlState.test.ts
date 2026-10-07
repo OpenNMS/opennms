@@ -81,6 +81,7 @@ describe('encodeAdhocState / decodeAdhocState', () => {
     expect(query.nf).toBe('catincRouters & location=\'Default\'')
     expect(query.rf).toBe('interfaceSnmp[eth*]')
     expect(query.df).toBe('ifHC*Octets')
+    // With a filter in play the picks are written out: they are not implied.
     expect(query.pn).toEqual(['1', 'FS:A'])
     expect(query.pr).toEqual(fullLink.selection.pickedResourceIds)
     expect(query.pd).toEqual([KEY_IN, KEY_OUT])
@@ -125,6 +126,41 @@ describe('encodeAdhocState / decodeAdhocState', () => {
 
     expect(restored?.link.selection.pickedDatasourceKeys).toEqual([KEY_IN])
   })
+
+  // A link with no filters is its datasources; the nodes and resources they
+  // belong to need not be spelled out, which keeps it the size the old one was.
+  describe('a static link', () => {
+    const staticLink: AdhocLinkState = {
+      ...emptyLink,
+      selection: {
+        ...emptyLink.selection,
+        pickedNodeIds: ['1', 'FS:A'],
+        pickedResourceIds: ['node[1].interfaceSnmp[eth0]', 'node[FS:A].interfaceSnmp[eth1]'],
+        pickedDatasourceKeys: [KEY_IN, KEY_OUT]
+      }
+    }
+
+    it('leaves out node and resource picks that its datasources imply', () => {
+      const query = encodeAdhocState(fullConfig, time, staticLink)
+
+      expect(query.pd).toEqual([KEY_IN, KEY_OUT])
+      expect(query.pr).toBeUndefined()
+      expect(query.pn).toBeUndefined()
+      expect(decodeAdhocState(query)?.link.selection).toEqual(staticLink.selection)
+    })
+
+    it('still writes picks that are not implied', () => {
+      const narrowed: AdhocLinkState = {
+        ...staticLink,
+        selection: { ...staticLink.selection, pickedNodeIds: ['1'] }
+      }
+      const query = encodeAdhocState(fullConfig, time, narrowed)
+
+      expect(query.pn).toEqual(['1'])
+      expect(query.pr).toEqual(narrowed.selection.pickedResourceIds)
+      expect(decodeAdhocState(query)?.link.selection).toEqual(narrowed.selection)
+    })
+  })
 })
 
 // Links made before filters existed carry each series as an `s` entry. They have
@@ -132,7 +168,7 @@ describe('encodeAdhocState / decodeAdhocState', () => {
 describe('legacy static links', () => {
   const entry = 'node[1].interfaceSnmp[eth0]~ifHCInOctets~MAX~in_octets~area~#2a78d6~1'
 
-  it('become picks at every level plus a full override', () => {
+  it('become picks at every level plus an override of what differs from the defaults', () => {
     const restored = decodeAdhocState({ s: [entry, 'nodeSource[FS:A].interfaceSnmp[eth1]~ifHCOutOctets~AVERAGE~out~line~#eb6834~0'] })
 
     expect(restored?.link.selection).toEqual({
@@ -150,7 +186,37 @@ describe('legacy static links', () => {
       color: '#2a78d6',
       hidden: true
     })
-    expect(restored?.link.overrides['nodeSource[FS:A].interfaceSnmp[eth1]|ifHCOutOctets']?.hidden).toBe(false)
+    // AVERAGE, line and not-hidden are what a generated series gets anyway.
+    expect(restored?.link.overrides['nodeSource[FS:A].interfaceSnmp[eth1]|ifHCOutOctets']).toEqual({ label: 'out', color: '#eb6834' })
+  })
+
+  it('re-encodes no longer than it was', () => {
+    const legacy = { s: [entry, 'nodeSource[FS:A].interfaceSnmp[eth1]~ifHCOutOctets~AVERAGE~out~line~#eb6834~0'], range: 'hours:24' }
+    const restored = decodeAdhocState(legacy)
+    const reencoded = encodeAdhocState(restored!.config, restored!.time, restored!.link)
+
+    expect(encodedQueryLength(reencoded)).toBeLessThanOrEqual(encodedQueryLength(legacy) * 1.1)
+    expect(reencoded.pn).toBeUndefined()
+    expect(reencoded.pr).toBeUndefined()
+    expect(reencoded.pd).toBeUndefined()
+    expect(decodeAdhocState(reencoded)?.link.selection).toEqual(restored!.link.selection)
+  })
+
+  it('still lists datasources that have no override of their own', () => {
+    const link: AdhocLinkState = {
+      ...emptyLink,
+      selection: {
+        ...emptyLink.selection,
+        pickedNodeIds: ['1'],
+        pickedResourceIds: ['node[1].interfaceSnmp[eth0]'],
+        pickedDatasourceKeys: [KEY_IN, 'node[1].interfaceSnmp[eth0]|ifHCOutOctets']
+      },
+      overrides: { [KEY_IN]: { label: 'in' }}
+    }
+    const query = encodeAdhocState(fullConfig, time, link)
+
+    expect(query.pd).toEqual(link.selection.pickedDatasourceKeys)
+    expect(decodeAdhocState(query)?.link.selection).toEqual(link.selection)
   })
 
   it('does not turn series into picks when the link already has a picker', () => {

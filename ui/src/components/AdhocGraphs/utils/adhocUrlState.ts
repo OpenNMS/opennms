@@ -145,6 +145,18 @@ const asPositiveInt = (value: string, fallback: number): number => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
 }
 
+const isStatic = (selection: AdhocSelectionState): boolean =>
+  !selection.nodeFilter && !selection.resourceFilter && !selection.datasourceFilter
+
+const resourcesOf = (datasourceKeys: string[]): string[] =>
+  [...new Set(datasourceKeys.map(key => splitDatasourceKey(key).resourceId))]
+
+const nodesOf = (resourceIds: string[]): string[] =>
+  [...new Set(resourceIds.map(id => nodeCriteriaOf(id) ?? '').filter(Boolean))]
+
+const sameSet = (a: string[], b: string[]): boolean =>
+  a.length === b.length && a.every(item => b.includes(item))
+
 /**
  * One override entry: `resourceId~attribute~aggregation~label~style~color~hidden`,
  * with a blank for anything not overridden. The same positional shape the old
@@ -246,24 +258,35 @@ export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime, l
     query.df = selection.datasourceFilter
   }
 
-  if (selection.pickedNodeIds.length) {
+  // A static link (no filters) is defined by its datasources alone: the resource
+  // and node picks are exactly what those datasources belong to, and writing them
+  // out would triple the length of every link made before filters existed.
+  const derivable = isStatic(selection) && sameSet(selection.pickedResourceIds, resourcesOf(selection.pickedDatasourceKeys)) &&
+    sameSet(selection.pickedNodeIds, nodesOf(selection.pickedResourceIds))
+
+  if (selection.pickedNodeIds.length && !derivable) {
     query.pn = selection.pickedNodeIds
   }
 
-  if (selection.pickedResourceIds.length) {
+  if (selection.pickedResourceIds.length && !derivable) {
     query.pr = selection.pickedResourceIds
   }
 
-  if (selection.pickedDatasourceKeys.length) {
+  const encodedOverrides = Object.entries(overrides)
+    .map(([key, override]) => [key, encodeOverride(key, override)] as const)
+    .filter((pair): pair is readonly [string, string] => pair[1] !== null)
+
+  // Likewise, a static link whose every datasource has an override needs no
+  // separate list of datasources: the overrides name them.
+  const datasourcesImplied = isStatic(selection) && selection.pickedDatasourceKeys.length > 0 &&
+    sameSet(selection.pickedDatasourceKeys, encodedOverrides.map(([key]) => key))
+
+  if (selection.pickedDatasourceKeys.length && !datasourcesImplied) {
     query.pd = selection.pickedDatasourceKeys
   }
 
-  const encodedOverrides = Object.entries(overrides)
-    .map(([key, override]) => encodeOverride(key, override))
-    .filter((entry): entry is string => entry !== null)
-
   if (encodedOverrides.length) {
-    query.o = encodedOverrides
+    query.o = encodedOverrides.map(([, entry]) => entry)
   }
 
   if (seriesCount > 0) {
@@ -346,7 +369,40 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
 
   const overrides: Record<string, AdhocSeriesOverride> = {}
 
-  for (const entry of [...legacySeries, ...rawOverrides]) {
+  // A legacy entry spells out every field, defaults included. Only what differs
+  // from the generated series is an override; the rest would just pad the link.
+  for (const entry of legacySeries) {
+    const decoded = decodeOverride(entry)
+
+    if (decoded) {
+      const [key, full] = decoded
+      const override: AdhocSeriesOverride = {}
+
+      if (full.label) {
+        override.label = full.label
+      }
+
+      if (full.color) {
+        override.color = full.color
+      }
+
+      if (full.aggregation && full.aggregation !== ConsolidationFunctionType.AVERAGE) {
+        override.aggregation = full.aggregation
+      }
+
+      if (full.style && full.style !== 'line') {
+        override.style = full.style
+      }
+
+      if (full.hidden) {
+        override.hidden = true
+      }
+
+      overrides[key] = override
+    }
+  }
+
+  for (const entry of rawOverrides) {
     const decoded = decodeOverride(entry)
 
     if (decoded) {
@@ -367,12 +423,23 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
       }
     }
 
-    const resourceIds = [...new Set([...keys].map(key => splitDatasourceKey(key).resourceId))]
-    const nodeIds = [...new Set(resourceIds.map(id => nodeCriteriaOf(id) ?? '').filter(Boolean))]
-
     selection.pickedDatasourceKeys = [...keys]
-    selection.pickedResourceIds = resourceIds
-    selection.pickedNodeIds = nodeIds
+  }
+
+  // A static link may leave its datasources implied by its overrides, and its
+  // resource and node picks implied by its datasources.
+  if (isStatic(selection) && !selection.pickedDatasourceKeys.length && rawOverrides.length) {
+    selection.pickedDatasourceKeys = Object.keys(overrides)
+  }
+
+  if (isStatic(selection) && selection.pickedDatasourceKeys.length) {
+    if (!selection.pickedResourceIds.length) {
+      selection.pickedResourceIds = resourcesOf(selection.pickedDatasourceKeys)
+    }
+
+    if (!selection.pickedNodeIds.length) {
+      selection.pickedNodeIds = nodesOf(selection.pickedResourceIds)
+    }
   }
 
   const expressions: AdhocExpression[] = []
