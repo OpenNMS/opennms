@@ -49,7 +49,7 @@
           <!-- Two lines at most, ellipsized; the whole message, as text, on hover. -->
           <div
             v-onms-tooltip.top="{ value: htmlToText(data.logMessage) || undefined, class: 'alarm-message-tooltip' }"
-            v-html="data.logMessage"
+            v-html="sanitizeHtml(data.logMessage)"
             class="log-message"
             data-test="log-message"
           />
@@ -71,6 +71,7 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { formatDateAndTimeInDisplayZone } from '@/lib/displayTimeZone'
 import { alarmDetailLink, nodeAlarmListLink } from '@/lib/linkUtils'
+import { sanitizeHtml } from '@/lib/sanitizeHtml'
 import { htmlToText } from '@/lib/utils'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'

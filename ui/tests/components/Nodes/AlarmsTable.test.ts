@@ -42,6 +42,12 @@ vi.mock('vue-router', async () => {
 const { showSnackBar } = vi.hoisted(() => ({ showSnackBar: vi.fn() }))
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 
+// DOMPurify misbehaves under happy-dom (it strips <p> yet keeps onerror), so the sanitizer is
+// stood in for here: these tests check the message goes through it, not what DOMPurify removes.
+vi.mock('@/lib/sanitizeHtml', () => ({
+  sanitizeHtml: (html?: string | null) => `<span data-test="sanitized">${html ?? ''}</span>`
+}))
+
 enableAutoUnmount(afterEach)
 
 // 12 alarms, lastEventTime rising with the id, so the newest is id 12.
@@ -110,10 +116,10 @@ describe('AlarmsTable.vue', () => {
     expect(wrapper.find('tbody tr .p-tag').classes().join(' ')).toContain('danger')
   })
 
-  it('renders the log message as HTML, clamped, with the text in a tooltip', () => {
+  it('renders the log message as sanitized HTML, clamped, with the text in a tooltip', () => {
     const message = mountTable().find('[data-test="log-message"]')
 
-    expect(message.html()).toContain('<p>alarm 12</p>')
+    expect(message.find('[data-test="sanitized"]').html()).toContain('<p>alarm 12</p>')
     expect(message.classes()).toContain('log-message')
     expect((message.element as any).$_ptooltipValue).toBe('alarm 12')
     // Widened past the default; see the component's unscoped style.

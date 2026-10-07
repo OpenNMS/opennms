@@ -41,7 +41,7 @@
       </OnmsColumn>
       <OnmsColumn field="logMessage" header="Message">
         <template #body="{ data }">
-          <span v-html="data.logMessage" class="log-message" />
+          <span v-html="sanitizeHtml(data.logMessage)" class="log-message" />
         </template>
       </OnmsColumn>
       <template #empty>
@@ -60,6 +60,7 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { sanitizeHtml } from '@/lib/sanitizeHtml'
 import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useRecordDownload } from './hooks/useRecordDownload'

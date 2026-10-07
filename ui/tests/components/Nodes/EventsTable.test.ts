@@ -45,6 +45,12 @@ vi.mock('vue-router', async () => {
 const { showSnackBar } = vi.hoisted(() => ({ showSnackBar: vi.fn() }))
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 
+// DOMPurify misbehaves under happy-dom (it strips <p> yet keeps onerror), so the sanitizer is
+// stood in for here: these tests check the message goes through it, not what DOMPurify removes.
+vi.mock('@/lib/sanitizeHtml', () => ({
+  sanitizeHtml: (html?: string | null) => `<span data-test="sanitized">${html ?? ''}</span>`
+}))
+
 const mockEvent = {
   id: 101,
   createTime: 1700000000000,
@@ -156,12 +162,12 @@ describe('EventsTable.vue', () => {
       expect(wrapper.find('.p-tag').text()).toContain('Major')
     })
 
-    it('Message cell renders html via v-html', async () => {
+    it('Message cell renders sanitized html via v-html', async () => {
       setNodeEvents([mockEvent], 1)
       await nextTick()
 
       const rows = wrapper.findAll('tbody tr')
-      expect(rows[0].html()).toContain('<p>A test log message</p>')
+      expect(rows[0].find('[data-test="sanitized"]').html()).toContain('<p>A test log message</p>')
     })
   })
 
