@@ -231,6 +231,22 @@ describe('NodeActionsDropdown.vue', () => {
     const assetsItem = (wrapper: ReturnType<typeof mountIt>) =>
       ((wrapper.vm as any).items as Array<{ label: string, command: () => void }>).find(i => i.label === 'Assets')!
 
+    // The node list has one of these per row, so the dialog waits until it is needed.
+    it('creates no dialog until a confirmation is pending', () => {
+      expect(mountIt({ node: requisitioned }).findComponent({ name: 'AssetEditConfirmDialog' }).exists()).toBe(false)
+    })
+
+    it('removes the dialog again when the confirmation is cancelled', async () => {
+      const wrapper = mountIt({ node: requisitioned })
+      assetsItem(wrapper).command()
+      await wrapper.vm.$nextTick()
+
+      wrapper.findComponent({ name: 'AssetEditConfirmDialog' }).vm.$emit('cancel')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent({ name: 'AssetEditConfirmDialog' }).exists()).toBe(false)
+    })
+
     it('asks before opening the asset editor for a node from a requisition', async () => {
       const assign = vi.fn()
       vi.stubGlobal('location', { assign } as any)

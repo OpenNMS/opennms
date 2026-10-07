@@ -13,8 +13,10 @@
     ref="menu"
     :items="items"
   />
+  <!-- Mounted only while a confirmation is pending: the node list has one of these per row. -->
   <AssetEditConfirmDialog
-    :visible="!!pendingAssetHref"
+    v-if="pendingAssetHref"
+    visible
     :foreignSource="node.foreignSource"
     @ok="onAssetEditConfirmed"
     @cancel="pendingAssetHref = undefined"
