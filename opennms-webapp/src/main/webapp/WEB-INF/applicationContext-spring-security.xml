@@ -65,9 +65,20 @@
     <!-- set/unset maintenance mode on nodes -->
     <intercept-url pattern="/rest/ifservices" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
 
-    <!-- Provisioning-related stuff is all allowed as long as you're in the provision, rest, or admin roles. -->
+    <!-- Provisioning-related stuff is all allowed as long as you're in the provision, rest, or admin roles.
+         The v1 REST API maps the .xml, .json and .atom suffixes to the same resource, so "/rest/requisitions.xml"
+         is the requisitions root. Each "<root>.*" pattern applies the rule of its "<root>/**" pattern to these paths. -->
     <intercept-url pattern="/rest/foreignSources/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/foreignSources.*" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+    <!-- NMS-20407: requisition reads return asset credentials (password, enable, snmpcommunity).
+         Only the provision and admin roles can read them. ROLE_REST can still write requisitions.
+         These rules must come before the general requisitions rules (first match wins). -->
+    <intercept-url pattern="/rest/requisitions/**" method="GET" access="ROLE_PROVISION,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/requisitions/**" method="HEAD" access="ROLE_PROVISION,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/requisitions.*" method="GET" access="ROLE_PROVISION,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/requisitions.*" method="HEAD" access="ROLE_PROVISION,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/requisitions/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/requisitions.*" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
 
     <!-- SNMP config is _only_ allowed for the provision or admin roles -->
     <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN"/>

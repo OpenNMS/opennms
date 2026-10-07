@@ -123,6 +123,22 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==%2521%2524%2527%2528%2529%252B%252C%253B%253D"), 204));
     }
 
+    /**
+     * A filter or sort on a credential would let a caller find its value one character at a time.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testFiqlSearchRejectsAssetCredentials() throws Exception {
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.password==a*"), 400);
+        sendRequest(GET, "/nodes/count", parseParamData("_s=assetRecord.password==a*"), 400);
+        sendRequest(GET, "/nodes", parseParamData("_s=node.label==*;assetRecord.enable==a*"), 400);
+        sendRequest(GET, "/nodes", parseParamData("_s=(node.label==x),(assetRecord.snmpcommunity==a*)"), 400);
+        sendRequest(GET, "/nodes", parseParamData("orderBy=assetRecord.password"), 400);
+
+        // Other asset fields can still be used. No node matches, so the status is 204.
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.id==1"), 204);
+    }
+
     @Test
     @JUnitTemporaryDatabase
     public void testAllEndPoints() throws Exception {
