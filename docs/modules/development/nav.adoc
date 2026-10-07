@@ -45,6 +45,7 @@
 *** xref:rest/geolocation.adoc[]
 *** xref:rest/graph.adoc[]
 *** xref:rest/graphml.adoc[]
+*** xref:rest/graph_collections.adoc[]
 *** xref:rest/groups.adoc[]
 *** xref:rest/hardware_inventory.adoc[]
 *** xref:rest/health_rest.adoc[]

@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -93,6 +94,15 @@ public class GraphCollectionConfigFactory {
      * Map of all Reports by their ID, ordered based on their order in the config file.
      */
     private Map<Integer, GraphCollection> m_reportList;
+
+    /**
+     * Whether the given string is one of the named timespans in {@link #TIMESPAN_OPTIONS}.
+     */
+    public static boolean isValidTimespan(final String timespan) {
+        return timespan != null && TIMESPANS.contains(timespan);
+    }
+
+    private static final Set<String> TIMESPANS = Set.of(TIMESPAN_OPTIONS);
 
     /**
      * Empty Private Constructor. Cannot be instantiated outside itself.
@@ -211,7 +221,7 @@ public class GraphCollectionConfigFactory {
      * @param index a int.
      * @return a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public GraphCollection getCollectionById(int index) {
+    public synchronized GraphCollection getCollectionById(int index) {
         return m_reportList.get(index);
     }
 
@@ -236,7 +246,7 @@ public class GraphCollectionConfigFactory {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, String> getCollectionTitles() {
+    public synchronized Map<Integer, String> getCollectionTitles() {
         LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getCollections().size());
 
         List<GraphCollection> reportList = m_config.getCollections();
@@ -259,7 +269,7 @@ public class GraphCollectionConfigFactory {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, GraphCollection> getCollectionMap() {
+    public synchronized Map<Integer, GraphCollection> getCollectionMap() {
         Map<Integer, GraphCollection> reports = new HashMap<Integer, GraphCollection>(m_config.getCollections().size());
 
         for (GraphCollection report : m_config.getCollections()) {
@@ -277,7 +287,7 @@ public class GraphCollectionConfigFactory {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public void deleteCollectionAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException {
+    public synchronized void deleteCollectionAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException {
         GraphCollection report = getCollectionById(index);
         if (report == null) {
             throw new ArrayIndexOutOfBoundsException("Reports List index to be deleted is out of bounds: " + index);
@@ -287,13 +297,13 @@ public class GraphCollectionConfigFactory {
         saveCurrent();
     }
 
-    public void addCollection(GraphCollection report) {
+    public synchronized void addCollection(GraphCollection report) {
         LOG.debug("addCollection: {}", report);
         m_config.addCollection(report);
         setIdsOnAllReports();
     }
 
-    public void setCollection(int index, GraphCollection report) {
+    public synchronized void setCollection(int index, GraphCollection report) {
         int arrayIndex = getArrayIndex(index);
         if (arrayIndex == -1) {
             throw new IllegalArgumentException("Could not find report with ID of " + index);

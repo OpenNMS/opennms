@@ -1,0 +1,295 @@
+
+= Graph Collections
+
+Graph collections (formerly known as KSC reports) are saved sets of prefabricated performance graphs.
+Each collection has a title, layout options for its view page, and an ordered list of graphs, each drawn for one resource over a named timespan.
+
+This is the REST API behind the Graph Collections UI in the OpenNMS web interface.
+External applications can use it to manage collections directly.
+It replaces the legacy xref:development:rest/ksc_reports.adoc[KSC Reports] API under `/rest/ksc`; new integrations should use this API.
+
+Collections are stored in `etc/ksc-performance-reports.xml`.
+Writes through this API update that file immediately, and the file remains editable by hand (see the `reload` operation below).
+
+All operations produce and consume JSON.
+
+== Permissions
+
+Any authenticated user can read collections.
+Any authenticated user can create, edit and delete collections, except users who hold `ROLE_READONLY`, who receive `403 Forbidden` on every write.
+This matches the behavior of the legacy Graph Collections  / KSC Reports pages.
+
+== GETs (reading data)
+
+[caption=]
+.Graph Collections API GET functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /graph-collections
+| Get every collection, including its graphs, sorted by title.
+
+| /graph-collections/\{id}
+| Get one collection by id.
+
+| /graph-collections/timespans
+| Get the named timespans a graph can use, in display order, as `id` and `label` pairs (for example `7_day` and `7 day`).
+
+| /graph-collections/\{id}/resolved
+| Get a collection prepared for rendering.
+Each graph carries its effective timespan and graph type, the `start` and `end` of the timespan as epoch milliseconds, the resolved resource (with its parent), the prefabricated graph title, and `valid` with an `error` message when the resource no longer exists or the graph is not available for it.
+Invalid graphs are reported, not removed.
+`graphsPerLine` has the system default applied, and `graphTypes` is the union of the prefabricated graphs available to the resolved resources.
+
+*Example:* `http://localhost:8980/opennms/api/v2/graph-collections/3/resolved?timespan=1_day`
+
+| /graph-collections/resolved/node/\{nodeId}
+| Build a collection on the fly with one graph per SNMP interface of the node and return it resolved.
+Nothing is stored. To keep it, post the graphs as a new collection.
+
+| /graph-collections/resolved/nodeSource/\{foreignSource:foreignId}
+| As above, addressing the node by its foreign source and foreign id.
+
+| /graph-collections/resolved/domain/\{domain}
+| As above, for the interfaces collected under a domain.
+|===
+
+The `resolved` operations accept two optional query parameters:
+
+[caption=]
+[cols="1,3"]
+|===
+| Name | Comment
+
+| timespan
+| Apply this timespan to every graph instead of its own.
+Must be one of the ids returned by `/graph-collections/timespans`; an unknown value returns `400 Bad Request`.
+Omit it, or pass `none`, for no override.
+
+| graphtype
+| Draw this prefabricated graph for every graph instead of its own.
+Omit it, or pass `none`, for no override.
+|===
+
+== POSTs (adding data)
+
+[caption=]
+.Graph Collections API POST functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /graph-collections
+| Create a collection.
+The server assigns the id; an id in the body is ignored.
+Graphs may be included inline.
+Returns `201 Created` with a `Location` header and the saved collection in the body.
+To copy a collection, get it and post it back with a new title.
+
+| /graph-collections/\{id}/graphs
+| Add one graph to a collection.
+The body is a single graph object.
+Append by default, or insert at a zero-based position with `?index=\{n}`.
+Returns the saved collection.
+This is the "add to collection" action used from graph pages.
+
+| /graph-collections/reload
+| Re-read `ksc-performance-reports.xml` from disk, picking up edits made outside this API.
+Returns `204 No Content`.
+|===
+
+== PUTs (modifying data)
+
+[caption=]
+.Graph Collections API PUT functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /graph-collections/\{id}
+| Replace the collection's title, options and graph list with the body.
+This is the one write used for editing: send the full graph list, in the order wanted, to edit, reorder or remove graphs.
+The id in the path wins over any id in the body.
+Returns the saved collection.
+|===
+
+== DELETEs (removing data)
+
+[caption=]
+.Graph Collections API DELETE functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /graph-collections/\{id}
+| Delete the collection.
+Returns `204 No Content`.
+|===
+
+== Collection fields
+
+[caption=]
+[cols="1,1,3"]
+|===
+| Field | Required | Comment
+
+| id
+| No
+| Assigned by the server. Ignored in request bodies.
+
+| title
+| Yes
+| Shown in the collection list. At most 255 characters.
+
+| showTimespanButton
+| No
+| Whether the view page offers a timespan override. Defaults to `false`.
+
+| showGraphtypeButton
+| No
+| Whether the view page offers a graph type override. Defaults to `false`.
+
+| graphsPerLine
+| No
+| Graphs per row on the view page. `0` or omitted means the system default, from the `ksc.default.graphsPerLine` property in `opennms.properties`.
+
+| graphs
+| No
+| Ordered list of graph objects, described below.
+|===
+
+== Graph fields
+
+[caption=]
+[cols="1,1,3"]
+|===
+| Field | Required | Comment
+
+| kind
+| No
+| What the entry is.
+`prefab`, a prefabricated graph drawn for one resource, is the only kind stored today and the default when omitted.
+`adhoc` is reserved for graphs from the ad-hoc graph builder and is rejected with `400 Bad Request` until it is implemented.
+
+| title
+| No
+| Title shown above the graph. Defaults to empty. At most 255 characters.
+
+| resourceId
+| Yes, for `prefab`
+| The timeseries xref:rest/resources.adoc#gets-reading-data[resourceId] to graph, for example `node[Routers:rtr-01].interfaceSnmp[ge-0_0_0-00112233aabb]`.
+Must be well-formed.
+Not required when one of the legacy fields below is set.
+
+| graphtype
+| Yes, for `prefab`
+| The prefabricated graph name, which is the `report.name` from `snmp-graph.properties.d`.
+The names available for a resource are listed by `GET /rest/graphs/for/\{resourceId}`.
+
+| timespan
+| Yes
+| One of the ids returned by `/graph-collections/timespans`.
+Unlike the legacy API, an unknown value is rejected with `400 Bad Request` rather than silently replaced.
+
+| extlink
+| No
+| A link shown with the graph.
+Either a relative link or an `http` or `https` URL; other schemes are rejected.
+
+| nodeId, nodeSource, domain, interfaceId
+| No
+| The pre-`resourceId` way of addressing a resource, still found in older configuration files.
+Carried through unchanged; new graphs should use `resourceId`.
+|===
+
+Unknown fields in request bodies are ignored, so a resolved graph can be posted back as is.
+Validation failures return `400 Bad Request` with a plain-text message naming the graph, for example `Graph 2: unknown timespan 'fortnight'.`
+
+== Examples using cURL
+
+.Get every collection
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/graph-collections"
+----
+
+.Response
+[source,json]
+----
+[
+  {
+    "id": 3,
+    "title": "Core routers",
+    "showTimespanButton": true,
+    "showGraphtypeButton": false,
+    "graphsPerLine": 2,
+    "graphs": [
+      {
+        "kind": "prefab",
+        "title": "Uplink traffic",
+        "resourceId": "node[Routers:rtr-01].interfaceSnmp[ge-0_0_0-00112233aabb]",
+        "graphtype": "mib2.HCbits",
+        "timespan": "7_day",
+        "extlink": null,
+        "nodeId": null,
+        "nodeSource": null,
+        "domain": null,
+        "interfaceId": null
+      }
+    ]
+  }
+]
+----
+
+.Create a collection
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' -d @collection.json "http://127.0.0.1:8980/opennms/api/v2/graph-collections"
+----
+
+.JSON payload collection.json
+[source,json]
+----
+{
+  "title": "JVM Heap",
+  "showTimespanButton": true,
+  "graphsPerLine": 2,
+  "graphs": [
+    {
+      "title": "Heap Memory Usage",
+      "resourceId": "node[selfmonitor:1].interfaceSnmp[opennms-jvm]",
+      "graphtype": "heap.memory",
+      "timespan": "7_day"
+    }
+  ]
+}
+----
+
+.Add a graph to collection 3
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"title":"Errors","resourceId":"node[Routers:rtr-01].interfaceSnmp[ge-0_0_0-00112233aabb]","graphtype":"mib2.HCerrors","timespan":"1_day"}' \
+  "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3/graphs"
+----
+
+.Reorder the graphs of collection 3
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3" > collection.json
+# edit collection.json: move entries in "graphs" into the wanted order
+curl -u admin:admin -X PUT -H 'Content-Type: application/json' -d @collection.json "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3"
+----
+
+.View collection 3 over the last hour, ready to render
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3/resolved?timespan=1_hour"
+----
+
+.Delete collection 3
+[source,bash]
+----
+curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3"
+----
