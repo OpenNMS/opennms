@@ -65,12 +65,13 @@ const alarms = Array.from({ length: 12 }, (_, i) => ({
 describe('AlarmsTable.vue', () => {
   let store: ReturnType<typeof useAlarmStore>
 
-  const mountTable = (nodeAlarms: unknown[] = alarms, nodeId = '144') => {
+  const mountTable = (nodeAlarms: unknown[] = alarms, nodeId = '144', failedNodeId?: string) => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     store = useAlarmStore(pinia)
     store.getNodeAlarms = vi.fn()
     store.nodeAlarms = nodeAlarms as never
     store.nodeAlarmsNodeId = nodeId
+    store.nodeAlarmsFailedNodeId = failedNodeId
     useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as never
 
     return mount(AlarmsTable, {
@@ -144,6 +145,26 @@ describe('AlarmsTable.vue', () => {
 
   it('says so when the node has no alarms', () => {
     expect(mountTable([]).text()).toContain('No alarms for this node.')
+  })
+
+  // Nothing on hand for this node yet is not the same as no alarms.
+  it('says it is loading while the node\'s alarms are in flight', () => {
+    const text = mountTable(alarms, '152').text()
+
+    expect(text).toContain('Loading alarms…')
+    expect(text).not.toContain('No alarms for this node.')
+  })
+
+  it('says the alarms could not be loaded when the node\'s fetch failed', () => {
+    const wrapper = mountTable(alarms, '152', '144')
+
+    expect(wrapper.text()).toContain('Unable to load alarms for this node.')
+    expect(wrapper.text()).not.toContain('No alarms for this node.')
+  })
+
+  // A failed refresh leaves the alarms already on hand, the same as the status banner does.
+  it('keeps showing the node\'s alarms when a refresh fails', () => {
+    expect(ids(mountTable(alarms, '144', '144'))).toEqual(['12', '11', '10', '9', '8'])
   })
 
   it('goes back to the first page for a new node', async () => {

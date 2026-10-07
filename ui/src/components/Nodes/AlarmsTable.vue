@@ -102,15 +102,28 @@ const baseHref = computed(() => menuStore.mainMenu.baseHref)
 const dateAndTime = (value: number) => formatDateAndTimeInDisplayZone(value)
 
 const first = ref(0)
-const emptyListContent = { msg: 'No alarms for this node.' }
 
 // The slice may still be the previous node's while this one's is in flight.
+const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmsNodeId === nodeId.value)
+
 const alarms = computed<Alarm[]>(() => {
-  if (alarmStore.nodeAlarmsNodeId !== nodeId.value) {
+  if (!isThisNode.value) {
     return []
   }
 
   return [...alarmStore.nodeAlarms].sort((a, b) => (b.lastEventTime ?? 0) - (a.lastEventTime ?? 0))
+})
+
+// With no alarms on hand for this node, say why: still loading, failed to load, or truly none.
+// The same rule as the status banner above, so the two never disagree.
+const emptyListContent = computed(() => {
+  if (isThisNode.value) {
+    return { msg: 'No alarms for this node.' }
+  }
+
+  return alarmStore.nodeAlarmsFailedNodeId === nodeId.value
+    ? { msg: 'Unable to load alarms for this node.' }
+    : { msg: 'Loading alarms…' }
 })
 
 const onPage = (event: OnmsTablePageEvent) => {

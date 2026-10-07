@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import useVisiblePolling from '@/composables/useVisiblePolling'
 import { useAlarmStore } from '@/stores/alarmStore'
@@ -47,16 +47,15 @@ const route = useRoute()
 
 const nodeId = computed(() => route.params.id as string)
 
-// Whether the last fetch for this node failed. A failed refresh of a node already on screen
-// keeps the status it had -- a minute-old status says more than none -- so this only shows
-// when there is nothing for this node to fall back on.
-const lastFetchFailed = ref(false)
-
 // The store's node slice is only replaced on success, so it may still be the previous node's.
 const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmsNodeId === nodeId.value)
 
 const status = computed<NodeStatus | undefined>(() => (isThisNode.value ? computeNodeStatus(alarmStore.nodeAlarms) : undefined))
-const loadFailed = computed<boolean>(() => !isThisNode.value && lastFetchFailed.value)
+
+// A failed refresh of a node already on screen keeps the status it had -- a minute-old status
+// says more than none -- so this only shows when there is nothing for this node to fall back on.
+// The failure is the store's, kept by node id: another node's failure never shows here.
+const loadFailed = computed<boolean>(() => !isThisNode.value && alarmStore.nodeAlarmsFailedNodeId === nodeId.value)
 
 // Before the first answer there is no severity to show, so the banner stays neutral.
 const severity = computed<BannerSeverity>(() => bannerSeverity(status.value?.severity))
@@ -69,17 +68,8 @@ const alarmListHref = (ackType: 'ack' | 'unack') =>
   `${menuStore.mainMenu.baseHref}alarm/list.htm?filter=node%3d${nodeId.value}&acktype=${ackType}`
 
 const fetchStatus = async () => {
-  const id = nodeId.value
-
-  if (!id) {
-    return
-  }
-
-  const result = await alarmStore.getNodeAlarms(id)
-
-  // A response for a node the page has since left says nothing about this one.
-  if (id === nodeId.value) {
-    lastFetchFailed.value = !result.success
+  if (nodeId.value) {
+    await alarmStore.getNodeAlarms(nodeId.value)
   }
 }
 

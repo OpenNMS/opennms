@@ -51,13 +51,20 @@ describe('NodeStatusBox.vue', () => {
     store.getNodeAlarms = vi.fn(async (nodeId: string) => {
       store.nodeAlarms = alarms as any
       store.nodeAlarmsNodeId = nodeId
+      store.nodeAlarmsFailedNodeId = undefined
 
       return { success: true, message: '', payload: alarms as any }
     })
   }
 
+  // Resolves as a failed fetch would: the slice left alone, the node marked failed.
   const failFetch = () => {
-    alarmStore.getNodeAlarms = vi.fn().mockResolvedValue({ success: false, message: 'nope' })
+    const store = alarmStore
+    store.getNodeAlarms = vi.fn(async (nodeId: string) => {
+      store.nodeAlarmsFailedNodeId = nodeId
+
+      return { success: false, message: 'nope' }
+    })
   }
 
   const createPinia = (setup: () => void) => {
@@ -167,6 +174,20 @@ describe('NodeStatusBox.vue', () => {
       await flushPromises()
 
       expect(wrapper.find('[data-test="node-status-message"]').exists()).toBe(false)
+      expect(wrapper.text()).toContain('Checking node status')
+    })
+
+    // Node 42's failure says nothing about node 99, which is still loading.
+    it('does not carry the previous node\'s failure over to the new one', async () => {
+      const wrapper = mountBox(failFetch)
+      await flushPromises()
+      expect(wrapper.find('[data-test="node-status-unavailable"]').exists()).toBe(true)
+
+      alarmStore.getNodeAlarms = vi.fn(() => new Promise(() => undefined)) as any
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="node-status-unavailable"]').exists()).toBe(false)
       expect(wrapper.text()).toContain('Checking node status')
     })
 

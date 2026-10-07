@@ -44,6 +44,9 @@ export const useAlarmStore = defineStore('alarmStore', () => {
   const nodeAlarms = ref([] as Alarm[])
   const nodeAlarmsTotalCount = ref(0)
   const nodeAlarmsNodeId = ref<string | undefined>(undefined)
+  // The node whose latest fetch failed, if any. Kept by node id so that one node's failure never
+  // reads as another's, and in the store so that every panel sharing the slice agrees on it.
+  const nodeAlarmsFailedNodeId = ref<string | undefined>(undefined)
 
   // One request counter per slice; see the event store.
   let alarmsRequestId = 0
@@ -71,10 +74,17 @@ export const useAlarmStore = defineStore('alarmStore', () => {
   /**
    * Fetch one node's alarms -- all of them unless `queryParameters` says otherwise. Any `_s` in
    * it is applied within the node. The slice is replaced only on success, so check
-   * `nodeAlarmsNodeId` before showing it for a given node.
+   * `nodeAlarmsNodeId` before showing it for a given node, and `nodeAlarmsFailedNodeId` to tell
+   * a node still loading from one that failed to load.
    */
   const getNodeAlarms = async (nodeId: string, queryParameters?: QueryParameters): Promise<ValidationResultWithPayload<Alarm[]>> => {
     const requestId = ++nodeAlarmsRequestId
+
+    // A fetch for another node starts afresh. A refresh of the failed node keeps saying so until
+    // it answers, rather than flicking back to loading.
+    if (nodeAlarmsFailedNodeId.value !== nodeId) {
+      nodeAlarmsFailedNodeId.value = undefined
+    }
 
     const resp = await API.getAlarms(withNodeFilter(nodeId, { limit: 0, ...queryParameters }))
 
@@ -83,12 +93,15 @@ export const useAlarmStore = defineStore('alarmStore', () => {
     }
 
     if (!resp) {
+      nodeAlarmsFailedNodeId.value = nodeId
+
       return createResultWithPayload(false, `Unable to load alarms for node ${nodeId}`)
     }
 
     nodeAlarms.value = resp.alarm
     nodeAlarmsTotalCount.value = resp.totalCount
     nodeAlarmsNodeId.value = nodeId
+    nodeAlarmsFailedNodeId.value = undefined
 
     return createResultWithPayload(true, '', resp.alarm)
   }
@@ -99,6 +112,7 @@ export const useAlarmStore = defineStore('alarmStore', () => {
     nodeAlarms,
     nodeAlarmsTotalCount,
     nodeAlarmsNodeId,
+    nodeAlarmsFailedNodeId,
     getAlarms,
     getNodeAlarms
   }

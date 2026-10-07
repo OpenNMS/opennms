@@ -125,5 +125,58 @@ describe('alarmStore', () => {
       expect(store.nodeAlarmsNodeId).toBe('99')
       expect(store.nodeAlarms).toEqual([{ id: '99' }])
     })
+
+    describe('failure state', () => {
+      const pending = () => new Promise(() => undefined) as never
+
+      it('marks the node failed when its fetch fails, and clears it when a fetch succeeds', async () => {
+        vi.mocked(API.getAlarms).mockResolvedValueOnce(false).mockResolvedValueOnce(response([alarm]))
+        const store = useAlarmStore()
+
+        await store.getNodeAlarms('42')
+        expect(store.nodeAlarmsFailedNodeId).toBe('42')
+
+        await store.getNodeAlarms('42')
+        expect(store.nodeAlarmsFailedNodeId).toBeUndefined()
+      })
+
+      // Node 99 is loading, not failed: node 42's failure must not show against it.
+      it('clears another node\'s failure as soon as a fetch for a new node starts', async () => {
+        vi.mocked(API.getAlarms).mockResolvedValueOnce(false).mockImplementationOnce(pending)
+        const store = useAlarmStore()
+
+        await store.getNodeAlarms('42')
+        void store.getNodeAlarms('99')
+
+        expect(store.nodeAlarmsFailedNodeId).toBeUndefined()
+      })
+
+      it('keeps the failure while the same node is refreshed', async () => {
+        vi.mocked(API.getAlarms).mockResolvedValueOnce(false).mockImplementationOnce(pending)
+        const store = useAlarmStore()
+
+        await store.getNodeAlarms('42')
+        void store.getNodeAlarms('42')
+
+        expect(store.nodeAlarmsFailedNodeId).toBe('42')
+      })
+
+      it('does not mark a node failed for a superseded fetch', async () => {
+        let resolve42: (value: unknown) => void = () => undefined
+        vi.mocked(API.getAlarms)
+          .mockImplementationOnce(() => new Promise((r) => {
+            resolve42 = r
+          }) as never)
+          .mockImplementationOnce(pending)
+        const store = useAlarmStore()
+
+        const call42 = store.getNodeAlarms('42')
+        void store.getNodeAlarms('99')
+        resolve42(false)
+        await call42
+
+        expect(store.nodeAlarmsFailedNodeId).toBeUndefined()
+      })
+    })
   })
 })
