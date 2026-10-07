@@ -23,19 +23,20 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { withNodeFilter } from '@/services/serviceHelpers'
-import { Alarm, QueryParameters } from '@/types'
+import { Alarm, NodeAlarmStatus, QueryParameters } from '@/types'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { ref } from 'vue'
 
 /**
- * Alarms in two independent slices, for the same reasons as the event store's:
+ * Alarms in independent slices, for the same reasons as the event store's:
  *
  * - `alarms` -- whatever the last unscoped query asked for, for an all-nodes alarm list.
- * - `nodeAlarms` -- one node's alarms, stamped with the node they belong to.
+ * - `nodeAlarms` -- whatever the last query asked of one node's alarms (a page, for Recent
+ *   Alarms), stamped with the node they belong to.
+ * - `nodeAlarmStatus` -- the server's count of one node's problem alarms, for the status banner,
+ *   stamped likewise. Counted on the server, so a node with thousands of alarms costs no more.
  *
- * The node slice defaults to every alarm the node has (`limit: 0`) rather than a page, because
- * the node's status is worked out from the whole set. A consumer that wants a page of a node's
- * alarms should page this slice, or pass its own limit knowing it narrows the set for everyone.
+ * The two node slices are fetched and refreshed separately.
  */
 export const useAlarmStore = defineStore('alarmStore', () => {
   const alarms = ref([] as Alarm[])
@@ -48,9 +49,15 @@ export const useAlarmStore = defineStore('alarmStore', () => {
   // reads as another's, and in the store so that every panel sharing the slice agrees on it.
   const nodeAlarmsFailedNodeId = ref<string | undefined>(undefined)
 
+  const nodeAlarmStatus = ref<NodeAlarmStatus | undefined>(undefined)
+  const nodeAlarmStatusNodeId = ref<string | undefined>(undefined)
+  // As nodeAlarmsFailedNodeId, for the status slice.
+  const nodeAlarmStatusFailedNodeId = ref<string | undefined>(undefined)
+
   // One request counter per slice; see the event store.
   let alarmsRequestId = 0
   let nodeAlarmsRequestId = 0
+  let nodeAlarmStatusRequestId = 0
 
   const getAlarms = async (queryParameters?: QueryParameters): Promise<ValidationResultWithPayload<Alarm[]>> => {
     const requestId = ++alarmsRequestId
@@ -72,8 +79,8 @@ export const useAlarmStore = defineStore('alarmStore', () => {
   }
 
   /**
-   * Fetch one node's alarms -- all of them unless `queryParameters` says otherwise. Any `_s` in
-   * it is applied within the node. The slice is replaced only on success, so check
+   * Fetch one node's alarms, as `queryParameters` asks (pass `limit: 0` for all of them). Any `_s`
+   * in it is applied within the node. The slice is replaced only on success, so check
    * `nodeAlarmsNodeId` before showing it for a given node, and `nodeAlarmsFailedNodeId` to tell
    * a node still loading from one that failed to load.
    */
@@ -86,7 +93,7 @@ export const useAlarmStore = defineStore('alarmStore', () => {
       nodeAlarmsFailedNodeId.value = undefined
     }
 
-    const resp = await API.getAlarms(withNodeFilter(nodeId, { limit: 0, ...queryParameters }))
+    const resp = await API.getAlarms(withNodeFilter(nodeId, { ...queryParameters }))
 
     if (requestId !== nodeAlarmsRequestId) {
       return createResultWithPayload(false, 'Superseded by a newer request')
@@ -106,6 +113,36 @@ export const useAlarmStore = defineStore('alarmStore', () => {
     return createResultWithPayload(true, '', resp.alarm)
   }
 
+  /**
+   * Fetch the server's summary of one node's problem alarms. Replaced only on success, like the
+   * alarm slice: check `nodeAlarmStatusNodeId` and `nodeAlarmStatusFailedNodeId` the same way.
+   */
+  const getNodeAlarmStatus = async (nodeId: string): Promise<ValidationResultWithPayload<NodeAlarmStatus>> => {
+    const requestId = ++nodeAlarmStatusRequestId
+
+    if (nodeAlarmStatusFailedNodeId.value !== nodeId) {
+      nodeAlarmStatusFailedNodeId.value = undefined
+    }
+
+    const result = await API.getNodeAlarmStatus(nodeId)
+
+    if (requestId !== nodeAlarmStatusRequestId) {
+      return createResultWithPayload(false, 'Superseded by a newer request')
+    }
+
+    if (!result.success || !result.payload) {
+      nodeAlarmStatusFailedNodeId.value = nodeId
+
+      return createResultWithPayload(false, result.message)
+    }
+
+    nodeAlarmStatus.value = result.payload
+    nodeAlarmStatusNodeId.value = nodeId
+    nodeAlarmStatusFailedNodeId.value = undefined
+
+    return result
+  }
+
   return {
     alarms,
     totalCount,
@@ -113,7 +150,11 @@ export const useAlarmStore = defineStore('alarmStore', () => {
     nodeAlarmsTotalCount,
     nodeAlarmsNodeId,
     nodeAlarmsFailedNodeId,
+    nodeAlarmStatus,
+    nodeAlarmStatusNodeId,
+    nodeAlarmStatusFailedNodeId,
     getAlarms,
-    getNodeAlarms
+    getNodeAlarms,
+    getNodeAlarmStatus
   }
 })

@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { Alarm } from '@/types'
+import { NodeAlarmStatus } from '@/types'
 
 // The tints NodeDetailsBanner offers. Indeterminate and cleared are never a node's status here --
 // they are not problems -- so they have none of their own.
@@ -34,8 +34,7 @@ export const bannerSeverity = (severity: string | undefined): BannerSeverity => 
 }
 
 /**
- * A node's at-a-glance status, worked out from its alarms the way the legacy
- * includes/nodeStatus-box.jsp did.
+ * A node's at-a-glance status, as the legacy includes/nodeStatus-box.jsp showed it.
  */
 export interface NodeStatus {
   // Highest severity among the node's unacknowledged problem alarms, as an upper-case
@@ -50,71 +49,20 @@ export interface NodeStatus {
   unackCount: number
 }
 
-// OnmsSeverity ids. Only the order matters here, but it has to be the real order: the JSP compares
-// the ids directly.
-const SEVERITY_IDS: Record<string, number> = {
-  INDETERMINATE: 1,
-  CLEARED: 2,
-  NORMAL: 3,
-  WARNING: 4,
-  MINOR: 5,
-  MAJOR: 6,
-  CRITICAL: 7
-}
-
-const NORMAL = SEVERITY_IDS.NORMAL
-
-const severityId = (severity: string | undefined): number => SEVERITY_IDS[(severity ?? '').toUpperCase()] ?? 0
+// Above Normal. The server reports the worst unacknowledged one, and NORMAL when there is none.
+const PROBLEM_SEVERITIES = ['WARNING', 'MINOR', 'MAJOR', 'CRITICAL']
 
 const plural = (count: number, singular: string, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`
 
-export const computeNodeStatus = (alarms: Alarm[]): NodeStatus => {
-  let maxSeverity = NORMAL
-  let ackCount = 0
-  let unackCount = 0
-  let nodeDown = false
-  let intfDown = 0
-  let servDown = 0
-
-  for (const alarm of alarms) {
-    const id = severityId(alarm.severity)
-
-    // Indeterminate, cleared and normal alarms are not problems.
-    if (id <= NORMAL) {
-      continue
-    }
-
-    const uei = alarm.uei ?? ''
-
-    if (uei.includes('nodeDown')) {
-      nodeDown = true
-    }
-
-    if (uei.includes('interfaceDown')) {
-      intfDown++
-    }
-
-    if (uei.includes('nodeLostService')) {
-      servDown++
-    }
-
-    const acknowledged = alarm.ackTime != null
-
-    if (acknowledged) {
-      ackCount++
-    } else {
-      unackCount++
-
-      // As in the JSP, an acknowledged problem is counted but does not colour the status: someone
-      // has already taken it on.
-      if (id > maxSeverity) {
-        maxSeverity = id
-      }
-    }
-  }
-
-  const severity = Object.keys(SEVERITY_IDS).find(key => SEVERITY_IDS[key] === maxSeverity) ?? 'NORMAL'
-  const hasProblems = maxSeverity > NORMAL
+/**
+ * The status box's headline and counts from the server's summary of the node's problem alarms
+ * (GET /api/v2/nodes/{id}/alarmStatus). The server does the counting, as the JSP did over every
+ * alarm the node had; this keeps the JSP's wording.
+ */
+export const computeNodeStatus = (summary: NodeAlarmStatus): NodeStatus => {
+  const severity = (summary.severity ?? 'NORMAL').toUpperCase()
+  const hasProblems = PROBLEM_SEVERITIES.includes(severity)
+  const { nodeDown, interfacesDown: intfDown, servicesDown: servDown } = summary
 
   let message = `Node has ${hasProblems ? severity.toLowerCase() : 'no'} problems.`
 
@@ -128,5 +76,11 @@ export const computeNodeStatus = (alarms: Alarm[]): NodeStatus => {
     message = `Node has ${plural(servDown, 'service')} down.`
   }
 
-  return { severity, message, hasProblems, ackCount, unackCount }
+  return {
+    severity: hasProblems ? severity : 'NORMAL',
+    message,
+    hasProblems,
+    ackCount: summary.acknowledgedCount,
+    unackCount: summary.unacknowledgedCount
+  }
 }

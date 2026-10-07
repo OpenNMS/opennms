@@ -36,8 +36,12 @@ vi.mock('vue-router', async () => {
   return { useRoute: () => route }
 })
 
-const major = { id: '1', severity: 'MAJOR', uei: 'uei.opennms.org/nodes/nodeLostService', nodeId: 42 }
-const acked = { id: '2', severity: 'MINOR', uei: 'uei.opennms.org/nodes/other', nodeId: 42, ackTime: 1 }
+const summary = (overrides: Record<string, unknown> = {}) => ({
+  severity: 'NORMAL', nodeDown: false, interfacesDown: 0, servicesDown: 0, acknowledgedCount: 0, unacknowledgedCount: 0, ...overrides
+})
+// One service down and unacknowledged, plus one minor problem someone has acknowledged.
+const major = summary({ severity: 'MAJOR', servicesDown: 1, unacknowledgedCount: 1, acknowledgedCount: 1 })
+const twoUnacked = summary({ severity: 'MAJOR', servicesDown: 2, unacknowledgedCount: 2 })
 
 // Every test moves the one shared route; a box left mounted from an earlier test would follow it.
 enableAutoUnmount(afterEach)
@@ -46,22 +50,22 @@ describe('NodeStatusBox.vue', () => {
   let alarmStore: ReturnType<typeof useAlarmStore>
 
   // Resolves as a successful fetch would: the slice replaced and stamped with the node id.
-  const answerWith = (alarms: unknown[]) => {
+  const answerWith = (status: ReturnType<typeof summary>) => {
     const store = alarmStore
-    store.getNodeAlarms = vi.fn(async (nodeId: string) => {
-      store.nodeAlarms = alarms as any
-      store.nodeAlarmsNodeId = nodeId
-      store.nodeAlarmsFailedNodeId = undefined
+    store.getNodeAlarmStatus = vi.fn(async (nodeId: string) => {
+      store.nodeAlarmStatus = status
+      store.nodeAlarmStatusNodeId = nodeId
+      store.nodeAlarmStatusFailedNodeId = undefined
 
-      return { success: true, message: '', payload: alarms as any }
+      return { success: true, message: '', payload: status }
     })
   }
 
   // Resolves as a failed fetch would: the slice left alone, the node marked failed.
   const failFetch = () => {
     const store = alarmStore
-    store.getNodeAlarms = vi.fn(async (nodeId: string) => {
-      store.nodeAlarmsFailedNodeId = nodeId
+    store.getNodeAlarmStatus = vi.fn(async (nodeId: string) => {
+      store.nodeAlarmStatusFailedNodeId = nodeId
 
       return { success: false, message: 'nope' }
     })
@@ -76,7 +80,7 @@ describe('NodeStatusBox.vue', () => {
     return pinia
   }
 
-  const mountBox = (setup: () => void = () => answerWith([])) =>
+  const mountBox = (setup: () => void = () => answerWith(summary())) =>
     mount(NodeStatusBox, { global: { plugins: [createPinia(setup)] }})
 
   beforeEach(() => {
@@ -88,16 +92,16 @@ describe('NodeStatusBox.vue', () => {
     vi.useRealTimers()
   })
 
-  it('fetches the node\'s alarms on mount', async () => {
+  it('fetches the node\'s alarm status on mount', async () => {
     mountBox()
     await flushPromises()
 
-    expect(alarmStore.getNodeAlarms).toHaveBeenCalledWith('42')
+    expect(alarmStore.getNodeAlarmStatus).toHaveBeenCalledWith('42')
   })
 
   it('says it is checking until the first answer arrives, in a neutral banner', () => {
     const wrapper = mountBox(() => {
-      alarmStore.getNodeAlarms = vi.fn(() => new Promise(() => undefined)) as any
+      alarmStore.getNodeAlarmStatus = vi.fn(() => new Promise(() => undefined)) as any
     })
 
     expect(wrapper.text()).toContain('Checking node status')
@@ -114,7 +118,7 @@ describe('NodeStatusBox.vue', () => {
   })
 
   it('shows the headline, severity and linked counts for a node with problems', async () => {
-    const wrapper = mountBox(() => answerWith([major, acked]))
+    const wrapper = mountBox(() => answerWith(major))
     await flushPromises()
 
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--major')
@@ -127,7 +131,7 @@ describe('NodeStatusBox.vue', () => {
   })
 
   it('pluralises the counts', async () => {
-    const wrapper = mountBox(() => answerWith([major, { ...major, id: '3' }]))
+    const wrapper = mountBox(() => answerWith(twoUnacked))
     await flushPromises()
 
     expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There are 2 unacknowledged problems, and 0 acknowledged problems.')
@@ -143,13 +147,13 @@ describe('NodeStatusBox.vue', () => {
 
   // A minute-old status says more than none.
   it('keeps the last status when a later refresh fails', async () => {
-    const wrapper = mountBox(() => answerWith([major]))
+    const wrapper = mountBox(() => answerWith(major))
     await flushPromises()
 
     failFetch()
     await vi.advanceTimersByTimeAsync(60_000)
 
-    expect(alarmStore.getNodeAlarms).toHaveBeenCalled()
+    expect(alarmStore.getNodeAlarmStatus).toHaveBeenCalled()
     expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has 1 service down.')
   })
 
@@ -161,15 +165,15 @@ describe('NodeStatusBox.vue', () => {
       ;(useRoute() as any).params.id = '99'
       await flushPromises()
 
-      expect(alarmStore.getNodeAlarms).toHaveBeenLastCalledWith('99')
+      expect(alarmStore.getNodeAlarmStatus).toHaveBeenLastCalledWith('99')
     })
 
     // The store's slice is replaced only on success, so it may still be node 42's.
     it('does not show the previous node\'s status while the new one is loading', async () => {
-      const wrapper = mountBox(() => answerWith([major]))
+      const wrapper = mountBox(() => answerWith(major))
       await flushPromises()
 
-      alarmStore.getNodeAlarms = vi.fn(() => new Promise(() => undefined)) as any
+      alarmStore.getNodeAlarmStatus = vi.fn(() => new Promise(() => undefined)) as any
       ;(useRoute() as any).params.id = '99'
       await flushPromises()
 
@@ -183,7 +187,7 @@ describe('NodeStatusBox.vue', () => {
       await flushPromises()
       expect(wrapper.find('[data-test="node-status-unavailable"]').exists()).toBe(true)
 
-      alarmStore.getNodeAlarms = vi.fn(() => new Promise(() => undefined)) as any
+      alarmStore.getNodeAlarmStatus = vi.fn(() => new Promise(() => undefined)) as any
       ;(useRoute() as any).params.id = '99'
       await flushPromises()
 
@@ -192,7 +196,7 @@ describe('NodeStatusBox.vue', () => {
     })
 
     it('says unavailable, not the previous node\'s status, when the new node\'s fetch fails', async () => {
-      const wrapper = mountBox(() => answerWith([major]))
+      const wrapper = mountBox(() => answerWith(major))
       await flushPromises()
 
       failFetch()
@@ -207,24 +211,24 @@ describe('NodeStatusBox.vue', () => {
     it('refreshes every minute while visible', async () => {
       mountBox()
       await flushPromises()
-      vi.mocked(alarmStore.getNodeAlarms).mockClear()
+      vi.mocked(alarmStore.getNodeAlarmStatus).mockClear()
 
       await vi.advanceTimersByTimeAsync(60_000)
-      expect(alarmStore.getNodeAlarms).toHaveBeenCalledTimes(1)
+      expect(alarmStore.getNodeAlarmStatus).toHaveBeenCalledTimes(1)
 
       await vi.advanceTimersByTimeAsync(60_000)
-      expect(alarmStore.getNodeAlarms).toHaveBeenCalledTimes(2)
+      expect(alarmStore.getNodeAlarmStatus).toHaveBeenCalledTimes(2)
     })
 
     it('stops when unmounted', async () => {
       const wrapper = mountBox()
       await flushPromises()
       wrapper.unmount()
-      vi.mocked(alarmStore.getNodeAlarms).mockClear()
+      vi.mocked(alarmStore.getNodeAlarmStatus).mockClear()
 
       await vi.advanceTimersByTimeAsync(180_000)
 
-      expect(alarmStore.getNodeAlarms).not.toHaveBeenCalled()
+      expect(alarmStore.getNodeAlarmStatus).not.toHaveBeenCalled()
     })
 
     // The Main tab sits in a KeepAlive: switched away, it is alive but not on screen.
@@ -233,21 +237,21 @@ describe('NodeStatusBox.vue', () => {
       const Host = defineComponent({
         setup: () => () => h(KeepAlive, null, [showBox.value ? h(NodeStatusBox) : h('div')])
       })
-      mount(Host, { global: { plugins: [createPinia(() => answerWith([]))] }})
+      mount(Host, { global: { plugins: [createPinia(() => answerWith(summary()))] }})
       await flushPromises()
 
       showBox.value = false
       await nextTick()
-      vi.mocked(alarmStore.getNodeAlarms).mockClear()
+      vi.mocked(alarmStore.getNodeAlarmStatus).mockClear()
       await vi.advanceTimersByTimeAsync(180_000)
-      expect(alarmStore.getNodeAlarms).not.toHaveBeenCalled()
+      expect(alarmStore.getNodeAlarmStatus).not.toHaveBeenCalled()
 
       showBox.value = true
       await flushPromises()
-      expect(alarmStore.getNodeAlarms).toHaveBeenCalledTimes(1)
+      expect(alarmStore.getNodeAlarmStatus).toHaveBeenCalledTimes(1)
 
       await vi.advanceTimersByTimeAsync(60_000)
-      expect(alarmStore.getNodeAlarms).toHaveBeenCalledTimes(2)
+      expect(alarmStore.getNodeAlarmStatus).toHaveBeenCalledTimes(2)
     })
   })
 })

@@ -38,7 +38,8 @@ import { BannerSeverity, bannerSeverity, computeNodeStatus, NodeStatus } from '.
 import useActiveNodeId from './hooks/useActiveNodeId'
 
 // How often the status is refreshed while it is on screen. The JSP worked it out once per page
-// load; the alarms behind it change without the page knowing, so this one keeps up.
+// load; the alarms behind it change without the page knowing, so this one keeps up. Each refresh
+// is a handful of counts on the server, not the node's alarms.
 const POLL_INTERVAL_MS = 60_000
 
 const alarmStore = useAlarmStore()
@@ -47,14 +48,15 @@ const menuStore = useMenuStore()
 const nodeId = useActiveNodeId()
 
 // The store's node slice is only replaced on success, so it may still be the previous node's.
-const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmsNodeId === nodeId.value)
+const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmStatusNodeId === nodeId.value)
 
-const status = computed<NodeStatus | undefined>(() => (isThisNode.value ? computeNodeStatus(alarmStore.nodeAlarms) : undefined))
+const status = computed<NodeStatus | undefined>(() =>
+  (isThisNode.value && alarmStore.nodeAlarmStatus ? computeNodeStatus(alarmStore.nodeAlarmStatus) : undefined))
 
 // A failed refresh of a node already on screen keeps the status it had -- a minute-old status
 // says more than none -- so this only shows when there is nothing for this node to fall back on.
 // The failure is the store's, kept by node id: another node's failure never shows here.
-const loadFailed = computed<boolean>(() => !isThisNode.value && alarmStore.nodeAlarmsFailedNodeId === nodeId.value)
+const loadFailed = computed<boolean>(() => !isThisNode.value && alarmStore.nodeAlarmStatusFailedNodeId === nodeId.value)
 
 // Before the first answer there is no severity to show, so the banner stays neutral.
 const severity = computed<BannerSeverity>(() => bannerSeverity(status.value?.severity))
@@ -68,7 +70,7 @@ const alarmListHref = (ackType: 'ack' | 'unack') =>
 
 const fetchStatus = async () => {
   if (nodeId.value) {
-    await alarmStore.getNodeAlarms(nodeId.value)
+    await alarmStore.getNodeAlarmStatus(nodeId.value)
   }
 }
 

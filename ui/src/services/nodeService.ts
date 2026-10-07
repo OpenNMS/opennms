@@ -26,6 +26,7 @@ import {
   SnmpInterfaceApiResponse,
   QueryParameters,
   IpInterfaceApiResponse,
+  NodeAlarmStatus,
   NodeAvailability,
   NodeCriticalPath
 } from '@/types'
@@ -167,8 +168,23 @@ const getNodeCriticalPath = async (id: string): Promise<ValidationResultWithPayl
   }
 }
 
+/**
+ * A summary of the node's problem alarms for the status banner, counted on the server, so it stays
+ * small however many alarms the node has.
+ */
+const getNodeAlarmStatus = async (id: string): Promise<ValidationResultWithPayload<NodeAlarmStatus>> => {
+  try {
+    const resp = await v2.get(`/nodes/${id}/alarmStatus`)
+
+    return createResultWithPayload(true, '', resp.data as NodeAlarmStatus)
+  } catch (_err) {
+    return createResultWithPayload<NodeAlarmStatus>(false, `Unable to load the alarm status for node ${id}`)
+  }
+}
+
 export {
   getNodes,
+  getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeById,
   getNodeIpInterfaces,

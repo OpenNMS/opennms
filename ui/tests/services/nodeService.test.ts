@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNodeAvailabilityPercentage, getNodeCriticalPath } from '@/services/nodeService'
+import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath } from '@/services/nodeService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -57,6 +57,28 @@ describe('nodeService.getNodeCriticalPath', () => {
     vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
 
     expect((await getNodeCriticalPath('161')).success).toBe(false)
+  })
+})
+
+describe('nodeService.getNodeAlarmStatus', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('asks v2 for the node\'s alarm summary', async () => {
+    const status = { severity: 'MAJOR', nodeDown: false, interfacesDown: 0, servicesDown: 1, acknowledgedCount: 0, unacknowledgedCount: 1 }
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: status })
+
+    const result = await getNodeAlarmStatus('144')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/144/alarmStatus')
+    expect(result).toEqual(expect.objectContaining({ success: true, payload: status }))
+  })
+
+  it('answers a failed result when the request fails', async () => {
+    vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
+
+    expect((await getNodeAlarmStatus('144')).success).toBe(false)
   })
 })
 

@@ -14,10 +14,12 @@
       />
     </template>
     <OnmsTable
+      lazy
       :value="alarms"
       paginator
       :rows="PAGE_SIZE"
       :first="first"
+      :totalRecords="totalRecords"
       dataKey="id"
       data-test="alarms-table"
       @page="onPage"
@@ -68,25 +70,27 @@ import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import useVisiblePolling from '@/composables/useVisiblePolling'
 import { formatDateAndTimeInDisplayZone } from '@/lib/displayTimeZone'
 import { alarmDetailLink, nodeAlarmListLink } from '@/lib/linkUtils'
 import { sanitizeHtml } from '@/lib/sanitizeHtml'
 import { htmlToText } from '@/lib/utils'
+import API from '@/services'
+import { withNodeFilter } from '@/services/serviceHelpers'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { Alarm } from '@/types'
+import { Alarm, SORT } from '@/types'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import { useRecordDownload } from './hooks/useRecordDownload'
 import { severityTag } from './utils'
 import useActiveNodeId from './hooks/useActiveNodeId'
 
-// The node's alarms, most recent first, a few at a time to fit the Main tab's column.
-//
-// It makes no request of its own: the status banner on the same tab fetches every alarm the node
-// has into alarmStore's node slice and refreshes it every minute, so this pages through that slice
-// in the browser -- and its counts always agree with the banner's.
+// The node's alarms, most recent first, a few at a time to fit the Main tab's column. Each page is
+// fetched from the server -- the status banner above has its own summary -- and refreshed on the
+// banner's cycle, since alarms come and go while the page is open.
 const PAGE_SIZE = 5
+const POLL_INTERVAL_MS = 60_000
 
 const alarmStore = useAlarmStore()
 const menuStore = useMenuStore()
@@ -105,16 +109,10 @@ const first = ref(0)
 // The slice may still be the previous node's while this one's is in flight.
 const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmsNodeId === nodeId.value)
 
-const alarms = computed<Alarm[]>(() => {
-  if (!isThisNode.value) {
-    return []
-  }
-
-  return [...alarmStore.nodeAlarms].sort((a, b) => (b.lastEventTime ?? 0) - (a.lastEventTime ?? 0))
-})
+const alarms = computed<Alarm[]>(() => (isThisNode.value ? alarmStore.nodeAlarms : []))
+const totalRecords = computed<number>(() => (isThisNode.value ? alarmStore.nodeAlarmsTotalCount : 0))
 
 // With no alarms on hand for this node, say why: still loading, failed to load, or truly none.
-// The same rule as the status banner above, so the two never disagree.
 const emptyListContent = computed(() => {
   if (isThisNode.value) {
     return { msg: 'No alarms for this node.' }
@@ -125,29 +123,65 @@ const emptyListContent = computed(() => {
     : { msg: 'Loading alarms…' }
 })
 
+const fetchPage = async () => {
+  const id = nodeId.value
+
+  if (!id) {
+    return
+  }
+
+  const result = await alarmStore.getNodeAlarms(id, {
+    limit: PAGE_SIZE,
+    offset: first.value,
+    orderBy: 'lastEventTime',
+    order: SORT.DESCENDING
+  })
+
+  // A refresh can leave fewer alarms than the page shown: step back to the last page that has any.
+  const total = alarmStore.nodeAlarmsTotalCount
+
+  if (result.success && id === nodeId.value && first.value > 0 && first.value >= total) {
+    first.value = Math.max(0, Math.floor((total - 1) / PAGE_SIZE) * PAGE_SIZE)
+    await fetchPage()
+  }
+}
+
 const onPage = (event: OnmsTablePageEvent) => {
   first.value = event.first
+  fetchPage()
 }
+
+useVisiblePolling(fetchPage, POLL_INTERVAL_MS)
 
 // A new node starts on its first page.
 watch(nodeId, () => {
   first.value = 0
-})
-
-// A refresh can leave fewer alarms than the page shown -- step back to the last page that exists.
-watch(() => alarms.value.length, (count) => {
-  if (first.value >= count && first.value > 0) {
-    first.value = Math.max(0, Math.floor((count - 1) / PAGE_SIZE) * PAGE_SIZE)
-  }
-})
+  fetchPage()
+}, { immediate: true })
 
 const onViewAlarmsClick = () => {
   window.location.assign(nodeAlarmListLink(baseHref.value, nodeId.value))
 }
 
-// Every alarm the node has, not just the page: they are all on hand already.
-const onDownload = (format: 'csv' | 'json') => {
-  if (alarms.value.length === 0) {
+// Every alarm the node has, not just the page. Fetched only when asked for, and kept out of the
+// store, so the table's page is left alone.
+const onDownload = async (format: 'csv' | 'json') => {
+  const resp = await API.getAlarms(withNodeFilter(nodeId.value, {
+    limit: 0,
+    orderBy: 'lastEventTime',
+    order: SORT.DESCENDING
+  }))
+
+  if (!resp) {
+    showSnackBar({
+      msg: `Unable to load alarms for '${format}' download for this node`,
+      error: true
+    })
+
+    return
+  }
+
+  if (resp.alarm.length === 0) {
     showSnackBar({
       msg: `No alarms found for '${format}' download for this node`,
       error: true
@@ -156,7 +190,7 @@ const onDownload = (format: 'csv' | 'json') => {
     return
   }
 
-  downloadRecords(alarms.value, 'Alarms', format)
+  downloadRecords(resp.alarm, 'Alarms', format)
 }
 
 const onCsvDownload = () => {
@@ -167,7 +201,7 @@ const onJsonDownload = () => {
   onDownload('json')
 }
 
-defineExpose({ onPage })
+defineExpose({ onPage, fetchPage })
 </script>
 
 <style lang="scss" scoped>

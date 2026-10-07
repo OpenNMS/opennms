@@ -28,7 +28,8 @@ import { Alarm } from '@/types'
 
 vi.mock('@/services', () => ({
   default: {
-    getAlarms: vi.fn()
+    getAlarms: vi.fn(),
+    getNodeAlarmStatus: vi.fn()
   }
 }))
 
@@ -66,13 +67,13 @@ describe('alarmStore', () => {
   })
 
   describe('getNodeAlarms', () => {
-    // The node's status is worked out from every alarm it has, as the JSP's NO_LIMIT did.
-    it('asks for all of the node\'s alarms by default', async () => {
+    // The status no longer needs every alarm, so the caller says how many it wants.
+    it('asks only for what the caller asks, within the node', async () => {
       vi.mocked(API.getAlarms).mockResolvedValue(response([]))
 
-      await useAlarmStore().getNodeAlarms('42')
+      await useAlarmStore().getNodeAlarms('42', { limit: 5, offset: 10 })
 
-      expect(API.getAlarms).toHaveBeenCalledWith({ limit: 0, _s: 'node.id==42' })
+      expect(API.getAlarms).toHaveBeenCalledWith({ limit: 5, offset: 10, _s: 'node.id==42' })
     })
 
     it('applies the caller\'s criteria within the node', async () => {
@@ -177,6 +178,66 @@ describe('alarmStore', () => {
 
         expect(store.nodeAlarmsFailedNodeId).toBeUndefined()
       })
+    })
+  })
+
+  describe('getNodeAlarmStatus', () => {
+    const status = { severity: 'MAJOR', nodeDown: false, interfacesDown: 0, servicesDown: 1, acknowledgedCount: 0, unacknowledgedCount: 1 }
+    const ok = (payload = status) => ({ success: true, message: '', payload }) as never
+    const failed = { success: false, message: 'nope' } as never
+    const pending = () => new Promise(() => undefined) as never
+
+    it('publishes the summary, stamped with the node id', async () => {
+      vi.mocked(API.getNodeAlarmStatus).mockResolvedValue(ok())
+      const store = useAlarmStore()
+
+      const result = await store.getNodeAlarmStatus('42')
+
+      expect(API.getNodeAlarmStatus).toHaveBeenCalledWith('42')
+      expect(result.success).toBe(true)
+      expect(store.nodeAlarmStatus).toEqual(status)
+      expect(store.nodeAlarmStatusNodeId).toBe('42')
+    })
+
+    it('keeps the previous summary and marks the node failed when a fetch fails', async () => {
+      vi.mocked(API.getNodeAlarmStatus).mockResolvedValueOnce(ok()).mockResolvedValueOnce(failed)
+      const store = useAlarmStore()
+
+      await store.getNodeAlarmStatus('42')
+      const result = await store.getNodeAlarmStatus('99')
+
+      expect(result.success).toBe(false)
+      expect(store.nodeAlarmStatusNodeId).toBe('42')
+      expect(store.nodeAlarmStatus).toEqual(status)
+      expect(store.nodeAlarmStatusFailedNodeId).toBe('99')
+    })
+
+    it('clears another node\'s failure as soon as a fetch for a new node starts', async () => {
+      vi.mocked(API.getNodeAlarmStatus).mockResolvedValueOnce(failed).mockImplementationOnce(pending)
+      const store = useAlarmStore()
+
+      await store.getNodeAlarmStatus('42')
+      void store.getNodeAlarmStatus('99')
+
+      expect(store.nodeAlarmStatusFailedNodeId).toBeUndefined()
+    })
+
+    it('discards a superseded fetch', async () => {
+      let resolve42: (value: unknown) => void = () => undefined
+      vi.mocked(API.getNodeAlarmStatus)
+        .mockImplementationOnce(() => new Promise((r) => {
+          resolve42 = r
+        }) as never)
+        .mockResolvedValueOnce(ok({ ...status, severity: 'MINOR' }))
+      const store = useAlarmStore()
+
+      const call42 = store.getNodeAlarmStatus('42')
+      await store.getNodeAlarmStatus('99')
+      resolve42(ok())
+
+      expect((await call42).success).toBe(false)
+      expect(store.nodeAlarmStatusNodeId).toBe('99')
+      expect(store.nodeAlarmStatus?.severity).toBe('MINOR')
     })
   })
 })
