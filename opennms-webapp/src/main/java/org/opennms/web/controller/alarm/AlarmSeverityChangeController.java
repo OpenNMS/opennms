@@ -93,6 +93,8 @@ public class AlarmSeverityChangeController extends AbstractController implements
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
+        // State-changing action: accept only POST so CSRF protection applies and a cross-site GET cannot trigger it.
+        setSupportedMethods(new String[] { "POST" });
     }
 
 

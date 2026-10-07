@@ -97,12 +97,8 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException {
-        doPost(request, response);
-    }
+    // No doGet: this servlet changes the interface status on the device, so the default HttpServlet.doGet
+    // rejects GET with 405. A cross-site GET cannot trigger it, and POST requests get the CSRF token check.
 
     /** {@inheritDoc} */
     @Override
