@@ -54,8 +54,8 @@ public class AvailabilityNode {
     private Long m_serviceDownCount;
 
     /**
-     * How many IP interfaces the node has in all, when {@link #getIpInterfaces()} may hold only a page
-     * of them. Null -- and so left out of the payload -- where the full list is always returned.
+     * How many IP interfaces the node has in all (after the {@code withServices} filter), for a caller
+     * that pages {@link #getIpInterfaces()}. Set on every response, paged or not.
      */
     @XmlAttribute(name="ipinterfaceCount")
     private Long m_ipInterfaceCount;

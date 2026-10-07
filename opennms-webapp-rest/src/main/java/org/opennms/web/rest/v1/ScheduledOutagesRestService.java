@@ -688,7 +688,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             summary = "List the names of the scheduled outages currently affecting a node",
             description = """
                     Return the name of every calendar that is inside one of its windows right now and covers the
-                    node, either by naming the node or by covering one of its interfaces (exact addresses, ranges or
+                    node, either by naming the node or by covering one of its interfaces (an exact address, or
                     `match-any`). Deleted interfaces are not considered. This is what the node page shows as
                     "currently affected by the following scheduled outages". Only the names are returned, as the
                     legacy node page showed them; the calendars themselves are at `GET /sched-outages/{outageName}`.
@@ -728,7 +728,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             description = """
                     Return `true` when the calendar covers the address and the current time falls inside one of its
                     windows, and `false` otherwise. The address is checked against the calendar's `interface`
-                    entries, which may be exact addresses or ranges.
+                    entries, each an exact address or `match-any`.
                     The address is validated here, so a malformed one is a 400.""",
             operationId = "isInterfaceInScheduledOutageV1"
     )

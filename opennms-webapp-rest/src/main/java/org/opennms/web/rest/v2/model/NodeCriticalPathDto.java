@@ -24,8 +24,7 @@ package org.opennms.web.rest.v2.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Describes the body of {@code GET /nodes/{nodeCriteria}/criticalPath}. The handler builds it from an
- * ad-hoc map, so this class documents the shape rather than being returned as a type.
+ * The body of {@code GET /nodes/{nodeCriteria}/criticalPath}.
  */
 @Schema(name = "NodeCriticalPath", description = "The critical path configured for one node (its row in the "
         + "`pathoutage` table): an address and service on the network path to the node. When the node goes down "

@@ -24,8 +24,7 @@ package org.opennms.web.rest.v2.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Describes the body of {@code GET /nodes/{nodeCriteria}/alarmStatus}. The handler builds it from an
- * ad-hoc map, so this class documents the shape rather than being returned as a type.
+ * The body of {@code GET /nodes/{nodeCriteria}/alarmStatus}.
  */
 @Schema(name = "NodeAlarmStatus", description = "A summary of one node's problem alarms (severity above "
         + "Normal), as the legacy node page's status box worked it out. Counted on the server, so it costs the "

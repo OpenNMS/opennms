@@ -1047,9 +1047,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             return Response.noContent().build();
         }
 
-        final Map<String,Object> result = new HashMap<>();
-        result.put("criticalPathIp", InetAddressUtils.str(pathOutage.getCriticalPathIp()));
-        result.put("criticalPathServiceName", pathOutage.getCriticalPathServiceName());
+        final NodeCriticalPathDto result = new NodeCriticalPathDto();
+        result.setCriticalPathIp(InetAddressUtils.str(pathOutage.getCriticalPathIp()));
+        result.setCriticalPathServiceName(pathOutage.getCriticalPathServiceName());
         return Response.ok(result).build();
     }
 
@@ -1097,15 +1097,15 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 .limit(1)
                 .toCriteria());
 
-        final Map<String,Object> result = new HashMap<>();
-        result.put("severity", worstUnacknowledged.isEmpty()
+        final NodeAlarmStatusDto result = new NodeAlarmStatusDto();
+        result.setSeverity(worstUnacknowledged.isEmpty()
                 ? OnmsSeverity.NORMAL.name()
                 : worstUnacknowledged.get(0).getSeverity().name());
-        result.put("nodeDown", countProblemAlarms(nodeId, b -> b.like("uei", "%nodeDown%")) > 0);
-        result.put("interfacesDown", countProblemAlarms(nodeId, b -> b.like("uei", "%interfaceDown%")));
-        result.put("servicesDown", countProblemAlarms(nodeId, b -> b.like("uei", "%nodeLostService%")));
-        result.put("acknowledgedCount", countProblemAlarms(nodeId, b -> b.isNotNull("alarmAckTime")));
-        result.put("unacknowledgedCount", countProblemAlarms(nodeId, b -> b.isNull("alarmAckTime")));
+        result.setNodeDown(countProblemAlarms(nodeId, b -> b.like("uei", "%nodeDown%")) > 0);
+        result.setInterfacesDown(countProblemAlarms(nodeId, b -> b.like("uei", "%interfaceDown%")));
+        result.setServicesDown(countProblemAlarms(nodeId, b -> b.like("uei", "%nodeLostService%")));
+        result.setAcknowledgedCount(countProblemAlarms(nodeId, b -> b.isNotNull("alarmAckTime")));
+        result.setUnacknowledgedCount(countProblemAlarms(nodeId, b -> b.isNull("alarmAckTime")));
         return Response.ok(result).build();
     }
 
