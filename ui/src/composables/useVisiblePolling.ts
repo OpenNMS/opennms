@@ -26,8 +26,9 @@ import { useDocumentVisibility, useIntervalFn } from '@vueuse/core'
 /**
  * Call `fn` every `intervalMs`, but only while someone can see the component calling this: not
  * while the browser tab is hidden, and not while a KeepAlive has switched the component away
- * (it stays alive, and so would a plain timer). Coming back from a KeepAlive switch calls `fn`
- * straight away, since the data may be a long way out of date by then.
+ * (it stays alive, and so would a plain timer). Coming back -- from a KeepAlive switch, or to a
+ * browser tab that was hidden -- calls `fn` straight away, since the data may be a long way out of
+ * date by then.
  *
  * It does not make the first call -- callers fetch on mount or on an id change themselves -- and
  * the timer stops when the component unmounts. Call it from `setup`.
@@ -37,8 +38,13 @@ const useVisiblePolling = (fn: () => unknown, intervalMs: number) => {
   const { pause, resume } = useIntervalFn(fn, intervalMs, { immediate: false })
   const active = ref(true)
 
-  watch([active, visibility], ([isActive, vis]) => {
+  watch([active, visibility], ([isActive, vis], previous) => {
     if (isActive && vis === 'visible') {
+      // The browser tab coming back into view; a KeepAlive return makes its own call below.
+      if (previous && previous[0] && previous[1] !== 'visible') {
+        fn()
+      }
+
       resume()
     } else {
       pause()
