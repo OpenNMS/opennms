@@ -32,7 +32,7 @@ Response times are displayed as IP interface resource graphs on Node Detail page
 You can click a service's name on any Node Detail page to see the service monitor's configuration parameters.
 The status of a service can be up or down.
 
-TIP: The Service page also includes timestamps that indicate the last time the service was polled and found to to be up (last good) or down (last fail).
+TIP: The Service page also includes timestamps that indicate the last time the service was polled and found to be up (last good) or down (last fail).
 These fields help to validate that pollerd is polling the services as expected.
 
 When a service monitor detects an outage, pollerd sends an event that is used to create an alarm.

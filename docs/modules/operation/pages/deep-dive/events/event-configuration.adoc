@@ -74,8 +74,9 @@ This architecture provides several key benefits:
 Core {page-component-title} events are pre-loaded in the database and are essential for system operation.
 These events handle internal {page-component-title} functionality such as node discovery, service monitoring, and alarm management.
 
-IMPORTANT: Core OpenNMS events should not be deleted.
-While individual events can be disabled if needed, removing core event definitions may cause unexpected system behavior.
+IMPORTANT: Core OpenNMS event configuration cannot be deleted.
+It ships managed by the system and stays adjustable across upgrades, so the API refuses to delete `opennms`-vendor sources and their events; disable a whole source or individual events instead when you do not want them matched.
+The `opennms.catch-all.events` source is additionally pinned as the last source evaluated.
 
 === Vendor event files
 
@@ -181,41 +182,47 @@ Use "Normal" severity for events that clear an alarm.
 
 === Event matching order
 
-The order of event definitions within a file is important, as an incoming event is matched against them in order.
+An incoming event is matched against the event definitions in evaluation order, and the first matching definition wins.
 It is possible, and often useful, to have several event definitions that could match variant forms of a given event; for example, based on the values of SNMP trap variable bindings.
 
-Within each event configuration file, events are evaluated in the order they are defined.
-If your file contains catch-all event definitions (generic events that match a broad range of conditions), place them at the bottom of the file to ensure more specific definitions are matched first.
+The order has two levels, both stored in the database and shown as the *Order* columns in the UI:
 
-NOTE: Core {page-component-title} catch-all events are automatically placed at the lowest priority, so your uploaded vendor events will be evaluated before the generic catch-all definitions.
+* *Sources* carry an evaluation order: order 1 is evaluated first, and the `opennms.catch-all.events` source is always evaluated last, so your vendor and custom definitions always win over the generic catch-all definitions.
+* *Events within a source* are evaluated in their own order, initially the order they appear in the uploaded file.
+If your file contains catch-all definitions (generic events that match a broad range of conditions), place them at the bottom of the file so more specific definitions are matched first.
+
+Both levels can be rearranged after upload:
+
+* In the UI, use *Reorder Sources* on the Manage Event Configurations page, or *Reorder Events* on a source's detail page: drag rows or use the move actions, then save; the new order takes effect immediately.
+* Over REST, `GET /api/v2/eventconf/sources/ordered` and `PUT /api/v2/eventconf/sources/order` manage the source order, and `GET`/`PUT /api/v2/eventconf/sources/\{sourceId}/events/order` (with `.../events/ordered` for reading) manage the order within a source.
+* Including an `eventconf.xml` in an upload applies a complete source order in one step (see Uploading, below).
+
+NOTE: A position change is not a content change: reordering does not touch a source's or event's last-modified information.
 
 == Uploading event configurations
 
 You can upload event configurations through the UI or the REST API.
-Uploads support both individual files and multiple files (folder upload).
+Each uploaded `.xml` file must conform to the event configuration schema and becomes one event source in the database.
 
-=== Uploading individual files
+In the UI, drag files or whole folders onto the upload box, or browse for them; selections combine with no count limit, so a directory of vendor files and an `eventconf.xml` from elsewhere can go into one upload.
+Everything is validated and reviewed in place, and nothing is stored until you confirm with the upload button, which states what the upload will do.
 
-Single event configuration files can be uploaded directly.
-The file must be valid XML conforming to the event configuration schema.
-Each uploaded file becomes a separate event source in the database.
+NOTE: Browsing for a folder triggers the browser's own "upload files to this site?" confirmation; dragging the folder onto the box does not.
 
-=== Uploading a folder
+=== Setting the source order with an eventconf.xml
 
-You can upload an entire folder of event configuration files at once.
-Each XML file in the folder is processed as a separate event source.
-This is useful when you need to add events for multiple vendors or device types simultaneously.
+A file named `eventconf.xml` in the upload is not stored as a source: its `<event-file>` entries define the evaluation order of the sources, first entry evaluated first.
+Sources it does not list are evaluated before the listed ones, and the catch-all source always stays last.
+This also works as an upload of its own, to apply an order to the sources already in the database — for example to carry over the order of a pre-upgrade `eventconf.xml`.
+The upload report states when a source order was applied.
 
-=== Duplicate handling
+=== Replacing existing sources
 
-When uploading event files, {page-component-title} checks for duplicate source names.
-If a source with the same name already exists:
+Uploading a file whose name matches an existing source *replaces* that source and all of its events — this is the supported way to update a source from a file.
+The UI flags such files first, so you can rename the file or confirm the replacement (per file, or with *Replace all* for a re-imported directory).
+When two files in one upload resolve to the same name, only the first is stored; the report names the files that were dropped.
 
-* The upload for that specific file is skipped.
-* Other files in the batch upload continue processing.
-* A message is returned indicating which files were skipped.
-
-To update an existing event source, you must first delete it and then re-upload.
+Single events can also be changed without re-uploading the whole file: edit them in the UI, or use `PUT /api/v2/eventconf/sources/\{sourceId}/events` to update one event identified by its exact UEI and mask (or append it when no match exists).
 
 == Managing event configurations
 
@@ -227,7 +234,8 @@ The {page-component-title} web interface provides a comprehensive event configur
 * Upload new event configuration files (individual or folder).
 * Enable or disable sources and individual events.
 * Edit event definitions.
-* Delete sources or individual events.
+* Reorder the evaluation order of sources and of events within a source.
+* Delete sources or individual events (except the core `opennms`-vendor configuration, which can only be disabled).
 * Download event sources as XML.
 * Search and filter events by UEI, vendor, or source name.
 
@@ -238,18 +246,22 @@ API documentation is available via Swagger UI at `http://<opennms-host>:8980/ope
 
 Key operations include:
 
-* `POST /api/v2/eventconf/upload` - Upload event configuration files.
+* `POST /api/v2/eventconf/upload` - Upload event configuration files (an included `eventconf.xml` sets the source order).
 * `GET /api/v2/eventconf/filter/sources` - List and filter event sources.
-* `GET /api/v2/eventconf/filter/\{sourceId}/events` - Get events for a source.
+* `GET /api/v2/eventconf/filter/\{sourceId}/events` - Get events for a source; omitting `limit` (or passing 0) returns every match in one page.
+* `GET /api/v2/eventconf/sources/\{sourceId}/events?uei=...` - Resolve events by their exact UEI, with ids and XML content.
+* `PUT /api/v2/eventconf/sources/\{sourceId}/events` - Create or update one event by its identity (exact UEI plus equal mask).
+* `GET /api/v2/eventconf/sources/ordered` and `PUT /api/v2/eventconf/sources/order` - Read and replace the source evaluation order.
+* `GET`/`PUT /api/v2/eventconf/sources/\{sourceId}/events/ordered|order` - Read and replace the event order within a source.
 * `PATCH /api/v2/eventconf/sources/status` - Enable/disable sources.
-* `DELETE /api/v2/eventconf/sources` - Delete event sources.
+* `DELETE /api/v2/eventconf/sources` - Delete event sources (refused for the catch-all and `opennms`-vendor sources).
 
 === A few tips
 
 * Only upload vendor event files that are relevant to devices in your network to keep the event configuration manageable.
 * Use descriptive vendor names when uploading events to make filtering and searching easier.
 * Disabled events remain in the database but are not used for event matching, allowing you to temporarily turn off noisy events without losing the configuration.
-* When creating custom event files, place catch-all definitions at the bottom of your file to ensure specific events are matched first.
+* When creating custom event files, place catch-all definitions at the bottom of your file to ensure specific events are matched first — and remember the order can be adjusted after upload with the reorder tools.
 
 === Karaf shell
 

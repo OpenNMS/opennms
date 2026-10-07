@@ -101,7 +101,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Some example configuration on how to configure the monitor in `poller-configuration.xml`.
+Some example configurations showing how to configure the monitor in `poller-configuration.xml`.
 [source, xml]
 ----
 <parameter key="url" value="http://$\{ipaddr}:$\{port}/jolokia"/>

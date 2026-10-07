@@ -1,11 +1,19 @@
 import { Severity } from '@/components/EventConfigEventCreate/constants'
+import useSnackbar from '@/composables/useSnackbar'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
   filterEventConfigEvents,
-  getEventConfSourceById
+  getEventConfSourceById,
+  getOrderedEventConfigEvents,
+  updateEventConfigEventsOrder
 } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import {
+  EventConfigDetailStoreState,
+  EventConfigEvent,
+  EventConfigMutationResult,
+  EventConfigSource
+} from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -50,6 +58,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       visible: false,
       eventConfigEvent: null
     },
+    eventsReorderMode: false,
+    orderedEvents: [],
+    isSavingEventsOrder: false,
     deleteEventConfigSourceDialogState: {
       visible: false,
       eventConfigSource: null
@@ -61,6 +72,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
   }),
   actions: {
     async fetchSourceById(id: string) {
+      // the store outlives the page, so a reorder left open on another source must not carry over
+      this.eventsReorderMode = false
+      this.orderedEvents = []
       try {
         const response = await getEventConfSourceById(id)
         this.selectedSource = response
@@ -153,6 +167,57 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     showChangeEventConfigEventStatusDialog(eventConfigEvent: EventConfigEvent) {
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
       this.changeEventConfigEventStatusDialogState.visible = true
+    },
+    async startEventsReorder() {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return
+      }
+      // the mode turns on only once the current order has loaded, so the editor never
+      // opens on a stale previous list that the arriving fetch would then replace
+      if (await this.fetchOrderedEvents()) {
+        this.eventsReorderMode = true
+      }
+    },
+    stopEventsReorder() {
+      this.eventsReorderMode = false
+    },
+    async fetchOrderedEvents(): Promise<boolean> {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return false
+      }
+      this.isLoading = true
+      try {
+        this.orderedEvents = await getOrderedEventConfigEvents(this.selectedSource.id)
+        return true
+      } catch (error) {
+        console.error('Error fetching ordered event configuration events:', error)
+        this.orderedEvents = []
+        // without the current order there is nothing to edit: leave the mode instead of
+        // showing an inexplicable empty list
+        this.stopEventsReorder()
+        useSnackbar().showSnackBar({ msg: 'Failed to load the event order. Try again.', error: true })
+        return false
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async saveEventsOrder(eventIds: number[]): Promise<EventConfigMutationResult> {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return { ok: false, status: 0, message: 'No source selected' }
+      }
+      this.isSavingEventsOrder = true
+      try {
+        const result = await updateEventConfigEventsOrder(this.selectedSource.id, eventIds)
+        if (result.ok) {
+          await this.fetchEventsBySourceId()
+        }
+        return result
+      } finally {
+        this.isSavingEventsOrder = false
+      }
     },
     async hideChangeEventConfigEventStatusDialog() {
       this.changeEventConfigEventStatusDialogState.visible = false

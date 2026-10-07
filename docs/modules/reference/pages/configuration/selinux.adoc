@@ -56,7 +56,7 @@ allow unconfined_service_t node_t:icmp_socket node_bind;
 allow unconfined_service_t port_t:icmp_socket name_bind;
 ----
 
-Create a SElinux module and compile it:
+Create a SELinux module and compile it:
 
 [source, console]
 ----

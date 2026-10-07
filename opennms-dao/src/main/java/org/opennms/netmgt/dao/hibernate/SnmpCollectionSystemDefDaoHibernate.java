@@ -67,7 +67,7 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
 
     @Override
     public List<SnmpCollectionSystemDef> findAllEnabledBySource(Integer snmpCollectionSourceId) {
-        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1 and d.enabled = true", snmpCollectionSourceId);
+        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1 and d.enabled = true order by d.id", snmpCollectionSourceId);
     }
 
     @Override

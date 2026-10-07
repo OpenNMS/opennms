@@ -21,7 +21,7 @@ Use `0` to display all scheduled services.
 opennms:pollerd-schedule --services 0
 ----
 
-* You can alter the output by specifying `--columns/-c` using a comma-seperated list of the columns to display.
+* You can alter the output by specifying `--columns/-c` using a comma-separated list of the columns to display.
 +
 [source, karaf]
 ----

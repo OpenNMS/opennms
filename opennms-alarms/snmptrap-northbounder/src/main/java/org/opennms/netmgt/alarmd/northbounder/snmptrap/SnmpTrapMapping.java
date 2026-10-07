@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
  * The Class SnmpTrapMapping.
@@ -190,12 +190,12 @@ public class SnmpTrapMapping {
      * @return true, if the alarm is accepted
      */
     public boolean accepts(NorthboundAlarm alarm) {
-        StandardEvaluationContext context = new StandardEvaluationContext(alarm);
+        SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(getRule());
         boolean passed = false;
         try {
-            passed = (Boolean)exp.getValue(context, Boolean.class);
+            passed = (Boolean)exp.getValue(context, alarm, Boolean.class);
         } catch (Exception e) {
             LOG.warn("mapping accepts: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage());
         }

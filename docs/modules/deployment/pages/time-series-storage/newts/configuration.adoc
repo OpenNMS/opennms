@@ -78,7 +78,7 @@ Must be a power of two.
 | 8192
 
 | org.opennms.newts.config.writer_threads
-| Number of threads used to pull samples from the ring buffer and inserted into Newts.
+| Number of threads used to pull samples from the ring buffer and insert them into Newts.
 | 16
 
 | org.opennms.newts.config.ttl
@@ -160,7 +160,7 @@ When enabled, the following options can be used to configure the Redis-based cac
 | Name  | Description   | Default
 
 | org.opennms.newts.config.cache.redis_hostname
-| IP address the Redis server's hostname.
+| IP address or hostname of the Redis server.
 | localhost
 
 | org.opennms.newts.config.cache.redis_port

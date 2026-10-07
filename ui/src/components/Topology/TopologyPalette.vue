@@ -173,8 +173,7 @@ onMounted(() => {
   background: var(--onms-surface);
   border: 1px solid var(--onms-border-on-surface);
   border-radius: 4px;
-  min-width: 260px;
-  width: 280px;
+  width: 100%;
 }
 
 .palette-header {
