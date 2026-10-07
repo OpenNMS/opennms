@@ -145,6 +145,13 @@ Support has been added for configuring Karaf shell authentication using ssh publ
 
 == Breaking changes
 
+=== Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default
+The Kafka client libraries have been upgraded to 3.9.1, which adds the `org.apache.kafka.sasl.oauthbearer.allowed.urls` system property for CVE-2025-27817.
+Core, Minion, and Sentinel now ship that property with an empty value in `etc/opennms.properties` and `etc/system.properties`, so the client contacts no token or JWKS endpoint URL.
+If you authenticate to Kafka with SASL/OAUTHBEARER, set the property to a comma-separated list of your endpoint URLs before upgrading.
+Other SASL mechanisms, such as SCRAM, are not affected.
+See xref:deployment:core/message-broker/kafka.adoc[Kafka message broker] for the client configuration.
+
 === Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support
 All mail sending and reading now uses Jakarta Mail 2.1 (Eclipse Angus) instead of JavaMail 1.4; existing `javamail-configuration.xml` and `javamail-configuration.properties` files load unchanged.
 The JMTA local-MTA transport is gone (`use-jmta` is still accepted, but mail is sent over SMTP to the configured mail host), `<javamail-property>` entries now reach the mail session instead of being ignored, and SSL/TLS connections now verify that the server certificate covers the mail host.
@@ -225,6 +232,16 @@ We have updated the Jasper Reports engine to version 7.0.7. Custom reports creat
 Writing OpenNMS configuration through the REST API (`POST`/`PUT`/`DELETE` on `/rest/config/**`, including the alarm northbounder configurations) now requires `ROLE_ADMIN`; previously an account with only `ROLE_REST` could write these.
 Update any integration that used a `ROLE_REST` account to change configuration to use a `ROLE_ADMIN` account.
 Reading configuration and all other `ROLE_REST` data operations are unchanged.
+
+=== REST API requisition reads require ROLE_PROVISION
+Reading requisitions through the REST API now requires `ROLE_PROVISION` or `ROLE_ADMIN`.
+Give `ROLE_PROVISION` to integration accounts that read requisitions.
+
+=== Write-only asset fields in the REST API
+The asset fields `password`, `enable` and `snmpcommunity` are now write-only in the REST API.
+
+=== Raw SQL query parameter requires ROLE_ADMIN
+The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
 === Ops Board and Wallboard removed
 
