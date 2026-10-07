@@ -1925,8 +1925,8 @@
     <paxWebVersion>8.0.34</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
-    <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
-    <kafkaVersion>3.6.2</kafkaVersion>
+    <kafkaBundleVersion>3.9.1_1</kafkaBundleVersion>
+    <kafkaVersion>3.9.1</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
@@ -1974,7 +1974,7 @@
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
-    <scalaLibraryVersion>2.13.12</scalaLibraryVersion>
+    <scalaLibraryVersion>2.13.15</scalaLibraryVersion>
     <scala11LibraryVersion>2.11.12</scala11LibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
@@ -2006,7 +2006,7 @@
     <xstreamVersion>1.4.21</xstreamVersion>
     <wsmanVersion>1.3.7</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
-    <zstdJniVersion>1.5.2-1</zstdJniVersion>
+    <zstdJniVersion>1.5.6-4</zstdJniVersion>
     <minaSshdVersion>2.15.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
