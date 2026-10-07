@@ -65,6 +65,9 @@ angular.module('onms-assets', [
 
   $scope.blackList = [ 'id', 'lastModifiedDate', 'lastModifiedBy', 'lastCapsdPoll', 'createTime' ];
   $scope.infoKeys = [ 'sysObjectId', 'sysName', 'sysLocation', 'sysContact', 'sysDescription' ];
+  $scope.writeOnlyKeys = [ 'password', 'enable', 'snmpcommunity' ];
+  // Write-only fields the user marked to clear. An empty input keeps the stored value.
+  $scope.cleared = {};
   $scope.dateKeys = [ 'dateInstalled', 'leaseExpires', 'maintContractExpiration' ];
 
   $scope.dateFormat = 'yyyy-MM-dd';
@@ -117,6 +120,7 @@ angular.module('onms-assets', [
 
   $scope.reset = function() {
     $scope.asset = angular.copy($scope.master);
+    $scope.cleared = {};
     $scope.assetForm.$setPristine();
   };
 
@@ -127,6 +131,12 @@ angular.module('onms-assets', [
         target[k] = $scope.dateKeys.indexOf(k) === -1 ? $scope.asset[k] : uibDateParser.filter($scope.asset[k], $scope.dateFormat);
       }
     }
+    // An empty value clears a write-only field in the asset record.
+    angular.forEach($scope.writeOnlyKeys, function(k) {
+      if ($scope.cleared[k]) {
+        target[k] = '';
+      }
+    });
     //console.log('Assets to save: ' + angular.toJson(target));
     $http({
       method: 'PUT',
@@ -136,6 +146,11 @@ angular.module('onms-assets', [
     }).then(function() {
       growl.success('The asset record has been successfully updated.');
       $scope.checkRequisition(target);
+      // Do not keep typed secrets in the form after the save.
+      angular.forEach($scope.writeOnlyKeys, function(k) {
+        $scope.asset[k] = null;
+      });
+      $scope.cleared = {};
     }, function(response) {
       growl.error('Cannot update the asset record: ' + response.data);
     });
@@ -154,13 +169,21 @@ angular.module('onms-assets', [
   $scope.updateRequisition = function(assets) {
     var assetFields = [];
     for (var key in assets) {
-      if (assets.hasOwnProperty(key)) {
+      // An empty value is a cleared write-only field. Leave it out of the requisition.
+      if (assets.hasOwnProperty(key) && assets[key] !== '') {
         assetFields.push({ name: key, value: assets[key] });
       }
     }
     $http.get('rest/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId)
       .then(function(response) {
         const node = response.data;
+        // The REST API never returns write-only fields, so the form only has them when the user typed a new value or cleared them.
+        // Keep the requisition's existing entries otherwise, or replacing the asset list would drop them.
+        angular.forEach(node.asset, function(entry) {
+          if ($scope.writeOnlyKeys.indexOf(entry.name) !== -1 && !assets.hasOwnProperty(entry.name)) {
+            assetFields.push(entry);
+          }
+        });
         node.asset = assetFields;
         $http.post('rest/requisitions/' + $scope.foreignSource + '/nodes', node)
           .then(function() {
@@ -168,8 +191,12 @@ angular.module('onms-assets', [
           }, function() {
             growl.error('Cannot update requisition ' + $scope.foreignSource);
           });
-      }, function() {
-        growl.error('Cannot obtain node data from requisition ' + $scope.foreignSource);
+      }, function(response) {
+        if (response.status === 403) {
+          growl.error('Cannot update requisition ' + $scope.foreignSource + ': reading requisitions requires the ROLE_PROVISION or ROLE_ADMIN role.');
+        } else {
+          growl.error('Cannot obtain node data from requisition ' + $scope.foreignSource);
+        }
       });
   };
 

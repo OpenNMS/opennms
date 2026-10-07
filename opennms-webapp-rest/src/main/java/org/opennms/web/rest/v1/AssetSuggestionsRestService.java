@@ -69,6 +69,8 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
         BLACK_LIST.add("geolocation");
         BLACK_LIST.add("lastModifiedDate");
         BLACK_LIST.add("lastModifiedBy");
+        // Suggestions show each stored value. Do not show credentials.
+        BLACK_LIST.addAll(OnmsAssetRecord.WRITE_ONLY_PROPERTIES);
     }
 
     /** The Asset DAO. */

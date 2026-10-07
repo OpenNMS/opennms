@@ -59,9 +59,11 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
@@ -114,6 +116,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private AssetRecordDao m_assetRecordDao;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -383,6 +388,100 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/nodes/1/assetRecord", 200);
 	    assertTrue(xml.contains("<description>Right here, Right now</description>"));
 	    assertTrue(xml.matches(".*<id>\\d+</id>.*"));
+    }
+
+    /**
+     * Asset credentials are write-only: they can be set over REST but never appear in responses.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void assetCredentialsAreWriteOnly() throws Exception {
+        createNode();
+        sendPut("/nodes/1/assetRecord", "password=secretPass&enable=secretEnable&snmpcommunity=secretComm", 204);
+
+        final OnmsAssetRecord stored = m_assetRecordDao.findByNodeId(1);
+        assertEquals("secretPass", stored.getPassword());
+        assertEquals("secretEnable", stored.getEnable());
+        assertEquals("secretComm", stored.getSnmpcommunity());
+
+        assertCredentialsNotInResponses();
+
+        // The asset editor sends an empty value to clear a write-only field.
+        sendPut("/nodes/1/assetRecord", "password=", 204);
+        assertEquals("", m_assetRecordDao.findByNodeId(1).getPassword());
+        assertEquals("secretEnable", m_assetRecordDao.findByNodeId(1).getEnable());
+    }
+
+    /**
+     * XML node input still binds asset credentials, although responses do not show them.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void assetCredentialsBindFromXml() throws Exception {
+        final String node = "<node type=\"A\" label=\"TestMachine0\">"
+                + "<location>Default</location>"
+                + "<assetRecord><description>xmlAsset</description><password>secretPass</password>"
+                + "<enable>secretEnable</enable><snmpcommunity>secretComm</snmpcommunity></assetRecord>"
+                + "</node>";
+        sendPost("/nodes", node, 201, "/nodes/1");
+
+        final OnmsAssetRecord stored = m_assetRecordDao.findByNodeId(1);
+        assertEquals("xmlAsset", stored.getDescription());
+        assertEquals("secretPass", stored.getPassword());
+        assertEquals("secretEnable", stored.getEnable());
+        assertEquals("secretComm", stored.getSnmpcommunity());
+
+        assertCredentialsNotInResponses();
+    }
+
+    private void assertCredentialsNotInResponses() throws Exception {
+        for (final String url : new String[] { "/nodes/1/assetRecord", "/nodes/1", "/nodes" }) {
+            final String xml = sendRequest(GET, url, 200);
+            assertFalse(url + " leaks an asset credential in XML", xml.matches("(?s).*secret(Pass|Enable|Comm).*"));
+
+            final MockHttpServletRequest req = createRequest(m_context, GET, url);
+            req.addHeader("Accept", MediaType.APPLICATION_JSON);
+            final String json = sendRequest(req, 200);
+            assertFalse(url + " leaks an asset credential in JSON", json.matches("(?s).*secret(Pass|Enable|Comm).*"));
+        }
+    }
+
+    /**
+     * A filter or sort on a credential would let a caller find its value one character at a time.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void assetCredentialsCannotBeFilteredOrSorted() throws Exception {
+        createNode();
+        sendPut("/nodes/1/assetRecord", "password=secretPass", 204);
+
+        sendRequest(GET, "/nodes", parseParamData("assetRecord.password=secretPass"), 400);
+        sendRequest(GET, "/nodes", parseParamData("comparator=like&assetRecord.password=s%25"), 400);
+        sendRequest(GET, "/nodes", parseParamData("assetRecord.enable=notnull"), 400);
+        sendRequest(GET, "/nodes", parseParamData("orderBy=assetRecord.snmpcommunity"), 400);
+
+        // Other asset fields can still be used.
+        sendRequest(GET, "/nodes", parseParamData("assetRecord.description=null"), 200);
+    }
+
+    /**
+     * Raw SQL in the 'query' parameter can read any column, so only an administrator can use it.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void rawSqlQueryRequiresAdmin() throws Exception {
+        createNode();
+        System.setProperty("org.opennms.web.rest.enableQuery", "true");
+        try {
+            setUser("lowpriv", new String[]{ "ROLE_REST" });
+            sendRequest(GET, "/nodes", parseParamData(
+                    "query={alias}.nodeid in (select nodeid from assets where password like 's%25')"), 403);
+
+            setUser("admin", new String[]{ "ROLE_ADMIN" });
+            sendRequest(GET, "/nodes", parseParamData("query={alias}.nodeid > 0"), 200);
+        } finally {
+            System.clearProperty("org.opennms.web.rest.enableQuery");
+        }
     }
 
     @Test
