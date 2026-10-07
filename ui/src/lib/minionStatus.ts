@@ -20,23 +20,17 @@
 /// License.
 ///
 
-// Wire shape of an OnmsMinion from /api/v2/minions (OnmsMonitoringSystem +
-// status/version). type/status/date are server-maintained; the page reads
-// Minions and deletes them, and never writes one.
-export interface Minion {
-  id: string
-  label: string | null
-  location: string | null
-  type?: string | null
-  status?: string | null
-  version?: string | null
-  date?: string | number | null // last updated
-  properties?: Record<string, string>
+// MinionStatusTracker reports up / down / unknown; both tabs treat anything else,
+// including a missing status, as unknown so their counts and colours agree.
+export type MinionState = 'up' | 'down' | 'unknown'
+
+export const minionState = (status: string | null | undefined): MinionState => {
+  const s = (status ?? '').toLowerCase()
+  return s === 'up' ? 'up' : s === 'down' ? 'down' : 'unknown'
 }
 
-export interface MinionApiResponse {
-  minion: Minion[]
-  totalCount: number
-  count: number
-  offset: number
+// unknown is a setup state (no node in the Minions requisition), not a fault, so it is grey
+export const minionStateSeverity = (status: string | null | undefined): 'success' | 'danger' | 'secondary' => {
+  const state = minionState(status)
+  return state === 'up' ? 'success' : state === 'down' ? 'danger' : 'secondary'
 }

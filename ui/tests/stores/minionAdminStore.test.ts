@@ -5,7 +5,7 @@ import API from '@/services'
 import { Minion } from '@/types/minionAdmin'
 
 vi.mock('@/services', () => ({
-  default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn() }
+  default: { listMinions: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn(), getCoreVersion: vi.fn(), getMinion: vi.fn() }
 }))
 
 const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {}})
@@ -50,18 +50,6 @@ describe('useMinionAdminStore', () => {
     expect(store.nodeIdFor(minion('m1', 'Default'))).toBeUndefined()
   })
 
-  it('updateMinion refreshes on success, not on failure', async () => {
-    const edit = { id: 'm1', label: 'm1', location: 'Default', properties: {}}
-    vi.mocked(API.updateMinion).mockResolvedValue(ok)
-    vi.mocked(API.listMinions).mockResolvedValue(listResult([minion('m1')]))
-    expect((await store.updateMinion(edit)).success).toBe(true)
-    expect(API.listMinions).toHaveBeenCalledTimes(1)
-    vi.clearAllMocks()
-    vi.mocked(API.updateMinion).mockResolvedValue(failed('boom'))
-    expect(await store.updateMinion(edit)).toEqual({ success: false, message: 'boom' })
-    expect(API.listMinions).not.toHaveBeenCalled()
-  })
-
   it('deleteMinion refreshes on success', async () => {
     vi.mocked(API.deleteMinion).mockResolvedValue(ok)
     vi.mocked(API.listMinions).mockResolvedValue(listResult([]))
@@ -73,5 +61,30 @@ describe('useMinionAdminStore', () => {
     vi.mocked(API.deleteMinion).mockResolvedValue(failed('nope'))
     expect(await store.deleteMinion('m1')).toEqual({ success: false, message: 'nope' })
     expect(API.listMinions).not.toHaveBeenCalled()
+  })
+
+  it('getCoreVersion stores the core version, null when it is unavailable', async () => {
+    vi.mocked(API.getCoreVersion).mockResolvedValue('34.0.0')
+    expect(await store.getCoreVersion()).toBe('34.0.0')
+    expect(store.coreVersion).toBe('34.0.0')
+    vi.mocked(API.getCoreVersion).mockResolvedValue(null)
+    expect(await store.getCoreVersion()).toBeNull()
+    expect(store.coreVersion).toBeNull()
+  })
+
+  it('byLocation groups the loaded minions by location name', async () => {
+    vi.mocked(API.listMinions).mockResolvedValue(listResult([minion('m1'), minion('m2', 'RemoteA'), minion('m3', 'RemoteA'), { ...minion('m4'), location: null }]))
+    await store.getMinions()
+    expect(Object.keys(store.byLocation).sort()).toEqual(['', 'Default', 'RemoteA'])
+    expect(store.byLocation.RemoteA.map(m => m.id)).toEqual(['m2', 'm3'])
+    expect(store.byLocation.Default.map(m => m.id)).toEqual(['m1'])
+  })
+
+  it('getMinion passes through to the service without touching the list', async () => {
+    store.minions = [minion('m1')]
+    vi.mocked(API.getMinion).mockResolvedValue({ ...minion('m1'), status: 'DOWN' })
+    expect(await store.getMinion('m1')).toEqual({ ...minion('m1'), status: 'DOWN' })
+    expect(API.getMinion).toHaveBeenCalledWith('m1')
+    expect(store.minions[0].status).toBe('UP')
   })
 })

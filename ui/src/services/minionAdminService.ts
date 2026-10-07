@@ -19,9 +19,9 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-import { Minion, MinionEdit } from '@/types/minionAdmin'
+import { Minion } from '@/types/minionAdmin'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
-import { v2 } from './axiosInstances'
+import { rest, v2 } from './axiosInstances'
 
 // Uses the existing v2 AbstractDaoRestService CRUD at /api/v2/minions.
 
@@ -105,24 +105,15 @@ const getMinionNodeIds = async (minions: Minion[]): Promise<Record<string, numbe
   return map
 }
 
-// Read-before-write: the v2 PUT is a whole-object saveOrUpdate, so we must send
-// the CURRENT server row with only label/location/properties changed — spreading
-// a stale list snapshot would revert the server-maintained status/version/date.
-const updateMinion = async (edit: MinionEdit): Promise<ValidationResult> => {
+// The current server row, for a dialog that must not trust a paused list.
+// null when it could not be read, including a 404 for a row that is gone.
+const getMinion = async (id: string): Promise<Minion | null> => {
   try {
-    const current = await v2.get(`${endpoint}/${encodeURIComponent(edit.id)}`)
-    const fresh = (current.data ?? {}) as Minion
-    const payload: Minion = {
-      ...fresh,
-      label: edit.label,
-      location: edit.location,
-      properties: edit.properties
-    }
-    await v2.put(`${endpoint}/${encodeURIComponent(edit.id)}`, payload)
-    return createSuccessResponse()
-  } catch (err: any) {
-    console.error('Error updating minion:', err)
-    return createFailureResult(errorMessage(err, `Failed to update minion '${edit.label ?? edit.id}'.`))
+    const resp = await v2.get(`${endpoint}/${encodeURIComponent(id)}`)
+    return resp.status === 204 || !resp.data?.id ? null : (resp.data as Minion)
+  } catch (err) {
+    console.error(`Error loading minion '${id}':`, err)
+    return null
   }
 }
 
@@ -140,4 +131,18 @@ const deleteMinion = async (id: string): Promise<ValidationResult> => {
   }
 }
 
-export { deleteMinion, getMinionNodeIds, listMinions, minionNodeKey, updateMinion }
+// The core's own version from /rest/info ("37.0.0", no qualifier). Minions report
+// VersionBean.toString() ("v37.0.0-SNAPSHOT"), so callers compare through
+// lib/version rather than verbatim.
+const getCoreVersion = async (): Promise<string | null> => {
+  try {
+    const resp = await rest.get('/info')
+    const version = resp.data?.version
+    return typeof version === 'string' && version.trim() ? version.trim() : null
+  } catch (err) {
+    console.error('Error loading the core version:', err)
+    return null
+  }
+}
+
+export { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions, minionNodeKey }

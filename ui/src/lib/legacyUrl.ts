@@ -20,23 +20,21 @@
 /// License.
 ///
 
-// Wire shape of an OnmsMinion from /api/v2/minions (OnmsMonitoringSystem +
-// status/version). type/status/date are server-maintained; the page reads
-// Minions and deletes them, and never writes one.
-export interface Minion {
-  id: string
-  label: string | null
-  location: string | null
-  type?: string | null
-  status?: string | null
-  version?: string | null
-  date?: string | number | null // last updated
-  properties?: Record<string, string>
+import { getActivePinia } from 'pinia'
+
+import { useMenuStore } from '@/stores/menuStore'
+
+// The legacy JSP pages live one level up from /ui, e.g. /opennms/admin/...
+const LEGACY_BASE = import.meta.env.BASE_URL.replace(/ui\/?$/, '')
+
+// the server's baseHref wins once the menu has loaded; before that (or with no
+// store at all) the build-time base is the same path for a default deployment
+const legacyBase = (): string => {
+  if (!getActivePinia()) {
+    return LEGACY_BASE
+  }
+  const baseHref = useMenuStore().mainMenu?.baseHref
+  return typeof baseHref === 'string' && baseHref ? baseHref : LEGACY_BASE
 }
 
-export interface MinionApiResponse {
-  minion: Minion[]
-  totalCount: number
-  count: number
-  offset: number
-}
+export const legacyUrl = (path: string): string => `${legacyBase()}${path}`
