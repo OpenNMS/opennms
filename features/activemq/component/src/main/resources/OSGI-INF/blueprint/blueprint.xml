@@ -49,7 +49,11 @@
 	<!-- Drop inbound Camel* headers so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
 	<bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.headers.InboundCamelHeaderFilterStrategy">
 		<argument>
-			<bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy"/>
+			<bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy">
+				<argument>
+					<bean factory-ref="jmsConfig" factory-method="isIncludeAllJMSXProperties"/>
+				</argument>
+			</bean>
 		</argument>
 	</bean>
 

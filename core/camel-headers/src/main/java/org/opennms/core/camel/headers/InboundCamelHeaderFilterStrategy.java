@@ -34,6 +34,9 @@ import org.apache.camel.spi.HeaderFilterStrategy;
  * The stock JMS strategies pass inbound Camel* headers through (or only match
  * them case-sensitively), so a JMS producer could set internal headers such
  * as CamelExecCommandExecutable on a consumer's exchange (CVE-2026-40453).
+ *
+ * The JMS binding applies the filter to the property name as sent, before it
+ * decodes Camel's "safe" JMS name encoding, so the encoded forms are matched too.
  */
 public class InboundCamelHeaderFilterStrategy implements HeaderFilterStrategy {
     private final HeaderFilterStrategy delegate;
@@ -56,7 +59,8 @@ public class InboundCamelHeaderFilterStrategy implements HeaderFilterStrategy {
         if (headerName == null) {
             return false;
         }
-        final String name = headerName.toLowerCase(Locale.ROOT);
+        // DefaultJmsKeyFormatStrategy encodes '.' as _DOT_ and '-' as _HYPHEN_
+        final String name = headerName.toLowerCase(Locale.ROOT).replace("_dot_", ".").replace("_hyphen_", "-");
         return name.startsWith("camel") || name.startsWith("org.apache.camel.");
     }
 }

@@ -47,9 +47,25 @@ public class InboundCamelHeaderFilterStrategyTest {
     }
 
     @Test
+    public void blocksSafeJmsEncodedCamelHeaders() {
+        for (String name : new String[] { "org_DOT_apache_DOT_camel_DOT_Foo", "ORG_dot_APACHE_dot_CAMEL_dot_foo",
+                "org_DOT_apache_DOT_camel_DOT_Foo_HYPHEN_bar" }) {
+            assertTrue(name, blocks(name));
+        }
+    }
+
+    @Test
+    public void blocksAnyHeaderStartingWithCamel() {
+        // same prefix rule as Camel's own fix (CAMEL_FILTER_STARTS_WITH), so "camelot" is dropped as well
+        assertTrue(blocks("camelot"));
+        assertFalse(blocks("myCamelHeader"));
+    }
+
+    @Test
     public void passesOpenNMSHeaders() {
         for (String name : new String[] { "JmsQueueName", "SystemId", "RpcTracingInfo", "SinkTracingInfo",
-                "JMSCorrelationID", "myHeader", "org.opennms.Foo" }) {
+                "systemId", "foreignSource", "foreignId", "JMSCorrelationID", "myHeader", "org.opennms.Foo",
+                "org_DOT_opennms_DOT_Foo" }) {
             assertFalse(name, blocks(name));
         }
     }

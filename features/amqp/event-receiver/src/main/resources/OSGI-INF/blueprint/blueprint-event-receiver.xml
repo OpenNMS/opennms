@@ -27,6 +27,8 @@
       <!-- amqp:[queue:|topic:]destinationName[?options] -->
       <cm:property name="source" value="amqp:queue:opennms-events"/>
       <cm:property name="processorName" value="default-event-receiver-processor"/>
+      <!-- Classes an ObjectMessage may deserialize to; empty rejects every class. -->
+      <cm:property name="deserializationWhiteList" value=""/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -78,21 +80,11 @@
     </argument>
   </bean>
 
-  <!--
-    Same as AMQPComponent.amqpComponent(), plus a deserialization policy with an empty allow-list.
-    The receiver only reads text messages, and Qpid JMS otherwise deserializes any class from an
-    ObjectMessage (CVE-2026-40860).
-  -->
-  <bean id="amqpConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
+  <bean id="amqpConnectionFactory" class="org.opennms.features.amqp.eventreceiver.internal.AmqpConnectionFactories" factory-method="create">
     <argument value="${username}"/>
     <argument value="${password}"/>
     <argument value="${connectionUrl}"/>
-    <property name="topicPrefix" value="topic://"/>
-    <property name="deserializationPolicy">
-      <bean class="org.apache.qpid.jms.policy.JmsDefaultDeserializationPolicy">
-        <property name="allowList" value=""/>
-      </bean>
-    </property>
+    <argument value="${deserializationWhiteList}"/>
   </bean>
 
   <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
