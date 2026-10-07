@@ -1835,7 +1835,7 @@
     <httpclient5Version>5.6.4</httpclient5Version>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.22.1</jackson2Version>
+    <jackson2Version>2.22.3</jackson2Version>
     <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
     <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
     <jmsApiVersion>2.0.1</jmsApiVersion>
