@@ -25,7 +25,7 @@ import useRole from '@/composables/useRole'
 import { useAuthStore } from '@/stores/authStore'
 import { WhoAmIResponse } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick, ref } from 'vue'
 import { RouteLocationNormalized, START_LOCATION } from 'vue-router'
 
@@ -46,12 +46,8 @@ const run = (from: RouteLocationNormalized) => {
 }
 
 describe('requireRole', () => {
-  // useRole caches the auth store at module level, so keep one pinia for the file
-  beforeAll(() => {
-    createTestingPinia()
-  })
-
   beforeEach(() => {
+    createTestingPinia()
     const authStore = useAuthStore()
     authStore.loaded = true
     authStore.whoAmI = { roles: ['ROLE_USER'] } as WhoAmIResponse
