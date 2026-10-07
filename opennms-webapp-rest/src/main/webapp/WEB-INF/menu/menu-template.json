@@ -258,9 +258,9 @@
         {
           "id": "configureThresholds",
           "name": "Configure Thresholds",
-          "url": "admin/thresholds/index.htm",
-          "locationMatch": "thresholds",
-          "roles": null
+          "url": "ui/index.html#/threshold-config",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "flowClassification",

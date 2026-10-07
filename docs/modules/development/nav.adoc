@@ -93,6 +93,7 @@
 *** xref:rest/javamail-config.adoc[]
 *** xref:rest/syslognbi-config.adoc[]
 *** xref:rest/trapd-rest-api.adoc[]
+*** xref:rest/thresholds-rest-api.adoc[]
 *** xref:bsm/bsm-development.adoc[]
 *** xref:rest/situation-feedback.adoc[]
 

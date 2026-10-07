@@ -59,6 +59,22 @@ After upgrade, manage trapd configuration through the *Integrations -> Trap Conf
 
 See xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)] for details.
 
+=== Threshold configuration moved to DB with new UI
+The contents of `thresholds.xml` and `threshd-configuration.xml` are migrated into the database during the
+upgrade process, and the original files are moved to `etc_archive/`.
+
+After upgrade, manage thresholds through the *Administration -> Configure Thresholds* page (or the REST v2
+API under `/api/v2/thresholding` and `/api/v2/threshd`). Direct edits to the archived XML files no longer
+take effect.
+
+The page also covers threshd packages and services, which previously had no UI at all, and adds creating,
+renaming and deleting threshold groups, which previously required editing the XML by hand.
+
+The legacy JSP threshold editor at `admin/thresholds/index.htm` has been removed. Update any bookmarks or
+external links to `ui/index.html#/threshold-config`.
+
+See xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API (v2)] for details.
+
 === Environment variable support in service configuration
 Individual services in `service-configuration.xml` can now be enabled or disabled at runtime via environment variables,
 using the pattern `CORE_SERVICE_<NAME>_ENABLED`. For example, set `CORE_SERVICE_TELEMETRYD_ENABLED=false`

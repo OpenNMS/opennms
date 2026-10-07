@@ -32,7 +32,7 @@ Follow these steps to create the expression-based threshold:
 
 . Click menu:Administration[Configure Thresholds] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Performance Management*, click *Configure Thresholds*.
-. Click *Edit* beside the `netsnmp` group.
+. Click the `netsnmp` group.
 . Click *Create New Expression-based Threshold*.
 . Fill in the following information:
 +
@@ -107,10 +107,10 @@ As an example, the following configuration for the HTTP service will enable thre
       </service>
 -----
 
-The `rrdRepository` attribute of the thresholding group in `$OPENNMS_HOME/etc/thresholds.xml` must contain the appropriate path to the `response` repository.  In the the example below, the path is `/opt/opennms/share/rrd/response`.
+The thresholding group's RRD repository must contain the appropriate path to the `response` repository.  In the the example below, the path is `/opt/opennms/share/rrd/response`.
 
 Additionally, response time thresholds must be `interface` (`if`) type.
-Below is an example section from `$OPENNMS_HOME/etc/thresholds.xml`:
+The resulting configuration looks like this:
 
 [source, xml]
 -----

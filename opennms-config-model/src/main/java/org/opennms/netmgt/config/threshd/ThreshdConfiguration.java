@@ -29,12 +29,10 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Top-level element for the threshd-configuration.xml
@@ -47,34 +45,13 @@ public class ThreshdConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
     /**
-     * Maximum number of threads used for
-     *  thresholding.
-     */
-    @XmlAttribute(name = "threads", required = true)
-    private Integer threads;
-
-    /**
      * Package encapsulating addresses eligible for
      *  thresholding.
      */
     @XmlElement(name = "package", required = true)
     private List<Package> packages = new ArrayList<>();
 
-    /**
-     * Service thresholders
-     */
-    @XmlElement(name = "thresholder")
-    private List<Thresholder> thresholder = new ArrayList<>();
-
     public ThreshdConfiguration() { }
-
-    public Integer getThreads() {
-        return threads;
-    }
-
-    public void setThreads(final Integer threads) {
-        this.threads = ConfigUtils.assertNotNull(threads, "threads");
-    }
 
     public List<Package> getPackages() {
         return packages;
@@ -100,29 +77,9 @@ public class ThreshdConfiguration implements Serializable {
         return packages.remove(p);
     }
 
-    public List<Thresholder> getThresholder() {
-        return thresholder;
-    }
-
-    public void setThresholder(final List<Thresholder> thresholder) {
-        if (thresholder == this.thresholder) return;
-        this.thresholder.clear();
-        if (thresholder != null) this.thresholder.addAll(thresholder);
-    }
-
-    public void addThresholder(final Thresholder thresholder) {
-        this.thresholder.add(thresholder);
-    }
-
-    public boolean removeThresholder(final Thresholder thresholder) {
-        return this.thresholder.remove(thresholder);
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(threads,
-                packages,
-                thresholder);
+        return Objects.hash(packages);
     }
 
     @Override
@@ -133,9 +90,7 @@ public class ThreshdConfiguration implements Serializable {
 
         if (obj instanceof ThreshdConfiguration) {
             final ThreshdConfiguration that = (ThreshdConfiguration)obj;
-            return Objects.equals(this.threads, that.threads)
-                    && Objects.equals(this.packages, that.packages)
-                    && Objects.equals(this.thresholder, that.thresholder);
+            return Objects.equals(this.packages, that.packages);
         }
         return false;
     }
