@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
@@ -67,17 +68,20 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -91,6 +95,7 @@ import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.StringCollection;
+import org.opennms.web.rest.v2.model.NodeAlarmStatusDto;
 import org.opennms.web.rest.v2.model.NodeCriticalPathDto;
 import org.opennms.web.rest.v2.model.NodeServiceTypeDto;
 import org.slf4j.Logger;
@@ -135,6 +140,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @Autowired
     private PathOutageDao m_pathOutageDao;
+
+    @Autowired
+    private AlarmDao m_alarmDao;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -1043,6 +1051,74 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         result.put("criticalPathIp", InetAddressUtils.str(pathOutage.getCriticalPathIp()));
         result.put("criticalPathServiceName", pathOutage.getCriticalPathServiceName());
         return Response.ok(result).build();
+    }
+
+    @GET
+    @Path("{nodeCriteria}/alarmStatus")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get a summary of a node's problem alarms",
+            description = """
+        Return what the legacy node page's status box showed: whether the node is down, how many interfaces
+        and services are down, how many problem alarms are acknowledged and unacknowledged, and the highest
+        unacknowledged severity. A problem alarm is one above Normal severity. Down is read from the UEI, as
+        the status box did: a UEI that contains `nodeDown`, `interfaceDown` or `nodeLostService`.
+
+        Every figure is counted on the server, so the answer stays small however many alarms the node has.
+        Use `GET /alarms` with a node filter for the alarms themselves.""",
+            operationId = "NodeRestServiceGETAlarmStatusByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's alarm summary.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = NodeAlarmStatusDto.class),
+                            examples = @ExampleObject(value = """
+                    {"severity": "MAJOR", "nodeDown": false, "interfacesDown": 0, "servicesDown": 1,
+                     "acknowledgedCount": 1, "unacknowledgedCount": 2}"""))),
+            @ApiResponse(responseCode = "404", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found.")))
+    })
+    public Response getAlarmStatus(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        final int nodeId = node.getId();
+
+        // As includes/nodeStatus-box.jsp, which loaded every alarm and counted them; here the database counts.
+        final List<OnmsAlarm> worstUnacknowledged = m_alarmDao.findMatching(problemAlarms(nodeId)
+                .isNull("alarmAckTime")
+                .orderBy("severity").desc()
+                .limit(1)
+                .toCriteria());
+
+        final Map<String,Object> result = new HashMap<>();
+        result.put("severity", worstUnacknowledged.isEmpty()
+                ? OnmsSeverity.NORMAL.name()
+                : worstUnacknowledged.get(0).getSeverity().name());
+        result.put("nodeDown", countProblemAlarms(nodeId, b -> b.like("uei", "%nodeDown%")) > 0);
+        result.put("interfacesDown", countProblemAlarms(nodeId, b -> b.like("uei", "%interfaceDown%")));
+        result.put("servicesDown", countProblemAlarms(nodeId, b -> b.like("uei", "%nodeLostService%")));
+        result.put("acknowledgedCount", countProblemAlarms(nodeId, b -> b.isNotNull("alarmAckTime")));
+        result.put("unacknowledgedCount", countProblemAlarms(nodeId, b -> b.isNull("alarmAckTime")));
+        return Response.ok(result).build();
+    }
+
+    // The node's alarms above Normal: indeterminate, cleared and normal ones are not problems.
+    private static CriteriaBuilder problemAlarms(final int nodeId) {
+        return new CriteriaBuilder(OnmsAlarm.class)
+                .alias("node", "node")
+                .eq("node.id", nodeId)
+                .gt("severity", OnmsSeverity.NORMAL);
+    }
+
+    private int countProblemAlarms(final int nodeId, final UnaryOperator<CriteriaBuilder> restrict) {
+        return m_alarmDao.countMatching(restrict.apply(problemAlarms(nodeId)).toCriteria());
     }
 
     @Path("{nodeCriteria}/ipinterfaces")
