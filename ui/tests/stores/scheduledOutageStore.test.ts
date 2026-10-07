@@ -23,13 +23,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { useScheduledOutageStore } from '@/stores/scheduledOutageStore'
-import { getActiveOutagesForNode } from '@/services/scheduledOutagesService'
+import { getActiveOutageNamesForNode } from '@/services/scheduledOutagesService'
 
 vi.mock('@/services/scheduledOutagesService', () => ({
-  getActiveOutagesForNode: vi.fn()
+  getActiveOutageNamesForNode: vi.fn()
 }))
 
-const maint = { name: 'maint', node: [{ id: 42 }] }
+const maint = 'maint'
 
 describe('scheduledOutageStore', () => {
   beforeEach(() => {
@@ -37,31 +37,31 @@ describe('scheduledOutageStore', () => {
     vi.clearAllMocks()
   })
 
-  it('publishes the node\'s active outages, stamped with the node id', async () => {
-    vi.mocked(getActiveOutagesForNode).mockResolvedValue([maint])
+  it('publishes the names of the node\'s active outages, stamped with the node id', async () => {
+    vi.mocked(getActiveOutageNamesForNode).mockResolvedValue([maint])
     const store = useScheduledOutageStore()
 
     const result = await store.getNodeActiveOutages('42')
 
-    expect(getActiveOutagesForNode).toHaveBeenCalledWith('42')
+    expect(getActiveOutageNamesForNode).toHaveBeenCalledWith('42')
     expect(result).toEqual(expect.objectContaining({ success: true, payload: [maint] }))
-    expect(store.nodeActiveOutages).toEqual([maint])
+    expect(store.nodeActiveOutageNames).toEqual([maint])
     expect(store.nodeActiveOutagesNodeId).toBe('42')
   })
 
   // A window closing is an empty answer, which must replace the outages that were in effect.
   it('replaces the slice with an empty answer', async () => {
-    vi.mocked(getActiveOutagesForNode).mockResolvedValueOnce([maint]).mockResolvedValueOnce([])
+    vi.mocked(getActiveOutageNamesForNode).mockResolvedValueOnce([maint]).mockResolvedValueOnce([])
     const store = useScheduledOutageStore()
 
     await store.getNodeActiveOutages('42')
     await store.getNodeActiveOutages('42')
 
-    expect(store.nodeActiveOutages).toEqual([])
+    expect(store.nodeActiveOutageNames).toEqual([])
   })
 
   it('keeps the previous slice and stamp when a fetch fails', async () => {
-    vi.mocked(getActiveOutagesForNode).mockResolvedValueOnce([maint]).mockResolvedValueOnce(null)
+    vi.mocked(getActiveOutageNamesForNode).mockResolvedValueOnce([maint]).mockResolvedValueOnce(null)
     const store = useScheduledOutageStore()
 
     await store.getNodeActiveOutages('42')
@@ -69,12 +69,12 @@ describe('scheduledOutageStore', () => {
 
     expect(result.success).toBe(false)
     expect(store.nodeActiveOutagesNodeId).toBe('42')
-    expect(store.nodeActiveOutages).toEqual([maint])
+    expect(store.nodeActiveOutageNames).toEqual([maint])
   })
 
   it('discards a superseded fetch: node 42 answering late does not replace node 99', async () => {
     let resolve42: (value: unknown) => void = () => undefined
-    vi.mocked(getActiveOutagesForNode)
+    vi.mocked(getActiveOutageNamesForNode)
       .mockImplementationOnce(() => new Promise((r) => {
         resolve42 = r
       }) as never)
@@ -87,6 +87,6 @@ describe('scheduledOutageStore', () => {
 
     expect((await call42).success).toBe(false)
     expect(store.nodeActiveOutagesNodeId).toBe('99')
-    expect(store.nodeActiveOutages).toEqual([])
+    expect(store.nodeActiveOutageNames).toEqual([])
   })
 })

@@ -55,7 +55,7 @@ describe('NodeScheduledOutagesBox.vue', () => {
   const answerWith = (names: string[]) => {
     const s = store
     s.getNodeActiveOutages = vi.fn(async (nodeId: string) => {
-      s.nodeActiveOutages = names.map(name => ({ name }))
+      s.nodeActiveOutageNames = names
       s.nodeActiveOutagesNodeId = nodeId
 
       return { success: true, message: '' }
