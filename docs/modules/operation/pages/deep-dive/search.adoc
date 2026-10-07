@@ -82,6 +82,7 @@ Find nodes whose CDP or LLDP data match the defined search string.
 Search for nodes with assets that are associated with a particular category or field.
 
 The field search includes a list of fields, and a text box to provide a string value to match.
+The list does not include the asset credential fields (password, enable password and SNMP community).
 The search is case-insensitive and inclusive.
 You can use an underscore (`_`) as a single-character wildcard, or a percent character (`%`) as a multiple-character wildcard.
 

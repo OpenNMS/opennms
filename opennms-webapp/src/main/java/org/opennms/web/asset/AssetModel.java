@@ -508,7 +508,9 @@ public class AssetModel {
 
     /**
      * Hard-coded (for now) list of human-readable asset columns and the
-     * corresponding database column.
+     * corresponding database column. Credential columns (password, enable,
+     * snmpcommunity) are deliberately left out: this list is also the search
+     * allowlist, and search results echo the matched value.
      */
     private static final String[][] s_columns = sort(new String[][] {
         new String[] { "Address 1", "address1" },
@@ -549,8 +551,6 @@ public class AssetModel {
         new String[] { "Vendor Phone", "vendorPhone" }, 
         new String[] { "ZIP Code", "zip" },
         new String[] { "Username", "username" },
-        new String[] { "Password", "password" },
-        new String[] { "Enable Password", "enable" },
         new String[] { "Connection type", "connection" },
         new String[] { "Auto Enable", "autoenable" },
         new String[] { "Cpu", "cpu" },        
@@ -566,7 +566,6 @@ public class AssetModel {
         new String[] { "Inputpower", "inputpower" },
         new String[] { "Additional hardware", "additionalhardware" },
         new String[] { "Admin", "admin" },
-        new String[] { "SNMP community", "snmpcommunity" },
 	    new String[] { "Rack unit height", "rackunitheight" },
         new String[] { "GeoLocation Longitude", "longitude" },
         new String[] { "GeoLocation Latitude", "latitude" },
