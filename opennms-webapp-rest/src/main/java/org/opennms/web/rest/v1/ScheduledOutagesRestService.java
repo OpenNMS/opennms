@@ -40,6 +40,7 @@ import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -92,7 +93,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <li><b>GET /sched-outages/{outageName}/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage for a specific scheduled outage calendar.</li>
  * <li><b>GET /sched-outages/nodeInOutage/{nodeId}</b><br>to check if a node (with a specific nodeId) is currently in outage.</li>
  * <li><b>GET /sched-outages/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage.</li>
- * <li><b>GET /sched-outages/activeForNode/{nodeId}</b><br>to get the outages currently in effect for a node or any of its interfaces.</li>
+ * <li><b>GET /sched-outages/activeForNode/{nodeId}</b><br>to get the names of the outages currently in effect for a node or any of its interfaces.</li>
  * </ul>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
@@ -681,37 +682,28 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @GET
     @Path("activeForNode/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @Transactional(readOnly = true)
     @Operation(
-            summary = "List the scheduled outages currently affecting a node",
+            summary = "List the names of the scheduled outages currently affecting a node",
             description = """
-                    Return every calendar that is inside one of its windows right now and covers the node, either by
-                    naming the node or by covering one of its interfaces (exact addresses, ranges or `match-any`).
-                    Deleted interfaces are not considered. This is what the node page shows as "currently affected
-                    by the following scheduled outages". An unknown node id is not an error and answers an empty
-                    list.""",
+                    Return the name of every calendar that is inside one of its windows right now and covers the
+                    node, either by naming the node or by covering one of its interfaces (exact addresses, ranges or
+                    `match-any`). Deleted interfaces are not considered. This is what the node page shows as
+                    "currently affected by the following scheduled outages". Only the names are returned, as the
+                    legacy node page showed them; the calendars themselves are at `GET /sched-outages/{outageName}`.
+                    An unknown node id is not an error and answers an empty list.""",
             operationId = "getActiveScheduledOutagesForNodeV1"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The calendars currently in effect for the node.",
+            @ApiResponse(responseCode = "200", description = "The names of the calendars currently in effect for the node.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = Outages.class),
+                            array = @ArraySchema(schema = @Schema(type = "string")),
                             examples = @ExampleObject(value = """
-                    {
-                      "outage": [ {
-                          "name": "Weekend maintenance",
-                          "type": "weekly",
-                          "time": [
-                            { "id": null, "day": "saturday", "begins": "00:00:00", "ends": "23:59:59" }
-                          ],
-                          "interface": [],
-                          "node": [ { "id": 2 } ]
-                        } ]
-                    }"""))),
+                    [ "Weekend maintenance" ]"""))),
             @ApiResponse(responseCode = "404", description = "The node id is not an integer.")
     })
-    public Outages getActiveOutagesForNode(
+    public List<String> getActiveOutagesForNode(
             @Parameter(description = "Node id.", example = "2", required = true)
             @PathParam("nodeId") int nodeId) {
         // As NetworkElementFactory.getActiveInterfacesOnNode: every interface not marked deleted.
@@ -720,15 +712,12 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                 .map(OnmsIpInterface::getIpAddressAsString)
                 .collect(Collectors.toList());
 
-        final List<Outage> active = m_pollOutagesDao.getReadOnlyConfig().getOutages().stream()
+        return m_pollOutagesDao.getReadOnlyConfig().getOutages().stream()
                 .filter(outage -> m_pollOutagesDao.isCurTimeInOutage(outage))
                 .filter(outage -> m_pollOutagesDao.isNodeIdInOutage(nodeId, outage)
                         || addresses.stream().anyMatch(address -> m_pollOutagesDao.isInterfaceInOutage(address, outage)))
+                .map(Outage::getName)
                 .collect(Collectors.toList());
-
-        final Outages outages = new Outages();
-        outages.setOutages(active);
-        return outages;
     }
 
     @GET

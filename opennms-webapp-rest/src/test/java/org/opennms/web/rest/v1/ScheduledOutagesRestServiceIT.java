@@ -434,10 +434,11 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     private List<String> activeOutageNames(final int nodeId) throws Exception {
         final MockHttpServletRequest request = createRequest(m_servletContext, GET, "/sched-outages/activeForNode/" + nodeId);
         request.addHeader("Accept", MediaType.APPLICATION_JSON);
-        final JSONArray outages = new JSONObject(sendRequest(request, 200)).optJSONArray("outage");
+        // A bare array of names: getString fails on anything that is not a string, such as a whole calendar.
+        final JSONArray outages = new JSONArray(sendRequest(request, 200));
         final List<String> names = new ArrayList<>();
-        for (int i = 0; outages != null && i < outages.length(); i++) {
-            names.add(outages.getJSONObject(i).getString("name"));
+        for (int i = 0; i < outages.length(); i++) {
+            names.add(outages.getString(i));
         }
         return names;
     }
