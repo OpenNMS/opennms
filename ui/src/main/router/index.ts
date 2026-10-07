@@ -70,6 +70,7 @@ const mainMenuLoaded = () => useMenuStore().mainMenuLoaded
 const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled ?? false
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
+const thresholdRoleMsg = 'Must have the admin role to access Threshold Configuration.'
 
 // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
 // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
@@ -428,6 +429,25 @@ const router = createRouter({
       name: 'Edit MIB File',
       component: () => import('@/containers/EditMibFile.vue'),
       beforeEnter: requireRole('adminRole', 'No role access to the MIB compiler.')
+    },
+    {
+      path: '/threshold-config',
+      name: 'Threshold Configuration',
+      component: () => import('@/containers/ThresholdConfiguration.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      // Successor of the legacy '?groupName=X&editGroup' deep link, so runbooks can keep linking a group.
+      path: '/threshold-config/group/:name',
+      name: 'Threshold Group Detail',
+      component: () => import('@/containers/ThresholdGroupDetail.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name',
+      name: 'Threshold Package Detail',
+      component: () => import('@/containers/ThresholdPackageDetail.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
@@ -55,6 +57,20 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
 
     AbstractThreshdDao(JsonStore jsonStore) {
         this.jsonStore = Objects.requireNonNull(jsonStore);
+    }
+
+    /**
+     * Guards the configuration this DAO holds. Declared here so that both the CM-backed and the
+     * overrideable implementation share one lock; only the writeable DAO interfaces expose it.
+     */
+    private final ReentrantReadWriteLock configLock = new ReentrantReadWriteLock();
+
+    public Lock getReadLock() {
+        return configLock.readLock();
+    }
+
+    public Lock getWriteLock() {
+        return configLock.writeLock();
     }
 
     /**
