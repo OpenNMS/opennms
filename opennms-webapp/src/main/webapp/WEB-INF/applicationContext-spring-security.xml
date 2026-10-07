@@ -16,11 +16,10 @@
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/alarms/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE','ROLE_FILESYSTEM_EDITOR')"/>
 
-    <!-- ack/unack/escalate/clear alarms. ack/clear/escalate are PUT form-body params, so these must be
-         scoped by method (the old /rest/alarms/*?ack=true patterns matched on the query string and never
-         fired, leaving PUT unauthorized at the filter layer). SecurityHelper still enforces
-         self-vs-delegate and blocks read-only users in code. NMS-20348 -->
-    <intercept-url pattern="/rest/alarms/**" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')"/>
+    <!-- ack/unack/escalate/clear alarms. These operations use PUT with form-body parameters, so the rule
+         matches on the method, not on the query string. ROLE_ADMIN can always edit, also with ROLE_READONLY.
+         This agrees with SecurityHelper and the alarm UI. SecurityHelper also does the self-vs-delegate check. -->
+    <intercept-url pattern="/rest/alarms/**" method="PUT" access="hasRole('ROLE_ADMIN') or (hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST') and !hasRole('ROLE_READONLY'))"/>
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/alarms/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
@@ -152,16 +151,19 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
-  <http pattern="/nrt/**" realm="OpenNMS Realm" use-expressions="false">
+  <http pattern="/nrt/**" realm="OpenNMS Realm" use-expressions="true">
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
-    <intercept-url pattern="/nrt/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+    <intercept-url pattern="/nrt/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE')"/>
 
     <!-- read-only calls should be allowed for any user -->
-    <intercept-url pattern="/nrt/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
-    <intercept-url pattern="/nrt/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+    <intercept-url pattern="/nrt/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/nrt/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+
+    <!-- Deny all requests that the rules above do not match, for example an HTTP method in lowercase. -->
+    <intercept-url pattern="/**" access="denyAll"/>
 
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
