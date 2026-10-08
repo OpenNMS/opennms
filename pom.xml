@@ -2521,7 +2521,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.camel.headers</artifactId>
+        <artifactId>org.opennms.core.camel.hardening</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

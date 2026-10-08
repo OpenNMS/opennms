@@ -31,8 +31,24 @@
     <property name="concurrentConsumers" value="1" />
   </bean>
 
+  <!-- Same inbound hardening as applicationContext-daemon.xml, so the IPC tests exercise it -->
+  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList" lazy-init="true">
+    <constructor-arg>
+      <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy"/>
+    </constructor-arg>
+    <constructor-arg>
+      <list>
+        <value>JmsQueueName</value>
+        <value>SystemId</value>
+        <value>RpcTracingInfo</value>
+        <value>SinkTracingInfo</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
   <bean id="queuingservice" class="org.apache.camel.component.jms.JmsComponent" lazy-init="true">
     <property name="configuration" ref="jmsConfig" />
+    <property name="headerFilterStrategy" ref="jmsHeaderFilterStrategy" />
   </bean>
 
 </beans>

@@ -42,8 +42,8 @@
     </bean>
 
     <!-- A canonical JMS component (backed by ActiveMQ) pointing to the OpenNMS controller -->
-    <!-- Drop inbound Camel* headers so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
-    <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.headers.InboundCamelHeaderFilterStrategy">
+    <!-- Keep only the inbound properties OpenNMS reads, so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
+    <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList">
         <argument>
             <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy">
                 <argument>
@@ -51,6 +51,14 @@
                 </argument>
             </bean>
         </argument>
+            <argument>
+                <list>
+                    <value>JmsQueueName</value>
+                    <value>SystemId</value>
+                    <value>RpcTracingInfo</value>
+                    <value>SinkTracingInfo</value>
+                </list>
+            </argument>
     </bean>
 
     <bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">

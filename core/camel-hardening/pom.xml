@@ -7,12 +7,12 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
-  <artifactId>org.opennms.core.camel.headers</artifactId>
-  <name>OpenNMS :: Core :: Camel :: Headers</name>
+  <artifactId>org.opennms.core.camel.hardening</artifactId>
+  <name>OpenNMS :: Core :: Camel :: Hardening</name>
   <!--
     Kept separate from org.opennms.core.camel on purpose: the JMS bundles that
     use it are installed in Sentinel's prerequisite feature stage, where only
-    camel-core is available.
+    camel-core and the JMS API are available.
   -->
   <packaging>bundle</packaging>
   <build>
@@ -25,7 +25,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.core.camel.headers</Export-Package>
+            <Export-Package>org.opennms.core.camel.hardening</Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -36,6 +36,16 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>javax.jms-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

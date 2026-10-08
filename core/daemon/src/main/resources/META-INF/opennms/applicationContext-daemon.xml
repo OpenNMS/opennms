@@ -54,14 +54,22 @@
   </bean>
 
   <!-- JMS component (backed by ActiveMQ) to be used by spring applicationContext/camelContext  -->
-  <!-- Drop inbound Camel* headers so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
-  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.headers.InboundCamelHeaderFilterStrategy" lazy-init="true">
+  <!-- Keep only the inbound properties OpenNMS reads, so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
+  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList" lazy-init="true">
     <constructor-arg>
       <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy">
         <constructor-arg>
           <bean factory-bean="jmsConfig" factory-method="isIncludeAllJMSXProperties"/>
         </constructor-arg>
       </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <list>
+        <value>JmsQueueName</value>
+        <value>SystemId</value>
+        <value>RpcTracingInfo</value>
+        <value>SinkTracingInfo</value>
+      </list>
     </constructor-arg>
   </bean>
 

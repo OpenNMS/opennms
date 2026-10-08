@@ -19,11 +19,13 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.camel.headers;
+package org.opennms.core.camel.hardening;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.jms.Message;
@@ -35,19 +37,19 @@ import org.apache.camel.component.jms.JmsHeaderFilterStrategy;
 import org.junit.Test;
 
 /**
- * Runs the filter through Camel's real JMS binding, which filters on the
+ * Runs the allow list through Camel's real JMS binding, which filters on the
  * property name as sent and only decodes it afterwards.
  */
 public class JmsBindingInboundFilterTest {
 
     private static Map<String, Object> extract(final Message message) {
         final JmsEndpoint endpoint = new JmsEndpoint();
-        endpoint.setHeaderFilterStrategy(new InboundCamelHeaderFilterStrategy(new JmsHeaderFilterStrategy()));
+        endpoint.setHeaderFilterStrategy(new InboundHeaderAllowList(new JmsHeaderFilterStrategy(), Arrays.asList("JmsQueueName", "SystemId")));
         return new JmsBinding(endpoint).extractHeadersFromJms(message, null);
     }
 
     @Test
-    public void dropsCamelHeadersWhetherEncodedOrNot() throws Exception {
+    public void keepsOnlyAllowedProperties() throws Exception {
         final ActiveMQTextMessage message = new ActiveMQTextMessage();
         message.setStringProperty("CamelExecCommandExecutable", "/bin/sh");
         message.setStringProperty("cAMELFileName", "x");
@@ -59,11 +61,12 @@ public class JmsBindingInboundFilterTest {
         final Map<String, Object> headers = extract(message);
 
         for (String dropped : new String[] { "CamelExecCommandExecutable", "cAMELFileName",
-                "org.apache.camel.Foo", "org_DOT_apache_DOT_camel_DOT_Foo" }) {
+                "org.apache.camel.Foo", "org_DOT_apache_DOT_camel_DOT_Foo", "org.opennms.Foo", "org_DOT_opennms_DOT_Foo" }) {
             assertFalse(dropped, headers.containsKey(dropped));
         }
         assertEquals("OpenNMS.Sink.Heartbeat", headers.get("JmsQueueName"));
         assertEquals("minion-1", headers.get("SystemId"));
-        assertEquals("x", headers.get("org.opennms.Foo"));
+        // standard JMS header fields bypass the strategy
+        assertTrue(headers.containsKey("JMSDeliveryMode"));
     }
 }

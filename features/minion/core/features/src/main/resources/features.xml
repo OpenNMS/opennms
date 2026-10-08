@@ -34,7 +34,7 @@
         <!-- netty-transport-classes-epoll is required by netty-transport-native-epoll at runtime -->
         <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
 
-        <feature>opennms-core-camel-headers</feature>
+        <feature>opennms-core-camel-hardening</feature>
 
         <!-- This is also defined in "sentinel-jms" -->
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>

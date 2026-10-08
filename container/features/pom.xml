@@ -508,7 +508,7 @@
                           <feature>opennms-alarm-history-elastic</feature>
                           <feature>opennms-camel-amqp</feature>
                           <feature>opennms-core-camel</feature>
-                          <feature>opennms-core-camel-headers</feature>
+                          <feature>opennms-core-camel-hardening</feature>
                           <feature>opennms-core-daemon</feature>
                           <feature>opennms-core-ipc-jms</feature>
                           <feature>opennms-core-ipc-rpc-api</feature>

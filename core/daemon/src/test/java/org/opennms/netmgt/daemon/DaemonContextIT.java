@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.Connection;
 import javax.jms.Message;
@@ -45,6 +46,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.opennms.core.camel.hardening.DiscardUnreadableBodies;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -119,12 +121,14 @@ public class DaemonContextIT {
 	            m.setStringProperty("cAMELJmsDestinationName", "somewhere-else");
 	            m.setStringProperty("org_DOT_apache_DOT_camel_DOT_Foo", "x");
 	            m.setStringProperty("SystemId", "minion-1");
+	            m.setStringProperty("NotSomethingOpenNMSReads", "x");
 	            return m;
 	        });
 	        mock.assertIsSatisfied(10000);
 	        final org.apache.camel.Message in = mock.getExchanges().get(0).getIn();
 	        for (String name : new String[] { "CamelExecCommandExecutable", "cAMELJmsDestinationName",
-	                "CamelJmsDestinationName", "org.apache.camel.Foo", "org_DOT_apache_DOT_camel_DOT_Foo" }) {
+	                "CamelJmsDestinationName", "org.apache.camel.Foo", "org_DOT_apache_DOT_camel_DOT_Foo",
+	                "NotSomethingOpenNMSReads" }) {
 	            assertNull(name, in.getHeader(name));
 	        }
 	        assertEquals("minion-1", in.getHeader("SystemId"));
@@ -135,34 +139,33 @@ public class DaemonContextIT {
 	}
 
 	/**
-	* A producer on the broker sends an ObjectMessage; Camel's JmsBinding would call
-	* getObject() on it, so the connection factory must refuse to deserialize (CVE-2026-40860).
+	* A producer on the broker sends an ObjectMessage. The connection factory refuses to
+	* deserialize it (CVE-2026-40860) and the route drops it once, without redelivery.
 	*/
 	@Test
-	public void queuingserviceDoesNotDeserializeObjectMessages() throws Exception {
+	public void queuingserviceDropsObjectMessagesOnce() throws Exception {
 	    final DefaultCamelContext camel = new DefaultCamelContext();
 	    camel.getShutdownStrategy().setTimeout(5);
 	    camel.addComponent("queuingservice", queuingservice);
-	    // the JMS body is extracted lazily; catch in the route so the message is not redelivered
-	    final BlockingQueue<Object> outcomes = new LinkedBlockingQueue<>();
+	    final AtomicInteger deliveries = new AtomicInteger();
+	    final BlockingQueue<String> bodies = new LinkedBlockingQueue<>();
 	    camel.addRoutes(new RouteBuilder() {
 	        @Override
 	        public void configure() {
-	            from("queuingservice:queue:NMS-20397.objects").process(exchange -> {
-	                try {
-	                    outcomes.add(exchange.getIn().getBody(String.class));
-	                } catch (RuntimeException e) {
-	                    outcomes.add(e);
-	                }
-	            });
+	            from("queuingservice:queue:NMS-20397.objects")
+	                .process(exchange -> deliveries.incrementAndGet())
+	                .process(new DiscardUnreadableBodies())
+	                .process(exchange -> bodies.add(exchange.getIn().getBody(String.class)));
 	        }
 	    });
 	    camel.start();
 	    try {
 	        sendRaw("NMS-20397.objects", session -> session.createObjectMessage(new DeserializationProbe()));
-	        final Object outcome = outcomes.poll(10, TimeUnit.SECONDS);
-	        assertTrue(String.valueOf(outcome), outcome instanceof Exception
-	                && String.valueOf(outcome).contains("not trusted to be serialized"));
+	        sendRaw("NMS-20397.objects", session -> session.createTextMessage("after"));
+	        assertEquals("after", bodies.poll(10, TimeUnit.SECONDS));
+	        Thread.sleep(2000); // long enough for a rollback to have been redelivered
+	        assertEquals("ObjectMessage consumed once, text message once", 2, deliveries.get());
+	        assertTrue(bodies.isEmpty());
 	        assertFalse("payload must not be deserialized", DeserializationProbe.DESERIALIZED.get());
 	    } finally {
 	        camel.stop();

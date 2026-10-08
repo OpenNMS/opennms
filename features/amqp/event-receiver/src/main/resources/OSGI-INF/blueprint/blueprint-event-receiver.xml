@@ -64,6 +64,7 @@
     <route id="receiveEvent">
       <!-- Receive from AMQP -->
       <from uri="{{source}}"/>
+      <process ref="discardUnreadableBodies"/>
       <!-- Filter and/or transform the event -->
       <bean ref="dynamicallyTrackedProcessor"/>
       <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
@@ -73,12 +74,22 @@
     </route>
   </camelContext>
 
-  <!-- Drop inbound Camel* headers so a message producer cannot set Camel internals (CVE-2026-40453) -->
-  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.headers.InboundCamelHeaderFilterStrategy">
+  <!-- Keep only the inbound properties the receiver reads, so a producer cannot set Camel internals (CVE-2026-40453) -->
+  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList">
     <argument>
       <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy"/>
     </argument>
+    <argument>
+      <list>
+        <value>systemId</value>
+        <value>foreignSource</value>
+        <value>foreignId</value>
+      </list>
+    </argument>
   </bean>
+
+  <!-- An ObjectMessage is refused by the deserialization policy; drop it instead of letting the broker redeliver it -->
+  <bean id="discardUnreadableBodies" class="org.opennms.core.camel.hardening.DiscardUnreadableBodies"/>
 
   <bean id="amqpConnectionFactory" class="org.opennms.features.amqp.eventreceiver.internal.AmqpConnectionFactories" factory-method="create">
     <argument value="${username}"/>
