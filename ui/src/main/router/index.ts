@@ -112,6 +112,12 @@ const router = createRouter({
       component: () => import('@/containers/DistributedMonitoring.vue'),
       beforeEnter: requireRole(adminRole, 'Must be admin to manage distributed monitoring.')
     },
+    {
+      path: '/admin/applications',
+      name: 'Manage Applications',
+      component: () => import('@/containers/ManageApplications.vue'),
+      beforeEnter: requireRole(adminRole, 'Must be admin to manage applications.')
+    },
     // the former Manage Minions / Manage Monitoring Locations pages (NMS-20364)
     {
       path: '/admin/minions',
