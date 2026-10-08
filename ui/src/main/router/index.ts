@@ -284,39 +284,13 @@ const router = createRouter({
       path: '/mib-compiler',
       name: 'MIB Compiler',
       component: () => import('@/containers/MibCompiler.vue'),
-      beforeEnter: (to, from) => {
-        const checkRoles = () => {
-          if (!adminRole.value) {
-            showSnackBar({ msg: 'No role access to the MIB compiler.' })
-            router.push(from.path)
-          }
-        }
-
-        if (rolesAreLoaded.value) {
-          checkRoles()
-        } else {
-          whenever(rolesAreLoaded, () => checkRoles())
-        }
-      }
+      beforeEnter: requireRole('adminRole', 'No role access to the MIB compiler.')
     },
     {
       path: '/mib-compiler/edit',
       name: 'Edit MIB File',
       component: () => import('@/containers/EditMibFile.vue'),
-      beforeEnter: (to, from) => {
-        const checkRoles = () => {
-          if (!adminRole.value) {
-            showSnackBar({ msg: 'No role access to the MIB compiler.' })
-            router.push(from.path)
-          }
-        }
-
-        if (rolesAreLoaded.value) {
-          checkRoles()
-        } else {
-          whenever(rolesAreLoaded, () => checkRoles())
-        }
-      }
+      beforeEnter: requireRole('adminRole', 'No role access to the MIB compiler.')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
