@@ -31,15 +31,11 @@ import ZenithConnect from '@/containers/ZenithConnect.vue'
 import ZenithConnectView from '@/components/ZenithConnect/ZenithConnectView.vue'
 import ZenithConnectRegister from '@/components/ZenithConnect/ZenithConnectRegister.vue'
 import ZenithConnectRegisterResult from '@/components/ZenithConnect/ZenithConnectRegisterResult.vue'
-import useRole from '@/composables/useRole'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { computed } from 'vue'
 import { requireCondition, requireRole } from './guards'
 
-const { adminRole, filesystemEditorRole, dcbRole, snmpRole } = useRole()
-const menuStore = computed(() => useMenuStore())
 const { startSpinner, stopSpinner } = useSpinner()
 
 // for backward compatibility with legacy OpenNMS plugins
@@ -65,8 +61,9 @@ const isLegacyPlugin = (plugin: Plugin) => {
   return false
 }
 
-const mainMenuLoaded = computed<boolean>(() => menuStore.value?.mainMenuLoaded ?? false)
-const zenithConnectEnabled = computed<boolean>(() => menuStore.value?.mainMenu?.zenithConnectEnabled ?? false)
+// getters, so the guard reads the menu store that is active when the navigation runs
+const mainMenuLoaded = () => useMenuStore().mainMenuLoaded
+const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled ?? false
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
 
@@ -98,19 +95,19 @@ const router = createRouter({
       path: '/file-editor',
       name: 'FileEditor',
       component: FileEditor,
-      beforeEnter: requireRole(filesystemEditorRole, 'No role access to file editor.')
+      beforeEnter: requireRole('filesystemEditorRole', 'No role access to file editor.')
     },
     {
       path: '/configuration',
       name: 'Configuration',
       component: () => import('@/containers/ProvisionDConfig.vue'),
-      beforeEnter: requireRole(adminRole, 'No role access to external requisitions.')
+      beforeEnter: requireRole('adminRole', 'No role access to external requisitions.')
     },
     {
       path: '/logs',
       name: 'Logs',
       component: () => import('@/containers/Logs.vue'),
-      beforeEnter: requireRole(adminRole, 'No role access to logs.')
+      beforeEnter: requireRole('adminRole', 'No role access to logs.')
     },
     {
       path: '/map',
@@ -198,31 +195,31 @@ const router = createRouter({
       path: '/device-config-backup',
       name: 'DeviceConfigBackup',
       component: DeviceConfigBackup,
-      beforeEnter: requireRole(dcbRole, 'No role access to DCB.')
+      beforeEnter: requireRole('dcbRole', 'No role access to DCB.')
     },
     {
       path: '/scv',
       name: 'SCV',
       component: () => import('@/containers/SecureCredentialsVault.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to access SCV.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to access SCV.')
     },
     {
       path: '/snmp-config',
       name: 'SNMP Config',
       component: () => import('@/containers/SnmpConfiguration.vue'),
-      beforeEnter: requireRole(snmpRole, snmpRoleMsg)
+      beforeEnter: requireRole('snmpRole', snmpRoleMsg)
     },
     {
       path: '/snmp-config/lookup',
       name: 'SNMP Config Lookup',
       component: () => import('@/containers/SnmpConfiguration.vue'),
-      beforeEnter: [requireRole(snmpRole, snmpRoleMsg), enterSnmpLookupMode]
+      beforeEnter: [requireRole('snmpRole', snmpRoleMsg), enterSnmpLookupMode]
     },
     {
       path: '/usage-statistics',
       name: 'Usage Statistics',
       component: () => import('@/containers/UsageStatistics.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to access Usage Statistics.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to access Usage Statistics.')
     },
     {
       path: '/zenith-connect',
