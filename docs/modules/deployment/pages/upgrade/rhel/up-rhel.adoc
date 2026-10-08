@@ -52,11 +52,11 @@ yum -y upgrade opennms
 yum-config-manager --disable opennms-repo-stable-*
 ----
 
-. Upgrade Java 21 to the latest release:
+. Upgrade Java 25 to the latest release:
 +
 [source, console]
 ----
-yum -y install java-21-openjdk java-21-openjdk-devel
+yum -y install java-25-openjdk java-25-openjdk-devel
 ----
 
 . Use the `runjava` command to set the JVM that {page-component-title} will use:

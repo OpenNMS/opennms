@@ -57,13 +57,13 @@ endif::[]
 
 === Step 3: Download OpenJDK
 
-Download and install OpenJDK packages (OpenJDK 21 here but please refer to system requirements):
+Download and install OpenJDK packages (OpenJDK 25 here but please refer to system requirements):
 
 [source,console]
 ----
-dnf install --downloadonly --downloaddir=/tmp/opennms_rpms java-21-openjdk-devel
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms java-25-openjdk-devel
 mv ./tmp/opennms_rpms ./airgap_rpm_files/01-openjdk
-dnf install -y java-21-openjdk-devel
+dnf install -y java-25-openjdk-devel
 ----
 
 === Step 4: Download PostgreSQL
