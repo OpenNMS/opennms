@@ -1,6 +1,6 @@
 import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import { defineComponent, h } from 'vue'
@@ -11,15 +11,15 @@ import { useAdhocGraphStore } from '@/stores/adhocGraphStore'
 import { useMenuStore } from '@/stores/menuStore'
 
 const getNodes = vi.fn()
+const getNodesByFilterRule = vi.fn()
 const getResourceForNode = vi.fn()
-const getResourceById = vi.fn()
 const getGraphMetrics = vi.fn()
 
 vi.mock('@/services', () => ({
   default: {
     getNodes: (...args: unknown[]) => getNodes(...args),
+    getNodesByFilterRule: (...args: unknown[]) => getNodesByFilterRule(...args),
     getResourceForNode: (...args: unknown[]) => getResourceForNode(...args),
-    getResourceById: (...args: unknown[]) => getResourceById(...args),
     getGraphMetrics: (...args: unknown[]) => getGraphMetrics(...args)
   }
 }))
@@ -61,14 +61,42 @@ vi.mock('@/components/AdhocGraphs/AdhocChart.vue', () => ({
       error: { type: String, default: '' },
       expanded: { type: Boolean, default: false }
     },
-    setup(_props, { expose }) {
+    setup(props, { expose }) {
       expose({ exportTarget: () => null })
-      return () => h('div', { 'data-test': 'chart-stub' })
+      return () => h('div', { 'data-test': 'chart-stub' }, props.error ? [h('p', { 'data-test': 'chart-error' }, props.error)] : [])
     }
   })
 }))
 
 const RESOURCE_ID = 'node[1].interfaceSnmp[eth0]'
+const RESPONSE_TIME_ID = 'node[1].responseTime[127.0.0.1]'
+const KEY_IN = `${RESOURCE_ID}|ifHCInOctets`
+const KEY_OUT = `${RESOURCE_ID}|ifHCOutOctets`
+
+/** Node 1 as fornode lists it: one SNMP interface and one response-time resource. */
+const NODE_RESOURCE = {
+  id: 'node[1]',
+  label: 'switch-01',
+  name: '1',
+  children: {
+    resource: [
+      {
+        id: RESOURCE_ID,
+        label: 'eth0',
+        name: 'eth0-005056b6b6b6',
+        typeLabel: 'SNMP Interface Data',
+        rrdGraphAttributes: { ifHCOutOctets: {}, ifHCInOctets: {}}
+      },
+      {
+        id: RESPONSE_TIME_ID,
+        label: 'Response Time for 127.0.0.1',
+        name: '127.0.0.1',
+        typeLabel: 'Response Time',
+        rrdGraphAttributes: { icmp: {}}
+      }
+    ]
+  }
+}
 
 // Every mounted builder is torn down after its test: the URL sync and the query
 // are debounced, so a leaked instance's timer would otherwise fire during a later
@@ -96,6 +124,47 @@ const mountBuilder = (props: Record<string, unknown> = {}) => {
   return { wrapper, store: useAdhocGraphStore() }
 }
 
+/**
+ * Poll until `check` holds. The URL writer and the query are debounced behind
+ * real promises, so fake timers make tests depend on how many microtask turns
+ * the machine happens to need.
+ */
+const waitFor = async (check: () => boolean, timeoutMs = 3000) => {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    await flushPromises()
+    if (check()) {
+      return
+    }
+    await new Promise(resolve => setTimeout(resolve, 25))
+  }
+  throw new Error('condition never held')
+}
+
+/** The explicit-pick path: one node, one resource, one datasource. */
+const pickOne = async (store: ReturnType<typeof useAdhocGraphStore>) => {
+  await store.setPickedNodes([{ id: '1', label: 'switch-01' }])
+  await flushPromises()
+  store.setPickedResources([store.resourceOptions[0]])
+  await flushPromises()
+  store.setPickedDatasources([store.datasourceOptions[0]])
+  await flushPromises()
+}
+
+/** The filter path: a rule, a resource pattern, an attribute pattern. */
+const filterAll = async (store: ReturnType<typeof useAdhocGraphStore>) => {
+  await store.setNodeFilter('catincRouters')
+  await flushPromises()
+  store.setResourceFilter('interfaceSnmp[eth*]')
+  store.setDatasourceFilter('ifHC*Octets')
+  await flushPromises()
+}
+
+const seriesLabels = (wrapper: ReturnType<typeof mount>) =>
+  wrapper.findAll('input[data-test^="series-label-"]').map(field => (field.element as HTMLInputElement).value)
+
+const component = (wrapper: ReturnType<typeof mount>, selector: string) => wrapper.findComponent(selector) as VueWrapper<any>
+
 describe('AdhocGraphBuilder', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -107,13 +176,9 @@ describe('AdhocGraphBuilder', () => {
       setItem: () => undefined,
       removeItem: () => undefined
     })
-    getNodes.mockResolvedValue({ node: [{ id: '1', label: 'switch-01' }] })
-    getResourceForNode.mockResolvedValue({
-      id: 'node[1]',
-      label: 'switch-01',
-      children: { resource: [{ id: RESOURCE_ID, label: 'eth0', typeLabel: 'SNMP Interface Data' }] }
-    })
-    getResourceById.mockResolvedValue({ rrdGraphAttributes: { ifHCInOctets: {}, ifHCOutOctets: {}}})
+    getNodes.mockResolvedValue({ node: [{ id: '1', label: 'switch-01' }], totalCount: 1, count: 1 })
+    getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01', foreignSource: 'FS', foreignId: 'sw1' }] })
+    getResourceForNode.mockResolvedValue(NODE_RESOURCE)
     getGraphMetrics.mockResolvedValue({ labels: ['x'], columns: [{ values: [1] }], timestamps: [0] })
   })
 
@@ -123,115 +188,464 @@ describe('AdhocGraphBuilder', () => {
     }
   })
 
-  it('searches for nodes on mount and renders the three picker columns', async () => {
-    const { wrapper } = mountBuilder()
+  it('lists the first page of nodes on mount and renders the three columns, graphing nothing yet', async () => {
+    const { wrapper, store } = mountBuilder()
     await flushPromises()
 
     expect(getNodes).toHaveBeenCalled()
     expect(wrapper.find('[data-test="nodes-list"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="nodes-count"]').text()).toBe('1 available')
     expect(wrapper.find('[data-test="resources-empty"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="datasources-empty"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="series-empty"]').exists()).toBe(true)
+    expect(store.effectiveNodes).toEqual([])
+    expect(getGraphMetrics).not.toHaveBeenCalled()
   })
 
-  it('walks the node -> resource -> datasource cascade and builds a series row', async () => {
-    const { wrapper, store } = mountBuilder()
-    await flushPromises()
+  describe('building a graph from filters', () => {
+    it('describes the graph with three filters and no clicking', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
 
-    await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-    await flushPromises()
-    expect(wrapper.find('[data-test="resources-list"]').exists()).toBe(true)
+      await filterAll(store)
 
-    await store.setSelectedResources([store.resourceOptions[0]])
-    await flushPromises()
-    expect(store.datasourceOptions.map(option => option.attribute)).toEqual(['ifHCInOctets', 'ifHCOutOctets'])
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
+      expect(wrapper.find('[data-test="nodes-count"]').text()).toBe('all 1 matching')
+      expect(wrapper.find('[data-test="resources-count"]').text()).toBe('all 1 matching')
+      expect(wrapper.find('[data-test="datasources-count"]').text()).toBe('all 2 matching')
+      expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCInOctets', 'switch_01_eth0_ifHCOutOctets'])
 
-    store.setSelectedDatasources([store.datasourceOptions[0]])
-    await flushPromises()
+      await waitFor(() => getGraphMetrics.mock.calls.length > 0)
+      const payload = getGraphMetrics.mock.calls[0][0]
+      expect(payload.source.map((source: { attribute: string }) => source.attribute)).toEqual(['ifHCInOctets', 'ifHCOutOctets'])
+      expect(payload.relaxed).toBe(true)
+    })
 
-    const key = `${RESOURCE_ID}|ifHCInOctets`
-    expect(wrapper.find('[data-test="series-grid"]').exists()).toBe(true)
-    expect(wrapper.find(`[data-test="series-label-${key}"]`).exists()).toBe(true)
+    it('reaches the server from the node box after the typing settles', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await wrapper.find('input[data-test="nodes-filter"]').setValue('catincRouters')
+      expect(getNodesByFilterRule).not.toHaveBeenCalled()
+      // Until then the store does not know the new text, so the browse page's
+      // nodes cannot masquerade as "all matching" the half-typed rule.
+      expect(store.nodeFilter).toBe('')
+      expect(wrapper.find('[data-test="nodes-count"]').text()).toBe('1 available')
+
+      await waitFor(() => getNodesByFilterRule.mock.calls.length > 0)
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
+    })
+
+    it('settles the resource and datasource boxes too, rather than rebuilding on every keystroke', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+
+      await wrapper.find('input[data-test="resources-filter"]').setValue('interfaceSnmp[*]')
+      expect(store.resourceFilter).toBe('')
+
+      await waitFor(() => store.resourceFilter === 'interfaceSnmp[*]')
+    })
+
+    it('drops a filter still settling when the user clears, and empties the box', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      const input = wrapper.find('input[data-test="nodes-filter"]')
+      await input.setValue('catincRouters')
+      await wrapper.find('[data-test="toolbar-clear"]').trigger('click')
+      await new Promise(resolve => setTimeout(resolve, 700))
+      await flushPromises()
+
+      expect(getNodesByFilterRule).not.toHaveBeenCalled()
+      expect(store.nodeFilter).toBe('')
+      expect((input.element as HTMLInputElement).value).toBe('')
+    })
+
+    it('tells the user when selecting turns a filtered column into a fixed list', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      await wrapper.find('[data-test="datasources-select-all"]').trigger('click')
+      await flushPromises()
+
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/Datasources are now a fixed selection of 2/) }))
+      expect(store.pickedDatasources).toHaveLength(2)
+
+      // Already a fixed list: no second notice for a further change.
+      showSnackBar.mockClear()
+      store.setPickedDatasources([store.datasourceOptions[0]])
+      await flushPromises()
+      expect(showSnackBar).not.toHaveBeenCalled()
+    })
+
+    // A rule that starts matching a node whose series sorts first must not
+    // renumber the series an expression already refers to.
+    it('keeps a generated label when a newcomer would otherwise take it', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+      expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCInOctets', 'switch_01_eth0_ifHCOutOctets'])
+
+      // A second node with the same label, sorting first.
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '0', label: 'switch-01' }, { id: '1', label: 'switch-01' }] })
+      getResourceForNode.mockImplementation((id: string) => Promise.resolve({
+        ...NODE_RESOURCE,
+        id: `node[${id}]`,
+        children: { resource: NODE_RESOURCE.children.resource.map(child => ({ ...child, id: child.id.replace('node[1]', `node[${id}]`) })) }
+      }))
+      await store.setNodeFilter('catincRouters & catincSNMP')
+      await flushPromises()
+
+      expect(seriesLabels(wrapper)).toEqual([
+        'switch_01_eth0_ifHCInOctets_2',
+        'switch_01_eth0_ifHCOutOctets_2',
+        'switch_01_eth0_ifHCInOctets',
+        'switch_01_eth0_ifHCOutOctets'
+      ])
+    })
+
+    it('says how many nodes would not give up their resources', async () => {
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }, { id: '2', label: 'switch-02' }] })
+      getResourceForNode.mockImplementation((id: string) => (id === '2' ? Promise.reject(new Error('boom')) : Promise.resolve(NODE_RESOURCE)))
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="resources-note"]').text()).toBe('Resources could not be loaded for 1 node.')
+    })
+
+    it('narrows a column to its picks, and picking is still available at every level', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      store.setPickedDatasources([store.datasourceOptions[1]])
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="datasources-count"]').text()).toBe('1 of 2 selected')
+      expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCOutOctets'])
+    })
+
+    it('removing a series from a generated set pins the rest', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      component(wrapper, '[data-test="series-grid"]').vm.$emit('remove', KEY_IN)
+      await flushPromises()
+
+      expect(store.pickedDatasources.map(datasource => datasource.key)).toEqual([KEY_OUT])
+      expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCOutOctets'])
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/fixed selection of 1/) }))
+    })
+
+    it('keeps an edited label when the filters re-evaluate', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      await wrapper.find(`input[data-test="series-label-${KEY_IN}"]`).setValue('renamed_by_hand')
+      await flushPromises()
+
+      // A re-evaluation that produces the same series again.
+      await store.setNodeFilter('catincRouters & catincSNMP')
+      await flushPromises()
+
+      expect(seriesLabels(wrapper)).toContain('renamed_by_hand')
+      expect(seriesLabels(wrapper)).toHaveLength(2)
+    })
+
+    // The virtual scroller renders no rows under happy-dom, so the identity is
+    // checked on the options the list is handed rather than on the text.
+    it('carries the node identity the plugin shows, fs:fid, into the list', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+
+      expect(component(wrapper, '[data-test="nodes-list"]').props('options')).toEqual([
+        { id: '1', label: 'switch-01', foreignSource: 'FS', foreignId: 'sw1' }
+      ])
+    })
+
+    it('shows the server objection to a rule it cannot parse', async () => {
+      getNodesByFilterRule.mockResolvedValue({ error: 'invalid' })
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await store.setNodeFilter('catinc(')
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="nodes-error"]').text()).toMatch(/could not be parsed/)
+      expect(wrapper.find('[data-test="nodes-list"]').exists()).toBe(false)
+    })
+
+    it('keeps selected nodes listed, and the graph intact, when a rule fails', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await pickOne(store)
+
+      getNodesByFilterRule.mockResolvedValue({ error: 'invalid' })
+      await store.setNodeFilter('catinc(')
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="nodes-error"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="nodes-list"]').exists()).toBe(true)
+      expect(seriesLabels(wrapper)).toHaveLength(1)
+    })
+
+    it('removing the last series empties the graph rather than bringing everything back', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+      store.setDatasourceFilter('ifHCInOctets')
+      await flushPromises()
+      expect(seriesLabels(wrapper)).toHaveLength(1)
+
+      component(wrapper, '[data-test="series-grid"]').vm.$emit('remove', KEY_IN)
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="series-empty"]').exists()).toBe(true)
+      expect(store.datasourceFilter).toBe('')
+    })
+
+    it('stops at the node limit and says so, without fetching anything', async () => {
+      getNodesByFilterRule.mockResolvedValue({
+        nodes: Array.from({ length: 201 }, (_unused, index) => ({ id: String(index), label: `n${index}` }))
+      })
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await store.setNodeFilter('catincEverything')
+      await flushPromises()
+
+      expect(getResourceForNode).not.toHaveBeenCalled()
+      expect(wrapper.find('[data-test="chart-error"]').text()).toContain('201 nodes; a graph can be built from at most 200')
+      expect(wrapper.find('[data-test="nodes-note"]').text()).toContain('at most 200')
+    })
+
+    it('says when a label search is only showing its first page', async () => {
+      getNodes.mockResolvedValue({ node: [{ id: '1', label: 'switch-01' }], totalCount: 2310, count: 1 })
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await store.setNodeFilter('sw')
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="nodes-note"]').text()).toContain('first 1 of 2,310')
+    })
+
+    it('refuses to graph more series than the cap, and says why', async () => {
+      getResourceForNode.mockResolvedValue({
+        ...NODE_RESOURCE,
+        children: { resource: [{
+          id: RESOURCE_ID,
+          label: 'eth0',
+          name: 'eth0',
+          typeLabel: 'SNMP Interface Data',
+          rrdGraphAttributes: Object.fromEntries(Array.from({ length: 201 }, (_unused, index) => [`attr${index}`, {}]))
+        }] }
+      })
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+      store.setResourceFilter('*')
+      store.setDatasourceFilter('*')
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="chart-error"]').text()).toContain('201 series; the limit is 200')
+      expect(wrapper.find('[data-test="series-empty"]').exists()).toBe(true)
+      await new Promise(resolve => setTimeout(resolve, 700))
+      expect(getGraphMetrics).not.toHaveBeenCalled()
+    })
   })
 
-  it('keeps an edited label when an unrelated datasource is added', async () => {
-    const { wrapper, store } = mountBuilder()
-    await flushPromises()
+  describe('explicit picks', () => {
+    it('walk the node -> resource -> datasource cascade and build a series row', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
 
-    await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-    await flushPromises()
-    await store.setSelectedResources([store.resourceOptions[0]])
-    await flushPromises()
+      await store.setPickedNodes([{ id: '1', label: 'switch-01' }])
+      await flushPromises()
+      expect(wrapper.find('[data-test="resources-list"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="resources-count"]').text()).toBe('2 available')
 
-    store.setSelectedDatasources([store.datasourceOptions[0]])
-    await flushPromises()
+      store.setPickedResources([store.resourceOptions[0]])
+      await flushPromises()
+      expect(store.datasourceOptions.map(option => option.attribute)).toEqual(['ifHCInOctets', 'ifHCOutOctets'])
 
-    const key = `${RESOURCE_ID}|ifHCInOctets`
-    const input = wrapper.find(`input[data-test="series-label-${key}"]`)
-    await input.setValue('renamed_by_hand')
-    await flushPromises()
+      store.setPickedDatasources([store.datasourceOptions[0]])
+      await flushPromises()
 
-    // Ticking a second datasource must reconcile, not rebuild.
-    store.setSelectedDatasources([...store.datasourceOptions])
-    await flushPromises()
+      expect(wrapper.find('[data-test="series-grid"]').exists()).toBe(true)
+      expect(wrapper.find(`[data-test="series-label-${KEY_IN}"]`).exists()).toBe(true)
+    })
 
-    const labels = wrapper.findAll('input[data-test^="series-label-"]')
-      .map(field => (field.element as HTMLInputElement).value)
+    it('keep an edited label when an unrelated datasource is added', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await pickOne(store)
 
-    expect(labels).toContain('renamed_by_hand')
-    expect(labels).toHaveLength(2)
+      await wrapper.find(`input[data-test="series-label-${KEY_IN}"]`).setValue('renamed_by_hand')
+      await flushPromises()
+
+      // Picking a second datasource must reconcile, not rebuild.
+      store.setPickedDatasources([...store.datasourceOptions])
+      await flushPromises()
+
+      expect(seriesLabels(wrapper)).toContain('renamed_by_hand')
+      expect(seriesLabels(wrapper)).toHaveLength(2)
+    })
   })
 
-  it('restores a shared link: series, title and time range', async () => {
-    routeQuery = {
-      s: `${RESOURCE_ID}~ifHCInOctets~MAX~in_octets~area~#2a78d6~0`,
-      start: '1704067200',
-      end: '1704070800',
-      fmt: 'hours',
-      title: 'WAN traffic'
-    }
+  describe('links', () => {
+    it('restores a legacy static link: series, title and time range', async () => {
+      routeQuery = {
+        s: `${RESOURCE_ID}~ifHCInOctets~MAX~in_octets~area~#2a78d6~0`,
+        start: '1704067200',
+        end: '1704070800',
+        fmt: 'hours',
+        title: 'WAN traffic'
+      }
 
-    const { wrapper, store } = mountBuilder()
-    await flushPromises()
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
 
-    expect(store.selectedDatasources.map(datasource => datasource.key)).toEqual([`${RESOURCE_ID}|ifHCInOctets`])
+      expect(store.effectiveDatasources.map(datasource => datasource.key)).toEqual([KEY_IN])
 
-    // Regression: a restored link used to populate only the datasource pane,
-    // leaving Nodes with nothing selected and Resources empty.
-    expect(store.selectedNodes.map(node => node.id)).toEqual(['1'])
-    expect(store.nodeOptions.map(node => node.id)).toContain('1')
-    expect(store.selectedResources.map(resource => resource.id)).toEqual([RESOURCE_ID])
-    expect(store.resourceOptions.map(resource => resource.id)).toContain(RESOURCE_ID)
-    expect(wrapper.find('[data-test="resources-list"]').exists()).toBe(true)
+      // All three panes show the picks, with real labels.
+      expect(store.pickedNodes).toEqual([{ id: '1', label: 'switch-01' }])
+      expect(store.nodeOptions.map(node => node.id)).toContain('1')
+      expect(store.pickedResources.map(resource => resource.id)).toEqual([RESOURCE_ID])
+      expect(wrapper.find('[data-test="resources-list"]').exists()).toBe(true)
 
-    const titleField = wrapper.find('input[data-test="toolbar-title"]')
-    expect((titleField.element as HTMLInputElement).value).toBe('WAN traffic')
+      const titleField = wrapper.find('input[data-test="toolbar-title"]')
+      expect((titleField.element as HTMLInputElement).value).toBe('WAN traffic')
 
-    // Restoring a link must query immediately rather than waiting for a manual refresh.
-    expect(getGraphMetrics).toHaveBeenCalled()
-    const payload = getGraphMetrics.mock.calls[0][0]
-    expect(payload.start).toBe(1_704_067_200_000)
-    expect(payload.relaxed).toBe(true)
-    expect(payload.source).toEqual([{
-      aggregation: 'MAX',
-      attribute: 'ifHCInOctets',
-      label: 'in_octets',
-      resourceId: RESOURCE_ID,
-      transient: false
-    }])
+      // Restoring a link must query immediately rather than waiting for a manual refresh.
+      expect(getGraphMetrics).toHaveBeenCalled()
+      const payload = getGraphMetrics.mock.calls[0][0]
+      expect(payload.start).toBe(1_704_067_200_000)
+      expect(payload.relaxed).toBe(true)
+      expect(payload.source).toEqual([{
+        aggregation: 'MAX',
+        attribute: 'ifHCInOctets',
+        label: 'in_octets',
+        resourceId: RESOURCE_ID,
+        transient: false
+      }])
+    })
+
+    it('re-evaluates a filter link on open, and says when it now draws something different', async () => {
+      routeQuery = { nf: 'catincRouters', rf: 'interfaceSnmp[eth*]', df: 'ifHC*Octets', n: '3', range: 'hours:1' }
+
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
+      expect(getNodes).not.toHaveBeenCalled()
+      expect((wrapper.find('input[data-test="nodes-filter"]').element as HTMLInputElement).value).toBe('catincRouters')
+      expect((wrapper.find('input[data-test="resources-filter"]').element as HTMLInputElement).value).toBe('interfaceSnmp[eth*]')
+      expect(store.effectiveDatasources).toHaveLength(2)
+      expect(seriesLabels(wrapper)).toHaveLength(2)
+
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({
+        msg: expect.stringMatching(/now matches 2 series; it matched 3/)
+      }))
+      expect(getGraphMetrics).toHaveBeenCalled()
+      expect(getGraphMetrics.mock.calls[0][0].source).toHaveLength(2)
+    })
+
+    it('says nothing when a re-evaluated link draws what it did', async () => {
+      routeQuery = { nf: 'catincRouters', rf: 'interfaceSnmp[eth*]', df: 'ifHC*Octets', n: '2', range: 'hours:1' }
+
+      mountBuilder()
+      await flushPromises()
+
+      expect(showSnackBar).not.toHaveBeenCalled()
+    })
+
+    it('does not blame a fetch failure on inventory', async () => {
+      routeQuery = { nf: 'catincRouters', rf: 'interfaceSnmp[eth*]', df: 'ifHC*Octets', n: '2', range: 'hours:1' }
+      getResourceForNode.mockRejectedValue(new Error('boom'))
+
+      mountBuilder()
+      await flushPromises()
+
+      expect(showSnackBar).not.toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/now matches/) }))
+    })
+
+    it('carries a generated label an expression depends on, so the reopened graph keeps it', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      await wrapper.find('[data-test="expressions-panel"] button').trigger('click')
+      const expressions = component(wrapper, '[data-test="expressions-panel"]')
+      expressions.findComponent({ name: 'ExpressionEditor' }).vm.$emit('add')
+      await flushPromises()
+      expressions.findComponent({ name: 'ExpressionEditor' }).vm.$emit('update', 'expr-1', { value: 'switch_01_eth0_ifHCInOctets * 8' })
+      await flushPromises()
+
+      await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+      await flushPromises()
+
+      const params = new URLSearchParams((copyToClipboard.mock.calls[0][0] as string).split('?')[1])
+      expect(params.getAll('o')).toEqual([`${RESOURCE_ID}~ifHCInOctets~~switch_01_eth0_ifHCInOctets~~~`])
+    })
+
+    // The series are generated against stand-ins first, then against real data.
+    // The first guess at a label must not stick, or an expression written against
+    // the real label breaks on every reopen.
+    it('labels a restored series from its real node and resource, not its stand-in', async () => {
+      routeQuery = { pn: '1', pr: RESOURCE_ID, pd: KEY_IN, e: 'bits~switch_01_eth0_ifHCInOctets * 8~line~#eb6834', range: 'hours:1' }
+
+      const { wrapper } = mountBuilder()
+      await flushPromises()
+
+      expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCInOctets'])
+      expect(getGraphMetrics).toHaveBeenCalled()
+      expect(getGraphMetrics.mock.calls[0][0].expression).toEqual([
+        expect.objectContaining({ label: 'bits', value: 'switch_01_eth0_ifHCInOctets * 8' })
+      ])
+    })
+
+    it('re-applies the edits a link carries to the series it now produces', async () => {
+      routeQuery = {
+        nf: 'catincRouters',
+        rf: 'interfaceSnmp[eth*]',
+        df: 'ifHC*Octets',
+        o: `${RESOURCE_ID}~ifHCInOctets~MAX~in_bits~~#2a78d6~`,
+        range: 'hours:1'
+      }
+
+      const { wrapper } = mountBuilder()
+      await flushPromises()
+
+      expect(seriesLabels(wrapper)).toEqual(['in_bits', 'switch_01_eth0_ifHCOutOctets'])
+      const payload = getGraphMetrics.mock.calls[0][0]
+      expect(payload.source[0]).toEqual(expect.objectContaining({ aggregation: 'MAX', label: 'in_bits' }))
+      expect(payload.source[1]).toEqual(expect.objectContaining({ aggregation: 'AVERAGE' }))
+    })
+
+    it('does not rewrite the address bar while hydrating a link', async () => {
+      routeQuery = { s: `${RESOURCE_ID}~ifHCInOctets~AVERAGE~in_octets~line~#2a78d6~0`, start: '1704067200', end: '1704070800' }
+
+      mountBuilder()
+      await flushPromises()
+
+      expect(routerReplace).not.toHaveBeenCalled()
+    })
   })
 
-  it('does not rewrite the address bar while hydrating a link', async () => {
-    routeQuery = { s: `${RESOURCE_ID}~ifHCInOctets~AVERAGE~in_octets~line~#2a78d6~0`, start: '1704067200', end: '1704070800' }
-
-    mountBuilder()
-    await flushPromises()
-
-    expect(routerReplace).not.toHaveBeenCalled()
-  })
-
-  // Blanking the address bar silently meant a large graph quietly stopped being
-  // bookmarkable, with no signal until someone tried to copy the link.
   describe('the toolbar', () => {
     // MenuHeaderIT locates this page by //div[@id='app']//h2[text()='Custom
     // Performance Graphs']; if the tag or the text changes, that smoke test breaks
@@ -268,18 +682,18 @@ describe('AdhocGraphBuilder', () => {
 
       store.queryLoading = false
       await flushPromises()
-      expect(refreshDisabled()).toBe(true) // still disabled: no series selected yet
+      expect(refreshDisabled()).toBe(true) // still disabled: no series yet
     })
   })
 
   describe('outgrowing the URL', () => {
     /**
-     * Overflow MAX_QUERY_LENGTH (6000) with as few series as possible: a handful of
+     * Overflow MAX_QUERY_LENGTH (6000) with as few picks as possible: a handful of
      * very long resource ids rather than a hundred short ones, so the reconcile and
      * encode work stays small enough not to time out under full-suite load.
      */
-    const manySeries = (store: ReturnType<typeof useAdhocGraphStore>, count: number) =>
-      store.setSelectedDatasources(Array.from({ length: count }, (_unused, index) => {
+    const manyPicks = (store: ReturnType<typeof useAdhocGraphStore>, count: number) =>
+      store.setPickedDatasources(Array.from({ length: count }, (_unused, index) => {
         const resourceId = `node[${index}].interfaceSnmp[${'Gigabit0-0-'.repeat(30)}${index}]`
         return {
           key: `${resourceId}|ifHCInOctets`,
@@ -291,50 +705,28 @@ describe('AdhocGraphBuilder', () => {
         }
       }))
 
-    /**
-     * Poll until `check` holds. The URL writer is debounced behind real promises,
-     * so fake timers make this test depend on how many microtask turns the machine
-     * happens to need — it passed alone and failed under full-suite load.
-     */
-    const waitFor = async (check: () => boolean, timeoutMs = 3000) => {
-      const deadline = Date.now() + timeoutMs
-      while (Date.now() < deadline) {
-        await flushPromises()
-        if (check()) {
-          return
-        }
-        await new Promise(resolve => setTimeout(resolve, 25))
-      }
-      throw new Error('condition never held')
-    }
-
     const warnings = () => showSnackBar.mock.calls
-      .filter(call => String((call[0] as { msg?: string })?.msg ?? '').includes('too many series'))
+      .filter(call => String((call[0] as { msg?: string })?.msg ?? '').includes('too many selections'))
 
     it('clears the query and says so once the graph will not fit', async () => {
-      // Something in the address bar to clear, but not enough to trigger hydration.
-      routeQuery = { title: 'WAN traffic' }
+      routeQuery = { title: 'x' }
       const { store } = mountBuilder()
       await flushPromises()
 
-      manySeries(store, 20)
+      manyPicks(store, 20)
       await waitFor(() => warnings().length > 0)
 
-      // The address bar is cleared rather than left describing a stale graph...
       expect(routerReplace).toHaveBeenCalledWith({ query: {}})
-      // ...and the user is told, rather than discovering it at copy time.
-      expect(warnings()[0][0]).toEqual(expect.objectContaining({ error: true }))
-    }, 20000)
+    }, 10000)
 
     it('warns once, not on every edit', async () => {
       const { store } = mountBuilder()
       await flushPromises()
 
-      manySeries(store, 20)
+      manyPicks(store, 20)
       await waitFor(() => warnings().length > 0)
 
-      manySeries(store, 22)
-      await waitFor(() => routerReplace.mock.calls.length > 0 || true)
+      manyPicks(store, 22)
       await new Promise(resolve => setTimeout(resolve, 600))
       await flushPromises()
 
@@ -343,20 +735,13 @@ describe('AdhocGraphBuilder', () => {
   })
 
   describe('the copy-link button', () => {
-    const selectOneDatasource = async (store: ReturnType<typeof useAdhocGraphStore>) => {
-      await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-      await flushPromises()
-      await store.setSelectedResources([store.resourceOptions[0]])
-      await flushPromises()
-      store.setSelectedDatasources([store.datasourceOptions[0]])
-      await flushPromises()
-    }
-
-    it('copies an absolute URL carrying the current selection', async () => {
+    it('copies an absolute URL carrying the filters and picks', async () => {
       copyToClipboard.mockResolvedValue(undefined)
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOneDatasource(store)
+      await filterAll(store)
+      store.setPickedDatasources([store.datasourceOptions[0]])
+      await flushPromises()
 
       await wrapper.find('[data-test="toolbar-share"]').trigger('click')
       await flushPromises()
@@ -365,7 +750,14 @@ describe('AdhocGraphBuilder', () => {
       const copied = copyToClipboard.mock.calls[0][0] as string
       expect(copied.startsWith(window.location.origin)).toBe(true)
       expect(copied).toContain('#/adhoc-graphs?')
-      expect(decodeURIComponent(copied)).toContain('ifHCInOctets')
+
+      const params = new URLSearchParams(copied.split('?')[1])
+      expect(params.get('nf')).toBe('catincRouters')
+      expect(params.get('rf')).toBe('interfaceSnmp[eth*]')
+      expect(params.get('df')).toBe('ifHC*Octets')
+      expect(params.getAll('pd')).toEqual([KEY_IN])
+      expect(params.get('n')).toBe('1')
+      expect(params.get('s')).toBeNull()
     })
 
     // The address bar is written by a debounced watcher, so reading
@@ -374,10 +766,9 @@ describe('AdhocGraphBuilder', () => {
       copyToClipboard.mockResolvedValue(undefined)
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOneDatasource(store)
+      await pickOne(store)
 
-      const key = `${RESOURCE_ID}|ifHCInOctets`
-      await wrapper.find(`input[data-test="series-label-${key}"]`).setValue('renamed_just_now')
+      await wrapper.find(`input[data-test="series-label-${KEY_IN}"]`).setValue('renamed_just_now')
       await wrapper.find('[data-test="toolbar-share"]').trigger('click')
       await flushPromises()
 
@@ -389,7 +780,7 @@ describe('AdhocGraphBuilder', () => {
       copyToClipboard.mockRejectedValue(new Error('denied'))
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOneDatasource(store)
+      await pickOne(store)
 
       await wrapper.find('[data-test="toolbar-share"]').trigger('click')
       await flushPromises()
@@ -399,15 +790,6 @@ describe('AdhocGraphBuilder', () => {
   })
 
   describe('relative time ranges', () => {
-    const selectOne = async (store: ReturnType<typeof useAdhocGraphStore>) => {
-      await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-      await flushPromises()
-      await store.setSelectedResources([store.resourceOptions[0]])
-      await flushPromises()
-      store.setSelectedDatasources([store.datasourceOptions[0]])
-      await flushPromises()
-    }
-
     const windowOf = (call: number) => {
       const payload = getGraphMetrics.mock.calls[call][0]
       return { start: payload.start, end: payload.end, span: payload.end - payload.start }
@@ -416,7 +798,7 @@ describe('AdhocGraphBuilder', () => {
     it('defaults to a relative window rather than a frozen one', async () => {
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOne(store)
+      await pickOne(store)
 
       await wrapper.find('[data-test="toolbar-refresh"]').trigger('click')
       await flushPromises()
@@ -462,7 +844,7 @@ describe('AdhocGraphBuilder', () => {
     it('slides the window forward on Refresh', async () => {
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOne(store)
+      await pickOne(store)
       await wrapper.find('[data-test="toolbar-refresh"]').trigger('click')
       await flushPromises()
 
@@ -502,7 +884,7 @@ describe('AdhocGraphBuilder', () => {
       copyToClipboard.mockResolvedValue(undefined)
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOne(store)
+      await pickOne(store)
 
       await wrapper.find('[data-test="toolbar-share"]').trigger('click')
       await flushPromises()
@@ -531,12 +913,7 @@ describe('AdhocGraphBuilder', () => {
     it('counts what each panel holds, so a closed one still says something', async () => {
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-      await flushPromises()
-      await store.setSelectedResources([store.resourceOptions[0]])
-      await flushPromises()
-      store.setSelectedDatasources([...store.datasourceOptions])
-      await flushPromises()
+      await filterAll(store)
 
       expect(panels(wrapper).Series.props('header')).toBe('Series (2)')
       expect(panels(wrapper).Expressions.props('header')).toBe('Expressions (0)')
@@ -574,40 +951,25 @@ describe('AdhocGraphBuilder', () => {
     })
 
     it('does not reopen a panel the user closed', async () => {
-      const { wrapper } = mountBuilder()
+      const { wrapper, store } = mountBuilder()
       await flushPromises()
 
       panels(wrapper).Series.vm.$emit('update:collapsed', true)
       await flushPromises()
       expect(panels(wrapper).Series.props('collapsed')).toBe(true)
 
-      // Selecting datasources fills the panel but must not force it back open.
-      const store = useAdhocGraphStore()
-      await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-      await flushPromises()
-      await store.setSelectedResources([store.resourceOptions[0]])
-      await flushPromises()
-      store.setSelectedDatasources([...store.datasourceOptions])
-      await flushPromises()
+      // Filling the panel must not force it back open.
+      await filterAll(store)
 
       expect(panels(wrapper).Series.props('collapsed')).toBe(true)
     })
   })
 
   describe('expanding and popping out', () => {
-    const selectOne = async (store: ReturnType<typeof useAdhocGraphStore>) => {
-      await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-      await flushPromises()
-      await store.setSelectedResources([store.resourceOptions[0]])
-      await flushPromises()
-      store.setSelectedDatasources([store.datasourceOptions[0]])
-      await flushPromises()
-    }
-
     it('hides the pickers and editors while expanded, and restores them', async () => {
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOne(store)
+      await pickOne(store)
 
       expect(wrapper.find('[data-test="nodes-list"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="series-grid"]').exists()).toBe(true)
@@ -639,7 +1001,7 @@ describe('AdhocGraphBuilder', () => {
     it('leaves the expanded view on Escape', async () => {
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOne(store)
+      await pickOne(store)
 
       await wrapper.find('[data-test="toolbar-expand"]').trigger('click')
       await flushPromises()
@@ -651,13 +1013,13 @@ describe('AdhocGraphBuilder', () => {
       expect(wrapper.find('[data-test="nodes-list"]').exists()).toBe(true)
     })
 
-    it('opens the view route in a new tab, carrying the current selection', async () => {
+    it('opens the view route in a new tab, carrying the current filters', async () => {
       const open = vi.fn().mockReturnValue({})
       vi.stubGlobal('open', open)
 
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOne(store)
+      await filterAll(store)
 
       await wrapper.find('[data-test="toolbar-popout"]').trigger('click')
       await flushPromises()
@@ -665,7 +1027,7 @@ describe('AdhocGraphBuilder', () => {
       expect(open).toHaveBeenCalledTimes(1)
       const [url, target, features] = open.mock.calls[0]
       expect(url).toContain('#/adhoc-graphs/view?')
-      expect(decodeURIComponent(url as string)).toContain('ifHCInOctets')
+      expect(decodeURIComponent(url as string)).toContain('nf=catincRouters')
       expect(target).toBe('_blank')
       expect(features).toBe('noopener')
     })
@@ -675,7 +1037,7 @@ describe('AdhocGraphBuilder', () => {
 
       const { wrapper, store } = mountBuilder()
       await flushPromises()
-      await selectOne(store)
+      await pickOne(store)
 
       await wrapper.find('[data-test="toolbar-popout"]').trigger('click')
       await flushPromises()
@@ -688,7 +1050,9 @@ describe('AdhocGraphBuilder', () => {
   describe('the graph-only view route', () => {
     it('renders the chart from the URL with no pickers, editors or edit controls', async () => {
       routeQuery = {
-        s: `${RESOURCE_ID}~ifHCInOctets~AVERAGE~in_octets~line~#2a78d6~0`,
+        nf: 'catincRouters',
+        rf: 'interfaceSnmp[eth*]',
+        df: 'ifHCInOctets',
         start: '1704067200',
         end: '1704070800',
         title: 'WAN traffic'
@@ -725,22 +1089,23 @@ describe('AdhocGraphBuilder', () => {
     })
   })
 
-  it('clears every column and the config on Clear all', async () => {
+  it('clears every filter, pick and the config on Clear all', async () => {
     const { wrapper, store } = mountBuilder()
     await flushPromises()
-
-    await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
-    await flushPromises()
-    await store.setSelectedResources([store.resourceOptions[0]])
-    await flushPromises()
-    store.setSelectedDatasources([...store.datasourceOptions])
-    await flushPromises()
+    await filterAll(store)
+    await wrapper.find('input[data-test="toolbar-title"]').setValue('WAN')
 
     await wrapper.find('[data-test="toolbar-clear"]').trigger('click')
     await flushPromises()
 
-    expect(store.selectedNodes).toEqual([])
-    expect(store.selectedDatasources).toEqual([])
+    expect(store.nodeFilter).toBe('')
+    expect(store.resourceFilter).toBe('')
+    expect(store.effectiveDatasources).toEqual([])
+    // Back to the browse page, not stale matches under an empty box.
+    expect(getNodes).toHaveBeenCalledTimes(2)
+    expect(store.nodeOptions).toEqual([{ id: '1', label: 'switch-01' }])
+    expect((wrapper.find('input[data-test="nodes-filter"]').element as HTMLInputElement).value).toBe('')
+    expect((wrapper.find('input[data-test="toolbar-title"]').element as HTMLInputElement).value).toBe('')
     expect(wrapper.find('[data-test="series-empty"]').exists()).toBe(true)
   })
 })

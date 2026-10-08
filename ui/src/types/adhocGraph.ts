@@ -33,19 +33,34 @@ import { ConsolidationFunctionType } from '@/types/timeSeries'
  */
 export type AdhocSeriesStyle = 'line' | 'line2' | 'line3' | 'area' | 'stack'
 
-/** A node that can be expanded into resources. */
+/**
+ * A node the picker knows about. `id` is whatever criterion the server will accept
+ * for the node: the database id when it came from a search, or the id form found in
+ * a resource id (`1` or `fs:fid`) when it came from a link. The foreign-source pair
+ * and location ride along only to be shown.
+ */
 export interface AdhocNodeOption {
   id: string
   label: string
+  foreignSource?: string
+  foreignId?: string
+  location?: string
 }
 
-/** A resource beneath a node, as returned by /rest/resources/fornode/{nodeCriteria}. */
+/**
+ * A graphable resource beneath a node, as /rest/resources/fornode lists it. `name`
+ * is the instance name (`eth0-005056b6b6b6`), distinct from the human `label`.
+ * `attributes` are the graphable attribute names, so the datasource column never
+ * needs a request of its own.
+ */
 export interface AdhocResourceOption {
   id: string
   label: string
+  name: string
   typeLabel: string
   nodeId: string
   nodeLabel: string
+  attributes: string[]
 }
 
 /**
@@ -79,6 +94,13 @@ export interface AdhocSeries {
   hidden: boolean
 }
 
+/**
+ * The parts of a series the user changed by hand. Series are generated from the
+ * filters, so an edit has to live apart from the series it decorates: when the
+ * filters re-evaluate, the generated series is rebuilt and the override re-applied.
+ */
+export type AdhocSeriesOverride = Partial<Pick<AdhocSeries, 'label' | 'aggregation' | 'color' | 'style' | 'hidden'>>
+
 /** A derived series computed server-side from source labels via a JEXL expression. */
 export interface AdhocExpression {
   id: string
@@ -97,4 +119,19 @@ export interface AdhocGraphConfig {
   stacked: boolean
   /** Target number of data points across the range; drives the computed step. */
   resolution: number
+}
+
+/**
+ * What the three picker columns are set to: a filter per column, and the items
+ * the user picked by hand in each. An empty pick list means "everything the
+ * filter matches", so a graph can be defined entirely by filters and grow with
+ * inventory, or pinned down item by item, or anything in between.
+ */
+export interface AdhocSelectionState {
+  nodeFilter: string
+  resourceFilter: string
+  datasourceFilter: string
+  pickedNodeIds: string[]
+  pickedResourceIds: string[]
+  pickedDatasourceKeys: string[]
 }

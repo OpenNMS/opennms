@@ -22,6 +22,7 @@
 
 import {
   getNodes,
+  getNodesByFilterRule,
   getNodeById,
   getNodeOutages,
   getNodeIpInterfaces,
@@ -145,6 +146,7 @@ export default {
   generateSystemReport,
   getInfo,
   getNodes,
+  getNodesByFilterRule,
   getAlarms,
   getEvents,
   modifyAlarm,

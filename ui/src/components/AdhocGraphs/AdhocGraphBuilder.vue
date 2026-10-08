@@ -41,19 +41,22 @@
         <SelectionColumn
           title="Nodes"
           dataTest="nodes"
-          serverFilter
           dataKey="id"
           optionLabel="label"
-          filterPlaceholder="Search nodes"
-          emptyMessage="No nodes match that search."
+          filterPlaceholder="Search nodes, or a filter rule"
+          emptyMessage="No nodes match."
+          :filterTerm="nodeText"
+          :filterActive="Boolean(store.nodeFilter.trim())"
+          :errorMessage="store.nodeFilterError"
+          :note="nodeNote"
           :options="store.nodeOptions"
-          :modelValue="store.selectedNodes"
+          :modelValue="store.pickedNodes"
           :loading="store.nodesLoading"
           :keyOf="option => (option as AdhocNodeOption).id"
           :labelOf="option => (option as AdhocNodeOption).label"
           :descriptionOf="describeNode"
-          @filter="searchNodes"
-          @update:modelValue="value => store.setSelectedNodes(value as AdhocNodeOption[])"
+          @filter="onNodeFilter"
+          @update:modelValue="value => onPickNodes(value as AdhocNodeOption[])"
         />
       </div>
       <div class="onms-col-4">
@@ -62,15 +65,19 @@
           dataTest="resources"
           dataKey="id"
           optionLabel="label"
-          filterPlaceholder="Filter resources"
-          emptyMessage="Select a node to see its resources."
+          filterPlaceholder="Resource, e.g. interfaceSnmp[eth*]"
+          :emptyMessage="store.effectiveNodes.length ? 'No resources match.' : 'Type a node filter, or select nodes, to see resources.'"
+          :filterTerm="resourceText"
+          :filterActive="Boolean(store.resourceFilter.trim())"
+          :note="resourceNote"
           :options="store.resourceOptions"
-          :modelValue="store.selectedResources"
+          :modelValue="store.reachablePickedResources"
           :loading="store.resourcesLoading"
           :keyOf="option => (option as AdhocResourceOption).id"
           :labelOf="option => (option as AdhocResourceOption).label"
           :descriptionOf="describeResource"
-          @update:modelValue="value => store.setSelectedResources(value as AdhocResourceOption[])"
+          @filter="onResourceFilter"
+          @update:modelValue="value => onPickResources(value as AdhocResourceOption[])"
         />
       </div>
       <div class="onms-col-4">
@@ -79,15 +86,17 @@
           dataTest="datasources"
           dataKey="key"
           optionLabel="attribute"
-          filterPlaceholder="Filter datasources"
-          emptyMessage="Select a resource to see its datasources."
+          filterPlaceholder="Datasource, e.g. ifHC*Octets"
+          :emptyMessage="store.effectiveResources.length ? 'No datasources match.' : 'Type a resource filter, or select resources, to see datasources.'"
+          :filterTerm="datasourceText"
+          :filterActive="Boolean(store.datasourceFilter.trim())"
           :options="store.datasourceOptions"
-          :modelValue="store.selectedDatasources"
-          :loading="store.datasourcesLoading"
+          :modelValue="store.reachablePickedDatasources"
           :keyOf="option => (option as AdhocDatasourceOption).key"
           :labelOf="option => (option as AdhocDatasourceOption).attribute"
           :descriptionOf="describeDatasource"
-          @update:modelValue="value => store.setSelectedDatasources(value as AdhocDatasourceOption[])"
+          @filter="onDatasourceFilter"
+          @update:modelValue="value => onPickDatasources(value as AdhocDatasourceOption[])"
         />
       </div>
     </div>
@@ -165,7 +174,7 @@
           :measurements="store.measurements"
           :time="time"
           :loading="store.queryLoading"
-          :error="store.queryError"
+          :error="tooManySeriesMessage || store.queryError"
           :expanded="chartIsExpanded"
         />
       </div>
@@ -188,13 +197,16 @@
       <template #content>
         <div class="adhoc-help">
           <p>Build a graph from any combination of datasources, across any number of nodes, without a pre-defined graph definition.</p>
-          <p>Pick nodes, then their resources, then the datasources you want to plot. Each selected datasource becomes a series you can label, recolor and restyle.</p>
+          <h3>Filters</h3>
+          <p>Each column is a filter. Whatever all three match is in the graph, so a graph can be described rather than clicked together: nodes matching a rule, their interfaces matching a pattern, and one or two attributes of each.</p>
+          <p><strong>Nodes</strong> takes a label fragment, or an OpenNMS filter rule such as <code>catincRouters &amp; location='Default'</code>, the same expression a Grafana <code>nodeFilter()</code> variable takes. <strong>Resources</strong> and <strong>Datasources</strong> take plain text or a wildcard pattern: <code>interfaceSnmp[eth*]</code>, <code>ifHC*Octets</code>.</p>
+          <p>Selecting items in a column narrows it to those items; clear the selection to go back to everything the filter matches. A column with an empty filter and nothing selected contributes nothing, so nothing is graphed by accident.</p>
           <h3>Expressions</h3>
           <p>Expressions are evaluated server-side with JEXL. Reference a source series by its label &mdash; for example <code>ifHCInOctets_eth0 * 8</code> to convert octets to bits &mdash; and the result is plotted as a series of its own.</p>
           <p>Labels are JEXL identifiers, so they may contain only letters, digits and underscores, and must be unique across the graph.</p>
           <p>Turn on <strong>Hide raw</strong> for a source to keep it out of the graph while still feeding an expression. It only takes effect when some expression actually references that source.</p>
           <h3>Sharing</h3>
-          <p>The full selection, expressions, time range and render options live in the page URL, so a graph can be bookmarked or pasted to a colleague. Use the link button to copy it.</p>
+          <p>The filters, selections, expressions, time range and render options live in the page URL, so a graph can be bookmarked or pasted to a colleague. Use the link button to copy it. A link is re-evaluated when it is opened, so a graph of "all production routers" picks up routers added since.</p>
         </div>
       </template>
     </OnmsMessageDialog>
@@ -204,7 +216,7 @@
 <script setup lang="ts">
 import { OnmsIconButton, OnmsMessageDialog, OnmsPanel } from '@opennms/onms-ui'
 import { onKeyStroke, useDebounceFn } from '@vueuse/core'
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import AdhocChart from './AdhocChart.vue'
@@ -219,7 +231,7 @@ import { downloadGraphCsv, exportGraphsToPdf } from '@/components/Resources/util
 import { copyToClipboard } from '@/composables/useClipboard'
 import useSnackbar from '@/composables/useSnackbar'
 import { useAppStore } from '@/stores/appStore'
-import { useAdhocGraphStore } from '@/stores/adhocGraphStore'
+import { MAX_GRAPH_NODES, useAdhocGraphStore } from '@/stores/adhocGraphStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb, StartEndTime } from '@/types'
 import { DEFAULT_RANGE, resolveRelativeRange } from '@/components/Common/utils/timeRangeOptions'
@@ -229,7 +241,8 @@ import {
   AdhocGraphConfig,
   AdhocNodeOption,
   AdhocResourceOption,
-  AdhocSeries
+  AdhocSeries,
+  AdhocSeriesOverride
 } from '@/types/adhocGraph'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
 import { restepColorForTheme, seriesColor } from './utils/adhocColors'
@@ -237,11 +250,14 @@ import {
   buildMeasurementsPayload,
   configIsQueryable,
   DEFAULT_RESOLUTION,
+  expressionReferences,
   labelForDatasource,
+  MAX_SERIES,
   querySignature,
   toConvertedGraphData
 } from './utils/adhocQuery'
 import {
+  AdhocLinkState,
   decodeAdhocState,
   encodeAdhocState,
   encodedQueryLength,
@@ -311,6 +327,21 @@ const config = reactive<AdhocGraphConfig>({
   resolution: DEFAULT_RESOLUTION
 })
 
+/**
+ * Per-series edits, keyed by series. The series list is generated from the
+ * filters every time they change, so an edited label or color has to live apart
+ * from the generated row and be re-applied when the row is rebuilt.
+ */
+const overrides = reactive<Record<string, AdhocSeriesOverride>>({})
+
+/**
+ * The generated label each series was given, by key. A generated label is a
+ * JEXL identifier that an expression may reference, so once a series has one it
+ * keeps it, whatever order later builds happen in; only a label made from a
+ * link's stand-in, before the node and resource names were known, is replaced.
+ */
+const generatedLabels = new Map<string, { label: string, placeholder: boolean }>()
+
 // Relative by default, so an unbookmarked page and a bookmarked one behave alike.
 const time = reactive<StartEndTime>(resolveRelativeRange(DEFAULT_RANGE))
 
@@ -325,56 +356,216 @@ const breadcrumbs = computed<BreadCrumb[]>(() => (props.viewOnly ?
     { label: 'Custom Performance Graphs', to: '#', position: 'last' }
   ]))
 
-const canQuery = computed<boolean>(() => configIsQueryable(config))
+/**
+ * Filters compose multiplicatively, so a loose combination can name far more
+ * series than a plot can show or the measurements API should be asked for. Past
+ * the cap the page explains rather than tries.
+ */
+const tooManySeriesMessage = computed<string>(() => {
+  if (store.nodeLimitExceeded) {
+    return `The node filter matches ${store.nodeLimitExceeded.toLocaleString()} nodes; a graph can be built from at most ${MAX_GRAPH_NODES}. Narrow the rule, or select nodes.`
+  }
 
-const describeNode = (option: unknown): string => `Node #${(option as AdhocNodeOption).id}`
+  const count = store.effectiveDatasources.length
+
+  if (count <= MAX_SERIES) {
+    return ''
+  }
+
+  return `These filters match ${count.toLocaleString()} series; the limit is ${MAX_SERIES}. Narrow a filter, or select items in a column.`
+})
+
+const canQuery = computed<boolean>(() => !tooManySeriesMessage.value && configIsQueryable(config))
+
+/** Resources the server would not give up, so the user knows the list is short. */
+const resourceNote = computed<string>(() => (store.failedNodeLoads > 0 ?
+  `Resources could not be loaded for ${store.failedNodeLoads.toLocaleString()} ${store.failedNodeLoads === 1 ? 'node' : 'nodes'}.` :
+  ''))
+
+/** A label search is paged; say so, or a rule that matches 2,000 nodes looks like it matched 100. */
+const nodeNote = computed<string>(() => {
+  if (store.nodeLimitExceeded) {
+    return `${store.nodeLimitExceeded.toLocaleString()} nodes match; a graph can be built from at most ${MAX_GRAPH_NODES}.`
+  }
+
+  if (store.nodeMatchOverflow <= 0) {
+    return ''
+  }
+
+  const shown = store.nodeMatches.length
+  const total = (shown + store.nodeMatchOverflow).toLocaleString()
+  return `Showing the first ${shown} of ${total} nodes. Narrow the search, or use a filter rule to match them all.`
+})
+
+/**
+ * The node's identity the way the Grafana plugin presents it by default: the
+ * foreign-source pair when the node is requisitioned, the database id otherwise,
+ * plus the location when known.
+ */
+const describeNode = (option: unknown): string => {
+  const node = option as AdhocNodeOption
+  const identity = node.foreignSource && node.foreignId ? `${node.foreignSource}:${node.foreignId}` : `#${node.id}`
+  return node.location ? `${identity} · ${node.location}` : identity
+}
 
 const describeResource = (option: unknown): string => {
   const resource = option as AdhocResourceOption
-  return `${resource.nodeLabel} · ${resource.typeLabel}`
+  return [resource.nodeLabel, resource.typeLabel].filter(Boolean).join(' · ') || resource.id
 }
 
 const describeDatasource = (option: unknown): string => {
   const datasource = option as AdhocDatasourceOption
-  return `${datasource.nodeLabel} · ${datasource.resourceLabel}`
+  return [datasource.nodeLabel, datasource.resourceLabel].filter(Boolean).join(' · ')
 }
 
-const searchNodes = useDebounceFn((term: string) => store.searchNodes(term), 350)
+// A label fragment can follow typing; a rule is a round trip to the filter
+// engine, so wait a little longer for the typing to settle.
+/**
+ * The text in each box, as typed. The store only learns a filter once typing has
+ * settled, or the matches of the previous filter would count as "matching" the
+ * half-typed one, and the resource and datasource products would be rebuilt on
+ * every keystroke. The boxes follow the store the other way, for a restored link.
+ */
+const nodeText = ref('')
+const resourceText = ref('')
+const datasourceText = ref('')
+
+watch(() => store.nodeFilter, value => nodeText.value = value)
+watch(() => store.resourceFilter, value => resourceText.value = value)
+watch(() => store.datasourceFilter, value => datasourceText.value = value)
 
 /**
- * Keep `config.series` in step with the datasource selection.
- *
- * Existing entries are carried over by key so a label, color, style or aggregation
- * the user set is never lost when an unrelated datasource is ticked or unticked —
- * that regression is the whole reason this is a reconcile rather than a rebuild.
+ * Bumped by Clear all. A debounced filter still pending when the user clears
+ * would otherwise land afterwards and refill the picker with what they had typed.
+ */
+let filterGeneration = 0
+
+const settled = (apply: (term: string) => unknown, ms: number) => {
+  const debounced = useDebounceFn((generation: number, term: string) => {
+    if (generation === filterGeneration) {
+      apply(term)
+    }
+  }, ms)
+
+  return (term: string) => debounced(filterGeneration, term)
+}
+
+const applyNodeFilter = settled(term => store.setNodeFilter(term), 500)
+const applyResourceFilter = settled(term => store.setResourceFilter(term), 250)
+const applyDatasourceFilter = settled(term => store.setDatasourceFilter(term), 250)
+
+const onNodeFilter = (term: string) => {
+  nodeText.value = term
+  applyNodeFilter(term)
+}
+
+const onResourceFilter = (term: string) => {
+  resourceText.value = term
+  applyResourceFilter(term)
+}
+
+const onDatasourceFilter = (term: string) => {
+  datasourceText.value = term
+  applyDatasourceFilter(term)
+}
+
+/**
+ * Selecting in a column that was following its filter turns that column into a
+ * fixed list: the link stops following inventory there. Say so once per switch,
+ * because nothing on the page otherwise distinguishes the two states.
+ */
+const notePinned = (what: string, count: number) => {
+  showSnackBar({
+    msg: `${what} ${count === 1 ? 'is' : 'are'} now a fixed selection of ${count.toLocaleString()}; the filter no longer adds to ${count === 1 ? 'it' : 'them'}. Clear the selection to follow the filter again.`
+  })
+}
+
+const onPickNodes = (nodes: AdhocNodeOption[]) => {
+  if (!store.pickedNodes.length && nodes.length && store.nodeFilter.trim()) {
+    notePinned('Nodes', nodes.length)
+  }
+
+  store.setPickedNodes(nodes)
+}
+
+const onPickResources = (resources: AdhocResourceOption[]) => {
+  if (!store.pickedResources.length && resources.length && store.resourceFilter.trim()) {
+    notePinned('Resources', resources.length)
+  }
+
+  store.setPickedResources(resources)
+}
+
+const onPickDatasources = (datasources: AdhocDatasourceOption[]) => {
+  if (!store.pickedDatasources.length && datasources.length && store.datasourceFilter.trim()) {
+    notePinned('Datasources', datasources.length)
+  }
+
+  store.setPickedDatasources(datasources)
+}
+
+/**
+ * Rebuild `config.series` from what the filters currently match, re-applying the
+ * user's edits. Colors are carried over from the previous build where the series
+ * survived, so adding a series does not recolor its neighbors; a new series takes
+ * the palette slot for its position. A generated label is remembered per series
+ * (see `generatedLabels`) so that a filter matching one more node cannot renumber
+ * `foo` to `foo_2` under an expression; the one label not kept is a placeholder
+ * made from a link's stand-in before its node and resource names were known.
  */
 const reconcileSeries = (datasources: AdhocDatasourceOption[]) => {
+  if (datasources.length > MAX_SERIES) {
+    config.series = []
+    return
+  }
+
   const existing = new Map(config.series.map(entry => [entry.key, entry]))
   const taken = new Set<string>()
   const next: AdhocSeries[] = []
 
+  // Edited labels are claimed first so a generated one can never collide with
+  // them; then the labels series already hold, so a newcomer takes the suffix.
   for (const datasource of datasources) {
-    const previous = existing.get(datasource.key)
+    const label = overrides[datasource.key]?.label
 
-    if (previous) {
-      taken.add(previous.label)
-      next.push(previous)
-      continue
+    if (label) {
+      taken.add(label)
+    }
+  }
+
+  const kept = new Map<string, string>()
+
+  for (const datasource of datasources) {
+    const memory = generatedLabels.get(datasource.key)
+    const stale = !memory || (memory.placeholder && Boolean(datasource.nodeLabel))
+
+    if (!overrides[datasource.key]?.label && !stale && !taken.has(memory.label)) {
+      kept.set(datasource.key, memory.label)
+      taken.add(memory.label)
+    }
+  }
+
+  for (const datasource of datasources) {
+    const override = overrides[datasource.key] ?? {}
+    const previous = existing.get(datasource.key)
+    let label = override.label ?? kept.get(datasource.key)
+
+    if (!label) {
+      label = labelForDatasource(datasource, taken)
+      generatedLabels.set(datasource.key, { label, placeholder: !datasource.nodeLabel })
     }
 
-    const label = labelForDatasource(datasource, taken)
     taken.add(label)
+
     next.push({
       key: datasource.key,
       label,
       resourceId: datasource.resourceId,
       attribute: datasource.attribute,
-      aggregation: ConsolidationFunctionType.AVERAGE,
-      // Slot by final position, so an existing series keeps its color when a new
-      // one is added — color identifies the series, not its place in the list.
-      color: seriesColor(next.length + config.expressions.length, appStore.theme),
-      style: 'line',
-      hidden: false
+      aggregation: override.aggregation ?? ConsolidationFunctionType.AVERAGE,
+      color: override.color ?? previous?.color ?? seriesColor(next.length + config.expressions.length, appStore.theme),
+      style: override.style ?? 'line',
+      hidden: override.hidden ?? false
     })
   }
 
@@ -382,11 +573,28 @@ const reconcileSeries = (datasources: AdhocDatasourceOption[]) => {
 }
 
 const updateSeries = (key: string, patch: Partial<AdhocSeries>) => {
+  overrides[key] = { ...overrides[key], ...patch }
   config.series = config.series.map(entry => (entry.key === key ? { ...entry, ...patch } : entry))
 }
 
+/**
+ * Taking one series out of a generated set means pinning the rest: the picks
+ * become everything that was matched except this one. With picks already in
+ * place it is simply one fewer pick. Removing the last one has to empty the
+ * graph, not fall back to "everything matching", so the filter goes with it.
+ */
 const removeSeries = (key: string) => {
-  store.setSelectedDatasources(store.selectedDatasources.filter(datasource => datasource.key !== key))
+  const wasFollowingFilter = !store.pickedDatasources.length
+  const current = wasFollowingFilter ? store.effectiveDatasources : store.reachablePickedDatasources
+  const remaining = current.filter(datasource => datasource.key !== key)
+
+  if (!remaining.length) {
+    store.setDatasourceFilter('')
+  } else if (wasFollowingFilter) {
+    notePinned('Datasources', remaining.length)
+  }
+
+  store.setPickedDatasources(remaining)
 }
 
 const addExpression = () => {
@@ -446,13 +654,24 @@ const runQuery = () => {
 }
 
 const clearAll = () => {
+  filterGeneration++
+  nodeText.value = ''
+  resourceText.value = ''
+  datasourceText.value = ''
+  generatedLabels.clear()
   store.clearAll()
+  // Back to the browse page, not a blank column under an empty box.
+  store.evaluateNodes()
   config.series = []
   config.expressions = []
   config.title = ''
   config.verticalLabel = ''
   config.stacked = false
   config.resolution = DEFAULT_RESOLUTION
+
+  for (const key of Object.keys(overrides)) {
+    delete overrides[key]
+  }
 }
 
 const exportCsv = () => {
@@ -471,6 +690,25 @@ const exportPdf = () => {
   }
 }
 
+/** What a link carries besides the config: the picker, the edits, and the series count for comparison. */
+const linkState = (): AdhocLinkState => {
+  const carried: Record<string, AdhocSeriesOverride> = Object.fromEntries(
+    Object.entries(overrides).filter(([key]) => config.series.some(entry => entry.key === key))
+  )
+
+  // A generated label an expression refers to is part of the graph's meaning:
+  // write it into the link, or the reopened graph may generate it differently.
+  for (const series of config.series) {
+    const referenced = config.expressions.some(expression => expressionReferences(expression.value, series.label))
+
+    if (referenced && !carried[series.key]?.label) {
+      carried[series.key] = { ...carried[series.key], label: series.label }
+    }
+  }
+
+  return { selection: store.selectionState, overrides: carried, seriesCount: config.series.length }
+}
+
 /**
  * The shareable link for the graph as it stands right now.
  *
@@ -484,7 +722,7 @@ const exportPdf = () => {
  * point at which syncUrl gives up on the address bar.
  */
 const buildShareUrl = (routePath?: string): string | null => {
-  const query = encodeAdhocState(config, time)
+  const query = encodeAdhocState(config, time, linkState())
 
   if (encodedQueryLength(query) > MAX_QUERY_LENGTH) {
     return null
@@ -527,7 +765,7 @@ const popOut = () => {
   const url = buildShareUrl(ADHOC_VIEW_ROUTE_PATH)
 
   if (!url) {
-    showSnackBar({ msg: 'This graph has too many series to open in its own tab.', error: true })
+    showSnackBar({ msg: 'This graph has too many selections to open in its own tab.', error: true })
     return
   }
 
@@ -542,7 +780,7 @@ const shareLink = async () => {
   const url = buildShareUrl()
 
   if (!url) {
-    showSnackBar({ msg: 'This graph has too many series to share as a link.', error: true })
+    showSnackBar({ msg: 'This graph has too many selections to share as a link.', error: true })
     return
   }
 
@@ -556,7 +794,7 @@ const shareLink = async () => {
     // The browser can refuse outright (permissions policy, no activation). The
     // address bar still holds a working link, so point at it rather than failing
     // silently.
-    showSnackBar({ msg: 'Could not copy automatically — the link is in the address bar.', error: true })
+    showSnackBar({ msg: 'Could not copy automatically; the link is in the address bar.', error: true })
   }
 }
 
@@ -570,7 +808,7 @@ const syncUrl = useDebounceFn(() => {
     return
   }
 
-  const query = encodeAdhocState(config, time)
+  const query = encodeAdhocState(config, time, linkState())
 
   if (encodedQueryLength(query) > MAX_QUERY_LENGTH) {
     // Past this size the link stops being pasteable and some proxies truncate it.
@@ -584,7 +822,7 @@ const syncUrl = useDebounceFn(() => {
     if (!warnedUnshareable) {
       warnedUnshareable = true
       showSnackBar({
-        msg: 'This graph now has too many series to keep in the page address — it still works, but the link no longer captures it.',
+        msg: 'This graph now has too many selections to keep in the page address; it still works, but the link no longer captures it.',
         error: true
       })
     }
@@ -598,7 +836,8 @@ const syncUrl = useDebounceFn(() => {
 
 const debouncedQuery = useDebounceFn(runQuery, 600)
 
-watch(() => store.selectedDatasources, value => reconcileSeries([...value]), { deep: true })
+// The series are whatever the filters and picks currently produce.
+watch(() => store.effectiveDatasources, value => reconcileSeries([...value]))
 
 // Only a change to what the server would return re-queries; style, color and
 // title changes re-render from the data already in hand.
@@ -607,8 +846,9 @@ watch(() => querySignature(config, time), () => {
   debouncedQuery()
 })
 
-// Non-query config still belongs in the URL.
+// Non-query config still belongs in the URL, and so does the picker itself.
 watch(() => [config.title, config.verticalLabel, config.stacked, config.series, config.expressions], syncUrl, { deep: true })
+watch(() => store.selectionState, syncUrl)
 
 // A shared link carries the colors of the theme it was built in; move any color
 // still sitting on a palette slot to that slot's step for the current theme.
@@ -630,14 +870,15 @@ onBeforeUnmount(() => {
 onMounted(async () => {
   const restored = decodeAdhocState(route.query)
 
-  if (!restored?.config.series.length) {
-    store.searchNodes('')
+  if (!restored) {
+    store.evaluateNodes()
     return
   }
 
   hydrating = true
 
   Object.assign(config, restored.config)
+  Object.assign(overrides, restored.link.overrides)
 
   if (restored.time.range) {
     // Resolved against the clock now, so the link shows current data however old
@@ -647,32 +888,32 @@ onMounted(async () => {
     updateTime(restored.time)
   }
 
-  // Fill in anything the link left out: colors are optional in the encoding, and
-  // an expression id is regenerated rather than carried.
-  config.series = config.series.map((entry, index) => ({
-    ...entry,
-    color: entry.color || seriesColor(index, appStore.theme)
-  }))
+  // An expression id is regenerated rather than carried; a color is optional.
   config.expressions = config.expressions.map((entry, index) => ({
     ...entry,
     id: `expr-${++expressionSeq}`,
-    color: entry.color || seriesColor(config.series.length + index, appStore.theme)
+    color: entry.color || seriesColor(index, appStore.theme)
   }))
 
-  // Walk the cascade backwards from the link's resource ids so all three panes
-  // show what is actually being plotted, then populate the node picker. The search
-  // runs after the restore, not before, so it can pin the restored nodes to the top
-  // rather than racing them.
   // A link that carries expressions should show them; hiding them would make the
   // graph look like it came from its sources alone.
   expressionsCollapsed.value = config.expressions.length === 0
 
-  await store.restoreSelection(config.series.map(entry => ({
-    resourceId: entry.resourceId,
-    attribute: entry.attribute
-  })))
+  // Evaluate the picker as the server stands now. The series follow through the
+  // watcher above, so wait a tick for them before deciding what to say and query.
+  await store.restore(restored.link.selection)
+  await nextTick()
 
-  store.searchNodes('')
+  const shared = restored.link.seriesCount
+  const now = store.effectiveDatasources.length
+
+  // Only a real difference is worth a notice; a lookup that failed just now is
+  // reported by the columns themselves.
+  if (shared > 0 && now !== shared && !store.nodeFilterError && !store.failedNodeLoads) {
+    showSnackBar({
+      msg: `This link now matches ${now.toLocaleString()} series; it matched ${shared.toLocaleString()} when it was made.`
+    })
+  }
 
   hydrating = false
   runQuery()
