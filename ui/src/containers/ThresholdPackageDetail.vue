@@ -9,13 +9,14 @@
     <template v-if="store.currentPackage">
       <div class="header">
         <div class="left">
-          <OnmsIconButton
-            :icon="BackIcon"
-            tooltip="Back to threshold configuration"
-            aria-label="Back to threshold configuration"
+          <OnmsButton
+            variant="text"
             data-test="threshd-package-back"
             @click="router.push(PACKAGES_TAB_PATH)"
-          />
+          >
+            <OnmsIcon :icon="ArrowBack" />
+            Go Back
+          </OnmsButton>
           <h2 data-test="threshd-package-name">{{ packageName }}</h2>
         </div>
         <OnmsButton data-test="threshd-package-save" :disabled="hasErrors(errors)" @click="onSave">
@@ -53,8 +54,8 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import { BreadCrumb } from '@/types'
-import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
-import BackIcon from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -136,7 +137,7 @@ const onSave = async () => {
     .left {
       display: flex;
       align-items: center;
-      gap: 0.75em;
+      gap: 20px;
     }
 
     h2 {
