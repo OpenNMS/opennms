@@ -228,7 +228,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     return result
   }
 
-  const reloadThreshdConfiguration = async (): Promise<ValidationResult> => API.reloadThreshdConfiguration()
 
   const openServiceDrawer = (mode: CreateEditMode, index = -1): void => {
     serviceDrawer.value = { visible: true, mode, index }
@@ -264,7 +263,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     deletePackage,
     saveService,
     deleteService,
-    reloadThreshdConfiguration,
     openServiceDrawer,
     closeServiceDrawer,
     resetState

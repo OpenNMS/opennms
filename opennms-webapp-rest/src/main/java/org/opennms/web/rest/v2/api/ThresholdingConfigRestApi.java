@@ -262,27 +262,6 @@ public interface ThresholdingConfigRestApi {
     })
     Response getThresholdingMetadata(@Context SecurityContext securityContext);
 
-    @POST
-    @Path("reload")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(
-            summary = "Ask threshd to reload the thresholding configuration",
-            description = """
-        Send a `reloadDaemonConfig` event for `thresholds.xml`. Requires ROLE_ADMIN. Every write through
-        this API already sends one, so this is only needed after the stored configuration was changed by
-        some other means. The event is asynchronous: a 202 means it was sent, not that threshd has finished
-        reloading.""",
-            operationId = "reloadThresholdingConfiguration"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Reload event sent."),
-            @ApiResponse(responseCode = "403", description = "Admin role required.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "500", description = "The event could not be sent.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
-    })
-    Response reloadThresholdingConfiguration(@Context SecurityContext securityContext);
-
     @GET
     @Path("download")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

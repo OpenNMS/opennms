@@ -19,8 +19,7 @@ vi.mock('@/services', () => ({
     getThresholdingMetadata: vi.fn(),
     createThresholdGroup: vi.fn(),
     updateThresholdGroup: vi.fn(),
-    deleteThresholdGroup: vi.fn(),
-    reloadThresholdingConfiguration: vi.fn()
+    deleteThresholdGroup: vi.fn()
   }
 }))
 

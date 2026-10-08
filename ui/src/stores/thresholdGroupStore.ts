@@ -255,8 +255,6 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     return reordered
   }
 
-  const reloadThresholdConfiguration = async (): Promise<ValidationResult> => API.reloadThresholdingConfiguration()
-
   const openDefinitionDrawer = (kind: ThresholdDefinitionKind, mode: CreateEditMode, index = -1): void => {
     definitionDrawer.value = { visible: true, mode, kind, index }
   }
@@ -310,7 +308,6 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     saveDefinition,
     deleteDefinition,
     moveResourceFilter,
-    reloadThresholdConfiguration,
     openDefinitionDrawer,
     closeDefinitionDrawer,
     drawerDefinition,

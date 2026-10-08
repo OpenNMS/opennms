@@ -15,27 +15,10 @@
           @click="isHelpVisible = true"
           @keyup.enter="isHelpVisible = true"
         />
-        <OnmsButton variant="outlined" data-test="threshd-reload" @click="isReloadConfirmVisible = true">
-          Reload threshd configuration
-        </OnmsButton>
       </div>
     </div>
 
     <ThresholdPackagesTable />
-
-    <OnmsConfirmationDialog
-      v-if="isReloadConfirmVisible"
-      :visible="true"
-      title="Reload the threshd configuration?"
-      actionButtonText="Reload"
-      data-test="threshd-reload-confirm"
-      @ok="onReload"
-      @cancel="isReloadConfirmVisible = false"
-    >
-      <template #content>
-        <p>Threshd will re-read its daemon configuration and rebuild its schedules.</p>
-      </template>
-    </OnmsConfirmationDialog>
 
     <ThresholdHelpDialog
       :visible="isHelpVisible"
@@ -50,28 +33,11 @@
 import { ref } from 'vue'
 import ThresholdPackagesTable from '@/components/ThresholdConfiguration/ThresholdPackagesTable.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
-import useSnackbar from '@/composables/useSnackbar'
 import { PACKAGE_HELP } from '@/lib/thresholdHelpText'
-import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
-import { OnmsButton, OnmsConfirmationDialog, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsIcon } from '@opennms/onms-ui'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
-const store = useThreshdConfigurationStore()
-const { showSnackBar } = useSnackbar()
-
 const isHelpVisible = ref(false)
-const isReloadConfirmVisible = ref(false)
-
-const onReload = async () => {
-  isReloadConfirmVisible.value = false
-
-  const result = await store.reloadThreshdConfiguration()
-
-  showSnackBar({
-    msg: result.success ? 'Threshd has been asked to reload its configuration.' : result.message,
-    error: !result.success
-  })
-}
 </script>
 
 <style lang="scss" scoped>

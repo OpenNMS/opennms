@@ -408,17 +408,6 @@ public class ThresholdingConfigRestServiceTest {
     }
 
     @Test
-    public void reloadEndpointIsAdminOnly() {
-        try (Response response = restService.reloadThresholdingConfiguration(userContext())) {
-            assertEquals(403, response.getStatus());
-        }
-        try (Response response = restService.reloadThresholdingConfiguration(adminContext())) {
-            assertEquals(202, response.getStatus());
-        }
-        assertEquals("thresholds.xml", reloadedConfigFile());
-    }
-
-    @Test
     public void stillReportsSuccessWhenTheReloadEventCannotBeSent() throws Exception {
         // The configuration is stored by then; failing the request would tell the user nothing was saved.
         org.mockito.Mockito.doThrow(new RuntimeException("no event bus")).when(eventProxy).send(any(Event.class));

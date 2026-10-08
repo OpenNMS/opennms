@@ -146,15 +146,6 @@ export const getThresholdingMetadata = async (): Promise<ValidationResultWithPay
   }
 }
 
-export const reloadThresholdingConfiguration = async (): Promise<ValidationResult> => {
-  try {
-    await v2.post(`${thresholdingEndpoint}/reload`)
-    return createSuccessResponse()
-  } catch (error) {
-    return failure(error, 'Failed to reload the thresholding configuration.')
-  }
-}
-
 export const downloadThresholdingConfiguration = async (isXml: boolean) => {
   try {
     return await v2.get(`${thresholdingEndpoint}/download`, {
@@ -240,15 +231,6 @@ export const deleteThreshdPackage = async (name: string, version?: string): Prom
     return createSuccessResponse()
   } catch (error) {
     return failure(error, `Failed to delete threshd package '${name}'.`)
-  }
-}
-
-export const reloadThreshdConfiguration = async (): Promise<ValidationResult> => {
-  try {
-    await v2.post(`${threshdEndpoint}/reload`)
-    return createSuccessResponse()
-  } catch (error) {
-    return failure(error, 'Failed to reload the threshd configuration.')
   }
 }
 
