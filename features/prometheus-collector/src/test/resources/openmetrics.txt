@@ -1,0 +1,43 @@
+# TYPE go_goroutines gauge
+# HELP go_goroutines Number of goroutines that currently exist.
+go_goroutines 69
+# TYPE process_cpu_seconds counter
+# UNIT process_cpu_seconds seconds
+# HELP process_cpu_seconds Total user and system CPU time spent in seconds.
+process_cpu_seconds_total 4.20072246e+06
+# TYPE http_requests counter
+# UNIT http_requests requests
+# HELP http_requests Total number of HTTP requests made.
+http_requests_total{method="get",code="200"} 1027 1.488452300E9
+http_requests_total{method="post",code="200"} 32 1.488452300E9
+# TYPE foo counter
+foo_total{color="red"} 17.0 1520879607.789
+foo_created{color="red"} 1605281325.0
+foo_total{color="green"} 10 1520879607.789
+foo_created{color="green"} 1605281325.0
+# TYPE acme_http_router_request_seconds summary
+# UNIT acme_http_router_request_seconds seconds
+# HELP acme_http_router_request_seconds Latency though all of ACME's HTTP request router.
+acme_http_router_request_seconds_sum{path="/api/v1",method="GET"} 9036.32
+acme_http_router_request_seconds_count{path="/api/v1",method="GET"} 807283.0
+acme_http_router_request_seconds_created{path="/api/v1",method="GET"} 1605281325.0
+acme_http_router_request_seconds_sum{path="/api/v2",method="POST"} 479.3
+acme_http_router_request_seconds_count{path="/api/v2",method="POST"} 34.0
+acme_http_router_request_seconds_created{path="/api/v2",method="POST"} 1605281325.0
+# TYPE unknown_metric_1 unknown
+# HELP unknown_metric_1 A metric with an unknown type
+unknown_metric_1 42
+unknown_metric_1_garbage 99
+garbage 12
+more_garbage 3
+# HELP unknown_metric_2 Missing type, defaults to unknown
+unknown_metric_2 55
+# TYPE unknown_metric_3
+unknown_metric_3 66
+# HELP acme_count A metric with an invalid type. Should be ignored
+# TYPE acme_count invalid_type 
+acme_count 10
+# TYPE another_gauge gauge
+# HELP another_gauge Another gauge metric.
+another_gauge 128
+# EOF

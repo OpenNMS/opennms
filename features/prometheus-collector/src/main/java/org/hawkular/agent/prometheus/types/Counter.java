@@ -42,9 +42,21 @@ public class Counter extends Metric {
     public double getValue() {
         return value;
     }
+    
+    @Override
+    public String toString() {
+
+        return "Counter [name=" + getName() + ", labels" + getLabels() + ", timestamp=" + getTimestamp() + ", created=" + getCreated()
+                + ", value=" + value + "]";
+    }
 
     @Override
     public void visit(MetricVisitor visitor) {
         visitor.visitCounter(this);
+    }
+    
+    public static Builder builder() {
+
+        return new Builder();
     }
 }
