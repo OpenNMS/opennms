@@ -531,6 +531,7 @@
                 <feature>opennms-es-rest</feature>
                 <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
+                <feature>opennms-flows-aggregation</feature>
                 <feature>opennms-api-layer</feature>
                 <feature>opennms-plugin-sample</feature>
                 <feature>karaf-extender</feature>
