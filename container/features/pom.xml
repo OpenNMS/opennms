@@ -524,7 +524,6 @@
                           <!-- base API features -->
                           <feature>opennms-activemq-pool</feature>
                           <feature>opennms-alarm-history-elastic</feature>
-                          <feature>opennms-camel-amqp</feature>
                           <feature>opennms-core-camel</feature>
                           <feature>opennms-core-daemon</feature>
                           <feature>opennms-core-ipc-jms</feature>
