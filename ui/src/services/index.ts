@@ -30,6 +30,14 @@ import {
 } from './nodeService'
 import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
 import { getCategories } from './categoryService'
+import {
+  addNodeToCategory,
+  createCategory,
+  deleteCategory,
+  listCategories,
+  removeNodeFromCategory,
+  updateCategoryDescription
+} from './categoryAdminService'
 import { getMonitoringLocations } from './monitoringLocationService'
 import {
   createMonitoringLocation,
@@ -162,6 +170,12 @@ export default {
   getNodeAvailabilityPercentage,
   getNodeOutageTimeline,
   getCategories,
+  addNodeToCategory,
+  createCategory,
+  deleteCategory,
+  listCategories,
+  removeNodeFromCategory,
+  updateCategoryDescription,
   getMonitoringLocations,
   createMonitoringLocation,
   deleteMonitoringLocation,
