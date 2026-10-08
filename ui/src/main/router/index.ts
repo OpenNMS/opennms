@@ -61,6 +61,7 @@ const isLegacyPlugin = (plugin: Plugin) => {
   return false
 }
 
+// getters, so the guard reads the menu store that is active when the navigation runs
 const mainMenuLoaded = () => useMenuStore().mainMenuLoaded
 const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled ?? false
 
