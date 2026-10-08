@@ -64,6 +64,7 @@ export const useDashboardStore = defineStore('dashboardStore', {
   }),
   getters: {
     panels: (state): DashboardPanel[] => state.layout.panels,
+    dashboardName: (state): string => state.layout.name?.trim() || 'Home',
     // Whether panels squeeze up/down to pack against neighbours (vs. free-form).
     autoCompact: (state): boolean => state.layout.autoCompact !== false,
     isPaused: (state): boolean => state.layout.refresh.paused,

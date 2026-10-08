@@ -58,6 +58,8 @@ export const normalizeLayout = (raw: unknown): DashboardLayout => {
   return {
     scope: 'SYSTEM',
     version: typeof doc.version === 'number' ? doc.version : base.version,
+    // display name; documents written before the field existed take the default
+    name: typeof doc.name === 'string' && doc.name.trim() ? doc.name.trim() : base.name,
     refresh: {
       seconds: Number.isFinite(doc.refresh?.seconds as number) ? (doc.refresh as DashboardLayout['refresh']).seconds : base.refresh.seconds,
       paused: !!doc.refresh?.paused
