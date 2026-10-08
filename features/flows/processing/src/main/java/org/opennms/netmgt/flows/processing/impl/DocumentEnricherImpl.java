@@ -146,11 +146,11 @@ public class DocumentEnricherImpl {
 
             // Node data
             getNodeInfoFromCache(source.getLocation(), source.getSourceAddress(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setExporterNodeInfo);
-            if (flow.getDstAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), flow.getDstAddr(), null, null).ifPresent(document::setSrcNodeInfo);
-            }
             if (flow.getSrcAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), flow.getSrcAddr(), null, null).ifPresent(document::setDstNodeInfo);
+                getNodeInfoFromCache(source.getLocation(), flow.getSrcAddr(), null, null).ifPresent(document::setSrcNodeInfo);
+            }
+            if (flow.getDstAddr() != null) {
+                getNodeInfoFromCache(source.getLocation(), flow.getDstAddr(), null, null).ifPresent(document::setDstNodeInfo);
             }
 
             // Locality

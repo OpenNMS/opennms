@@ -89,6 +89,42 @@ public class DocumentEnricherTest {
         Assert.assertEquals(6, nodeDaoGetCounter.get());
     }
 
+    @Test
+    public void testSrcAndDstNodeInfo() throws InterruptedException {
+        final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
+        final DocumentEnricherImpl enricher = factory.getEnricher();
+        final NodeDao nodeDao = factory.getNodeDao();
+        final InterfaceToNodeCache interfaceToNodeCache = factory.getInterfaceToNodeCache();
+
+        interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.1"), 1);
+        interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.2"), 2);
+
+        nodeDao.save(createOnmsNode(1, "my-requisition"));
+        nodeDao.save(createOnmsNode(2, "my-requisition"));
+
+        // Both addresses resolve to a node
+        final List<EnrichedFlow> docs = enricher.enrich(Lists.newArrayList(
+                createFlowDocument("10.0.0.1", "10.0.0.2"),
+                createFlowDocument("10.0.0.2", "10.0.0.1")
+        ), new FlowSource("Default", "127.0.0.1", null));
+
+        Assert.assertEquals(1, docs.get(0).getSrcNodeInfo().getNodeId());
+        Assert.assertEquals(2, docs.get(0).getDstNodeInfo().getNodeId());
+        Assert.assertEquals(2, docs.get(1).getSrcNodeInfo().getNodeId());
+        Assert.assertEquals(1, docs.get(1).getDstNodeInfo().getNodeId());
+
+        // Only one of the addresses resolves to a node
+        final List<EnrichedFlow> partial = enricher.enrich(Lists.newArrayList(
+                createFlowDocument("10.0.0.1", "10.0.0.99"),
+                createFlowDocument("10.0.0.99", "10.0.0.2")
+        ), new FlowSource("Default", "127.0.0.1", null));
+
+        Assert.assertEquals(1, partial.get(0).getSrcNodeInfo().getNodeId());
+        Assert.assertNull(partial.get(0).getDstNodeInfo());
+        Assert.assertNull(partial.get(1).getSrcNodeInfo());
+        Assert.assertEquals(2, partial.get(1).getDstNodeInfo().getNodeId());
+    }
+
     private static Flow createFlowDocument(String sourceIp, String destIp) {
         return createFlowDocument(sourceIp, destIp, 0);
     }
