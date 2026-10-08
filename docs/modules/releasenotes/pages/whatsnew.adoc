@@ -34,6 +34,14 @@ The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` 
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
 Direct edits to the archived XML files no longer take effect.
 
+=== SNMP MIB compiler: new UI and REST API
+The SNMP MIB compiler has a new Vue UI and a REST API under `/api/v2/mibs`.
+Use the *SNMP MIB Compiler (New UI)* page to upload, view, edit, compile, and delete MIB files.
+From a compiled MIB, you can generate event definitions, an SNMP data collection group, and graph templates.
+Generated event definitions and data collection groups are stored in the database, the same as manual uploads on the event configuration and SNMP data collection pages.
+Graph templates are written to `etc/snmp-graph.properties.d/`.
+The legacy MIB compiler page remains available.
+
 === Snmp Config file `snmp-config.xml` moved to DB with new UI
 The contents of `snmp-config.xml` are migrated into the database during the upgrade process,
 and the original file is moved to `etc_archive/`.

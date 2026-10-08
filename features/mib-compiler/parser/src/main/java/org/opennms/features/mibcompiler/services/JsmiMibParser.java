@@ -81,8 +81,6 @@ public class JsmiMibParser implements MibParser, Serializable {
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(JsmiMibParser.class);
 
-    /** The Constant MIB_SUFFIXES. */
-    private static final String[] MIB_SUFFIXES = new String[] { "", ".txt", ".mib", ".my" };
 
     /** The Constant TRAP_OID_PATTERN. */
     private static final Pattern TRAP_OID_PATTERN = Pattern.compile("(.*)\\.(\\d+)$");
