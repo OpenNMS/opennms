@@ -31,8 +31,10 @@ package org.opennms.netmgt.provision.persist;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
@@ -112,5 +114,44 @@ public class RequisitionFileUtilsTest {
 
         snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");
         assertEquals(0, snapshots.size());
+    }
+
+    @Test
+    public void testDoctypeRejectedByDefault() throws Exception {
+        final File file = writeRequisitionWithDoctype();
+        try {
+            RequisitionFileUtils.getRequisitionFromFile(file);
+            fail("expected a requisition with a DOCTYPE to be rejected");
+        } catch (final ForeignSourceRepositoryException e) {
+            Throwable cause = e;
+            while (cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            assertTrue("rejected for an unexpected reason: " + cause, String.valueOf(cause.getMessage()).toLowerCase().contains("doctype"));
+        }
+    }
+
+    @Test
+    public void testDoctypeAcceptedWhenAllowed() throws Exception {
+        final File file = writeRequisitionWithDoctype();
+        System.setProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY, "true");
+        try {
+            final Requisition requisition = RequisitionFileUtils.getRequisitionFromFile(file);
+            assertEquals("doctype", requisition.getForeignSource());
+            assertEquals("M\u00fcnchen", requisition.getNodes().get(0).getNodeLabel());
+        } finally {
+            System.clearProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY);
+        }
+    }
+
+    private File writeRequisitionWithDoctype() throws Exception {
+        final File file = new File(m_requisitionDirectory.toFile(), "doctype.xml");
+        final String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE model-import [ <!ENTITY uuml \"&#252;\"> ]>\n"
+                + "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" foreign-source=\"doctype\">\n"
+                + "  <node foreign-id=\"1\" node-label=\"M&uuml;nchen\"/>\n"
+                + "</model-import>\n";
+        Files.write(file.toPath(), xml.getBytes(StandardCharsets.UTF_8));
+        return file;
     }
 }

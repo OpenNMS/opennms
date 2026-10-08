@@ -64,7 +64,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         Assert.notNull(resource);
 
         LOG.debug("importing requisition from {}", stripCredentials(resource));
-        final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
+        final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource, true, RequisitionFileUtils.isDoctypeDisabled());
         requisition.setResource(resource);
         save(requisition);
         return requisition;
@@ -91,7 +91,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         if (!defaultForeignSource.exists()) {
             defaultForeignSource = new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml");
         }
-        final ForeignSource fs = JaxbUtils.unmarshal(ForeignSource.class, defaultForeignSource);
+        final ForeignSource fs = JaxbUtils.unmarshal(ForeignSource.class, defaultForeignSource, true, RequisitionFileUtils.isDoctypeDisabled());
         fs.setDefault(true);
         return fs;
     }

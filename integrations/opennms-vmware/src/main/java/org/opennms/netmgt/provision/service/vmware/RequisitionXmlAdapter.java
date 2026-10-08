@@ -31,13 +31,14 @@ package org.opennms.netmgt.provision.service.vmware;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 public class RequisitionXmlAdapter extends XmlAdapter<String, Requisition> {
 
     @Override
     public Requisition unmarshal(String v) throws Exception {
-        return JaxbUtils.unmarshal(Requisition.class, v);
+        return JaxbUtils.unmarshal(Requisition.class, v, true, RequisitionFileUtils.isDoctypeDisabled());
     }
 
     @Override

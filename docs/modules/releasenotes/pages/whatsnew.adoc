@@ -78,6 +78,7 @@ The biggest addition is a new Quick Start Guide that provides simple steps to se
 * reading requisitions through the REST API now requires `ROLE_PROVISION` or `ROLE_ADMIN`. Give `ROLE_PROVISION` to integration accounts that read requisitions.
 * the asset fields `password`, `enable` and `snmpcommunity` are now write-only in the REST API.
 * the raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
+* requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import. Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
 
 === SNMP4J upgrade
 The SNMP4J library has been upgraded to version 2.8.15.

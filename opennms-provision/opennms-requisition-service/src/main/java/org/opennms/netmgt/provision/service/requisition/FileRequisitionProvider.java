@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionProvider;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 public class FileRequisitionProvider extends AbstractRequisitionProvider<FileRequisitionRequest> {
@@ -61,7 +62,7 @@ public class FileRequisitionProvider extends AbstractRequisitionProvider<FileReq
     @Override
     public Requisition getRequisitionFor(FileRequisitionRequest request) {
         final File file = new File(request.getPath());
-        return JaxbUtils.unmarshal(Requisition.class, file);
+        return JaxbUtils.unmarshal(Requisition.class, file, true, RequisitionFileUtils.isDoctypeDisabled());
     }
 
 }

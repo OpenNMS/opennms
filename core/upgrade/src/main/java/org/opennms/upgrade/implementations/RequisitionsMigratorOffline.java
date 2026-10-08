@@ -37,6 +37,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
@@ -145,7 +146,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
                 if (content.length() != output.length()) {
                     log("  Updating and parsing the requisition\n", req);
                     IOUtils.write(output, new FileOutputStream(req), StandardCharsets.UTF_8);
-                    Requisition requisition = JaxbUtils.unmarshal(Requisition.class, req, true);
+                    Requisition requisition = JaxbUtils.unmarshal(Requisition.class, req, true, RequisitionFileUtils.isDoctypeDisabled());
                     if (requisition == null) {
                         throw new OnmsUpgradeException("Can't parse requisition " + req);
                     }
