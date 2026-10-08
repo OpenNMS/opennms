@@ -81,6 +81,9 @@ public class Schedule {
                     // Chose a random number of seconds between 5 and 14 to wait before trying again
                     m_timer.schedule(random.nextInt(10) * 1000L + 5000L, this);
                     return;
+                } catch (RuntimeException e) {
+                    // Fall through to the reschedule below; otherwise one failed run ends the schedule for good
+                    LOG.error("Schedule {} failed to run.", this, e);
                 }
             }
                 
