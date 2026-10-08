@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Users, groups, security roles and on-call roles, until now kept in users.xml, groups.xml and
+         security-roles.properties. Mapped by the entities in org.opennms.netmgt.model.usermgmt.
+
+         Two kinds of "role" live here: security roles (ROLE_ADMIN, ...), the Spring Security authorities
+         granted to users, and on-call roles, the notification rotas of groups.xml.
+
+         The on-call schedule strings (duty schedules, begins/ends/day) are kept in their XML formats, so the
+         migration from the files is a lossless copy and the existing parsers keep working. -->
+
+    <!-- Security roles: the built-in ones (seeded below; SecurityRoleDao refuses to delete them) and custom ones -->
+    <changeSet author="stheleman" id="37.0.0-security-roles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="security_roles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="security_roles">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!-- the full authority name, ROLE_ included -->
+            <column name="name" type="varchar(128)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_security_roles_name"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="builtin" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+        </createTable>
+
+        <createSequence sequenceName="security_roles_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="security_roles"/>
+            <dropSequence sequenceName="security_roles_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The built-in security roles; must match SecurityRoles.BUILTIN_ROLES (SecurityRoleDaoIT checks).
+         Seeds only an empty table, which it always is here: the changeset above just created it. -->
+    <changeSet author="stheleman" id="37.0.0-security-roles-builtin">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM security_roles
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_USER"/>
+            <column name="description" value="Default permissions for a new user to interact with the web UI. Allows users to escalate and acknowledge alarms and notifications."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_ADMIN"/>
+            <column name="description" value="Permissions to create, read, update, and delete items via the web UI and the REST API (see ROLE_FILESYSTEM_EDITOR for exceptions)."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_READONLY"/>
+            <column name="description" value="Permissions only to read information in the web UI. Does not allow user to change alarm states or notifications."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_DASHBOARD"/>
+            <column name="description" value="Permissions only to view the dashboard."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_DELEGATE"/>
+            <column name="description" value="Permissions to perform actions (such as acknowledging an alarm) on behalf of another user."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_RTC"/>
+            <column name="description" value="Permissions to exchange information with the Real-Time Console for availability calculations."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_PROVISION"/>
+            <column name="description" value="Permissions to use the provisioning system and configure SNMP to access management information from devices."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_REST"/>
+            <column name="description" value="Permissions to interact with the REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_ASSET_EDITOR"/>
+            <column name="description" value="Permissions only to update asset records from nodes."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_FILESYSTEM_EDITOR"/>
+            <column name="description" value="Permissions only to view and update file configuration data via the REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_MOBILE"/>
+            <column name="description" value="Permissions to use the OpenNMS COMPASS mobile application to acknowledge alarms and notifications via the REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_JMX"/>
+            <column name="description" value="Permissions to retrieve JMX metrics."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_MINION"/>
+            <column name="description" value="Minimum permissions required for a Minion to operate."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_REPORT_DESIGNER"/>
+            <column name="description" value="Permissions to manage reports in the web UI and REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_FLOW_MANAGER"/>
+            <column name="description" value="Permissions to edit flow classifications."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_DEVICE_CONFIG_BACKUP"/>
+            <column name="description" value="Permissions to view and trigger device configuration backups."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="security_roles"><where>builtin = true</where></delete>
+        </rollback>
+    </changeSet>
+
+    <!-- Users -->
+    <changeSet author="stheleman" id="37.0.0-users-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="users">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!-- case-sensitive, as in users.xml -->
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_users_username"/>
+            </column>
+            <column name="full_name" type="varchar(256)"/>
+            <column name="comments" type="text"/>
+            <column name="password_hash" type="varchar(512)"/>
+            <column name="password_salted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tui_pin" type="varchar(32)"/>
+            <column name="time_zone_id" type="varchar(64)"/>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+        </createTable>
+
+        <createSequence sequenceName="users_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="users"/>
+            <dropSequence sequenceName="users_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- How users are reached, at most one contact per type -->
+    <changeSet author="stheleman" id="37.0.0-user-contacts-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_contacts"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_contacts">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_type" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="info" type="varchar(256)"/>
+            <column name="service_provider" type="varchar(256)"/>
+        </createTable>
+
+        <createSequence sequenceName="user_contacts_id_seq" startValue="1" incrementBy="1"/>
+
+        <addForeignKeyConstraint baseTableName="user_contacts" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_user_contacts_user_id" onDelete="CASCADE"/>
+
+        <!-- deferred, so a contact can be replaced by one of the same type in a single transaction -->
+        <addUniqueConstraint tableName="user_contacts" columnNames="user_id, contact_type"
+                             constraintName="uk_user_contacts_user_type"
+                             deferrable="true" initiallyDeferred="true"/>
+
+        <!-- the ContactType enum -->
+        <sql>
+            ALTER TABLE user_contacts ADD CONSTRAINT ck_user_contacts_contact_type
+                CHECK (contact_type IN ('email', 'pagerEmail', 'xmppAddress', 'microblog', 'numericPage', 'textPage', 'workPhone', 'mobilePhone', 'homePhone', 'snmpTrap'))
+        </sql>
+
+        <rollback>
+            <dropTable tableName="user_contacts"/>
+            <dropSequence sequenceName="user_contacts_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The duty schedules of a user, in order, in the users.xml format (MoTuWe800-1700) -->
+    <changeSet author="stheleman" id="37.0.0-user-duty-schedules-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_duty_schedules"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_duty_schedules">
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="user_duty_schedules" columnNames="user_id, position" constraintName="pk_user_duty_schedules"/>
+
+        <addForeignKeyConstraint baseTableName="user_duty_schedules" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_user_duty_schedules_user_id" onDelete="CASCADE"/>
+
+        <rollback>
+            <dropTable tableName="user_duty_schedules"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The security roles granted to each user -->
+    <changeSet author="stheleman" id="37.0.0-user-security-roles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_security_roles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_security_roles">
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="user_security_roles" columnNames="user_id, role_id" constraintName="pk_user_security_roles"/>
+
+        <addForeignKeyConstraint baseTableName="user_security_roles" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_user_security_roles_user_id" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="user_security_roles" baseColumnNames="role_id"
+                                 referencedTableName="security_roles" referencedColumnNames="id"
+                                 constraintName="fk_user_security_roles_role_id" onDelete="CASCADE"/>
+
+        <createIndex tableName="user_security_roles" indexName="idx_user_security_roles_role_id">
+            <column name="role_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="user_security_roles"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Groups of users. category_group.groupId refers to groups by name, without a foreign key, as before -->
+    <changeSet author="stheleman" id="37.0.0-groups-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="groups"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="groups">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_groups_name"/>
+            </column>
+            <column name="default_map" type="varchar(256)"/>
+            <column name="comments" type="text"/>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+        </createTable>
+
+        <createSequence sequenceName="groups_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="groups"/>
+            <dropSequence sequenceName="groups_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The members of each group, in order -->
+    <changeSet author="stheleman" id="37.0.0-group-members-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="group_members"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="group_members">
+            <column name="group_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="group_members" columnNames="group_id, position" constraintName="pk_group_members"/>
+
+        <addForeignKeyConstraint baseTableName="group_members" baseColumnNames="group_id"
+                                 referencedTableName="groups" referencedColumnNames="id"
+                                 constraintName="fk_group_members_group_id" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="group_members" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_group_members_user_id" onDelete="CASCADE"/>
+
+        <!-- deferred: Hibernate reorders members by rewriting user_id position by position, so two
+             members briefly share a user until the statement for the other position runs -->
+        <addUniqueConstraint tableName="group_members" columnNames="group_id, user_id"
+                             constraintName="uk_group_members_group_user"
+                             deferrable="true" initiallyDeferred="true"/>
+
+        <createIndex tableName="group_members" indexName="idx_group_members_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="group_members"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The duty schedules of a group, in order, in the groups.xml format (MoTuWe800-1700) -->
+    <changeSet author="stheleman" id="37.0.0-group-duty-schedules-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="group_duty_schedules"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="group_duty_schedules">
+            <column name="group_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="group_duty_schedules" columnNames="group_id, position" constraintName="pk_group_duty_schedules"/>
+
+        <addForeignKeyConstraint baseTableName="group_duty_schedules" baseColumnNames="group_id"
+                                 referencedTableName="groups" referencedColumnNames="id"
+                                 constraintName="fk_group_duty_schedules_group_id" onDelete="CASCADE"/>
+
+        <rollback>
+            <dropTable tableName="group_duty_schedules"/>
+        </rollback>
+    </changeSet>
+
+    <!-- On-call roles: the notification rotas of groups.xml -->
+    <changeSet author="stheleman" id="37.0.0-oncall-roles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="oncall_roles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="oncall_roles">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_oncall_roles_name"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="membership_group_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="supervisor_user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+        </createTable>
+
+        <createSequence sequenceName="oncall_roles_id_seq" startValue="1" incrementBy="1"/>
+
+        <!-- RESTRICT: a group or user a role depends on cannot be deleted; groups.xml allowed both -->
+        <addForeignKeyConstraint baseTableName="oncall_roles" baseColumnNames="membership_group_id"
+                                 referencedTableName="groups" referencedColumnNames="id"
+                                 constraintName="fk_oncall_roles_membership_group_id" onDelete="RESTRICT"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_roles" baseColumnNames="supervisor_user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_oncall_roles_supervisor_user_id" onDelete="RESTRICT"/>
+
+        <createIndex tableName="oncall_roles" indexName="idx_oncall_roles_membership_group_id">
+            <column name="membership_group_id"/>
+        </createIndex>
+
+        <createIndex tableName="oncall_roles" indexName="idx_oncall_roles_supervisor_user_id">
+            <column name="supervisor_user_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="oncall_roles"/>
+            <dropSequence sequenceName="oncall_roles_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Who is on call for a role, and when -->
+    <changeSet author="stheleman" id="37.0.0-oncall-schedules-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="oncall_schedules"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="oncall_schedules">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="oncall_role_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <!-- the user on call: the name attribute of the groups.xml schedule -->
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule_type" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="oncall_schedules_id_seq" startValue="1" incrementBy="1"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_schedules" baseColumnNames="oncall_role_id"
+                                 referencedTableName="oncall_roles" referencedColumnNames="id"
+                                 constraintName="fk_oncall_schedules_oncall_role_id" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_schedules" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_oncall_schedules_user_id" onDelete="CASCADE"/>
+
+        <sql>
+            ALTER TABLE oncall_schedules ADD CONSTRAINT ck_oncall_schedules_schedule_type
+                CHECK (schedule_type IN ('specific', 'daily', 'weekly', 'monthly'))
+        </sql>
+
+        <createIndex tableName="oncall_schedules" indexName="idx_oncall_schedules_oncall_role_id">
+            <column name="oncall_role_id"/>
+        </createIndex>
+
+        <createIndex tableName="oncall_schedules" indexName="idx_oncall_schedules_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="oncall_schedules"/>
+            <dropSequence sequenceName="oncall_schedules_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The intervals of each on-call schedule, in order -->
+    <changeSet author="stheleman" id="37.0.0-oncall-schedule-times-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="oncall_schedule_times"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="oncall_schedule_times">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="schedule_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <!-- the optional id attribute of the groups.xml time -->
+            <column name="time_id" type="varchar(64)"/>
+            <!-- weekday or day of month, for weekly and monthly schedules -->
+            <column name="day" type="varchar(16)"/>
+            <!-- dd-MMM-yyyy HH:mm:ss for specific schedules, HH:mm:ss otherwise -->
+            <column name="begins" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ends" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="oncall_schedule_times_id_seq" startValue="1" incrementBy="1"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_schedule_times" baseColumnNames="schedule_id"
+                                 referencedTableName="oncall_schedules" referencedColumnNames="id"
+                                 constraintName="fk_oncall_schedule_times_schedule_id" onDelete="CASCADE"/>
+
+        <createIndex tableName="oncall_schedule_times" indexName="idx_oncall_schedule_times_schedule_id">
+            <column name="schedule_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="oncall_schedule_times"/>
+            <dropSequence sequenceName="oncall_schedule_times_id_seq"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
