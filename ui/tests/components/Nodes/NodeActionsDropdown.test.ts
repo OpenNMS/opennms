@@ -8,13 +8,11 @@ import { useAuthStore } from '@/stores/authStore'
 
 const node = { id: 42, label: 'srv-42', assetRecord: {}} as any
 
-// useRole resolves the auth store through a module-level computed, so the FIRST pinia this file
-// creates is the one every mount sees -- handing a fresh one to each mount is silently ignored.
-// Hence one shared pinia, with the roles set on it before each mount instead.
-const pinia = createTestingPinia({ createSpy: vi.fn })
-const authStore = useAuthStore(pinia)
+// a fresh pinia for each test, made in beforeEach
+let pinia: ReturnType<typeof createTestingPinia>
 
 const setRoles = (...roles: string[]) => {
+  const authStore = useAuthStore(pinia)
   authStore.whoAmI = { ...authStore.whoAmI, roles } as never
 }
 
@@ -30,6 +28,7 @@ const labelsOf = (wrapper: ReturnType<typeof mountIt>) =>
 describe('NodeActionsDropdown.vue', () => {
   // Most of these assert the full menu, so default to the role that sees all of it.
   beforeEach(() => {
+    pinia = createTestingPinia({ createSpy: vi.fn })
     setRoles('ROLE_ADMIN')
   })
   it('puts Info... first and includes all link actions', () => {
