@@ -25,7 +25,6 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { THRESHOLDING_GROUP_PARAMETER, ThreshdServiceStatus } from '@/lib/thresholdValidator'
 import API from '@/services'
-import { CreateEditMode } from '@/types'
 import type { ValidationResult } from '@/types/validation'
 import { createFailureResult } from '@/types/validation'
 import type {
@@ -65,15 +64,7 @@ export const getDefaultAddressRange = (): ThreshdAddressRange => ({ begin: '', e
 
 export const getDefaultParameter = (): ThreshdParameter => ({ key: '', value: '' })
 
-export interface EntityDrawerState {
-  visible: boolean
-  mode: CreateEditMode
-  index: number
-}
-
 const PRECONDITION_FAILED = 412
-
-const closedDrawer = (): EntityDrawerState => ({ visible: false, mode: CreateEditMode.None, index: -1 })
 
 /**
  * State for the threshd daemon configuration (formerly threshd-configuration.xml).
@@ -92,7 +83,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
    */
   const loadedPackageName = ref<string | null>(null)
   const isLoading = ref(false)
-  const serviceDrawer = ref<EntityDrawerState>(closedDrawer())
 
   const packageNames = computed(() => packages.value.map(pkg => pkg.name))
 
@@ -228,13 +218,10 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     return result
   }
 
-
-  const openServiceDrawer = (mode: CreateEditMode, index = -1): void => {
-    serviceDrawer.value = { visible: true, mode, index }
-  }
-
-  const closeServiceDrawer = (): void => {
-    serviceDrawer.value = closedDrawer()
+  /** Drops the loaded package, discarding edits that were never saved. */
+  const clearCurrentPackage = (): void => {
+    currentPackage.value = null
+    loadedPackageName.value = null
   }
 
   const resetState = (): void => {
@@ -243,7 +230,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     currentPackage.value = null
     loadedPackageName.value = null
     isLoading.value = false
-    serviceDrawer.value = closedDrawer()
   }
 
   return {
@@ -252,7 +238,6 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     currentPackage,
     loadedPackageName,
     isLoading,
-    serviceDrawer,
     packageNames,
     packagesUsingGroup,
     fetchConfiguration,
@@ -263,8 +248,7 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
     deletePackage,
     saveService,
     deleteService,
-    openServiceDrawer,
-    closeServiceDrawer,
+    clearCurrentPackage,
     resetState
   }
 })

@@ -8,7 +8,6 @@ import {
   useThresholdGroupStore
 } from '@/stores/thresholdGroupStore'
 import { FilterOperator, ThresholdDefinitionKind, ThresholdType } from '@/lib/thresholdValidator'
-import { CreateEditMode } from '@/types'
 import API from '@/services'
 import type { ResourceFilter, Threshold, ThresholdGroup } from '@/types/thresholdConfig'
 
@@ -243,35 +242,29 @@ describe('thresholdGroupStore', () => {
     })
   })
 
-  describe('drawer', () => {
+  describe('definitionAt', () => {
     test('clones the definition being edited so cancel really discards', () => {
       const store = useThresholdGroupStore()
       store.currentGroup = group({ thresholds: [{ ...getDefaultThreshold(), dsName: 'original' }] })
 
-      store.openDefinitionDrawer(ThresholdDefinitionKind.Threshold, CreateEditMode.Edit, 0)
-      const draft = store.drawerDefinition() as Threshold
+      const draft = store.definitionAt(ThresholdDefinitionKind.Threshold, 0) as Threshold
       draft.dsName = 'edited'
 
       expect(store.currentGroup?.thresholds[0].dsName).toBe('original')
     })
 
-    test('hands back a fresh default in create mode', () => {
+    test('hands back a fresh default without an index', () => {
       const store = useThresholdGroupStore()
       store.currentGroup = group()
 
-      store.openDefinitionDrawer(ThresholdDefinitionKind.Expression, CreateEditMode.Create)
-
-      expect(store.drawerDefinition()).toHaveProperty('expression', '')
+      expect(store.definitionAt(ThresholdDefinitionKind.Expression, null)).toHaveProperty('expression', '')
     })
 
-    test('resets on close', () => {
+    test('hands back null for an index the group does not have', () => {
       const store = useThresholdGroupStore()
+      store.currentGroup = group()
 
-      store.openDefinitionDrawer(ThresholdDefinitionKind.Expression, CreateEditMode.Edit, 3)
-      store.closeDefinitionDrawer()
-
-      expect(store.definitionDrawer.visible).toBe(false)
-      expect(store.definitionDrawer.index).toBe(-1)
+      expect(store.definitionAt(ThresholdDefinitionKind.Expression, 3)).toBeNull()
     })
   })
 

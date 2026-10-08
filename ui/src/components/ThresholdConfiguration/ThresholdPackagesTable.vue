@@ -2,13 +2,13 @@
   <TableCard>
     <div class="table-header">
       <h3>Packages</h3>
-      <OnmsButton data-test="threshd-package-create" @click="isDrawerVisible = true">New package</OnmsButton>
+      <OnmsButton data-test="threshd-package-create" @click="router.push(PACKAGE_CREATE_PATH)">New package</OnmsButton>
     </div>
 
     <OnmsTable :value="store.config.packages" data-test="threshd-packages-table">
       <OnmsColumn header="Name">
         <template #body="{ data }">
-          <router-link :to="packageRoute(data.name)" data-test="threshd-package-link">{{ data.name }}</router-link>
+          <router-link :to="packagePath(data.name)" data-test="threshd-package-link">{{ data.name }}</router-link>
         </template>
       </OnmsColumn>
       <OnmsColumn header="Filter" field="filter" />
@@ -59,13 +59,6 @@
         <p>Thresholding stops for every interface '{{ pendingDelete }}' selects.</p>
       </template>
     </OnmsConfirmationDialog>
-
-    <ThresholdPackageDrawer
-      :visible="isDrawerVisible"
-      :existingNames="store.config.packages.map(pkg => pkg.name)"
-      @cancel="isDrawerVisible = false"
-      @save="onSaveNewPackage"
-    />
   </TableCard>
 </template>
 
@@ -74,8 +67,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import ThresholdPackageDrawer from '@/components/ThresholdConfiguration/ThresholdPackageDrawer.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { PACKAGE_CREATE_PATH, packagePath } from '@/lib/thresholdRoutes'
 import { THRESHOLDING_GROUP_PARAMETER } from '@/lib/thresholdValidator'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import type { ThreshdPackage } from '@/types/thresholdConfig'
@@ -87,9 +80,6 @@ const router = useRouter()
 const { showSnackBar } = useSnackbar()
 
 const pendingDelete = ref('')
-const isDrawerVisible = ref(false)
-
-const packageRoute = (name: string) => `/threshold-config/package/${encodeURIComponent(name)}`
 
 const groupsOf = (pkg: ThreshdPackage) => {
   const groups = (pkg.services ?? [])
@@ -98,18 +88,6 @@ const groupsOf = (pkg: ThreshdPackage) => {
     .map(parameter => parameter.value)
 
   return groups.length ? [...new Set(groups)].join(', ') : '--'
-}
-
-const onSaveNewPackage = async (pkg: ThreshdPackage) => {
-  isDrawerVisible.value = false
-
-  const result = await store.createPackage(pkg)
-
-  showSnackBar({ msg: result.success ? 'Threshd package created.' : result.message, error: !result.success })
-
-  if (result.success) {
-    router.push(packageRoute(pkg.name))
-  }
 }
 
 const onConfirmDelete = async () => {

@@ -76,6 +76,14 @@ const checkThresholdRole = (from: RouteLocationNormalized) => {
   }
 }
 
+const thresholdGuard = (_to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+  if (rolesAreLoaded.value) {
+    checkThresholdRole(from)
+  } else {
+    whenever(rolesAreLoaded, () => checkThresholdRole(from))
+  }
+}
+
 const checkSnmpRole = (from: RouteLocationNormalized, isLookup?: boolean) => {
   if (!snmpRole.value) {
     showSnackBar({ msg: 'Must have the proper SNMP role(s) to access SNMP Config.' })
@@ -407,38 +415,63 @@ const router = createRouter({
       path: '/threshold-config',
       name: 'Threshold Configuration',
       component: () => import('@/containers/ThresholdConfiguration.vue'),
-      beforeEnter: (to, from) => {
-        if (rolesAreLoaded.value) {
-          checkThresholdRole(from)
-        } else {
-          whenever(rolesAreLoaded, () => checkThresholdRole(from))
-        }
-      }
+      beforeEnter: thresholdGuard
     },
     {
       // Successor of the legacy '?groupName=X&editGroup' deep link, so runbooks can keep linking a group.
       path: '/threshold-config/group/:name',
       name: 'Threshold Group Detail',
       component: () => import('@/containers/ThresholdGroupDetail.vue'),
-      beforeEnter: (to, from) => {
-        if (rolesAreLoaded.value) {
-          checkThresholdRole(from)
-        } else {
-          whenever(rolesAreLoaded, () => checkThresholdRole(from))
-        }
-      }
+      beforeEnter: thresholdGuard
     },
     {
       path: '/threshold-config/package/:name',
       name: 'Threshold Package Detail',
       component: () => import('@/containers/ThresholdPackageDetail.vue'),
-      beforeEnter: (to, from) => {
-        if (rolesAreLoaded.value) {
-          checkThresholdRole(from)
-        } else {
-          whenever(rolesAreLoaded, () => checkThresholdRole(from))
-        }
-      }
+      beforeEnter: thresholdGuard
+    },
+    {
+      // Not '/threshold-config/group/create', so a group named 'create' stays reachable.
+      path: '/threshold-config/create-group',
+      name: 'Threshold Group Create',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: thresholdGuard
+    },
+    {
+      path: '/threshold-config/group/:name/edit',
+      name: 'Threshold Group Edit',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: thresholdGuard
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/create',
+      name: 'Threshold Definition Create',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: thresholdGuard
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/:index(\\d+)/edit',
+      name: 'Threshold Definition Edit',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: thresholdGuard
+    },
+    {
+      path: '/threshold-config/create-package',
+      name: 'Threshold Package Create',
+      component: () => import('@/containers/ThresholdPackageCreate.vue'),
+      beforeEnter: thresholdGuard
+    },
+    {
+      path: '/threshold-config/package/:name/service/create',
+      name: 'Threshold Service Create',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: thresholdGuard
+    },
+    {
+      path: '/threshold-config/package/:name/service/:index(\\d+)/edit',
+      name: 'Threshold Service Edit',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: thresholdGuard
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

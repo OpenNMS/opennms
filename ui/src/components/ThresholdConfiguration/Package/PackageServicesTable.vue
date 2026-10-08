@@ -2,7 +2,7 @@
   <TableCard>
     <div class="table-header">
       <h3>Services</h3>
-      <OnmsButton data-test="package-service-create" @click="store.openServiceDrawer(CreateEditMode.Create)">
+      <OnmsButton data-test="package-service-create" @click="onCreate">
         New service
       </OnmsButton>
     </div>
@@ -27,7 +27,7 @@
               tooltip="Edit service"
               aria-label="Edit service"
               data-test="package-service-edit"
-              @click="store.openServiceDrawer(CreateEditMode.Edit, index)"
+              @click="onEdit(index)"
             />
             <OnmsIconButton
               :icon="DeleteIcon"
@@ -61,26 +61,25 @@
         <p>Thresholding stops for this service on every interface the package selects.</p>
       </template>
     </OnmsConfirmationDialog>
-
-    <PackageServiceDrawer />
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import PackageServiceDrawer from '@/components/ThresholdConfiguration/Package/PackageServiceDrawer.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { serviceCreatePath, serviceEditPath } from '@/lib/thresholdRoutes'
 import { THRESHOLDING_GROUP_PARAMETER } from '@/lib/thresholdValidator'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
-import { CreateEditMode } from '@/types'
 import type { ThreshdService } from '@/types/thresholdConfig'
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
 
 const store = useThreshdConfigurationStore()
+const router = useRouter()
 const { showSnackBar } = useSnackbar()
 
 const pendingDeleteIndex = ref(-1)
@@ -89,6 +88,17 @@ const services = computed(() => store.currentPackage?.services ?? [])
 
 const thresholdingGroupOf = (service: ThreshdService) =>
   service.parameters?.find(parameter => parameter.key === THRESHOLDING_GROUP_PARAMETER)?.value || '--'
+
+// The stored name: the package page may hold a rename that is not saved yet.
+const packageName = computed(() => store.loadedPackageName ?? '')
+
+const onCreate = () => {
+  router.push(serviceCreatePath(packageName.value))
+}
+
+const onEdit = (index: number) => {
+  router.push(serviceEditPath(packageName.value, index))
+}
 
 const onConfirmDelete = async () => {
   const index = pendingDeleteIndex.value

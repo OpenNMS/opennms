@@ -2,17 +2,20 @@ import ThresholdDefinitionTable from '@/components/ThresholdConfiguration/Group/
 import ThresholdUeiCell from '@/components/ThresholdConfiguration/Group/ThresholdUeiCell.vue'
 import { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
 import { getDefaultExpression, getDefaultThreshold, useThresholdGroupStore } from '@/stores/thresholdGroupStore'
-import { CreateEditMode } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { mount, VueWrapper } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { showSnackBarMock } = vi.hoisted(() => ({ showSnackBarMock: vi.fn() }))
+const { showSnackBarMock, pushMock } = vi.hoisted(() => ({ showSnackBarMock: vi.fn(), pushMock: vi.fn() }))
 
 vi.mock('@/composables/useSnackbar', () => ({
   default: () => ({ showSnackBar: showSnackBarMock })
+}))
+
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: pushMock })
 }))
 
 describe('ThresholdDefinitionTable.vue', () => {
@@ -74,24 +77,20 @@ describe('ThresholdDefinitionTable.vue', () => {
     expect(wrapper.findAllComponents(ThresholdUeiCell).length).toBeGreaterThan(0)
   })
 
-  it('opens the drawer in create mode', async () => {
-    const wrapper = mountComponent(ThresholdDefinitionKind.Threshold)
+  it('opens the create page for the kind it shows', async () => {
+    const wrapper = mountComponent(ThresholdDefinitionKind.Expression)
 
-    await wrapper.find('[data-test="threshold-create-threshold"]').trigger('click')
+    await wrapper.find('[data-test="threshold-create-expression"]').trigger('click')
 
-    expect(store.definitionDrawer).toMatchObject({
-      visible: true,
-      mode: CreateEditMode.Create,
-      kind: ThresholdDefinitionKind.Threshold
-    })
+    expect(pushMock).toHaveBeenCalledWith('/threshold-config/group/mib2/expression/create')
   })
 
-  it('opens the drawer in edit mode on the right row', async () => {
+  it('opens the edit page on the right row', async () => {
     const wrapper = mountComponent(ThresholdDefinitionKind.Threshold)
 
     await wrapper.find('[data-test="threshold-edit-threshold"]').trigger('click')
 
-    expect(store.definitionDrawer).toMatchObject({ visible: true, mode: CreateEditMode.Edit, index: 0 })
+    expect(pushMock).toHaveBeenCalledWith('/threshold-config/group/mib2/threshold/0/edit')
   })
 
   it('asks before deleting and only then saves', async () => {

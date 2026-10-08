@@ -25,7 +25,6 @@ import { defineStore } from 'pinia'
 import { cloneDeep } from 'lodash'
 import { ThresholdDefinitionKind, FilterOperator, ThresholdType } from '@/lib/thresholdValidator'
 import API from '@/services'
-import { CreateEditMode } from '@/types'
 import type { ValidationResult } from '@/types/validation'
 import { createFailureResult } from '@/types/validation'
 import type {
@@ -69,21 +68,7 @@ export const getDefaultThresholdGroup = (): ThresholdGroup => ({
   expressions: []
 })
 
-export interface DefinitionDrawerState {
-  visible: boolean
-  mode: CreateEditMode
-  kind: ThresholdDefinitionKind
-  index: number
-}
-
 const PRECONDITION_FAILED = 412
-
-const closedDrawer = (): DefinitionDrawerState => ({
-  visible: false,
-  mode: CreateEditMode.None,
-  kind: ThresholdDefinitionKind.Threshold,
-  index: -1
-})
 
 /**
  * State for the thresholding configuration (formerly thresholds.xml).
@@ -99,7 +84,6 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
   const thresholdTypes = ref<string[]>([])
   const filterOperators = ref<string[]>([])
   const isLoading = ref(false)
-  const definitionDrawer = ref<DefinitionDrawerState>(closedDrawer())
 
   const groupNames = computed(() => groups.value.map(group => group.name))
   const currentThresholds = computed(() => currentGroup.value?.thresholds ?? [])
@@ -255,27 +239,18 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     return reordered
   }
 
-  const openDefinitionDrawer = (kind: ThresholdDefinitionKind, mode: CreateEditMode, index = -1): void => {
-    definitionDrawer.value = { visible: true, mode, kind, index }
-  }
-
-  const closeDefinitionDrawer = (): void => {
-    definitionDrawer.value = closedDrawer()
-  }
-
-  /** The definition the drawer is editing, deep-cloned so Cancel really discards. */
-  const drawerDefinition = (): ThresholdDefinition => {
-    const { kind, mode, index } = definitionDrawer.value
-
-    if (mode === CreateEditMode.Edit) {
-      const definitions = definitionsOf(kind)
-
-      if (definitions && index >= 0 && index < definitions.length) {
-        return cloneDeep(definitions[index])
-      }
+  /**
+   * A deep clone of the definition at index, so Cancel really discards; a new default definition for index null,
+   * and null when there is no definition at index.
+   */
+  const definitionAt = (kind: ThresholdDefinitionKind, index: number | null): ThresholdDefinition | null => {
+    if (index === null) {
+      return kind === ThresholdDefinitionKind.Threshold ? getDefaultThreshold() : getDefaultExpression()
     }
 
-    return kind === ThresholdDefinitionKind.Threshold ? getDefaultThreshold() : getDefaultExpression()
+    const definitions = definitionsOf(kind)
+
+    return definitions && index >= 0 && index < definitions.length ? cloneDeep(definitions[index]) : null
   }
 
   const resetState = (): void => {
@@ -285,7 +260,6 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     thresholdTypes.value = []
     filterOperators.value = []
     isLoading.value = false
-    definitionDrawer.value = closedDrawer()
   }
 
   return {
@@ -295,7 +269,6 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     thresholdTypes,
     filterOperators,
     isLoading,
-    definitionDrawer,
     groupNames,
     currentThresholds,
     currentExpressions,
@@ -308,9 +281,7 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     saveDefinition,
     deleteDefinition,
     moveResourceFilter,
-    openDefinitionDrawer,
-    closeDefinitionDrawer,
-    drawerDefinition,
+    definitionAt,
     resetState
   }
 })

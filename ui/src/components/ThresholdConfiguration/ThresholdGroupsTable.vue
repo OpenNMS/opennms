@@ -8,13 +8,13 @@
         dataTest="threshold-group-search"
         @update:modelValue="search = $event ?? ''"
       />
-      <OnmsButton data-test="threshold-group-create" @click="onCreate">New group</OnmsButton>
+      <OnmsButton data-test="threshold-group-create" @click="router.push(GROUP_CREATE_PATH)">New group</OnmsButton>
     </div>
 
     <OnmsTable :value="filteredGroups" data-test="threshold-groups-table">
       <OnmsColumn header="Name">
         <template #body="{ data }">
-          <router-link :to="groupRoute(data.name)" data-test="threshold-group-link">{{ data.name }}</router-link>
+          <router-link :to="groupPath(data.name)" data-test="threshold-group-link">{{ data.name }}</router-link>
         </template>
       </OnmsColumn>
       <OnmsColumn header="RRD repository" field="rrdRepository" />
@@ -62,14 +62,6 @@
         <p>{{ deleteMessage }}</p>
       </template>
     </OnmsConfirmationDialog>
-
-    <ThresholdGroupDrawer
-      :visible="isDrawerVisible"
-      :isCreate="true"
-      :existingNames="store.groupNames"
-      @cancel="isDrawerVisible = false"
-      @save="onSaveNewGroup"
-    />
   </TableCard>
 </template>
 
@@ -78,11 +70,10 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import ThresholdGroupDrawer from '@/components/ThresholdConfiguration/ThresholdGroupDrawer.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { GROUP_CREATE_PATH, groupPath } from '@/lib/thresholdRoutes'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
-import type { ThresholdGroup } from '@/types/thresholdConfig'
 import {
   OnmsButton,
   OnmsColumn,
@@ -101,7 +92,6 @@ const { showSnackBar } = useSnackbar()
 
 const search = ref('')
 const pendingDelete = ref('')
-const isDrawerVisible = ref(false)
 
 const filteredGroups = computed(() => {
   const term = search.value.trim().toLowerCase()
@@ -115,8 +105,6 @@ const filteredGroups = computed(() => {
       group.name.toLowerCase().includes(term) || (group.rrdRepository ?? '').toLowerCase().includes(term)
   )
 })
-
-const groupRoute = (name: string) => `/threshold-config/group/${encodeURIComponent(name)}`
 
 const usedBy = (name: string) => {
   const packages = threshdStore.packagesUsingGroup(name)
@@ -132,22 +120,6 @@ const deleteMessage = computed(() => {
 
   return `'${pendingDelete.value}' and all of its thresholds will be removed.`
 })
-
-const onCreate = () => {
-  isDrawerVisible.value = true
-}
-
-const onSaveNewGroup = async (group: ThresholdGroup) => {
-  isDrawerVisible.value = false
-
-  const result = await store.createGroup(group)
-
-  showSnackBar({ msg: result.success ? 'Threshold group created.' : result.message, error: !result.success })
-
-  if (result.success) {
-    router.push(groupRoute(group.name))
-  }
-}
 
 const onConfirmDelete = async () => {
   const name = pendingDelete.value
