@@ -26,7 +26,7 @@
       for="threshold-group-repository"
       required
       :error="errors.rrdRepository"
-      :hint="THRESHOLD_FIELD_HINTS.rrdRepository"
+      :info="THRESHOLD_FIELD_HINTS.rrdRepository"
     >
       <OnmsInputText
         inputId="threshold-group-repository"

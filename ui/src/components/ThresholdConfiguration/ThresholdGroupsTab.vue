@@ -4,19 +4,12 @@
       <p>
         A threshold group collects the thresholds evaluated against one RRD repository. It takes effect once
         a threshd package applies it.
-      </p>
-      <div class="intro-actions">
-        <OnmsIcon
-          :icon="InfoIcon"
-          class="info-icon"
+        <InfoIconButton
+          ariaLabel="About threshold groups"
           data-test="threshold-groups-info-icon"
-          role="button"
-          tabindex="0"
-          aria-label="About threshold groups"
           @click="isHelpVisible = true"
-          @keyup.enter="isHelpVisible = true"
         />
-      </div>
+      </p>
     </div>
 
     <ThresholdGroupsTable />
@@ -33,10 +26,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ThresholdGroupsTable from '@/components/ThresholdConfiguration/ThresholdGroupsTable.vue'
+import InfoIconButton from '@/components/Common/InfoIconButton.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
 import { GROUP_HELP } from '@/lib/thresholdHelpText'
-import { OnmsIcon } from '@opennms/onms-ui'
-import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 const isHelpVisible = ref(false)
 </script>
@@ -53,17 +45,6 @@ const isHelpVisible = ref(false)
     p {
       margin: 0;
     }
-  }
-
-  .intro-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75em;
-  }
-
-  .info-icon {
-    cursor: pointer;
-    color: var(--p-text-muted-color);
   }
 }
 </style>

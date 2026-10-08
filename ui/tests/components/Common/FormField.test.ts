@@ -1,5 +1,7 @@
 import FormField from '@/components/Common/FormField.vue'
+import { OnmsMessageDialog } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
 import { h } from 'vue'
 
@@ -146,5 +148,64 @@ describe('FormField.vue', () => {
   it('still renders the label element when label is provided', () => {
     const wrapper = mount(FormField, { props: { label: 'Name' }})
     expect(wrapper.find('label.form-field__label').text()).toContain('Name')
+  })
+
+  describe('info', () => {
+    const mountWithInfo = (props: Record<string, unknown> = {}) =>
+      mount(FormField, {
+        props: { label: 'Value', for: 'value', info: 'The value to compare against.', ...props },
+        slots: { default: '<input id="value" data-test="control" />' },
+        global: { plugins: [PrimeVue] }
+      })
+
+    it('shows no info icon without an info text', () => {
+      const wrapper = mount(FormField, { props: { label: 'Value' }})
+      expect(wrapper.find('[data-test="form-field-info"]').exists()).toBe(false)
+    })
+
+    it('puts the info icon beside the label, not inside it, and not the text below the field', () => {
+      const wrapper = mountWithInfo()
+
+      expect(wrapper.find('.form-field__label-row [data-test="form-field-info"]').exists()).toBe(true)
+      expect(wrapper.find('label [data-test="form-field-info"]').exists()).toBe(false)
+      expect(wrapper.find('label').attributes('for')).toBe('value')
+      expect(wrapper.text()).not.toContain('The value to compare against.')
+    })
+
+    it('opens a dialog with the text, titled after the label', async () => {
+      const wrapper = mountWithInfo()
+      expect(wrapper.findComponent(OnmsMessageDialog).exists()).toBe(false)
+
+      await wrapper.find('[data-test="form-field-info"]').trigger('click')
+
+      const dialog = wrapper.findComponent(OnmsMessageDialog)
+      expect(dialog.props('title')).toBe('Value')
+      expect(dialog.props('visible')).toBe(true)
+    })
+
+    it('opens the dialog from the keyboard', async () => {
+      const wrapper = mountWithInfo()
+
+      await wrapper.find('[data-test="form-field-info"]').trigger('keydown', { key: 'Enter' })
+
+      expect(wrapper.findComponent(OnmsMessageDialog).exists()).toBe(true)
+    })
+
+    it('uses infoTitle over the label and closes again', async () => {
+      const wrapper = mountWithInfo({ infoTitle: 'About the value' })
+
+      await wrapper.find('[data-test="form-field-info"]').trigger('click')
+      const dialog = wrapper.findComponent(OnmsMessageDialog)
+      expect(dialog.props('title')).toBe('About the value')
+
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent(OnmsMessageDialog).exists()).toBe(false)
+    })
+
+    it('keeps rendering a hint below the field', () => {
+      const wrapper = mount(FormField, { props: { label: 'Port', hint: 'Default: 10162' }})
+      expect(wrapper.find('.field-hint').text()).toBe('Default: 10162')
+    })
   })
 })

@@ -1,7 +1,7 @@
 <template>
   <div class="threshold-definition-form">
     <div class="field-grid">
-      <FormField label="Type" for="threshold-type" required :error="errors.type" :hint="typeHint">
+      <FormField label="Type" for="threshold-type" required :error="errors.type" :info="typeHint">
         <OnmsSelect
           inputId="threshold-type"
           data-test="threshold-type"
@@ -20,7 +20,7 @@
         for="threshold-ds-name"
         required
         :error="errors.dsName"
-        :hint="THRESHOLD_FIELD_HINTS.dsName"
+        :info="THRESHOLD_FIELD_HINTS.dsName"
       >
         <OnmsInputText
           inputId="threshold-ds-name"
@@ -38,7 +38,7 @@
         for="threshold-expression"
         required
         :error="errors.expression"
-        :hint="THRESHOLD_FIELD_HINTS.expression"
+        :info="THRESHOLD_FIELD_HINTS.expression"
       >
         <OnmsInputText
           inputId="threshold-expression"
@@ -55,7 +55,7 @@
         for="threshold-ds-type"
         required
         :error="errors.dsType"
-        :hint="THRESHOLD_FIELD_HINTS.dsType"
+        :info="THRESHOLD_FIELD_HINTS.dsType"
       >
         <OnmsSelect
           inputId="threshold-ds-type"
@@ -69,7 +69,7 @@
         />
       </FormField>
 
-      <FormField label="Datasource label" for="threshold-ds-label" :hint="THRESHOLD_FIELD_HINTS.dsLabel">
+      <FormField label="Datasource label" for="threshold-ds-label" :info="THRESHOLD_FIELD_HINTS.dsLabel">
         <OnmsInputText
           inputId="threshold-ds-label"
           data-test="threshold-ds-label"
@@ -83,7 +83,7 @@
         v-if="kind === ThresholdDefinitionKind.Expression"
         label="Expression label"
         for="threshold-expr-label"
-        :hint="THRESHOLD_FIELD_HINTS.exprLabel"
+        :info="THRESHOLD_FIELD_HINTS.exprLabel"
       >
         <OnmsInputText
           inputId="threshold-expr-label"
@@ -94,7 +94,7 @@
         />
       </FormField>
 
-      <FormField label="Value" for="threshold-value" required :error="errors.value" :hint="THRESHOLD_FIELD_HINTS.value">
+      <FormField label="Value" for="threshold-value" required :error="errors.value" :info="THRESHOLD_FIELD_HINTS.value">
         <OnmsInputText
           inputId="threshold-value"
           data-test="threshold-value"
@@ -105,7 +105,7 @@
         />
       </FormField>
 
-      <FormField label="Re-arm" for="threshold-rearm" required :error="errors.rearm" :hint="rearmHint">
+      <FormField label="Re-arm" for="threshold-rearm" required :error="errors.rearm" :info="rearmHint">
         <OnmsInputText
           inputId="threshold-rearm"
           data-test="threshold-rearm"
@@ -116,7 +116,7 @@
         />
       </FormField>
 
-      <FormField label="Trigger" for="threshold-trigger" required :error="errors.trigger" :hint="triggerHint">
+      <FormField label="Trigger" for="threshold-trigger" required :error="errors.trigger" :info="triggerHint">
         <OnmsInputText
           inputId="threshold-trigger"
           data-test="threshold-trigger"
@@ -137,7 +137,7 @@
         />
       </FormField>
 
-      <FormField label="Triggered UEI" for="threshold-triggered-uei" :hint="THRESHOLD_FIELD_HINTS.triggeredUEI">
+      <FormField label="Triggered UEI" for="threshold-triggered-uei" :info="THRESHOLD_FIELD_HINTS.triggeredUEI">
         <OnmsInputText
           inputId="threshold-triggered-uei"
           data-test="threshold-triggered-uei"
@@ -150,7 +150,7 @@
       <FormField
         label="Re-armed UEI"
         for="threshold-rearmed-uei"
-        :hint="rearmedUeiHint"
+        :info="rearmedUeiHint"
       >
         <OnmsInputText
           inputId="threshold-rearmed-uei"
@@ -165,7 +165,7 @@
       <FormField
         label="Relaxed"
         for="threshold-relaxed"
-        hint="Evaluate the threshold even when some referenced values are unknown."
+        info="Evaluate the threshold even when some referenced values are unknown."
       >
         <OnmsToggleSwitch
           inputId="threshold-relaxed"

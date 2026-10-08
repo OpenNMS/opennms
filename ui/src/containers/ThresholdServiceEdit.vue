@@ -26,7 +26,7 @@
       for="package-service-interval"
       required
       :error="errors.interval"
-      :hint="THRESHOLD_FIELD_HINTS.serviceInterval"
+      :info="THRESHOLD_FIELD_HINTS.serviceInterval"
     >
       <OnmsInputNumber
         inputId="package-service-interval"
@@ -41,7 +41,7 @@
       label="Threshold group"
       for="package-service-group"
       :error="errors.thresholdingGroup"
-      :hint="THRESHOLD_FIELD_HINTS.thresholdingGroup"
+      :info="THRESHOLD_FIELD_HINTS.thresholdingGroup"
     >
       <OnmsSelect
         inputId="package-service-group"

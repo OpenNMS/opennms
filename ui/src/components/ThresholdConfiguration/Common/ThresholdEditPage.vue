@@ -39,10 +39,10 @@
         class="section-content"
         :class="{ wide }"
       >
-        <div class="section-title">
-          <h3>{{ sectionTitle }}</h3>
+        <h3>
+          {{ sectionTitle }}
           <slot name="section-actions" />
-        </div>
+        </h3>
         <slot />
         <div class="spacer"></div>
         <div class="action-container">
@@ -120,12 +120,6 @@ const emit = defineEmits<{
       &.wide {
         width: 100%;
       }
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 0.75em;
     }
   }
 

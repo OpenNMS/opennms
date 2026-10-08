@@ -3,8 +3,31 @@
     ref="rootEl"
     class="form-field"
   >
+    <!-- With an info text the label shares a row with an info icon. The icon sits
+         outside the <label>, so clicking it opens the dialog instead of focusing
+         the control. -->
+    <div
+      v-if="label && info"
+      class="form-field__label-row"
+    >
+      <label
+        :for="controlId"
+        class="form-field__label"
+      >
+        {{ label }}<span
+          v-if="required"
+          class="form-field__required"
+          aria-hidden="true"
+        >*</span>
+      </label>
+      <InfoIconButton
+        :ariaLabel="`About ${label}`"
+        data-test="form-field-info"
+        @click="isInfoVisible = true"
+      />
+    </div>
     <label
-      v-if="label"
+      v-else-if="label"
       :for="controlId"
       class="form-field__label"
     >
@@ -38,11 +61,24 @@
       v-else-if="hint"
       class="field-hint"
     >{{ hint }}</small>
+    <OnmsMessageDialog
+      v-if="isInfoVisible"
+      :visible="true"
+      :title="infoTitle || label"
+      data-test="form-field-info-dialog"
+      @close="isInfoVisible = false"
+    >
+      <template #content>
+        <p class="form-field__info-text">{{ info }}</p>
+      </template>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import InfoIconButton from '@/components/Common/InfoIconButton.vue'
+import { OnmsMessageDialog } from '@opennms/onms-ui'
 
 const props = withDefaults(defineProps<{
   label?: string
@@ -50,6 +86,10 @@ const props = withDefaults(defineProps<{
   required?: boolean
   error?: string
   hint?: string
+  /** Description of the field, shown in a dialog behind an info icon beside the label. */
+  info?: string
+  /** Title of the info dialog; defaults to the label. */
+  infoTitle?: string
   reserveLabelSpace?: boolean
 }>(), {
   label: undefined,
@@ -57,8 +97,12 @@ const props = withDefaults(defineProps<{
   required: false,
   error: undefined,
   hint: undefined,
+  info: undefined,
+  infoTitle: undefined,
   reserveLabelSpace: false
 })
+
+const isInfoVisible = ref(false)
 
 // `for` is a reserved word; alias it for use in the template.
 const controlId = computed(() => props.for)
@@ -127,6 +171,23 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--p-text-color);
+}
+
+// The label's font size, so the info icon is sized relative to the label text.
+.form-field__label-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+
+  .form-field__label {
+    margin-bottom: 0;
+  }
+}
+
+.form-field__info-text {
+  margin: 0;
+  line-height: 1.5;
 }
 
 .form-field__required {

@@ -25,7 +25,7 @@
       for="threshd-package-filter"
       required
       :error="errors.filter"
-      :hint="THRESHOLD_FIELD_HINTS.packageFilter"
+      :info="THRESHOLD_FIELD_HINTS.packageFilter"
     >
       <OnmsInputText
         inputId="threshd-package-filter"
