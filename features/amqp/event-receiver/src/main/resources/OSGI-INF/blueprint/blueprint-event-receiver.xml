@@ -27,8 +27,6 @@
       <!-- amqp:[queue:|topic:]destinationName[?options] -->
       <cm:property name="source" value="amqp:queue:opennms-events"/>
       <cm:property name="processorName" value="default-event-receiver-processor"/>
-      <!-- Classes an ObjectMessage may deserialize to; empty rejects every class. -->
-      <cm:property name="deserializationWhiteList" value=""/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -64,7 +62,6 @@
     <route id="receiveEvent">
       <!-- Receive from AMQP -->
       <from uri="{{source}}"/>
-      <process ref="discardUnreadableBodies"/>
       <!-- Filter and/or transform the event -->
       <bean ref="dynamicallyTrackedProcessor"/>
       <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
@@ -74,33 +71,10 @@
     </route>
   </camelContext>
 
-  <!-- Keep only the inbound properties the receiver reads, so a producer cannot set Camel internals (CVE-2026-40453) -->
-  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList">
-    <argument>
-      <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy"/>
-    </argument>
-    <argument>
-      <list>
-        <value>systemId</value>
-        <value>foreignSource</value>
-        <value>foreignId</value>
-      </list>
-    </argument>
-  </bean>
-
-  <!-- An ObjectMessage is refused by the deserialization policy; drop it instead of letting the broker redeliver it -->
-  <bean id="discardUnreadableBodies" class="org.opennms.core.camel.hardening.DiscardUnreadableBodies"/>
-
-  <bean id="amqpConnectionFactory" class="org.opennms.features.amqp.eventreceiver.internal.AmqpConnectionFactories" factory-method="create">
+  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent" factory-method="amqpComponent">
+    <argument value="${connectionUrl}"/>
     <argument value="${username}"/>
     <argument value="${password}"/>
-    <argument value="${connectionUrl}"/>
-    <argument value="${deserializationWhiteList}"/>
-  </bean>
-
-  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
-    <argument ref="amqpConnectionFactory"/>
-    <property name="headerFilterStrategy" ref="jmsHeaderFilterStrategy"/>
   </bean>
 
 </blueprint>

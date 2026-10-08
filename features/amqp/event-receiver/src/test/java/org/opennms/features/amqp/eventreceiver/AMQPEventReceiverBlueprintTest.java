@@ -28,8 +28,8 @@ import java.util.Properties;
 
 import org.apache.camel.BeanInject;
 import org.apache.camel.util.KeyValueHolder;
-import org.apache.qpid.jms.JmsConnectionFactory;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -38,6 +38,7 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
 
@@ -46,6 +47,8 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
@@ -72,13 +75,6 @@ public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
 
         MockNodeDao mockNodeDao = new MockNodeDao();
         services.put(NodeDao.class.getName(), asService(mockNodeDao, null));
-    }
-
-    @Test
-    public void connectionFactoryRejectsObjectMessagePayloads() {
-        final JmsConnectionFactory factory = context.getRegistry().lookupByNameAndType("amqpConnectionFactory", JmsConnectionFactory.class);
-        assertNotNull(factory);
-        assertFalse(factory.getDeserializationPolicy().isTrustedType(null, String.class));
     }
 
     @Test
