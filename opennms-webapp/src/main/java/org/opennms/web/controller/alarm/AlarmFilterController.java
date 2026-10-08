@@ -21,7 +21,6 @@
  */
 package org.opennms.web.controller.alarm;
 
-import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -68,6 +67,9 @@ public class AlarmFilterController extends MultiActionController implements Init
     private static final int DEFAULT_LONG_LIMIT = 10;
     private static final AcknowledgeType DEFAULT_ACKNOWLEDGE_TYPE = AcknowledgeType.UNACKNOWLEDGED;
     private static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
+
+    // The only view that deleteFavorite can show instead of the alarm list.
+    private static final String FAVORITE_INDEX_VIEW = "/alarm/index";
 
     @Autowired
     private AlarmRepository m_webAlarmRepository;
@@ -139,8 +141,10 @@ public class AlarmFilterController extends MultiActionController implements Init
 
         ModelAndView resultView = list(request, (OnmsFilterFavorite) null);
         resultView.addObject("favorite", null); // we deleted the favorite
-        if (!StringUtils.isEmpty(request.getParameter("redirect"))) {
-            resultView.setViewName(request.getParameter("redirect")); // change to redirect View
+        // The view name must not come from the request as is: "redirect:" and "forward:" prefixes and
+        // relative paths would let a request send the user to any URL or show any internal resource.
+        if (FAVORITE_INDEX_VIEW.equals(request.getParameter("redirect"))) {
+            resultView.setViewName(FAVORITE_INDEX_VIEW);
         }
 
         if (!success) {

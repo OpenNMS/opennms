@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.alert.AlertType;
+import org.opennms.web.controller.RedirectRestricter;
 import org.opennms.web.event.*;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
@@ -50,6 +51,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -88,6 +90,20 @@ public class EventController extends MultiActionController implements Initializi
 	private WebEventRepository m_webEventRepository;
 
     private boolean m_showEventCount = false;
+
+    // Open-redirect guard: only redirect back to the pages that show event acknowledge forms.
+    // Anything else falls back to the default view.
+    private final RedirectRestricter redirectRestricter = RedirectRestricter.builder()
+            .allowRedirect("detail.jsp")
+            .allowRedirect("/element/node.jsp")
+            .allowRedirect("/element/interface.jsp")
+            .allowRedirect("/element/snmpinterface.jsp")
+            .allowRedirect("/element/service.jsp")
+            .allowRedirect("/element/service.htm")
+            .build();
+
+    // The only view that deleteFavorite can show instead of the event list.
+    private static final String FAVORITE_INDEX_VIEW = "/event/index";
 
     public EventController() {
         super();
@@ -184,8 +200,10 @@ public class EventController extends MultiActionController implements Initializi
 
         ModelAndView resultView = list(request, (OnmsFilterFavorite) null);
         resultView.addObject("favorite", null); // we deleted the favorite
-        if (!StringUtils.isEmpty(request.getParameter("redirect"))) {
-            resultView.setViewName(request.getParameter("redirect")); // change to redirect View
+        // The view name must not come from the request as is: "redirect:" and "forward:" prefixes and
+        // relative paths would let a request send the user to any URL or show any internal resource.
+        if (FAVORITE_INDEX_VIEW.equals(request.getParameter("redirect"))) {
+            resultView.setViewName(FAVORITE_INDEX_VIEW);
         }
 
         if (!success) {
@@ -201,6 +219,7 @@ public class EventController extends MultiActionController implements Initializi
      * to an appropriate URL for display.
      */
     public ModelAndView acknowledge(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (rejectIfNotPost(request, response)) { return null; }
 
         // required parameter
         String[] eventIdStrings = request.getParameterValues("event");
@@ -235,6 +254,7 @@ public class EventController extends MultiActionController implements Initializi
      * to an appropriate URL for display.
      */
     public ModelAndView acknowledgeByFilter(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (rejectIfNotPost(request, response)) { return null; }
         // required parameter
         String[] filterStrings = request.getParameterValues("filter");
         String action = request.getParameter("actionCode");
@@ -270,17 +290,37 @@ public class EventController extends MultiActionController implements Initializi
         return getRedirectView(request);
     }
 
+    // State-changing actions must be POST so CSRF protection applies and a cross-site GET cannot trigger them.
+    private boolean rejectIfNotPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (!"POST".equalsIgnoreCase(request.getMethod())) {
+            response.setHeader("Allow", "POST");
+            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return true;
+        }
+        return false;
+    }
+
     private ModelAndView getRedirectView(HttpServletRequest request) {
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
+        String redirect = redirectRestricter.getRedirectOrNull(stripContextPath(request, request.getParameter("redirect")));
         String viewName;
         if (redirect != null) {
             viewName = redirect;
         } else {
             viewName = (redirectParms == null || "".equals(redirectParms) || "null".equals(redirectParms) ? "/event/list" : "/event/list" + "?" + redirectParms);
         }
-        RedirectView redirectView = new RedirectView(viewName);
+        // Context-relative, so that "/event/list" and "/element/..." stay inside the web application.
+        RedirectView redirectView = new RedirectView(viewName, true);
         return new ModelAndView(redirectView);
+    }
+
+    // Forms that include the event list send the full request URI, which starts with the context path.
+    private static String stripContextPath(HttpServletRequest request, String redirect) {
+        final String contextPath = request.getContextPath();
+        if (redirect != null && !contextPath.isEmpty() && redirect.startsWith(contextPath + "/")) {
+            return redirect.substring(contextPath.length());
+        }
+        return redirect;
     }
 
     private String getDisplay(HttpServletRequest request) {
