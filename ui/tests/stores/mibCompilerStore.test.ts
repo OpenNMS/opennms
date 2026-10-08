@@ -29,6 +29,11 @@ vi.mock('@/services/mibCompilerService', () => ({
   listMibFiles: (...args: unknown[]) => mockListMibFiles(...args)
 }))
 
+const mockShowSnackBar = vi.fn()
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: mockShowSnackBar })
+}))
+
 describe('mibCompilerStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -46,9 +51,10 @@ describe('mibCompilerStore', () => {
     expect(store.pendingFiles).toEqual(pending)
     expect(store.compiledFiles).toEqual(compiled)
     expect(store.isLoading).toBe(false)
+    expect(mockShowSnackBar).not.toHaveBeenCalled()
   })
 
-  it('fetchMibFiles keeps state and resets loading on error', async () => {
+  it('fetchMibFiles reports the error and resets loading', async () => {
     mockListMibFiles.mockRejectedValue(new Error('boom'))
 
     const store = useMibCompilerStore()
@@ -57,5 +63,7 @@ describe('mibCompilerStore', () => {
     expect(store.pendingFiles).toEqual([])
     expect(store.compiledFiles).toEqual([])
     expect(store.isLoading).toBe(false)
+    // an empty page with no message would read as "no MIB files"
+    expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
   })
 })

@@ -38,8 +38,10 @@ vi.mock('@/components/MibCompiler/mibFilesValidator', async importOriginal => ({
 }))
 
 const mockUploadEventConfigFiles = vi.fn()
+const mockGetOrderedEventConfigSources = vi.fn()
 vi.mock('@/services/eventConfigService', () => ({
-  uploadEventConfigFiles: (...args: unknown[]) => mockUploadEventConfigFiles(...args)
+  uploadEventConfigFiles: (...args: unknown[]) => mockUploadEventConfigFiles(...args),
+  getOrderedEventConfigSources: (...args: unknown[]) => mockGetOrderedEventConfigSources(...args)
 }))
 
 const mockShowSnackBar = vi.fn()
@@ -91,6 +93,8 @@ describe('GenerateEventsDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    // no existing source by default: saving needs no confirmation
+    mockGetOrderedEventConfigSources.mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -139,6 +143,55 @@ describe('GenerateEventsDialog', () => {
     expect(uploaded[0].name).toBe('IF-MIB.events.xml')
     expect(wrapper.find('[data-test="events-saved"]').exists()).toBe(true)
     expect(mockShowSnackBar).toHaveBeenCalled()
+  })
+
+  it('asks for confirmation when the event source already exists', async () => {
+    mockGenerateEvents.mockResolvedValue(preview)
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'IF-MIB.events' }])
+    mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    // nothing is uploaded until the user confirms the replacement
+    expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-test="confirm-replace"]').text()).toContain('IF-MIB.events')
+
+    await wrapper.find('[data-test="replace-button"]').trigger('click')
+    await flushPromises()
+    expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
+    expect(wrapper.find('[data-test="events-saved"]').exists()).toBe(true)
+  })
+
+  it('returns to the preview from the replace confirmation', async () => {
+    mockGenerateEvents.mockResolvedValue(preview)
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'IF-MIB.events' }])
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="confirm-replace"]').exists()).toBe(true)
+
+    await wrapper.find('[data-test="back-button"]').trigger('click')
+    expect(wrapper.find('[data-test="confirm-replace"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="events-xml"]').exists()).toBe(true)
+    expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
+  })
+
+  it('blocks saving when the source check fails', async () => {
+    mockGenerateEvents.mockResolvedValue(preview)
+    mockGetOrderedEventConfigSources.mockRejectedValue(new Error('boom'))
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-test="validation-error"]').text()).toContain('existing event source')
   })
 
   it('rejects malformed XML before uploading', async () => {

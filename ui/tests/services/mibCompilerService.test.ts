@@ -66,6 +66,20 @@ describe('mibCompilerService', () => {
     expect((formData as FormData).getAll('upload')).toEqual([fileA, fileB])
   })
 
+  it('uploadMibFiles returns the per-file report from an all-failed 400 answer', async () => {
+    const report = { success: [], errors: [{ file: 'A-MIB.txt', error: 'already exists' }] }
+    vi.mocked(v2.post).mockRejectedValue(Object.assign(new Error('Request failed with status code 400'), {
+      isAxiosError: true,
+      response: { status: 400, data: report }
+    }))
+    expect(await uploadMibFiles([new File(['a'], 'A-MIB.txt')])).toEqual(report)
+  })
+
+  it('uploadMibFiles rethrows an error without a report body', async () => {
+    vi.mocked(v2.post).mockRejectedValue(Object.assign(new Error('Network Error'), { isAxiosError: true }))
+    await expect(uploadMibFiles([new File(['a'], 'A-MIB.txt')])).rejects.toThrow('Network Error')
+  })
+
   it('getMibFileContent GETs the raw file content as text', async () => {
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: 'IF-MIB DEFINITIONS' })
     expect(await getMibFileContent('pending', 'IF-MIB.txt')).toBe('IF-MIB DEFINITIONS')
@@ -116,9 +130,11 @@ describe('mibCompilerService', () => {
     expect(v2.post).toHaveBeenCalledWith('/mibs/compiled/IF-MIB.mib/datacollection')
   })
 
-  it('generateGraphTemplates POSTs with the dryRun parameter', async () => {
+  it('generateGraphTemplates POSTs with the dryRun and overwrite parameters', async () => {
     vi.mocked(v2.post).mockResolvedValue({ status: 200, data: { success: true }})
     await generateGraphTemplates('IF-MIB.mib', false)
-    expect(v2.post).toHaveBeenCalledWith('/mibs/compiled/IF-MIB.mib/graph-templates', null, { params: { dryRun: false }})
+    expect(v2.post).toHaveBeenCalledWith('/mibs/compiled/IF-MIB.mib/graph-templates', null, { params: { dryRun: false, overwrite: false }})
+    await generateGraphTemplates('IF-MIB.mib', false, true)
+    expect(v2.post).toHaveBeenCalledWith('/mibs/compiled/IF-MIB.mib/graph-templates', null, { params: { dryRun: false, overwrite: true }})
   })
 })

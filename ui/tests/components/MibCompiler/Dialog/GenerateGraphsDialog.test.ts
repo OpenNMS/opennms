@@ -26,7 +26,10 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-type Deferred = { resolve: (value: MibGraphTemplatesResult) => void }
+type Deferred = {
+  resolve: (value: MibGraphTemplatesResult) => void
+  reject: (reason: unknown) => void
+}
 let deferreds: Deferred[] = []
 
 const mockGenerateGraphTemplates = vi.fn()
@@ -61,8 +64,8 @@ describe('GenerateGraphsDialog', () => {
     vi.clearAllMocks()
     deferreds = []
     mockGenerateGraphTemplates.mockImplementation(() =>
-      new Promise<MibGraphTemplatesResult>((resolve) => {
-        deferreds.push({ resolve })
+      new Promise<MibGraphTemplatesResult>((resolve, reject) => {
+        deferreds.push({ resolve, reject })
       }))
   })
 
@@ -100,6 +103,77 @@ describe('GenerateGraphsDialog', () => {
     deferreds[1].resolve(result('B-MIB'))
     await flushPromises()
     expect(wrapper.find('[data-test="graph-count"]').text()).toContain('B-MIB')
+  })
+
+  it('ignores a write response that arrives after the dialog reopened for another file', async () => {
+    wrapper = createWrapper()
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+    deferreds[0].resolve(result('A-MIB'))
+    await flushPromises()
+
+    // start the write for A-MIB, then close and reopen for B-MIB while it runs
+    await wrapper.find('[data-test="write-button"]').trigger('click')
+    await wrapper.setProps({ visible: false })
+    await wrapper.setProps({ fileName: 'B-MIB.mib' })
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+
+    // A's late write completion must not switch B's dialog to the saved state
+    deferreds[1].resolve({ ...result('A-MIB'), written: true })
+    await flushPromises()
+    expect(wrapper.find('[data-test="graphs-saved"]').exists()).toBe(false)
+
+    deferreds[2].resolve(result('B-MIB'))
+    await flushPromises()
+    expect(wrapper.find('[data-test="graph-count"]').text()).toContain('B-MIB')
+  })
+
+  it('asks for confirmation before overwriting an existing graph template file', async () => {
+    wrapper = createWrapper()
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+    deferreds[0].resolve(result('A-MIB'))
+    await flushPromises()
+
+    // the server answers the write with a 409: the target file exists
+    await wrapper.find('[data-test="write-button"]').trigger('click')
+    deferreds[1].reject(Object.assign(new Error('Request failed with status code 409'), {
+      isAxiosError: true,
+      response: { status: 409, data: { targetFile: 'A-MIB-graph.properties' }}
+    }))
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="graphs-saved"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="confirm-overwrite"]').text()).toContain('A-MIB-graph.properties')
+    expect(mockGenerateGraphTemplates).toHaveBeenLastCalledWith('A-MIB.mib', false, false)
+
+    // confirming retries the write with overwrite=true
+    await wrapper.find('[data-test="overwrite-button"]').trigger('click')
+    expect(mockGenerateGraphTemplates).toHaveBeenLastCalledWith('A-MIB.mib', false, true)
+    deferreds[2].resolve({ ...result('A-MIB'), written: true })
+    await flushPromises()
+    expect(wrapper.find('[data-test="graphs-saved"]').exists()).toBe(true)
+  })
+
+  it('returns to the preview from the overwrite confirmation', async () => {
+    wrapper = createWrapper()
+    await wrapper.setProps({ visible: true })
+    await flushPromises()
+    deferreds[0].resolve(result('A-MIB'))
+    await flushPromises()
+
+    await wrapper.find('[data-test="write-button"]').trigger('click')
+    deferreds[1].reject(Object.assign(new Error('Request failed with status code 409'), {
+      isAxiosError: true,
+      response: { status: 409, data: { targetFile: 'A-MIB-graph.properties' }}
+    }))
+    await flushPromises()
+    expect(wrapper.find('[data-test="confirm-overwrite"]').exists()).toBe(true)
+
+    await wrapper.find('[data-test="back-button"]').trigger('click')
+    expect(wrapper.find('[data-test="confirm-overwrite"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="graph-count"]').text()).toContain('A-MIB')
   })
 
   it('ignores a preview response that arrives after the dialog closed', async () => {

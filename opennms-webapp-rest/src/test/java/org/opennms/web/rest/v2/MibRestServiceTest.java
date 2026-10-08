@@ -84,11 +84,12 @@ public class MibRestServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testUploadWithoutFilenameIsReportedPerFile() {
+    public void testUploadWhereEveryFileFailsIsBadRequest() {
         final Attachment noName = new Attachment("upload", new ByteArrayInputStream("x".getBytes(StandardCharsets.UTF_8)),
                 new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"upload\""));
         final Response response = restService.uploadMibFiles(List.of(noName));
-        assertEquals(200, response.getStatus());
+        // nothing was stored, so the request failed; the body still carries the per-file report
+        assertEquals(400, response.getStatus());
         final Map<String, Object> entity = (Map<String, Object>) response.getEntity();
         assertTrue(((List<?>) entity.get("success")).isEmpty());
         final Map<String, Object> error = (Map<String, Object>) ((List<?>) entity.get("errors")).get(0);
@@ -136,5 +137,26 @@ public class MibRestServiceTest {
         assertEquals("IF-MIB.mib", entity.get("targetFile"));
 
         assertEquals(200, restService.compileMibFile("IF-MIB.txt", true).getStatus());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGraphTemplatesWriteConflictReturns409() throws Exception {
+        pendingDir.mkdirs();
+        compiledDir.mkdirs();
+        for (final String dep : new String[]{"SNMPv2-SMI.txt", "SNMPv2-TC.txt", "SNMPv2-CONF.txt", "SNMPv2-MIB.txt", "IANAifType-MIB.txt"}) {
+            Files.copy(new File(MIB_FIXTURES, dep).toPath(), new File(compiledDir, dep).toPath());
+        }
+        Files.copy(new File(MIB_FIXTURES, "IF-MIB.txt").toPath(), new File(compiledDir, "IF-MIB.mib").toPath());
+
+        assertEquals(200, restService.generateGraphTemplates("IF-MIB.mib", false, false).getStatus());
+
+        final Response conflict = restService.generateGraphTemplates("IF-MIB.mib", false, false);
+        assertEquals(409, conflict.getStatus());
+        final Map<String, Object> entity = (Map<String, Object>) conflict.getEntity();
+        assertEquals("IF-MIB", entity.get("mibName"));
+        assertEquals("IF-MIB-graph.properties", entity.get("targetFile"));
+
+        assertEquals(200, restService.generateGraphTemplates("IF-MIB.mib", false, true).getStatus());
     }
 }

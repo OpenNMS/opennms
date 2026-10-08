@@ -70,8 +70,8 @@ public interface MibRestApi {
             operationId = "uploadMibFiles"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Per-file success/error report", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Per-file success/error report; at least one file was stored", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid request, or no file was stored (the body carries the per-file report)", content = @Content)
     })
     Response uploadMibFiles(@Multipart("upload") List<Attachment> attachments);
 
@@ -177,13 +177,16 @@ public interface MibRestApi {
             summary = "Generate graph templates from a compiled MIB",
             description = "Parse the compiled MIB and generate prefab graph templates. With dryRun=true (default) "
                     + "the generated content is only returned for review; with dryRun=false it is also written to "
-                    + "etc/snmp-graph.properties.d/<MibName>-graph.properties.",
+                    + "etc/snmp-graph.properties.d/<MibName>-graph.properties. An existing template file is only "
+                    + "replaced with overwrite=true.",
             operationId = "generateMibGraphTemplates"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Generated graph templates (or parse errors)", content = @Content),
-            @ApiResponse(responseCode = "404", description = "File not found", content = @Content)
+            @ApiResponse(responseCode = "404", description = "File not found", content = @Content),
+            @ApiResponse(responseCode = "409", description = "The graph template file exists and overwrite=false", content = @Content)
     })
     Response generateGraphTemplates(@PathParam("name") String name,
-                                    @QueryParam("dryRun") @DefaultValue("true") boolean dryRun);
+                                    @QueryParam("dryRun") @DefaultValue("true") boolean dryRun,
+                                    @QueryParam("overwrite") @DefaultValue("false") boolean overwrite);
 }

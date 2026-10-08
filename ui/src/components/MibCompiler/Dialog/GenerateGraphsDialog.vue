@@ -22,6 +22,18 @@
     </div>
 
     <div
+      v-if="step === 'confirm-overwrite'"
+      class="confirm-step"
+      data-test="confirm-overwrite"
+    >
+      <p>
+        A graph template file named <code>{{ overwriteTarget }}</code> already exists in
+        <code>etc/snmp-graph.properties.d</code>. Writing replaces its content, including
+        changes made after the file was written.
+      </p>
+    </div>
+
+    <div
       v-if="step === 'done'"
       class="done-step"
       data-test="graphs-saved"
@@ -44,7 +56,22 @@
         label="Write Graph Templates"
         :disabled="isLoading || !preview?.graphCount"
         data-test="write-button"
-        @click="write"
+        @click="write(false)"
+      />
+      <OnmsButton
+        v-if="step === 'confirm-overwrite'"
+        label="Overwrite Graph Templates"
+        :disabled="isLoading"
+        data-test="overwrite-button"
+        @click="write(true)"
+      />
+      <OnmsButton
+        v-if="step === 'confirm-overwrite'"
+        label="Back"
+        variant="outlined"
+        :disabled="isLoading"
+        data-test="back-button"
+        @click="step = 'preview'"
       />
       <OnmsButton
         :label="step === 'done' ? 'Close' : 'Cancel'"
@@ -57,6 +84,7 @@
 </template>
 
 <script lang="ts" setup>
+import axios from 'axios'
 import { ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 import useSnackbar from '@/composables/useSnackbar'
@@ -75,10 +103,11 @@ const emit = defineEmits<{
 }>()
 
 const snackbar = useSnackbar()
-const step = ref<'preview' | 'done'>('preview')
+const step = ref<'preview' | 'confirm-overwrite' | 'done'>('preview')
 const isLoading = ref(false)
 const preview = ref<MibGraphTemplatesResult | null>(null)
 const contentChanged = ref(false)
+const overwriteTarget = ref('')
 
 // a response that arrives after the dialog closed, or after it reopened for
 // another file, must not touch the current state
@@ -93,6 +122,7 @@ watch(() => props.visible, async (visible) => {
   step.value = 'preview'
   preview.value = null
   contentChanged.value = false
+  overwriteTarget.value = ''
   isLoading.value = true
   try {
     const result = await generateGraphTemplates(props.fileName, true)
@@ -120,10 +150,14 @@ watch(() => props.visible, async (visible) => {
   }
 })
 
-const write = async () => {
+const write = async (overwrite: boolean) => {
+  const requestId = requestSeq.value
   isLoading.value = true
   try {
-    const result = await generateGraphTemplates(props.fileName, false)
+    const result = await generateGraphTemplates(props.fileName, false, overwrite)
+    if (requestId !== requestSeq.value) {
+      return
+    }
     if (!result.success) {
       emit('failed', result)
       return
@@ -142,12 +176,24 @@ const write = async () => {
     snackbar.showSnackBar({ msg: `Graph templates for '${result.mibName}' written successfully.` })
     step.value = 'done'
   } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    // the target file exists on the server; ask before replacing it
+    if (!overwrite && axios.isAxiosError(error) && error.response?.status === 409) {
+      overwriteTarget.value = (error.response.data as { targetFile?: string })?.targetFile
+        ?? preview.value?.fileName ?? ''
+      step.value = 'confirm-overwrite'
+      return
+    }
     snackbar.showSnackBar({
       msg: getGeneralErrorMessage(error, 'Failed to write the graph templates.'),
       error: true
     })
   } finally {
-    isLoading.value = false
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
   }
 }
 

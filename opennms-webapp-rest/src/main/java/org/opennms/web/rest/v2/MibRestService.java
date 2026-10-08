@@ -94,6 +94,10 @@ public class MibRestService implements MibRestApi {
         final Map<String, Object> response = new LinkedHashMap<>();
         response.put("success", successList);
         response.put("errors", errorList);
+        // a request that stored nothing is a failed request, not a report with footnotes
+        if (successList.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
+        }
         return Response.ok(response).build();
     }
 
@@ -158,9 +162,13 @@ public class MibRestService implements MibRestApi {
     }
 
     @Override
-    public Response generateGraphTemplates(final String name, final boolean dryRun) {
+    public Response generateGraphTemplates(final String name, final boolean dryRun, final boolean overwrite) {
         try {
-            return Response.ok(mibFileService.generateGraphTemplates(name, dryRun)).build();
+            return Response.ok(mibFileService.generateGraphTemplates(name, dryRun, overwrite)).build();
+        } catch (MibFileService.MibExistsException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(Map.of("mibName", e.getMibName(), "targetFile", e.getTargetFile(), "error", e.getMessage()))
+                    .build();
         } catch (Exception e) {
             return errorResponse(e);
         }

@@ -42,10 +42,10 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
@@ -53,6 +53,7 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
@@ -84,13 +85,17 @@ public class MibFileService {
     private File mibsRootDir = new File(ConfigFileConstants.getHome(), "share" + File.separatorChar + "mibs");
     private File graphTemplatesDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "snmp-graph.properties.d");
 
-    /** Thrown when a compiled MIB with the same name already exists and overwrite was not requested. */
+    /** Thrown when a generated file with the same name already exists and overwrite was not requested. */
     public static class MibExistsException extends RuntimeException {
         private final String mibName;
         private final String targetFile;
 
         public MibExistsException(String mibName, String targetFile) {
-            super("A compiled MIB named '" + targetFile + "' already exists");
+            this(mibName, targetFile, "A compiled MIB named '" + targetFile + "' already exists");
+        }
+
+        public MibExistsException(String mibName, String targetFile, String message) {
+            super(message);
             this.mibName = mibName;
             this.targetFile = targetFile;
         }
@@ -263,7 +268,7 @@ public class MibFileService {
         return result;
     }
 
-    public MibGraphTemplatesDto generateGraphTemplates(String name, boolean dryRun) throws IOException {
+    public MibGraphTemplatesDto generateGraphTemplates(String name, boolean dryRun, boolean overwrite) throws IOException {
         final File mibFile = existingFile(COMPILED, name);
         final MibParser parser = createParser();
         final MibGraphTemplatesDto result = new MibGraphTemplatesDto();
@@ -290,8 +295,15 @@ public class MibFileService {
                 throw new IOException("Unable to create directory " + graphTemplatesDir);
             }
             final File target = new File(graphTemplatesDir, fileName);
-            try (FileWriter writer = new FileWriter(target, StandardCharsets.UTF_8)) {
+            // CREATE_NEW makes the existence check and the file creation one atomic step
+            final OpenOption[] options = overwrite
+                    ? new OpenOption[] { StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE }
+                    : new OpenOption[] { StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE };
+            try (Writer writer = Files.newBufferedWriter(target.toPath(), StandardCharsets.UTF_8, options)) {
                 writer.write(content.toString());
+            } catch (FileAlreadyExistsException e) {
+                throw new MibExistsException(mibName, fileName,
+                        "A graph template file named '" + fileName + "' already exists");
             }
             result.setWritten(true);
             LOG.info("Graph templates for MIB {} written to {}", mibName, target);

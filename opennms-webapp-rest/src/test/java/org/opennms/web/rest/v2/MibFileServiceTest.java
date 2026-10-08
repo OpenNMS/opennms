@@ -261,7 +261,7 @@ public class MibFileServiceTest {
     @Test
     public void testGenerateGraphTemplates() throws Exception {
         compileIfMib();
-        final MibGraphTemplatesDto dryRun = service.generateGraphTemplates("IF-MIB.mib", true);
+        final MibGraphTemplatesDto dryRun = service.generateGraphTemplates("IF-MIB.mib", true, false);
         assertTrue(dryRun.isSuccess());
         assertTrue(dryRun.getGraphCount() > 0);
         assertEquals("IF-MIB-graph.properties", dryRun.getFileName());
@@ -269,16 +269,33 @@ public class MibFileServiceTest {
         assertFalse(dryRun.isWritten());
         assertFalse(new File(graphDir, "IF-MIB-graph.properties").exists());
 
-        final MibGraphTemplatesDto written = service.generateGraphTemplates("IF-MIB.mib", false);
+        final MibGraphTemplatesDto written = service.generateGraphTemplates("IF-MIB.mib", false, false);
         assertTrue(written.isWritten());
         assertTrue(new File(graphDir, "IF-MIB-graph.properties").exists());
+    }
+
+    @Test
+    public void testGenerateGraphTemplatesRefusesToOverwriteWithoutConsent() throws Exception {
+        compileIfMib();
+        assertTrue(service.generateGraphTemplates("IF-MIB.mib", false, false).isWritten());
+        final File target = new File(graphDir, "IF-MIB-graph.properties");
+        Files.writeString(target.toPath(), "edited by an admin");
+
+        final MibFileService.MibExistsException conflict = assertThrows(MibFileService.MibExistsException.class,
+                () -> service.generateGraphTemplates("IF-MIB.mib", false, false));
+        assertEquals("IF-MIB-graph.properties", conflict.getTargetFile());
+        assertEquals("edited by an admin", Files.readString(target.toPath()));
+
+        final MibGraphTemplatesDto overwritten = service.generateGraphTemplates("IF-MIB.mib", false, true);
+        assertTrue(overwritten.isWritten());
+        assertTrue(Files.readString(target.toPath()).contains("reports="));
     }
 
     @Test
     public void testGenerateAgainstMissingFile() {
         assertThrows(FileNotFoundException.class, () -> service.generateEvents("NO-SUCH.mib", null));
         assertThrows(FileNotFoundException.class, () -> service.generateDataCollection("NO-SUCH.mib"));
-        assertThrows(FileNotFoundException.class, () -> service.generateGraphTemplates("NO-SUCH.mib", true));
+        assertThrows(FileNotFoundException.class, () -> service.generateGraphTemplates("NO-SUCH.mib", true, false));
     }
 
     private void compileIfMib() throws IOException {

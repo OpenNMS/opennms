@@ -61,7 +61,19 @@
       </p>
     </div>
 
-    <!-- Step 3: saved -->
+    <!-- Step 3 (conditional): the source exists, confirm the replacement -->
+    <div
+      v-if="step === 'confirm-replace'"
+      class="confirm-step"
+      data-test="confirm-replace"
+    >
+      <p>
+        An event source named <strong>{{ sourceName }}</strong> already exists in the database.
+        Saving replaces all of its event definitions, including changes made after the source was created.
+      </p>
+    </div>
+
+    <!-- Step 4: saved -->
     <div
       v-if="step === 'done'"
       class="done-step"
@@ -89,6 +101,21 @@
         @click="save"
       />
       <OnmsButton
+        v-if="step === 'confirm-replace'"
+        label="Replace Events"
+        :disabled="isLoading"
+        data-test="replace-button"
+        @click="doSave"
+      />
+      <OnmsButton
+        v-if="step === 'confirm-replace'"
+        label="Back"
+        variant="outlined"
+        :disabled="isLoading"
+        data-test="back-button"
+        @click="step = 'preview'"
+      />
+      <OnmsButton
         v-if="step === 'done'"
         label="Go to Event Configuration"
         data-test="go-to-event-config-button"
@@ -110,7 +137,7 @@ import { useRouter } from 'vue-router'
 import { OnmsButton, OnmsDialog, OnmsInputText, OnmsTextarea } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import useSnackbar from '@/composables/useSnackbar'
-import { uploadEventConfigFiles } from '@/services/eventConfigService'
+import { getOrderedEventConfigSources, uploadEventConfigFiles } from '@/services/eventConfigService'
 import { generateEvents } from '@/services/mibCompilerService'
 import { MibEventsPreview } from '@/types/mibCompiler'
 import { getGeneralErrorMessage, isWellFormedXml } from '../mibFilesValidator'
@@ -129,7 +156,7 @@ const router = useRouter()
 const snackbar = useSnackbar()
 const ueiInputId = useId()
 
-const step = ref<'input' | 'preview' | 'done'>('input')
+const step = ref<'input' | 'preview' | 'confirm-replace' | 'done'>('input')
 const isLoading = ref(false)
 const ueiBase = ref('')
 const preview = ref<MibEventsPreview | null>(null)
@@ -192,20 +219,58 @@ const save = async () => {
     validationError.value = 'The events XML is not well-formed. Fix it before saving.'
     return
   }
+  // the upload replaces an existing source wholesale, so an existing
+  // source needs the user's explicit consent first
+  const requestId = requestSeq.value
+  isLoading.value = true
+  try {
+    const sources = await getOrderedEventConfigSources()
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    if (sources.some(source => source.name === sourceName.value)) {
+      isLoading.value = false
+      step.value = 'confirm-replace'
+      return
+    }
+  } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    isLoading.value = false
+    validationError.value = getGeneralErrorMessage(error, 'Failed to check for an existing event source. Try again.')
+    return
+  }
+  await doSave()
+}
+
+const doSave = async () => {
+  const xml = eventsXml.value.trim()
+  const requestId = requestSeq.value
   isLoading.value = true
   try {
     const file = new File([xml], `${sourceName.value}.xml`, { type: 'application/xml' })
     const response = await uploadEventConfigFiles([file])
+    if (requestId !== requestSeq.value) {
+      return
+    }
     if (response.errors?.length) {
+      step.value = 'preview'
       validationError.value = response.errors.map(item => `${item.file}: ${item.error}`).join('; ')
       return
     }
     snackbar.showSnackBar({ msg: `Event definitions from '${preview.value?.mibName}' saved successfully.` })
     step.value = 'done'
   } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    step.value = 'preview'
     validationError.value = getGeneralErrorMessage(error, 'Failed to save the event definitions.')
   } finally {
-    isLoading.value = false
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
   }
 }
 

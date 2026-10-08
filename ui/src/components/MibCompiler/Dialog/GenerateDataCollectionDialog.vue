@@ -217,10 +217,14 @@ const save = async () => {
     validationError.value = 'The data collection XML is not well-formed. Fix it before saving.'
     return
   }
+  const requestId = requestSeq.value
   isLoading.value = true
   try {
     const file = new File([xml], uploadFileName.value, { type: 'application/xml' })
     const response = await uploadDataCollectionFiles([file], selectedProfiles.value.map(profile => profile.name))
+    if (requestId !== requestSeq.value) {
+      return
+    }
     if (response.errors?.length) {
       validationError.value = response.errors.map(item => `${item.file}: ${item.error}`).join('; ')
       return
@@ -228,9 +232,14 @@ const save = async () => {
     snackbar.showSnackBar({ msg: `Data collection group from '${preview.value?.mibName}' saved successfully.` })
     step.value = 'done'
   } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
     validationError.value = getGeneralErrorMessage(error, 'Failed to save the data collection group.')
   } finally {
-    isLoading.value = false
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
   }
 }
 
