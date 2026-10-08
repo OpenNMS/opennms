@@ -73,6 +73,15 @@ public class RedirectRestricterTest {
         assertNull(restricter.getRedirectOrNull("unknownRedirect?e=f"));
     }
 
+    @Test
+    public void shouldRejectRedirectsWithoutPath() {
+        RedirectRestricter restricter = RedirectRestricter.builder().allowRedirect("redirectA").build();
+
+        assertNull(restricter.getRedirectOrNull("?"));
+        assertNull(restricter.getRedirectOrNull("??"));
+        assertNull(restricter.getRedirectOrNull("?redirectA"));
+    }
+
     public static void assertThrowsException(Class<? extends Throwable> expectedException, Runnable function) {
         try {
             function.run();

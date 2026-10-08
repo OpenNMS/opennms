@@ -52,7 +52,11 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 
@@ -373,5 +377,99 @@ public class EventControllerTest  {
         eventList.add(event3);
 
         return eventList;
+    }
+    @Test
+    public void acknowledgeRejectsGet() throws Exception {
+        final MockHttpServletRequest request = ackRequest("GET", "/opennms/element/node.jsp?node=5");
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+
+        Assert.assertNull(eventController.acknowledge(request, response));
+        Assert.assertEquals(405, response.getStatus());
+        Assert.assertEquals("POST", response.getHeader("Allow"));
+        verifyNoInteractions(m_webEventRepository);
+    }
+
+    @Test
+    public void acknowledgeByFilterRejectsGet() throws Exception {
+        final MockHttpServletRequest request = new MockHttpServletRequest("GET", "/opennms/event/acknowledgeByFilter");
+        request.setContextPath("/opennms");
+        request.addParameter("filter", "node=5");
+        request.addParameter("actionCode", AcknowledgeType.ACKNOWLEDGED.getShortName());
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+
+        Assert.assertNull(eventController.acknowledgeByFilter(request, response));
+        Assert.assertEquals(405, response.getStatus());
+        verifyNoInteractions(m_webEventRepository);
+    }
+
+    @Test
+    public void acknowledgeRedirectsBackToAllowedPages() throws Exception {
+        // Event detail page sends a path relative to /event/.
+        Assert.assertEquals("detail.jsp?id=1", acknowledgeAndGetLocation("detail.jsp?id=1"));
+        // Element pages that include the event list send the full request URI.
+        Assert.assertEquals("/opennms/element/node.jsp?node=5", acknowledgeAndGetLocation("/opennms/element/node.jsp?node=5"));
+        Assert.assertEquals("/opennms/element/service.jsp?ifserviceid=7", acknowledgeAndGetLocation("/opennms/element/service.jsp?ifserviceid=7"));
+        verify(m_webEventRepository, times(3)).acknowledgeMatchingEvents(eq("admin"), any(), any());
+    }
+
+    @Test
+    public void acknowledgeFallsBackToEventListForOtherRedirects() throws Exception {
+        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("https://evil.example/"));
+        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("//evil.example/element/node.jsp"));
+        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("/opennms//evil.example/"));
+        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("?"));
+        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation(null));
+    }
+
+    @Test
+    public void deleteFavoriteAcceptsOnlyTheIndexView() throws Exception {
+        when(m_webEventRepository.getMatchingEvents(any())).thenReturn(new Event[0]);
+
+        Assert.assertEquals("/event/index", deleteFavoriteAndGetViewName("/event/index"));
+        Assert.assertEquals("event/list", deleteFavoriteAndGetViewName("redirect:https://evil.example/"));
+        Assert.assertEquals("event/list", deleteFavoriteAndGetViewName("forward:/admin/index.jsp"));
+        Assert.assertEquals("event/list", deleteFavoriteAndGetViewName("../../index"));
+    }
+
+    @Test
+    public void alarmDeleteFavoriteAcceptsOnlyTheIndexView() throws Exception {
+        when(m_webAlarmRepository.getMatchingAlarms(any())).thenReturn(new OnmsAlarm[0]);
+
+        final MockHttpServletRequest allowed = new MockHttpServletRequest("GET", "/opennms/alarm/deleteFavorite");
+        allowed.addParameter("favoriteId", "1");
+        allowed.addParameter("redirect", "/alarm/index");
+        Assert.assertEquals("/alarm/index", alarmFilterController.deleteFavorite(allowed, new MockHttpServletResponse()).getViewName());
+
+        final MockHttpServletRequest rejected = new MockHttpServletRequest("GET", "/opennms/alarm/deleteFavorite");
+        rejected.addParameter("favoriteId", "1");
+        rejected.addParameter("redirect", "redirect:https://evil.example/");
+        Assert.assertEquals("alarm/list", alarmFilterController.deleteFavorite(rejected, new MockHttpServletResponse()).getViewName());
+    }
+
+    private static MockHttpServletRequest ackRequest(final String method, final String redirect) {
+        final MockHttpServletRequest request = new MockHttpServletRequest(method, "/opennms/event/acknowledge");
+        request.setContextPath("/opennms");
+        request.setRemoteUser("admin");
+        request.addParameter("event", "1");
+        request.addParameter("actionCode", AcknowledgeType.ACKNOWLEDGED.getShortName());
+        if (redirect != null) {
+            request.addParameter("redirect", redirect);
+        }
+        return request;
+    }
+
+    private String acknowledgeAndGetLocation(final String redirect) throws Exception {
+        final MockHttpServletRequest request = ackRequest("POST", redirect);
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+        final ModelAndView mv = eventController.acknowledge(request, response);
+        mv.getView().render(mv.getModel(), request, response);
+        return response.getRedirectedUrl();
+    }
+
+    private String deleteFavoriteAndGetViewName(final String redirect) throws Exception {
+        final MockHttpServletRequest request = new MockHttpServletRequest("GET", "/opennms/event/deleteFavorite");
+        request.addParameter("favoriteId", "1");
+        request.addParameter("redirect", redirect);
+        return eventController.deleteFavorite(request, new MockHttpServletResponse()).getViewName();
     }
 }

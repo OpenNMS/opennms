@@ -163,7 +163,10 @@
 <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
     <form action="event/acknowledge" method="post" name="acknowledge_form">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-    <input type="hidden" name="redirect" value="<c:out value='<%= request.getRequestURI() + "?" + request.getQueryString()%>'/>" />
+    <%-- After a forward, getRequestURI() gives the internal JSP path. Send the URL that the browser requested. --%>
+    <c:set var="returnUri" value="${empty requestScope['javax.servlet.forward.request_uri'] ? pageContext.request.requestURI : requestScope['javax.servlet.forward.request_uri']}"/>
+    <c:set var="returnQuery" value="${empty requestScope['javax.servlet.forward.request_uri'] ? pageContext.request.queryString : requestScope['javax.servlet.forward.query_string']}"/>
+    <input type="hidden" name="redirect" value="<c:out value='${returnUri}?${returnQuery}'/>" />
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>
 
