@@ -31,15 +31,11 @@ import ZenithConnect from '@/containers/ZenithConnect.vue'
 import ZenithConnectView from '@/components/ZenithConnect/ZenithConnectView.vue'
 import ZenithConnectRegister from '@/components/ZenithConnect/ZenithConnectRegister.vue'
 import ZenithConnectRegisterResult from '@/components/ZenithConnect/ZenithConnectRegisterResult.vue'
-import useRole from '@/composables/useRole'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { computed } from 'vue'
 import { requireCondition, requireRole } from './guards'
 
-const { adminRole, filesystemEditorRole, dcbRole, snmpRole } = useRole()
-const menuStore = computed(() => useMenuStore())
 const { startSpinner, stopSpinner } = useSpinner()
 
 // for backward compatibility with legacy OpenNMS plugins
@@ -65,8 +61,8 @@ const isLegacyPlugin = (plugin: Plugin) => {
   return false
 }
 
-const mainMenuLoaded = computed<boolean>(() => menuStore.value?.mainMenuLoaded ?? false)
-const zenithConnectEnabled = computed<boolean>(() => menuStore.value?.mainMenu?.zenithConnectEnabled ?? false)
+const mainMenuLoaded = () => useMenuStore().mainMenuLoaded
+const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled ?? false
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
 
@@ -104,13 +100,13 @@ const router = createRouter({
       path: '/file-editor',
       name: 'FileEditor',
       component: FileEditor,
-      beforeEnter: requireRole(filesystemEditorRole, 'No role access to file editor.')
+      beforeEnter: requireRole('filesystemEditorRole', 'No role access to file editor.')
     },
     {
       path: '/distributed-monitoring',
       name: 'Manage Minions and Locations',
       component: () => import('@/containers/DistributedMonitoring.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to manage distributed monitoring.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage distributed monitoring.')
     },
     // the former Manage Minions / Manage Monitoring Locations pages (NMS-20364)
     {
@@ -125,19 +121,19 @@ const router = createRouter({
       path: '/configuration',
       name: 'Configuration',
       component: () => import('@/containers/ProvisionDConfig.vue'),
-      beforeEnter: requireRole(adminRole, 'No role access to external requisitions.')
+      beforeEnter: requireRole('adminRole', 'No role access to external requisitions.')
     },
     {
       path: '/logs',
       name: 'Logs',
       component: () => import('@/containers/Logs.vue'),
-      beforeEnter: requireRole(adminRole, 'No role access to logs.')
+      beforeEnter: requireRole('adminRole', 'No role access to logs.')
     },
     {
       path: '/admin/users',
       name: 'Manage Users',
       component: () => import('@/containers/ManageUsers.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to manage users.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage users.')
     },
     {
       path: '/notifications',
@@ -148,31 +144,31 @@ const router = createRouter({
       path: '/notifications-config',
       name: 'Notifications Configuration',
       component: () => import('@/containers/NotificationsConfig.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to configure notifications.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to configure notifications.')
     },
     {
       path: '/admin/groups',
       name: 'Manage Groups',
       component: () => import('@/containers/ManageGroups.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to manage groups.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage groups.')
     },
     {
       path: '/admin/wsman-config',
       name: 'Manage WS-Man',
       component: () => import('@/containers/ManageWsman.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to manage WS-Man configuration.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage WS-Man configuration.')
     },
     {
       path: '/scheduled-outages',
       name: 'Scheduled Outages',
       component: () => import('@/containers/ScheduledOutages.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to manage scheduled outages.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage scheduled outages.')
     },
     {
       path: '/scheduled-outages/edit',
       name: 'Edit Scheduled Outage',
       component: () => import('@/containers/ScheduledOutageEditor.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to manage scheduled outages.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage scheduled outages.')
     },
     {
       path: '/map',
@@ -260,37 +256,37 @@ const router = createRouter({
       path: '/device-config-backup',
       name: 'DeviceConfigBackup',
       component: DeviceConfigBackup,
-      beforeEnter: requireRole(dcbRole, 'No role access to DCB.')
+      beforeEnter: requireRole('dcbRole', 'No role access to DCB.')
     },
     {
       path: '/scv',
       name: 'SCV',
       component: () => import('@/containers/SecureCredentialsVault.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to access SCV.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to access SCV.')
     },
     {
       path: '/system-report',
       name: 'Generate System Report',
       component: () => import('@/containers/SystemReport.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to generate a system report.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to generate a system report.')
     },
     {
       path: '/snmp-config',
       name: 'SNMP Config',
       component: () => import('@/containers/SnmpConfiguration.vue'),
-      beforeEnter: requireRole(snmpRole, snmpRoleMsg)
+      beforeEnter: requireRole('snmpRole', snmpRoleMsg)
     },
     {
       path: '/snmp-config/lookup',
       name: 'SNMP Config Lookup',
       component: () => import('@/containers/SnmpConfiguration.vue'),
-      beforeEnter: [requireRole(snmpRole, snmpRoleMsg), enterSnmpLookupMode]
+      beforeEnter: [requireRole('snmpRole', snmpRoleMsg), enterSnmpLookupMode]
     },
     {
       path: '/usage-statistics',
       name: 'Usage Statistics',
       component: () => import('@/containers/UsageStatistics.vue'),
-      beforeEnter: requireRole(adminRole, 'Must be admin to access Usage Statistics.')
+      beforeEnter: requireRole('adminRole', 'Must be admin to access Usage Statistics.')
     },
     {
       path: '/zenith-connect',
