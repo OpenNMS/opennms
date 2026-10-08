@@ -22,6 +22,7 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  htmlToText,
   ellipsify,
   hasNonEmptyProperty,
   isConvertibleToInteger,
@@ -92,5 +93,20 @@ describe('lib/utils test', () => {
     for (const value of nonEmptyProperties) {
       expect(hasNonEmptyProperty(value)).toBe(true)
     }
+  })
+})
+
+describe('htmlToText', () => {
+  test('drops the markup and collapses whitespace', () => {
+    expect(htmlToText('<p>Interface <b>eth0</b>\n  down</p>')).toBe('Interface eth0 down')
+  })
+
+  test('decodes entities', () => {
+    expect(htmlToText('a &amp; b &lt;c&gt;')).toBe('a & b <c>')
+  })
+
+  test('answers empty for nothing', () => {
+    expect(htmlToText(undefined)).toBe('')
+    expect(htmlToText('')).toBe('')
   })
 })

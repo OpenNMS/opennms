@@ -26,11 +26,12 @@ import {
   SnmpInterfaceApiResponse,
   QueryParameters,
   IpInterfaceApiResponse,
+  NodeAlarmStatus,
   NodeAvailability,
-  OutagesApiResponse
+  NodeCriticalPath
 } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
-import { orderBy } from 'lodash'
+import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 
 const endpoint = '/nodes'
 
@@ -118,18 +119,34 @@ const getNodeIpInterfaces = async (
  * Node availability by interface and service. With `startMs`/`endMs` the figures cover that window;
  * without them they cover the last 24 hours, which is the legacy behaviour and still what every
  * caller but the availability panel wants.
+ *
+ * `page` asks for one page of the node's interfaces (in address order, as the server sorts them):
+ * only that page's figures are computed, each being a query of its own. `ipinterfaceCount` in the
+ * answer is the node's total, for a paginator. `withServices` counts and pages only the interfaces
+ * with monitored services.
  */
 const getNodeAvailabilityPercentage = async (
   id: string,
   startMs?: number,
-  endMs?: number
+  endMs?: number,
+  page?: { limit: number, offset: number, withServices?: boolean }
 ): Promise<NodeAvailability | false> => {
   try {
-    const params = (startMs !== undefined && endMs !== undefined)
-      ? { params: { start: startMs, end: endMs }}
-      : undefined
-    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`, params)
-    resp.data.ipinterfaces = orderBy(resp.data.ipinterfaces, 'address')
+    const params: Record<string, number> = {}
+
+    if (startMs !== undefined && endMs !== undefined) {
+      params.start = startMs
+      params.end = endMs
+    }
+
+    if (page) {
+      params.limit = page.limit
+      params.offset = page.offset
+    }
+
+    const query: Record<string, number | boolean> = page?.withServices ? { ...params, withServices: true } : params
+
+    const resp: { data: NodeAvailability } = await rest.get(`/availability/nodes/${id}`, Object.keys(query).length ? { params: query } : undefined)
 
     return resp.data
   } catch (_err) {
@@ -137,27 +154,39 @@ const getNodeAvailabilityPercentage = async (
   }
 }
 
-const getNodeOutages = async (id: string, queryParameters?: QueryParameters): Promise<OutagesApiResponse | false> => {
-  const outagesEndpoint = `/outages/forNode/${id}`
-  let outagesEndpointWithQueryString = ''
-
-  if (queryParameters) {
-    outagesEndpointWithQueryString = queryParametersHandler(queryParameters, outagesEndpoint)
-  }
-
+/**
+ * The node's critical path, for the Path Outage panel. The payload is null when the node has none
+ * of its own (204); a failed request is a failed result, so the two can be told apart.
+ */
+const getNodeCriticalPath = async (id: string): Promise<ValidationResultWithPayload<NodeCriticalPath | null>> => {
   try {
-    const resp = await rest.get(outagesEndpointWithQueryString || outagesEndpoint)
+    const resp = await v2.get(`/nodes/${id}/criticalPath`)
 
-    return resp.data
+    return createResultWithPayload(true, '', resp.status === 204 || !resp.data ? null : resp.data as NodeCriticalPath)
   } catch (_err) {
-    return false
+    return createResultWithPayload<NodeCriticalPath | null>(false, `Unable to load the critical path for node ${id}`)
+  }
+}
+
+/**
+ * A summary of the node's problem alarms for the status banner, counted on the server, so it stays
+ * small however many alarms the node has.
+ */
+const getNodeAlarmStatus = async (id: string): Promise<ValidationResultWithPayload<NodeAlarmStatus>> => {
+  try {
+    const resp = await v2.get(`/nodes/${id}/alarmStatus`)
+
+    return createResultWithPayload(true, '', resp.data as NodeAlarmStatus)
+  } catch (_err) {
+    return createResultWithPayload<NodeAlarmStatus>(false, `Unable to load the alarm status for node ${id}`)
   }
 }
 
 export {
   getNodes,
+  getNodeAlarmStatus,
+  getNodeCriticalPath,
   getNodeById,
-  getNodeOutages,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage

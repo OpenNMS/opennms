@@ -90,7 +90,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -101,6 +100,7 @@ import { getFlowGraphUrl } from '@/services/flowService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
 import { useDelayedLoading } from './hooks/useDelayedLoading'
+import useActiveNodeId from './hooks/useActiveNodeId'
 import {
   formatIfSpeed,
   matchesSearchTerm,
@@ -121,9 +121,8 @@ const props = withDefaults(defineProps<{
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
-const route = useRoute()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const DEFAULT_PAGE_SIZE = 5

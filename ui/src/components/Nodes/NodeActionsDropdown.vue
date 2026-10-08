@@ -13,13 +13,22 @@
     ref="menu"
     :items="items"
   />
+  <!-- Mounted only while a confirmation is pending: the node list has one of these per row. -->
+  <AssetEditConfirmDialog
+    v-if="pendingAssetHref"
+    visible
+    :foreignSource="node.foreignSource"
+    @ok="onAssetEditConfirmed"
+    @cancel="pendingAssetHref = undefined"
+  />
 </template>
 
 <script setup lang="ts">
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
 import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
-import { createLinkItemsList } from './nodeActionLinks'
+import AssetEditConfirmDialog from './AssetEditConfirmDialog.vue'
+import { createLinkItemsList, needsAssetEditConfirm } from './nodeActionLinks'
 import useRole from '@/composables/useRole'
 import { Node } from '@/types'
 
@@ -39,6 +48,13 @@ const props = defineProps({
     type: String,
     default: undefined
   },
+  // Supplied by the Node Details page, which asks once for its node; the node list cannot tell
+  // without a request per row, so it omits this and the Edit in Requisition action with it.
+  existsInRequisition: {
+    required: false,
+    type: Boolean,
+    default: false
+  },
   triggerNodeInfo: {
     required: false,
     type: Function as PropType<(node: Node) => void>,
@@ -46,7 +62,30 @@ const props = defineProps({
   }
 })
 
-const { adminRole } = useRole()
+const { adminRole, provisionRole, readOnlyRole } = useRole()
+
+// The asset editor waits for the confirmation dialog when the node is from a requisition, as on
+// the Node Details links row.
+const pendingAssetHref = ref<string | undefined>(undefined)
+
+const navigate = (name: string, href: string) => {
+  if (name === 'assets' && needsAssetEditConfirm(props.node, readOnlyRole.value)) {
+    pendingAssetHref.value = href
+
+    return
+  }
+
+  window.location.assign(href)
+}
+
+const onAssetEditConfirmed = () => {
+  const href = pendingAssetHref.value
+  pendingAssetHref.value = undefined
+
+  if (href) {
+    window.location.assign(href)
+  }
+}
 
 const menuIcon = markRaw(MoreVert)
 const menu = ref()
@@ -66,10 +105,12 @@ const items = computed<OnmsMenuItem[]>(() => {
     ...infoItem,
     ...createLinkItemsList(props.node, {
       snmpPrimaryIpAddress: props.snmpPrimaryIpAddress,
-      isAdmin: adminRole.value
+      isAdmin: adminRole.value,
+      canEditRequisitions: provisionRole.value,
+      existsInRequisition: props.existsInRequisition
     }).map(li => ({
       label: li.label,
-      command: () => window.location.assign(`${props.baseHref}${li.link}`)
+      command: () => navigate(li.name, `${props.baseHref}${li.link}`)
     }))
   ]
 })

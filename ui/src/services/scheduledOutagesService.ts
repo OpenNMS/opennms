@@ -205,6 +205,21 @@ export const getNodeLabels = async (ids: number[]): Promise<Record<number, strin
   }
 }
 
+/**
+ * The names of the scheduled outages in effect right now for a node: calendars inside one of their
+ * windows that name the node or cover one of its interfaces. Names only, as the legacy node page
+ * showed them. null on failure, so a caller can tell a failed check from a node with none.
+ */
+export const getActiveOutageNamesForNode = async (nodeId: string | number): Promise<string[] | null> => {
+  try {
+    const resp = await rest.get(`${endpoint}/activeForNode/${seg(String(nodeId))}`)
+
+    return asArray<string>(resp.data)
+  } catch (_err) {
+    return null
+  }
+}
+
 // The v1 payload may arrive with single-element lists collapsed to objects.
 const normalizeOutage = (raw: any): ScheduledOutage => ({
   name: raw?.name,

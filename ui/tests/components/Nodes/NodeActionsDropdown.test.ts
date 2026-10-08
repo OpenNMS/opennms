@@ -196,4 +196,81 @@ describe('NodeActionsDropdown.vue', () => {
       ADMIN_ONLY.forEach(label => expect(labels).not.toContain(label))
     })
   })
+
+  describe('Edit in Requisition', () => {
+    const requisitioned = { ...node, foreignSource: 'fs', foreignId: 'fid' }
+
+    it('is offered, last, when the page says the node is in its requisition', () => {
+      const labels = labelsOf(mountIt({ node: requisitioned, existsInRequisition: true }))
+
+      expect(labels[labels.length - 1]).toBe('Edit in Requisition')
+    })
+
+    // The node list passes nothing: it cannot tell without a request per row.
+    it('is left out when the caller does not say', () => {
+      expect(labelsOf(mountIt({ node: requisitioned }))).not.toContain('Edit in Requisition')
+    })
+
+    it('is offered to a provision user who is not an admin', () => {
+      setRoles('ROLE_USER', 'ROLE_PROVISION')
+
+      expect(labelsOf(mountIt({ node: requisitioned, existsInRequisition: true }))).toContain('Edit in Requisition')
+    })
+
+    it('is left out for a user who is neither admin nor provision', () => {
+      setRoles('ROLE_USER')
+
+      expect(labelsOf(mountIt({ node: requisitioned, existsInRequisition: true }))).not.toContain('Edit in Requisition')
+    })
+  })
+
+  // The node list's rows: the same confirmation as the Node Details links row.
+  describe('Assets confirmation', () => {
+    const requisitioned = { ...node, foreignSource: 'fs', foreignId: 'fid' }
+    const assetsItem = (wrapper: ReturnType<typeof mountIt>) =>
+      ((wrapper.vm as any).items as Array<{ label: string, command: () => void }>).find(i => i.label === 'Assets')!
+
+    // The node list has one of these per row, so the dialog waits until it is needed.
+    it('creates no dialog until a confirmation is pending', () => {
+      expect(mountIt({ node: requisitioned }).findComponent({ name: 'AssetEditConfirmDialog' }).exists()).toBe(false)
+    })
+
+    it('removes the dialog again when the confirmation is cancelled', async () => {
+      const wrapper = mountIt({ node: requisitioned })
+      assetsItem(wrapper).command()
+      await wrapper.vm.$nextTick()
+
+      wrapper.findComponent({ name: 'AssetEditConfirmDialog' }).vm.$emit('cancel')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent({ name: 'AssetEditConfirmDialog' }).exists()).toBe(false)
+    })
+
+    it('asks before opening the asset editor for a node from a requisition', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      const wrapper = mountIt({ node: requisitioned })
+
+      assetsItem(wrapper).command()
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'AssetEditConfirmDialog' })
+      expect(assign).not.toHaveBeenCalled()
+      expect(dialog.props('visible')).toBe(true)
+
+      dialog.vm.$emit('ok')
+      expect(assign).toHaveBeenCalledWith('/opennms/asset/modify.jsp?node=42')
+      vi.unstubAllGlobals()
+    })
+
+    it('goes straight there for a node not from a requisition', () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+
+      assetsItem(mountIt()).command()
+
+      expect(assign).toHaveBeenCalledWith('/opennms/asset/modify.jsp?node=42')
+      vi.unstubAllGlobals()
+    })
+  })
 })
