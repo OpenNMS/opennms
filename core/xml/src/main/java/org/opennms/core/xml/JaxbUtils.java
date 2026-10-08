@@ -195,15 +195,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate) {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(file);
-            return unmarshal(clazz, new InputSource(reader), null, validate, false);
-        } catch (final FileNotFoundException e) {
-            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
-        } finally {
-            IOUtils.closeQuietly(reader);
-        }
+        return unmarshal(clazz, file, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader) {
@@ -235,13 +227,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate) {
-        final StringReader sr = new StringReader(xml);
-        final InputSource is = new InputSource(sr);
-        try {
-            return unmarshal(clazz, is, null, validate, false);
-        } finally {
-            IOUtils.closeQuietly(sr);
-        }
+        return unmarshal(clazz, xml, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource) {
@@ -249,16 +235,12 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate) {
-        try {
-            return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate, false);
-        } catch (final IOException e) {
-            throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
-        }
+        return unmarshal(clazz, resource, validate, false);
     }
 
     /**
-     * Unmarshals with the option to disable DOCTYPE processing. Use disableDOCTYPE=true for requisition and
-     * foreign-source imports: their XML never carries a DOCTYPE, and disabling it blocks XML entity-expansion
+     * Unmarshals with the option to disable DOCTYPE processing. Use disableDOCTYPE=true for formats that do not
+     * need a DOCTYPE, such as requisition and foreign-source XML. Disabling it blocks XML entity-expansion
      * denial of service, which the entity-expansion count limit alone does not stop on all parsers.
      */
     public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate, final boolean disableDOCTYPE) {
@@ -284,8 +266,8 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate, final boolean disableDOCTYPE) {
-        try {
-            return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate, disableDOCTYPE);
+        try (final InputStream stream = resource.getInputStream()) {
+            return unmarshal(clazz, new InputSource(stream), null, validate, disableDOCTYPE);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
         }
