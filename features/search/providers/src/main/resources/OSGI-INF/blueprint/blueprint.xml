@@ -16,7 +16,7 @@
     <reference id="alarmDao"                    interface="org.opennms.netmgt.dao.api.AlarmDao"                     availability="mandatory"/>
     <reference id="genericPersistenceAccessor"  interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor"   availability="mandatory"/>
     <!-- These providers enrich search results when the web application is running. -->
-    <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="optional"/>
+    <reference id="graphCollectionService"            interface="org.opennms.web.svclayer.api.GraphCollectionService"           availability="optional"/>
     <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="optional"/>
     <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="optional"/>
     <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" availability="mandatory"/>
@@ -120,8 +120,8 @@
     <service ref="filterSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <!-- KSC Database Provider -->
-    <bean id="kscReportSearchProvider" class="org.opennms.netmgt.search.providers.action.KscReportSearchProvider">
-        <argument ref="kscReportService" />
+    <bean id="graphCollectionSearchProvider" class="org.opennms.netmgt.search.providers.action.GraphCollectionSearchProvider">
+        <argument ref="graphCollectionService" />
     </bean>
-    <service ref="kscReportSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
+    <service ref="graphCollectionSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 </blueprint>

@@ -42,9 +42,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.Graph;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -54,7 +54,7 @@ import org.opennms.web.api.Authentication;
 import org.opennms.web.api.Util;
 import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,8 +83,8 @@ public class CustomViewController extends AbstractController implements Initiali
         graphtype
     }
 
-    private KSC_PerformanceReportFactory m_kscReportFactory;
-    private KscReportService m_kscReportService;
+    private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
+    private GraphCollectionService m_graphCollectionService;
     private ResourceService m_resourceService;
     private int m_defaultGraphsPerLine = 0;
     private Executor m_executor;
@@ -122,19 +122,19 @@ public class CustomViewController extends AbstractController implements Initiali
         }
       
         // Load report to view 
-        Report report = null;
+        GraphCollection report = null;
         if ("node".equals(reportType)) {
-            LOG.debug("handleRequestInternal: buildNodeReport(reportId) {}", reportId);
-            report = getKscReportService().buildNodeReport(reportId);
+            LOG.debug("handleRequestInternal: buildNodeCollection(reportId) {}", reportId);
+            report = getGraphCollectionService().buildNodeCollection(reportId);
         } else if ("nodeSource".equals(reportType)) {
-            LOG.debug("handleRequestInternal: buildNodeSourceReport(nodeSource) {}", reportIdString);
-            report = getKscReportService().buildNodeSourceReport(reportIdString);
+            LOG.debug("handleRequestInternal: buildNodeSourceCollection(nodeSource) {}", reportIdString);
+            report = getGraphCollectionService().buildNodeSourceCollection(reportIdString);
         } else if ("domain".equals(reportType)) {
-            LOG.debug("handleRequestInternal: buildDomainReport(reportIdString) {}", reportIdString);
-            report = getKscReportService().buildDomainReport(reportIdString);
+            LOG.debug("handleRequestInternal: buildDomainCollection(reportIdString) {}", reportIdString);
+            report = getGraphCollectionService().buildDomainCollection(reportIdString);
         } else if ("custom".equals(reportType)) {
-            LOG.debug("handleRequestInternal: getReportByIndex(reportId) {}", reportId);
-            report = m_kscReportFactory.getReportByIndex(reportId);
+            LOG.debug("handleRequestInternal: getCollectionById(reportId) {}", reportId);
+            report = m_graphCollectionConfigFactory.getCollectionById(reportId);
             if (report == null) {
                 throw new ServletException("Report could not be found in config file for index '" + reportId + "'");
             }
@@ -146,9 +146,9 @@ public class CustomViewController extends AbstractController implements Initiali
         Map<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
         Set<PrefabGraph> prefabGraphs = new TreeSet<>();
         if (removeBrokenGraphsFromReport(report) && reportId > -1) {
-            m_kscReportFactory.setReport(reportId, report);
-            m_kscReportFactory.saveCurrent();
-            EventBuilder eb = new EventBuilder(EventConstants.KSC_REPORT_UPDATED_UEI, "Web UI");
+            m_graphCollectionConfigFactory.setCollection(reportId, report);
+            m_graphCollectionConfigFactory.saveCurrent();
+            EventBuilder eb = new EventBuilder(EventConstants.GRAPH_COLLECTION_UPDATED_UEI, "Web UI");
             eb.addParam(EventConstants.PARAM_REPORT_TITLE, report.getTitle() == null ? "Report #" + report.getId() : report.getTitle());
             eb.addParam(EventConstants.PARAM_REPORT_GRAPH_COUNT, report.getGraphs().size());
             try {
@@ -160,7 +160,7 @@ public class CustomViewController extends AbstractController implements Initiali
         List<Graph> graphCollection = report.getGraphs();
         if (!graphCollection.isEmpty()) {
             for (Graph graph : graphCollection) {
-                final OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
+                final OnmsResource resource = getGraphCollectionService().getResourceFromGraph(graph);
                 resourceMap.put(graph.toString(), resource);
                 if (resource == null) {
                     LOG.debug("Could not get resource for graph {} in report {}", graph, report.getTitle());
@@ -215,7 +215,7 @@ public class CustomViewController extends AbstractController implements Initiali
             }
             Calendar beginTime = Calendar.getInstance();
             Calendar endTime = Calendar.getInstance();
-            KSC_PerformanceReportFactory.getBeginEndTime(displayTimespan, beginTime, endTime);
+            GraphCollectionConfigFactory.getBeginEndTime(displayTimespan, beginTime, endTime);
             
             KscResultSet resultSet = new KscResultSet(graph.getTitle(), beginTime.getTime(), endTime.getTime(), resource, displayGraph);
             resultSets.add(resultSet);
@@ -233,12 +233,12 @@ public class CustomViewController extends AbstractController implements Initiali
         modelAndView.addObject("resultSets", resultSets);
         
         if (report.getShowTimespanButton().orElse(false)) {
-            if (overrideTimespan == null || !getKscReportService().getTimeSpans(true).containsKey(overrideTimespan)) {
+            if (overrideTimespan == null || !getGraphCollectionService().getTimeSpans(true).containsKey(overrideTimespan)) {
                 modelAndView.addObject("timeSpan", "none");
             } else {
                 modelAndView.addObject("timeSpan", overrideTimespan);
             }
-            modelAndView.addObject("timeSpans", getKscReportService().getTimeSpans(true));
+            modelAndView.addObject("timeSpans", getGraphCollectionService().getTimeSpans(true));
         } else {
             // Make sure it's null so the pulldown list isn't shown
             modelAndView.addObject("timeSpan", null);
@@ -274,11 +274,11 @@ public class CustomViewController extends AbstractController implements Initiali
     }
     
     // Returns true if the report was modified due to invalid resource IDs. 
-    private boolean removeBrokenGraphsFromReport(Report report) {
+    private boolean removeBrokenGraphsFromReport(GraphCollection report) {
         for (Iterator<Graph> itr = report.getGraphs().iterator(); itr.hasNext();) {
             Graph graph = itr.next();
             try {
-                OnmsResource r = getKscReportService().getResourceFromGraph(graph);
+                OnmsResource r = getGraphCollectionService().getResourceFromGraph(graph);
                 if (r == null) {
                     LOG.error("Removing graph '{}' in KSC report '{}' because the resource it refers to could not be found. Perhaps resource '{}' (or its ancestor) referenced by this graph no longer exists?", graph.getTitle(), report.getTitle(), graph.getResourceId().orElse(null));
                     itr.remove();
@@ -318,21 +318,21 @@ public class CustomViewController extends AbstractController implements Initiali
 
 
     /**
-     * <p>getKscReportFactory</p>
+     * <p>getGraphCollectionConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @return a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public KSC_PerformanceReportFactory getKscReportFactory() {
-        return m_kscReportFactory;
+    public GraphCollectionConfigFactory getGraphCollectionConfigFactory() {
+        return m_graphCollectionConfigFactory;
     }
 
     /**
-     * <p>setKscReportFactory</p>
+     * <p>setGraphCollectionConfigFactory</p>
      *
-     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param graphCollectionConfigFactory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
-        m_kscReportFactory = kscReportFactory;
+    public void setGraphCollectionConfigFactory(GraphCollectionConfigFactory graphCollectionConfigFactory) {
+        m_graphCollectionConfigFactory = graphCollectionConfigFactory;
     }
 
     /**
@@ -356,21 +356,21 @@ public class CustomViewController extends AbstractController implements Initiali
     }
 
     /**
-     * <p>getKscReportService</p>
+     * <p>getGraphCollectionService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public KscReportService getKscReportService() {
-        return m_kscReportService;
+    public GraphCollectionService getGraphCollectionService() {
+        return m_graphCollectionService;
     }
 
     /**
-     * <p>setKscReportService</p>
+     * <p>setGraphCollectionService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @param graphCollectionService a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public void setKscReportService(KscReportService kscReportService) {
-        m_kscReportService = kscReportService;
+    public void setGraphCollectionService(GraphCollectionService graphCollectionService) {
+        m_graphCollectionService = graphCollectionService;
     }
 
     /**
@@ -398,8 +398,8 @@ public class CustomViewController extends AbstractController implements Initiali
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
-        Assert.state(m_kscReportService != null, "property kscReportService must be set");
+        Assert.state(m_graphCollectionConfigFactory != null, "property graphCollectionConfigFactory must be set");
+        Assert.state(m_graphCollectionService != null, "property graphCollectionService must be set");
         Assert.state(m_resourceService != null, "property resourceService must be set");
         Assert.state(m_defaultGraphsPerLine != 0, "property defaultGraphsPerLine must be set");
         

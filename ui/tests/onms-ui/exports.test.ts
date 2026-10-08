@@ -50,6 +50,7 @@ const EXPECTED_RUNTIME_EXPORTS = [
   'OnmsListbox',
   'OnmsMenu',
   'OnmsMenubar',
+  'OnmsMessage',
   'OnmsMessageDialog',
   'OnmsMultiSelect',
   'OnmsPaginator',

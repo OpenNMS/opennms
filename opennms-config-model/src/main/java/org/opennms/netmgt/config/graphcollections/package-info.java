@@ -26,7 +26,7 @@
                    @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/kscReports")
            }
         )
-package org.opennms.netmgt.config.kscReports;
+package org.opennms.netmgt.config.graphcollections;
 
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

@@ -229,7 +229,7 @@ public interface EventConfRestApi {
         - `eventSortBy`: sort field `eventOrder`, `uei`, `eventLabel`, `description`, `severity`, `enabled`;
           defaults to `eventOrder` (the evaluation position within the source, 1 = evaluated first) if missing or invalid.
         - `eventOrder`: `asc` or `desc` (default: `desc`, or `asc` when falling back to `eventOrder`).
-        - `offset` and `limit`: for pagination.
+        - `offset` and `limit`: for pagination; omitting `limit` (or passing 0) returns every match in one page.
 
         The response wraps the page in `eventConfSourceList`; the entries are events, not sources.
         `createdTime` and `lastModified` come back as epoch milliseconds, not as the date-time strings the schema shows.""",
@@ -283,9 +283,9 @@ public interface EventConfRestApi {
             @Parameter(description = "Total matching records as already known to the caller. When present, the count query is not run.",
                     example = "132")
             @QueryParam("totalRecords") Integer totalRecords,
-            @Parameter(description = "Zero-based index of the first record to return.", example = "0")
+            @Parameter(description = "Zero-based index of the first record to return (default 0).", example = "0")
             @QueryParam("offset") Integer offset,
-            @Parameter(description = "Maximum number of records to return.", example = "20")
+            @Parameter(description = "Maximum number of records to return; omit or pass 0 for every match in one page.", example = "20")
             @QueryParam("limit") Integer limit,
             @Context SecurityContext securityContext );
 
@@ -592,22 +592,24 @@ public interface EventConfRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Delete Events for a Source",
-            description = "Delete one or more events belonging to the specified eventConf source.",
+            description = """
+        Delete one or more events belonging to the specified eventConf source. Events of the stock
+        (opennms-vendor) sources, including the catch-all, cannot be deleted - disable them instead.""",
             operationId = "deleteEventsForSource"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Events deleted successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "EventConf events deleted successfully."))),
-            @ApiResponse(responseCode = "500", description = "Missing or empty event ids. The IllegalArgumentException from the handler is mapped by the generic provider as 500 text/plain, not 400.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Event IDs to delete must not be null or empty"))),
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"message\": \"EventConf events deleted successfully.\"}"))),
+            @ApiResponse(responseCode = "400", description = "Missing or empty event ids, or a stock source",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"error\": \"Events of the stock source 'opennms.catch-all.events' cannot be deleted; disable them instead\"}"))),
             @ApiResponse(responseCode = "404", description = "Source or one or more events not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "One or more eventIds were not found: 9999")))
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"error\": \"One or more eventIds were not found: 9999\"}")))
     })
     Response deleteEventsForSource(
             @Parameter(description = "Identifier of the source owning the events.", example = "17", required = true)
@@ -1008,6 +1010,84 @@ public interface EventConfRestApi {
                             schema = @Schema(implementation = EventConfEventOrderPayload.class),
                             examples = @ExampleObject(value = "{\"eventIds\": [4213, 4211, 4212]}")))
             EventConfEventOrderPayload payload,
+            @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("/sources/{sourceId}/events")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get a source's events with an exact UEI",
+            description = """
+        Returns the source's events whose UEI matches `uei` exactly (case-sensitive, no wildcards), in
+        evaluation order, as full records including `id` and `xmlContent`. This resolves an event's id
+        from its identity: pick among the results by comparing masks in `xmlContent`. For substring
+        search use `filter/{sourceId}/events`; for definitions without ids use `.../events/download`.""",
+            operationId = "getEventConfSourceEventsByUei"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Matching events, possibly an empty list",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfEventDto.class))),
+            @ApiResponse(responseCode = "400", description = "Missing uei parameter",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Query parameter 'uei' is required"))),
+            @ApiResponse(responseCode = "404", description = "Source not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "EventConfSource not found for id: 17")))
+    })
+    Response getEventConfSourceEventsByUei(
+            @Parameter(description = "Identifier of the source whose events are searched.", example = "17", required = true)
+            @PathParam("sourceId") Long sourceId,
+            @Parameter(description = "The exact UEI to match.",
+                    example = "uei.opennms.org/vendor/cisco/syslog/LINK-3-UPDOWN", required = true)
+            @QueryParam("uei") String uei,
+            @Context SecurityContext securityContext);
+
+    @PUT
+    @Path("/sources/{sourceId}/events")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Upsert one event in a source by its UEI and mask",
+            description = """
+        Creates or updates the event whose identity — the exact UEI plus an equal mask — matches the body.
+        The first event in evaluation order with that identity is rewritten in place, keeping its id,
+        position and enabled flag; if its stored definition is already identical the call changes nothing
+        (`outcome: unchanged`). Without a match the event is appended to the source, like the POST.
+        `uei`, `event-label` and `severity` are required. The same body can be sent repeatedly: the call
+        is idempotent, converging on `unchanged`. The event definitions are reloaded into memory after a
+        create or update.""",
+            operationId = "upsertEventConfSourceEvent"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "An existing event matched by UEI and mask",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"outcome\": \"updated\", \"id\": 4211, \"eventOrder\": 3}"))),
+            @ApiResponse(responseCode = "201", description = "No event matched; the definition was appended",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"outcome\": \"created\", \"id\": 4299, \"eventOrder\": 133}"))),
+            @ApiResponse(responseCode = "400", description = "Missing or invalid event payload",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Invalid event payload: Event 'uei' is required"))),
+            @ApiResponse(responseCode = "404", description = "Source not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Source with ID 17 not found")))
+    })
+    Response upsertEventConfSourceEvent(
+            @Parameter(description = "Identifier of the source holding the event.", example = "17", required = true)
+            @PathParam("sourceId") Long sourceId,
+            @RequestBody(required = true,
+                    description = """
+                            Event definition, using the same structure as an <event> element in an eventconf file.
+                            The UEI and mask identify the event to update; the rest is the desired content.""",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Event.class)))
+            Event event,
             @Context SecurityContext securityContext) throws Exception;
 
 }

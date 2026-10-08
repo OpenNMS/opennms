@@ -20,29 +20,23 @@
 /// License.
 ///
 
-import { defineComponent, h } from 'vue'
+// Wire shape of an OnmsMinion from /api/v2/minions (OnmsMonitoringSystem +
+// status/version). type/status/date are server-maintained; the page reads
+// Minions and deletes them, and never writes one.
+export interface Minion {
+  id: string
+  label: string | null
+  location: string | null
+  type?: string | null
+  status?: string | null
+  version?: string | null
+  date?: string | number | null // last updated
+  properties?: Record<string, string>
+}
 
-/**
- * Glyphs for the Edit tool strip that the shared icon set does not carry: a
- * pointer for the select tool and a rectangle for the box tool. Same shape as
- * the vendored icons, an inline 24-unit SVG filled with currentColor.
- */
-const glyph = (name: string, paths: string[]) =>
-  defineComponent({
-    name,
-    render() {
-      return h(
-        'svg',
-        { xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 24 24' },
-        paths.map(d => h('path', { d }))
-      )
-    }
-  })
-
-export const SelectToolIcon = glyph('SelectToolIcon', [
-  'M6 3.5v14.2l3.9-3.2 2.4 5.5 2.2-1-2.4-5.4h5.1L6 3.5z'
-])
-
-export const BoxToolIcon = glyph('BoxToolIcon', [
-  'M4 5h16v14H4V5zm2 2v10h12V7H6z'
-])
+export interface MinionApiResponse {
+  minion: Minion[]
+  totalCount: number
+  count: number
+  offset: number
+}

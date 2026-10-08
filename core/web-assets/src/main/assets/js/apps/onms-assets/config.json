@@ -375,13 +375,15 @@
                   "label": "Password",
                   "tooltip": "Password",
                   "model": "password",
-                  "type": "password"
+                  "type": "password",
+                  "placeholder": "Stored value is hidden; enter a new value to replace it"
                 },
                 {
                   "label": "Enable Password",
                   "tooltip": "Enable Password: used only if AutoEnable is not set to 'A'",
                   "model": "enable",
-                  "type": "password"
+                  "type": "password",
+                  "placeholder": "Stored value is hidden; enter a new value to replace it"
                 },
                 {
                   "label": "Connection",
@@ -401,7 +403,8 @@
                   "label": "SNMP Community",
                   "tooltip": "SNMP Community String (it is recommended to use snmp-config.xml instead)",
                   "model": "snmpcommunity",
-                  "type": "text"
+                  "type": "password",
+                  "placeholder": "Stored value is hidden; enter a new value to replace it"
                 }
               ]
             }

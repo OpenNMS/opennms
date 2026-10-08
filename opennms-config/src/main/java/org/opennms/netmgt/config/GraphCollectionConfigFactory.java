@@ -35,27 +35,27 @@ import java.util.Objects;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.config.kscReports.ReportsList;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
+import org.opennms.netmgt.config.graphcollections.GraphCollectionList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.Assert;
 
-public class KSC_PerformanceReportFactory {
-    private static final Logger LOG = LoggerFactory.getLogger(KSC_PerformanceReportFactory.class);
+public class GraphCollectionConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(GraphCollectionConfigFactory.class);
 
     /**
      * The static singleton instance object.
      * Null if init() hasn't been successfully called.
      */
-    private static KSC_PerformanceReportFactory s_instance = null;
+    private static GraphCollectionConfigFactory s_instance = null;
 
     /** File name of the KSC_PerformanceReport.xml */
     private static File s_configFile = null;
 
-    /** An instance of the ReportsList configuration */
-    private ReportsList m_config;
+    /** An instance of the GraphCollectionList configuration */
+    private GraphCollectionList m_config;
 
     /**
      * The array of values that may be used in the timespan declaration of a
@@ -92,12 +92,12 @@ public class KSC_PerformanceReportFactory {
     /**
      * Map of all Reports by their ID, ordered based on their order in the config file.
      */
-    private Map<Integer, Report> m_reportList;
+    private Map<Integer, GraphCollection> m_reportList;
 
     /**
      * Empty Private Constructor. Cannot be instantiated outside itself.
      */
-    private KSC_PerformanceReportFactory() {
+    private GraphCollectionConfigFactory() {
     }
 
     /**
@@ -111,7 +111,7 @@ public class KSC_PerformanceReportFactory {
             return;
         }
 
-        KSC_PerformanceReportFactory newInstance = new KSC_PerformanceReportFactory();
+        GraphCollectionConfigFactory newInstance = new GraphCollectionConfigFactory();
         newInstance.reload();
 
         s_instance = newInstance;
@@ -119,12 +119,12 @@ public class KSC_PerformanceReportFactory {
 
     /**
      * Singleton static call to get the only instance that should exist for the
-     * KSC_PerformanceReportFactory
+     * GraphCollectionConfigFactory
      *
-     * @return the single KSC_PerformanceReportFactory instance
+     * @return the single GraphCollectionConfigFactory instance
      * @throws java.lang.IllegalStateException if any.
      */
-    public static synchronized KSC_PerformanceReportFactory getInstance() throws IllegalStateException {
+    public static synchronized GraphCollectionConfigFactory getInstance() throws IllegalStateException {
         assertInitialized();
 
         return s_instance;
@@ -139,7 +139,7 @@ public class KSC_PerformanceReportFactory {
     public synchronized void reload() throws IOException, FileNotFoundException {
         if (s_configFile == null) s_configFile = ConfigFileConstants.getFile(ConfigFileConstants.KSC_REPORT_FILE_NAME);
 
-        m_config = JaxbUtils.unmarshal(ReportsList.class, new FileSystemResource(s_configFile));
+        m_config = JaxbUtils.unmarshal(GraphCollectionList.class, new FileSystemResource(s_configFile));
 
         setIdsOnAllReports();
 
@@ -153,13 +153,13 @@ public class KSC_PerformanceReportFactory {
     private void setIdsOnAllReports() {
         LOG.debug("setIdsOnAllReports()");
 
-        if (m_config == null || m_config.getReports() == null) {
+        if (m_config == null || m_config.getCollections() == null) {
             LOG.debug("no reports");
             return;
         }
 
         // Make sure that i is larger than the highest report ID
-        int nextReportId = m_config.getReports().stream().map(report -> {
+        int nextReportId = m_config.getCollections().stream().map(report -> {
             return report.getId() == null? -1 : report.getId();
         }).filter(Objects::nonNull).reduce(-1, (a, b) -> {
             if (b > a) {
@@ -169,10 +169,10 @@ public class KSC_PerformanceReportFactory {
         }) + 1;
         LOG.debug("highest ID: {}", nextReportId);
 
-        LOG.debug("existing reports: {}", m_config.getReports());
+        LOG.debug("existing reports: {}", m_config.getCollections());
 
         // Set IDs for any report lacking one.
-        for (final Report report : m_config.getReports()) {
+        for (final GraphCollection report : m_config.getCollections()) {
             if (report.getId() == null) {
                 LOG.debug("report has no ID: {}", report);
                 report.setId(nextReportId++);
@@ -198,7 +198,7 @@ public class KSC_PerformanceReportFactory {
     }
 
     private static void assertInitialized() {
-        Assert.state(isInitialized(), "KSC_PerformanceReportFactory.init() has not been called");
+        Assert.state(isInitialized(), "GraphCollectionConfigFactory.init() has not been called");
     }
 
     private static boolean isInitialized() {
@@ -206,19 +206,19 @@ public class KSC_PerformanceReportFactory {
     }
 
     /**
-     * <p>getReportByIndex</p>
+     * <p>getCollectionById</p>
      *
      * @param index a int.
-     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     * @return a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public Report getReportByIndex(int index) {
+    public GraphCollection getCollectionById(int index) {
         return m_reportList.get(index);
     }
 
-    private Map<Integer, Report> createReportList() {
-        Map<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReports().size());
+    private Map<Integer, GraphCollection> createReportList() {
+        Map<Integer, GraphCollection> reports = new LinkedHashMap<Integer, GraphCollection>(m_config.getCollections().size());
 
-        for (final Report report : m_config.getReports()) {
+        for (final GraphCollection report : m_config.getCollections()) {
             if (report.getId() != null) {
                 final Integer reportId = report.getId();
                 if (reports.containsKey(reportId)) {
@@ -232,22 +232,22 @@ public class KSC_PerformanceReportFactory {
     }
 
     /**
-     * <p>getReportList</p>
+     * <p>getCollectionTitles</p>
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, String> getReportList() {
-        LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getReports().size());
+    public Map<Integer, String> getCollectionTitles() {
+        LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getCollections().size());
 
-        List<Report> reportList = m_config.getReports();
-        Collections.sort(reportList, new Comparator<Report>() {
+        List<GraphCollection> reportList = m_config.getCollections();
+        Collections.sort(reportList, new Comparator<GraphCollection>() {
             @Override
-            public int compare(Report o1, Report o2) {
+            public int compare(GraphCollection o1, GraphCollection o2) {
                 return o1.getTitle().compareTo(o2.getTitle());
             }
         });
 
-        for (Report report : reportList) {
+        for (GraphCollection report : reportList) {
             reports.put(report.getId(), report.getTitle());
         }
 
@@ -255,14 +255,14 @@ public class KSC_PerformanceReportFactory {
     }
 
     /**
-     * <p>getReportMap</p>
+     * <p>getCollectionMap</p>
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, Report> getReportMap() {
-        Map<Integer, Report> reports = new HashMap<Integer, Report>(m_config.getReports().size());
+    public Map<Integer, GraphCollection> getCollectionMap() {
+        Map<Integer, GraphCollection> reports = new HashMap<Integer, GraphCollection>(m_config.getCollections().size());
 
-        for (Report report : m_config.getReports()) {
+        for (GraphCollection report : m_config.getCollections()) {
             reports.put(report.getId(), report);
         }
 
@@ -277,23 +277,23 @@ public class KSC_PerformanceReportFactory {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public void deleteReportAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException {
-        Report report = getReportByIndex(index);
+    public void deleteCollectionAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException {
+        GraphCollection report = getCollectionById(index);
         if (report == null) {
             throw new ArrayIndexOutOfBoundsException("Reports List index to be deleted is out of bounds: " + index);
         }
 
-        m_config.removeReport(report);
+        m_config.removeCollection(report);
         saveCurrent();
     }
 
-    public void addReport(Report report) {
-        LOG.debug("addReport: {}", report);
-        m_config.addReport(report);
+    public void addCollection(GraphCollection report) {
+        LOG.debug("addCollection: {}", report);
+        m_config.addCollection(report);
         setIdsOnAllReports();
     }
 
-    public void setReport(int index, Report report) {
+    public void setCollection(int index, GraphCollection report) {
         int arrayIndex = getArrayIndex(index);
         if (arrayIndex == -1) {
             throw new IllegalArgumentException("Could not find report with ID of " + index);
@@ -301,18 +301,18 @@ public class KSC_PerformanceReportFactory {
         final int index1 = arrayIndex;
 
         // Make sure we preserve the existing ID, if it exists (which it should)
-        if (m_config.getReports().get(index1).getId() != null) {
+        if (m_config.getCollections().get(index1).getId() != null) {
             final int index2 = arrayIndex;
-            report.setId(m_config.getReports().get(index2).getId());
+            report.setId(m_config.getCollections().get(index2).getId());
         }
 
-        m_config.setReport(arrayIndex, report);
+        m_config.setCollection(arrayIndex, report);
         setIdsOnAllReports();
     }
 
     private int getArrayIndex(int index) {
         int i = 0;
-        for (Report report : m_config.getReports()) {
+        for (GraphCollection report : m_config.getCollections()) {
             if (report.getId() == index) {
                 return i;
             }

@@ -198,6 +198,9 @@ export const filterEventConfigSources = async (
     })
     if (response.status === 200) {
       return mapEventConfSourceResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      // the server answers 204 when nothing matches; an empty page, not an error
+      return { sources: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
@@ -239,6 +242,9 @@ export const filterEventConfigEvents = async (
     })
     if (response.status === 200) {
       return mapEventConfigEventsResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      // the server answers 204 when nothing matches; an empty page, not an error
+      return { events: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }

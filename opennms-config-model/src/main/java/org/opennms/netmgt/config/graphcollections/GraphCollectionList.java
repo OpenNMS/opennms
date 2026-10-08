@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.config.kscReports;
+package org.opennms.netmgt.config.graphcollections;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,39 +40,39 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name = "ReportsList")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("ksc-performance-reports.xsd")
-public class ReportsList implements java.io.Serializable {
+public class GraphCollectionList implements java.io.Serializable {
     private static final long serialVersionUID = 2L;
 
-    private static final Comparator<Report> SORT_REPORTS = new Comparator<Report>() {
+    private static final Comparator<GraphCollection> SORT_REPORTS = new Comparator<GraphCollection>() {
         @Override
-        public int compare(final Report o1, final Report o2) {
+        public int compare(final GraphCollection o1, final GraphCollection o2) {
             return o1.getTitle().compareTo(o2.getTitle());
         }
     };
 
     @XmlElement(name = "Report")
-    private List<Report> m_reports = new ArrayList<>();
+    private List<GraphCollection> m_reports = new ArrayList<>();
 
-    public List<Report> getReports() {
+    public List<GraphCollection> getCollections() {
         return m_reports;
     }
 
-    public void setReports(final List<Report> reports) {
+    public void setCollections(final List<GraphCollection> reports) {
         if (reports == m_reports) return;
         m_reports.clear();
         if (reports != null) m_reports.addAll(reports);
         m_reports.sort(SORT_REPORTS);
     }
 
-    public void addReport(final Report report) {
+    public void addCollection(final GraphCollection report) {
         m_reports.add(report);
     }
 
-    public void setReport(final int index, final Report report) {
+    public void setCollection(final int index, final GraphCollection report) {
         m_reports.set(index, report);
     }
 
-    public boolean removeReport(final Report report) {
+    public boolean removeCollection(final GraphCollection report) {
         return m_reports.remove(report);
     }
 
@@ -91,8 +91,8 @@ public class ReportsList implements java.io.Serializable {
             return true;
         }
 
-        if (obj instanceof ReportsList) {
-            final ReportsList that = (ReportsList)obj;
+        if (obj instanceof GraphCollectionList) {
+            final GraphCollectionList that = (GraphCollectionList)obj;
             return Objects.equals(this.m_reports, that.m_reports);
         }
         return false;

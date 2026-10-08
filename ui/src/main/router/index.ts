@@ -107,6 +107,21 @@ const router = createRouter({
       beforeEnter: requireRole(filesystemEditorRole, 'No role access to file editor.')
     },
     {
+      path: '/distributed-monitoring',
+      name: 'Manage Minions and Locations',
+      component: () => import('@/containers/DistributedMonitoring.vue'),
+      beforeEnter: requireRole(adminRole, 'Must be admin to manage distributed monitoring.')
+    },
+    // the former Manage Minions / Manage Monitoring Locations pages (NMS-20364)
+    {
+      path: '/admin/minions',
+      redirect: { path: '/distributed-monitoring', query: { tab: 'minions' }}
+    },
+    {
+      path: '/admin/monitoring-locations',
+      redirect: { path: '/distributed-monitoring', query: { tab: 'locations' }}
+    },
+    {
       path: '/configuration',
       name: 'Configuration',
       component: () => import('@/containers/ProvisionDConfig.vue'),

@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.config.kscReports;
+package org.opennms.netmgt.config.graphcollections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlRootElement(name = "Report")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("ksc-performance-reports.xsd")
-public class Report implements java.io.Serializable {
+public class GraphCollection implements java.io.Serializable {
     private static final long serialVersionUID = 3L;
 
     @XmlAttribute(name = "id")
@@ -137,8 +137,8 @@ public class Report implements java.io.Serializable {
             return true;
         }
 
-        if (obj instanceof Report) {
-            final Report that = (Report)obj;
+        if (obj instanceof GraphCollection) {
+            final GraphCollection that = (GraphCollection)obj;
             return Objects.equals(this.m_id, that.m_id)
                     && Objects.equals(this.m_title, that.m_title)
                     && Objects.equals(this.m_showTimespanButton, that.m_showTimespanButton)
