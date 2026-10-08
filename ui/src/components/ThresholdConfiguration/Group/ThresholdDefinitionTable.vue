@@ -16,12 +16,7 @@
       <OnmsColumn header="Description">
         <template #body="{ data }">{{ data.description || '--' }}</template>
       </OnmsColumn>
-      <OnmsColumn v-if="isThresholdKind" header="Datasource" field="dsName" />
-      <OnmsColumn v-else header="Expression" field="expression" />
-      <OnmsColumn header="Datasource type" field="dsType" />
-      <OnmsColumn header="Datasource label">
-        <template #body="{ data }">{{ data.dsLabel || '--' }}</template>
-      </OnmsColumn>
+      <OnmsColumn v-if="!isThresholdKind" header="Expression" field="expression" />
       <OnmsColumn v-if="!isThresholdKind" header="Expression label">
         <template #body="{ data }">{{ data.exprLabel || '--' }}</template>
       </OnmsColumn>

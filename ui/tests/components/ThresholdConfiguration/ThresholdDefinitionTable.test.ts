@@ -47,12 +47,20 @@ describe('ThresholdDefinitionTable.vue', () => {
     wrapper?.unmount()
   })
 
-  it('shows a datasource column for thresholds', () => {
+  it.each([ThresholdDefinitionKind.Threshold, ThresholdDefinitionKind.Expression])(
+    'leaves the datasource columns out of the %s table',
+    (kind) => {
+      const wrapper = mountComponent(kind)
+
+      expect(wrapper.text()).not.toContain('Datasource')
+      expect(wrapper.text()).not.toContain('cpuUtilization')
+    }
+  )
+
+  it('shows no expression columns for thresholds', () => {
     const wrapper = mountComponent(ThresholdDefinitionKind.Threshold)
 
     expect(wrapper.text()).toContain('Basic thresholds')
-    expect(wrapper.text()).toContain('Datasource')
-    expect(wrapper.text()).toContain('cpuUtilization')
     expect(wrapper.text()).not.toContain('Expression label')
   })
 
