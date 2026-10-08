@@ -90,7 +90,7 @@
   <c:otherwise>
     <div class="card">
       <div class="card-header">
-        <span>Custom View: ${title}</span>
+        <span>Custom View: <c:out value="${title}"/></span>
       </div>
       <div class="card-body">
         <form class="form-horizontal" name="view_form" method="get" action="<%= baseHref %>KSC/formProcView.htm">
@@ -114,7 +114,7 @@
                       <table class="table table-sm">
                         <tr>
                           <th>
-                            ${resultSet.title} <br/>
+                            <c:out value="${resultSet.title}"/> <br/>
                             From: ${resultSet.start} <br/>
                             To: ${resultSet.end}
                           </th>
@@ -123,10 +123,10 @@
                               ${resultSet.resource.parent.resourceType.label}:
                               <c:choose>
                                 <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
-                                  <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+                                  <a href="<c:url value='${resultSet.resource.parent.link}'/>"><c:out value="${resultSet.resource.parent.label}"/></a>
                                 </c:when>
                                 <c:otherwise>
-                                  ${resultSet.resource.parent.label}
+                                  <c:out value="${resultSet.resource.parent.label}"/>
                                 </c:otherwise>
                               </c:choose>
                               <br />
@@ -142,10 +142,10 @@
                             </c:choose>
                             <c:choose>
                               <c:when test="${(!empty resultSet.resource.link) && loggedIn}">
-                                <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
+                                <a href="<c:url value='${resultSet.resource.link}'/>"><c:out value="${resultSet.resource.label}"/></a>
                               </c:when>
                               <c:otherwise>
-                                ${resultSet.resource.label}
+                                <c:out value="${resultSet.resource.label}"/>
                               </c:otherwise>
                             </c:choose>
                             <c:url var="detailUrl" value="${baseHref}graph/results.htm">

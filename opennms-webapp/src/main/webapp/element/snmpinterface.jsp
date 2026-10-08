@@ -84,7 +84,7 @@ function doDelete() {
 }
 %>
 
-<h4>Interface: <%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></h4>
+<h4>Interface: <%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : WebSecurityUtils.sanitizeString(intf_db.getSnmpIfDescription())%></h4>
 
 <%
 if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
