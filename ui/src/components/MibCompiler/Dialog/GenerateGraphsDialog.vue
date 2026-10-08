@@ -29,6 +29,13 @@
       <p>
         Graph templates written to <code>etc/snmp-graph.properties.d/{{ preview?.fileName }}</code>.
       </p>
+      <p
+        v-if="contentChanged"
+        class="content-changed-note"
+        data-test="content-changed-note"
+      >
+        The compiled MIB changed after the preview. The written templates differ from the previewed content.
+      </p>
     </div>
 
     <template #footer>
@@ -71,29 +78,45 @@ const snackbar = useSnackbar()
 const step = ref<'preview' | 'done'>('preview')
 const isLoading = ref(false)
 const preview = ref<MibGraphTemplatesResult | null>(null)
+const contentChanged = ref(false)
+
+// a response that arrives after the dialog closed, or after it reopened for
+// another file, must not touch the current state
+const requestSeq = ref(0)
 
 watch(() => props.visible, async (visible) => {
   if (!visible) {
+    requestSeq.value++
     return
   }
+  const requestId = ++requestSeq.value
   step.value = 'preview'
   preview.value = null
+  contentChanged.value = false
   isLoading.value = true
   try {
     const result = await generateGraphTemplates(props.fileName, true)
+    if (requestId !== requestSeq.value) {
+      return
+    }
     if (!result.success) {
       emit('failed', result)
       return
     }
     preview.value = result
   } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
     snackbar.showSnackBar({
       msg: getGeneralErrorMessage(error, `Failed to generate graph templates from '${props.fileName}'.`),
       error: true
     })
     close()
   } finally {
-    isLoading.value = false
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
   }
 })
 
@@ -112,6 +135,9 @@ const write = async () => {
       })
       return
     }
+    // the write call regenerates from the current MIB; tell the user when the
+    // result no longer matches what they reviewed
+    contentChanged.value = preview.value?.content !== undefined && result.content !== preview.value.content
     preview.value = result
     snackbar.showSnackBar({ msg: `Graph templates for '${result.mibName}' written successfully.` })
     step.value = 'done'
@@ -131,6 +157,12 @@ const close = () => {
 </script>
 
 <style lang="scss" scoped>
+.done-step {
+  .content-changed-note {
+    color: var(--p-orange-600);
+  }
+}
+
 .preview-step {
   .graph-content {
     font-family: monospace;

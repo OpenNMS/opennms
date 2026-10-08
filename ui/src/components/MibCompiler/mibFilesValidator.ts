@@ -1,4 +1,3 @@
-import { UploadMibFileType } from '@/types/mibCompiler'
 import axios from 'axios'
 
 export const isValidMibExtension = (fileName: string): boolean => {
@@ -17,10 +16,6 @@ export const mibFilesValidator = async (file: File): Promise<{ isValid: boolean;
     isValid: errors.length === 0,
     errors
   }
-}
-
-export const isDuplicateFile = (fileName: string, existingFiles: UploadMibFileType[]): boolean => {
-  return existingFiles.some(file => file.file.name === fileName)
 }
 
 // must match MAX_MIB_FILE_SIZE in MibFileService.java

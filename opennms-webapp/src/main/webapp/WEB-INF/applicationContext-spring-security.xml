@@ -220,6 +220,8 @@
 
     <!-- MIB compiler manages files on the server filesystem; admin-only like the Vaadin MIB compiler UI -->
     <intercept-url pattern="/api/v2/mibs/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/mibs/**" method="HEAD" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/mibs/**" method="PATCH" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/mibs/**" method="DELETE" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/mibs/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/mibs/**" method="PUT" access="ROLE_ADMIN" />

@@ -35,6 +35,9 @@ import org.opennms.netmgt.xml.eventconf.Events;
  */
 public interface MibParser {
 
+    /** The file suffixes the parser tries when it resolves a dependency module to a MIB file. */
+    String[] MIB_SUFFIXES = new String[] { "", ".txt", ".mib", ".my" };
+
     /**
      * Sets the MIB directory.
      *

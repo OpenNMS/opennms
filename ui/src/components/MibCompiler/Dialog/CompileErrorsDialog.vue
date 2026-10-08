@@ -34,8 +34,8 @@
       v-if="result?.errors"
       class="errors"
     >
-      <!-- the raw parser output also lists modules from parse passes that were later
-           resolved, so when the dependency chips tell the real story keep it collapsed -->
+      <!-- The raw parser output also lists modules that later parse passes resolved.
+           Keep it collapsed when the dependency chips show the real cause. -->
       <OnmsButton
         v-if="result?.missingDependencies?.length"
         variant="text"

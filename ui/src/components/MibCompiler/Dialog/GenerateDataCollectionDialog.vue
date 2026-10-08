@@ -157,13 +157,20 @@ const sourceName = computed(() => {
   }
   return uploadFileName.value.replace(/\.[^.]*$/, '').trim()
 })
+// the backend looks the source up with an exact, case-sensitive name comparison
 const isNewSource = computed(() =>
-  !existingSourceNames.value.some(name => name.toLowerCase() === sourceName.value.toLowerCase()))
+  !existingSourceNames.value.some(name => name === sourceName.value))
+
+// a response that arrives after the dialog closed, or after it reopened for
+// another file, must not touch the current state
+const requestSeq = ref(0)
 
 watch(() => props.visible, async (visible) => {
   if (!visible) {
+    requestSeq.value++
     return
   }
+  const requestId = ++requestSeq.value
   step.value = 'preview'
   isLoading.value = true
   preview.value = null
@@ -176,6 +183,9 @@ watch(() => props.visible, async (visible) => {
       getAllSnmpCollectionProfiles(),
       getAllSnmpCollectionSourcesNamesAndIds()
     ])
+    if (requestId !== requestSeq.value) {
+      return
+    }
     profileOptions.value = profiles.map(profile => ({ id: profile.id, name: profile.name }))
     existingSourceNames.value = existingSources.map(source => source.name)
     if (!result.success) {
@@ -185,13 +195,18 @@ watch(() => props.visible, async (visible) => {
     preview.value = result
     dataCollectionXml.value = result.dataCollectionXml ?? ''
   } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
     snackbar.showSnackBar({
       msg: getGeneralErrorMessage(error, `Failed to generate data collection from '${props.fileName}'.`),
       error: true
     })
     close()
   } finally {
-    isLoading.value = false
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
   }
 })
 

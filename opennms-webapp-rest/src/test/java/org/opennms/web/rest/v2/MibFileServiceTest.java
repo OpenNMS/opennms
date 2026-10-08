@@ -206,6 +206,22 @@ public class MibFileServiceTest {
     }
 
     @Test
+    public void testCompileConflictsWithOtherSuffixVariants() throws Exception {
+        addPending("IF-MIB.txt");
+        // the same module compiled earlier under another suffix must conflict too
+        Files.writeString(new File(compiledDir, "if-mib.MY").toPath(), "-- stale copy", StandardCharsets.UTF_8);
+        final MibFileService.MibExistsException e =
+                assertThrows(MibFileService.MibExistsException.class, () -> service.compile("IF-MIB.txt", false));
+        assertEquals("if-mib.MY", e.getTargetFile());
+
+        final MibCompileResultDto result = service.compile("IF-MIB.txt", true);
+        assertTrue(result.isSuccess());
+        // the overwrite removes the stale variant; only the fresh .mib remains
+        assertFalse(new File(compiledDir, "if-mib.MY").exists());
+        assertTrue(new File(compiledDir, "IF-MIB.mib").exists());
+    }
+
+    @Test
     public void testGenerateEventsWithDefaultUeiBase() throws Exception {
         compileIfMib();
         final MibEventsPreviewDto result = service.generateEvents("IF-MIB.mib", null);

@@ -205,6 +205,13 @@ const handleUpload = async (e: Event) => {
       }
       for (const errorItem of response.errors ?? []) {
         addLog('error', `${errorItem.file} - ${errorItem.error}`)
+        // the card was added as valid before the upload; a server rejection must not
+        // keep showing the green check
+        const rejected = mibFiles.value.find(mibFile => mibFile.file.name === errorItem.file)
+        if (rejected) {
+          rejected.isValid = false
+          rejected.errors.push(errorItem.error ?? 'Rejected by the server')
+        }
       }
       await store.fetchMibFiles()
     } catch (error: unknown) {

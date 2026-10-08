@@ -208,44 +208,36 @@ const deleteFile = async () => {
   }
 }
 
-const compileFile = async (file: MibFileInfo) => {
+const doCompile = async (fileName: string, overwrite: boolean) => {
   try {
-    const result = await compileMibFile(file.name, false)
+    const result = await compileMibFile(fileName, overwrite)
     if (result.success) {
-      snackbar.showSnackBar({ msg: `'${file.name}' compiled successfully as '${result.targetFile}'.` })
+      snackbar.showSnackBar({ msg: `'${fileName}' compiled successfully as '${result.targetFile}'.` })
       await store.fetchMibFiles()
     } else {
-      errorsDialog.fileName = file.name
+      errorsDialog.fileName = fileName
       errorsDialog.result = result
       errorsDialog.visible = true
     }
   } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response?.status === 409) {
-      overwriteDialog.pendingFile = file.name
+    if (!overwrite && axios.isAxiosError(error) && error.response?.status === 409) {
+      overwriteDialog.pendingFile = fileName
       overwriteDialog.targetFile = (error.response.data as { targetFile?: string })?.targetFile ?? ''
       overwriteDialog.visible = true
       return
     }
-    snackbar.showSnackBar({ msg: getGeneralErrorMessage(error, `Failed to compile '${file.name}'.`), error: true })
+    snackbar.showSnackBar({ msg: getGeneralErrorMessage(error, `Failed to compile '${fileName}'.`), error: true })
   }
+}
+
+const compileFile = async (file: MibFileInfo) => {
+  await doCompile(file.name, false)
 }
 
 const compileWithOverwrite = async () => {
   const pendingFile = overwriteDialog.pendingFile
   overwriteDialog.visible = false
-  try {
-    const result = await compileMibFile(pendingFile, true)
-    if (result.success) {
-      snackbar.showSnackBar({ msg: `'${pendingFile}' compiled successfully as '${result.targetFile}'.` })
-      await store.fetchMibFiles()
-    } else {
-      errorsDialog.fileName = pendingFile
-      errorsDialog.result = result
-      errorsDialog.visible = true
-    }
-  } catch (error: unknown) {
-    snackbar.showSnackBar({ msg: getGeneralErrorMessage(error, `Failed to compile '${pendingFile}'.`), error: true })
-  }
+  await doCompile(pendingFile, true)
 }
 
 const openGenerateDialog = (type: 'events' | 'datacollection' | 'graphs', file: MibFileInfo) => {

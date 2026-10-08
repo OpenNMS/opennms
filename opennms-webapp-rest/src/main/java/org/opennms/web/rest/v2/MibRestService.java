@@ -71,6 +71,13 @@ public class MibRestService implements MibRestApi {
             final String fileName = attachment.getContentDisposition() == null
                     ? null
                     : attachment.getContentDisposition().getParameter("filename");
+            if (fileName == null || fileName.isBlank()) {
+                final Map<String, Object> error = new HashMap<>();
+                error.put("file", String.valueOf(fileName));
+                error.put("error", "The attachment carries no usable filename and was not stored");
+                errorList.add(error);
+                continue;
+            }
             try (InputStream stream = attachment.getDataHandler().getInputStream()) {
                 mibFileService.saveUpload(fileName, stream);
                 final Map<String, Object> success = new HashMap<>();

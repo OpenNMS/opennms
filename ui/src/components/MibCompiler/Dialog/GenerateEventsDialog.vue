@@ -139,7 +139,12 @@ const validationError = ref('')
 const baseName = computed(() => props.fileName.replace(/\.[^.]+$/, ''))
 const sourceName = computed(() => (preview.value?.suggestedFileName ?? `${baseName.value}.events.xml`).replace(/\.xml$/, ''))
 
+// a response that arrives after the dialog closed, or after it reopened for
+// another file, must not touch the current state
+const requestSeq = ref(0)
+
 watch(() => props.visible, (visible) => {
+  requestSeq.value++
   if (visible) {
     step.value = 'input'
     isLoading.value = false
@@ -151,9 +156,13 @@ watch(() => props.visible, (visible) => {
 })
 
 const generatePreview = async () => {
+  const requestId = requestSeq.value
   isLoading.value = true
   try {
     const result = await generateEvents(props.fileName, ueiBase.value.trim())
+    if (requestId !== requestSeq.value) {
+      return
+    }
     if (!result.success) {
       emit('failed', result)
       return
@@ -162,12 +171,17 @@ const generatePreview = async () => {
     eventsXml.value = result.eventsXml ?? ''
     step.value = 'preview'
   } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
     snackbar.showSnackBar({
       msg: getGeneralErrorMessage(error, `Failed to generate events from '${props.fileName}'.`),
       error: true
     })
   } finally {
-    isLoading.value = false
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
   }
 }
 

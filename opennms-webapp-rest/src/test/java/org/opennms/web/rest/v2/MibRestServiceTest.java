@@ -83,6 +83,19 @@ public class MibRestServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    public void testUploadWithoutFilenameIsReportedPerFile() {
+        final Attachment noName = new Attachment("upload", new ByteArrayInputStream("x".getBytes(StandardCharsets.UTF_8)),
+                new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"upload\""));
+        final Response response = restService.uploadMibFiles(List.of(noName));
+        assertEquals(200, response.getStatus());
+        final Map<String, Object> entity = (Map<String, Object>) response.getEntity();
+        assertTrue(((List<?>) entity.get("success")).isEmpty());
+        final Map<String, Object> error = (Map<String, Object>) ((List<?>) entity.get("errors")).get(0);
+        assertTrue(String.valueOf(error.get("error")).contains("no usable filename"));
+    }
+
+    @Test
     public void testUploadWithoutFilesIsBadRequest() {
         assertEquals(400, restService.uploadMibFiles(List.of()).getStatus());
         assertEquals(400, restService.uploadMibFiles(null).getStatus());

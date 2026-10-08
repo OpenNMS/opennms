@@ -51,9 +51,11 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -75,9 +77,9 @@ public class MibFileService {
     public static final String COMPILED = "compiled";
 
     private static final String MIB_FILE_EXTENSION = ".mib";
-    // keep in sync with JsmiMibParser.MIB_SUFFIXES
-    private static final String[] DEPENDENCY_SUFFIXES = {"", ".txt", ".mib", ".my"};
     private static final long MAX_MIB_FILE_SIZE = 10L * 1024 * 1024;
+
+    private final Object compileLock = new Object();
 
     private File mibsRootDir = new File(ConfigFileConstants.getHome(), "share" + File.separatorChar + "mibs");
     private File graphTemplatesDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "snmp-graph.properties.d");
@@ -124,7 +126,12 @@ public class MibFileService {
         if (compiledFile.exists()) {
             throw new IllegalArgumentException("A MIB file named '" + fileName + "' already exists in the compiled directory");
         }
-        Files.write(pendingFile.toPath(), readCapped(stream));
+        try {
+            // CREATE_NEW makes the duplicate check atomic against a concurrent upload
+            Files.write(pendingFile.toPath(), readCapped(stream), StandardOpenOption.CREATE_NEW);
+        } catch (FileAlreadyExistsException e) {
+            throw new IllegalArgumentException("A MIB file named '" + fileName + "' already exists in the pending directory");
+        }
     }
 
     /** Reads the stream into memory, rejecting it as soon as it exceeds {@link #MAX_MIB_FILE_SIZE}. */
@@ -181,15 +188,30 @@ public class MibFileService {
         }
         final String mibName = parser.getMibName();
         final String targetName = mibName + MIB_FILE_EXTENSION;
-        final File targetFile = resolve(COMPILED, targetName);
-        if (targetFile.exists() && !overwrite) {
-            throw new MibExistsException(mibName, targetName);
+        // the same module can sit in the compiled directory under another suffix,
+        // for example a seeded SNMPv2-MIB.txt; treat every variant as a conflict,
+        // or the stale copy keeps winning dependency resolution
+        // serialize the check and the move: concurrent compiles of the same module
+        // must not bypass the conflict check or overwrite each other
+        synchronized (compileLock) {
+            final List<File> existingVariants = findCompiledVariants(mibName);
+            if (!existingVariants.isEmpty() && !overwrite) {
+                throw new MibExistsException(mibName, existingVariants.get(0).getName());
+            }
+            final File targetFile = resolve(COMPILED, targetName);
+            // move first so a failed move keeps the old compiled copies
+            Files.move(pendingFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            for (final File variant : existingVariants) {
+                // on a case-insensitive filesystem the moved file can be one of the variants
+                if (!Files.isSameFile(variant.toPath(), targetFile.toPath())) {
+                    Files.delete(variant.toPath());
+                }
+            }
         }
-        Files.move(pendingFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         result.setSuccess(true);
         result.setMibName(mibName);
         result.setTargetFile(targetName);
-        LOG.info("Compiled MIB {} into {}", name, targetFile);
+        LOG.info("Compiled MIB {} into {}", name, targetName);
         return result;
     }
 
@@ -296,6 +318,24 @@ public class MibFileService {
      * report those so the UI can tell the user to compile them first. The name matching
      * mirrors the parser's lookup: case-insensitive, with the same optional suffixes.
      */
+    /** Returns every compiled file that holds the given module under any known suffix. */
+    private List<File> findCompiledVariants(String mibName) {
+        final File[] compiledFiles = directoryFor(COMPILED).listFiles(File::isFile);
+        if (compiledFiles == null) {
+            return List.of();
+        }
+        final List<File> variants = new ArrayList<>();
+        for (final File file : compiledFiles) {
+            for (final String suffix : MibParser.MIB_SUFFIXES) {
+                if (file.getName().equalsIgnoreCase(mibName + suffix)) {
+                    variants.add(file);
+                    break;
+                }
+            }
+        }
+        return variants;
+    }
+
     private List<String> findInPendingDirectory(List<String> missingDependencies) {
         if (missingDependencies == null || missingDependencies.isEmpty()) {
             return List.of();
@@ -306,7 +346,7 @@ public class MibFileService {
         }
         final List<String> found = new ArrayList<>();
         for (final String dependency : missingDependencies) {
-            for (final String suffix : DEPENDENCY_SUFFIXES) {
+            for (final String suffix : MibParser.MIB_SUFFIXES) {
                 final String candidate = dependency + suffix;
                 if (Arrays.stream(pendingFiles).anyMatch(file -> file.getName().equalsIgnoreCase(candidate))) {
                     found.add(dependency);
