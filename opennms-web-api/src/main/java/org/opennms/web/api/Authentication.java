@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.model.usermgmt.SecurityRoles;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,43 +62,28 @@ public final class Authentication extends Object {
 
     public static final String ROLE_CONFIGURATION_FILE = "security-roles.properties";
 
-    public static final String ROLE_USER = "ROLE_USER";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_READONLY = "ROLE_READONLY";
-    public static final String ROLE_DASHBOARD = "ROLE_DASHBOARD";
-    public static final String ROLE_DELEGATE = "ROLE_DELEGATE";
-    public static final String ROLE_RTC = "ROLE_RTC";
-    public static final String ROLE_PROVISION = "ROLE_PROVISION";
-    public static final String ROLE_REST = "ROLE_REST";
-    public static final String ROLE_ASSET_EDITOR = "ROLE_ASSET_EDITOR";
-    public static final String ROLE_FILESYSTEM_EDITOR = "ROLE_FILESYSTEM_EDITOR";
-    public static final String ROLE_MOBILE = "ROLE_MOBILE";
-    public static final String ROLE_JMX = "ROLE_JMX";
-    public static final String ROLE_MINION = "ROLE_MINION";
-    public static final String ROLE_REPORT_DESIGNER = "ROLE_REPORT_DESIGNER";
-    public static final String ROLE_FLOW_MANAGER = "ROLE_FLOW_MANAGER";
-    public static final String ROLE_DEVICE_CONFIG_BACKUP = "ROLE_DEVICE_CONFIG_BACKUP";
+    public static final String ROLE_USER = SecurityRoles.ROLE_USER;
+    public static final String ROLE_ADMIN = SecurityRoles.ROLE_ADMIN;
+    public static final String ROLE_READONLY = SecurityRoles.ROLE_READONLY;
+    public static final String ROLE_DASHBOARD = SecurityRoles.ROLE_DASHBOARD;
+    public static final String ROLE_DELEGATE = SecurityRoles.ROLE_DELEGATE;
+    public static final String ROLE_RTC = SecurityRoles.ROLE_RTC;
+    public static final String ROLE_PROVISION = SecurityRoles.ROLE_PROVISION;
+    public static final String ROLE_REST = SecurityRoles.ROLE_REST;
+    public static final String ROLE_ASSET_EDITOR = SecurityRoles.ROLE_ASSET_EDITOR;
+    public static final String ROLE_FILESYSTEM_EDITOR = SecurityRoles.ROLE_FILESYSTEM_EDITOR;
+    public static final String ROLE_MOBILE = SecurityRoles.ROLE_MOBILE;
+    public static final String ROLE_JMX = SecurityRoles.ROLE_JMX;
+    public static final String ROLE_MINION = SecurityRoles.ROLE_MINION;
+    public static final String ROLE_REPORT_DESIGNER = SecurityRoles.ROLE_REPORT_DESIGNER;
+    public static final String ROLE_FLOW_MANAGER = SecurityRoles.ROLE_FLOW_MANAGER;
+    public static final String ROLE_DEVICE_CONFIG_BACKUP = SecurityRoles.ROLE_DEVICE_CONFIG_BACKUP;
 
     private static List<String> s_availableRoles = new ArrayList<>();
     private static long lastModified = 0;
 
     static {
-        s_availableRoles.add(ROLE_USER);
-        s_availableRoles.add(ROLE_ADMIN);
-        s_availableRoles.add(ROLE_READONLY);
-        s_availableRoles.add(ROLE_DASHBOARD);
-        s_availableRoles.add(ROLE_DELEGATE);
-        s_availableRoles.add(ROLE_RTC);
-        s_availableRoles.add(ROLE_PROVISION);
-        s_availableRoles.add(ROLE_REST);
-        s_availableRoles.add(ROLE_ASSET_EDITOR);
-        s_availableRoles.add(ROLE_FILESYSTEM_EDITOR);
-        s_availableRoles.add(ROLE_MOBILE);
-        s_availableRoles.add(ROLE_JMX);
-        s_availableRoles.add(ROLE_MINION);
-        s_availableRoles.add(ROLE_REPORT_DESIGNER);
-        s_availableRoles.add(ROLE_FLOW_MANAGER);
-        s_availableRoles.add(ROLE_DEVICE_CONFIG_BACKUP);
+        s_availableRoles.addAll(SecurityRoles.BUILTIN_ROLES.keySet());
     }
 
     /** Private, empty constructor so this class cannot be instantiated. */
@@ -125,7 +111,10 @@ public final class Authentication extends Object {
                 String roleList = p.getProperty("roles");
                 if (roleList != null) {
                     for (String role : BundleLists.parseBundleList(roleList)) {
-                        String securityRole = "ROLE_" + role.toUpperCase();
+                        if (role.isEmpty()) {
+                            continue;
+                        }
+                        String securityRole = SecurityRoles.toRoleName(role);
                         if (!s_availableRoles.contains(securityRole)) {
                             LOG.info("Adding role {}", securityRole);
                             s_availableRoles.add(securityRole);

@@ -154,6 +154,26 @@
 
     <onmsgi:service interface="org.opennms.netmgt.dao.api.EventConfSourceDao" ref="eventConfSourceDao" />
 
+    <bean id="securityRoleDao" class="org.opennms.netmgt.dao.hibernate.SecurityRoleDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SecurityRoleDao" ref="securityRoleDao" />
+
+    <bean id="userAccountDao" class="org.opennms.netmgt.dao.hibernate.UserAccountDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.UserAccountDao" ref="userAccountDao" />
+
+    <bean id="userGroupDao" class="org.opennms.netmgt.dao.hibernate.UserGroupDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.UserGroupDao" ref="userGroupDao" />
+
+    <bean id="onCallRoleDao" class="org.opennms.netmgt.dao.hibernate.OnCallRoleDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.OnCallRoleDao" ref="onCallRoleDao" />
+
     <bean id="ifLabel" class="org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
 
