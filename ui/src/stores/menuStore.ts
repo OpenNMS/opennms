@@ -32,6 +32,8 @@ const useFakeUserNotificationData = false
 
 export const useMenuStore = defineStore('menuStore', () => {
   const mainMenu = ref({} as MainMenu)
+  // true once the first getMainMenu() call has finished, whether or not it succeeded
+  const mainMenuLoaded = ref(false)
   const notificationSummary = ref({} as NotificationSummary)
   // null if uninitialized
   const isSideMenuExpanded = ref<boolean | null>(null)
@@ -42,6 +44,8 @@ export const useMenuStore = defineStore('menuStore', () => {
     if (resp) {
       mainMenu.value = resp as MainMenu
     }
+
+    mainMenuLoaded.value = true
   }
 
   const getNotificationSummary = async () => {
@@ -78,6 +82,7 @@ export const useMenuStore = defineStore('menuStore', () => {
 
   return {
     mainMenu,
+    mainMenuLoaded,
     notificationSummary,
     getMainMenu,
     getNotificationSummary,
