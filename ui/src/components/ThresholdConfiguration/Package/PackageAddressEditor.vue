@@ -1,5 +1,5 @@
 <template>
-  <TableCard>
+  <TableCard class="package-address-card">
     <div class="address-editor">
       <h3>Addresses</h3>
       <p class="hint">
@@ -83,8 +83,14 @@ const update = (field: string, value: unknown) => {
 </script>
 
 <style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.package-address-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
 .address-editor {
-  padding: 0 1em;
 
   h3 {
     margin: 0;

@@ -1,5 +1,5 @@
 <template>
-  <TableCard>
+  <TableCard class="threshd-packages-card">
     <div class="table-header">
       <h3>Packages</h3>
       <OnmsButton data-test="threshd-package-create" @click="router.push(PACKAGE_CREATE_PATH)">New package</OnmsButton>
@@ -101,11 +101,18 @@ const onConfirmDelete = async () => {
 </script>
 
 <style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.threshd-packages-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
 .table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1em 0.75em 1em;
+  padding: 0 0 0.75em 0;
 
   h3 {
     margin: 0;
@@ -114,6 +121,5 @@ const onConfirmDelete = async () => {
 
 .hint {
   color: var(--p-text-muted-color);
-  padding: 0 1em;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <TableCard>
+  <TableCard class="package-basics-card">
     <div class="basics-form">
       <FormField label="Name" for="package-name" required :error="errors.name">
         <OnmsInputText
@@ -54,11 +54,17 @@ const update = (field: string, value: unknown) => {
 </script>
 
 <style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.package-basics-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
 .basics-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: 0.75em 1.25em;
-  padding: 0 1em;
 
   @media (max-width: 768px) {
     grid-template-columns: minmax(0, 1fr);

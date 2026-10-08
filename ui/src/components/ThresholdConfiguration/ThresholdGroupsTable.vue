@@ -1,5 +1,5 @@
 <template>
-  <TableCard>
+  <TableCard class="threshold-groups-card">
     <div class="table-header">
       <OnmsSearchInput
         :modelValue="search"
@@ -132,12 +132,19 @@ const onConfirmDelete = async () => {
 </script>
 
 <style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.threshold-groups-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
 .table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1em;
-  padding: 0 1em 0.75em 1em;
+  padding: 0 0 0.75em 0;
 }
 
 .actions {
