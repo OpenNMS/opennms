@@ -74,7 +74,6 @@ import { useConfigurationStore } from '@/stores/configurationStore'
 import { OnmsButton, OnmsChip, OnmsInputText } from '@opennms/onms-ui'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
-import { isEqual as _isEqual } from 'lodash'
 
 import { putProvisionDService } from '@/services/configurationService'
 import useSnackbar from '@/composables/useSnackbar'
@@ -127,21 +126,6 @@ const updateThreadpools = async () => {
   // If there are no errors.
   if (Object.keys(threadPoolsErrors.value).length === 0) {
     try {
-      // reduce provisionD data object to thread pool sizes, in order to determine whether thread pool sizes value has changed, upon update button clicked
-      const reducedUpdatedProvisionDData = threadPoolKeys.reduce((acc, key) => {
-        const obj: Record<string, string> = {}
-
-        for (let elem in updatedProvisionDData) {
-          if (elem === key) {
-            obj[elem] = updatedProvisionDData[elem]
-            break
-          }
-        }
-
-        return { ...acc, ...obj }
-      }, {})
-      const haveThreadPoolValuesChanged = !_isEqual(currentThreadpoolState, reducedUpdatedProvisionDData)
-
       // Set Update State
       threadPoolKeys.forEach((key) => {
         if (updatedProvisionDData?.[key]) {
@@ -156,20 +140,11 @@ const updateThreadpools = async () => {
       // Redownload + Populate Data.
       await configurationStore.getProvisionDService()
 
-      let messageUpdateSuccess = 'Thread pool data saved.'
-
-      if (!haveThreadPoolValuesChanged) {
-        showSnackBar({
-          msg: messageUpdateSuccess
-        })
-      } else {
-        messageUpdateSuccess += ' Restart OpenNMS for this change to take effect.'
-
-        showSnackBar({
-          msg: messageUpdateSuccess,
-          timeout: 10000
-        })
-      }
+      // Provisiond applies new thread pool sizes immediately on the reload
+      // event the config manager fires, so no restart is needed.
+      showSnackBar({
+        msg: 'Thread pool data saved.'
+      })
     } catch (err) {
       showSnackBar({
         msg: `Thread pool data not saved. (${err})`,
