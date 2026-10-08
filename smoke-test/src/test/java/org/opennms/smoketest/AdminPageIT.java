@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,8 +196,15 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
 
         // the Monitoring Locations tab must show the name as text; a script that ran would raise an alert and fail the wait
         getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/distributed-monitoring?tab=locations");
-        wait.until(driver -> driver.findElements(By.cssSelector("[data-test='locations-table'] td")).stream()
-                .anyMatch(cell -> evilString.equals(cell.getText().trim())));
+        wait.until(driver -> {
+            try {
+                return driver.findElements(By.cssSelector("[data-test='locations-table'] td")).stream()
+                        .anyMatch(cell -> evilString.equals(cell.getText().trim()));
+            } catch (final StaleElementReferenceException e) {
+                // the table re-renders as its data loads; poll again
+                return false;
+            }
+        });
 
         // navigate to the applications page
         driver.get(getBaseUrlInternal() + "opennms/admin/applications.htm");
