@@ -133,6 +133,10 @@ const KIND_OPTIONS: { label: string, noun: string, value: DefinitionKind }[] = [
   { label: 'Resource Type', noun: 'resource type', value: 'resourcetypes' }
 ]
 
+// The resource type names endpoint also returns the instance values "0" and
+// "ifIndex". No source defines them as resource types.
+const INSTANCE_ONLY_NAMES = new Set(['0', 'ifIndex'])
+
 // Tab index of each kind on the source detail page.
 const DETAIL_TAB: Record<DefinitionKind, number> = { systemdefs: 0, mibgroups: 1, resourcetypes: 2 }
 
@@ -151,6 +155,8 @@ const allNames = ref<Partial<Record<DefinitionKind, string[]>>>({})
 // Incremented for each search and at each type change. A response is shown
 // only if no newer search or type change happened while it was pending.
 let latestRequest = 0
+// Incremented for each name completion. Only the newest completion sets the suggestions.
+let latestCompletion = 0
 
 const kindNoun = computed(() => KIND_OPTIONS.find(o => o.value === kind.value)?.noun ?? '')
 
@@ -166,22 +172,26 @@ const loadNames = async (k: DefinitionKind): Promise<string[]> => {
     const names = k === 'systemdefs'
       ? await getAllSystemDefNames()
       : k === 'mibgroups' ? await getAllMibGroupNames() : await getAllResourceTypeNames()
-    allNames.value[k] = [...new Set(names)].sort()
+    const definitionNames = k === 'resourcetypes' ? names.filter(n => !INSTANCE_ONLY_NAMES.has(n)) : names
+    allNames.value[k] = [...new Set(definitionNames)].sort()
   }
   return allNames.value[k] ?? []
 }
 
 const onComplete = async (rawQuery: string) => {
+  const completion = ++latestCompletion
+  const requestedKind = kind.value
   try {
     const query = (rawQuery ?? '').trim().toLowerCase()
-    const requestedKind = kind.value
     const names = await loadNames(requestedKind)
-    if (requestedKind !== kind.value) {
+    if (completion !== latestCompletion || requestedKind !== kind.value) {
       return
     }
     suggestions.value = names.filter(n => n.toLowerCase().includes(query)).slice(0, 50)
   } catch (_e) {
-    suggestions.value = []
+    if (completion === latestCompletion) {
+      suggestions.value = []
+    }
   }
 }
 

@@ -22,7 +22,7 @@
 
 import SnmpDataCollectionDefinitionSearch from '@/components/SnmpDataCollection/SnmpDataCollectionDefinitionSearch.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
-import { OnmsSelect, OnmsTooltip } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsSelect, OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -35,12 +35,14 @@ vi.mock('vue-router', () => ({
 
 const mockFindMibGroupsByName = vi.fn()
 const mockFindResourceTypesByName = vi.fn()
+const mockGetAllMibGroupNames = vi.fn()
+const mockGetAllResourceTypeNames = vi.fn()
 vi.mock('@/services/snmpDataCollectionService', () => ({
   findMibGroupsByName: (...args: any[]) => mockFindMibGroupsByName(...args),
   findResourceTypesByName: (...args: any[]) => mockFindResourceTypesByName(...args),
   findSystemDefsByName: vi.fn().mockResolvedValue([]),
-  getAllMibGroupNames: vi.fn().mockResolvedValue([]),
-  getAllResourceTypeNames: vi.fn().mockResolvedValue([]),
+  getAllMibGroupNames: (...args: any[]) => mockGetAllMibGroupNames(...args),
+  getAllResourceTypeNames: (...args: any[]) => mockGetAllResourceTypeNames(...args),
   getAllSystemDefNames: vi.fn().mockResolvedValue([])
 }))
 
@@ -148,5 +150,36 @@ describe('SnmpDataCollectionDefinitionSearch.vue', () => {
     const table = wrapper.find('[data-test="definition-results-table"]')
     expect(table.text()).toContain('Second')
     expect(table.text()).not.toContain('First')
+  })
+
+  it('does not suggest the instance values as resource type names', async () => {
+    mockGetAllResourceTypeNames.mockResolvedValue(['0', 'ifIndex', 'hrStorageIndex'])
+    const wrapper = mountSearch()
+
+    wrapper.findComponent(OnmsSelect).vm.$emit('update:modelValue', 'resourcetypes')
+    await flushPromises()
+    wrapper.findComponent(OnmsAutoComplete).vm.$emit('complete', '')
+    await flushPromises()
+
+    expect(wrapper.findComponent(OnmsAutoComplete).props('suggestions')).toEqual(['hrStorageIndex'])
+  })
+
+  it('shows only the latest suggestions when completions finish out of order', async () => {
+    let resolveFirst: (names: string[]) => void = () => {}
+    mockGetAllMibGroupNames
+      .mockReturnValueOnce(new Promise((resolve) => {
+        resolveFirst = resolve
+      }))
+      .mockResolvedValueOnce(['mib2-interfaces', 'ucd-loadavg'])
+    const wrapper = mountSearch()
+    const autoComplete = wrapper.findComponent(OnmsAutoComplete)
+
+    autoComplete.vm.$emit('complete', 'mib')
+    autoComplete.vm.$emit('complete', 'ucd')
+    await flushPromises()
+    resolveFirst(['mib2-interfaces', 'ucd-loadavg'])
+    await flushPromises()
+
+    expect(autoComplete.props('suggestions')).toEqual(['ucd-loadavg'])
   })
 })
