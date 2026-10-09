@@ -669,8 +669,16 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
         }
     }
 
+    private static Response missingNameResponse() {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(Map.of("error", "The name query parameter is required.")).build();
+    }
+
     @Override
     public Response getDataCollectionMibGroupsByName(final String name, final SecurityContext securityContext) throws Exception {
+        if (name == null || name.isBlank()) {
+            return missingNameResponse();
+        }
         try {
             final var list = dataCollectionConfPersistenceService.findMibGroupsByName(name);
             if (list.isEmpty()) {
@@ -679,13 +687,15 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
             }
             return Response.ok(list).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Failed to find MIB group: " + e.getMessage()).build();
+            return internalServerError(e);
         }
     }
 
     @Override
     public Response getDataCollectionResourceTypesByName(final String name, final SecurityContext securityContext) throws Exception {
+        if (name == null || name.isBlank()) {
+            return missingNameResponse();
+        }
         try {
             final var list = dataCollectionConfPersistenceService.findResourceTypesByName(name);
             if (list.isEmpty()) {
@@ -694,13 +704,15 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
             }
             return Response.ok(list).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Failed to find resource type: " + e.getMessage()).build();
+            return internalServerError(e);
         }
     }
 
     @Override
     public Response getDataCollectionSystemDefsByName(final String name, final SecurityContext securityContext) throws Exception {
+        if (name == null || name.isBlank()) {
+            return missingNameResponse();
+        }
         try {
             final var list = dataCollectionConfPersistenceService.findSystemDefsByName(name);
             if (list.isEmpty()) {
@@ -709,8 +721,7 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
             }
             return Response.ok(list).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Failed to find system definition: " + e.getMessage()).build();
+            return internalServerError(e);
         }
     }
 

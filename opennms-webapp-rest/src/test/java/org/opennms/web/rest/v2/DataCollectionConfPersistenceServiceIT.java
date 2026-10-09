@@ -1608,6 +1608,40 @@ public class DataCollectionConfPersistenceServiceIT {
                 result.errors.stream().anyMatch(e -> e.contains("systemDef='nms20429-off-sd' is disabled")));
     }
 
+    /**
+     * An inline source holds copies for one profile. When the original
+     * systemDef is gone, a new upload must report it, and must not resolve it
+     * from the old inline copy.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testBulkUploadDoesNotResolveFromInlineCopies() {
+        final Date now = new Date();
+        final DatacollectionGroup original = new DatacollectionGroup();
+        original.setName("NMS20429-Original");
+        original.addGroup(group("nms20429-copied-group"));
+        original.addSystemDef(systemDef("nms20429-copied-sd", "nms20429-copied-group"));
+        dataCollectionConfPersistenceService.bulkUploadConfig(List.of(original), null, "testuser", now);
+
+        final DatacollectionConfig config = new DatacollectionConfig();
+        final IncludeCollection single = new IncludeCollection();
+        single.setSystemDef("nms20429-copied-sd");
+        config.addSnmpCollection(collection("nms20429-copy", single));
+        final var first = dataCollectionConfPersistenceService.bulkUploadConfig(List.of(), config, "testuser", now);
+        assertTrue("first upload must resolve: " + first.errors, first.errors.isEmpty());
+        assertNotNull(snmpCollectionSourceDao.findByName("__inline_nms20429-copy"));
+
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(
+                List.of(snmpCollectionSourceDao.findByName("NMS20429-Original").getId()));
+        snmpCollectionSourceDao.flush();
+
+        final var second = dataCollectionConfPersistenceService.bulkUploadConfig(List.of(), config, "testuser", now);
+
+        assertTrue("the systemDef that is only in the inline copy must be reported: " + second.errors,
+                second.errors.stream().anyMatch(e -> e.contains("systemDef='nms20429-copied-sd' not found")));
+    }
+
     private static Group group(final String name) {
         final Group g = new Group();
         g.setName(name);

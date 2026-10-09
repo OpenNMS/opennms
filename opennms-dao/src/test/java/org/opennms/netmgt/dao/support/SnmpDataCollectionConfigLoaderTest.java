@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -143,12 +144,12 @@ public class SnmpDataCollectionConfigLoaderTest {
         final SnmpCollectionMibGroup shared = mibGroupEntity(mib2, "mib2-shared", null, "ifIndex");
 
         final Fixture f = new Fixture(cisco);
-        when(f.mibGroupDao.findAllEnabledInEnabledSources()).thenReturn(List.of(frameRelay, shared));
+        when(f.mibGroupDao.findAllWithSource()).thenReturn(List.of(frameRelay, shared));
         final SnmpCollectionResourceType frType = new SnmpCollectionResourceType();
         frType.setName("frCircuitIfIndex");
         frType.setLabel("Frame-Relay");
         frType.setCollectionSource(routers);
-        when(f.resourceTypeDao.findAllEnabledInEnabledSources()).thenReturn(List.of(frType));
+        when(f.resourceTypeDao.findAllWithSource()).thenReturn(List.of(frType));
 
         final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
 
@@ -171,8 +172,44 @@ public class SnmpDataCollectionConfigLoaderTest {
         final Fixture f = new Fixture(cisco);
         f.loader.materializeFromDb();
 
-        verify(f.mibGroupDao, never()).findAllEnabledInEnabledSources();
-        verify(f.resourceTypeDao, never()).findAllEnabledInEnabledSources();
+        verify(f.mibGroupDao, never()).findAllWithSource();
+        verify(f.resourceTypeDao, never()).findAllWithSource();
+        verify(f.mibGroupDao, never()).findAllDisabledWithSource();
+        verify(f.resourceTypeDao, never()).findAllDisabledWithSource();
+    }
+
+    @Test
+    public void crossSourceLookupsUseOneQueryPerType() {
+        // The systemDef references five groups, and each group uses its own resource type.
+        // No attached source defines them.
+        final DatacollectionGroup cisco = new DatacollectionGroup();
+        cisco.setName("Cisco");
+        final SystemDef sd = systemDef("Cisco Routers");
+        final SnmpCollectionSource other = source(2, "Other");
+        final List<SnmpCollectionMibGroup> groups = new java.util.ArrayList<>();
+        final List<SnmpCollectionResourceType> types = new java.util.ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            sd.getCollect().addIncludeGroup("group-" + i);
+            groups.add(mibGroupEntity(other, "group-" + i, null, "type-" + i));
+            types.add(resourceTypeEntity(other, "type-" + i));
+        }
+        sd.getCollect().addIncludeGroup("does-not-exist");
+        cisco.addSystemDef(sd);
+
+        final Fixture f = new Fixture(cisco);
+        when(f.mibGroupDao.findAllWithSource()).thenReturn(groups);
+        when(f.resourceTypeDao.findAllWithSource()).thenReturn(types);
+
+        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
+
+        assertEquals(5, m.config.getSnmpCollection("default").getGroups().getGroups().size());
+        assertEquals(5, m.allResourceTypes.size());
+        verify(f.mibGroupDao, times(1)).findAllDisabledWithSource();
+        verify(f.mibGroupDao, times(1)).findAllWithSource();
+        verify(f.resourceTypeDao, times(1)).findAllDisabledWithSource();
+        verify(f.resourceTypeDao, times(1)).findAllWithSource();
+        verify(f.mibGroupDao, never()).findAllByName(any());
+        verify(f.resourceTypeDao, never()).findAllByName(any());
     }
 
     @Test
@@ -184,13 +221,12 @@ public class SnmpDataCollectionConfigLoaderTest {
         cisco.addSystemDef(sd);
 
         final Fixture f = new Fixture(cisco);
-        when(f.mibGroupDao.findAllEnabledInEnabledSources()).thenReturn(List.of());
-        when(f.mibGroupDao.findAllByName("does-not-exist")).thenReturn(List.of());
+        when(f.mibGroupDao.findAllWithSource()).thenReturn(List.of());
 
         final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
 
         assertTrue(m.config.getSnmpCollection("default").getGroups().getGroups().isEmpty());
-        verify(f.mibGroupDao).findAllByName("does-not-exist");
+        verify(f.mibGroupDao).findAllWithSource();
     }
 
     @Test
@@ -207,13 +243,14 @@ public class SnmpDataCollectionConfigLoaderTest {
         final SnmpCollectionMibGroup other = mibGroupEntity(source(2, "Other"), "shared", null, "ifIndex");
 
         final Fixture f = new Fixture(cisco);
-        when(f.mibGroupDao.findAllByName("shared")).thenReturn(List.of(disabled, other));
-        when(f.mibGroupDao.findAllEnabledInEnabledSources()).thenReturn(List.of(other));
+        when(f.mibGroupDao.findAllDisabledWithSource()).thenReturn(List.of(disabled));
+        when(f.mibGroupDao.findAllWithSource()).thenReturn(List.of(disabled, other));
 
         final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
 
         assertTrue(m.config.getSnmpCollection("default").getGroups().getGroups().isEmpty());
-        verify(f.mibGroupDao, never()).findAllEnabledInEnabledSources();
+        // The small query for disabled groups is enough. The query for all groups does not run.
+        verify(f.mibGroupDao, never()).findAllWithSource();
     }
 
     @Test
@@ -235,13 +272,13 @@ public class SnmpDataCollectionConfigLoaderTest {
         final SnmpCollectionResourceType other = resourceTypeEntity(source(2, "Other"), "ciscoType");
 
         final Fixture f = new Fixture(cisco);
-        when(f.resourceTypeDao.findAllByName("ciscoType")).thenReturn(List.of(disabled, other));
-        when(f.resourceTypeDao.findAllEnabledInEnabledSources()).thenReturn(List.of(other));
+        when(f.resourceTypeDao.findAllDisabledWithSource()).thenReturn(List.of(disabled));
+        when(f.resourceTypeDao.findAllWithSource()).thenReturn(List.of(disabled, other));
 
         final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
 
         assertFalse(m.allResourceTypes.containsKey("ciscoType"));
-        verify(f.resourceTypeDao, never()).findAllEnabledInEnabledSources();
+        verify(f.resourceTypeDao, never()).findAllWithSource();
     }
 
     @Test
@@ -272,8 +309,8 @@ public class SnmpDataCollectionConfigLoaderTest {
         when(profileDao.findAllEnabled()).thenReturn(List.of(profile("a", "A"), profile("b", "B")));
         when(sourceDao.findByName("A")).thenReturn(source(1, "A"));
         when(sourceDao.findByName("B")).thenReturn(source(2, "B"));
-        when(resourceTypeDao.findAllByName("fooType")).thenReturn(List.of(disabled, other));
-        when(resourceTypeDao.findAllEnabledInEnabledSources()).thenReturn(List.of(other));
+        when(resourceTypeDao.findAllDisabledWithSource()).thenReturn(List.of(disabled));
+        when(resourceTypeDao.findAllWithSource()).thenReturn(List.of(disabled, other));
 
         final SnmpDataCollectionConfigLoaderImpl loader = new SnmpDataCollectionConfigLoaderImpl() {
             @Override

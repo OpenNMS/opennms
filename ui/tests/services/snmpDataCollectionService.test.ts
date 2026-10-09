@@ -83,7 +83,7 @@ describe('snmpDataCollectionService', () => {
   })
 
   describe('find definitions by name', () => {
-    it('keeps a slash in the name as a path separator and encodes the rest', async () => {
+    it('sends the name as a query parameter', async () => {
       vi.mocked(v2.get).mockResolvedValue({
         status: 200,
         data: [{ id: 7, name: 'Microsoft Windows NT/2000', sysoidMask: '.1.3.6.1.4.1.311.1.1.3.1.', mibGroupNames: '[]',
@@ -92,7 +92,7 @@ describe('snmpDataCollectionService', () => {
 
       const result = await findSystemDefsByName('Microsoft Windows NT/2000')
 
-      expect(v2.get).toHaveBeenCalledWith('/datacollectionconf/systemdefs/names/Microsoft%20Windows%20NT/2000')
+      expect(v2.get).toHaveBeenCalledWith('/datacollectionconf/systemdefs/by-name', { params: { name: 'Microsoft Windows NT/2000' }})
       expect(result).toHaveLength(1)
       expect(result[0].collectionSourceName).toBe('Microsoft')
     })

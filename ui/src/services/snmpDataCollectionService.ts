@@ -1,3 +1,25 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import {
   mapDataCollectionSourceFromServer,
   mapSnmpCollectionMibGroupFromServer,
@@ -338,15 +360,11 @@ export const getAllSystemDefNames = async (): Promise<string[]> => {
   }
 }
 
-// Names such as "Microsoft Windows NT/2000" contain '/'. Keep it as a raw '/',
-// because reverse proxies often reject an encoded slash (%2F) by default.
-const encodeDefinitionName = (name: string) => name.split('/').map(encodeURIComponent).join('/')
-
 // Returns the response body, or an empty list when no source defines the name (404).
 const findByName = async (kind: 'mibgroups' | 'resourcetypes' | 'systemdefs', name: string): Promise<any[]> => {
-  const endpoint = `/datacollectionconf/${kind}/names/${encodeDefinitionName(name)}`
+  // The name is a query parameter, because a name can contain '/' or be '.' or '..'.
   try {
-    const response = await v2.get(endpoint)
+    const response = await v2.get(`/datacollectionconf/${kind}/by-name`, { params: { name }})
     return Array.isArray(response.data) ? response.data : []
   } catch (error: any) {
     if (error?.response?.status === 404) {

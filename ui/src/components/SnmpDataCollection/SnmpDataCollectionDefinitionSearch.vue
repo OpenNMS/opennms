@@ -96,7 +96,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, useId, watch } from 'vue'
+import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { OnmsAutoComplete, OnmsButton, OnmsColumn, OnmsIconButton, OnmsSelect, OnmsTable, OnmsTag } from '@opennms/onms-ui'
@@ -113,10 +113,9 @@ import {
 } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
+import { SnmpDefinitionKind as DefinitionKind } from '@/types/snmpDataCollection'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-
-type DefinitionKind = 'systemdefs' | 'mibgroups' | 'resourcetypes'
 
 interface DefinitionRow {
   key: string
@@ -156,19 +155,23 @@ const name = ref('')
 const searchedName = ref('')
 const results = ref<DefinitionRow[]>([])
 const suggestions = ref<string[]>([])
-const allNames = ref<Partial<Record<DefinitionKind, string[]>>>({})
+// One request per type. Concurrent completions share the pending request.
+let namesByKind: Partial<Record<DefinitionKind, Promise<string[]>>> = {}
 // Incremented for each search and at each type change. A response is shown
 // only if no newer search or type change happened while it was pending.
 let latestRequest = 0
-// Incremented for each name completion and at each type change. Only the newest
-// completion sets the suggestions.
+// Incremented for each name completion, each search and at each type change.
+// Only the newest completion sets the suggestions.
 let latestCompletion = 0
+// The type and name of the search that is pending. A second request for the
+// same search, for example from Enter and option select together, is not sent.
+let pendingSearchKey: string | null = null
 
 // The tab stays mounted when it is hidden. Load the names again each time the
 // tab opens, so that definitions added or deleted on other tabs are suggested correctly.
 watch(() => pageStore.activeTab, (tab) => {
   if (tab === FIND_BY_NAME_TAB) {
-    allNames.value = {}
+    namesByKind = {}
   }
 })
 
@@ -177,21 +180,32 @@ const kindNoun = computed(() => KIND_OPTIONS.find(o => o.value === kind.value)?.
 const onChangeKind = (value: unknown) => {
   latestRequest++
   latestCompletion++
+  pendingSearchKey = null
   kind.value = value as DefinitionKind
   results.value = []
   searchedName.value = ''
   suggestions.value = []
+  pageStore.definitionSearch = null
 }
 
-const loadNames = async (k: DefinitionKind): Promise<string[]> => {
-  if (!allNames.value[k]) {
-    const names = k === 'systemdefs'
-      ? await getAllSystemDefNames()
-      : k === 'mibgroups' ? await getAllMibGroupNames() : await getAllResourceTypeNames()
-    const definitionNames = k === 'resourcetypes' ? names.filter(n => !INSTANCE_ONLY_NAMES.has(n)) : names
-    allNames.value[k] = [...new Set(definitionNames)].sort()
+const fetchNames = async (k: DefinitionKind): Promise<string[]> => {
+  const names = k === 'systemdefs'
+    ? await getAllSystemDefNames()
+    : k === 'mibgroups' ? await getAllMibGroupNames() : await getAllResourceTypeNames()
+  const definitionNames = k === 'resourcetypes' ? names.filter(n => !INSTANCE_ONLY_NAMES.has(n)) : names
+  return [...new Set(definitionNames)].sort()
+}
+
+const loadNames = (k: DefinitionKind): Promise<string[]> => {
+  const cache = namesByKind
+  if (!cache[k]) {
+    // Remove a failed request from the cache, so that the next completion tries again.
+    cache[k] = fetchNames(k).catch((e) => {
+      delete cache[k]
+      throw e
+    })
   }
-  return allNames.value[k] ?? []
+  return cache[k]
 }
 
 const onComplete = async (rawQuery: string) => {
@@ -251,14 +265,24 @@ const search = async () => {
   if (!term) {
     return
   }
+  const searchKind = kind.value
+  const key = `${searchKind}:${term}`
+  if (key === pendingSearchKey) {
+    return
+  }
+  pendingSearchKey = key
   const request = ++latestRequest
+  // A completion that is still pending must not open the suggestions over the results.
+  latestCompletion++
+  suggestions.value = []
   try {
-    const rows = await findRows(kind.value, term)
+    const rows = await findRows(searchKind, term)
     if (request !== latestRequest) {
       return
     }
     results.value = rows
     searchedName.value = term
+    pageStore.definitionSearch = { kind: searchKind, name: term }
   } catch (_e) {
     if (request !== latestRequest) {
       return
@@ -266,21 +290,40 @@ const search = async () => {
     results.value = []
     searchedName.value = ''
     snackbar.showSnackBar({ msg: `Failed to search for '${term}'.`, error: true })
+  } finally {
+    if (pendingSearchKey === key) {
+      pendingSearchKey = null
+    }
   }
 }
 
-// Open the source on the matching tab, filtered to this name.
+// When the page opens again, for example after the view button and Back, show the last search again.
+onMounted(() => {
+  const last = pageStore.definitionSearch
+  if (last) {
+    kind.value = last.kind
+    name.value = last.name
+    search()
+  }
+})
+
+// Open the source on the matching tab, filtered to this name. The filter
+// matches part of a name, so sort by name to show the exact name first.
 const openInSource = (row: DefinitionRow) => {
+  const byName = { sortKey: 'name', sortOrder: 'asc' } as const
   detailStore.activeTab = DETAIL_TAB[row.kind]
   if (row.kind === 'systemdefs') {
     detailStore.systemDefsSearchTerm = row.name
     detailStore.systemDefsPagination.page = 1
+    detailStore.systemDefsSorting = { ...byName }
   } else if (row.kind === 'mibgroups') {
     detailStore.mibGroupsSearchTerm = row.name
     detailStore.mibGroupsPagination.page = 1
+    detailStore.mibGroupsSorting = { ...byName }
   } else {
     detailStore.resourceTypesSearchTerm = row.name
     detailStore.resourceTypesPagination.page = 1
+    detailStore.resourceTypesSorting = { ...byName }
   }
   router.push({ name: 'SNMP Data Collection Source Detail', params: { id: row.sourceId }})
 }

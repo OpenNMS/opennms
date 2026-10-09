@@ -882,11 +882,11 @@ public interface DataCollectionConfRestApi {
     Response getDataCollectionSystemDefNames(@Context SecurityContext securityContext) throws Exception;
 
     @GET
-    @Path("/mibgroups/names/{name: .+}")
+    @Path("/mibgroups/by-name")
     @Produces("application/json")
     @Operation(
             summary = "Find MIB Groups by Name",
-            description = "Retrieve every mib groups with this exact name, in all sources. "
+            description = "Retrieve every MIB group with this exact name, in all sources. "
                     + "Names are not unique across sources, so the response is a list. "
                     + "Each entry contains the id and name of the source that owns it.",
             operationId = "getDataCollectionMibGroupsByName"
@@ -909,26 +909,30 @@ public interface DataCollectionConfRestApi {
                         "collectionSourceName": "REF_MIB2-Interfaces"
                       }
                     ]"""))),
+            @ApiResponse(responseCode = "400", description = "The name query parameter is missing or blank.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"The name query parameter is required.\"}"))),
             @ApiResponse(responseCode = "404", description = "No source defines this name.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
-                            examples = @ExampleObject(value = "{\"error\": \"No mib groups found with name: ...\"}"))),
+                            examples = @ExampleObject(value = "{\"error\": \"No MIB group found with name: ...\"}"))),
             @ApiResponse(responseCode = "500", description = "The definitions could not be read.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Failed to find MIB Groups: ...")))
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
     Response getDataCollectionMibGroupsByName(
-            @Parameter(description = "Exact name. Send a '/' in the name as a raw '/' or as %2F.", example = "mib2-interfaces", required = true)
-            @PathParam("name") String name,
+            @Parameter(description = "Exact name. A query parameter, so any name works, also one that contains '/' or '.'.", example = "mib2-interfaces", required = true)
+            @QueryParam("name") String name,
             @Context SecurityContext securityContext) throws Exception;
 
     @GET
-    @Path("/resourcetypes/names/{name: .+}")
+    @Path("/resourcetypes/by-name")
     @Produces("application/json")
     @Operation(
             summary = "Find Resource Types by Name",
-            description = "Retrieve every resource types with this exact name, in all sources. "
+            description = "Retrieve every resource type with this exact name, in all sources. "
                     + "Names are not unique across sources, so the response is a list. "
                     + "Each entry contains the id and name of the source that owns it.",
             operationId = "getDataCollectionResourceTypesByName"
@@ -944,26 +948,30 @@ public interface DataCollectionConfRestApi {
                       { "id": 233, "name": "pethMainPseGroupIndex", "label": "PoE Groups", "enabled": true,
                         "collectionSourceId": 52, "collectionSourceName": "REF_MIB2-Powerethernet" }
                     ]"""))),
+            @ApiResponse(responseCode = "400", description = "The name query parameter is missing or blank.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"The name query parameter is required.\"}"))),
             @ApiResponse(responseCode = "404", description = "No source defines this name.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
-                            examples = @ExampleObject(value = "{\"error\": \"No resource types found with name: ...\"}"))),
+                            examples = @ExampleObject(value = "{\"error\": \"No resource type found with name: ...\"}"))),
             @ApiResponse(responseCode = "500", description = "The definitions could not be read.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Failed to find Resource Types: ...")))
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
     Response getDataCollectionResourceTypesByName(
-            @Parameter(description = "Exact name. Send a '/' in the name as a raw '/' or as %2F.", example = "pethMainPseGroupIndex", required = true)
-            @PathParam("name") String name,
+            @Parameter(description = "Exact name. A query parameter, so any name works, also one that contains '/' or '.'.", example = "pethMainPseGroupIndex", required = true)
+            @QueryParam("name") String name,
             @Context SecurityContext securityContext) throws Exception;
 
     @GET
-    @Path("/systemdefs/names/{name: .+}")
+    @Path("/systemdefs/by-name")
     @Produces("application/json")
     @Operation(
             summary = "Find System Definitions by Name",
-            description = "Retrieve every system definitions with this exact name, in all sources. "
+            description = "Retrieve every system definition with this exact name, in all sources. "
                     + "Names are not unique across sources, so the response is a list. "
                     + "Each entry contains the id and name of the source that owns it.",
             operationId = "getDataCollectionSystemDefsByName"
@@ -977,18 +985,22 @@ public interface DataCollectionConfRestApi {
                       { "id": 140, "name": "Cisco Routers", "sysoidMask": ".1.3.6.1.4.1.9.1.",
                         "enabled": true, "collectionSourceId": 24, "collectionSourceName": "Cisco" }
                     ]"""))),
+            @ApiResponse(responseCode = "400", description = "The name query parameter is missing or blank.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"The name query parameter is required.\"}"))),
             @ApiResponse(responseCode = "404", description = "No source defines this name.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
-                            examples = @ExampleObject(value = "{\"error\": \"No system definitions found with name: ...\"}"))),
+                            examples = @ExampleObject(value = "{\"error\": \"No system definition found with name: ...\"}"))),
             @ApiResponse(responseCode = "500", description = "The definitions could not be read.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Failed to find System Definitions: ...")))
+                            schema = @Schema(implementation = DataCollectionConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
     Response getDataCollectionSystemDefsByName(
-            @Parameter(description = "Exact name. Send a '/' in the name as a raw '/' or as %2F.", example = "Cisco Routers", required = true)
-            @PathParam("name") String name,
+            @Parameter(description = "Exact name. A query parameter, so any name works, also one that contains '/' or '.'.", example = "Cisco Routers", required = true)
+            @QueryParam("name") String name,
             @Context SecurityContext securityContext) throws Exception;
 
     @POST

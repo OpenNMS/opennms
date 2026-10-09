@@ -131,7 +131,7 @@ public class SnmpCollectionMibGroupDaoIT {
 
     @Test
     @Transactional
-    public void testFindAllByNameAndEnabledInEnabledSources() {
+    public void testFindAllByNameAndFindAllWithSource() {
         final SnmpCollectionSource disabledSource = new SnmpCollectionSource();
         disabledSource.setName("Disabled Source");
         disabledSource.setEnabled(false);
@@ -154,10 +154,21 @@ public class SnmpCollectionMibGroupDaoIT {
         assertEquals("JUnit Source", byName.get(1).getCollectionSource().getName());
         assertTrue(mibGroupDao.findAllByName("Mib-Group").isEmpty());
 
-        // Only the copy in the enabled source is available for collection.
-        final List<SnmpCollectionMibGroup> enabled = mibGroupDao.findAllEnabledInEnabledSources();
-        assertEquals(1, enabled.size());
-        assertEquals(source.getId(), enabled.get(0).getCollectionSource().getId());
+        // All groups are returned, also the one in the disabled source, ordered by source id.
+        final List<SnmpCollectionMibGroup> all = mibGroupDao.findAllWithSource().stream()
+                .filter(g -> g.getName().equals("Mib-Group-1")).toList();
+        assertEquals(2, all.size());
+        assertEquals(source.getId(), all.get(0).getCollectionSource().getId());
+        assertEquals(disabledSource.getId(), all.get(1).getCollectionSource().getId());
+
+        // Only disabled groups are returned. The copy in the disabled source is an enabled group.
+        assertTrue(mibGroupDao.findAllDisabledWithSource().stream().noneMatch(g -> g.getName().equals("Mib-Group-1")));
+        copy.setEnabled(false);
+        mibGroupDao.saveOrUpdate(copy);
+        mibGroupDao.flush();
+        final List<SnmpCollectionMibGroup> disabled = mibGroupDao.findAllDisabledWithSource();
+        assertEquals(1, disabled.size());
+        assertEquals("Disabled Source", disabled.get(0).getCollectionSource().getName());
     }
 
     @Test

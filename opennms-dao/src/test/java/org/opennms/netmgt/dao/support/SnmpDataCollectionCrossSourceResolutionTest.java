@@ -62,6 +62,7 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDef;
  * <li>A definition that an attached source disables is not taken from another source.</li>
  * <li>Otherwise the enabled definition in the enabled source with the lowest id is used.</li>
  * <li>A disabled source counts as not attached.</li>
+ * <li>An inline source is used only by the profile that attaches it.</li>
  * <li>Groups are resolved per profile. Resource types are global.</li>
  * </ul>
  */
@@ -191,6 +192,20 @@ public class SnmpDataCollectionCrossSourceResolutionTest {
         w.profile("p", "A");
 
         assertEquals(Map.of("G", "A"), w.groupsOf("p"));
+    }
+
+    @Test
+    public void inlineSourceIsNotUsedForOtherProfiles() {
+        // "__inline_q" has the lowest id after A, but it holds copies for profile q only.
+        final World w = new World();
+        final SnmpCollectionSource a = w.source(1, "A", true);
+        w.systemDef(a, "N", "M");
+        w.group(w.source(2, "__inline_q", true), "N", true);
+        w.group(w.source(3, "__inline_q2", true), "M", true);
+        w.group(w.source(4, "X", true), "N", true);
+        w.profile("p", "A");
+
+        assertEquals(Map.of("N", "X"), w.groupsOf("p"));
     }
 
     @Test
@@ -399,24 +414,22 @@ public class SnmpDataCollectionCrossSourceResolutionTest {
             final SnmpCollectionMibGroupDao mibGroupDao = mock(SnmpCollectionMibGroupDao.class);
             when(mibGroupDao.findAllEnabledBySource(anyInt())).thenAnswer(i -> groups.stream()
                     .filter(g -> g.getEnabled() && g.getCollectionSource().getId().equals(i.getArgument(0))).toList());
-            when(mibGroupDao.findAllByName(anyString())).thenAnswer(i -> groups.stream()
-                    .filter(g -> g.getName().equals(i.getArgument(0)))
-                    .sorted(Comparator.comparing((SnmpCollectionMibGroup g) -> g.getCollectionSource().getName()))
+            when(mibGroupDao.findAllDisabledWithSource()).thenAnswer(i -> groups.stream()
+                    .filter(g -> !g.getEnabled())
+                    .sorted(Comparator.comparing((SnmpCollectionMibGroup g) -> g.getCollectionSource().getId()))
                     .toList());
-            when(mibGroupDao.findAllEnabledInEnabledSources()).thenAnswer(i -> groups.stream()
-                    .filter(g -> g.getEnabled() && g.getCollectionSource().getEnabled())
+            when(mibGroupDao.findAllWithSource()).thenAnswer(i -> groups.stream()
                     .sorted(Comparator.comparing((SnmpCollectionMibGroup g) -> g.getCollectionSource().getId()))
                     .toList());
 
             final SnmpCollectionResourceTypeDao resourceTypeDao = mock(SnmpCollectionResourceTypeDao.class);
             when(resourceTypeDao.findAllEnabledBySource(anyInt())).thenAnswer(i -> resourceTypes.stream()
                     .filter(r -> r.getEnabled() && r.getCollectionSource().getId().equals(i.getArgument(0))).toList());
-            when(resourceTypeDao.findAllByName(anyString())).thenAnswer(i -> resourceTypes.stream()
-                    .filter(r -> r.getName().equals(i.getArgument(0)))
-                    .sorted(Comparator.comparing((SnmpCollectionResourceType r) -> r.getCollectionSource().getName()))
+            when(resourceTypeDao.findAllDisabledWithSource()).thenAnswer(i -> resourceTypes.stream()
+                    .filter(r -> !r.getEnabled())
+                    .sorted(Comparator.comparing((SnmpCollectionResourceType r) -> r.getCollectionSource().getId()))
                     .toList());
-            when(resourceTypeDao.findAllEnabledInEnabledSources()).thenAnswer(i -> resourceTypes.stream()
-                    .filter(r -> r.getEnabled() && r.getCollectionSource().getEnabled())
+            when(resourceTypeDao.findAllWithSource()).thenAnswer(i -> resourceTypes.stream()
                     .sorted(Comparator.comparing((SnmpCollectionResourceType r) -> r.getCollectionSource().getId()))
                     .toList());
 

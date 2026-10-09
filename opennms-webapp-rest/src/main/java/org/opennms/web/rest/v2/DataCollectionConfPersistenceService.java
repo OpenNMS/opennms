@@ -72,6 +72,7 @@ import java.util.Set;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -1065,7 +1066,7 @@ public class DataCollectionConfPersistenceService {
         }
         for (final String name : systemDef.getCollect().getIncludeGroups()) {
             // A group that the source of the systemDef disables is not taken from another source.
-            if (lookup.isDisabledInStoredSource(name, preferredGroup)) {
+            if (lookup.findGroupIn(name, preferredGroup) == null && lookup.isDisabledInStoredSource(name, preferredGroup)) {
                 final String msg = "snmp-collection '" + coll.getName() + "': systemDef '" + systemDef.getName()
                         + "' references MIB group '" + name + "', which is disabled in source '"
                         + preferredGroup.getName() + "' — skipped.";
@@ -1089,15 +1090,17 @@ public class DataCollectionConfPersistenceService {
 
     /**
      * Finds the datacollection groups that include-collection entries refer
-     * to. The uploaded files have priority. The enabled sources in the
-     * database are read only when the uploaded files do not resolve a
-     * reference. Synthetic inline sources come last, because they contain
-     * copies of other sources.
+     * to. The uploaded files have priority. Sources in the database are read
+     * only when the uploaded files do not resolve a reference, and only the
+     * sources that a reference uses are read. A lookup by MIB group or
+     * systemDef name does not use inline sources, because they contain
+     * copies for one profile, and a copy can be older than its original.
      */
     private final class IncludeLookup {
         private final Map<String, DatacollectionGroup> uploaded;
-        private Map<String, DatacollectionGroup> stored;
+        private final Map<String, Optional<DatacollectionGroup>> stored = new HashMap<>();
         private final Map<String, SnmpCollectionSource> storedSources = new HashMap<>();
+        private final Map<Integer, Set<String>> disabledGroupNames = new HashMap<>();
 
         IncludeLookup(final Map<String, DatacollectionGroup> uploaded) {
             this.uploaded = uploaded;
@@ -1105,7 +1108,7 @@ public class DataCollectionConfPersistenceService {
 
         DatacollectionGroup getSource(final String name) {
             final DatacollectionGroup g = uploaded.get(name);
-            return g != null ? g : stored().get(name);
+            return g != null ? g : stored(name);
         }
 
         Group findGroup(final String groupName, final DatacollectionGroup preferred) {
@@ -1117,9 +1120,28 @@ public class DataCollectionConfPersistenceService {
                 final Group g = findGroupIn(groupName, dg);
                 if (g != null) return g;
             }
-            for (final DatacollectionGroup dg : stored().values()) {
-                final Group g = findGroupIn(groupName, dg);
-                if (g != null) return g;
+            for (final SnmpCollectionMibGroup e : byLowestSourceId(snmpCollectionMibGroupDao.findAllByName(groupName),
+                    SnmpCollectionMibGroup::getCollectionSource)) {
+                if (Boolean.TRUE.equals(e.getEnabled()) && isLookupSource(e.getCollectionSource())) {
+                    final Group g = findGroupIn(groupName, stored(e.getCollectionSource().getName()));
+                    if (g != null) return g;
+                }
+            }
+            return null;
+        }
+
+        SystemDefRef findSystemDef(final String name) {
+            final SystemDefRef ref = findSystemDefIn(name, uploaded.values());
+            if (ref != null) {
+                return ref;
+            }
+            for (final SnmpCollectionSystemDef e : byLowestSourceId(snmpCollectionSystemDefDao.findAllByName(name),
+                    SnmpCollectionSystemDef::getCollectionSource)) {
+                if (Boolean.TRUE.equals(e.getEnabled()) && isLookupSource(e.getCollectionSource())) {
+                    final DatacollectionGroup dg = stored(e.getCollectionSource().getName());
+                    final SystemDefRef found = dg == null ? null : findSystemDefIn(name, List.of(dg));
+                    if (found != null) return found;
+                }
             }
             return null;
         }
@@ -1133,13 +1155,15 @@ public class DataCollectionConfPersistenceService {
             if (group == null || uploaded.containsKey(group.getName())) {
                 return false;
             }
-            stored();
             final SnmpCollectionSource src = storedSources.get(group.getName());
             if (src == null) {
                 return false;
             }
-            final SnmpCollectionMibGroup g = snmpCollectionMibGroupDao.findByNameAndSource(groupName, src.getId());
-            return g != null && !Boolean.TRUE.equals(g.getEnabled());
+            return disabledGroupNames.computeIfAbsent(src.getId(), id -> snmpCollectionMibGroupDao.findAllBySource(id).stream()
+                    .filter(g -> !Boolean.TRUE.equals(g.getEnabled()))
+                    .map(SnmpCollectionMibGroup::getName)
+                    .collect(Collectors.toSet()))
+                    .contains(groupName);
         }
 
         /** Names of the sources where a systemDef with this name is disabled, or its source is disabled. */
@@ -1152,29 +1176,33 @@ public class DataCollectionConfPersistenceService {
                     .toList();
         }
 
-        SystemDefRef findSystemDef(final String name) {
-            final SystemDefRef ref = findSystemDefIn(name, uploaded.values());
-            return ref != null ? ref : findSystemDefIn(name, stored().values());
+        /** An enabled source from the database that is not inline and not in the upload. */
+        private boolean isLookupSource(final SnmpCollectionSource src) {
+            return Boolean.TRUE.equals(src.getEnabled())
+                    && !src.getName().startsWith(INLINE_SOURCE_PREFIX)
+                    && !uploaded.containsKey(src.getName());
         }
 
-        private Map<String, DatacollectionGroup> stored() {
-            if (stored == null) {
-                stored = new LinkedHashMap<>();
-                snmpCollectionSourceDao.findAll().stream()
-                        .filter(src -> Boolean.TRUE.equals(src.getEnabled()))
-                        .filter(src -> !uploaded.containsKey(src.getName()))
-                        .sorted(Comparator.comparing((SnmpCollectionSource src) -> src.getName().startsWith(INLINE_SOURCE_PREFIX))
-                                .thenComparing(SnmpCollectionSource::getId))
-                        .forEach(src -> {
-                            storedSources.put(src.getName(), src);
-                            stored.put(src.getName(), snmpDataCollectionConfigLoader.buildDataCollectionGroupFromDb(src));
-                        });
-            }
-            return stored;
+        /** The enabled source from the database with this name, read on first use, or null. */
+        private DatacollectionGroup stored(final String name) {
+            return stored.computeIfAbsent(name, n -> {
+                final SnmpCollectionSource src = snmpCollectionSourceDao.findByName(n);
+                if (src == null || !Boolean.TRUE.equals(src.getEnabled()) || uploaded.containsKey(n)) {
+                    return Optional.empty();
+                }
+                storedSources.put(n, src);
+                return Optional.of(snmpDataCollectionConfigLoader.buildDataCollectionGroupFromDb(src));
+            }).orElse(null);
+        }
+
+        private <T> List<T> byLowestSourceId(final List<T> definitions, final Function<T, SnmpCollectionSource> sourceOf) {
+            return definitions.stream()
+                    .sorted(Comparator.comparing((T d) -> sourceOf.apply(d).getId()))
+                    .toList();
         }
 
         private Group findGroupIn(final String groupName, final DatacollectionGroup dg) {
-            if (dg.getGroups() == null) return null;
+            if (dg == null || dg.getGroups() == null) return null;
             for (final Group g : dg.getGroups()) {
                 if (groupName.equals(g.getName())) return g;
             }

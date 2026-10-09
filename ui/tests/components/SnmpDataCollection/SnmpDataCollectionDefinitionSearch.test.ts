@@ -27,7 +27,7 @@ import { OnmsAutoComplete, OnmsSelect, OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
@@ -67,6 +67,14 @@ const search = async (wrapper: ReturnType<typeof mountSearch>, name: string) => 
 describe('SnmpDataCollectionDefinitionSearch.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Typing into the autocomplete starts a delayed search, which PrimeVue does not
+    // cancel at unmount. Fake the timer, so that it cannot run in a later test.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+  })
+
+  afterEach(() => {
+    vi.clearAllTimers()
+    vi.useRealTimers()
   })
 
   it('lists every source that defines the name', async () => {
@@ -219,5 +227,67 @@ describe('SnmpDataCollectionDefinitionSearch.vue', () => {
     await flushPromises()
 
     expect(autoComplete.props('suggestions')).toEqual(['mib2-interfaces', 'new-group'])
+  })
+
+  it('sends one request when the same search starts twice', async () => {
+    let resolveSearch: (rows: unknown[]) => void = () => {}
+    mockFindMibGroupsByName.mockReturnValue(new Promise((resolve) => {
+      resolveSearch = resolve
+    }))
+    const wrapper = mountSearch()
+
+    await wrapper.find('[data-test="definition-name-input"] input').setValue('shared')
+    await wrapper.find('[data-test="definition-search-button"]').trigger('click')
+    await wrapper.find('[data-test="definition-search-button"]').trigger('click')
+    resolveSearch([])
+    await flushPromises()
+
+    expect(mockFindMibGroupsByName).toHaveBeenCalledTimes(1)
+  })
+
+  it('shares one names request between completions', async () => {
+    let resolveNames: (names: string[]) => void = () => {}
+    mockGetAllMibGroupNames.mockReturnValue(new Promise((resolve) => {
+      resolveNames = resolve
+    }))
+    const wrapper = mountSearch()
+    const autoComplete = wrapper.findComponent(OnmsAutoComplete)
+
+    autoComplete.vm.$emit('complete', 'm')
+    autoComplete.vm.$emit('complete', 'mi')
+    resolveNames(['mib2-interfaces'])
+    await flushPromises()
+
+    expect(mockGetAllMibGroupNames).toHaveBeenCalledTimes(1)
+    expect(autoComplete.props('suggestions')).toEqual(['mib2-interfaces'])
+  })
+
+  it('shows the last search again when the page opens again', async () => {
+    mockFindResourceTypesByName.mockResolvedValue([
+      { id: 3, name: 'hrStorageIndex', label: 'Storage', enabled: true, collectionSourceId: 10, collectionSourceName: 'MIB2' }
+    ])
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+    useSnmpDataCollectionStore(pinia).definitionSearch = { kind: 'resourcetypes', name: 'hrStorageIndex' }
+
+    const wrapper = mount(SnmpDataCollectionDefinitionSearch, {
+      global: { plugins: [pinia, PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+    })
+    await flushPromises()
+
+    expect(mockFindResourceTypesByName).toHaveBeenCalledWith('hrStorageIndex')
+    expect(wrapper.find('[data-test="definition-results-table"]').text()).toContain('MIB2')
+  })
+
+  it('sorts the source table by name when it opens the source', async () => {
+    mockFindMibGroupsByName.mockResolvedValue([
+      { id: 1, name: 'mib2-tcp', ifType: 'all', enabled: true, collectionSourceId: 10, collectionSourceName: 'MIB2' }
+    ])
+    const wrapper = mountSearch()
+    const detailStore = useSnmpDataCollectionDetailStore()
+
+    await search(wrapper, 'mib2-tcp')
+    await wrapper.find('[data-test="view-in-source-button"]').trigger('click')
+
+    expect(detailStore.mibGroupsSorting).toEqual({ sortKey: 'name', sortOrder: 'asc' })
   })
 })

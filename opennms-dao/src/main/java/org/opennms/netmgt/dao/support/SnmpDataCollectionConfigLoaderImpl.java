@@ -78,6 +78,9 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
 
     private static final String RESOURCE_TYPE_COLLECTION_NAME = "__resource_type_collection";
 
+    /** Prefix of the sources that the upload and the migration make for one profile. */
+    private static final String INLINE_SOURCE_PREFIX = "__inline_";
+
     private DataCollectionConfigDao dataCollectionConfigDao;
     private SnmpCollectionProfileDao snmpCollectionProfileDao;
     private SnmpCollectionSourceDao snmpCollectionSourceDao;
@@ -214,7 +217,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                                 profile.getName(), sourceName);
                         continue;
                     }
-                    if (!source.getEnabled()) {
+                    if (!Boolean.TRUE.equals(source.getEnabled())) {
                         LOG.debug("Profile '{}': source '{}' is disabled — skipping.",
                                 profile.getName(), sourceName);
                         continue;
@@ -333,34 +336,31 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
     }
 
     /**
-     * Index of the enabled MIB groups and resource types in all enabled
-     * sources, for one reload. The DB queries run only at the first lookup,
-     * so a reload without cross-source references does not run them.
+     * Lookup of MIB groups and resource types in other sources, for one reload.
+     * The queries run only at the first lookup. Thus a reload without such
+     * lookups runs no query. A name that an attached source disables needs
+     * only the small query for disabled definitions. The query for all
+     * definitions runs only for a name that no attached source defines.
      */
     private final class CrossSourceIndex {
-        private Map<String, SnmpCollectionMibGroup> groupsByName;
-        private Map<String, SnmpCollectionResourceType> resourceTypesByName;
+        private Map<String, List<SnmpCollectionMibGroup>> disabledGroupsByName;
+        private Map<String, List<SnmpCollectionResourceType>> disabledResourceTypesByName;
+        private Map<String, List<SnmpCollectionMibGroup>> groupsByName;
+        private Map<String, List<SnmpCollectionResourceType>> resourceTypesByName;
         private final Map<String, Group> builtGroups = new HashMap<>();
-        private final Map<String, List<SnmpCollectionMibGroup>> groupDefinitions = new HashMap<>();
-        private final Map<String, List<SnmpCollectionResourceType>> resourceTypeDefinitions = new HashMap<>();
         private final Map<String, Set<String>> unresolvedGroups = new TreeMap<>();
+        private final Map<String, Set<String>> disabledInAttachedGroups = new TreeMap<>();
 
         Group findGroup(final String name, final String profileName, final Set<Integer> attachedSourceIds) {
             // An enabled group of an attached source is already in the profile.
-            // Thus a definition in an attached source here is a disabled one.
-            if (definedIn(groupDefinitions.computeIfAbsent(name, snmpCollectionMibGroupDao::findAllByName), attachedSourceIds,
+            // Thus a disabled definition in an attached source means: do not collect.
+            if (definedIn(disabledGroups().getOrDefault(name, List.of()), attachedSourceIds,
                     SnmpCollectionMibGroup::getCollectionSource)) {
-                unresolvedGroups.computeIfAbsent(name, k -> new TreeSet<>()).add(profileName);
+                disabledInAttachedGroups.computeIfAbsent(name, k -> new TreeSet<>()).add(profileName);
                 return null;
             }
-            if (groupsByName == null) {
-                groupsByName = new HashMap<>();
-                // Ordered by source id: the first source that defines a name wins.
-                for (final SnmpCollectionMibGroup e : snmpCollectionMibGroupDao.findAllEnabledInEnabledSources()) {
-                    groupsByName.putIfAbsent(e.getName(), e);
-                }
-            }
-            final SnmpCollectionMibGroup e = groupsByName.get(name);
+            final SnmpCollectionMibGroup e = firstEnabled(groups().getOrDefault(name, List.of()),
+                    SnmpCollectionMibGroup::getEnabled, SnmpCollectionMibGroup::getCollectionSource);
             if (e == null) {
                 unresolvedGroups.computeIfAbsent(name, k -> new TreeSet<>()).add(profileName);
                 return null;
@@ -371,18 +371,13 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
         }
 
         ResourceType findResourceType(final String name, final Set<Integer> attachedSourceIds) {
-            if (definedIn(resourceTypeDefinitions.computeIfAbsent(name, snmpCollectionResourceTypeDao::findAllByName), attachedSourceIds,
+            if (definedIn(disabledResourceTypes().getOrDefault(name, List.of()), attachedSourceIds,
                     SnmpCollectionResourceType::getCollectionSource)) {
                 LOG.debug("Resource type '{}' is disabled in an attached source; not using other sources.", name);
                 return null;
             }
-            if (resourceTypesByName == null) {
-                resourceTypesByName = new HashMap<>();
-                for (final SnmpCollectionResourceType e : snmpCollectionResourceTypeDao.findAllEnabledInEnabledSources()) {
-                    resourceTypesByName.putIfAbsent(e.getName(), e);
-                }
-            }
-            final SnmpCollectionResourceType e = resourceTypesByName.get(name);
+            final SnmpCollectionResourceType e = firstEnabled(resourceTypes().getOrDefault(name, List.of()),
+                    SnmpCollectionResourceType::getEnabled, SnmpCollectionResourceType::getCollectionSource);
             if (e == null) {
                 return null;
             }
@@ -391,30 +386,86 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
             return toResourceType(e);
         }
 
+        private Map<String, List<SnmpCollectionMibGroup>> disabledGroups() {
+            if (disabledGroupsByName == null) {
+                disabledGroupsByName = byName(snmpCollectionMibGroupDao.findAllDisabledWithSource(), SnmpCollectionMibGroup::getName);
+            }
+            return disabledGroupsByName;
+        }
+
+        private Map<String, List<SnmpCollectionResourceType>> disabledResourceTypes() {
+            if (disabledResourceTypesByName == null) {
+                disabledResourceTypesByName = byName(snmpCollectionResourceTypeDao.findAllDisabledWithSource(),
+                        SnmpCollectionResourceType::getName);
+            }
+            return disabledResourceTypesByName;
+        }
+
+        private Map<String, List<SnmpCollectionMibGroup>> groups() {
+            if (groupsByName == null) {
+                groupsByName = byName(snmpCollectionMibGroupDao.findAllWithSource(), SnmpCollectionMibGroup::getName);
+            }
+            return groupsByName;
+        }
+
+        private Map<String, List<SnmpCollectionResourceType>> resourceTypes() {
+            if (resourceTypesByName == null) {
+                resourceTypesByName = byName(snmpCollectionResourceTypeDao.findAllWithSource(), SnmpCollectionResourceType::getName);
+            }
+            return resourceTypesByName;
+        }
+
+        /** Group the definitions by name. Each list keeps the order of the query, which is by source id. */
+        private <T> Map<String, List<T>> byName(final List<T> definitions, final Function<T, String> nameOf) {
+            final Map<String, List<T>> result = new HashMap<>();
+            for (final T d : definitions) {
+                result.computeIfAbsent(nameOf.apply(d), k -> new ArrayList<>()).add(d);
+            }
+            return result;
+        }
+
         private <T> boolean definedIn(final List<T> definitions, final Set<Integer> sourceIds,
                                       final Function<T, SnmpCollectionSource> sourceOf) {
             return definitions.stream().anyMatch(d -> sourceIds.contains(sourceOf.apply(d).getId()));
         }
 
         /**
-         * Write one warning for each referenced group name that is not
-         * collected. Collectd skips these groups.
+         * The first definition that is enabled in an enabled source. The source
+         * with the lowest id wins. Inline sources are not used: they contain
+         * copies for one profile, and a copy can be older than its original.
+         */
+        private <T> T firstEnabled(final List<T> definitions, final Function<T, Boolean> enabledOf,
+                                   final Function<T, SnmpCollectionSource> sourceOf) {
+            return definitions.stream()
+                    .filter(d -> Boolean.TRUE.equals(enabledOf.apply(d))
+                            && Boolean.TRUE.equals(sourceOf.apply(d).getEnabled())
+                            && !sourceOf.apply(d).getName().startsWith(INLINE_SOURCE_PREFIX))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        /**
+         * Write one message for each referenced group name that is not
+         * collected. Collectd skips these groups. A group that an attached
+         * source disables is a normal configuration, so it gets INFO only.
          */
         void logUnresolved() {
+            for (final Map.Entry<String, Set<String>> entry : disabledInAttachedGroups.entrySet()) {
+                LOG.info("MIB group '{}' is referenced in profile(s) {}, but an attached source disables it. "
+                        + "SNMP collection skips this group.", entry.getKey(), entry.getValue());
+            }
             for (final Map.Entry<String, Set<String>> entry : unresolvedGroups.entrySet()) {
                 final String name = entry.getKey();
-                final List<SnmpCollectionMibGroup> all = groupDefinitions.computeIfAbsent(name, snmpCollectionMibGroupDao::findAllByName);
+                final List<SnmpCollectionMibGroup> all = groups().getOrDefault(name, List.of());
                 if (all.isEmpty()) {
                     LOG.warn("MIB group '{}' is referenced in profile(s) {}, but no source defines it. "
                             + "SNMP collection skips this group.", name, entry.getValue());
                 } else {
                     final Set<String> sources = new TreeSet<>();
-                    all.stream()
-                            .filter(g -> !Boolean.TRUE.equals(g.getEnabled())
-                                    || !Boolean.TRUE.equals(g.getCollectionSource().getEnabled()))
-                            .forEach(g -> sources.add(g.getCollectionSource().getName()));
-                    LOG.warn("MIB group '{}' is referenced in profile(s) {}, but it is disabled, or its source is disabled, in {}. "
-                            + "SNMP collection skips this group.", name, entry.getValue(), sources);
+                    all.forEach(g -> sources.add(g.getCollectionSource().getName()));
+                    LOG.warn("MIB group '{}' is referenced in profile(s) {}. Only disabled groups, disabled sources "
+                            + "or inline sources define it: {}. SNMP collection skips this group.",
+                            name, entry.getValue(), sources);
                 }
             }
         }
