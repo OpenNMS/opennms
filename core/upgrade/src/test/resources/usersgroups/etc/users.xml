@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+   <header>
+      <rev>.9</rev>
+      <created>Thursday, November 3, 2011 9:28:08 PM GMT</created>
+      <mstation>localhost</mstation>
+   </header>
+   <users>
+      <user>
+         <user-id>admin</user-id>
+         <full-name>Administrator</full-name>
+         <user-comments>Default administrator, do not delete</user-comments>
+         <password salt="true">gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL</password>
+         <contact type="email" info="admin@example.com"/>
+         <contact type="pagerEmail" info="pager@example.com"/>
+         <contact type="email" info="second@example.com"/>
+         <contact type="textPage" info="5551234" serviceProvider="ACME"/>
+         <duty-schedule>MoTuWeThFr800-1700</duty-schedule>
+         <duty-schedule>SaSu900-1200</duty-schedule>
+         <role>ROLE_ADMIN</role>
+         <role>ROLE_USER</role>
+         <role>ROLE_OPERATOR</role>
+         <role>ROLE_BOGUS</role>
+         <role>ROLE_ADMIN</role>
+         <tui-pin>1234</tui-pin>
+         <time-zone-id>America/New_York</time-zone-id>
+      </user>
+      <user>
+         <user-id>bob</user-id>
+         <full-name>Bob</full-name>
+         <password>21232F297A57A5A743894A0E4A801FC3</password>
+         <role>ROLE_USER</role>
+         <role> ROLE_ADMIN</role>
+      </user>
+      <user>
+         <user-id>carol</user-id>
+         <full-name>Carol One</full-name>
+         <password salt="true">first</password>
+      </user>
+      <user>
+         <user-id>carol</user-id>
+         <full-name>Carol Two</full-name>
+         <password salt="true">second</password>
+         <role>ROLE_STAGE</role>
+      </user>
+      <user>
+         <user-id>rtc</user-id>
+         <full-name>RTC</full-name>
+         <password salt="true">sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX</password>
+         <role>ROLE_RTC</role>
+      </user>
+   </users>
+</userinfo>

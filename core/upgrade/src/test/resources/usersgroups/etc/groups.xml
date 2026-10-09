@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groupinfo xmlns="http://xmlns.opennms.org/xsd/groups">
+   <header>
+      <rev>1.3</rev>
+      <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+      <mstation>localhost</mstation>
+   </header>
+   <groups>
+      <group>
+         <name>Admin</name>
+         <default-map>Main</default-map>
+         <comments>The administrators</comments>
+         <user>admin</user>
+         <user>ghost</user>
+         <user>bob</user>
+         <user>admin</user>
+         <user>carol </user>
+         <duty-schedule>MoTuWeThFr800-1700</duty-schedule>
+      </group>
+      <group>
+         <name>Oncall</name>
+         <user>carol</user>
+         <user>bob</user>
+      </group>
+      <group>
+         <name>Ops</name>
+         <user>admin</user>
+      </group>
+      <group>
+         <name>Ops</name>
+         <user>bob</user>
+      </group>
+   </groups>
+   <roles>
+      <role name="night" membership-group="Oncall" supervisor="admin" description="Night shift">
+         <schedule name="bob" type="weekly">
+            <time id="0" day="monday" begins="17:00:00" ends="23:59:59"/>
+            <time id="1" day="tuesday" begins="00:00:00" ends="08:00:00"/>
+         </schedule>
+         <schedule name="ghost" type="daily">
+            <time begins="00:00:00" ends="08:00:00"/>
+         </schedule>
+         <schedule name="carol" type="specific">
+            <time begins="21-Feb-2025 18:00:00" ends="22-Feb-2025 06:00:00"/>
+         </schedule>
+      </role>
+      <role name="orphan" membership-group="Missing" supervisor="admin">
+         <schedule name="bob" type="daily">
+            <time begins="00:00:00" ends="08:00:00"/>
+         </schedule>
+      </role>
+      <role name="unsupervised" membership-group="Oncall" supervisor="ghost">
+         <schedule name="bob" type="daily">
+            <time begins="00:00:00" ends="08:00:00"/>
+         </schedule>
+      </role>
+   </roles>
+</groupinfo>
