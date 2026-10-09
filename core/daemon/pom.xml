@@ -62,6 +62,10 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel.hardening</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
     </dependency>
     <dependency>
