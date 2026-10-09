@@ -66,6 +66,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The original KSC report API.
+ *
+ * @deprecated Superseded by the Graph Collections API under {@code /api/v2/graph-collections}
+ * ({@code org.opennms.web.rest.v2.GraphCollectionRestService}), which speaks JSON, assigns ids on
+ * the server, updates a collection whole and can delete. This service is kept so existing clients
+ * keep working and will be removed together with the legacy KSC pages.
+ */
+@Deprecated(since = "37.0.0", forRemoval = true)
 @Component("kscRestService")
 @Path("ksc")
 @Tag(name = "Ksc", description = """
@@ -296,39 +305,34 @@ public class KscRestService extends OnmsRestService {
             if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
                 throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
             }
-            final GraphCollection report = m_graphCollectionConfigFactory.getCollectionById(kscReportId);
-            if (report == null) {
-                throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: {}.", Integer.toString(kscReportId));
-            }
-            final Graph graph = new Graph();
-            if (title != null) {
-                graph.setTitle(title);
-            }
-
-            boolean found = false;
-            for (final String valid : GraphCollectionConfigFactory.TIMESPAN_OPTIONS) {
-                if (valid.equals(timespan)) {
-                    found = true;
-                    break;
+            // Same monitor as the v2 GraphCollectionRestService, so the two cannot interleave.
+            synchronized (m_graphCollectionConfigFactory) {
+                final GraphCollection report = m_graphCollectionConfigFactory.getCollectionById(kscReportId);
+                if (report == null) {
+                    throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: {}.", Integer.toString(kscReportId));
                 }
-            }
+                final Graph graph = new Graph();
+                if (title != null) {
+                    graph.setTitle(title);
+                }
 
-            if (!found) {
-                LOG.debug("invalid timespan ('{}'), setting to '7_day' instead.", timespan);
-                timespan = "7_day";
-            }
+                if (!GraphCollectionConfigFactory.isValidTimespan(timespan)) {
+                    LOG.debug("invalid timespan ('{}'), setting to '7_day' instead.", timespan);
+                    timespan = "7_day";
+                }
 
-            graph.setGraphtype(reportName);
-            graph.setResourceId(resourceId);
-            graph.setTimespan(timespan);
-            report.addGraph(graph);
-            m_graphCollectionConfigFactory.setCollection(kscReportId, report);
-            try {
-                m_graphCollectionConfigFactory.saveCurrent();
-            } catch (final Exception e) {
-                throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot save report with Id {} : {} ", kscReportId.toString(), e.getMessage());
+                graph.setGraphtype(reportName);
+                graph.setResourceId(resourceId);
+                graph.setTimespan(timespan);
+                report.addGraph(graph);
+                m_graphCollectionConfigFactory.setCollection(kscReportId, report);
+                try {
+                    m_graphCollectionConfigFactory.saveCurrent();
+                } catch (final Exception e) {
+                    throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot save report with Id {} : {} ", kscReportId.toString(), e.getMessage());
+                }
+                return Response.noContent().build();
             }
-            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -379,36 +383,38 @@ public class KscRestService extends OnmsRestService {
         writeLock();
         try {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
-            GraphCollection report = m_graphCollectionConfigFactory.getCollectionById(kscReport.getId());
-            if (report != null) {
-                throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: {}.", Integer.toString(kscReport.getId()));
-            }
-            report = new GraphCollection();
-            report.setId(kscReport.getId());
-            report.setTitle(kscReport.getLabel());
-            if (kscReport.getShowGraphtypeButton() != null) {
-                report.setShowGraphtypeButton(kscReport.getShowGraphtypeButton());
-            }
-            if (kscReport.getShowTimespanButton() != null) {
-                report.setShowTimespanButton(kscReport.getShowTimespanButton());
-            }
-            if (kscReport.getGraphsPerLine() != null) {
-                report.setGraphsPerLine(kscReport.getGraphsPerLine());
-            }
-            if (kscReport.hasGraphs()) {
-                for (KscGraph kscGraph : kscReport.getGraphs()) {
-                    final Graph graph = kscGraph.buildGraph();
-                    report.addGraph(graph);
+            synchronized (m_graphCollectionConfigFactory) {
+                GraphCollection report = m_graphCollectionConfigFactory.getCollectionById(kscReport.getId());
+                if (report != null) {
+                    throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: {}.", Integer.toString(kscReport.getId()));
                 }
-            }
+                report = new GraphCollection();
+                report.setId(kscReport.getId());
+                report.setTitle(kscReport.getLabel());
+                if (kscReport.getShowGraphtypeButton() != null) {
+                    report.setShowGraphtypeButton(kscReport.getShowGraphtypeButton());
+                }
+                if (kscReport.getShowTimespanButton() != null) {
+                    report.setShowTimespanButton(kscReport.getShowTimespanButton());
+                }
+                if (kscReport.getGraphsPerLine() != null) {
+                    report.setGraphsPerLine(kscReport.getGraphsPerLine());
+                }
+                if (kscReport.hasGraphs()) {
+                    for (KscGraph kscGraph : kscReport.getGraphs()) {
+                        final Graph graph = kscGraph.buildGraph();
+                        report.addGraph(graph);
+                    }
+                }
 
-            m_graphCollectionConfigFactory.addCollection(report);
-            try {
-                m_graphCollectionConfigFactory.saveCurrent();
-            } catch (final Exception e) {
-                throw getException(Status.BAD_REQUEST, e.getMessage());
+                m_graphCollectionConfigFactory.addCollection(report);
+                try {
+                    m_graphCollectionConfigFactory.saveCurrent();
+                } catch (final Exception e) {
+                    throw getException(Status.BAD_REQUEST, e.getMessage());
+                }
+                return Response.created(getRedirectUri(uriInfo, kscReport.getId())).build();
             }
-            return Response.created(getRedirectUri(uriInfo, kscReport.getId())).build();
         } finally {
             writeUnlock();
         }
@@ -601,15 +607,7 @@ public class KscRestService extends OnmsRestService {
         }
 
         public Graph buildGraph() {
-            boolean found = false;
-            for (final String valid : GraphCollectionConfigFactory.TIMESPAN_OPTIONS) {
-                if (valid.equals(m_timespan)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
+            if (!GraphCollectionConfigFactory.isValidTimespan(m_timespan)) {
                 LOG.debug("invalid timespan ('{}'), setting to '7_day' instead.", m_timespan);
                 m_timespan = "7_day";
             }

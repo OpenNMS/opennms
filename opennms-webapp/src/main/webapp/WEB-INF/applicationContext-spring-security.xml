@@ -229,6 +229,38 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
+  <!--
+    Graph Collections (NMS-19771): any authenticated user may create, edit and delete
+    collections, as the legacy KSC pages allowed, but a ROLE_READONLY user may not.
+    Kept in its own use-expressions block so ROLE_READONLY can be excluded, mirroring
+    the alarms and notifications rules; it must precede the generic /api/v2/** block.
+  -->
+  <http pattern="/api/v2/graph-collections/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/api/v2/graph-collections/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE')"/>
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/api/v2/graph-collections/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/api/v2/graph-collections/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+
+    <!-- writes: any user except read-only ones -->
+    <intercept-url pattern="/api/v2/graph-collections/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER') and !hasRole('ROLE_READONLY')"/>
+    <intercept-url pattern="/api/v2/graph-collections/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER') and !hasRole('ROLE_READONLY')"/>
+    <intercept-url pattern="/api/v2/graph-collections/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER') and !hasRole('ROLE_READONLY')"/>
+
+    <!-- nothing else falls through -->
+    <intercept-url pattern="/api/v2/graph-collections/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
   <!-- Only use BASIC auth for the RESTful API v2 -->
   <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never" use-expressions="false">
     <csrf disabled="true" />
@@ -280,13 +312,13 @@
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PUT" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="ROLE_ADMIN" />
 
-    <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
-         restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <!-- Dashboard layout is system-wide: reads fall through to the /api/v2/** GET
          catch-all (every reader role); only admins may save it, so override just
          the write. Order matters — this must precede the /api/v2/** PUT rule. -->
     <intercept-url pattern="/api/v2/dashboard/**" method="PUT" access="ROLE_ADMIN" />
 
+    <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
+         restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/discovery/**" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
 
