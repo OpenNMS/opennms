@@ -182,6 +182,29 @@ public class SnmpDataCollectionXmlToDbParityIT implements TemporaryDatabaseAware
         runParityCheck();
     }
 
+    /**
+     * A collection that includes only one source, next to the shipped
+     * default collection. The "Cisco Routers" systemDef references groups
+     * that only routers.xml and mib2.xml define. The XML parser resolves
+     * them from all files, so the DB loader must also resolve them.
+     */
+    @Test
+    public void subsetIncludeResolvesGroupsFromOtherSources() throws Exception {
+        stage(BASELINE_ETC.resolve("datacollection-config.xml"), BASELINE_DC_DIR);
+        final Path mainConfig = opennmsHome.resolve("etc/datacollection-config.xml");
+        final String xml = Files.readString(mainConfig);
+        final String subset = """
+                  <snmp-collection name="cisco-only" snmpStorageFlag="select">
+                    <rrd step="300">
+                      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    </rrd>
+                    <include-collection dataCollectionGroup="Cisco"/>
+                  </snmp-collection>
+                </datacollection-config>""";
+        Files.writeString(mainConfig, xml.replace("</datacollection-config>", subset));
+        runParityCheck();
+    }
+
     // Edge-case fixtures (datacollection-config-excludes.xml and
     // datacollection-config-single-systemdef.xml) are intentionally not
     // exercised here yet: their <resource-types> sections are empty, so

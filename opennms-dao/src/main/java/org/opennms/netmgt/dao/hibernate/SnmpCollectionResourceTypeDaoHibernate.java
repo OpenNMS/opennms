@@ -198,6 +198,22 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
+    public List<SnmpCollectionResourceType> findAllByName(String name) {
+        return find("from SnmpCollectionResourceType t join fetch t.collectionSource s where t.name = ?1 order by s.name, t.id", name);
+    }
+
+    @Override
+    public List<SnmpCollectionResourceType> findAllWithSource() {
+        return find("from SnmpCollectionResourceType t join fetch t.collectionSource s order by s.id, t.id");
+    }
+
+    @Override
+    public List<SnmpCollectionResourceType> findAllDisabledWithSource() {
+        return find("from SnmpCollectionResourceType t join fetch t.collectionSource s "
+                + "where t.enabled = false or t.enabled is null order by s.id, t.id");
+    }
+
+    @Override
     public void updateResourceTypeEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled) {
         if (ids == null || ids.isEmpty()) {
             LOG.warn("No ResourceType IDs provided for update. Skipping...");
