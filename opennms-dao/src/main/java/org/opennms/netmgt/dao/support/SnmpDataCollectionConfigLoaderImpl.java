@@ -30,6 +30,8 @@ import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
+import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.Rrd;
@@ -52,12 +54,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.PreDestroy;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -171,6 +177,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
         rtRrd.setStep(300);
         rtCollection.setRrd(rtRrd);
 
+        final CrossSourceIndex index = new CrossSourceIndex();
         for (final SnmpCollectionProfile profile : profiles) {
             final SnmpCollection coll = new SnmpCollection();
             coll.setName(profile.getName());
@@ -232,11 +239,151 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                 }
             }
 
+            resolveMissingGroups(profile.getName(), groups, systems, addedGroupNames, index);
             config.addSnmpCollection(coll);
         }
 
+        resolveMissingResourceTypes(config, rtCollection, allResourceTypes, index);
+        index.logUnresolved();
+
         config.insertSnmpCollection(rtCollection);
         return new MaterializedConfig(config, allResourceTypes, allGroups, profiles.size());
+    }
+
+    /**
+     * Add the groups that the systemDefs and groups of a profile reference,
+     * but that no attached source defines. The legacy XML parser searched all
+     * files in etc/datacollection/ for such references. This keeps that
+     * behavior. Groups from the attached sources always have priority.
+     */
+    private void resolveMissingGroups(final String profileName,
+                                      final Groups groups,
+                                      final Systems systems,
+                                      final Set<String> addedGroupNames,
+                                      final CrossSourceIndex index) {
+        final Deque<String> pending = new ArrayDeque<>();
+        for (final SystemDef sd : systems.getSystemDefs()) {
+            if (sd.getCollect() != null) {
+                pending.addAll(sd.getCollect().getIncludeGroups());
+            }
+        }
+        for (final Group g : groups.getGroups()) {
+            pending.addAll(g.getIncludeGroups());
+        }
+        while (!pending.isEmpty()) {
+            final String name = pending.poll();
+            if (name == null || addedGroupNames.contains(name)) {
+                continue;
+            }
+            addedGroupNames.add(name);
+            final Group g = index.findGroup(name, profileName);
+            if (g != null) {
+                groups.addGroup(g);
+                pending.addAll(g.getIncludeGroups());
+            }
+        }
+    }
+
+    /**
+     * Add the resource types that MIB objects use as instance, but that no
+     * attached source of any profile defines. This is necessary for groups
+     * that come from other sources, and for custom sources that use resource
+     * types of shared sources such as MIB2.
+     */
+    private void resolveMissingResourceTypes(final DatacollectionConfig config,
+                                             final SnmpCollection rtCollection,
+                                             final Map<String, ResourceType> allResourceTypes,
+                                             final CrossSourceIndex index) {
+        for (final SnmpCollection coll : config.getSnmpCollections()) {
+            for (final Group g : coll.getGroups().getGroups()) {
+                for (final MibObj mibObj : g.getMibObjs()) {
+                    final String instance = mibObj.getInstance();
+                    if (instance == null || allResourceTypes.containsKey(instance)
+                            || MibObject.INSTANCE_IFINDEX.equals(instance) || isNumeric(instance)) {
+                        continue;
+                    }
+                    final ResourceType rt = index.findResourceType(instance);
+                    if (rt != null) {
+                        rtCollection.addResourceType(rt);
+                        allResourceTypes.put(rt.getName(), rt);
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isNumeric(final String instance) {
+        try {
+            return Integer.parseInt(instance.trim()) >= 0;
+        } catch (final NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Index of the enabled MIB groups and resource types in all enabled
+     * sources, for one reload. The DB queries run only at the first lookup,
+     * so a reload without cross-source references does not run them.
+     */
+    private final class CrossSourceIndex {
+        private Map<String, SnmpCollectionMibGroup> groupsByName;
+        private Map<String, SnmpCollectionResourceType> resourceTypesByName;
+        private final Map<String, Group> builtGroups = new HashMap<>();
+        private final Map<String, Set<String>> unresolvedGroups = new TreeMap<>();
+
+        Group findGroup(final String name, final String profileName) {
+            if (groupsByName == null) {
+                groupsByName = new HashMap<>();
+                // Ordered by source id: the first source that defines a name wins.
+                for (final SnmpCollectionMibGroup e : snmpCollectionMibGroupDao.findAllEnabledInEnabledSources()) {
+                    groupsByName.putIfAbsent(e.getName(), e);
+                }
+            }
+            final SnmpCollectionMibGroup e = groupsByName.get(name);
+            if (e == null) {
+                unresolvedGroups.computeIfAbsent(name, k -> new TreeSet<>()).add(profileName);
+                return null;
+            }
+            LOG.debug("Profile '{}': MIB group '{}' is not in an attached source; using the definition from source '{}'.",
+                    profileName, name, e.getCollectionSource().getName());
+            return builtGroups.computeIfAbsent(name, k -> toGroup(e));
+        }
+
+        ResourceType findResourceType(final String name) {
+            if (resourceTypesByName == null) {
+                resourceTypesByName = new HashMap<>();
+                for (final SnmpCollectionResourceType e : snmpCollectionResourceTypeDao.findAllEnabledInEnabledSources()) {
+                    resourceTypesByName.putIfAbsent(e.getName(), e);
+                }
+            }
+            final SnmpCollectionResourceType e = resourceTypesByName.get(name);
+            if (e == null) {
+                return null;
+            }
+            LOG.debug("Resource type '{}' is not in an attached source; using the definition from source '{}'.",
+                    name, e.getCollectionSource().getName());
+            return toResourceType(e);
+        }
+
+        /**
+         * Write one warning for each group name that no enabled source
+         * defines. Collectd skips these groups.
+         */
+        void logUnresolved() {
+            for (final Map.Entry<String, Set<String>> entry : unresolvedGroups.entrySet()) {
+                final String name = entry.getKey();
+                final List<SnmpCollectionMibGroup> all = snmpCollectionMibGroupDao.findAllByName(name);
+                if (all.isEmpty()) {
+                    LOG.warn("MIB group '{}' is referenced in profile(s) {}, but no source defines it. "
+                            + "SNMP collection skips this group.", name, entry.getValue());
+                } else {
+                    final Set<String> sources = new TreeSet<>();
+                    all.forEach(g -> sources.add(g.getCollectionSource().getName()));
+                    LOG.warn("MIB group '{}' is referenced in profile(s) {}, but it is disabled, or its source is disabled, in {}. "
+                            + "SNMP collection skips this group.", name, entry.getValue(), sources);
+                }
+            }
+        }
     }
 
     /** Bundle of values produced by {@link #materializeFromDb()}. */
@@ -267,55 +414,11 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
 
         final List<SnmpCollectionResourceType> rtEntities =
                 snmpCollectionResourceTypeDao.findAllEnabledBySource(source.getId());
-        group.setResourceTypes(rtEntities.stream().map(e -> {
-            final ResourceType rt = new ResourceType();
-            rt.setName(e.getName());
-            rt.setLabel(e.getLabel());
-            if (e.getResourceLabel() != null) {
-                rt.setResourceLabel(e.getResourceLabel());
-            }
-            if (e.getStorageStrategy() != null) {
-                final StorageStrategy ss = new StorageStrategy();
-                ss.setClazz(e.getStorageStrategy());
-                final var ssParams = DatacollectionJsonHelper.fromJsonToParameters(e.getStorageStrategyParams());
-                if (ssParams != null) {
-                    ss.setParameters(ssParams);
-                }
-                rt.setStorageStrategy(ss);
-            }
-            if (e.getPersistenceSelectorStrategy() != null) {
-                final PersistenceSelectorStrategy ps = new PersistenceSelectorStrategy();
-                ps.setClazz(e.getPersistenceSelectorStrategy());
-                final var psParams = DatacollectionJsonHelper.fromJsonToParameters(e.getPersistenceSelectorParams());
-                if (psParams != null) {
-                    ps.setParameters(psParams);
-                }
-                rt.setPersistenceSelectorStrategy(ps);
-            }
-            return rt;
-        }).toList());
+        group.setResourceTypes(rtEntities.stream().map(SnmpDataCollectionConfigLoaderImpl::toResourceType).toList());
 
         final List<SnmpCollectionMibGroup> mgEntities =
                 snmpCollectionMibGroupDao.findAllEnabledBySource(source.getId());
-        group.setGroups(mgEntities.stream().map(e -> {
-            final Group g = new Group();
-            g.setName(e.getName());
-            g.setIfType(e.getIfType());
-            // Preserve JAXB's empty-list defaults when the JSON is null/empty.
-            // DataCollectionConfigLookupUtils#processGroupForProperties (and
-            // similar collectd hot-path code) calls getProperties().forEach
-            // without a null check, so a null here would NPE at runtime.
-            final var mibObjs = DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects());
-            if (mibObjs != null) g.setMibObjs(mibObjs);
-            final var props = DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties());
-            if (props != null) g.setProperties(props);
-            final List<String> includeGroups = DatacollectionJsonHelper.fromJson(
-                    e.getMibGroupNames(), new TypeReference<List<String>>() {});
-            if (includeGroups != null) {
-                g.setIncludeGroups(includeGroups);
-            }
-            return g;
-        }).toList());
+        group.setGroups(mgEntities.stream().map(SnmpDataCollectionConfigLoaderImpl::toGroup).toList());
 
         final List<SnmpCollectionSystemDef> sdEntities =
                 snmpCollectionSystemDefDao.findAllEnabledBySource(source.getId());
@@ -350,6 +453,54 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
         }).toList());
 
         return group;
+    }
+
+    private static ResourceType toResourceType(final SnmpCollectionResourceType e) {
+        final ResourceType rt = new ResourceType();
+        rt.setName(e.getName());
+        rt.setLabel(e.getLabel());
+        if (e.getResourceLabel() != null) {
+            rt.setResourceLabel(e.getResourceLabel());
+        }
+        if (e.getStorageStrategy() != null) {
+            final StorageStrategy ss = new StorageStrategy();
+            ss.setClazz(e.getStorageStrategy());
+            final var ssParams = DatacollectionJsonHelper.fromJsonToParameters(e.getStorageStrategyParams());
+            if (ssParams != null) {
+                ss.setParameters(ssParams);
+            }
+            rt.setStorageStrategy(ss);
+        }
+        if (e.getPersistenceSelectorStrategy() != null) {
+            final PersistenceSelectorStrategy ps = new PersistenceSelectorStrategy();
+            ps.setClazz(e.getPersistenceSelectorStrategy());
+            final var psParams = DatacollectionJsonHelper.fromJsonToParameters(e.getPersistenceSelectorParams());
+            if (psParams != null) {
+                ps.setParameters(psParams);
+            }
+            rt.setPersistenceSelectorStrategy(ps);
+        }
+        return rt;
+    }
+
+    private static Group toGroup(final SnmpCollectionMibGroup e) {
+        final Group g = new Group();
+        g.setName(e.getName());
+        g.setIfType(e.getIfType());
+        // Preserve JAXB's empty-list defaults when the JSON is null/empty.
+        // DataCollectionConfigLookupUtils#processGroupForProperties (and
+        // similar collectd hot-path code) calls getProperties().forEach
+        // without a null check, so a null here would NPE at runtime.
+        final var mibObjs = DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects());
+        if (mibObjs != null) g.setMibObjs(mibObjs);
+        final var props = DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties());
+        if (props != null) g.setProperties(props);
+        final List<String> includeGroups = DatacollectionJsonHelper.fromJson(
+                e.getMibGroupNames(), new TypeReference<List<String>>() {});
+        if (includeGroups != null) {
+            g.setIncludeGroups(includeGroups);
+        }
+        return g;
     }
 
     public void setDataCollectionConfigDao(final DataCollectionConfigDao dataCollectionConfigDao) {

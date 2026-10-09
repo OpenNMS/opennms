@@ -27,9 +27,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.datacollection.Collect;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.Rrd;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
@@ -1474,6 +1479,113 @@ public class DataCollectionConfPersistenceServiceIT {
         final var r2 = snmpCollectionSystemDefDao.get(def2.getId());
         Assert.assertFalse(r1.getEnabled());
         Assert.assertFalse(r2.getEnabled());
+    }
+
+    /**
+     * A datacollection-config.xml upload can refer to sources that are already
+     * in the database. The exclude-filter and systemDef= forms must resolve
+     * against those sources, the same as against sources in the same upload.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testBulkUploadResolvesIncludesAgainstStoredSources() {
+        final Date now = new Date();
+
+        // First upload: only the source. It has two systemDefs; "keep-sd"
+        // uses a group of its own and a group that is not defined anywhere.
+        final DatacollectionGroup stored = new DatacollectionGroup();
+        stored.setName("NMS20429-Stored");
+        stored.addGroup(group("nms20429-group"));
+        stored.addSystemDef(systemDef("nms20429-keep-sd", "nms20429-group", "nms20429-missing-group"));
+        stored.addSystemDef(systemDef("nms20429-drop-sd", "nms20429-group"));
+        dataCollectionConfPersistenceService.bulkUploadConfig(List.of(stored), null, "testuser", now);
+
+        // Second upload: only datacollection-config.xml.
+        final DatacollectionConfig config = new DatacollectionConfig();
+        final IncludeCollection excludeDrop = new IncludeCollection();
+        excludeDrop.setDataCollectionGroup("NMS20429-Stored");
+        excludeDrop.addExcludeFilter("nms20429-drop-.*");
+        config.addSnmpCollection(collection("nms20429-filtered", excludeDrop));
+        final IncludeCollection single = new IncludeCollection();
+        single.setSystemDef("nms20429-keep-sd");
+        config.addSnmpCollection(collection("nms20429-single", single));
+
+        final var result = dataCollectionConfPersistenceService.bulkUploadConfig(List.of(), config, "testuser", now);
+
+        for (final String profile : List.of("nms20429-filtered", "nms20429-single")) {
+            final SnmpCollectionSource inline = snmpCollectionSourceDao.findByName("__inline_" + profile);
+            assertNotNull(inline, "inline source for " + profile);
+            final List<String> sdNames = snmpCollectionSystemDefDao.findAllBySource(inline.getId()).stream()
+                    .map(SnmpCollectionSystemDef::getName).toList();
+            assertEquals(List.of("nms20429-keep-sd"), sdNames);
+            final List<String> groupNames = snmpCollectionMibGroupDao.findAllBySource(inline.getId()).stream()
+                    .map(SnmpCollectionMibGroup::getName).toList();
+            assertEquals(List.of("nms20429-group"), groupNames);
+        }
+        assertTrue("a MIB group that no source defines must be reported: " + result.errors,
+                result.errors.stream().anyMatch(e -> e.contains("nms20429-missing-group")));
+        Assert.assertFalse("the stored source must resolve: " + result.errors,
+                result.errors.stream().anyMatch(e -> e.contains("not in the upload or in the database")
+                        && !e.contains("nms20429-missing-group")));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testFindDefinitionsByName() {
+        final DatacollectionGroup a = new DatacollectionGroup();
+        a.setName("NMS20429-A");
+        a.addGroup(group("nms20429-shared"));
+        a.addSystemDef(systemDef("nms20429 NT/2000", "nms20429-shared"));
+        final DatacollectionGroup b = new DatacollectionGroup();
+        b.setName("NMS20429-B");
+        b.addGroup(group("nms20429-shared"));
+        dataCollectionConfPersistenceService.bulkUploadConfig(List.of(a, b), null, "testuser", new Date());
+
+        final List<SnmpCollectionMibGroupDto> groups = dataCollectionConfPersistenceService.findMibGroupsByName("nms20429-shared");
+        assertEquals(List.of("NMS20429-A", "NMS20429-B"),
+                groups.stream().map(SnmpCollectionMibGroupDto::getCollectionSourceName).toList());
+
+        final List<SnmpCollectionSystemDefDto> sds = dataCollectionConfPersistenceService.findSystemDefsByName("nms20429 NT/2000");
+        assertEquals(1, sds.size());
+        assertEquals("NMS20429-A", sds.get(0).getCollectionSourceName());
+        assertTrue(dataCollectionConfPersistenceService.getAllSystemDefNames().contains("nms20429 NT/2000"));
+
+        assertTrue(dataCollectionConfPersistenceService.findMibGroupsByName("nms20429").isEmpty());
+        assertTrue(dataCollectionConfPersistenceService.findResourceTypesByName("nms20429-none").isEmpty());
+    }
+
+    private static Group group(final String name) {
+        final Group g = new Group();
+        g.setName(name);
+        g.setIfType("ignore");
+        g.addMibObj(createMibObj(".1.3.6.1.2.1.1.3", "0", "nms20429Up", "timeticks"));
+        return g;
+    }
+
+    private static SystemDef systemDef(final String name, final String... groups) {
+        final SystemDef sd = new SystemDef();
+        sd.setName(name);
+        sd.setSysoidMask(".1.3.6.1.4.1.99999.");
+        final Collect collect = new Collect();
+        for (final String g : groups) {
+            collect.addIncludeGroup(g);
+        }
+        sd.setCollect(collect);
+        return sd;
+    }
+
+    private static SnmpCollection collection(final String name, final IncludeCollection include) {
+        final SnmpCollection coll = new SnmpCollection();
+        coll.setName(name);
+        coll.setSnmpStorageFlag("select");
+        final Rrd rrd = new Rrd();
+        rrd.setStep(300);
+        rrd.addRra("RRA:AVERAGE:0.5:1:2016");
+        coll.setRrd(rrd);
+        coll.addIncludeCollection(include);
+        return coll;
     }
 
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {

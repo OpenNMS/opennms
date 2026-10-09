@@ -22,34 +22,46 @@
 package org.opennms.netmgt.dao.support;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DatacollectionJsonHelper;
+import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
+import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
+import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionProfile;
+import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Pinpoint test for the dedup-by-name behavior in
- * {@link SnmpDataCollectionConfigLoader#reloadDataCollectionConfigFromDb()}.
+ * Tests for how {@link SnmpDataCollectionConfigLoaderImpl} merges sources into
+ * a profile.
  *
- * Two sources contributing the same group/systemDef name to one profile
- * must merge into a single occurrence each. Mirrors
- * {@code DataCollectionConfigParser.addSystemDef}'s contains-check.
+ * <p>Two sources that contribute the same group or systemDef name to one
+ * profile merge into one occurrence. This mirrors the contains-check in
+ * {@code DataCollectionConfigParser.addSystemDef}.
+ *
+ * <p>A group reference that no attached source defines resolves from all
+ * enabled sources. This mirrors {@code DataCollectionConfigParser.getMibObjectGroup}.
  */
 public class SnmpDataCollectionConfigLoaderTest {
 
@@ -111,6 +123,128 @@ public class SnmpDataCollectionConfigLoaderTest {
                 2, coll.getSystems().getSystemDefs().size());
     }
 
+    @Test
+    public void resolvesSystemDefGroupsFromSourcesThatAreNotAttached() {
+        // Profile attaches only "Cisco". Its systemDef references a group of
+        // "Routers", which in turn includes a group of "MIB2".
+        final DatacollectionGroup cisco = new DatacollectionGroup();
+        cisco.setName("Cisco");
+        cisco.addGroup(group("cisco-router"));
+        final SystemDef sd = systemDef("Cisco Routers");
+        sd.getCollect().addIncludeGroup("cisco-router");
+        sd.getCollect().addIncludeGroup("rfc1315-frame-relay");
+        cisco.addSystemDef(sd);
+
+        final SnmpCollectionSource routers = source(2, "Routers");
+        final SnmpCollectionSource mib2 = source(3, "MIB2");
+        final SnmpCollectionMibGroup frameRelay = mibGroupEntity(routers, "rfc1315-frame-relay",
+                "[\"mib2-shared\"]", "frCircuitIfIndex");
+        final SnmpCollectionMibGroup shared = mibGroupEntity(mib2, "mib2-shared", null, "ifIndex");
+
+        final Fixture f = new Fixture(cisco);
+        when(f.mibGroupDao.findAllEnabledInEnabledSources()).thenReturn(List.of(frameRelay, shared));
+        final SnmpCollectionResourceType frType = new SnmpCollectionResourceType();
+        frType.setName("frCircuitIfIndex");
+        frType.setLabel("Frame-Relay");
+        frType.setCollectionSource(routers);
+        when(f.resourceTypeDao.findAllEnabledInEnabledSources()).thenReturn(List.of(frType));
+
+        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
+
+        final SnmpCollection coll = m.config.getSnmpCollection("default");
+        assertEquals(List.of("cisco-router", "rfc1315-frame-relay", "mib2-shared"),
+                coll.getGroups().getGroups().stream().map(Group::getName).toList());
+        assertTrue("resource type of a group from another source must be available",
+                m.allResourceTypes.containsKey("frCircuitIfIndex"));
+        verify(f.mibGroupDao, never()).findAllByName(any());
+    }
+
+    @Test
+    public void attachedSourcesDoNotQueryOtherSources() {
+        final DatacollectionGroup cisco = new DatacollectionGroup();
+        cisco.setName("Cisco");
+        cisco.addGroup(group("cisco-router"));
+        final SystemDef sd = systemDef("Cisco Routers");
+        sd.getCollect().addIncludeGroup("cisco-router");
+        cisco.addSystemDef(sd);
+
+        final Fixture f = new Fixture(cisco);
+        f.loader.materializeFromDb();
+
+        verify(f.mibGroupDao, never()).findAllEnabledInEnabledSources();
+        verify(f.resourceTypeDao, never()).findAllEnabledInEnabledSources();
+    }
+
+    @Test
+    public void unresolvedGroupIsSkipped() {
+        final DatacollectionGroup cisco = new DatacollectionGroup();
+        cisco.setName("Cisco");
+        final SystemDef sd = systemDef("Cisco Routers");
+        sd.getCollect().addIncludeGroup("does-not-exist");
+        cisco.addSystemDef(sd);
+
+        final Fixture f = new Fixture(cisco);
+        when(f.mibGroupDao.findAllEnabledInEnabledSources()).thenReturn(List.of());
+        when(f.mibGroupDao.findAllByName("does-not-exist")).thenReturn(List.of());
+
+        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
+
+        assertTrue(m.config.getSnmpCollection("default").getGroups().getGroups().isEmpty());
+        verify(f.mibGroupDao).findAllByName("does-not-exist");
+    }
+
+    /** One profile named "default" that attaches only the given source. */
+    private final class Fixture {
+        final SnmpCollectionMibGroupDao mibGroupDao = mock(SnmpCollectionMibGroupDao.class);
+        final SnmpCollectionResourceTypeDao resourceTypeDao = mock(SnmpCollectionResourceTypeDao.class);
+        final SnmpDataCollectionConfigLoaderImpl loader;
+
+        Fixture(final DatacollectionGroup attached) {
+            final SnmpCollectionProfileDao profileDao = mock(SnmpCollectionProfileDao.class);
+            final SnmpCollectionSourceDao sourceDao = mock(SnmpCollectionSourceDao.class);
+            final DataCollectionConfigDao configDao = mock(DataCollectionConfigDao.class);
+
+            final SnmpCollectionProfile profile = new SnmpCollectionProfile();
+            profile.setName("default");
+            profile.setStorageFlag("select");
+            profile.setRrdStep(300);
+            profile.setSourceNames("[\"" + attached.getName() + "\"]");
+            profile.setRrdRras("[]");
+            when(profileDao.findAllEnabled()).thenReturn(List.of(profile));
+            when(sourceDao.findByName(attached.getName())).thenReturn(source(1, attached.getName()));
+            when(configDao.getRrdPath()).thenReturn("/tmp/rrd/");
+
+            loader = new SnmpDataCollectionConfigLoaderImpl() {
+                @Override
+                public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource s) {
+                    return attached;
+                }
+            };
+            loader.setSnmpCollectionProfileDao(profileDao);
+            loader.setSnmpCollectionSourceDao(sourceDao);
+            loader.setDataCollectionConfigDao(configDao);
+            loader.setSnmpCollectionMibGroupDao(mibGroupDao);
+            loader.setSnmpCollectionResourceTypeDao(resourceTypeDao);
+        }
+    }
+
+    private SnmpCollectionMibGroup mibGroupEntity(final SnmpCollectionSource source, final String name,
+                                                  final String includeGroupsJson, final String instance) {
+        final MibObj obj = new MibObj();
+        obj.setOid(".1.3.6.1.2.1.10.32.2.1.1");
+        obj.setInstance(instance);
+        obj.setAlias(name.substring(0, Math.min(name.length(), 10)));
+        obj.setType("counter");
+        final SnmpCollectionMibGroup e = new SnmpCollectionMibGroup();
+        e.setName(name);
+        e.setIfType("all");
+        e.setEnabled(true);
+        e.setCollectionSource(source);
+        e.setMibGroupNames(includeGroupsJson);
+        e.setMibObjects(DatacollectionJsonHelper.toJson(List.of(obj)));
+        return e;
+    }
+
     private SnmpCollectionSource source(final int id, final String name) {
         final SnmpCollectionSource s = new SnmpCollectionSource();
         s.setId(id);
@@ -130,6 +264,7 @@ public class SnmpDataCollectionConfigLoaderTest {
         final SystemDef sd = new SystemDef();
         sd.setName(name);
         sd.setSysoid(".1.3.6.1.4.1.99");
+        sd.setCollect(new Collect());
         return sd;
     }
 }

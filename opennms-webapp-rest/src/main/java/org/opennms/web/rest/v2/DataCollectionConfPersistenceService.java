@@ -37,6 +37,7 @@ import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
+import org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader;
 import org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb;
 import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
@@ -58,6 +59,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,6 +90,8 @@ public class DataCollectionConfPersistenceService {
     private  SnmpCollectionMibGroupDao snmpCollectionMibGroupDao;
     @Autowired
     private  SnmpCollectionSystemDefDao snmpCollectionSystemDefDao;
+    @Autowired
+    private  SnmpDataCollectionConfigLoader snmpDataCollectionConfigLoader;
 
     public Integer addDataCollectionConfig(final String fileName,
                                            final String userName,
@@ -167,6 +172,22 @@ public class DataCollectionConfPersistenceService {
 
     public List<String> getAllMibGroupNames() {
         return snmpCollectionMibGroupDao.findAllMibGroupNames();
+    }
+
+    public List<String> getAllSystemDefNames() {
+        return snmpCollectionSystemDefDao.findAllSystemDefNames();
+    }
+
+    public List<SnmpCollectionMibGroupDto> findMibGroupsByName(final String name) {
+        return SnmpCollectionMibGroupDto.fromEntity(snmpCollectionMibGroupDao.findAllByName(name));
+    }
+
+    public List<SnmpCollectionResourceTypeDto> findResourceTypesByName(final String name) {
+        return SnmpCollectionResourceTypeDto.fromEntity(snmpCollectionResourceTypeDao.findAllByName(name));
+    }
+
+    public List<SnmpCollectionSystemDefDto> findSystemDefsByName(final String name) {
+        return toSystemDefDtos(snmpCollectionSystemDefDao.findAllByName(name));
     }
 
     @Transactional
@@ -867,12 +888,13 @@ public class DataCollectionConfPersistenceService {
         }
 
         if (uploadedConfig != null && uploadedConfig.getSnmpCollections() != null) {
+            final IncludeLookup lookup = new IncludeLookup(groupsByName);
             for (final SnmpCollection coll : uploadedConfig.getSnmpCollections()) {
                 if (coll == null || coll.getName() == null || coll.getName().isBlank()) {
                     result.errors.add("Skipped a snmp-collection with no name attribute");
                     continue;
                 }
-                upsertProfileFromSnmpCollection(coll, groupsByName, user, now, result);
+                upsertProfileFromSnmpCollection(coll, lookup, user, now, result);
                 result.profiles.add(coll.getName());
             }
         }
@@ -891,11 +913,11 @@ public class DataCollectionConfPersistenceService {
      * like {@link #addDataCollectionConfig}.
      */
     private void upsertProfileFromSnmpCollection(final SnmpCollection coll,
-                                                 final Map<String, DatacollectionGroup> groupsByName,
+                                                 final IncludeLookup lookup,
                                                  final String userName,
                                                  final Date now,
                                                  final BulkUploadResult result) {
-        final ResolvedIncludes resolved = resolveIncludes(coll, groupsByName, result);
+        final ResolvedIncludes resolved = resolveIncludes(coll, lookup, result);
 
         // Materialize inline source if there's any pulled or seeded content.
         if (!resolved.inlineGroups.isEmpty()
@@ -936,14 +958,15 @@ public class DataCollectionConfPersistenceService {
     }
 
     /**
-     * Pure resolution of include-collection entries. Mirrors
+     * Resolution of include-collection entries. Mirrors
      * {@code SnmpDataCollectionMigration.resolveIncludes} — see that class for
-     * the rationale on each branch. References that can't be resolved (group
-     * not in the upload batch and not in DB, missing systemDef, etc.) are
-     * recorded in {@code result.errors} as warnings but do not abort.
+     * the rationale on each branch. References resolve against the uploaded
+     * files first, then against the enabled sources in the database.
+     * References that do not resolve (missing source, systemDef or MIB group)
+     * are recorded in {@code result.errors} as warnings but do not abort.
      */
     private ResolvedIncludes resolveIncludes(final SnmpCollection coll,
-                                             final Map<String, DatacollectionGroup> groupsByName,
+                                             final IncludeLookup lookup,
                                              final BulkUploadResult result) {
         final ResolvedIncludes r = new ResolvedIncludes();
 
@@ -980,10 +1003,11 @@ public class DataCollectionConfPersistenceService {
                     continue;
                 }
 
-                final DatacollectionGroup dcGroup = groupsByName.get(groupName);
+                final DatacollectionGroup dcGroup = lookup.getSource(groupName);
                 if (dcGroup == null) {
                     final String msg = "snmp-collection '" + coll.getName() + "': include-collection group '"
-                            + groupName + "' has exclude-filter but the group is not in the upload batch — full group reference kept.";
+                            + groupName + "' has exclude-filter, but the group is not in the upload or in the database — "
+                            + "full group reference kept.";
                     LOG.warn(msg);
                     result.errors.add(msg);
                     r.sourceNames.add(groupName);
@@ -997,7 +1021,7 @@ public class DataCollectionConfPersistenceService {
                     if (r.seenSystemDefNames.add(sd.getName())) {
                         r.inlineSystemDefs.add(sd);
                     }
-                    addReferencedGroups(sd, dcGroup, groupsByName, r);
+                    addReferencedGroups(coll, sd, dcGroup, lookup, r, result);
                 }
                 if (dcGroup.getResourceTypes() != null) {
                     for (final org.opennms.netmgt.config.datacollection.ResourceType rt : dcGroup.getResourceTypes()) {
@@ -1008,10 +1032,10 @@ public class DataCollectionConfPersistenceService {
                 }
             } else if (inc.getSystemDef() != null && !inc.getSystemDef().isEmpty()) {
                 final String systemDefName = inc.getSystemDef();
-                final SystemDefRef ref = findSystemDef(systemDefName, groupsByName);
+                final SystemDefRef ref = lookup.findSystemDef(systemDefName);
                 if (ref == null) {
                     final String msg = "snmp-collection '" + coll.getName() + "': systemDef='"
-                            + systemDefName + "' not found in upload batch — skipped.";
+                            + systemDefName + "' not found in the upload or in the database — skipped.";
                     LOG.warn(msg);
                     result.errors.add(msg);
                     continue;
@@ -1019,56 +1043,111 @@ public class DataCollectionConfPersistenceService {
                 if (r.seenSystemDefNames.add(ref.systemDef.getName())) {
                     r.inlineSystemDefs.add(ref.systemDef);
                 }
-                addReferencedGroups(ref.systemDef, ref.owningGroup, groupsByName, r);
+                addReferencedGroups(coll, ref.systemDef, ref.owningGroup, lookup, r, result);
             }
         }
 
         return r;
     }
 
-    private void addReferencedGroups(final SystemDef systemDef,
+    private void addReferencedGroups(final SnmpCollection coll,
+                                     final SystemDef systemDef,
                                      final DatacollectionGroup preferredGroup,
-                                     final Map<String, DatacollectionGroup> allGroups,
-                                     final ResolvedIncludes r) {
+                                     final IncludeLookup lookup,
+                                     final ResolvedIncludes r,
+                                     final BulkUploadResult result) {
         if (systemDef.getCollect() == null || systemDef.getCollect().getIncludeGroups() == null) {
             return;
         }
         for (final String name : systemDef.getCollect().getIncludeGroups()) {
-            final Group g = findGroup(name, preferredGroup, allGroups);
-            if (g == null) continue;
+            final Group g = lookup.findGroup(name, preferredGroup);
+            if (g == null) {
+                final String msg = "snmp-collection '" + coll.getName() + "': systemDef '" + systemDef.getName()
+                        + "' references MIB group '" + name + "', which is not in the upload or in the database — skipped.";
+                LOG.warn(msg);
+                result.errors.add(msg);
+                continue;
+            }
             if (r.seenGroupNames.add(g.getName())) {
                 r.inlineGroups.add(g);
             }
         }
     }
 
-    private Group findGroup(final String groupName,
-                            final DatacollectionGroup preferred,
-                            final Map<String, DatacollectionGroup> all) {
-        if (preferred != null && preferred.getGroups() != null) {
-            for (final Group g : preferred.getGroups()) {
-                if (groupName.equals(g.getName())) return g;
-            }
+    /**
+     * Finds the datacollection groups that include-collection entries refer
+     * to. The uploaded files have priority. The enabled sources in the
+     * database are read only when the uploaded files do not resolve a
+     * reference. Synthetic inline sources come last, because they contain
+     * copies of other sources.
+     */
+    private final class IncludeLookup {
+        private final Map<String, DatacollectionGroup> uploaded;
+        private Map<String, DatacollectionGroup> stored;
+
+        IncludeLookup(final Map<String, DatacollectionGroup> uploaded) {
+            this.uploaded = uploaded;
         }
-        for (final DatacollectionGroup dg : all.values()) {
-            if (dg.getGroups() == null) continue;
+
+        DatacollectionGroup getSource(final String name) {
+            final DatacollectionGroup g = uploaded.get(name);
+            return g != null ? g : stored().get(name);
+        }
+
+        Group findGroup(final String groupName, final DatacollectionGroup preferred) {
+            if (preferred != null) {
+                final Group g = findGroupIn(groupName, preferred);
+                if (g != null) return g;
+            }
+            for (final DatacollectionGroup dg : uploaded.values()) {
+                final Group g = findGroupIn(groupName, dg);
+                if (g != null) return g;
+            }
+            for (final DatacollectionGroup dg : stored().values()) {
+                final Group g = findGroupIn(groupName, dg);
+                if (g != null) return g;
+            }
+            return null;
+        }
+
+        SystemDefRef findSystemDef(final String name) {
+            final SystemDefRef ref = findSystemDefIn(name, uploaded.values());
+            return ref != null ? ref : findSystemDefIn(name, stored().values());
+        }
+
+        private Map<String, DatacollectionGroup> stored() {
+            if (stored == null) {
+                stored = new LinkedHashMap<>();
+                snmpCollectionSourceDao.findAll().stream()
+                        .filter(src -> Boolean.TRUE.equals(src.getEnabled()))
+                        .filter(src -> !uploaded.containsKey(src.getName()))
+                        .sorted(Comparator.comparing((SnmpCollectionSource src) -> src.getName().startsWith(INLINE_SOURCE_PREFIX))
+                                .thenComparing(SnmpCollectionSource::getId))
+                        .forEach(src -> stored.put(src.getName(),
+                                snmpDataCollectionConfigLoader.buildDataCollectionGroupFromDb(src)));
+            }
+            return stored;
+        }
+
+        private Group findGroupIn(final String groupName, final DatacollectionGroup dg) {
+            if (dg.getGroups() == null) return null;
             for (final Group g : dg.getGroups()) {
                 if (groupName.equals(g.getName())) return g;
             }
+            return null;
         }
-        return null;
-    }
 
-    private SystemDefRef findSystemDef(final String name, final Map<String, DatacollectionGroup> all) {
-        for (final DatacollectionGroup dg : all.values()) {
-            if (dg.getSystemDefs() == null) continue;
-            for (final SystemDef sd : dg.getSystemDefs()) {
-                if (name.equals(sd.getName())) {
-                    return new SystemDefRef(sd, dg);
+        private SystemDefRef findSystemDefIn(final String name, final Collection<DatacollectionGroup> groups) {
+            for (final DatacollectionGroup dg : groups) {
+                if (dg.getSystemDefs() == null) continue;
+                for (final SystemDef sd : dg.getSystemDefs()) {
+                    if (name.equals(sd.getName())) {
+                        return new SystemDefRef(sd, dg);
+                    }
                 }
             }
+            return null;
         }
-        return null;
     }
 
     private boolean matchesAnyRegex(final String candidate, final List<String> regexes) {

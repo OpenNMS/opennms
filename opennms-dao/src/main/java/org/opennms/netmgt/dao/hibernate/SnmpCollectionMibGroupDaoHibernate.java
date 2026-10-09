@@ -193,6 +193,17 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
+    public List<SnmpCollectionMibGroup> findAllByName(String name) {
+        return find("from SnmpCollectionMibGroup g join fetch g.collectionSource s where g.name = ?1 order by s.name, g.id", name);
+    }
+
+    @Override
+    public List<SnmpCollectionMibGroup> findAllEnabledInEnabledSources() {
+        return find("from SnmpCollectionMibGroup g join fetch g.collectionSource s "
+                + "where g.enabled = true and s.enabled = true order by s.id, g.id");
+    }
+
+    @Override
     public void updateMibGroupEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled) {
         if (ids == null || ids.isEmpty()) {
             LOG.warn("No MIB Group IDs provided for update. Skipping...");

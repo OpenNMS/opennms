@@ -22,6 +22,7 @@
 package org.opennms.config.upgrade.datacollection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -61,6 +62,20 @@ import java.util.Map;
 public class SnmpDataCollectionMigrationTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    // --- rrdRepository check ---
+
+    @Test
+    public void testIsCustomRrdRepository() {
+        final String expected = "/opt/opennms/share/rrd/snmp/";
+        assertFalse(SnmpDataCollectionMigration.isCustomRrdRepository("/opt/opennms/share/rrd/snmp/", expected));
+        assertFalse("trailing slash alone is not a difference",
+                SnmpDataCollectionMigration.isCustomRrdRepository("/opt/opennms/share/rrd/snmp", expected));
+        assertFalse(SnmpDataCollectionMigration.isCustomRrdRepository("/opt/opennms/share/rrd/./snmp/", expected));
+        assertFalse(SnmpDataCollectionMigration.isCustomRrdRepository(null, expected));
+        assertFalse(SnmpDataCollectionMigration.isCustomRrdRepository(" ", expected));
+        assertTrue(SnmpDataCollectionMigration.isCustomRrdRepository("/data/rrd/snmp/", expected));
+    }
 
     // --- DataCollectionGroupMapper tests ---
 

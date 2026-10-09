@@ -21,7 +21,7 @@
 ///
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { createSnmpCollectionSource } from '@/services/snmpDataCollectionService'
+import { createSnmpCollectionSource, findMibGroupsByName, findSystemDefsByName } from '@/services/snmpDataCollectionService'
 import { v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -79,6 +79,34 @@ describe('snmpDataCollectionService', () => {
         expect.any(Error)
       )
       consoleSpy.mockRestore()
+    })
+  })
+
+  describe('find definitions by name', () => {
+    it('keeps a slash in the name as a path separator and encodes the rest', async () => {
+      vi.mocked(v2.get).mockResolvedValue({
+        status: 200,
+        data: [{ id: 7, name: 'Microsoft Windows NT/2000', sysoidMask: '.1.3.6.1.4.1.311.1.1.3.1.', mibGroupNames: '[]',
+          enabled: true, collectionSourceId: 3, collectionSourceName: 'Microsoft' }]
+      })
+
+      const result = await findSystemDefsByName('Microsoft Windows NT/2000')
+
+      expect(v2.get).toHaveBeenCalledWith('/datacollectionconf/systemdefs/names/Microsoft%20Windows%20NT/2000')
+      expect(result).toHaveLength(1)
+      expect(result[0].collectionSourceName).toBe('Microsoft')
+    })
+
+    it('returns an empty list when no source defines the name', async () => {
+      vi.mocked(v2.get).mockRejectedValue({ response: { status: 404 }})
+
+      await expect(findMibGroupsByName('missing')).resolves.toEqual([])
+    })
+
+    it('rethrows other errors', async () => {
+      vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
+
+      await expect(findMibGroupsByName('mib2-interfaces')).rejects.toEqual({ response: { status: 500 }})
     })
   })
 })

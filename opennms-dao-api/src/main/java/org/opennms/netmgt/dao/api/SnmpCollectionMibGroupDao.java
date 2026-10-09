@@ -58,6 +58,19 @@ public interface SnmpCollectionMibGroupDao extends OnmsDao<SnmpCollectionMibGrou
 
     List<String> findAllMibGroupNames();
 
+    /**
+     * Find the MIB groups with this exact name in all sources. Names are not
+     * unique across sources, so the result can contain more than one entry.
+     * The owning source is fetched with each entry.
+     */
+    List<SnmpCollectionMibGroup> findAllByName(String name);
+
+    /**
+     * Find the enabled MIB groups that belong to enabled sources, ordered by
+     * source id. The owning source is fetched with each entry.
+     */
+    List<SnmpCollectionMibGroup> findAllEnabledInEnabledSources();
+
     void updateMibGroupEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled);
 }
 

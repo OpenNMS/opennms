@@ -1,19 +1,25 @@
 import {
   mapDataCollectionSourceFromServer,
+  mapSnmpCollectionMibGroupFromServer,
   mapSnmpCollectionMibGroupResponseFromServer,
+  mapSnmpCollectionResourceTypeFromServer,
   mapSnmpCollectionResourceTypeResponseFromServer,
+  mapSnmpCollectionSystemDefFromServer,
   mapSnmpCollectionSystemDefResponseFromServer,
   mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer,
   mapSnmpDataCollectionSourceResponseFromServer,
   mapUploadedDataCollectionFilesResponseFromServer
 } from '@/mappers/snmpDataCollection.mapper'
 import {
+  SnmpCollectionMibGroup,
   SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
   SnmpCollectionProfile,
+  SnmpCollectionResourceType,
   SnmpCollectionResourceTypePayload,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
+  SnmpCollectionSystemDef,
   SnmpCollectionSystemDefPayload,
   SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
@@ -309,6 +315,65 @@ export const getAllResourceTypeNames = async (): Promise<string[]> => {
     throw error
   }
 }
+
+/**
+ * Makes a GET request to the REST endpoint to retrieve a list of all SNMP data collection system definition names.
+ *
+ * @returns {Promise<string[]>} A promise that resolves to the names of all system definitions.
+ */
+export const getAllSystemDefNames = async (): Promise<string[]> => {
+  const endpoint = '/datacollectionconf/systemdefs/names'
+
+  try {
+    const response = await v2.get(endpoint)
+
+    if (response.status === 200) {
+      return response.data as string[]
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection system definition names:', error)
+    throw error
+  }
+}
+
+// Names such as "Microsoft Windows NT/2000" contain '/'. Keep it as a raw '/',
+// because reverse proxies often reject an encoded slash (%2F) by default.
+const encodeDefinitionName = (name: string) => name.split('/').map(encodeURIComponent).join('/')
+
+// Returns the response body, or an empty list when no source defines the name (404).
+const findByName = async (kind: 'mibgroups' | 'resourcetypes' | 'systemdefs', name: string): Promise<any[]> => {
+  const endpoint = `/datacollectionconf/${kind}/names/${encodeDefinitionName(name)}`
+  try {
+    const response = await v2.get(endpoint)
+    return Array.isArray(response.data) ? response.data : []
+  } catch (error: any) {
+    if (error?.response?.status === 404) {
+      return []
+    }
+    console.error(`Error finding SNMP data collection ${kind} with name '${name}':`, error)
+    throw error
+  }
+}
+
+/**
+ * Finds the MIB groups with this exact name in all sources. A name can exist in more than one source.
+ */
+export const findMibGroupsByName = async (name: string): Promise<SnmpCollectionMibGroup[]> =>
+  (await findByName('mibgroups', name)).map(mapSnmpCollectionMibGroupFromServer)
+
+/**
+ * Finds the resource types with this exact name in all sources. A name can exist in more than one source.
+ */
+export const findResourceTypesByName = async (name: string): Promise<SnmpCollectionResourceType[]> =>
+  (await findByName('resourcetypes', name)).map(mapSnmpCollectionResourceTypeFromServer)
+
+/**
+ * Finds the system definitions with this exact name in all sources. A name can exist in more than one source.
+ */
+export const findSystemDefsByName = async (name: string): Promise<SnmpCollectionSystemDef[]> =>
+  (await findByName('systemdefs', name)).map(mapSnmpCollectionSystemDefFromServer)
 
 /**
  * Makes a GET request to the REST endpoint to retrieve a list of all SNMP data collection MIB group names.
