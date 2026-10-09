@@ -109,8 +109,6 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     private static final Set<String> CONTACT_TYPES = names(ContactType.class);
     private static final Set<String> SCHEDULE_TYPES = names(OnCallSchedule.Type.class);
 
-    private boolean m_migrated;
-
     public UsersGroupsXmlMigratorOffline() throws OnmsUpgradeException {
         super();
     }
@@ -184,18 +182,20 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         } catch (final SQLException | RuntimeException e) {
             throw new OnmsUpgradeException("Can't copy users and groups to the database: " + e.getMessage(), e);
         }
-        m_migrated = true;
+        // here, not in postExecute(): Upgrade marks the task as done before postExecute(), so a failure
+        // there would never be retried. A failure here is, and the copy above can safely run again.
+        archive();
     }
 
-    /** Copies the files to {@code etc_archive}, but only after a successful {@link #execute()}. */
     @Override
     public void postExecute() throws OnmsUpgradeException {
-        if (!m_migrated) {
-            return;
-        }
+    }
+
+    /** Copies the files to {@code etc_archive}. */
+    private void archive() throws OnmsUpgradeException {
         final File archive = new File(getHomeDirectory(), "etc_archive");
         if (!archive.isDirectory() && !archive.mkdirs()) {
-            throw new OnmsUpgradeException("Can't create the folder '" + archive + "'");
+            throw new OnmsUpgradeException("The data was copied to the database, but the folder '" + archive + "' can't be created");
         }
         for (final String name : Arrays.asList(USERS_FILE_NAME, GROUPS_FILE_NAME, SECURITY_ROLES_FILE_NAME)) {
             final File source = etcFile(name);
@@ -204,7 +204,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     Files.copy(source.toPath(), new File(archive, name).toPath(), REPLACE_EXISTING, COPY_ATTRIBUTES);
                     log("Copied %s to %s\n", source, archive);
                 } catch (final IOException e) {
-                    throw new OnmsUpgradeException("Can't copy '" + source + "' to '" + archive + "': " + e.getMessage(), e);
+                    throw new OnmsUpgradeException("The data was copied to the database, but '" + source + "' can't be copied to '" + archive + "': " + e.getMessage(), e);
                 }
             }
         }
@@ -240,7 +240,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         final Properties properties = new Properties();
         try (final InputStream in = new FileInputStream(file)) {
             properties.load(in);
-        } catch (final IOException e) {
+        } catch (final IOException | IllegalArgumentException e) {
+            // IllegalArgumentException: a malformed Unicode escape
             throw new OnmsUpgradeException("Can't read '" + file + "': " + e.getMessage(), e);
         }
         final String roleList = properties.getProperty("roles");
@@ -515,7 +516,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
         /** @return true if the value is null or fits its column; otherwise logs that the entry is skipped */
         private boolean fits(final String value, final int length, final String ownerType, final String ownerName, final String what) {
-            if (value == null || value.length() <= length) {
+            // varchar(n) counts characters, not UTF-16 units
+            if (value == null || value.codePointCount(0, value.length()) <= length) {
                 return true;
             }
             skip("%s '%s': %s is longer than %d characters", ownerType, ownerName, what, length);
@@ -524,7 +526,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
         /** For an optional column: a value too long for it is dropped, with a message, and the row is kept. */
         private String valueOrNull(final String value, final int length, final String ownerType, final String ownerName, final String what) {
-            if (value == null || value.length() <= length) {
+            if (value == null || value.codePointCount(0, value.length()) <= length) {
                 return value;
             }
             warn("%s '%s': %s is longer than %d characters and was not copied", ownerType, ownerName, what, length);

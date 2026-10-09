@@ -325,6 +325,38 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
+    public void testAFailedArchiveCopyIsRetried() throws Exception {
+        copyFixtures();
+        // a file where the folder must be
+        final File archive = new File(m_home.getRoot(), "etc_archive");
+        write(archive, "");
+
+        final UsersGroupsXmlMigratorOffline migrator = new UsersGroupsXmlMigratorOffline();
+        migrator.preExecute();
+        // the task fails, so Upgrade does not mark it as done and runs it again next time
+        assertThrows(OnmsUpgradeException.class, migrator::execute);
+        final Map<String, Integer> counts = countAll();
+        assertEquals(4, (int) counts.get("users"));
+
+        assertTrue(archive.delete());
+        migrate();
+        assertEquals(counts, countAll());
+        assertTrue(new File(archive, "users.xml").exists());
+    }
+
+    @Test
+    public void testAMalformedSecurityRolesFileFailsTheTask() throws Exception {
+        copyFixtures();
+        write("security-roles.properties", "roles=\\u00zz");
+
+        final UsersGroupsXmlMigratorOffline migrator = new UsersGroupsXmlMigratorOffline();
+        migrator.preExecute();
+        // an OnmsUpgradeException, which Upgrade reports, not an IllegalArgumentException, which stops the installer
+        assertThrows(OnmsUpgradeException.class, migrator::execute);
+        assertEquals(0, count("users"));
+    }
+
+    @Test
     public void testCopiesTheFilesToTheArchiveAndKeepsThem() throws Exception {
         copyFixtures();
         migrate();
@@ -340,11 +372,13 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     @Test
     public void testValuesTooLongForTheirColumn() throws Exception {
         final String tooLong = "x".repeat(300);
+        // 200 characters, but 400 UTF-16 units
+        final String emoji = "\uD83D\uDE00".repeat(200);
         write("users.xml", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
                 + "<user><user-id>" + tooLong + "</user-id><password>a</password></user>"
                 + "<user><user-id>dave</user-id><full-name>" + tooLong + "</full-name><password>a</password>"
                 + "<contact type=\"email\" info=\"" + tooLong + "\"/><contact type=\"email\" info=\"dave@example.com\"/>"
-                + "<contact type=\"workPhone\" info=\"5551234\"/>"
+                + "<contact type=\"workPhone\" info=\"5551234\"/><contact type=\"homePhone\" info=\"" + emoji + "\"/>"
                 + "<duty-schedule>" + tooLong + "</duty-schedule><duty-schedule>MoTuWeThFr800-1700</duty-schedule></user>"
                 + "</users></userinfo>");
         migrate();
@@ -357,6 +391,8 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
             // the first email is too long; the second one is not used today, so it is not copied either
             assertNull(dave.getContact(ContactType.email));
             assertNotNull(dave.getContact(ContactType.workPhone));
+            // varchar(256) holds 256 characters, whatever their UTF-16 length
+            assertEquals(emoji, dave.getContact(ContactType.homePhone).getInfo());
             assertEquals(List.of("MoTuWeThFr800-1700"), dave.getDutySchedules());
         });
     }
@@ -389,7 +425,11 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     private void write(final String name, final String content) throws Exception {
-        Files.write(new File(m_etc, name).toPath(), content.getBytes(StandardCharsets.UTF_8));
+        write(new File(m_etc, name), content);
+    }
+
+    private static void write(final File file, final String content) throws Exception {
+        Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
     }
 
     private int count(final String table) {
