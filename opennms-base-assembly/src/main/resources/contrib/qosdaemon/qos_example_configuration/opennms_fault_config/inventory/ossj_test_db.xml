@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <!DOCTYPE myData [
-    <!ENTITY auml    "&#228;" >
-    <!ENTITY ouml    "&#246;" >
-    <!ENTITY uuml    "&#252;" >
-    <!ENTITY szlig   "&#223;" >
-  ]>
 <model-import xmlns:this="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2008-07-27T00:16:37" foreign-source="OSS-J_Test_Import">
 	<node node-label="localhost"  foreign-id="1000">
 		<category name="localhost"/>

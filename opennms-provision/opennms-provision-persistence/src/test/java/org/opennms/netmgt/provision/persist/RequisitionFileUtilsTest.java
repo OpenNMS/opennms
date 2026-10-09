@@ -31,8 +31,10 @@ package org.opennms.netmgt.provision.persist;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
@@ -42,6 +44,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 public class RequisitionFileUtilsTest {
@@ -49,9 +52,13 @@ public class RequisitionFileUtilsTest {
     private Path m_requisitionDirectory;
     private String m_importDirectory;
     private String m_foreignSourceDirectory;
+    private String m_allowDoctype;
 
     @Before
     public void createTestRepository() throws Exception {
+        m_allowDoctype = System.getProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY);
+        System.clearProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY);
+
         m_requisitionDirectory = Files.createTempDirectory("RequisitionFileUtilsTest");
         if (m_requisitionDirectory.toFile().exists()) {
             FileUtils.deleteDirectory(m_requisitionDirectory.toFile());
@@ -73,6 +80,11 @@ public class RequisitionFileUtilsTest {
     @After
     public void destroyTestRepository() throws Exception {
         FileUtils.deleteDirectory(m_requisitionDirectory.toFile());
+        if (m_allowDoctype == null) {
+            System.clearProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY);
+        } else {
+            System.setProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY, m_allowDoctype);
+        }
     }
 
     @Test
@@ -112,5 +124,67 @@ public class RequisitionFileUtilsTest {
 
         snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");
         assertEquals(0, snapshots.size());
+    }
+
+    @Test
+    public void testRequisitionDoctypeRejectedByDefault() throws Exception {
+        final File file = writeFile("requisition.xml", "<!DOCTYPE model-import [ <!ENTITY uuml \"&#252;\"> ]>\n"
+                + "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" foreign-source=\"doctype\">\n"
+                + "  <node foreign-id=\"1\" node-label=\"M&uuml;nchen\"/>\n"
+                + "</model-import>\n");
+        try {
+            RequisitionFileUtils.getRequisitionFromFile(file);
+            fail("expected a requisition with a DOCTYPE to be rejected");
+        } catch (final Exception e) {
+            assertDoctypeRejected(e);
+        }
+    }
+
+    @Test
+    public void testRequisitionDoctypeAcceptedWhenAllowed() throws Exception {
+        final File file = writeFile("requisition.xml", "<!DOCTYPE model-import [ <!ENTITY uuml \"&#252;\"> ]>\n"
+                + "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" foreign-source=\"doctype\">\n"
+                + "  <node foreign-id=\"1\" node-label=\"M&uuml;nchen\"/>\n"
+                + "</model-import>\n");
+        System.setProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY, "true");
+        final Requisition requisition = RequisitionFileUtils.getRequisitionFromFile(file);
+        assertEquals("doctype", requisition.getForeignSource());
+        assertEquals("M\u00fcnchen", requisition.getNodes().get(0).getNodeLabel());
+    }
+
+    @Test
+    public void testForeignSourceDoctypeRejectedByDefault() throws Exception {
+        final File file = writeFile("foreign-source.xml", "<!DOCTYPE foreign-source [ <!ENTITY uuml \"&#252;\"> ]>\n"
+                + "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"M&uuml;nchen\"/>\n");
+        try {
+            RequisitionFileUtils.getForeignSourceFromFile(file);
+            fail("expected a foreign source with a DOCTYPE to be rejected");
+        } catch (final Exception e) {
+            assertDoctypeRejected(e);
+        }
+    }
+
+    @Test
+    public void testForeignSourceDoctypeAcceptedWhenAllowed() throws Exception {
+        final File file = writeFile("foreign-source.xml", "<!DOCTYPE foreign-source [ <!ENTITY uuml \"&#252;\"> ]>\n"
+                + "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"M&uuml;nchen\"/>\n");
+        System.setProperty(RequisitionFileUtils.ALLOW_DOCTYPE_PROPERTY, "true");
+        final ForeignSource foreignSource = RequisitionFileUtils.getForeignSourceFromFile(file);
+        assertEquals("M\u00fcnchen", foreignSource.getName());
+    }
+
+    private static void assertDoctypeRejected(final Exception e) {
+        Throwable cause = e;
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        assertTrue("rejected for an unexpected reason: " + cause, String.valueOf(cause.getMessage()).toLowerCase().contains("doctype"));
+    }
+
+    private File writeFile(final String name, final String body) throws Exception {
+        final File file = new File(m_requisitionDirectory.toFile(), name);
+        final String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + body;
+        Files.write(file.toPath(), xml.getBytes(StandardCharsets.UTF_8));
+        return file;
     }
 }

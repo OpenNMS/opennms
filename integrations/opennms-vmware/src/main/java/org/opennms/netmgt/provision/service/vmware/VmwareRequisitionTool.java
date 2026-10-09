@@ -45,6 +45,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
@@ -99,7 +100,7 @@ public abstract class VmwareRequisitionTool {
                 // This is not elegant but it is necessary to avoid booting Spring
                 File req = new File(ConfigFileConstants.getFilePathString(), "imports" + File.separator + foreignSource + ".xml");
                 if (req.exists()) {
-                    return JaxbUtils.unmarshal(Requisition.class, req);
+                    return JaxbUtils.unmarshal(Requisition.class, req, true, RequisitionFileUtils.isDoctypeDisabled());
                 }
                 return null;
             }

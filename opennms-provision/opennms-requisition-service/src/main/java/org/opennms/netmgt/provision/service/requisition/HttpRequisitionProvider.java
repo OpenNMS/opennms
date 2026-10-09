@@ -37,6 +37,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionProvider;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 public class HttpRequisitionProvider extends AbstractRequisitionProvider<HttpRequisitionRequest> {
@@ -73,7 +74,7 @@ public class HttpRequisitionProvider extends AbstractRequisitionProvider<HttpReq
             }
             try (CloseableHttpResponse response = client.execute(get)) {
                 String responseString = new BasicResponseHandler().handleResponse(response);
-                return JaxbUtils.unmarshal(Requisition.class, responseString);
+                return JaxbUtils.unmarshal(Requisition.class, responseString, true, RequisitionFileUtils.isDoctypeDisabled());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

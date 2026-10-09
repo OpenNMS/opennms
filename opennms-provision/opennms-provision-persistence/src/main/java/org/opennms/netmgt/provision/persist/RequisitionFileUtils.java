@@ -51,6 +51,19 @@ public abstract class RequisitionFileUtils {
     
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionFileUtils.class);
 
+    /**
+     * Set this system property to true to accept a DOCTYPE in requisition and foreign-source XML.
+     * The default rejects a DOCTYPE, because the parser cannot limit the size of expanded entities.
+     */
+    public static final String ALLOW_DOCTYPE_PROPERTY = "org.opennms.provision.requisition.allowDoctype";
+
+    /**
+     * Returns true when requisition and foreign-source XML must not contain a DOCTYPE.
+     */
+    public static boolean isDoctypeDisabled() {
+        return !Boolean.getBoolean(ALLOW_DOCTYPE_PROPERTY);
+    }
+
     static void createPath(final File fsPath) throws ForeignSourceRepositoryException {
         if (!fsPath.exists()) {
             if (!fsPath.mkdirs()) {
@@ -64,12 +77,12 @@ public abstract class RequisitionFileUtils {
   }
 
     static ForeignSource getForeignSourceFromFile(final File inputFile) throws ForeignSourceRepositoryException {
-        return JaxbUtils.unmarshal(ForeignSource.class, inputFile);
+        return JaxbUtils.unmarshal(ForeignSource.class, inputFile, true, isDoctypeDisabled());
     }
 
     static Requisition getRequisitionFromFile(final File inputFile) throws ForeignSourceRepositoryException {
         try {
-            return JaxbUtils.unmarshal(Requisition.class, inputFile);
+            return JaxbUtils.unmarshal(Requisition.class, inputFile, true, isDoctypeDisabled());
         } catch (final Throwable e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }
@@ -198,7 +211,7 @@ public abstract class RequisitionFileUtils {
         Requisition newest = foreignSourceRepository.getRequisition(foreignSource);
         for (final File snapshotFile : findSnapshots(foreignSourceRepository, foreignSource)) {
             if (newest == null || isNewer(snapshotFile, newest.getDate())) {
-                newest = JaxbUtils.unmarshal(Requisition.class, snapshotFile);
+                newest = JaxbUtils.unmarshal(Requisition.class, snapshotFile, true, isDoctypeDisabled());
                 newest.setResource(new FileSystemResource(snapshotFile));
             }
         }
