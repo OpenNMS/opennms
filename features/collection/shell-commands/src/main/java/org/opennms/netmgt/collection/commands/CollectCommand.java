@@ -23,7 +23,6 @@ package org.opennms.netmgt.collection.commands;
 
 import java.net.InetAddress;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +74,11 @@ public class CollectCommand implements Action {
             "RRA:AVERAGE:0.5:288:366",
             "RRA:MAX:0.5:288:366",
             "RRA:MIN:0.5:288:366");
+
+    /**
+     * Default RRD step in seconds, matching the stock datacollection-config.xml.
+     */
+    public static final int DEFAULT_STEP = 300;
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String location;
@@ -148,15 +152,13 @@ public class CollectCommand implements Action {
 
         Persister persister = null;
         if (persist) {
-            ServiceParameters params = new ServiceParameters(Collections.emptyMap());
-            RrdRepository repository = new RrdRepository();
+            // Mirror what collectd does: the service parameters are the collector attributes
+            // (so a "collection=xyz" attribute selects the data collection), and the RRD
+            // repository comes from the collector's own data collection configuration.
+            final ServiceParameters params = new ServiceParameters(parse(attributes));
+            final RrdRepository repository = buildRrdRepository(collector, params);
+            System.out.printf("Persisting using RRD repository: %s\n", repository);
             persister = persisterFactory.createPersister(params, repository);
-            if (rras != null && rras.size() > 0) {
-                repository.setRraList(rras);
-            } else {
-                repository.setRraList(Lists.newArrayList(DEFAULT_RRA));
-            }
-            repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"), "share", "rrd", "snmp").toFile());
         }
         while (true) {
             try {
@@ -189,6 +191,63 @@ public class CollectCommand implements Action {
             System.out.flush();
         }
         return null;
+    }
+
+    /**
+     * Builds the {@link RrdRepository} used to persist the collection set.
+     *
+     * The repository is taken from the collector's data collection configuration for the
+     * requested collection, exactly like collectd does. If the collector cannot provide one
+     * (or provides an incomplete one) sensible defaults are used instead, so that the step
+     * and heartbeat are never zero: rrdtool refuses to create a file with a heartbeat of 0,
+     * which would otherwise fail with "value must be positive".
+     */
+    RrdRepository buildRrdRepository(final ServiceCollector collector, final ServiceParameters params) {
+        final String collectionName = params.getCollectionName();
+
+        RrdRepository configured = null;
+        try {
+            configured = collector.getRrdRepository(collectionName);
+        } catch (Exception e) {
+            System.out.printf("Unable to determine the RRD repository for collection '%s' from the collector, using defaults: %s\n", collectionName, e.getMessage());
+        }
+
+        final RrdRepository repository = new RrdRepository();
+
+        // Step: use the configured value when valid, otherwise the stock default
+        int step = configured != null ? configured.getStep() : 0;
+        if (step <= 0) {
+            if (configured != null) {
+                System.out.printf("The collector has no valid RRD settings for collection '%s' (step=%d), using the default step of %d seconds.\n", collectionName, step, DEFAULT_STEP);
+            }
+            step = DEFAULT_STEP;
+        }
+        repository.setStep(step);
+
+        // Heartbeat: use the configured value when valid, otherwise twice the step
+        int heartBeat = configured != null ? configured.getHeartBeat() : 0;
+        if (heartBeat <= 0) {
+            heartBeat = 2 * step;
+        }
+        repository.setHeartBeat(heartBeat);
+
+        // RRAs: explicit command line option wins, then the configured list, then the stock default
+        if (rras != null && !rras.isEmpty()) {
+            repository.setRraList(Lists.newArrayList(rras));
+        } else if (configured != null && configured.getRraList() != null && !configured.getRraList().isEmpty()) {
+            repository.setRraList(Lists.newArrayList(configured.getRraList()));
+        } else {
+            repository.setRraList(Lists.newArrayList(DEFAULT_RRA));
+        }
+
+        // Base directory: use the configured value, otherwise $OPENNMS_HOME/share/rrd/snmp
+        if (configured != null && configured.getRrdBaseDir() != null) {
+            repository.setRrdBaseDir(configured.getRrdBaseDir());
+        } else {
+            repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"), "share", "rrd", "snmp").toFile());
+        }
+
+        return repository;
     }
 
     private CollectionAgent getCollectionAgent() {
