@@ -178,6 +178,12 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.wsman</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
@@ -207,6 +213,12 @@
           <artifactId>jaxen</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- the IT registers a fake time-series storage plugin; production code finds the interface by name -->
+    <dependency>
+      <groupId>org.opennms.integration.api</groupId>
+      <artifactId>api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -427,6 +439,16 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.collection</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-wsman-agent</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

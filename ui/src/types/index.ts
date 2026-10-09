@@ -254,6 +254,9 @@ export interface Alarm {
   count: number
   lastEventTime: number
   logMessage: string
+  // Both absent while the alarm is unacknowledged: the REST API omits null fields.
+  ackTime?: number
+  ackUser?: string
 }
 
 export interface Event {
@@ -289,6 +292,20 @@ export interface MonitoringLocation {
 export interface DrawerState {
   visible: boolean
   isAdvanceFilterModal: boolean
+}
+
+/**
+ * IF-MIB ifAdminStatus / ifOperStatus values. ifAdminStatus only ever takes the
+ * first three; ifOperStatus uses the full range.
+ */
+export enum SnmpIfStatus {
+  UP = 1,
+  DOWN = 2,
+  TESTING = 3,
+  UNKNOWN = 4,
+  DORMANT = 5,
+  NOT_PRESENT = 6,
+  LOWER_LAYER_DOWN = 7
 }
 
 export interface SnmpInterface {
@@ -336,6 +353,30 @@ export interface IpInterface {
   snmpPrimary: string
   hostName: string
 }
+// A monitored service on a node and the address it runs on, from /api/v2/ifservices: what the
+// Node Details Services menu links to.
+export interface NodeLinkService {
+  serviceName: string
+  ipAddress: string
+}
+
+// GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
+// GET /api/v2/nodes/{id}/alarmStatus: the node's problem alarms (above Normal), counted on the server.
+export interface NodeAlarmStatus {
+  // Highest unacknowledged problem severity, as an OnmsSeverity name; NORMAL when there is none.
+  severity: string
+  nodeDown: boolean
+  interfacesDown: number
+  servicesDown: number
+  acknowledgedCount: number
+  unacknowledgedCount: number
+}
+
+export interface NodeCriticalPath {
+  criticalPathIp: string | null
+  criticalPathServiceName: string | null
+}
+
 export interface MonitoredService {
   id: number
   lastGood?: Date | null
@@ -386,6 +427,12 @@ export interface Category {
   name: string
 }
 
+// The page a node slice holds: what its query asked for. A limit of 0 is every row.
+export interface NodePage {
+  offset: number
+  limit: number
+}
+
 export interface QueryParameters {
   limit?: number
   offset?: number
@@ -413,23 +460,31 @@ export interface SortProps extends ISortObject {
   sortOrder: 1 | -1
 }
 
+export interface NodeAvailabilityService {
+  /** The monitored service (ifservices) id, which the outage timeline joins on. */
+  id: number
+  name: string
+  /** The service *type* id, for building a service detail link. */
+  serviceId: number
+  availability: number
+  up?: boolean
+}
+
+export interface NodeAvailabilityInterface {
+  address: string
+  availability: number
+  id: number
+  services: NodeAvailabilityService[]
+}
+
 export interface NodeAvailability {
   availability: number
   id: number
-  ipinterfaces: {
-    address: string
-    availability: number
-    id: number
-    services: [
-      {
-        id: number
-        name: string
-        availability: number
-      }
-    ]
-  }[]
+  ipinterfaces: NodeAvailabilityInterface[]
   'service-count': number
   'service-down-count': number
+  // The node's total interfaces, when `ipinterfaces` may hold only a page of them.
+  ipinterfaceCount?: number
 }
 
 export interface FileEditorResponseLog {

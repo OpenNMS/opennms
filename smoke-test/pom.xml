@@ -51,7 +51,7 @@
     <camelVersion>2.21.5</camelVersion>
     <groovyVersion>3.0.21</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.22.1</jackson2Version>
+    <jackson2Version>2.22.3</jackson2Version>
     <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
     <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
     <jersey.version>2.46</jersey.version>
@@ -792,6 +792,12 @@
       <version>${selenium.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-wsman-agent</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <version>4.2.0</version>
@@ -824,7 +830,7 @@
     <dependency>
       <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.2.11</version>
+      <version>2.28.7</version>
     </dependency>
     <dependency>
       <groupId>net.i2p.crypto</groupId>

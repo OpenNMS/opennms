@@ -18,7 +18,7 @@ docker compose up -d
 ----
 
 TIP: You can also use this command when you run upgrades.
-     You must delete the file `etc/configured` file first.
+     You must delete the `etc/configured` file first.
      It works as a guard to prevent unnecessary database migration runs on startup.
 
 [[docker-upgrade-core]]

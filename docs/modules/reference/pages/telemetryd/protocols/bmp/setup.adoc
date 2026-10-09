@@ -19,7 +19,7 @@ To configure BMP, enable the BMP-TCP-5000 listener and the various BMP adapters 
         </adapter>
 ----
 
-The adapters you choose to enable depends on the use case.
+The adapters you choose to enable depend on the use case.
 For example, if you want to know the status of peers, you would enable the BMP peer status adapter.
 If you want to know all the BGP updates, enable the BGP persisting adapter.
 

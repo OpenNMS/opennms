@@ -2,6 +2,7 @@ import EventConfigSourceTable from '@/components/EventConfiguration/EventConfigS
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -9,8 +10,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
+const routeLeaveGuards: Array<(...args: unknown[]) => unknown> = []
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: mockPush })
+  useRouter: () => ({ push: mockPush }),
+  onBeforeRouteLeave: (guard: (...args: unknown[]) => unknown) => routeLeaveGuards.push(guard)
 }))
 
 const mockDownloadEventConfXmlBySourceId = vi.fn()
@@ -23,9 +26,16 @@ vi.mock('@/services/eventConfigService', () => ({
 }))
 
 // Stub the child dialogs so this suite focuses on the table's own behaviour.
+const mockConfirmLeave = vi.fn()
 const stubs = {
   DeleteEventConfigSourceDialog: { name: 'DeleteEventConfigSourceDialog', template: '<div class="delete-dialog-stub"></div>' },
-  ChangeEventConfigSourceStatusDialog: { name: 'ChangeEventConfigSourceStatusDialog', template: '<div class="change-status-dialog-stub"></div>' }
+  ChangeEventConfigSourceStatusDialog: { name: 'ChangeEventConfigSourceStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
+  StagedReorderList: {
+    name: 'StagedReorderList',
+    props: ['items', 'itemNoun', 'saving'],
+    template: '<div class="staged-reorder-stub"></div>',
+    methods: { confirmLeave: (...args: unknown[]) => mockConfirmLeave(...args) }
+  }
 }
 
 describe('EventConfigSourceTable.vue', () => {
@@ -38,6 +48,7 @@ describe('EventConfigSourceTable.vue', () => {
   const mountTable = () => mount(EventConfigSourceTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
+      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })
@@ -45,6 +56,7 @@ describe('EventConfigSourceTable.vue', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    routeLeaveGuards.length = 0
 
     mockSource = {
       id: 1,
@@ -99,6 +111,46 @@ describe('EventConfigSourceTable.vue', () => {
     })
   })
 
+  describe('Reorder mode', () => {
+    it('offers the evaluation-order explanation on the Order header', async () => {
+      store.sources = [mockSource]
+      await nextTick()
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(true)
+    })
+
+    it('replaces the table with the staged reorder list and hides search/refresh', async () => {
+      store.sources = [mockSource]
+      store.sourcesReorderMode = true
+      await nextTick()
+
+      expect(wrapper.find('.staged-reorder-stub').exists()).toBe(true)
+      expect(wrapper.find('[data-test="event-config-source-table"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(false)
+      // the reorder list carries its own intro
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(false)
+    })
+
+    it('leaving the route outside reorder mode passes without asking', async () => {
+      expect(routeLeaveGuards.length).toBe(1)
+      expect(await routeLeaveGuards[0]()).toBe(true)
+      expect(mockConfirmLeave).not.toHaveBeenCalled()
+    })
+
+    it('leaving the route in reorder mode passes the reorder list answer through', async () => {
+      store.sourcesReorderMode = true
+      await nextTick()
+      mockConfirmLeave.mockResolvedValue(false)
+      expect(await routeLeaveGuards[0]()).toBe(false)
+      expect(store.sourcesReorderMode).toBe(true)
+
+      mockConfirmLeave.mockResolvedValue(true)
+      expect(await routeLeaveGuards[0]()).toBe(true)
+      // an allowed leave ends the mode so the page does not reopen mid-reorder
+      expect(store.sourcesReorderMode).toBe(false)
+    })
+  })
+
   describe('Empty State', () => {
     it('shows EmptyList and no table when there are no sources', async () => {
       store.sources = []
@@ -131,7 +183,7 @@ describe('EventConfigSourceTable.vue', () => {
       const header = wrapper.find('[data-test="order-header"]')
       expect(header.exists()).toBe(true)
       expect(header.text()).toBe('Order')
-      expect(header.attributes('title')).toContain('1 is evaluated first')
+      expect(header.find('[data-test="order-info"]').exists()).toBe(true)
       expect(wrapper.findAll('tbody tr')[0].text()).toContain(String(mockSource.evaluationOrder))
     })
 

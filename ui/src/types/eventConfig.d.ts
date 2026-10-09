@@ -57,6 +57,23 @@ export type EventConfigEvent = {
   eventOrder: number
 }
 
+/** One event of a source, reduced to what the reorder view needs - no XML payload */
+export type EventConfigEventSummary = {
+  id: number
+  uei: string
+  eventLabel: string
+  severity: string
+  enabled: boolean
+  /** Evaluation position within the source: 1 = evaluated first */
+  eventOrder: number
+}
+
+export type EventConfigMutationResult = {
+  ok: boolean
+  status: number
+  message: string
+}
+
 export type EventConfigStoreState = {
   sources: EventConfigSource[]
   sourcesPagination: Pagination
@@ -65,6 +82,13 @@ export type EventConfigStoreState = {
   isLoading: boolean
   activeTab: number
   uploadedSources: Array<UploadedSourceNamesResponse>
+  /** Non-catch-all sources in evaluation order (first evaluated first), for the reorder mode */
+  orderedSources: EventConfigSource[]
+  /** The pinned catch-all source, shown locked below the reorderable list */
+  catchAllSource: EventConfigSource | null
+  isSavingSourceOrder: boolean
+  /** True while the sources table is in its in-place reorder mode */
+  sourcesReorderMode: boolean
   uploadedEventConfigFilesReportDialogState: {
     visible: boolean
   }
@@ -96,6 +120,11 @@ export type EventConfigDetailStoreState = {
     visible: boolean
     eventConfigEvent: EventConfigEvent | null
   }
+  /** True while the events table is in its in-place reorder mode */
+  eventsReorderMode: boolean
+  /** The source's events in evaluation order (first evaluated first), for the reorder mode */
+  orderedEvents: EventConfigEventSummary[]
+  isSavingEventsOrder: boolean
   deleteEventConfigSourceDialogState: {
     visible: boolean
     eventConfigSource: EventConfigSource | null
@@ -116,6 +145,9 @@ export type EventConfigFilesUploadResponse = {
   success: [
     {
       file: string
+      // present on non-file steps, e.g. 'Source order applied (12 entries)'
+      message?: string
+      eventCount?: number
     }
   ]
 }
@@ -140,6 +172,11 @@ export type UploadEventFileType = {
   isValid: boolean
   errors: string[]
   isDuplicate: boolean
+  // set once the user confirms replacing the existing source, so store refreshes
+  // (which recompute duplicate flags) do not resurrect an already-answered question
+  replaceConfirmed?: boolean
+  // for an eventconf.xml ordering manifest: how many <event-file> entries it carries
+  manifestEntries?: number
 }
 
 export type EventModificationStoreState = {

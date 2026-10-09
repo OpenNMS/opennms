@@ -22,47 +22,103 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { Event, QueryParameters } from '@/types'
+import { nodePageOf, withNodeFilter } from '@/services/serviceHelpers'
+import { Event, NodePage, QueryParameters } from '@/types'
+import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { ref } from 'vue'
 
+/**
+ * Events in two independent slices:
+ *
+ * - `events` -- whatever the last unscoped query asked for, for an all-nodes event list.
+ * - `nodeEvents` -- one node's events, for the Node Details page, stamped with the node they
+ *   belong to.
+ *
+ * They are kept apart because the store is global and outlives any one page: with a single
+ * slice, an event list page and the node page would each leave the other's results behind. The
+ * node stamp lets a panel tell this node's events from the previous node's, which a failed fetch
+ * would otherwise leave on screen.
+ */
 export const useEventStore = defineStore('eventStore', () => {
   const events = ref([] as Event[])
   const totalCount = ref(0)
 
-  // Monotonic id sequencing getEvents requests, mirroring the node store's fetches: the events
-  // table fires one per node id as the user moves between nodes and again per page, so a slow
-  // response from a superseded request must not land under the current paginator state.
-  let eventsRequestId = 0
+  const nodeEvents = ref([] as Event[])
+  const nodeEventsTotalCount = ref(0)
+  const nodeEventsNodeId = ref<string | undefined>(undefined)
+  // The page the node slice holds, so a table's paginator can match the rows on screen.
+  const nodeEventsPage = ref<NodePage | undefined>(undefined)
+  // The node whose latest fetch failed, if any; see the alarm store.
+  const nodeEventsFailedNodeId = ref<string | undefined>(undefined)
 
-  const getEvents = async (queryParameters?: QueryParameters) => {
+  // Monotonic ids sequencing each slice's requests: a table fires one per page and, on the node
+  // page, one per node as the user moves between them, so a slow response from a superseded
+  // request must not land under the current paginator state. One counter per slice, so a request
+  // for one never discards a response for the other.
+  let eventsRequestId = 0
+  let nodeEventsRequestId = 0
+
+  const getEvents = async (queryParameters?: QueryParameters): Promise<ValidationResultWithPayload<Event[]>> => {
     const requestId = ++eventsRequestId
 
     const resp = await API.getEvents(queryParameters)
 
     if (requestId !== eventsRequestId) {
-      return
+      return createResultWithPayload(false, 'Superseded by a newer request')
     }
 
-    if (resp) {
-      events.value = resp.event
-      totalCount.value = resp.totalCount
+    if (!resp) {
+      return createResultWithPayload(false, 'Unable to load events')
     }
+
+    events.value = resp.event
+    totalCount.value = resp.totalCount
+
+    return createResultWithPayload(true, '', resp.event)
   }
 
   /**
-   * Drop the events on hand. The Node Details page calls this when its node fails to load:
-   * the events table fetches by node id itself and only replaces its rows on success, so the
-   * previous node's events would otherwise stay on screen.
+   * Fetch one node's events. `queryParameters` carries paging and sorting; any `_s` in it is
+   * applied within the node. The slice is replaced only on success, so check `nodeEventsNodeId`
+   * before showing it for a given node.
    */
-  const clearEvents = () => {
-    events.value = []
-    totalCount.value = 0
+  const getNodeEvents = async (nodeId: string, queryParameters?: QueryParameters): Promise<ValidationResultWithPayload<Event[]>> => {
+    const requestId = ++nodeEventsRequestId
+
+    if (nodeEventsFailedNodeId.value !== nodeId) {
+      nodeEventsFailedNodeId.value = undefined
+    }
+
+    const resp = await API.getEvents(withNodeFilter(nodeId, queryParameters))
+
+    if (requestId !== nodeEventsRequestId) {
+      return createResultWithPayload(false, 'Superseded by a newer request')
+    }
+
+    if (!resp) {
+      nodeEventsFailedNodeId.value = nodeId
+
+      return createResultWithPayload(false, `Unable to load events for node ${nodeId}`)
+    }
+
+    nodeEvents.value = resp.event
+    nodeEventsTotalCount.value = resp.totalCount
+    nodeEventsNodeId.value = nodeId
+    nodeEventsPage.value = nodePageOf(queryParameters)
+    nodeEventsFailedNodeId.value = undefined
+
+    return createResultWithPayload(true, '', resp.event)
   }
 
   return {
     events,
     totalCount,
+    nodeEvents,
+    nodeEventsTotalCount,
+    nodeEventsNodeId,
+    nodeEventsPage,
+    nodeEventsFailedNodeId,
     getEvents,
-    clearEvents
+    getNodeEvents
   }
 })

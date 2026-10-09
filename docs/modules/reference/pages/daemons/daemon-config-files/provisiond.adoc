@@ -51,10 +51,18 @@ Also includes service detection and policy results.
 
 == Provisiond thread configuration
 
-Provisiond uses for a few thread pools to manage various tasks.
+Provisiond uses a few thread pools to manage various tasks.
 You can configure these via the Web UI by selecting menu:Info[External Requisitions] in the top menu bar.
 
-NOTE: Any changes to the thread pools require a restart of the {page-component-title} service to apply the new thread limits.
+NOTE: Changes to the thread pool sizes take effect without a restart.
+Saving them in the web UI, or updating them through the xref:development:rest/config_management.adoc[configuration management REST API], sends a `reloadDaemonConfig` event to Provisiond, which resizes the running pools in place.
+Threads that are busy finish their current task before a pool shrinks, and no queued work is lost.
+Sending the event by hand has the same effect:
+
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
+----
 
 
 .Provisiond thread pool descriptions
@@ -82,7 +90,7 @@ Increase this number if you have a large number of nodes in a single requisition
 
 | Rescan
 | 10
-| Number of threads to allocate for automated rescanning existing nodes.
+| Number of threads to allocate for automated rescanning of existing nodes.
 This pool is used for rescanning nodes in a requisition based on the foreign source definition or the external requisition schedule.
 Rescan threads will spawn a scan thread to process the applicable detectors, so this value typically should be the same as the Scan thread pool size.
 

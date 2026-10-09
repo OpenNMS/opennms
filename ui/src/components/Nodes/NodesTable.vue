@@ -206,7 +206,6 @@
               >{{ col.id === 'id' ? data.id : data.label }}</a>
               <ManagementIPTooltipCell
                 v-else-if="col.id === 'ipaddress'"
-                :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
                 :node="data"
                 :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap"
               />
@@ -276,8 +275,6 @@
   </div>
 
   <NodeDetailsDialog
-    :computeNodeLink="computeNodeLink"
-    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
     :visible="dialogVisible"
     :node="dialogNode"
     @close="dialogVisible = false"
@@ -346,6 +343,7 @@ import {
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
 import { getAssetColumnLabel } from './hooks/queryStringParser'
+import { nodeLink } from '@/lib/linkUtils'
 import { getSnmpPrimaryIpAddress } from './nodeActionLinks'
 import { buildSnmpNarrowing } from './utils'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
@@ -472,11 +470,7 @@ const snmpPrimaryIpAddressFor = (nodeId: string) =>
   getSnmpPrimaryIpAddress(nodeStore.nodeToIpInterfaceMap.get(nodeId) ?? [])
 
 const computeNodeLink = (nodeId: number | string) => {
-  return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
-}
-
-const computeNodeIpInterfaceLink = (nodeId: number | string, ipAddress: string) => {
-  return `${mainMenu.value.baseHref}element/interface.jsp?node=${nodeId}&intf=${ipAddress}`
+  return nodeLink(mainMenu.value.baseHref, mainMenu.value.baseNodeUrl, nodeId)
 }
 
 const onNodeLinkClick = (nodeId: number | string) => {

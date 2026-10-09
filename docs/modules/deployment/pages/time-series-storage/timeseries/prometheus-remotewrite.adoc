@@ -4,7 +4,7 @@
 
 The Prometheus RemoteWrite plugin enables {page-component-title} to persist time series performance and latency data to any Prometheus remote-write compatible time series store (for example, https://victoriametrics.com/[VictoriaMetrics], https://grafana.com/oss/mimir/[Mimir], or https://cortexmetrics.io/[Cortex]).
 The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to the configured time series store.
-It also lets you visualize graphs from the time series store in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
+It also lets you visualize graphs from the time series store in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS Plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
 
 .Prometheus RemoteWrite plugin architecture
 image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Prometheus RemoteWrite plugin and how it integrates with {page-component-title}", 600]

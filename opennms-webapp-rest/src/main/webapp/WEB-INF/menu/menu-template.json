@@ -251,9 +251,16 @@
         {
           "id": "notificationsPreview",
           "name": "Notifications (Preview)",
-          "url": "ui/index.html#/admin/notifications",
+          "url": "ui/index.html#/notifications",
           "locationMatch": null,
           "roles": null
+        },
+        {
+          "id": "notificationsConfigPreview",
+          "name": "Notifications Config (Preview)",
+          "url": "ui/index.html#/notifications-config",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "manageEventConfigurations",
@@ -308,23 +315,16 @@
       "roles": null,
       "items": [
         {
-          "id": "manageMinions",
-          "name": "Manage Minions",
-          "url": "minion/index.jsp",
+          "id": "distributedMonitoring",
+          "name": "Manage Minions and Locations",
+          "url": "ui/index.html#/distributed-monitoring",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "manageApplications",
           "name": "Manage Applications",
           "url": "admin/applications.htm",
-          "locationMatch": "",
-          "roles": null
-        },
-        {
-          "id": "manageMonitoringLocations",
-          "name": "Manage Monitoring Locations",
-          "url": "locations/index.jsp",
           "locationMatch": "",
           "roles": null
         }
@@ -379,6 +379,13 @@
           "url": "admin/bsm/adminpage.jsp",
           "locationMatch": "",
           "roles": null
+        },
+        {
+          "id": "manageWsman",
+          "name": "Manage WS-Man",
+          "url": "ui/index.html#/admin/wsman-config",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },
@@ -718,21 +725,21 @@
       {
         "id": "userNotificationConfiguration",
         "name": null,
-        "url": "ui/index.html#/admin/notifications",
+        "url": "ui/index.html#/notifications",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationUser",
         "name": null,
-        "url": "ui/index.html#/admin/notifications?preset=yourOutstanding",
+        "url": "ui/index.html#/notifications?preset=yourOutstanding",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationTeam",
         "name": null,
-        "url": "ui/index.html#/admin/notifications?preset=teamOutstanding",
+        "url": "ui/index.html#/notifications?preset=teamOutstanding",
         "locationMatch": null,
         "roles": null
       },

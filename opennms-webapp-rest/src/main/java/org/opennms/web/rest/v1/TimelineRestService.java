@@ -67,7 +67,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("timelineRestService")
 @Path("timeline")
 @Tag(name = "Timeline", description = """
-        Server-rendered outage strips.
+        Server-rendered outage strips. **Deprecated.** Use `GET /api/v2/outages/timeline/{nodeId}`, which
+        returns the same outages as JSON for a whole node in one request, and render the strip client-side.
+        These operations remain because the JSP availability boxes still render these images; they paint
+        fixed colours that cannot follow a page theme, and one request per monitored service.
 
         Every operation takes `start`, `end` and `width` as path segments. **`start` and `end` are epoch
         seconds, not milliseconds**: passing milliseconds produces a strip covering the year 58000 with no
@@ -399,6 +402,12 @@ public class TimelineRestService extends OnmsRestService {
         return onmsOutageCollection;
     }
 
+    /**
+     * @deprecated Superseded by {@code GET /api/v2/outages/timeline/{nodeId}}. There is no JSON successor for
+     *     this endpoint specifically: a client that renders the timeline itself draws its own time
+     *     axis. Retained for the JSP availability boxes, which still render these images.
+     */
+    @Deprecated(since = "37.0.0")
     @GET
     @Produces("image/png")
     @Transactional
@@ -410,7 +419,8 @@ public class TimelineRestService extends OnmsRestService {
         granularity is chosen from the window length and the width.
 
         `start` and `end` are epoch seconds.""",
-            operationId = "getTimelineHeader"
+            operationId = "getTimelineHeader",
+            deprecated = true
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "A 20-pixel-high PNG of the time axis.",
@@ -456,6 +466,13 @@ public class TimelineRestService extends OnmsRestService {
         return Response.ok(imageData).build();
     }
 
+    /**
+     * @deprecated Superseded by {@code GET /api/v2/outages/timeline/{nodeId}}, which returns the same
+     *     outages as JSON for client-side rendering, in one request per node rather than one PNG
+     *     per monitored service. Retained for the JSP availability boxes, which still render
+     *     these images.
+     */
+    @Deprecated(since = "37.0.0")
     @GET
     @Produces("text/html")
     @Transactional
@@ -470,7 +487,8 @@ public class TimelineRestService extends OnmsRestService {
         A node id that does not exist is not an error: the map comes back empty.
 
         `start` and `end` are epoch seconds.""",
-            operationId = "getTimelineHtml"
+            operationId = "getTimelineHtml",
+            deprecated = true
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The `<img>` element and its image map. The map is empty when no outage falls in the window.",
@@ -557,6 +575,13 @@ public class TimelineRestService extends OnmsRestService {
         return Response.ok(htmlBuffer.toString()).build();
     }
 
+    /**
+     * @deprecated Superseded by {@code GET /api/v2/outages/timeline/{nodeId}}, which returns the same
+     *     outages as JSON for client-side rendering, in one request per node rather than one PNG
+     *     per monitored service. Retained for the JSP availability boxes, which still render
+     *     these images.
+     */
+    @Deprecated(since = "37.0.0")
     @GET
     @Produces("image/png")
     @Transactional
@@ -573,7 +598,8 @@ public class TimelineRestService extends OnmsRestService {
 
         An unknown node id fails with 500, because the node is drawn before it is checked. `start` and `end`
         are epoch seconds.""",
-            operationId = "getTimelineImage"
+            operationId = "getTimelineImage",
+            deprecated = true
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "A 20-pixel-high PNG of the outage strip.",
@@ -636,6 +662,12 @@ public class TimelineRestService extends OnmsRestService {
         return Response.ok(imageData).build();
     }
 
+    /**
+     * @deprecated Superseded by {@code GET /api/v2/outages/timeline/{nodeId}}. There is no JSON successor for
+     *     this endpoint specifically: a client that renders the timeline itself draws its own time
+     *     axis. Retained for the JSP availability boxes, which still render these images.
+     */
+    @Deprecated(since = "37.0.0")
     @GET
     @Produces("image/png")
     @Transactional
@@ -648,7 +680,8 @@ public class TimelineRestService extends OnmsRestService {
 
         `start` and `end` are epoch seconds. This operation narrows them to `int` before subtracting, so a
         window that does not fit in a signed 32-bit number of seconds produces a wrong or negative range.""",
-            operationId = "getTimelineEmpty"
+            operationId = "getTimelineEmpty",
+            deprecated = true
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "A 20-pixel-high PNG containing only grid lines.",

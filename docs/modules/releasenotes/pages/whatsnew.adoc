@@ -118,7 +118,39 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 
 To keep the previous behavior, see xref:operation:deep-dive/admin/configuration/startup.adoc[Startup Configuration], or xref:reference:configuration/core-docker.adoc[Core Docker] for container deployments.
 
+=== WSMan WinRS support, WsManShellMonitor, and WsManShellDetector
+The OpenNMS WSMan library has added support for WinRS remote shell commands.
+A corresponding monitor and detector have been added to leverage these new capabilities.
+
+=== WSMan Kerberos message encryption
+The OpenNMS WSMan library has added support for Kerberos message encryption over unencrypted channels.
+The existing configuration has been extended to take advantage of this new feature.
+This should greatly reduce friction when deploying WS-Man / WinRM-based monitoring on Windows.
+
+=== Custom Performance Graphs preview
+A preview interface has been added to eventually replace the previous Ad-Hoc Graphing workflow with a more modern UI that takes advantage of current OpenNMS REST APIs for nodes, resources, and metric measurements.
+
+=== Notifd modernization
+The `notifd` daemon has had much of its underlying software infrastructure modernized, including mail libraries, to improve support for modern protocols.
+
+=== Kafka producer JSON payloads for metrics
+The Kafka producer feature now supports producing metric payloads to Kafka as JSON format.
+
+=== OpenAPI docs improvements
+There are extensive improvements to how our OpenAPI docs are generated and rendered.
+This includes more reliable rendering with reduced load times as well as expected payloads and responses for many more API endpoints.
+
+=== Karaf shell pubkey auth
+Support has been added for configuring Karaf shell authentication using ssh public keys.
+
 == Breaking changes
+
+=== Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default
+The Kafka client libraries have been upgraded to 3.9.1, which adds the `org.apache.kafka.sasl.oauthbearer.allowed.urls` system property for CVE-2025-27817.
+Core, Minion, and Sentinel now ship that property with an empty value in `etc/opennms.properties` and `etc/system.properties`, so the client contacts no token or JWKS endpoint URL.
+If you authenticate to Kafka with SASL/OAUTHBEARER, set the property to a comma-separated list of your endpoint URLs before upgrading.
+Other SASL mechanisms, such as SCRAM, are not affected.
+See xref:deployment:core/message-broker/kafka.adoc[Kafka message broker] for the client configuration.
 
 === Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support
 All mail sending and reading now uses Jakarta Mail 2.1 (Eclipse Angus) instead of JavaMail 1.4; existing `javamail-configuration.xml` and `javamail-configuration.properties` files load unchanged.
@@ -184,8 +216,32 @@ IMPORTANT: If you previously configured the plugin via `$\{OPENNMS_HOME}/etc/org
 The Karaf feature is now `opennms-plugins-prometheus-remotewrite` (previously `opennms-plugins-cortex-tss`), and the KAR file is `opennms-prometheus-remotewrite-plugin` (previously `opennms-cortex-tss-plugin`).
 See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[the Prometheus RemoteWrite plugin documentation] for details.
 
+=== Newts and Cassandra time series storage deprecated
+
+Newts, the time series store backed by Apache Cassandra, should be considered deprecated.
+{page-component-title} {page-component-version} still ships with Newts support for existing Newts users: if you are already running on Newts, you can continue to do so through this release.
+
+After {page-component-title} {page-component-version} reaches end of support, OpenNMS will no longer provide official support for the Cassandra backend, and Newts will not be carried forward into subsequent releases.
+If you are using Newts, we suggest planning a move to the xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[Prometheus RemoteWrite plugin], which stores metrics in any Prometheus `remote_write`-compatible time series database.
+Note that there is no tool to copy existing Newts data into another store, so after a switch the historical metrics remain in Cassandra until its retention period expires.
+
 === Jasper Reports engine
 We have updated the Jasper Reports engine to version 7.0.7. Custom reports created using version 6.x must be updated to work with the new version.
+
+=== REST API configuration writes require ROLE_ADMIN
+Writing OpenNMS configuration through the REST API (`POST`/`PUT`/`DELETE` on `/rest/config/**`, including the alarm northbounder configurations) now requires `ROLE_ADMIN`; previously an account with only `ROLE_REST` could write these.
+Update any integration that used a `ROLE_REST` account to change configuration to use a `ROLE_ADMIN` account.
+Reading configuration and all other `ROLE_REST` data operations are unchanged.
+
+=== REST API requisition reads require ROLE_PROVISION
+Reading requisitions through the REST API now requires `ROLE_PROVISION` or `ROLE_ADMIN`.
+Give `ROLE_PROVISION` to integration accounts that read requisitions.
+
+=== Write-only asset fields in the REST API
+The asset fields `password`, `enable` and `snmpcommunity` are now write-only in the REST API.
+
+=== Raw SQL query parameter requires ROLE_ADMIN
+The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
 === Ops Board and Wallboard removed
 

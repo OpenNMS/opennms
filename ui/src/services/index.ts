@@ -23,13 +23,27 @@
 import {
   getNodes,
   getNodeById,
-  getNodeOutages,
+  getNodeAlarmStatus,
+  getNodeCriticalPath,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
+import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
+import { getNodeOutages, getOutages } from './outageService'
+import { nodeExistsInRequisition } from './requisitionService'
+import { getNodeEnlinkdElements } from './enlinkdService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
+import {
+  createMonitoringLocation,
+  deleteMonitoringLocation,
+  getApplicationsUsingPerspective,
+  getNodeCountByLocation,
+  getPerspectiveOutageCount,
+  listMonitoringLocations,
+  updateMonitoringLocation
+} from './monitoringLocationAdminService'
 import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
@@ -57,9 +71,10 @@ import { getAliases, getAllCredentials, getCredentialsByAlias, addCredentials, u
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
-import { getNodeIfServices } from './ifService'
+import { getNodeIfServices, getNodeServicesByName } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { getSnmpInterfaces, getNodeSnmpInterfaceQuery } from './snmpInterfaceService'
+import { getFlowGraphUrl } from './flowService'
 import { search } from './searchService'
 import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
@@ -75,7 +90,9 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
+import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
   createManagedUser,
   deleteManagedUser,
@@ -110,7 +127,7 @@ import {
   updateEventNotification,
   validateNotificationRule
 } from './notificationConfigService'
-import { acknowledgeNotice, browseNotices } from './noticesService'
+import { acknowledgeNotification, browseNotifications } from './notificationService'
 import {
   createManagedGroup,
   deleteManagedGroup,
@@ -121,6 +138,11 @@ import {
 } from './groupAdminService'
 
 export default {
+  getMinionNodeIds,
+  getCoreVersion,
+  listMinions,
+  deleteMinion,
+  getMinion,
   search,
   getSystemReportPlugins,
   getSystemReportFormatters,
@@ -131,18 +153,33 @@ export default {
   getEvents,
   modifyAlarm,
   getNodeById,
+  getNodeAlarmStatus,
+  getNodeCriticalPath,
   getNodeOutages,
+  getOutages,
+  nodeExistsInRequisition,
+  getNodeEnlinkdElements,
   getNodeIfServices,
+  getNodeServicesByName,
   getIpInterfaces,
   getNodeIpInterfaceQuery,
   getSnmpInterfaces,
+  getFlowGraphUrl,
   getNodeSnmpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
+  getNodeOutageTimeline,
   getCategories,
   getMonitoringLocations,
+  createMonitoringLocation,
+  deleteMonitoringLocation,
+  getApplicationsUsingPerspective,
+  getNodeCountByLocation,
+  getPerspectiveOutageCount,
+  listMonitoringLocations,
+  updateMonitoringLocation,
   getLog,
   getLogs,
   getFile,
@@ -194,11 +231,11 @@ export default {
   renameManagedUser,
   setManagedUserPassword,
   updateManagedUser,
-  acknowledgeNotice,
+  acknowledgeNotification,
   addDestinationPath,
   addEventNotification,
   applyPathOutage,
-  browseNotices,
+  browseNotifications,
   deleteDestinationPath,
   deleteEventNotification,
   deletePathOutage,
@@ -224,5 +261,15 @@ export default {
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
-  updateManagedGroup
+  updateManagedGroup,
+  getWsmanConfig,
+  getWsmanDataCollection,
+  getWsmanStatus,
+  getRequisitionNames,
+  getWsmanReadiness,
+  runWsmanReadinessAction,
+  resetWsmanDataCollection,
+  syncWsmanDefinition,
+  updateWsmanConfig,
+  updateWsmanDataCollectionFile
 }

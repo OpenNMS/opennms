@@ -22,14 +22,14 @@ These rules apply to all monitors and collectors, excluding the `SnmpCollector`.
 
 The TTL used when invoking the `SnmpCollector` remotely is:
 
-1. The value of the `ttl` associate with the SNMP agent's configuration
+1. The value of the `ttl` associated with the SNMP agent's configuration
 2. Fall-back to using the service interval as the TTL (this is the rate at which the service is scheduled)
 
 == TTLs for the other SNMP communication
 
 The TTL used when invoking other types of SNMP requests remotely is:
 
-1. The value of the `ttl` associate with the SNMP agent's configuration
+1. The value of the `ttl` associated with the SNMP agent's configuration
 2. Fall-back to using the service interval as the TTL (this is the rate at which the service is scheduled)
 
 TIP: These rules apply to SNMP queries like agent scans in provisiond, table scans in enlinkd, etc...
@@ -63,7 +63,7 @@ If legitimately long-running local operations (for example, large SNMP table wal
 
 For RPCs that derive TTLs from service parameters, the link:#ga-meta-data[metadata] feature can be used to customize these values on a node/interface/service basis.
 
-For example, the ICMP detector could be configured to use the value of the `ttl` associated with the node metadata, or default to 30 seconds if none is setup as follows:
+For example, the ICMP detector could be configured to use the value of the `ttl` associated with the node metadata, or default to 30 seconds if none is set up as follows:
 
 [source, xml]
 ----

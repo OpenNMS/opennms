@@ -152,7 +152,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "description", "Description", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "displayCategory", "Display Category", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "division", "Division", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "enable", "Enable", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "floor", "Floor", STRING),
 		//new SearchProperty(OnmsAssetRecord.class, "geolocation", "", ?),
 		new SearchProperty(OnmsAssetRecord.class, "hdd1", "HDD 1", STRING),
@@ -177,7 +176,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "notifyCategory", "Notify Category", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "numpowersupplies", "Number of Power Supplies", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "operatingSystem", "Operating System", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "password", "Password", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "pollerCategory", "Poller Category", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "port", "Port", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "rack", "Rack", STRING),
@@ -187,7 +185,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "room", "Room", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "serialNumber", "Serial Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "slot", "Slot", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "snmpcommunity", "SNMP Community", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "geolocation.state", "State or Province", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "storagectrl", "Storage Controller", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "supportPhone", "Support Phone", STRING),
@@ -272,6 +269,8 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsMonitoredService.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsMonitoredService.class, "lastFail", "Last Failure Time", TIMESTAMP),
 		new SearchProperty(OnmsMonitoredService.class, "lastGood", "Last Good Time", TIMESTAMP),
+		new SearchProperty(OnmsMonitoredService.class, "collectLastFail", "Last Collection Failure Time", TIMESTAMP),
+		new SearchProperty(OnmsMonitoredService.class, "collectLastGood", "Last Collection Good Time", TIMESTAMP),
 		new SearchProperty(OnmsMonitoredService.class, "notify", "Notify", STRING, ImmutableMap.<String,String>builder()
 			.put("Y", "Yes")
 			.put("N", "No")

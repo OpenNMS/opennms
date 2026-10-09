@@ -92,7 +92,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
 const stubs = {
   NodeAdvancedFiltersDrawer: { name: 'NodeAdvancedFiltersDrawer', template: '<div></div>' },
   ColumnSelectionDrawer: { name: 'ColumnSelectionDrawer', template: '<div></div>' },
-  NodeDetailsDialog: { name: 'NodeDetailsDialog', template: '<div></div>', props: ['visible', 'node', 'computeNodeLink', 'computeNodeIpInterfaceLink'] },
+  NodeDetailsDialog: { name: 'NodeDetailsDialog', template: '<div></div>', props: ['visible', 'node'] },
   NodeDownloadDropdown: { name: 'NodeDownloadDropdown', template: '<div></div>', props: ['onCsvDownload', 'onJsonDownload'] },
   NodeActionsDropdown: {
     name: 'NodeActionsDropdown',
@@ -100,7 +100,7 @@ const stubs = {
     props: ['baseHref', 'node', 'triggerNodeInfo', 'snmpPrimaryIpAddress']
   },
   NodeTooltipCell: { name: 'NodeTooltipCell', template: '<span></span>', props: ['text'] },
-  ManagementIPTooltipCell: { name: 'ManagementIPTooltipCell', template: '<span></span>', props: ['computeNodeIpInterfaceLink', 'node', 'nodeToIpInterfaceMap'] },
+  ManagementIPTooltipCell: { name: 'ManagementIPTooltipCell', template: '<span></span>', props: ['node', 'nodeToIpInterfaceMap'] },
   FlowTooltipCell: { name: 'FlowTooltipCell', template: '<span></span>', props: ['node'] },
   OnmsMessageDialog: { name: 'OnmsMessageDialog', template: '<div><slot name="content" /></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
   EmptyList: { name: 'EmptyList', template: '<div class="empty-list-stub"></div>', props: ['content'] },

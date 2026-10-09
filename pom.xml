@@ -1747,7 +1747,7 @@
     <activemqVersion>5.19.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.84</bouncyCastleVersion>
+    <bouncyCastleVersion>1.85</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <byteBuddyVersion>1.14.9</byteBuddyVersion>
@@ -1802,15 +1802,16 @@
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
-    <freemarkerVersion>2.3.32</freemarkerVersion>
+    <freemarkerVersion>2.3.35</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
-    <!-- this has to match FST's direct dependency because we specify it in karaf features -->
-    <objenesisVersion>2.5.1</objenesisVersion>
+    <objenesisVersion>3.5</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>3.0.21</groovyVersion>
     <grpcVersion>1.75.0</grpcVersion>
+    <!-- Codegen plugin only. 1.75.0 ships an x86_64-only macOS binary; 1.76.0+ is a universal binary (NMS-20384). -->
+    <grpcCodegenVersion>1.76.0</grpcCodegenVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>33.3.1-jre</guavaVersion>
     <guava32Version>32.1.3-jre</guava32Version>
@@ -1835,7 +1836,7 @@
     <httpclient5Version>5.6.4</httpclient5Version>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.22.1</jackson2Version>
+    <jackson2Version>2.22.3</jackson2Version>
     <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
     <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
     <jmsApiVersion>2.0.1</jmsApiVersion>
@@ -1885,7 +1886,7 @@
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
-    <jschVersion>0.2.11</jschVersion>
+    <jschVersion>2.28.7</jschVersion>
     <jsonVersion>20240303</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
@@ -1898,7 +1899,7 @@
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.4.9</karafVersion>
+    <karafVersion>4.4.11</karafVersion>
     <!-- BEGIN: versions must match versions provided by embedded Karaf -->
     <eclipseOsgiVersion>3.18.0</eclipseOsgiVersion>
     <felixCmJsonVersion>1.0.8</felixCmJsonVersion>
@@ -1910,22 +1911,24 @@
     <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
-    <jansiVersion>2.4.2</jansiVersion>
+    <jansiVersion>2.4.3</jansiVersion>
     <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
     <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
     <paxLoggingVersion>2.3.5</paxLoggingVersion>
     <paxSwissboxVersion>1.9.0</paxSwissboxVersion>
+    <!-- pax-swissbox-optional-jcl was not released alongside 1.9.0, so it keeps its own property -->
     <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
     <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
          container/pax-url-aether-patch to replace the plexus-utils it shades
-         (CVE-2025-67030); keep ${plexusUtilsVersion} in mind when bumping this -->
-    <paxUrlAetherVersion>2.6.17</paxUrlAetherVersion>
-    <paxWebVersion>8.0.34</paxWebVersion>
+         (CVE-2025-67030; 2.7.1 already shades the fixed 3.6.1); keep ${plexusUtilsVersion}
+         in mind when bumping this -->
+    <paxUrlAetherVersion>2.7.1</paxUrlAetherVersion>
+    <paxWebVersion>8.0.35</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
-    <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
-    <kafkaVersion>3.6.2</kafkaVersion>
+    <kafkaBundleVersion>3.9.1_1</kafkaBundleVersion>
+    <kafkaVersion>3.9.1</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
@@ -1973,7 +1976,7 @@
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
-    <scalaLibraryVersion>2.13.12</scalaLibraryVersion>
+    <scalaLibraryVersion>2.13.15</scalaLibraryVersion>
     <scala11LibraryVersion>2.11.12</scala11LibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
@@ -2005,8 +2008,8 @@
     <xstreamVersion>1.4.21</xstreamVersion>
     <wsmanVersion>1.3.7</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
-    <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.15.0</minaSshdVersion>
+    <zstdJniVersion>1.5.6-4</zstdJniVersion>
+    <minaSshdVersion>2.17.1</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <!-- Spring 5.3.x via stock ServiceMix bundles. The custom .ONMS.1 patches that the EOL 4.3.x line
@@ -3065,6 +3068,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.tests</groupId>
+        <artifactId>org.opennms.tests.mock-wsman-agent</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>activemq-dependencies</artifactId>
         <version>${project.version}</version>
@@ -3994,6 +4003,11 @@
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.xstream</artifactId>
         <version>${xstreamVersion}_1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>${objenesisVersion}</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -5187,17 +5201,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-orm</artifactId>
         <version>${springVersion}</version>
         <exclusions>
@@ -5267,17 +5270,6 @@
         </exclusions>
       </dependency>
       <!-- spring-webmvc-portlet was removed in Spring 5.0; no OpenNMS module consumes it. -->
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-websocket</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -5474,6 +5466,16 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk18on</artifactId>
+        <version>${bouncyCastleVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcutil-jdk18on</artifactId>
+        <version>${bouncyCastleVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bctls-jdk18on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
       <dependency>

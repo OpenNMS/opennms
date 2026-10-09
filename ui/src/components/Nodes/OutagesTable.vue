@@ -15,11 +15,11 @@
     </template>
     <OnmsTable
       lazy
-      :value="nodeStore.outages"
+      :value="outages"
       paginator
-      :rows="pageSize"
+      :rows="rows"
       :first="first"
-      :totalRecords="nodeStore.outagesTotalCount"
+      :totalRecords="totalRecords"
       :rowsPerPageOptions="[5, 10, 20, 50]"
       data-test="outages-table"
       @page="onPage"
@@ -64,67 +64,75 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag, type OnmsTablePageEvent } from '@opennms/onms-ui'
+import { computed, watch } from 'vue'
+import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStore } from '@/stores/nodeStore'
+import { useOutageStore } from '@/stores/outageStore'
 import { useRecordDownload } from './hooks/useRecordDownload'
+import {
+  OUTAGE_LIST_TYPE_BOTH,
+  interfaceLink as buildInterfaceLink,
+  nodeOutageListLink,
+  outageDetailLink as buildOutageDetailLink,
+  serviceLink as buildServiceLink
+} from '@/lib/linkUtils'
 import { Outage } from '@/types'
-
-// The legacy outage pages, which accept node/interface/service parameters.
-// Will need to replace with the Vue pages once they are implemented.
-const OUTAGE_LIST_PATH = 'outage/list.htm'
-
-// outtype=both makes the legacy list show current AND resolved outages, matching this panel.
-const OUTAGE_LIST_TYPE = 'both'
-const OUTAGE_DETAIL_PATH = 'outage/detail.htm'
-const INTERFACE_PATH = 'element/interface.jsp'
-const SERVICE_PATH = 'element/service.jsp'
+import useActiveNodeId from './hooks/useActiveNodeId'
+import useNodeTablePaging from './hooks/useNodeTablePaging'
 
 const menuStore = useMenuStore()
-const nodeStore = useNodeStore()
-const route = useRoute()
+const outageStore = useOutageStore()
 
 const { showSnackBar } = useSnackbar()
 const { downloadRecords } = useRecordDownload()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const DEFAULT_PAGE_SIZE = 5
 
-const pageSize = ref(DEFAULT_PAGE_SIZE)
-const first = ref(0)
-const emptyListContent = { msg: 'No results found.' }
+// The store's node slice is only replaced on a successful fetch, so it can still hold the
+// previous node's outages -- after a failed fetch, or while this node's is in flight. Show it
+// only when it is this node's.
+const isThisNode = computed<boolean>(() => outageStore.nodeOutagesNodeId === nodeId.value)
+const outages = computed<Outage[]>(() => (isThisNode.value ? outageStore.nodeOutages : []))
+const totalRecords = computed<number>(() => (isThisNode.value ? outageStore.nodeOutagesTotalCount : 0))
 
-const queryParameters = ref({
-  limit: DEFAULT_PAGE_SIZE,
-  offset: 0
+// With nothing on hand for this node, say why: still loading, failed to load, or truly none.
+const emptyListContent = computed(() => {
+  if (isThisNode.value) {
+    return { msg: 'No results found.' }
+  }
+
+  return outageStore.nodeOutagesFailedNodeId === nodeId.value
+    ? { msg: 'Unable to load outages for this node.' }
+    : { msg: 'Loading outages…' }
 })
 
+const { first, rows, onPage, firstPage } = useNodeTablePaging({
+  pageSize: DEFAULT_PAGE_SIZE,
+  load: page => outageStore.getNodeOutages(nodeId.value, page),
+  shownPage: () => (isThisNode.value ? outageStore.nodeOutagesPage : undefined),
+  total: () => totalRecords.value
+})
+
+// outtype=both so the legacy list shows current AND resolved outages, matching this panel.
 const onViewOutagesClick = () => {
-  window.location.assign(
-    `${baseHref.value}${OUTAGE_LIST_PATH}?filter=node%3D${nodeId.value}&outtype=${OUTAGE_LIST_TYPE}`)
+  window.location.assign(nodeOutageListLink(baseHref.value, nodeId.value, OUTAGE_LIST_TYPE_BOTH))
 }
 
-const outageDetailLink = (outage: Outage) => `${baseHref.value}${OUTAGE_DETAIL_PATH}?id=${outage.id}`
-
-// Both pages take the interface by address rather than by id, so the address is encoded (an
-// IPv6 address is full of reserved characters).
-const nodeAndInterfaceQuery = (outage: Outage) =>
-  `?node=${nodeId.value}&intf=${encodeURIComponent(outage.ipAddress)}`
+const outageDetailLink = (outage: Outage) => buildOutageDetailLink(baseHref.value, outage.id)
 
 const interfaceLink = (outage: Outage) =>
-  `${baseHref.value}${INTERFACE_PATH}${nodeAndInterfaceQuery(outage)}`
+  buildInterfaceLink(baseHref.value, nodeId.value, outage.ipAddress)
 
 const serviceLink = (outage: Outage) =>
-  `${baseHref.value}${SERVICE_PATH}${nodeAndInterfaceQuery(outage)}&service=${outage.serviceId}`
+  buildServiceLink(baseHref.value, nodeId.value, outage.ipAddress, outage.serviceId)
 
 // Every outage carries its service inline, so the name needs no lookup: OnmsMonitoredService
 // requires a serviceType, and the outage row nests it.
@@ -137,9 +145,7 @@ const isUnresolved = (outage: Outage) => !!outage.ifLostService && !outage.ifReg
 // second request, and no way for the file to disagree with the table. Raising rows-per-page is
 // how a user takes more than the default page.
 const onDownload = (format: 'csv' | 'json') => {
-  const outages = nodeStore.outages
-
-  if (!outages || outages.length === 0) {
+  if (outages.value.length === 0) {
     showSnackBar({
       msg: `No outages found for '${format}' download for this node`,
       error: true
@@ -148,7 +154,7 @@ const onDownload = (format: 'csv' | 'json') => {
     return
   }
 
-  downloadRecords(outages, 'Outages', format)
+  downloadRecords(outages.value, 'Outages', format)
 }
 
 const onCsvDownload = () => {
@@ -159,28 +165,11 @@ const onJsonDownload = () => {
   onDownload('json')
 }
 
-const fetchOutages = () => {
-  nodeStore.getNodeOutages({ id: nodeId.value, queryParameters: queryParameters.value })
-}
-
-const onPage = (event: OnmsTablePageEvent) => {
-  first.value = event.first
-  pageSize.value = event.rows
-  queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }
-  fetchOutages()
-}
-
-onMounted(fetchOutages)
-
 // The details page keeps one instance of this panel across node ids, so the id has to be
 // followed rather than read once: otherwise the table, its "View Outages for this Node" link
 // and its downloads would disagree about which node they are for. Back to the first page,
 // since the page the user was on says nothing about the new node.
-watch(nodeId, () => {
-  first.value = 0
-  queryParameters.value = { ...queryParameters.value, offset: 0 }
-  fetchOutages()
-})
+watch(nodeId, firstPage, { immediate: true })
 
 defineExpose({ onPage })
 </script>

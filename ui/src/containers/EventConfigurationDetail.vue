@@ -23,6 +23,7 @@
         <OnmsButton
           label="Add Event Config"
           data-test="add-event-config"
+          :disabled="store.eventsReorderMode"
           @click="onAddEventClick(store.selectedSource)"
         />
         <OnmsButton
@@ -43,39 +44,39 @@
       class="config-details-box"
       data-test="config-box"
     >
-      <div class="config-row">
-        <div class="config-field">
-          <span class="field-label">Source:</span>
-          <span class="field-value">{{ store.selectedSource.name }}</span>
-        </div>
-        <div class="config-field">
-          <span class="field-label">Uploaded By:</span>
-          <span class="field-value">{{ store.selectedSource.uploadedBy }}</span>
-        </div>
-        <div class="config-field">
-          <span class="field-label">Creation Date:</span>
-          <span class="field-value">{{ store.selectedSource.createdTime && format(store.selectedSource.createdTime, 'MM/dd/yyyy') }}</span>
-        </div>
+      <div class="config-field">
+        <span class="field-label">Source</span>
+        <span class="field-value field-value-strong">{{ store.selectedSource.name }}</span>
       </div>
-      <div class="config-row">
-        <div class="config-field">
-          <span class="field-label">Vendor:</span>
-          <span class="field-value">{{ store.selectedSource.vendor }}</span>
-        </div>
-        <div class="config-field">
-          <span class="field-label">Status:</span>
-          <span class="field-value">{{ store.selectedSource.enabled ? 'Enabled' : 'Disabled' }}</span>
-        </div>
-        <div class="config-field">
-          <span class="field-label">Last Modified Date:</span>
-          <span class="field-value">{{ store.selectedSource.lastModified && format(store.selectedSource.lastModified, 'MM/dd/yyyy') }}</span>
-        </div>
+      <div class="config-field">
+        <span class="field-label">Vendor</span>
+        <span class="field-value">{{ store.selectedSource.vendor }}</span>
       </div>
-      <div class="config-row">
-        <div class="config-field">
-          <span class="field-label">Event Count:</span>
-          <span class="field-value">{{ store.selectedSource.eventCount }}</span>
-        </div>
+      <div class="config-field">
+        <span class="field-label">Event Count</span>
+        <span class="field-value">{{ store.selectedSource.eventCount }}</span>
+      </div>
+      <div class="config-field">
+        <span class="field-label">Status</span>
+        <span class="field-value">
+          <OnmsTag
+            :class="store.selectedSource.enabled ? 'enabled-tag' : 'disabled-tag'"
+            :value="store.selectedSource.enabled ? 'Enabled' : 'Disabled'"
+            data-test="source-status-tag"
+          />
+        </span>
+      </div>
+      <div class="config-field">
+        <span class="field-label">Uploaded By</span>
+        <span class="field-value">{{ store.selectedSource.uploadedBy }}</span>
+      </div>
+      <div class="config-field">
+        <span class="field-label">Creation Date</span>
+        <span class="field-value">{{ store.selectedSource.createdTime && format(store.selectedSource.createdTime, 'MM/dd/yyyy') }}</span>
+      </div>
+      <div class="config-field">
+        <span class="field-label">Last Modified Date</span>
+        <span class="field-value">{{ store.selectedSource.lastModified && format(store.selectedSource.lastModified, 'MM/dd/yyyy') }}</span>
       </div>
     </div>
     <div class="event-table-section">
@@ -108,7 +109,7 @@ import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
 
@@ -166,44 +167,55 @@ onMounted(async () => {
   }
 
   .config-details-box {
-    border: 1px solid var(--p-primary-color);
-    border-radius: 4px;
-    padding: 20px;
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 8px;
+    padding: 16px 20px;
     background: var(--p-content-background);
     margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px 32px;
 
-    .config-row {
+    .config-field {
       display: flex;
-      margin-bottom: 15px;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
 
-      .config-field {
-        display: flex;
-        align-items: center;
-        flex: 1;
-        margin-right: 40px;
+    .field-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--p-text-muted-color);
+    }
 
-        .field-label {
-          font-weight: bold;
-          margin-right: 10px;
-          color: var(--p-text-muted-color);
-          min-width: 80px;
-        }
+    .field-value {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-        .field-value {
-          color: var(--p-text-muted-color);
-        }
+    .field-value-strong {
+      font-weight: 600;
+    }
+
+    .enabled-tag {
+      border-radius: 4px;
+      background-color: #0B720C1F;
+
+      :deep(.p-tag-label) {
+        color: #0B720C !important;
       }
+    }
 
-      .name-field {
-        min-width: 500px;
-      }
+    .disabled-tag {
+      border-radius: 4px;
+      background-color: #7575751F;
 
-      .description-field {
-        min-width: 300px;
-      }
-
-      .vendor-field {
-        min-width: 500px;
+      :deep(.p-tag-label) {
+        color: #757575 !important;
       }
     }
   }

@@ -9,66 +9,76 @@
       <div class="heading">
         <h2>Node Details for {{ nodeTitle }}</h2>
       </div>
-      <NodeActionsDropdown
-        v-if="nodeLoaded"
-        :baseHref="baseHref"
-        :node="nodeStore.node"
-        :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
-      />
-    </div>
-    <template v-if="nodeLoaded">
-      <div class="onms-row">
-        <div class="onms-col-12">
-          <NodeDetailsHeader :node="nodeStore.node" />
-        </div>
-      </div>
-      <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
-        <div class="onms-col-6">
-          <NodeSnmpAttributes :node="nodeStore.node" />
-        </div>
-        <div class="onms-col-6">
-          <NodeCategoriesPanel :node="nodeStore.node" :base-href="baseHref" />
-          <NodeNotificationsPanel :node="nodeStore.node" :base-href="baseHref" />
-        </div>
-      </div>
-    </template>
-    <div class="onms-row" style="flex-wrap: inherit; padding: 4px;">
-      <div class="onms-col-6">
-        <NodeAvailabilityGraph
-          v-if="nodeLoaded"
-          :node="nodeStore.node"
-          :base-href="baseHref"
+      <div class="header-controls">
+        <OnmsSelectButton
+          v-model="activeTab"
+          :options="tabOptions"
+          option-label="label"
+          option-value="value"
+          aria-label="Node details view"
+          data-test="node-details-tab-select"
         />
-        <InterfacesTabs />
-      </div>
-      <div class="onms-col-6">
-        <EventsTable />
-        <OutagesTable />
       </div>
     </div>
+    <div
+      v-if="nodeLoaded"
+      class="onms-row"
+    >
+      <div class="onms-col-12">
+        <NodeDetailsHeader :node="nodeStore.node" />
+        <NodeDetailsLinks
+          :baseHref="baseHref"
+          :node="nodeStore.node"
+          :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+          :existsInRequisition="nodeStore.existsInRequisition"
+          :services="nodeStore.linkServices"
+          :triggerNodeInfo="onNodeInfo"
+        />
+      </div>
+    </div>
+
+    <!--
+      KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
+      paging and sorting when the user switches away and back. A hidden tab does not follow the
+      route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
+    -->
+    <KeepAlive>
+      <NodeDetailsMainTab
+        v-if="activeTab === 'main'"
+        :node="nodeStore.node"
+        :nodeLoaded="nodeLoaded"
+        :baseHref="baseHref"
+      />
+      <NodeDetailsAdditionalTab v-else-if="activeTab === 'additional'" />
+      <NodeDetailsNetworkTab v-else />
+    </KeepAlive>
+
+    <NodeDetailsDialog
+      :visible="dialogVisible"
+      :node="nodeStore.node"
+      @close="dialogVisible = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
-import EventsTable from '@/components/Nodes/EventsTable.vue'
-import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
-import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
-import NodeCategoriesPanel from '@/components/Nodes/NodeCategoriesPanel.vue'
+import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
+import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
-import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'
-import OutagesTable from '@/components/Nodes/OutagesTable.vue'
-import NodeSnmpAttributes from '@/components/Nodes/NodeSnmpAttributes.vue'
-import { useEventStore } from '@/stores/eventStore'
+import NodeDetailsLinks from '@/components/Nodes/NodeDetailsLinks.vue'
+import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
+import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
+import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStore } from '@/stores/nodeStore'
+import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { BreadCrumb, Node } from '@/types'
 
-const eventStore = useEventStore()
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
+const { provisionRole } = useRole()
 
 const props = defineProps({
   id: {
@@ -77,6 +87,26 @@ const props = defineProps({
 })
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+
+const tabOptions: { label: string, value: NodeDetailsTab }[] = [
+  { label: 'Main', value: 'main' },
+  { label: 'Additional', value: 'additional' },
+  { label: 'Network', value: 'network' }
+]
+
+const activeTab = computed<NodeDetailsTab>({
+  get: () => nodeStore.nodeDetailsTab,
+  set: tab => nodeStore.setNodeDetailsTab(tab)
+})
+
+// The node attributes now live behind the actions menu's Info... rather than in a panel of their
+// own. The dialog takes the node it is given; this page only ever has one, so the handler
+// ignores the node the menu hands back and shows the page's.
+const dialogVisible = ref(false)
+
+const onNodeInfo = () => {
+  dialogVisible.value = true
+}
 
 // Panels that read the node wait for a real one: the store's node starts as {}, which is
 // truthy and answers undefined for every field. The events, outages and interface tables fetch
@@ -110,20 +140,28 @@ const fetchNode = async () => {
   }
 
   nodeStore.getNodeSnmpPrimaryInterface(props.id)
+  nodeStore.getNodeCriticalPath(props.id)
+  nodeStore.getNodeLinkServices(props.id)
 
   await nodeStore.getNodeById({ id: props.id } as Node)
-
-  // The events table fetches by node id itself and only replaces its rows on success, so a
-  // node that could not be fetched would otherwise keep the previous node's events on screen.
-  // Events are the event store's to clear, so the page asks rather than reaching across.
-  if (nodeStore.nodeLoadFailed) {
-    eventStore.clearEvents()
-  }
 }
 
 onMounted(fetchNode)
 
 watch(() => props.id, fetchNode)
+
+// The Edit in Requisition action needs to know whether the node is in its requisition, which the
+// node payload does not say. Asked once the node has loaded, and only of a user who could use
+// the answer; roles can arrive after the node, so both are followed.
+watch(
+  [() => (nodeStore.nodeLoaded ? nodeStore.node : undefined), provisionRole],
+  ([node, canEdit]) => {
+    if (node && canEdit) {
+      nodeStore.getNodeExistsInRequisition(node)
+    }
+  },
+  { immediate: true }
+)
 
 defineExpose({ fetchNode })
 </script>
@@ -138,6 +176,12 @@ defineExpose({ fetchNode })
     align-items: center;
     margin-bottom: 1.25em;
     padding: 0;
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+    }
   }
 }
 </style>

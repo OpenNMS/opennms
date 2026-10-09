@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { NotificationAckType, NotificationBrowseResult, OnmsNotification } from '@/types/notifications'
+import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { rest } from './axiosInstances'
 
 // Mirrors NotificationSummary (v1 NotificationRestService /notifications/summary).
@@ -49,3 +51,59 @@ export const getNotificationSummary = async (): Promise<NotificationSummary | fa
     return false
   }
 }
+
+// API calls only: no spinner or snackbar here; the notifications store and the
+// components that call it decide what to show.
+const endpoint = '/notifications'
+
+interface BrowseNotificationsParams {
+  acktype: NotificationAckType
+  user?: string | null
+  excludeUser?: string | null
+  limit: number
+  offset: number
+}
+
+const browseNotifications = async (params: BrowseNotificationsParams): Promise<ValidationResultWithPayload<NotificationBrowseResult>> => {
+  try {
+    const query = new URLSearchParams()
+    query.set('limit', String(params.limit))
+    query.set('offset', String(params.offset))
+    query.set('orderBy', 'pageTime')
+    query.set('order', 'desc')
+    if (params.acktype === 'unack') {
+      query.set('answeredBy', 'null')
+    } else if (params.acktype === 'ack') {
+      query.set('answeredBy', 'notnull')
+    }
+    if (params.user) {
+      query.set('usersNotified.userId', params.user)
+    }
+    if (params.excludeUser) {
+      query.set('excludeNotifiedUser', params.excludeUser)
+    }
+    const resp = await rest.get(`${endpoint}?${query.toString()}`)
+    // 204 No Content when nothing matches
+    if (!resp.data || typeof resp.data !== 'object') {
+      return createResultWithPayload(true, '', { notifications: [], totalCount: 0 })
+    }
+    const raw = resp.data.notification ?? []
+    const notifications: OnmsNotification[] = Array.isArray(raw) ? raw : [raw]
+    return createResultWithPayload(true, '', { notifications, totalCount: Number(resp.data.totalCount ?? notifications.length) })
+  } catch (_err) {
+    return createResultWithPayload<NotificationBrowseResult>(false, 'Failed to load notifications.')
+  }
+}
+
+const acknowledgeNotification = async (notificationId: number, ack: boolean): Promise<boolean> => {
+  try {
+    await rest.put(`${endpoint}/${notificationId}`, new URLSearchParams({ ack: String(ack) }), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+    return true
+  } catch (_err) {
+    return false
+  }
+}
+
+export { acknowledgeNotification, browseNotifications }
