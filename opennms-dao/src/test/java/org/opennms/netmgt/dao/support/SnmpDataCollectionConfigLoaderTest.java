@@ -244,6 +244,57 @@ public class SnmpDataCollectionConfigLoaderTest {
         verify(f.resourceTypeDao, never()).findAllEnabledInEnabledSources();
     }
 
+    @Test
+    public void resourceTypeDisabledInOtherProfileSourceIsStillTakenFromOtherSource() {
+        // Profile "a" attaches "A" (id 1), whose group uses "fooType". No attached source of "a" defines it.
+        // Profile "b" attaches "B" (id 2), which disables "fooType". "Other" (id 3) defines an enabled "fooType".
+        final DatacollectionGroup dcA = new DatacollectionGroup();
+        dcA.setName("A");
+        final Group g = group("a-group");
+        final MibObj obj = new MibObj();
+        obj.setOid(".1.3.6.1.4.1.99.1");
+        obj.setInstance("fooType");
+        obj.setAlias("fooObj");
+        obj.setType("gauge");
+        g.addMibObj(obj);
+        dcA.addGroup(g);
+        final DatacollectionGroup dcB = new DatacollectionGroup();
+        dcB.setName("B");
+
+        final SnmpCollectionResourceType disabled = resourceTypeEntity(source(2, "B"), "fooType");
+        disabled.setEnabled(false);
+        final SnmpCollectionResourceType other = resourceTypeEntity(source(3, "Other"), "fooType");
+
+        final SnmpCollectionProfileDao profileDao = mock(SnmpCollectionProfileDao.class);
+        final SnmpCollectionSourceDao sourceDao = mock(SnmpCollectionSourceDao.class);
+        final SnmpCollectionMibGroupDao mibGroupDao = mock(SnmpCollectionMibGroupDao.class);
+        final SnmpCollectionResourceTypeDao resourceTypeDao = mock(SnmpCollectionResourceTypeDao.class);
+        when(profileDao.findAllEnabled()).thenReturn(List.of(profile("a", "A"), profile("b", "B")));
+        when(sourceDao.findByName("A")).thenReturn(source(1, "A"));
+        when(sourceDao.findByName("B")).thenReturn(source(2, "B"));
+        when(resourceTypeDao.findAllByName("fooType")).thenReturn(List.of(disabled, other));
+        when(resourceTypeDao.findAllEnabledInEnabledSources()).thenReturn(List.of(other));
+
+        final SnmpDataCollectionConfigLoaderImpl loader = new SnmpDataCollectionConfigLoaderImpl() {
+            @Override
+            public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource s) {
+                return s.getId() == 1 ? dcA : dcB;
+            }
+        };
+        loader.setSnmpCollectionProfileDao(profileDao);
+        loader.setSnmpCollectionSourceDao(sourceDao);
+        final DataCollectionConfigDao configDao = mock(DataCollectionConfigDao.class);
+        when(configDao.getRrdPath()).thenReturn("/tmp/rrd/");
+        loader.setDataCollectionConfigDao(configDao);
+        loader.setSnmpCollectionMibGroupDao(mibGroupDao);
+        loader.setSnmpCollectionResourceTypeDao(resourceTypeDao);
+
+        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = loader.materializeFromDb();
+
+        assertTrue("profile b must not block the resource type that profile a needs",
+                m.allResourceTypes.containsKey("fooType"));
+    }
+
     /** One profile named "default" that attaches only the given source. */
     private final class Fixture {
         final SnmpCollectionMibGroupDao mibGroupDao = mock(SnmpCollectionMibGroupDao.class);
@@ -294,6 +345,16 @@ public class SnmpDataCollectionConfigLoaderTest {
         e.setMibGroupNames(includeGroupsJson);
         e.setMibObjects(DatacollectionJsonHelper.toJson(List.of(obj)));
         return e;
+    }
+
+    private SnmpCollectionProfile profile(final String name, final String sourceName) {
+        final SnmpCollectionProfile p = new SnmpCollectionProfile();
+        p.setName(name);
+        p.setStorageFlag("select");
+        p.setRrdStep(300);
+        p.setSourceNames("[\"" + sourceName + "\"]");
+        p.setRrdRras("[]");
+        return p;
     }
 
     private SnmpCollectionResourceType resourceTypeEntity(final SnmpCollectionSource source, final String name) {

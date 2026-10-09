@@ -61,6 +61,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1034,8 +1035,11 @@ public class DataCollectionConfPersistenceService {
                 final String systemDefName = inc.getSystemDef();
                 final SystemDefRef ref = lookup.findSystemDef(systemDefName);
                 if (ref == null) {
-                    final String msg = "snmp-collection '" + coll.getName() + "': systemDef='"
-                            + systemDefName + "' not found in the upload or in the database — skipped.";
+                    final List<String> disabledIn = lookup.sourcesWithDisabledSystemDef(systemDefName);
+                    final String msg = "snmp-collection '" + coll.getName() + "': systemDef='" + systemDefName
+                            + (disabledIn.isEmpty()
+                                ? "' not found in the upload or in the database — skipped."
+                                : "' is disabled, or its source is disabled, in " + disabledIn + " — skipped.");
                     LOG.warn(msg);
                     result.errors.add(msg);
                     continue;
@@ -1060,6 +1064,15 @@ public class DataCollectionConfPersistenceService {
             return;
         }
         for (final String name : systemDef.getCollect().getIncludeGroups()) {
+            // A group that the source of the systemDef disables is not taken from another source.
+            if (lookup.isDisabledInStoredSource(name, preferredGroup)) {
+                final String msg = "snmp-collection '" + coll.getName() + "': systemDef '" + systemDef.getName()
+                        + "' references MIB group '" + name + "', which is disabled in source '"
+                        + preferredGroup.getName() + "' — skipped.";
+                LOG.warn(msg);
+                result.errors.add(msg);
+                continue;
+            }
             final Group g = lookup.findGroup(name, preferredGroup);
             if (g == null) {
                 final String msg = "snmp-collection '" + coll.getName() + "': systemDef '" + systemDef.getName()
@@ -1084,6 +1097,7 @@ public class DataCollectionConfPersistenceService {
     private final class IncludeLookup {
         private final Map<String, DatacollectionGroup> uploaded;
         private Map<String, DatacollectionGroup> stored;
+        private final Map<String, SnmpCollectionSource> storedSources = new HashMap<>();
 
         IncludeLookup(final Map<String, DatacollectionGroup> uploaded) {
             this.uploaded = uploaded;
@@ -1110,6 +1124,34 @@ public class DataCollectionConfPersistenceService {
             return null;
         }
 
+        /**
+         * True if the source is from the database and disables its MIB group
+         * with this name. The upload has no disabled definitions, so this is
+         * always false for an uploaded source.
+         */
+        boolean isDisabledInStoredSource(final String groupName, final DatacollectionGroup group) {
+            if (group == null || uploaded.containsKey(group.getName())) {
+                return false;
+            }
+            stored();
+            final SnmpCollectionSource src = storedSources.get(group.getName());
+            if (src == null) {
+                return false;
+            }
+            final SnmpCollectionMibGroup g = snmpCollectionMibGroupDao.findByNameAndSource(groupName, src.getId());
+            return g != null && !Boolean.TRUE.equals(g.getEnabled());
+        }
+
+        /** Names of the sources where a systemDef with this name is disabled, or its source is disabled. */
+        List<String> sourcesWithDisabledSystemDef(final String name) {
+            return snmpCollectionSystemDefDao.findAllByName(name).stream()
+                    .filter(sd -> !Boolean.TRUE.equals(sd.getEnabled())
+                            || !Boolean.TRUE.equals(sd.getCollectionSource().getEnabled()))
+                    .map(sd -> sd.getCollectionSource().getName())
+                    .distinct()
+                    .toList();
+        }
+
         SystemDefRef findSystemDef(final String name) {
             final SystemDefRef ref = findSystemDefIn(name, uploaded.values());
             return ref != null ? ref : findSystemDefIn(name, stored().values());
@@ -1123,8 +1165,10 @@ public class DataCollectionConfPersistenceService {
                         .filter(src -> !uploaded.containsKey(src.getName()))
                         .sorted(Comparator.comparing((SnmpCollectionSource src) -> src.getName().startsWith(INLINE_SOURCE_PREFIX))
                                 .thenComparing(SnmpCollectionSource::getId))
-                        .forEach(src -> stored.put(src.getName(),
-                                snmpDataCollectionConfigLoader.buildDataCollectionGroupFromDb(src)));
+                        .forEach(src -> {
+                            storedSources.put(src.getName(), src);
+                            stored.put(src.getName(), snmpDataCollectionConfigLoader.buildDataCollectionGroupFromDb(src));
+                        });
             }
             return stored;
         }

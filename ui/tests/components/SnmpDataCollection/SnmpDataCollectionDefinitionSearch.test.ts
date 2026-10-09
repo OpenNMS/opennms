@@ -22,6 +22,7 @@
 
 import SnmpDataCollectionDefinitionSearch from '@/components/SnmpDataCollection/SnmpDataCollectionDefinitionSearch.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { OnmsAutoComplete, OnmsSelect, OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
@@ -196,5 +197,27 @@ describe('SnmpDataCollectionDefinitionSearch.vue', () => {
     await flushPromises()
 
     expect(autoComplete.props('suggestions')).toEqual([])
+  })
+
+  it('loads the names again when the tab opens', async () => {
+    mockGetAllMibGroupNames
+      .mockResolvedValueOnce(['mib2-interfaces'])
+      .mockResolvedValueOnce(['mib2-interfaces', 'new-group'])
+    const wrapper = mountSearch()
+    const pageStore = useSnmpDataCollectionStore()
+    const autoComplete = wrapper.findComponent(OnmsAutoComplete)
+
+    autoComplete.vm.$emit('complete', '')
+    await flushPromises()
+    expect(autoComplete.props('suggestions')).toEqual(['mib2-interfaces'])
+
+    pageStore.activeTab = 1
+    await flushPromises()
+    pageStore.activeTab = 3
+    await flushPromises()
+    autoComplete.vm.$emit('complete', '')
+    await flushPromises()
+
+    expect(autoComplete.props('suggestions')).toEqual(['mib2-interfaces', 'new-group'])
   })
 })

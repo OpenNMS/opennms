@@ -96,7 +96,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, useId } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { OnmsAutoComplete, OnmsButton, OnmsColumn, OnmsIconButton, OnmsSelect, OnmsTable, OnmsTag } from '@opennms/onms-ui'
@@ -112,6 +112,7 @@ import {
   getAllSystemDefNames
 } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
@@ -137,12 +138,16 @@ const KIND_OPTIONS: { label: string, noun: string, value: DefinitionKind }[] = [
 // "ifIndex". No source defines them as resource types.
 const INSTANCE_ONLY_NAMES = new Set(['0', 'ifIndex'])
 
+// Tab index of this component on the SNMP data collection page.
+const FIND_BY_NAME_TAB = 3
+
 // Tab index of each kind on the source detail page.
 const DETAIL_TAB: Record<DefinitionKind, number> = { systemdefs: 0, mibgroups: 1, resourcetypes: 2 }
 
 const router = useRouter()
 const snackbar = useSnackbar()
 const detailStore = useSnmpDataCollectionDetailStore()
+const pageStore = useSnmpDataCollectionStore()
 const kindId = useId()
 const nameId = useId()
 
@@ -158,6 +163,14 @@ let latestRequest = 0
 // Incremented for each name completion and at each type change. Only the newest
 // completion sets the suggestions.
 let latestCompletion = 0
+
+// The tab stays mounted when it is hidden. Load the names again each time the
+// tab opens, so that definitions added or deleted on other tabs are suggested correctly.
+watch(() => pageStore.activeTab, (tab) => {
+  if (tab === FIND_BY_NAME_TAB) {
+    allNames.value = {}
+  }
+})
 
 const kindNoun = computed(() => KIND_OPTIONS.find(o => o.value === kind.value)?.noun ?? '')
 

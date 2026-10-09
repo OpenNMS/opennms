@@ -179,7 +179,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
         rtCollection.setRrd(rtRrd);
 
         final CrossSourceIndex index = new CrossSourceIndex();
-        final Set<Integer> allAttachedSourceIds = new HashSet<>();
+        final Map<String, Set<Integer>> attachedSourceIdsByProfile = new HashMap<>();
         for (final SnmpCollectionProfile profile : profiles) {
             final SnmpCollection coll = new SnmpCollection();
             coll.setName(profile.getName());
@@ -244,11 +244,11 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
             }
 
             resolveMissingGroups(profile.getName(), groups, systems, addedGroupNames, attachedSourceIds, index);
-            allAttachedSourceIds.addAll(attachedSourceIds);
+            attachedSourceIdsByProfile.put(profile.getName(), attachedSourceIds);
             config.addSnmpCollection(coll);
         }
 
-        resolveMissingResourceTypes(config, rtCollection, allResourceTypes, allAttachedSourceIds, index);
+        resolveMissingResourceTypes(config, rtCollection, allResourceTypes, attachedSourceIdsByProfile, index);
         index.logUnresolved();
 
         config.insertSnmpCollection(rtCollection);
@@ -296,14 +296,17 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
      * attached source of any profile defines. This is necessary for groups
      * that come from other sources, and for custom sources that use resource
      * types of shared sources such as MIB2. A resource type that an attached
-     * source defines but disables is not added.
+     * source of the profile defines but disables is not added for that profile.
+     * Resource types are global. Thus a resource type that one profile adds is
+     * also available to the other profiles.
      */
     private void resolveMissingResourceTypes(final DatacollectionConfig config,
                                              final SnmpCollection rtCollection,
                                              final Map<String, ResourceType> allResourceTypes,
-                                             final Set<Integer> attachedSourceIds,
+                                             final Map<String, Set<Integer>> attachedSourceIdsByProfile,
                                              final CrossSourceIndex index) {
         for (final SnmpCollection coll : config.getSnmpCollections()) {
+            final Set<Integer> attachedSourceIds = attachedSourceIdsByProfile.getOrDefault(coll.getName(), Set.of());
             for (final Group g : coll.getGroups().getGroups()) {
                 for (final MibObj mibObj : g.getMibObjs()) {
                     final String instance = mibObj.getInstance();

@@ -1556,6 +1556,58 @@ public class DataCollectionConfPersistenceServiceIT {
         assertTrue(dataCollectionConfPersistenceService.findResourceTypesByName("nms20429-none").isEmpty());
     }
 
+    /**
+     * A systemDef from a stored source can use a MIB group that the source
+     * disables. The upload must not copy a group with the same name from
+     * another source. A systemDef= reference to a disabled systemDef must say
+     * that it is disabled.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testBulkUploadDoesNotReplaceGroupsThatTheSourceDisables() {
+        final Date now = new Date();
+        final DatacollectionGroup owner = new DatacollectionGroup();
+        owner.setName("NMS20429-Owner");
+        owner.addGroup(group("nms20429-shared"));
+        owner.addGroup(group("nms20429-own"));
+        owner.addSystemDef(systemDef("nms20429-owner-sd", "nms20429-shared", "nms20429-own"));
+        owner.addSystemDef(systemDef("nms20429-off-sd", "nms20429-own"));
+        final DatacollectionGroup elsewhere = new DatacollectionGroup();
+        elsewhere.setName("NMS20429-Elsewhere");
+        elsewhere.addGroup(group("nms20429-shared"));
+        dataCollectionConfPersistenceService.bulkUploadConfig(List.of(owner, elsewhere), null, "testuser", now);
+
+        final SnmpCollectionSource ownerSource = snmpCollectionSourceDao.findByName("NMS20429-Owner");
+        final SnmpCollectionMibGroup shared = snmpCollectionMibGroupDao.findByNameAndSource("nms20429-shared", ownerSource.getId());
+        shared.setEnabled(false);
+        snmpCollectionMibGroupDao.saveOrUpdate(shared);
+        final SnmpCollectionSystemDef off = snmpCollectionSystemDefDao.findAllBySource(ownerSource.getId()).stream()
+                .filter(sd -> sd.getName().equals("nms20429-off-sd")).findFirst().orElseThrow();
+        off.setEnabled(false);
+        snmpCollectionSystemDefDao.saveOrUpdate(off);
+        snmpCollectionMibGroupDao.flush();
+
+        final DatacollectionConfig config = new DatacollectionConfig();
+        final IncludeCollection single = new IncludeCollection();
+        single.setSystemDef("nms20429-owner-sd");
+        final IncludeCollection disabled = new IncludeCollection();
+        disabled.setSystemDef("nms20429-off-sd");
+        config.addSnmpCollection(collection("nms20429-owner", single, disabled));
+
+        final var result = dataCollectionConfPersistenceService.bulkUploadConfig(List.of(), config, "testuser", now);
+
+        final SnmpCollectionSource inline = snmpCollectionSourceDao.findByName("__inline_nms20429-owner");
+        assertNotNull(inline);
+        final List<String> groupNames = snmpCollectionMibGroupDao.findAllBySource(inline.getId()).stream()
+                .map(SnmpCollectionMibGroup::getName).toList();
+        assertEquals(List.of("nms20429-own"), groupNames);
+        assertTrue("the disabled MIB group must be reported: " + result.errors,
+                result.errors.stream().anyMatch(e -> e.contains("'nms20429-shared', which is disabled in source 'NMS20429-Owner'")));
+        assertTrue("the disabled systemDef must be reported: " + result.errors,
+                result.errors.stream().anyMatch(e -> e.contains("systemDef='nms20429-off-sd' is disabled")));
+    }
+
     private static Group group(final String name) {
         final Group g = new Group();
         g.setName(name);
@@ -1576,7 +1628,7 @@ public class DataCollectionConfPersistenceServiceIT {
         return sd;
     }
 
-    private static SnmpCollection collection(final String name, final IncludeCollection include) {
+    private static SnmpCollection collection(final String name, final IncludeCollection... includes) {
         final SnmpCollection coll = new SnmpCollection();
         coll.setName(name);
         coll.setSnmpStorageFlag("select");
@@ -1584,7 +1636,9 @@ public class DataCollectionConfPersistenceServiceIT {
         rrd.setStep(300);
         rrd.addRra("RRA:AVERAGE:0.5:1:2016");
         coll.setRrd(rrd);
-        coll.addIncludeCollection(include);
+        for (final IncludeCollection include : includes) {
+            coll.addIncludeCollection(include);
+        }
         return coll;
     }
 
