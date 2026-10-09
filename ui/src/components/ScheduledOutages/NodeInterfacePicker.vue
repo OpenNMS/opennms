@@ -1,14 +1,44 @@
 <template>
   <div class="picker" :data-test="`picker-${mode}`">
     <div class="picker-title">{{ mode === 'node' ? 'Nodes' : 'Interfaces' }}</div>
-    <FormField :label="`Search (max 200 results)`" :for="`picker-${mode}-input`">
+
+    <ul class="selection-list" :data-test="`picker-${mode}-selection`">
+      <!-- match-any lives in the interface list; the node picker mirrors it as
+           a display-only row so both read as "everything selected" -->
+      <li v-if="mode === 'node' && matchAny" class="selection-item" :data-test="`picker-${mode}-all`">
+        <span>All Nodes <span class="hint">(remove All Interfaces to pick nodes)</span></span>
+      </li>
+      <li v-else-if="!items.length" class="none" :data-test="`picker-${mode}-empty`">
+        {{ mode === 'node' ? 'No specific nodes selected' : 'No specific interfaces selected' }}
+      </li>
+      <template v-else>
+        <li
+          v-for="(item, index) in items"
+          :key="index"
+          class="selection-item"
+          :data-test="`picker-${mode}-item`"
+        >
+          <span>{{ labelFor(item) }}</span>
+          <OnmsIconButton
+            :icon="Delete"
+            severity="danger"
+            :title="`Remove ${labelFor(item)}`"
+            :aria-label="`Remove ${labelFor(item)}`"
+            :data-test="`picker-${mode}-remove`"
+            @click="emit('remove', index)"
+          />
+        </li>
+      </template>
+    </ul>
+
+    <FormField :label="mode === 'node' ? 'Add a node' : 'Add an interface'" :for="`picker-${mode}-input`">
       <div class="search-row">
         <OnmsAutoComplete
           v-model="selection"
           :inputId="`picker-${mode}-input`"
           :suggestions="suggestions"
           optionLabel="label"
-          :placeholder="mode === 'node' ? 'Node label' : 'IP address'"
+          :placeholder="mode === 'node' ? 'Search by node label' : 'Search by IP address or host name'"
           forceSelection
           fluid
           :data-test="`picker-${mode}-search`"
@@ -17,40 +47,20 @@
         <OnmsButton
           label="Add"
           icon="pi pi-plus"
-          :disabled="!selection"
+          :disabled="!picked"
           :data-test="`picker-${mode}-add`"
           @click="addSelection"
         />
       </div>
     </FormField>
-
-    <div class="current">
-      <div class="current-title">Current selection:</div>
-      <!-- match-any lives in the interface list; the node picker mirrors it as
-           a display-only chip so both read as "everything selected" -->
-      <div v-if="mode === 'node' && matchAny" class="chips">
-        <OnmsChip label="All Nodes" :data-test="`picker-${mode}-all`" />
-      </div>
-      <p v-else-if="!items.length" class="none" :data-test="`picker-${mode}-empty`">
-        {{ mode === 'node' ? 'No specific nodes selected' : 'No specific interfaces selected' }}
-      </p>
-      <div v-else class="chips">
-        <OnmsChip
-          v-for="(item, index) in items"
-          :key="index"
-          :label="labelFor(item)"
-          removable
-          :data-test="`picker-${mode}-chip`"
-          @remove="emit('remove', index)"
-        />
-      </div>
-    </div>
+    <small class="hint">Up to 200 matches are listed.</small>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { OnmsAutoComplete, OnmsButton, OnmsChip } from '@opennms/onms-ui'
+import { computed, ref } from 'vue'
+import { OnmsAutoComplete, OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { OutageInterface, OutageNode } from '@/types/scheduledOutage'
 import { searchOutageInterfaces, searchOutageNodes } from '@/services/scheduledOutagesService'
@@ -65,7 +75,7 @@ const props = defineProps<{
   // node id -> label, resolved by the editor; ids without an entry are shown
   // as not-found (deleted nodes still referenced by the outage config)
   nodeLabels?: Record<number, string>
-  // the outage applies to everything; the node picker shows an All Nodes chip
+  // the outage applies to everything; the node picker shows an All Nodes row
   matchAny?: boolean
 }>()
 
@@ -74,7 +84,8 @@ const emit = defineEmits<{
   remove: [index: number]
 }>()
 
-const selection = ref<Suggestion | null>(null)
+// typed text is a string until a suggestion is picked
+const selection = ref<Suggestion | string | null>(null)
 const suggestions = ref<Suggestion[]>([])
 
 const onComplete = async (query: string) => {
@@ -90,8 +101,12 @@ const onComplete = async (query: string) => {
   }
 }
 
+const picked = computed<Suggestion | null>(() =>
+  selection.value && typeof selection.value === 'object' ? selection.value : null
+)
+
 const addSelection = () => {
-  const sel = selection.value
+  const sel = picked.value
   if (!sel) {
     return
   }
@@ -130,25 +145,34 @@ const labelFor = (item: OutageNode | OutageInterface): string => {
     }
   }
 
-  .current {
-    margin-top: 0.75rem;
+
+  .selection-list {
+    list-style: none;
+    margin: 0 0 0.75rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
 
-  .current-title {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+  .selection-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+    padding: 0 0.25rem 0 0.5rem;
+    border-radius: 4px;
+    background: var(--p-content-hover-background, rgba(127, 127, 127, 0.08));
   }
 
   .none {
-    margin: 0;
     font-style: italic;
     color: var(--p-text-muted-color);
   }
 
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
+  .hint {
+    color: var(--p-text-muted-color);
   }
 }
 </style>

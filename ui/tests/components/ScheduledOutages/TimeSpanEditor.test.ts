@@ -74,10 +74,52 @@ describe('TimeSpanEditor.vue', () => {
     expect(wrapper.emitted('add')).toBeUndefined()
   })
 
+  it('lists the saved spans before the add controls', () => {
+    // an opened outage must read as filled in; the pickers only add a new span
+    const wrapper = mountEditor({ type: 'daily', times: [{ begins: '01:00:00', ends: '02:00:00' }] })
+    const html = wrapper.html()
+    expect(html.indexOf('data-test="time-list"')).toBeLessThan(html.indexOf('data-test="new-span"'))
+    expect(wrapper.find('[data-test="new-span"]').text()).toContain('Add a time span')
+    expect(wrapper.find('[data-test="time-empty"]').exists()).toBe(false)
+  })
+
+  it('shows an empty-state line when there are no spans', () => {
+    const wrapper = mountEditor({ type: 'daily', times: [] })
+    expect(wrapper.find('[data-test="time-empty"]').text()).toContain('No time spans yet')
+    expect(wrapper.find('[data-test="time-row"]').exists()).toBe(false)
+  })
+
+  it('describes weekly and monthly spans with their day', () => {
+    const weekly = mountEditor({ type: 'weekly', times: [{ day: 'monday', begins: '01:00:00', ends: '02:00:00' }] })
+    expect(weekly.find('[data-test="time-row"]').text()).toContain('Monday 01:00:00')
+    const monthly = mountEditor({ type: 'monthly', times: [{ day: '15', begins: '01:00:00', ends: '02:00:00' }] })
+    expect(monthly.find('[data-test="time-row"]').text()).toContain('Day 15 01:00:00')
+  })
+
   it('lists existing spans with a remove control', async () => {
     const wrapper = mountEditor({ type: 'daily', times: [{ begins: '01:00:00', ends: '02:00:00' }] })
     expect(wrapper.find('[data-test="time-row"]').text()).toContain('01:00:00')
     await wrapper.find('[data-test="remove-time"]').trigger('click')
     expect(wrapper.emitted('remove')).toEqual([[0]])
+  })
+
+  it('resets the shared day field to a value the new type offers', async () => {
+    const wrapper = mountEditor({ type: 'weekly', times: [] })
+    const vm = wrapper.vm as any
+    expect(vm.fields.day).toBe('sunday')
+    await wrapper.setProps({ type: 'monthly' })
+    expect(vm.fields.day).toBe('1')
+    await wrapper.find('[data-test="add-time"]').trigger('click')
+    expect((wrapper.emitted('add')![0] as any[])[0].day).toBe('1')
+    await wrapper.setProps({ type: 'weekly' })
+    expect(vm.fields.day).toBe('sunday')
+  })
+
+  it('ignores a direct add while the fields are invalid', () => {
+    const wrapper = mountEditor({ type: 'daily', times: [] })
+    const vm = wrapper.vm as any
+    vm.fields.start = null
+    vm.addSpan()
+    expect(wrapper.emitted('add')).toBeUndefined()
   })
 })

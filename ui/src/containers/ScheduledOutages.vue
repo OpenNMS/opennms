@@ -105,6 +105,7 @@
             v-model="newName"
             placeholder="Outage name"
             fluid
+            autofocus
             data-test="new-name"
             @keyup.enter="createOutage"
           />
@@ -134,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, onMounted, ref } from 'vue'
+import { computed, h, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
@@ -152,6 +153,7 @@ import {
   getNodeLabels,
   getOutageApplicability,
   getScheduledOutages,
+  outageNameProblem,
   scheduledOutageErrorMessage
 } from '@/services/scheduledOutagesService'
 import { ScheduledOutage } from '@/types/scheduledOutage'
@@ -183,6 +185,10 @@ const nodeLabels = ref<Record<number, string>>({})
 const loading = ref(true)
 const newName = ref('')
 const createError = ref('')
+// an error about the previous name would otherwise linger while the user fixes it
+watch(newName, () => {
+  createError.value = ''
+})
 const loadError = ref('')
 // kept separate from loadError, which the post-action reload resets
 const actionError = ref('')
@@ -270,6 +276,11 @@ const createOutage = () => {
   const name = newName.value.trim()
   createError.value = ''
   if (!name) {
+    return
+  }
+  const problem = outageNameProblem(name)
+  if (problem) {
+    createError.value = problem
     return
   }
   if (outages.value.some(o => o.name === name)) {

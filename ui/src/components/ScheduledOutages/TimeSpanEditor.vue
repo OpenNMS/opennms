@@ -2,15 +2,31 @@
   <div class="time-spans" data-test="time-spans">
     <div class="section-title">Time spans</div>
 
-    <div class="new-span">
+    <ul class="span-list" data-test="time-list">
+      <li v-if="!times.length" class="none" data-test="time-empty">No time spans yet. Add one below.</li>
+      <li v-for="(t, index) in times" :key="index" class="span-item">
+        <span data-test="time-row">{{ describeOutageTime(type, t) }}</span>
+        <OnmsIconButton
+          :icon="Delete"
+          severity="danger"
+          title="Remove time span"
+          aria-label="Remove time span"
+          data-test="remove-time"
+          @click="emit('remove', index)"
+        />
+      </li>
+    </ul>
+
+    <div class="new-span" data-test="new-span">
+      <div class="subsection-title">Add a time span</div>
       <!-- specific: full start/end dates; others: time-of-day (+ optional day) -->
       <div v-if="type === 'weekly'" class="span-row">
-        <span class="span-label">Day of Week</span>
-        <OnmsSelect v-model="fields.day" :options="DAYS_OF_WEEK" optionLabel="label" optionValue="value" data-test="weekly-day" />
+        <label class="span-label" for="span-day">Day of Week</label>
+        <OnmsSelect v-model="fields.day" inputId="span-day" :options="DAYS_OF_WEEK" optionLabel="label" optionValue="value" data-test="weekly-day" />
       </div>
       <div v-if="type === 'monthly'" class="span-row">
-        <span class="span-label">Day of Month</span>
-        <OnmsSelect v-model="fields.day" :options="DAYS_OF_MONTH" optionLabel="label" optionValue="value" data-test="monthly-day" />
+        <label class="span-label" for="span-day">Day of Month</label>
+        <OnmsSelect v-model="fields.day" inputId="span-day" :options="DAYS_OF_MONTH" optionLabel="label" optionValue="value" data-test="monthly-day" />
       </div>
       <div class="span-row">
         <label class="span-label" for="span-start">Start</label>
@@ -37,22 +53,8 @@
         />
       </div>
       <small v-if="problem" class="field-error" data-test="span-error">{{ problem }}</small>
-      <OnmsButton label="Add Timespan" icon="pi pi-plus" class="add-button" data-test="add-time" :disabled="!!problem" @click="addSpan" />
+      <OnmsButton label="Add Time Span" icon="pi pi-plus" class="add-button" data-test="add-time" :disabled="!!problem" @click="addSpan" />
     </div>
-
-    <ul v-if="times.length" class="span-list">
-      <li v-for="(t, index) in times" :key="index" class="span-item">
-        <span data-test="time-row">{{ describeOutageTime(type, t) }}</span>
-        <OnmsIconButton
-          :icon="Delete"
-          severity="danger"
-          :title="`Remove time span`"
-          aria-label="Remove time span"
-          data-test="remove-time"
-          @click="emit('remove', index)"
-        />
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -117,7 +119,10 @@ const addSpan = () => {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    margin-bottom: 0.75rem;
+  }
+
+  .subsection-title {
+    font-weight: 600;
   }
 
   .span-row {
@@ -140,9 +145,14 @@ const addSpan = () => {
     color: var(--p-red-500, #e24c4c);
   }
 
+  .none {
+    font-style: italic;
+    color: var(--p-text-muted-color);
+  }
+
   .span-list {
     list-style: none;
-    margin: 0;
+    margin: 0 0 1rem 0;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -154,7 +164,8 @@ const addSpan = () => {
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: 0.15rem 0.25rem;
+    min-height: 2.25rem;
+    padding: 0 0.25rem 0 0.5rem;
     border-radius: 4px;
     background: var(--p-content-hover-background, rgba(127, 127, 127, 0.08));
   }
