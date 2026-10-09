@@ -59,6 +59,7 @@ import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -306,6 +307,11 @@ public class RestClient {
     public Response deleteMinion(String id) {
         final WebTarget target = getTargetV2().path("minions").path(id);
         return getBuilder(target).delete();
+    }
+
+    public Response addMonitoringLocation(OnmsMonitoringLocation location) {
+        final WebTarget target = getTargetV2().path("monitoringLocations");
+        return getBuilder(target).post(Entity.entity(location, MediaType.APPLICATION_XML));
     }
 
     public void sendEvent(Event event) {
