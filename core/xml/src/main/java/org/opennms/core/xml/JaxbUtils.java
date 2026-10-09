@@ -21,16 +21,17 @@
  */
 package org.opennms.core.xml;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.SequenceInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -44,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -64,6 +67,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.SequenceReader;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,10 +114,22 @@ public abstract class JaxbUtils {
     private JaxbUtils() {
     }
 
+    /**
+     * MOXy's Writer output escapes each half of a UTF-16 surrogate pair as its own character
+     * reference, which no XML parser accepts (NMS-19814); the output is otherwise well-formed,
+     * so the pairs are put back afterwards. A lone surrogate half becomes U+FFFD.
+     */
     public static String marshal(final Object obj) {
+        final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
         final StringWriter jaxbWriter = new StringWriter();
-        marshal(obj, jaxbWriter);
-        return jaxbWriter.toString();
+        try {
+            jaxbMarshaller.marshal(obj, jaxbWriter);
+        } catch (final JAXBException e) {
+            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
+        } catch (final FactoryConfigurationError e) {
+            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
+        }
+        return repairSurrogateCharacterReferences(jaxbWriter.toString());
     }
 
     public static void marshal(final Object obj, final File file) throws IOException {
@@ -130,6 +146,132 @@ public abstract class JaxbUtils {
             fileWriter.flush();
             fileWriter.close();
         }
+    }
+
+    private static final Pattern SURROGATE_REFERENCE = Pattern.compile("&#(?:x([Dd][89A-Fa-f][0-9A-Fa-f]{2})|(5[5-7][0-9]{3}));");
+
+    /**
+     * Rewrites surrogate pairs written as two character references, e.g.
+     * {@code &#55357;&#56489;} for U+1F4A9, to the character they encode, and an unpaired
+     * half to U+FFFD. Nothing else is touched. Fixed-width pattern: this runs on IPC input.
+     */
+    public static String repairSurrogateCharacterReferences(final String xml) {
+        if (xml == null || xml.indexOf("&#") < 0) {
+            return xml;
+        }
+        final Matcher matcher = SURROGATE_REFERENCE.matcher(xml);
+        StringBuilder repaired = null;
+        int copied = 0;
+        int pendingHigh = -1;
+        while (matcher.find()) {
+            final char half = (char) (matcher.group(1) != null
+                    ? Integer.parseInt(matcher.group(1), 16)
+                    : Integer.parseInt(matcher.group(2)));
+            if (!Character.isSurrogate(half)) {
+                continue;
+            }
+            if (repaired == null) {
+                repaired = new StringBuilder(xml.length());
+            }
+            if (pendingHigh >= 0) {
+                // copied sits right after the high half's reference, so this is its low half
+                // only if the two references are adjacent
+                if (matcher.start() == copied && Character.isLowSurrogate(half)) {
+                    repaired.appendCodePoint(Character.toCodePoint((char) pendingHigh, half));
+                    copied = matcher.end();
+                    pendingHigh = -1;
+                    continue;
+                }
+                repaired.append('\uFFFD');
+                pendingHigh = -1;
+            }
+            repaired.append(xml, copied, matcher.start());
+            copied = matcher.end();
+            if (Character.isHighSurrogate(half)) {
+                pendingHigh = half;
+            } else {
+                repaired.append('\uFFFD');
+            }
+        }
+        if (repaired == null) {
+            return xml;
+        }
+        if (pendingHigh >= 0) {
+            repaired.append('\uFFFD');
+        }
+        repaired.append(xml, copied, xml.length());
+        return repaired.toString();
+    }
+
+    /** Inputs up to this many chars or bytes are buffered so persisted references can be repaired. */
+    private static final int REPAIR_LIMIT = 8 * 1024 * 1024;
+
+    private static final Pattern DECLARED_ENCODING = Pattern.compile("^\\s*<\\?xml[^>]*encoding\\s*=\\s*[\"']([^\"']+)[\"']");
+
+    /**
+     * Buffers the source's stream and repairs it. Anything larger than {@link #REPAIR_LIMIT}
+     * is handed on unchanged, as is a byte stream that is not UTF-8 (declared, given on the
+     * source, or evidently UTF-16/32). A stream read to its end is closed here, as the parser
+     * would otherwise have done.
+     */
+    private static void repairSurrogateCharacterReferences(final InputSource inputSource) throws IOException {
+        final Reader reader = inputSource.getCharacterStream();
+        if (reader != null) {
+            final StringBuilder buffer = new StringBuilder();
+            final char[] chunk = new char[8192];
+            int read = 0;
+            while (buffer.length() <= REPAIR_LIMIT && (read = reader.read(chunk)) >= 0) {
+                buffer.append(chunk, 0, read);
+            }
+            if (read < 0) {
+                reader.close();
+                inputSource.setCharacterStream(new StringReader(repairSurrogateCharacterReferences(buffer.toString())));
+            } else {
+                inputSource.setCharacterStream(new SequenceReader(new StringReader(buffer.toString()), reader));
+            }
+            return;
+        }
+        final InputStream stream = inputSource.getByteStream();
+        if (stream != null) {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            final byte[] chunk = new byte[8192];
+            int read = 0;
+            while (buffer.size() <= REPAIR_LIMIT && (read = stream.read(chunk)) >= 0) {
+                buffer.write(chunk, 0, read);
+            }
+            byte[] bytes = buffer.toByteArray();
+            if (read >= 0) {
+                inputSource.setByteStream(new SequenceInputStream(new ByteArrayInputStream(bytes), stream));
+                return;
+            }
+            stream.close();
+            if (isUtf8(inputSource.getEncoding(), bytes)) {
+                final String xml = new String(bytes, StandardCharsets.UTF_8);
+                final String repaired = repairSurrogateCharacterReferences(xml);
+                if (repaired != xml) {
+                    bytes = repaired.getBytes(StandardCharsets.UTF_8);
+                }
+            }
+            inputSource.setByteStream(new ByteArrayInputStream(bytes));
+        }
+    }
+
+    private static boolean isUtf8(final String sourceEncoding, final byte[] bytes) {
+        if (sourceEncoding != null && !StandardCharsets.UTF_8.name().equalsIgnoreCase(sourceEncoding)) {
+            return false;
+        }
+        // a NUL among the first bytes means a wider encoding (UTF-16/32, with or without a BOM)
+        for (int i = 0; i < Math.min(bytes.length, 4); i++) {
+            if (bytes[i] == 0) {
+                return false;
+            }
+        }
+        if (bytes.length >= 2 && ((bytes[0] == (byte) 0xFE && bytes[1] == (byte) 0xFF) || (bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xFE))) {
+            return false;
+        }
+        final String head = new String(bytes, 0, Math.min(bytes.length, 256), StandardCharsets.ISO_8859_1);
+        final Matcher declared = DECLARED_ENCODING.matcher(head);
+        return !declared.find() || StandardCharsets.UTF_8.name().equalsIgnoreCase(declared.group(1));
     }
 
     public static Class<?> getClassForElement(final String elementName) {
@@ -173,12 +315,10 @@ public abstract class JaxbUtils {
     }
 
     public static void marshal(final Object obj, final Writer writer) {
-        final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
         try {
-            jaxbMarshaller.marshal(obj, writer);
-        } catch (final JAXBException e) {
-            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
-        } catch (final FactoryConfigurationError e) {
+            writer.write(marshal(obj));
+            writer.flush();
+        } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
         }
     }
@@ -187,15 +327,12 @@ public abstract class JaxbUtils {
         return unmarshal(clazz, file, VALIDATE_IF_POSSIBLE);
     }
 
+    /** Read as UTF-8, which is what {@link #marshal(Object, File)} writes. */
     public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate) {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(file);
+        try (final Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
             return unmarshal(clazz, new InputSource(reader), null, validate, false);
-        } catch (final FileNotFoundException e) {
+        } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
-        } finally {
-            IOUtils.closeQuietly(reader);
         }
     }
 
@@ -228,10 +365,10 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate) {
-        final StringReader sr = new StringReader(xml);
+        final StringReader sr = new StringReader(repairSurrogateCharacterReferences(xml));
         final InputSource is = new InputSource(sr);
         try {
-            return unmarshal(clazz, is, null, validate, false);
+            return unmarshal(clazz, is, null, validate, false, false);
         } finally {
             IOUtils.closeQuietly(sr);
         }
@@ -266,10 +403,17 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate, final boolean disableDOCTYPE) {
+        return unmarshal(clazz, inputSource, jaxbContext, validate, disableDOCTYPE, true);
+    }
+
+    private static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate, final boolean disableDOCTYPE, final boolean repair) {
         final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
 
         LOG.trace("unmarshalling class {} from input source {} with unmarshaller {}", clazz.getSimpleName(), inputSource, um);
         try {
+            if (repair) {
+                repairSurrogateCharacterReferences(inputSource);
+            }
             final XMLFilter filter = getXMLFilterForClass(clazz, disableDOCTYPE);
             final SAXSource source = new SAXSource(filter, inputSource);
 
@@ -281,6 +425,8 @@ public abstract class JaxbUtils {
             throw EXCEPTION_TRANSLATOR.translate("creating an XML reader object", e);
         } catch (final JAXBException e) {
             throw EXCEPTION_TRANSLATOR.translate("unmarshalling an object (" + clazz.getSimpleName() + ")", e);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading an object (" + clazz.getSimpleName() + ")", e);
         }
     }
 
