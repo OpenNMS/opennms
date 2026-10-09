@@ -7,6 +7,122 @@ The same surface is used by the *Admin -> Manage SNMP Data Collection Config* pa
 
 The base path is `/api/v2/datacollectionconf`.
 
+== Endpoint overview
+
+All paths are relative to the base path.
+For the request and response bodies, see the OpenAPI definition at `/api/v2/openapi.json`.
+
+[options="header", cols="1,4,4"]
+|===
+| Method | Path | Description
+
+3+h| Upload
+
+| `POST`
+| `/upload`
+| Upload source XML files and `datacollection-config.xml`. See the Upload XML section.
+
+3+h| Profiles
+
+| `GET`
+| `/profiles`
+| List all profiles.
+
+| `GET`
+| `/profiles/\{profileId}`
+| Get one profile.
+
+| `POST`
+| `/profiles`
+| Create a profile.
+
+| `PUT`
+| `/profiles/\{profileId}`
+| Update a profile.
+
+| `DELETE`
+| `/profiles`
+| Delete profiles. The request body is a JSON array of profile IDs.
+
+| `PUT`
+| `/profiles/enable?enabled={true\|false}`
+| Enable or disable profiles. The request body is a JSON array of profile IDs.
+
+| `POST`
+| `/profiles/\{profileId}/sources`
+| Attach a source to a profile. The request body is the source name.
+
+| `DELETE`
+| `/profiles/\{profileId}/sources/\{sourceName}`
+| Detach a source from a profile.
+
+3+h| Sources
+
+| `GET`
+| `/filter/collectsources`
+| List sources, with filter, sort and pagination parameters.
+
+| `GET`
+| `/collectsources/names-and-ids`
+| List the name and ID of all sources.
+
+| `GET`
+| `/collectsources/\{collectionSourceId}`
+| Get one source.
+
+| `POST`
+| `/collectsources`
+| Create a source.
+
+| `DELETE`
+| `/collectsources?id=\{id}`
+| Delete sources. Repeat `id` for more than one source.
+
+| `PATCH`
+| `/collectsources/status/\{enabled}?id=\{id}`
+| Enable or disable sources.
+
+| `GET`
+| `/collectsources/\{collectionSourceId}/download`
+| Download a source as a `datacollection-group` XML or JSON file.
+
+| `GET`
+| `/config/download`
+| Download the top-level `datacollection-config` file.
+
+3+h| MIB groups, resource types and system definitions
+
+| `GET`
+| `/filter/\{collectionSourceId}/{mibgroups\|resourcetypes\|systemdefs}`
+| List the definitions of a source, with filter, sort and pagination parameters.
+
+| `POST`
+| `/collectsources/\{collectionSourceId}/{mibgroups\|resourcetypes\|systemdefs}`
+| Add a definition to a source.
+
+| `PUT`
+| `/collectsources/\{collectionSourceId}/mibgroups/\{mibGroupId}`
+| Update a MIB group. Resource types and system definitions use the same pattern.
+
+| `DELETE`
+| `/collectsources/\{snmpDataCollectionSourceId}/{mib-groups\|resource-types\|system-defs}?id=\{id}`
+| Delete definitions from a source.
+
+| `PATCH`
+| `/collectsources/\{snmpDataCollectionSourceId}/{mib-groups\|resource-types\|system-defs}/status/\{enabled}?id=\{id}`
+| Enable or disable definitions in a source.
+
+3+h| Lookup by name
+
+| `GET`
+| `/{mibgroups\|resourcetypes\|systemdefs}/names`
+| List the names of all definitions of this type. The resource type list also contains the instance values `0` and `ifIndex`.
+
+| `GET`
+| `/{mibgroups\|resourcetypes\|systemdefs}/names/\{name}`
+| Get every definition with this exact name, with the source that defines it. See the Find a definition by name section.
+|===
+
 == Upload XML
 
 Use this endpoint to import legacy `datacollection-config.xml` and `etc/datacollection/*.xml` files, or any externally version-controlled SNMP data collection definition.
@@ -58,8 +174,29 @@ The response body contains per-file `success` and `errors` arrays so partial fai
 | Invalid XML, missing required `profileNames` for an all-new source-only upload, or other request error.
 |===
 
-== Other endpoints
+== Find a definition by name
 
-The full set of endpoints (CRUD for profiles, sources, MIB groups, resource types, system definitions; pagination and filter helpers) is exposed under the same `/api/v2/datacollectionconf` base path.
+A MIB group, resource type or system definition name can exist in more than one source.
+Use these endpoints to find every source that defines a name.
+The *Find by Name* tab of the admin page uses the same endpoints.
 
-The OpenAPI definition is published at `/api/v2/openapi.json` and is the authoritative reference; the admin page consumes the same endpoints, so any operation surfaced in the UI has a corresponding REST call.
+.Find every source that defines the `mib2-interfaces` MIB group
+[source, bash]
+----
+curl -u admin:admin "http://localhost:8980/opennms/api/v2/datacollectionconf/mibgroups/names/mib2-interfaces"
+----
+
+The response is a JSON array with one entry for each source that defines the name.
+Each entry contains the definition, its `enabled` flag, `collectionSourceId` and `collectionSourceName`.
+A name that contains a slash, such as `Microsoft Windows NT/2000`, works as it is or encoded as `%2F`.
+
+[options="header"]
+|===
+| Status | Meaning
+
+| `200 OK`
+| At least one source defines the name.
+
+| `404 Not Found`
+| No source defines the name.
+|===
