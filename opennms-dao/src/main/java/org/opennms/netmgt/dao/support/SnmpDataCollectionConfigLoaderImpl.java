@@ -66,6 +66,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 /**
  * Default implementation of {@link SnmpDataCollectionConfigLoader}. See the
@@ -178,6 +179,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
         rtCollection.setRrd(rtRrd);
 
         final CrossSourceIndex index = new CrossSourceIndex();
+        final Set<Integer> allAttachedSourceIds = new HashSet<>();
         for (final SnmpCollectionProfile profile : profiles) {
             final SnmpCollection coll = new SnmpCollection();
             coll.setName(profile.getName());
@@ -200,6 +202,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
             // Mirrors DataCollectionConfigParser.addSystemDef's contains-check behavior.
             final Set<String> addedGroupNames = new HashSet<>();
             final Set<String> addedSystemDefNames = new HashSet<>();
+            final Set<Integer> attachedSourceIds = new HashSet<>();
 
             final List<String> sourceNames = DatacollectionJsonHelper.fromJson(
                     profile.getSourceNames(), new TypeReference<>() {});
@@ -216,6 +219,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                                 profile.getName(), sourceName);
                         continue;
                     }
+                    attachedSourceIds.add(source.getId());
                     if (!allGroups.contains(sourceName)) {
                         allGroups.add(sourceName);
                     }
@@ -239,11 +243,12 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                 }
             }
 
-            resolveMissingGroups(profile.getName(), groups, systems, addedGroupNames, index);
+            resolveMissingGroups(profile.getName(), groups, systems, addedGroupNames, attachedSourceIds, index);
+            allAttachedSourceIds.addAll(attachedSourceIds);
             config.addSnmpCollection(coll);
         }
 
-        resolveMissingResourceTypes(config, rtCollection, allResourceTypes, index);
+        resolveMissingResourceTypes(config, rtCollection, allResourceTypes, allAttachedSourceIds, index);
         index.logUnresolved();
 
         config.insertSnmpCollection(rtCollection);
@@ -254,12 +259,14 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
      * Add the groups that the systemDefs and groups of a profile reference,
      * but that no attached source defines. The legacy XML parser searched all
      * files in etc/datacollection/ for such references. This keeps that
-     * behavior. Groups from the attached sources always have priority.
+     * behavior. Groups from the attached sources always have priority. A group
+     * that an attached source defines but disables is not collected.
      */
     private void resolveMissingGroups(final String profileName,
                                       final Groups groups,
                                       final Systems systems,
                                       final Set<String> addedGroupNames,
+                                      final Set<Integer> attachedSourceIds,
                                       final CrossSourceIndex index) {
         final Deque<String> pending = new ArrayDeque<>();
         for (final SystemDef sd : systems.getSystemDefs()) {
@@ -276,7 +283,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                 continue;
             }
             addedGroupNames.add(name);
-            final Group g = index.findGroup(name, profileName);
+            final Group g = index.findGroup(name, profileName, attachedSourceIds);
             if (g != null) {
                 groups.addGroup(g);
                 pending.addAll(g.getIncludeGroups());
@@ -288,11 +295,13 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
      * Add the resource types that MIB objects use as instance, but that no
      * attached source of any profile defines. This is necessary for groups
      * that come from other sources, and for custom sources that use resource
-     * types of shared sources such as MIB2.
+     * types of shared sources such as MIB2. A resource type that an attached
+     * source defines but disables is not added.
      */
     private void resolveMissingResourceTypes(final DatacollectionConfig config,
                                              final SnmpCollection rtCollection,
                                              final Map<String, ResourceType> allResourceTypes,
+                                             final Set<Integer> attachedSourceIds,
                                              final CrossSourceIndex index) {
         for (final SnmpCollection coll : config.getSnmpCollections()) {
             for (final Group g : coll.getGroups().getGroups()) {
@@ -302,7 +311,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                             || MibObject.INSTANCE_IFINDEX.equals(instance) || isNumeric(instance)) {
                         continue;
                     }
-                    final ResourceType rt = index.findResourceType(instance);
+                    final ResourceType rt = index.findResourceType(instance, attachedSourceIds);
                     if (rt != null) {
                         rtCollection.addResourceType(rt);
                         allResourceTypes.put(rt.getName(), rt);
@@ -329,9 +338,18 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
         private Map<String, SnmpCollectionMibGroup> groupsByName;
         private Map<String, SnmpCollectionResourceType> resourceTypesByName;
         private final Map<String, Group> builtGroups = new HashMap<>();
+        private final Map<String, List<SnmpCollectionMibGroup>> groupDefinitions = new HashMap<>();
+        private final Map<String, List<SnmpCollectionResourceType>> resourceTypeDefinitions = new HashMap<>();
         private final Map<String, Set<String>> unresolvedGroups = new TreeMap<>();
 
-        Group findGroup(final String name, final String profileName) {
+        Group findGroup(final String name, final String profileName, final Set<Integer> attachedSourceIds) {
+            // An enabled group of an attached source is already in the profile.
+            // Thus a definition in an attached source here is a disabled one.
+            if (definedIn(groupDefinitions.computeIfAbsent(name, snmpCollectionMibGroupDao::findAllByName), attachedSourceIds,
+                    SnmpCollectionMibGroup::getCollectionSource)) {
+                unresolvedGroups.computeIfAbsent(name, k -> new TreeSet<>()).add(profileName);
+                return null;
+            }
             if (groupsByName == null) {
                 groupsByName = new HashMap<>();
                 // Ordered by source id: the first source that defines a name wins.
@@ -349,7 +367,12 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
             return builtGroups.computeIfAbsent(name, k -> toGroup(e));
         }
 
-        ResourceType findResourceType(final String name) {
+        ResourceType findResourceType(final String name, final Set<Integer> attachedSourceIds) {
+            if (definedIn(resourceTypeDefinitions.computeIfAbsent(name, snmpCollectionResourceTypeDao::findAllByName), attachedSourceIds,
+                    SnmpCollectionResourceType::getCollectionSource)) {
+                LOG.debug("Resource type '{}' is disabled in an attached source; not using other sources.", name);
+                return null;
+            }
             if (resourceTypesByName == null) {
                 resourceTypesByName = new HashMap<>();
                 for (final SnmpCollectionResourceType e : snmpCollectionResourceTypeDao.findAllEnabledInEnabledSources()) {
@@ -365,20 +388,28 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
             return toResourceType(e);
         }
 
+        private <T> boolean definedIn(final List<T> definitions, final Set<Integer> sourceIds,
+                                      final Function<T, SnmpCollectionSource> sourceOf) {
+            return definitions.stream().anyMatch(d -> sourceIds.contains(sourceOf.apply(d).getId()));
+        }
+
         /**
-         * Write one warning for each group name that no enabled source
-         * defines. Collectd skips these groups.
+         * Write one warning for each referenced group name that is not
+         * collected. Collectd skips these groups.
          */
         void logUnresolved() {
             for (final Map.Entry<String, Set<String>> entry : unresolvedGroups.entrySet()) {
                 final String name = entry.getKey();
-                final List<SnmpCollectionMibGroup> all = snmpCollectionMibGroupDao.findAllByName(name);
+                final List<SnmpCollectionMibGroup> all = groupDefinitions.computeIfAbsent(name, snmpCollectionMibGroupDao::findAllByName);
                 if (all.isEmpty()) {
                     LOG.warn("MIB group '{}' is referenced in profile(s) {}, but no source defines it. "
                             + "SNMP collection skips this group.", name, entry.getValue());
                 } else {
                     final Set<String> sources = new TreeSet<>();
-                    all.forEach(g -> sources.add(g.getCollectionSource().getName()));
+                    all.stream()
+                            .filter(g -> !Boolean.TRUE.equals(g.getEnabled())
+                                    || !Boolean.TRUE.equals(g.getCollectionSource().getEnabled()))
+                            .forEach(g -> sources.add(g.getCollectionSource().getName()));
                     LOG.warn("MIB group '{}' is referenced in profile(s) {}, but it is disabled, or its source is disabled, in {}. "
                             + "SNMP collection skips this group.", name, entry.getValue(), sources);
                 }

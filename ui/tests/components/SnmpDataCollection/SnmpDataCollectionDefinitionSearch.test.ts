@@ -182,4 +182,19 @@ describe('SnmpDataCollectionDefinitionSearch.vue', () => {
 
     expect(autoComplete.props('suggestions')).toEqual(['ucd-loadavg'])
   })
+
+  it('clears the suggestions when the type changes', async () => {
+    mockGetAllMibGroupNames.mockResolvedValue(['mib2-interfaces'])
+    const wrapper = mountSearch()
+    const autoComplete = wrapper.findComponent(OnmsAutoComplete)
+
+    autoComplete.vm.$emit('complete', 'mib')
+    await flushPromises()
+    expect(autoComplete.props('suggestions')).toEqual(['mib2-interfaces'])
+
+    wrapper.findComponent(OnmsSelect).vm.$emit('update:modelValue', 'resourcetypes')
+    await flushPromises()
+
+    expect(autoComplete.props('suggestions')).toEqual([])
+  })
 })

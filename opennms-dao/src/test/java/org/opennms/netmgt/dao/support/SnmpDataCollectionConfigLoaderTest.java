@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao.support;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -156,7 +157,6 @@ public class SnmpDataCollectionConfigLoaderTest {
                 coll.getGroups().getGroups().stream().map(Group::getName).toList());
         assertTrue("resource type of a group from another source must be available",
                 m.allResourceTypes.containsKey("frCircuitIfIndex"));
-        verify(f.mibGroupDao, never()).findAllByName(any());
     }
 
     @Test
@@ -191,6 +191,57 @@ public class SnmpDataCollectionConfigLoaderTest {
 
         assertTrue(m.config.getSnmpCollection("default").getGroups().getGroups().isEmpty());
         verify(f.mibGroupDao).findAllByName("does-not-exist");
+    }
+
+    @Test
+    public void groupDisabledInAttachedSourceIsNotTakenFromOtherSource() {
+        // "Cisco" (id 1) is attached and disables "shared". "Other" defines an enabled "shared".
+        final DatacollectionGroup cisco = new DatacollectionGroup();
+        cisco.setName("Cisco");
+        final SystemDef sd = systemDef("Cisco Routers");
+        sd.getCollect().addIncludeGroup("shared");
+        cisco.addSystemDef(sd);
+
+        final SnmpCollectionMibGroup disabled = mibGroupEntity(source(1, "Cisco"), "shared", null, "ifIndex");
+        disabled.setEnabled(false);
+        final SnmpCollectionMibGroup other = mibGroupEntity(source(2, "Other"), "shared", null, "ifIndex");
+
+        final Fixture f = new Fixture(cisco);
+        when(f.mibGroupDao.findAllByName("shared")).thenReturn(List.of(disabled, other));
+        when(f.mibGroupDao.findAllEnabledInEnabledSources()).thenReturn(List.of(other));
+
+        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
+
+        assertTrue(m.config.getSnmpCollection("default").getGroups().getGroups().isEmpty());
+        verify(f.mibGroupDao, never()).findAllEnabledInEnabledSources();
+    }
+
+    @Test
+    public void resourceTypeDisabledInAttachedSourceIsNotTakenFromOtherSource() {
+        // "Cisco" (id 1) is attached and disables "ciscoType". "Other" defines an enabled "ciscoType".
+        final DatacollectionGroup cisco = new DatacollectionGroup();
+        cisco.setName("Cisco");
+        final Group g = group("cisco-group");
+        final MibObj obj = new MibObj();
+        obj.setOid(".1.3.6.1.4.1.9.1");
+        obj.setInstance("ciscoType");
+        obj.setAlias("ciscoObj");
+        obj.setType("gauge");
+        g.addMibObj(obj);
+        cisco.addGroup(g);
+
+        final SnmpCollectionResourceType disabled = resourceTypeEntity(source(1, "Cisco"), "ciscoType");
+        disabled.setEnabled(false);
+        final SnmpCollectionResourceType other = resourceTypeEntity(source(2, "Other"), "ciscoType");
+
+        final Fixture f = new Fixture(cisco);
+        when(f.resourceTypeDao.findAllByName("ciscoType")).thenReturn(List.of(disabled, other));
+        when(f.resourceTypeDao.findAllEnabledInEnabledSources()).thenReturn(List.of(other));
+
+        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
+
+        assertFalse(m.allResourceTypes.containsKey("ciscoType"));
+        verify(f.resourceTypeDao, never()).findAllEnabledInEnabledSources();
     }
 
     /** One profile named "default" that attaches only the given source. */
@@ -242,6 +293,15 @@ public class SnmpDataCollectionConfigLoaderTest {
         e.setCollectionSource(source);
         e.setMibGroupNames(includeGroupsJson);
         e.setMibObjects(DatacollectionJsonHelper.toJson(List.of(obj)));
+        return e;
+    }
+
+    private SnmpCollectionResourceType resourceTypeEntity(final SnmpCollectionSource source, final String name) {
+        final SnmpCollectionResourceType e = new SnmpCollectionResourceType();
+        e.setName(name);
+        e.setLabel(name);
+        e.setEnabled(true);
+        e.setCollectionSource(source);
         return e;
     }
 

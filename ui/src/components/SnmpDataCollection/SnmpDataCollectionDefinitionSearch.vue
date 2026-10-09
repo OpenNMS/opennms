@@ -155,16 +155,19 @@ const allNames = ref<Partial<Record<DefinitionKind, string[]>>>({})
 // Incremented for each search and at each type change. A response is shown
 // only if no newer search or type change happened while it was pending.
 let latestRequest = 0
-// Incremented for each name completion. Only the newest completion sets the suggestions.
+// Incremented for each name completion and at each type change. Only the newest
+// completion sets the suggestions.
 let latestCompletion = 0
 
 const kindNoun = computed(() => KIND_OPTIONS.find(o => o.value === kind.value)?.noun ?? '')
 
 const onChangeKind = (value: unknown) => {
   latestRequest++
+  latestCompletion++
   kind.value = value as DefinitionKind
   results.value = []
   searchedName.value = ''
+  suggestions.value = []
 }
 
 const loadNames = async (k: DefinitionKind): Promise<string[]> => {
