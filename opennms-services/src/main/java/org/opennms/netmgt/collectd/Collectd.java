@@ -979,6 +979,23 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleNode(nodeId.intValue());
     }
 
+    /**
+     * Applies the {@code threads} setting from the reloaded collectd configuration to the
+     * running scheduler, so that a changed thread count takes effect without a restart.
+     */
+    private void resizeScheduler() {
+        // Read the field directly: getScheduler() would create a scheduler if there is none yet
+        final Scheduler scheduler = m_scheduler;
+        if (scheduler == null) {
+            LOG.debug("resizeScheduler: no scheduler yet, nothing to resize.");
+        } else if (scheduler instanceof LegacyScheduler) {
+            ((LegacyScheduler) scheduler).setThreads(m_collectdConfigFactory.getThreads());
+        } else {
+            LOG.warn("resizeScheduler: scheduler is a {}, the configured thread count cannot be applied without a restart.",
+                    scheduler.getClass().getName());
+        }
+    }
+
     private void rebuildScheduler() {
         //Remove all collectable services
         Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
@@ -1101,6 +1118,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 final String cfgFile = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
                 try {
                     m_collectdConfigFactory.reload();
+                    resizeScheduler();
                     rebuildScheduler();
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);

@@ -488,6 +488,33 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         m_scheduler = scheduler;
     }
 
+    public LegacyPriorityExecutor getExecutor() {
+        return m_executor;
+    }
+
+    public void setExecutor(LegacyPriorityExecutor executor) {
+        m_executor = executor;
+    }
+
+    /**
+     * Applies the {@code threads} and {@code executor-threads} settings from the current
+     * configuration to the running scheduler and priority executor, so that changed thread
+     * counts take effect on a reload without a restart. The executor queue size is fixed at
+     * creation and still needs a restart.
+     */
+    public void resizeExecutors() {
+        if (m_scheduler != null) {
+            m_scheduler.setThreads(m_linkdConfig.getThreads());
+        } else {
+            LOG.debug("resizeExecutors: no scheduler yet, nothing to resize.");
+        }
+        if (m_executor != null) {
+            m_executor.setThreads(m_linkdConfig.getExecutorThreads());
+        } else {
+            LOG.debug("resizeExecutors: no priority executor yet, nothing to resize.");
+        }
+    }
+
     public EnhancedLinkdConfig getLinkdConfig() {
         return m_linkdConfig;
     }
@@ -619,6 +646,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
             return false;
         }
+        resizeExecutors();
         reload();
         return true;
     }
