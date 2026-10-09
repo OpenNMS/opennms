@@ -1020,10 +1020,10 @@ public class DataCollectionConfPersistenceService {
                     if (matchesAnyRegex(sd.getName(), excludes)) {
                         continue;
                     }
-                    if (r.seenSystemDefNames.add(sd.getName())) {
-                        r.inlineSystemDefs.add(sd);
+                    final SystemDef copy = addReferencedGroups(coll, sd, dcGroup, lookup, r, result);
+                    if (r.seenSystemDefNames.add(copy.getName())) {
+                        r.inlineSystemDefs.add(copy);
                     }
-                    addReferencedGroups(coll, sd, dcGroup, lookup, r, result);
                 }
                 if (dcGroup.getResourceTypes() != null) {
                     for (final org.opennms.netmgt.config.datacollection.ResourceType rt : dcGroup.getResourceTypes()) {
@@ -1045,25 +1045,33 @@ public class DataCollectionConfPersistenceService {
                     result.errors.add(msg);
                     continue;
                 }
-                if (r.seenSystemDefNames.add(ref.systemDef.getName())) {
-                    r.inlineSystemDefs.add(ref.systemDef);
+                final SystemDef copy = addReferencedGroups(coll, ref.systemDef, ref.owningGroup, lookup, r, result);
+                if (r.seenSystemDefNames.add(copy.getName())) {
+                    r.inlineSystemDefs.add(copy);
                 }
-                addReferencedGroups(coll, ref.systemDef, ref.owningGroup, lookup, r, result);
             }
         }
 
         return r;
     }
 
-    private void addReferencedGroups(final SnmpCollection coll,
-                                     final SystemDef systemDef,
-                                     final DatacollectionGroup preferredGroup,
-                                     final IncludeLookup lookup,
-                                     final ResolvedIncludes r,
-                                     final BulkUploadResult result) {
+    /**
+     * Copy the MIB groups that the systemDef names to the inline source.
+     * Returns the systemDef to copy. A group that the source of the systemDef
+     * disables is removed from the copy. The profile attaches only the inline
+     * source, so at reload the loader cannot see the disabled flag, and would
+     * take a group with the same name from another source.
+     */
+    private SystemDef addReferencedGroups(final SnmpCollection coll,
+                                          final SystemDef systemDef,
+                                          final DatacollectionGroup preferredGroup,
+                                          final IncludeLookup lookup,
+                                          final ResolvedIncludes r,
+                                          final BulkUploadResult result) {
         if (systemDef.getCollect() == null || systemDef.getCollect().getIncludeGroups() == null) {
-            return;
+            return systemDef;
         }
+        final Set<String> disabled = new HashSet<>();
         for (final String name : systemDef.getCollect().getIncludeGroups()) {
             // A group that the source of the systemDef disables is not taken from another source.
             if (lookup.findGroupIn(name, preferredGroup) == null && lookup.isDisabledInStoredSource(name, preferredGroup)) {
@@ -1072,6 +1080,7 @@ public class DataCollectionConfPersistenceService {
                         + preferredGroup.getName() + "' — skipped.";
                 LOG.warn(msg);
                 result.errors.add(msg);
+                disabled.add(name);
                 continue;
             }
             final Group g = lookup.findGroup(name, preferredGroup);
@@ -1086,6 +1095,20 @@ public class DataCollectionConfPersistenceService {
                 r.inlineGroups.add(g);
             }
         }
+        return disabled.isEmpty() ? systemDef : withoutIncludeGroups(systemDef, disabled);
+    }
+
+    /** A copy of the systemDef without the given include groups. The original is not changed. */
+    private static SystemDef withoutIncludeGroups(final SystemDef systemDef, final Set<String> names) {
+        final SystemDef copy = new SystemDef(systemDef.getName());
+        copy.setSystemDefChoice(systemDef.getSystemDefChoice());
+        copy.setIpList(systemDef.getIpList());
+        final Collect collect = new Collect();
+        collect.setIncludeGroups(systemDef.getCollect().getIncludeGroups().stream()
+                .filter(n -> !names.contains(n))
+                .collect(Collectors.toCollection(ArrayList::new)));
+        copy.setCollect(collect);
+        return copy;
     }
 
     /**

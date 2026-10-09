@@ -87,6 +87,12 @@ public class DataCollectionConfPersistenceServiceIT {
     private SnmpCollectionSourceDao snmpCollectionSourceDao;
 
     @Autowired
+    private org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader snmpDataCollectionConfigLoader;
+
+    @Autowired
+    private org.opennms.netmgt.config.api.DataCollectionConfigDao dataCollectionConfigDao;
+
+    @Autowired
     private SnmpCollectionResourceTypeDao snmpCollectionResourceTypeDao;
 
     @Autowired
@@ -1606,6 +1612,18 @@ public class DataCollectionConfPersistenceServiceIT {
                 result.errors.stream().anyMatch(e -> e.contains("'nms20429-shared', which is disabled in source 'NMS20429-Owner'")));
         assertTrue("the disabled systemDef must be reported: " + result.errors,
                 result.errors.stream().anyMatch(e -> e.contains("systemDef='nms20429-off-sd' is disabled")));
+
+        // The copied systemDef must not name the disabled group. Otherwise the loader takes
+        // the group from "NMS20429-Elsewhere", because the profile attaches only the inline source.
+        final SnmpCollectionSystemDef copied = snmpCollectionSystemDefDao.findAllBySource(inline.getId()).stream()
+                .filter(sd -> sd.getName().equals("nms20429-owner-sd")).findFirst().orElseThrow();
+        assertEquals("[\"nms20429-own\"]", copied.getMibGroupNames());
+        snmpCollectionMibGroupDao.flush();
+        snmpDataCollectionConfigLoader.reloadDataCollectionConfigFromDb();
+        final List<String> collected = dataCollectionConfigDao.getRootDataCollection()
+                .getSnmpCollection("nms20429-owner").getGroups().getGroups().stream()
+                .map(org.opennms.netmgt.config.datacollection.Group::getName).toList();
+        assertEquals(List.of("nms20429-own"), collected);
     }
 
     /**
