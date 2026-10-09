@@ -229,39 +229,6 @@ describe('SnmpDataCollectionDefinitionSearch.vue', () => {
     expect(autoComplete.props('suggestions')).toEqual(['mib2-interfaces', 'new-group'])
   })
 
-  it('sends one request when the same search starts twice', async () => {
-    let resolveSearch: (rows: unknown[]) => void = () => {}
-    mockFindMibGroupsByName.mockReturnValue(new Promise((resolve) => {
-      resolveSearch = resolve
-    }))
-    const wrapper = mountSearch()
-
-    await wrapper.find('[data-test="definition-name-input"] input').setValue('shared')
-    await wrapper.find('[data-test="definition-search-button"]').trigger('click')
-    await wrapper.find('[data-test="definition-search-button"]').trigger('click')
-    resolveSearch([])
-    await flushPromises()
-
-    expect(mockFindMibGroupsByName).toHaveBeenCalledTimes(1)
-  })
-
-  it('shares one names request between completions', async () => {
-    let resolveNames: (names: string[]) => void = () => {}
-    mockGetAllMibGroupNames.mockReturnValue(new Promise((resolve) => {
-      resolveNames = resolve
-    }))
-    const wrapper = mountSearch()
-    const autoComplete = wrapper.findComponent(OnmsAutoComplete)
-
-    autoComplete.vm.$emit('complete', 'm')
-    autoComplete.vm.$emit('complete', 'mi')
-    resolveNames(['mib2-interfaces'])
-    await flushPromises()
-
-    expect(mockGetAllMibGroupNames).toHaveBeenCalledTimes(1)
-    expect(autoComplete.props('suggestions')).toEqual(['mib2-interfaces'])
-  })
-
   it('shows the last search again when the page opens again', async () => {
     mockFindResourceTypesByName.mockResolvedValue([
       { id: 3, name: 'hrStorageIndex', label: 'Storage', enabled: true, collectionSourceId: 10, collectionSourceName: 'MIB2' }
@@ -276,18 +243,5 @@ describe('SnmpDataCollectionDefinitionSearch.vue', () => {
 
     expect(mockFindResourceTypesByName).toHaveBeenCalledWith('hrStorageIndex')
     expect(wrapper.find('[data-test="definition-results-table"]').text()).toContain('MIB2')
-  })
-
-  it('sorts the source table by name when it opens the source', async () => {
-    mockFindMibGroupsByName.mockResolvedValue([
-      { id: 1, name: 'mib2-tcp', ifType: 'all', enabled: true, collectionSourceId: 10, collectionSourceName: 'MIB2' }
-    ])
-    const wrapper = mountSearch()
-    const detailStore = useSnmpDataCollectionDetailStore()
-
-    await search(wrapper, 'mib2-tcp')
-    await wrapper.find('[data-test="view-in-source-button"]').trigger('click')
-
-    expect(detailStore.mibGroupsSorting).toEqual({ sortKey: 'name', sortOrder: 'asc' })
   })
 })

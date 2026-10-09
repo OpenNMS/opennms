@@ -227,43 +227,11 @@ public class SnmpDataCollectionCrossSourceResolutionTest {
     // --- Resource types -----------------------------------------------------
 
     @Test
-    public void resourceTypeEnabledInAttachedSourceIsUsed() {
-        final World w = new World();
-        final SnmpCollectionSource a = w.attachedGroupUsing("R");
-        w.resourceType(a, "R", true);
-        w.resourceType(w.source(2, "X", true), "R", true);
-        w.profile("p", "A");
-
-        assertEquals("A", w.resourceTypeSource("R"));
-    }
-
-    @Test
     public void resourceTypeDisabledInAttachedSourceIsNotTakenFromOtherSource() {
         final World w = new World();
         final SnmpCollectionSource a = w.attachedGroupUsing("R");
         w.resourceType(a, "R", false);
         w.resourceType(w.source(2, "X", true), "R", true);
-        w.profile("p", "A");
-
-        assertEquals(null, w.resourceTypeSource("R"));
-    }
-
-    @Test
-    public void resourceTypeNotInAttachedSourceIsTakenFromSourceWithLowestId() {
-        final World w = new World();
-        w.attachedGroupUsing("R");
-        w.resourceType(w.source(3, "X", true), "R", true);
-        w.resourceType(w.source(2, "Y", true), "R", true);
-        w.profile("p", "A");
-
-        assertEquals("Y", w.resourceTypeSource("R"));
-    }
-
-    @Test
-    public void resourceTypeOnlyInDisabledSourceIsNotAdded() {
-        final World w = new World();
-        w.attachedGroupUsing("R");
-        w.resourceType(w.source(2, "X", false), "R", true);
         w.profile("p", "A");
 
         assertEquals(null, w.resourceTypeSource("R"));

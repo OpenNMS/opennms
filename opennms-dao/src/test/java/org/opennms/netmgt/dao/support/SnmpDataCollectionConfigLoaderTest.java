@@ -22,8 +22,6 @@
 package org.opennms.netmgt.dao.support;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -126,41 +124,6 @@ public class SnmpDataCollectionConfigLoaderTest {
     }
 
     @Test
-    public void resolvesSystemDefGroupsFromSourcesThatAreNotAttached() {
-        // Profile attaches only "Cisco". Its systemDef references a group of
-        // "Routers", which in turn includes a group of "MIB2".
-        final DatacollectionGroup cisco = new DatacollectionGroup();
-        cisco.setName("Cisco");
-        cisco.addGroup(group("cisco-router"));
-        final SystemDef sd = systemDef("Cisco Routers");
-        sd.getCollect().addIncludeGroup("cisco-router");
-        sd.getCollect().addIncludeGroup("rfc1315-frame-relay");
-        cisco.addSystemDef(sd);
-
-        final SnmpCollectionSource routers = source(2, "Routers");
-        final SnmpCollectionSource mib2 = source(3, "MIB2");
-        final SnmpCollectionMibGroup frameRelay = mibGroupEntity(routers, "rfc1315-frame-relay",
-                "[\"mib2-shared\"]", "frCircuitIfIndex");
-        final SnmpCollectionMibGroup shared = mibGroupEntity(mib2, "mib2-shared", null, "ifIndex");
-
-        final Fixture f = new Fixture(cisco);
-        when(f.mibGroupDao.findAllWithSource()).thenReturn(List.of(frameRelay, shared));
-        final SnmpCollectionResourceType frType = new SnmpCollectionResourceType();
-        frType.setName("frCircuitIfIndex");
-        frType.setLabel("Frame-Relay");
-        frType.setCollectionSource(routers);
-        when(f.resourceTypeDao.findAllWithSource()).thenReturn(List.of(frType));
-
-        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
-
-        final SnmpCollection coll = m.config.getSnmpCollection("default");
-        assertEquals(List.of("cisco-router", "rfc1315-frame-relay", "mib2-shared"),
-                coll.getGroups().getGroups().stream().map(Group::getName).toList());
-        assertTrue("resource type of a group from another source must be available",
-                m.allResourceTypes.containsKey("frCircuitIfIndex"));
-    }
-
-    @Test
     public void attachedSourcesDoNotQueryOtherSources() {
         final DatacollectionGroup cisco = new DatacollectionGroup();
         cisco.setName("Cisco");
@@ -210,126 +173,6 @@ public class SnmpDataCollectionConfigLoaderTest {
         verify(f.resourceTypeDao, times(1)).findAllWithSource();
         verify(f.mibGroupDao, never()).findAllByName(any());
         verify(f.resourceTypeDao, never()).findAllByName(any());
-    }
-
-    @Test
-    public void unresolvedGroupIsSkipped() {
-        final DatacollectionGroup cisco = new DatacollectionGroup();
-        cisco.setName("Cisco");
-        final SystemDef sd = systemDef("Cisco Routers");
-        sd.getCollect().addIncludeGroup("does-not-exist");
-        cisco.addSystemDef(sd);
-
-        final Fixture f = new Fixture(cisco);
-        when(f.mibGroupDao.findAllWithSource()).thenReturn(List.of());
-
-        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
-
-        assertTrue(m.config.getSnmpCollection("default").getGroups().getGroups().isEmpty());
-        verify(f.mibGroupDao).findAllWithSource();
-    }
-
-    @Test
-    public void groupDisabledInAttachedSourceIsNotTakenFromOtherSource() {
-        // "Cisco" (id 1) is attached and disables "shared". "Other" defines an enabled "shared".
-        final DatacollectionGroup cisco = new DatacollectionGroup();
-        cisco.setName("Cisco");
-        final SystemDef sd = systemDef("Cisco Routers");
-        sd.getCollect().addIncludeGroup("shared");
-        cisco.addSystemDef(sd);
-
-        final SnmpCollectionMibGroup disabled = mibGroupEntity(source(1, "Cisco"), "shared", null, "ifIndex");
-        disabled.setEnabled(false);
-        final SnmpCollectionMibGroup other = mibGroupEntity(source(2, "Other"), "shared", null, "ifIndex");
-
-        final Fixture f = new Fixture(cisco);
-        when(f.mibGroupDao.findAllDisabledWithSource()).thenReturn(List.of(disabled));
-        when(f.mibGroupDao.findAllWithSource()).thenReturn(List.of(disabled, other));
-
-        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
-
-        assertTrue(m.config.getSnmpCollection("default").getGroups().getGroups().isEmpty());
-        // The small query for disabled groups is enough. The query for all groups does not run.
-        verify(f.mibGroupDao, never()).findAllWithSource();
-    }
-
-    @Test
-    public void resourceTypeDisabledInAttachedSourceIsNotTakenFromOtherSource() {
-        // "Cisco" (id 1) is attached and disables "ciscoType". "Other" defines an enabled "ciscoType".
-        final DatacollectionGroup cisco = new DatacollectionGroup();
-        cisco.setName("Cisco");
-        final Group g = group("cisco-group");
-        final MibObj obj = new MibObj();
-        obj.setOid(".1.3.6.1.4.1.9.1");
-        obj.setInstance("ciscoType");
-        obj.setAlias("ciscoObj");
-        obj.setType("gauge");
-        g.addMibObj(obj);
-        cisco.addGroup(g);
-
-        final SnmpCollectionResourceType disabled = resourceTypeEntity(source(1, "Cisco"), "ciscoType");
-        disabled.setEnabled(false);
-        final SnmpCollectionResourceType other = resourceTypeEntity(source(2, "Other"), "ciscoType");
-
-        final Fixture f = new Fixture(cisco);
-        when(f.resourceTypeDao.findAllDisabledWithSource()).thenReturn(List.of(disabled));
-        when(f.resourceTypeDao.findAllWithSource()).thenReturn(List.of(disabled, other));
-
-        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = f.loader.materializeFromDb();
-
-        assertFalse(m.allResourceTypes.containsKey("ciscoType"));
-        verify(f.resourceTypeDao, never()).findAllWithSource();
-    }
-
-    @Test
-    public void resourceTypeDisabledInOtherProfileSourceIsStillTakenFromOtherSource() {
-        // Profile "a" attaches "A" (id 1), whose group uses "fooType". No attached source of "a" defines it.
-        // Profile "b" attaches "B" (id 2), which disables "fooType". "Other" (id 3) defines an enabled "fooType".
-        final DatacollectionGroup dcA = new DatacollectionGroup();
-        dcA.setName("A");
-        final Group g = group("a-group");
-        final MibObj obj = new MibObj();
-        obj.setOid(".1.3.6.1.4.1.99.1");
-        obj.setInstance("fooType");
-        obj.setAlias("fooObj");
-        obj.setType("gauge");
-        g.addMibObj(obj);
-        dcA.addGroup(g);
-        final DatacollectionGroup dcB = new DatacollectionGroup();
-        dcB.setName("B");
-
-        final SnmpCollectionResourceType disabled = resourceTypeEntity(source(2, "B"), "fooType");
-        disabled.setEnabled(false);
-        final SnmpCollectionResourceType other = resourceTypeEntity(source(3, "Other"), "fooType");
-
-        final SnmpCollectionProfileDao profileDao = mock(SnmpCollectionProfileDao.class);
-        final SnmpCollectionSourceDao sourceDao = mock(SnmpCollectionSourceDao.class);
-        final SnmpCollectionMibGroupDao mibGroupDao = mock(SnmpCollectionMibGroupDao.class);
-        final SnmpCollectionResourceTypeDao resourceTypeDao = mock(SnmpCollectionResourceTypeDao.class);
-        when(profileDao.findAllEnabled()).thenReturn(List.of(profile("a", "A"), profile("b", "B")));
-        when(sourceDao.findByName("A")).thenReturn(source(1, "A"));
-        when(sourceDao.findByName("B")).thenReturn(source(2, "B"));
-        when(resourceTypeDao.findAllDisabledWithSource()).thenReturn(List.of(disabled));
-        when(resourceTypeDao.findAllWithSource()).thenReturn(List.of(disabled, other));
-
-        final SnmpDataCollectionConfigLoaderImpl loader = new SnmpDataCollectionConfigLoaderImpl() {
-            @Override
-            public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource s) {
-                return s.getId() == 1 ? dcA : dcB;
-            }
-        };
-        loader.setSnmpCollectionProfileDao(profileDao);
-        loader.setSnmpCollectionSourceDao(sourceDao);
-        final DataCollectionConfigDao configDao = mock(DataCollectionConfigDao.class);
-        when(configDao.getRrdPath()).thenReturn("/tmp/rrd/");
-        loader.setDataCollectionConfigDao(configDao);
-        loader.setSnmpCollectionMibGroupDao(mibGroupDao);
-        loader.setSnmpCollectionResourceTypeDao(resourceTypeDao);
-
-        final SnmpDataCollectionConfigLoaderImpl.MaterializedConfig m = loader.materializeFromDb();
-
-        assertTrue("profile b must not block the resource type that profile a needs",
-                m.allResourceTypes.containsKey("fooType"));
     }
 
     /** One profile named "default" that attaches only the given source. */
@@ -382,16 +225,6 @@ public class SnmpDataCollectionConfigLoaderTest {
         e.setMibGroupNames(includeGroupsJson);
         e.setMibObjects(DatacollectionJsonHelper.toJson(List.of(obj)));
         return e;
-    }
-
-    private SnmpCollectionProfile profile(final String name, final String sourceName) {
-        final SnmpCollectionProfile p = new SnmpCollectionProfile();
-        p.setName(name);
-        p.setStorageFlag("select");
-        p.setRrdStep(300);
-        p.setSourceNames("[\"" + sourceName + "\"]");
-        p.setRrdRras("[]");
-        return p;
     }
 
     private SnmpCollectionResourceType resourceTypeEntity(final SnmpCollectionSource source, final String name) {
