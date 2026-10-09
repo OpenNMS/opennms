@@ -51,14 +51,6 @@
                 </argument>
             </bean>
         </argument>
-            <argument>
-                <list>
-                    <value>JmsQueueName</value>
-                    <value>SystemId</value>
-                    <value>RpcTracingInfo</value>
-                    <value>SinkTracingInfo</value>
-                </list>
-            </argument>
     </bean>
 
     <bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">

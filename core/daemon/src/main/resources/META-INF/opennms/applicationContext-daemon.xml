@@ -63,14 +63,6 @@
         </constructor-arg>
       </bean>
     </constructor-arg>
-    <constructor-arg>
-      <list>
-        <value>JmsQueueName</value>
-        <value>SystemId</value>
-        <value>RpcTracingInfo</value>
-        <value>SinkTracingInfo</value>
-      </list>
-    </constructor-arg>
   </bean>
 
   <bean id="queuingservice" class="org.apache.camel.component.jms.JmsComponent" lazy-init="true">

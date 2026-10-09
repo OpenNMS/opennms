@@ -18,6 +18,7 @@
 
   <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" lazy-init="true">
     <property name="brokerURL" value="vm://localhost?create=false&amp;jms.useAsyncSend=true" />
+    <property name="trustedPackages"><list/></property>
   </bean>
 
   <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
@@ -35,14 +36,6 @@
   <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList" lazy-init="true">
     <constructor-arg>
       <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy"/>
-    </constructor-arg>
-    <constructor-arg>
-      <list>
-        <value>JmsQueueName</value>
-        <value>SystemId</value>
-        <value>RpcTracingInfo</value>
-        <value>SinkTracingInfo</value>
-      </list>
     </constructor-arg>
   </bean>
 

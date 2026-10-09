@@ -27,14 +27,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.apache.camel.impl.DefaultHeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.junit.Test;
 
 public class InboundHeaderAllowListTest {
-    private final HeaderFilterStrategy strategy = new InboundHeaderAllowList(new DefaultHeaderFilterStrategy(),
-            Arrays.asList("JmsQueueName", "SystemId", "RpcTracingInfo", "SinkTracingInfo"));
+    private final HeaderFilterStrategy strategy = new InboundHeaderAllowList(new DefaultHeaderFilterStrategy());
 
     private boolean blocks(final String name) {
         return strategy.applyFilterToExternalHeaders(name, "x", null);
@@ -42,7 +42,9 @@ public class InboundHeaderAllowListTest {
 
     @Test
     public void passesOnlyTheAllowedNames() {
-        for (String name : new String[] { "JmsQueueName", "SystemId", "RpcTracingInfo", "SinkTracingInfo" }) {
+        assertEquals(new HashSet<>(Arrays.asList("JmsQueueName", "SystemId", "RpcTracingInfo", "SinkTracingInfo")),
+                InboundHeaderAllowList.DEFAULT_ALLOWED);
+        for (String name : InboundHeaderAllowList.DEFAULT_ALLOWED) {
             assertFalse(name, blocks(name));
         }
     }

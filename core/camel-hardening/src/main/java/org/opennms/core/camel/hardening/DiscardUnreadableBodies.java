@@ -37,6 +37,9 @@ import org.slf4j.LoggerFactory;
  *
  * Letting the exception escape instead would roll the message back, so the
  * broker redelivers it and every attempt logs an error.
+ *
+ * Relies on the body staying lazy: with eagerLoadingOfProperties=true on the
+ * endpoint, Camel reads it before the route starts and this never runs.
  */
 public class DiscardUnreadableBodies implements Processor {
     private static final Logger LOG = LoggerFactory.getLogger(DiscardUnreadableBodies.class);

@@ -21,6 +21,7 @@
  */
 package org.opennms.core.camel.hardening;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,8 +41,16 @@ import org.apache.camel.spi.HeaderFilterStrategy;
  * headers are left to the wrapped strategy.
  */
 public class InboundHeaderAllowList implements HeaderFilterStrategy {
+    /** The inbound JMS properties the IPC sink, RPC and twin consumers read. */
+    public static final Set<String> DEFAULT_ALLOWED = Collections.unmodifiableSet(new HashSet<>(
+            Arrays.asList("JmsQueueName", "SystemId", "RpcTracingInfo", "SinkTracingInfo")));
+
     private final HeaderFilterStrategy outbound;
     private final Set<String> allowed;
+
+    public InboundHeaderAllowList(final HeaderFilterStrategy outbound) {
+        this(outbound, DEFAULT_ALLOWED);
+    }
 
     public InboundHeaderAllowList(final HeaderFilterStrategy outbound, final Collection<String> allowed) {
         this.outbound = Objects.requireNonNull(outbound);
