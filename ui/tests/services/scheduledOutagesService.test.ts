@@ -22,6 +22,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  getActiveOutageNamesForNode,
   getNodeLabels,
   getOutageApplicability,
   getScheduledOutage,
@@ -180,5 +181,29 @@ describe('scheduledOutagesService', () => {
     const appl = await getOutageApplicability()
     expect(appl?.notificationCalendars).toEqual(['nightly'])
     expect(appl?.pollers[0].calendars).toEqual(['nightly', 'weekend'])
+  })
+
+  describe('getActiveOutageNamesForNode', () => {
+    it('asks the server for the names of the outages in effect for the node', async () => {
+      vi.mocked(rest.get).mockResolvedValue({ data: ['maint', 'weekend'] })
+
+      const result = await getActiveOutageNamesForNode(42)
+
+      expect(rest.get).toHaveBeenCalledWith('/sched-outages/activeForNode/42')
+      expect(result).toEqual(['maint', 'weekend'])
+    })
+
+    it('answers an empty list for a node with none in effect', async () => {
+      vi.mocked(rest.get).mockResolvedValue({ data: [] })
+
+      expect(await getActiveOutageNamesForNode('42')).toEqual([])
+    })
+
+    // null, not [], so the caller can tell a failed check from a node with none.
+    it('answers null when the request fails', async () => {
+      vi.mocked(rest.get).mockRejectedValue(new Error('boom'))
+
+      expect(await getActiveOutageNamesForNode('42')).toBeNull()
+    })
   })
 })
