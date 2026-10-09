@@ -36,10 +36,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.web.rest.v2.model.GraphCollectionDto;
-import org.opennms.web.rest.v2.model.GraphCollectionGraphDto;
-import org.opennms.web.rest.v2.model.GraphCollectionResolvedDto;
-import org.opennms.web.rest.v2.model.GraphCollectionTimespanDto;
+import org.opennms.web.rest.v2.model.graphCollection.GraphCollectionDto;
+import org.opennms.web.rest.v2.model.graphCollection.GraphCollectionGraphDto;
+import org.opennms.web.rest.v2.model.graphCollection.GraphCollectionResolvedDto;
+import org.opennms.web.rest.v2.model.graphCollection.GraphCollectionTimespanDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

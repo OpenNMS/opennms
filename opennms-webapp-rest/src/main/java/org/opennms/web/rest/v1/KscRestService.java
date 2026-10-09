@@ -66,6 +66,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The original KSC report API.
+ *
+ * @deprecated Superseded by the Graph Collections API under {@code /api/v2/graph-collections}
+ * ({@code org.opennms.web.rest.v2.GraphCollectionRestService}), which speaks JSON, assigns ids on
+ * the server, updates a collection whole and can delete. This service is kept so existing clients
+ * keep working and will be removed together with the legacy KSC pages.
+ */
+@Deprecated(since = "37.0.0", forRemoval = true)
 @Component("kscRestService")
 @Path("ksc")
 @Tag(name = "Ksc", description = """

@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.v2.model;
+package org.opennms.web.rest.v2.model.graphCollection;
 
 import java.util.ArrayList;
 import java.util.List;
