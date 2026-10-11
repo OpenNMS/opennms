@@ -274,22 +274,31 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
         final Deque<String> pending = new ArrayDeque<>();
         for (final SystemDef sd : systems.getSystemDefs()) {
             if (sd.getCollect() != null) {
-                pending.addAll(sd.getCollect().getIncludeGroups());
+                addNames(pending, sd.getCollect().getIncludeGroups());
             }
         }
         for (final Group g : groups.getGroups()) {
-            pending.addAll(g.getIncludeGroups());
+            addNames(pending, g.getIncludeGroups());
         }
         while (!pending.isEmpty()) {
             final String name = pending.poll();
-            if (name == null || addedGroupNames.contains(name)) {
+            if (addedGroupNames.contains(name)) {
                 continue;
             }
             addedGroupNames.add(name);
             final Group g = index.findGroup(name, profileName, attachedSourceIds);
             if (g != null) {
                 groups.addGroup(g);
-                pending.addAll(g.getIncludeGroups());
+                addNames(pending, g.getIncludeGroups());
+            }
+        }
+    }
+
+    /** ArrayDeque does not accept null. Thus null names are not added. */
+    private static void addNames(final Deque<String> pending, final List<String> names) {
+        for (final String name : names) {
+            if (name != null) {
+                pending.add(name);
             }
         }
     }

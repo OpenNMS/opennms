@@ -157,11 +157,16 @@ An `<include-collection>` entry attaches a full source, or copies a part of a so
 * `dataCollectionGroup="X"` attaches the source `X` to the profile. Later changes to `X` apply to the profile.
 * `dataCollectionGroup="X"` with `<exclude-filter>` entries, and `systemDef="Y"`, copy the selected system definitions and the MIB groups that they name to the source `__inline_<profile>`.
 The exclude-filter form also copies the resource types of `X`.
-The source `X`, or the source that contains `Y`, can be a file in the same request or a source that is already in the database.
-The copy does not change when you edit `X` later, for example in the UI. Upload the `datacollection-config.xml` file again to copy the current content of `X`.
+The source `X`, or the source that contains `Y`, must be a file in the same request.
+Thus, include the files that `datacollection-config.xml` refers to in the same upload.
 
-If a system definition or a MIB group to copy does not exist, or is disabled, the upload skips it.
-The upload continues, and the `errors` array of the response contains one message for each skipped item.
+The copy does not change when you edit `X` later.
+You can edit `__inline_<profile>` in the UI like any other source.
+An upload of `datacollection-config.xml` replaces the content of `__inline_<profile>`, and your edits to it are lost.
+
+If the request does not contain the source of an exclude-filter entry, the upload attaches the full source `X` and ignores the filter.
+If the request does not contain the system definition `Y`, the upload skips it.
+In both cases, the upload continues, and the `errors` array of the response contains a message.
 
 .Upload one or more source XML files and attach them to the `default` profile
 [source, bash]
