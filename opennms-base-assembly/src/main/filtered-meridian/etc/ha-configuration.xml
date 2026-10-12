@@ -63,7 +63,18 @@
   <sync-password>${scv:hasync:password|opennms}</sync-password>
 
   <!--
-    Per-node files sync must never overwrite or delete, relative to etc/
+    Directories under $OPENNMS_HOME to synchronize. Default: etc only. Add
+    deploy to replicate installed plugins; they land while Karaf is stopped
+    and install when this node promotes. Never list data: it is this node's
+    own Karaf cache.
+  <sync-roots>
+    <root>etc</root>
+    <root>deploy</root>
+  </sync-roots>
+  -->
+
+  <!--
+    Per-node files sync must never overwrite or delete, relative to a sync root
     (a trailing "/" excludes a subtree). ha-configuration.xml and examples/
     are always excluded. On identically-installed nodes leave this empty —
     exclude only files that genuinely differ per node:
