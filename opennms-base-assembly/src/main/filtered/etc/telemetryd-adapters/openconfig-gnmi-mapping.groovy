@@ -661,3 +661,128 @@ class LeafMatcher {
         return new Match(group, name, type, instance, leaf.value)
     }
 }
+
+@Slf4j
+class ResourceEmitter {
+    static int emit(List<Match> matches, NodeLevelResource node, CollectionSetBuilder builder) {
+        int emitted = 0
+        for (Match m : matches) {
+            Resource resource = resourceFor(m, node)
+            if (m.type == 'string') {
+                builder.withStringAttribute(resource, m.group.name, m.attrName, String.valueOf(m.value))
+                emitted++
+                continue
+            }
+            Number number = Values.toNumber(m.value)
+            if (number == null) {
+                if (log.isDebugEnabled() && RateLimitedLog.allow('value:' + m.group.name)) {
+                    log.debug('Group {}: value {} of attribute {} is not numeric, skipped', m.group.name, m.value, m.attrName)
+                }
+                continue
+            }
+            AttributeType type = m.type == 'counter' ? AttributeType.COUNTER : AttributeType.GAUGE
+            builder.withNumericAttribute(resource, m.group.name, m.attrName, number, type)
+            emitted++
+        }
+        return emitted
+    }
+
+    private static Resource resourceFor(Match m, NodeLevelResource node) {
+        if (m.group.resourceType == 'node') {
+            return node
+        }
+        if (m.group.resourceType == 'interface') {
+            return new InterfaceLevelResource(node, m.instance)
+        }
+        return new DeferredGenericTypeResource(node, m.group.resourceType, m.instance)
+    }
+}
+
+@Slf4j
+class MappingHolder {
+    private static final Object LOCK = new Object()
+    private static volatile CompiledMapping active
+    private static volatile File loadedFile
+    private static volatile long loadedStamp = -1L
+
+    static File locate() {
+        File dir = new File(System.getProperty('opennms.home', '/opt/opennms'), 'etc/telemetryd-adapters')
+        File yaml = new File(dir, 'openconfig-gnmi-mapping.yaml')
+        return yaml.exists() ? yaml : new File(dir, 'openconfig-gnmi-mapping.json')
+    }
+
+    static CompiledMapping current() {
+        File file = locate()
+        if (!file.exists()) {
+            // Keep the last good mapping if the file disappears
+            return active
+        }
+        long stamp = file.lastModified() * 31L + file.length()
+        if (file == loadedFile && stamp == loadedStamp) {
+            return active
+        }
+        synchronized (LOCK) {
+            if (file == loadedFile && stamp == loadedStamp) {
+                return active
+            }
+            LoadResult result = MappingLoader.load(file)
+            loadedFile = file
+            loadedStamp = stamp
+            for (String warning : result.warnings) {
+                log.warn('gNMI mapping {}: {}', file, warning)
+            }
+            if (result.errors.isEmpty()) {
+                active = result.mapping
+                log.info('Loaded gNMI mapping {} with {} groups', file, active.groups.size())
+            } else if (active == null) {
+                log.error('gNMI mapping {} is invalid: {}', file, result.errors.join('; '))
+            } else {
+                log.error('gNMI mapping {} is invalid, keeping the previous mapping: {}', file, result.errors.join('; '))
+            }
+            return active
+        }
+    }
+}
+
+@Slf4j
+class GnmiMapping {
+    static void apply(Object agent, CollectionSetBuilder builder, Gnmi.SubscribeResponse response) {
+        if (agent == null) {
+            // The adapter found no node for the source address
+            return
+        }
+        CompiledMapping mapping = MappingHolder.current()
+        if (mapping == null) {
+            if (RateLimitedLog.allow('no-mapping')) {
+                log.error('No valid gNMI mapping loaded from {}, no metrics are emitted', MappingHolder.locate())
+            }
+            return
+        }
+        int nodeId = agent.getNodeId()
+        int seen = 0
+        int matched = 0
+        int emitted = 0
+        try {
+            List<Leaf> leaves = LeafFlattener.flatten(response)
+            seen = leaves.size()
+            List<Match> matches = new ArrayList<>()
+            for (Leaf leaf : leaves) {
+                List<Match> found = LeafMatcher.match(leaf, mapping)
+                if (!found.isEmpty()) {
+                    matched++
+                }
+                matches.addAll(found)
+            }
+            emitted = ResourceEmitter.emit(matches, new NodeLevelResource(nodeId), builder)
+        } catch (Exception e) {
+            log.warn('Failed to map gNMI message for node {}: {}', nodeId, e.getMessage(), e)
+        }
+        log.debug('gNMI mapping for node {}: {} leaves seen, {} matched, {} attributes emitted', nodeId, seen, matched, emitted)
+    }
+}
+
+// Globals passed in by the OpenConfig adapter:
+// agent: the CollectionAgent of the node that sent the message
+// builder: the CollectionSetBuilder to add resources and attributes to
+// msg: the decoded Gnmi.SubscribeResponse
+GnmiMapping.apply(agent, (CollectionSetBuilder) builder, (Gnmi.SubscribeResponse) msg)
