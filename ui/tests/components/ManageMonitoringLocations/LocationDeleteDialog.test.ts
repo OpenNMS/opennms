@@ -179,7 +179,7 @@ describe('LocationDeleteDialog.vue', () => {
     expect(perspective.text()).toContain('Removed from 2 applications as a perspective — Web Shop, VPN stop being polled from this monitoring location, and nothing asks you to replace it.')
     const link = perspective.find('[data-test="applications-link"]')
     expect(link.text()).toBe('Open Manage Applications')
-    expect(link.attributes('href')).toMatch(/admin\/applications\.htm$/)
+    expect(link.attributes('href')).toMatch(/ui\/index\.html#\/admin\/applications$/)
     expect(link.attributes('target')).toBe('_self')
   })
 

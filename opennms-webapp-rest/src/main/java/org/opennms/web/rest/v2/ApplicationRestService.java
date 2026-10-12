@@ -24,10 +24,27 @@ package org.opennms.web.rest.v2;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
@@ -35,28 +52,42 @@ import javax.ws.rs.core.UriInfo;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.OnmsApplicationList;
+import org.opennms.web.rest.v2.model.ApplicationMembersDto;
+import org.opennms.web.rest.v2.model.ApplicationMembersUpdate;
+import org.opennms.web.rest.v2.model.ApplicationServiceDto;
+import org.opennms.web.rest.v2.model.ApplicationServicePage;
+import org.opennms.web.rest.v2.model.ApplicationSummaryDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -85,10 +116,22 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
 
     private final EventProxy m_eventProxy;
 
+    private final MonitoredServiceDao m_monitoredServiceDao;
+
+    private final MonitoringLocationDao m_monitoringLocationDao;
+
+    // applications.name is varchar(32)
+    static final int MAX_NAME_LENGTH = 32;
+
+    private static final int MAX_SERVICE_PAGE = 200;
+
     @Autowired
-    public ApplicationRestService(final ApplicationDao dao, final EventProxy eventProxy) {
+    public ApplicationRestService(final ApplicationDao dao, final EventProxy eventProxy,
+            final MonitoredServiceDao monitoredServiceDao, final MonitoringLocationDao monitoringLocationDao) {
         this.m_dao = dao;
         this.m_eventProxy = eventProxy;
+        this.m_monitoredServiceDao = monitoredServiceDao;
+        this.m_monitoringLocationDao = monitoringLocationDao;
     }
 
     @Override
@@ -133,6 +176,17 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
 
     @Override
     public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsApplication object) {
+        final String name = object == null || object.getName() == null ? "" : object.getName().trim();
+        if (name.isEmpty()) {
+            return badRequest("An application name is required.");
+        }
+        if (name.length() > MAX_NAME_LENGTH) {
+            return badRequest("The application name cannot be longer than " + MAX_NAME_LENGTH + " characters.");
+        }
+        if (getDao().findByName(name) != null) {
+            return badRequest("An application named " + name + " already exists.");
+        }
+        object.setName(name);
         final Integer id = getDao().save(object);
         sendEvent(object, EventConstants.APPLICATION_CREATED_EVENT_UEI);
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
@@ -339,15 +393,15 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
                     The application was created. The response has no body.""",
                     headers = @Header(name = "Location", description = "URI of the created application.",
                             schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "500", description = """
-                    The name is already taken. The body is a `text/plain` message naming the violated constraint.""",
+            @ApiResponse(responseCode = "400", description = """
+                    The name is missing, longer than 32 characters, or already taken. The body is a `text/plain` message saying which.""",
                     content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = """
-                            could not execute statement; SQL [n/a]; constraint [applications_name_idx]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement""")))
+                            An application named Review Reporting already exists.""")))
     })
     public Response create(final SecurityContext securityContext, final UriInfo uriInfo,
             @RequestBody(description = """
-                    The application to create. Only `name` is required, and it must be unique.""",
+                    The application to create. Only `name` is required. It is trimmed, at most 32 characters, and must be unique.""",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsApplication.class),
                                     examples = @ExampleObject(value = """
@@ -477,5 +531,260 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
                     required = true, example = "3")
             final Integer id) {
         return super.delete(securityContext, uriInfo, id);
+    }
+
+    @GET
+    @Path("summaries")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "List applications with their member counts",
+            description = """
+                    Every application ordered by name, with the number of member services and the names of its perspective locations.""",
+            operationId = "applicationsSummaries")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Every application.",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ApplicationSummaryDto.class)),
+                            examples = @ExampleObject(value = """
+                            [ { "id": 3, "name": "Review Analytics", "serviceCount": 2, "perspectiveLocations": [ "Default" ] } ]""")))
+    })
+    public Response getSummaries() {
+        final List<ApplicationSummaryDto> summaries = getDao().findAll().stream()
+                .sorted(Comparator.comparing(OnmsApplication::getName, String.CASE_INSENSITIVE_ORDER))
+                .map(application -> {
+                    final ApplicationSummaryDto summary = new ApplicationSummaryDto();
+                    summary.setId(application.getId());
+                    summary.setName(application.getName());
+                    summary.setServiceCount(application.getMonitoredServices().size());
+                    summary.setPerspectiveLocations(locationNames(application));
+                    return summary;
+                })
+                .collect(Collectors.toList());
+        return Response.ok(summaries).build();
+    }
+
+    @GET
+    @Path("{id}/members")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get the members of one application",
+            description = """
+                    The member services, ordered by node label, IP address and service name, and the perspective locations of one application.""",
+            operationId = "applicationsMembers")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The application and its members.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApplicationMembersDto.class),
+                            examples = @ExampleObject(value = """
+                            {
+                              "id": 3,
+                              "name": "Review Analytics",
+                              "services": [ { "id": 1021, "nodeId": 12, "nodeLabel": "web-01", "ipInterfaceId": 40, "ipAddress": "10.0.0.5", "serviceName": "HTTP" } ],
+                              "perspectiveLocations": [ "Default" ]
+                            }"""))),
+            @ApiResponse(responseCode = "404", description = "No application has that identifier. The body is a `text/plain` message.")
+    })
+    public Response getMembers(
+            @Parameter(description = "Database identifier of the application.", required = true, example = "3")
+            @PathParam("id") final Integer id) {
+        final OnmsApplication application = getDao().get(id);
+        if (application == null) {
+            return notFound(id);
+        }
+        final ApplicationMembersDto members = new ApplicationMembersDto();
+        members.setId(application.getId());
+        members.setName(application.getName());
+        // OnmsMonitoredService orders by node label, then IP address as an address, then service name
+        members.setServices(application.getMonitoredServices().stream()
+                .sorted()
+                .map(ApplicationRestService::toServiceDto)
+                .collect(Collectors.toList()));
+        members.setPerspectiveLocations(locationNames(application));
+        return Response.ok(members).build();
+    }
+
+    @PUT
+    @Path("{id}/members")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Replace the members of one application",
+            description = """
+                    Replaces the member services, the perspective locations, or both. A list left out keeps the current members of that kind. Nothing changes when any identifier or location is unknown. An `applicationChanged` event is sent when the members change.""",
+            operationId = "applicationsUpdateMembers")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The members were replaced. The response has no body."),
+            @ApiResponse(responseCode = "400", description = "The body is missing, or names a service or location that does not exist. The body is a `text/plain` message."),
+            @ApiResponse(responseCode = "404", description = "No application has that identifier. The body is a `text/plain` message.")
+    })
+    public Response updateMembers(
+            @Parameter(description = "Database identifier of the application.", required = true, example = "3")
+            @PathParam("id") final Integer id,
+            @RequestBody(description = "The new members.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApplicationMembersUpdate.class),
+                            examples = @ExampleObject(value = """
+                            { "serviceIds": [ 1021, 1039 ], "perspectiveLocations": [ "Default" ] }""")))
+            final ApplicationMembersUpdate update) {
+        if (update == null) {
+            return badRequest("A members body is required.");
+        }
+        writeLock();
+        try {
+            final OnmsApplication application = getDao().get(id);
+            if (application == null) {
+                return notFound(id);
+            }
+
+            // resolve everything before changing anything, so a bad entry leaves the application as it was
+            final Map<Integer, OnmsMonitoredService> services = new HashMap<>();
+            if (update.getServiceIds() != null) {
+                for (final Integer serviceId : new LinkedHashSet<>(update.getServiceIds())) {
+                    final OnmsMonitoredService service = serviceId == null ? null : m_monitoredServiceDao.get(serviceId);
+                    if (service == null) {
+                        return badRequest("Monitored service " + serviceId + " was not found.");
+                    }
+                    services.put(serviceId, service);
+                }
+            }
+            final Set<OnmsMonitoringLocation> locations = new HashSet<>();
+            if (update.getPerspectiveLocations() != null) {
+                for (final String name : new LinkedHashSet<>(update.getPerspectiveLocations())) {
+                    final OnmsMonitoringLocation location = name == null ? null : m_monitoringLocationDao.get(name);
+                    if (location == null) {
+                        return badRequest("Monitoring location " + name + " was not found.");
+                    }
+                    locations.add(location);
+                }
+            }
+
+            boolean changed = false;
+            if (update.getServiceIds() != null) {
+                // the services own the application_service_map rows, so membership is changed from their side
+                for (final OnmsMonitoredService service : new ArrayList<>(application.getMonitoredServices())) {
+                    if (!services.containsKey(service.getId())) {
+                        service.removeApplication(application);
+                        application.removeMonitoredService(service);
+                        m_monitoredServiceDao.update(service);
+                        changed = true;
+                    }
+                }
+                final Set<Integer> current = application.getMonitoredServices().stream()
+                        .map(OnmsMonitoredService::getId)
+                        .collect(Collectors.toSet());
+                for (final OnmsMonitoredService service : services.values()) {
+                    if (!current.contains(service.getId())) {
+                        service.addApplication(application);
+                        application.addMonitoredService(service);
+                        m_monitoredServiceDao.update(service);
+                        changed = true;
+                    }
+                }
+            }
+            if (update.getPerspectiveLocations() != null && !locationIds(application.getPerspectiveLocations()).equals(locationIds(locations))) {
+                application.getPerspectiveLocations().clear();
+                application.getPerspectiveLocations().addAll(locations);
+                getDao().update(application);
+                changed = true;
+            }
+            if (changed) {
+                sendEventAfterCommit(application, EventConstants.APPLICATION_CHANGED_EVENT_UEI);
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @GET
+    @Path("service-candidates")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Search the monitored services an application can include",
+            description = """
+                    Monitored services whose node label, IP address or service name contains the search text, ignoring case, ordered by node label, IP address and service name. Without search text every service matches. `totalCount` is the number of matches, which can exceed the services returned.""",
+            operationId = "applicationsServiceCandidates")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "One page of matching services.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApplicationServicePage.class),
+                            examples = @ExampleObject(value = """
+                            { "totalCount": 1, "services": [ { "id": 1021, "nodeId": 12, "nodeLabel": "web-01", "ipInterfaceId": 40, "ipAddress": "10.0.0.5", "serviceName": "HTTP" } ] }""")))
+    })
+    public Response getServiceCandidates(
+            @Parameter(description = "Text to look for in the node label, IP address or service name.", example = "web")
+            @QueryParam("search") final String search,
+            @Parameter(description = "Maximum number of services returned, at most 200.", example = "50")
+            @QueryParam("limit") @DefaultValue("50") final int limit) {
+        final ApplicationServicePage page = new ApplicationServicePage();
+        page.setTotalCount(m_monitoredServiceDao.countMatching(serviceCandidateCriteria(search).toCriteria()));
+        page.setServices(m_monitoredServiceDao.findMatching(serviceCandidateCriteria(search)
+                        .orderBy("node.label").asc()
+                        .orderBy("ipInterface.ipAddress").asc()
+                        .orderBy("serviceType.name").asc()
+                        .limit(Math.max(1, Math.min(limit, MAX_SERVICE_PAGE)))
+                        .toCriteria())
+                .stream()
+                .map(ApplicationRestService::toServiceDto)
+                .collect(Collectors.toList()));
+        return Response.ok(page).build();
+    }
+
+    private static CriteriaBuilder serviceCandidateCriteria(final String search) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class)
+                .alias("ipInterface", "ipInterface")
+                .alias("ipInterface.node", "node")
+                .alias("serviceType", "serviceType");
+        final String text = search == null ? "" : search.trim();
+        if (!text.isEmpty()) {
+            final String pattern = "%" + text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%";
+            builder.or(
+                    Restrictions.ilike("node.label", pattern),
+                    Restrictions.ilike("serviceType.name", pattern),
+                    // ipAddr is mapped through an InetAddress user type, so it is matched as text in SQL
+                    Restrictions.sql("{alias}.ipInterfaceId in (select ipif.id from ipInterface ipif where ipif.ipAddr ilike ?)",
+                            pattern, SqlRestriction.Type.STRING));
+        }
+        return builder;
+    }
+
+    private static ApplicationServiceDto toServiceDto(final OnmsMonitoredService service) {
+        final ApplicationServiceDto dto = new ApplicationServiceDto();
+        dto.setId(service.getId());
+        dto.setServiceName(service.getServiceName());
+        dto.setIpAddress(service.getIpAddressAsString());
+        if (service.getIpInterface() != null) {
+            dto.setIpInterfaceId(service.getIpInterface().getId());
+            if (service.getIpInterface().getNode() != null) {
+                dto.setNodeId(service.getIpInterface().getNode().getId());
+                dto.setNodeLabel(service.getIpInterface().getNode().getLabel());
+            }
+        }
+        return dto;
+    }
+
+    // the perspective poller re-reads the memberships when the event arrives, so it must not arrive before they are committed
+    private void sendEventAfterCommit(final OnmsApplication application, final String uei) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            sendEvent(application, uei);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                sendEvent(application, uei);
+            }
+        });
+    }
+
+    private static List<String> locationNames(final OnmsApplication application) {
+        return application.getPerspectiveLocations().stream()
+                .map(OnmsMonitoringLocation::getLocationName)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
+    }
+
+    private static Set<String> locationIds(final Collection<OnmsMonitoringLocation> locations) {
+        return locations.stream().map(OnmsMonitoringLocation::getLocationName).filter(Objects::nonNull).collect(Collectors.toSet());
+    }
+
+    private static Response badRequest(final String message) {
+        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(message).build();
+    }
+
+    private static Response notFound(final Integer id) {
+        return Response.status(Response.Status.NOT_FOUND).type(MediaType.TEXT_PLAIN).entity("Application " + id + " was not found.").build();
     }
 }
