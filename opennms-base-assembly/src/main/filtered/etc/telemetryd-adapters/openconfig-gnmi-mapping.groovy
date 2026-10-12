@@ -366,3 +366,123 @@ class MappingLoader {
         return result.errors.size() == errorsBefore ? group : null
     }
 }
+
+class Leaf {
+    final List<PathElem> path
+    final Object value
+
+    Leaf(List<PathElem> path, Object value) {
+        this.path = path
+        this.value = value
+    }
+
+    String toString() {
+        return '/' + path.join('/') + ' = ' + value + ' (' + value.getClass().getSimpleName() + ')'
+    }
+}
+
+class RateLimitedLog {
+    private static final long INTERVAL_MS = 60000L
+    private static final Map<String, Long> LAST = new ConcurrentHashMap<>()
+
+    static boolean allow(String key) {
+        long now = System.currentTimeMillis()
+        Long previous = LAST.get(key)
+        if (previous != null && now - previous < INTERVAL_MS) {
+            return false
+        }
+        LAST.put(key, now)
+        return true
+    }
+}
+
+@Slf4j
+class LeafFlattener {
+    private static final Set<String> WARNED_ARRAYS = ConcurrentHashMap.newKeySet()
+
+    static List<Leaf> flatten(Gnmi.SubscribeResponse response) {
+        List<Leaf> leaves = new ArrayList<>()
+        // sync_response and error messages carry no data; deletes are ignored
+        if (!response.hasUpdate()) {
+            return leaves
+        }
+        Gnmi.Notification notification = response.getUpdate()
+        List<PathElem> prefix = toElems(notification.getPrefix())
+        for (Gnmi.Update update : notification.getUpdateList()) {
+            List<PathElem> path = new ArrayList<>(prefix)
+            path.addAll(toElems(update.getPath()))
+            addValue(path, update.getVal(), leaves)
+        }
+        return leaves
+    }
+
+    static List<PathElem> toElems(Gnmi.Path path) {
+        List<PathElem> elems = new ArrayList<>()
+        for (Gnmi.PathElem e : path.getElemList()) {
+            Map<String, String> keys = new LinkedHashMap<>()
+            for (Map.Entry<String, String> k : e.getKeyMap().entrySet()) {
+                keys.put(Names.stripModule(k.getKey()), k.getValue())
+            }
+            elems.add(new PathElem(Names.stripModule(e.getName()), keys))
+        }
+        return elems
+    }
+
+    private static void addValue(List<PathElem> path, Gnmi.TypedValue val, List<Leaf> leaves) {
+        Gnmi.TypedValue.ValueCase c = val.getValueCase()
+        if (c == Gnmi.TypedValue.ValueCase.STRING_VAL) {
+            leaves.add(new Leaf(path, val.getStringVal()))
+        } else if (c == Gnmi.TypedValue.ValueCase.INT_VAL) {
+            leaves.add(new Leaf(path, Long.valueOf(val.getIntVal())))
+        } else if (c == Gnmi.TypedValue.ValueCase.UINT_VAL) {
+            long u = val.getUintVal()
+            leaves.add(new Leaf(path, u >= 0 ? (Object) Long.valueOf(u) : (Object) new BigInteger(Long.toUnsignedString(u))))
+        } else if (c == Gnmi.TypedValue.ValueCase.BOOL_VAL) {
+            leaves.add(new Leaf(path, Boolean.valueOf(val.getBoolVal())))
+        } else if (c == Gnmi.TypedValue.ValueCase.FLOAT_VAL) {
+            leaves.add(new Leaf(path, Double.valueOf((double) val.getFloatVal())))
+        } else if (c == Gnmi.TypedValue.ValueCase.DECIMAL_VAL) {
+            leaves.add(new Leaf(path, BigDecimal.valueOf(val.getDecimalVal().getDigits(), val.getDecimalVal().getPrecision())))
+        } else if (c == Gnmi.TypedValue.ValueCase.JSON_VAL || c == Gnmi.TypedValue.ValueCase.JSON_IETF_VAL) {
+            String text = c == Gnmi.TypedValue.ValueCase.JSON_VAL ? val.getJsonVal().toStringUtf8() : val.getJsonIetfVal().toStringUtf8()
+            Object parsed
+            try {
+                parsed = Parsers.parseJsonValue(text)
+            } catch (Exception e) {
+                String where = names(path)
+                if (RateLimitedLog.allow('json:' + where)) {
+                    log.warn('Skipping update at {}: invalid JSON: {}', where, e.getMessage())
+                }
+                return
+            }
+            addJson(path, parsed, leaves)
+        } else if (log.isDebugEnabled() && RateLimitedLog.allow('type:' + c)) {
+            log.debug('Skipping unsupported gNMI value type {} at {}', c, names(path))
+        }
+    }
+
+    private static void addJson(List<PathElem> path, Object node, List<Leaf> leaves) {
+        if (node instanceof Map) {
+            for (Map.Entry e : ((Map) node).entrySet()) {
+                List<PathElem> child = new ArrayList<>(path)
+                child.add(new PathElem(Names.stripModule(String.valueOf(e.getKey())), new LinkedHashMap<String, String>()))
+                addJson(child, e.getValue(), leaves)
+            }
+        } else if (node instanceof List) {
+            String where = names(path)
+            if (WARNED_ARRAYS.add(where)) {
+                log.warn('Skipping JSON array at {}: arrays are not supported, subscribe to a deeper path', where)
+            }
+        } else if (node != null) {
+            leaves.add(new Leaf(path, node))
+        }
+    }
+
+    private static String names(List<PathElem> path) {
+        List<String> names = new ArrayList<>()
+        for (PathElem e : path) {
+            names.add(e.name)
+        }
+        return '/' + names.join('/')
+    }
+}
