@@ -22,6 +22,7 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -56,9 +58,21 @@ import org.slf4j.LoggerFactory;
 public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private static final Logger LOG = LoggerFactory.getLogger(PollableServiceConfig.class);
 
+    public static final String METADATA_CACHE_TTL_PROPERTY = "org.opennms.netmgt.poller.metadataCacheTtlMs";
+
+    /**
+     * Upper bound on the age of the cached, interpolated service parameters. Explicit
+     * invalidation events are the fast path; this backstop guarantees that scope changes
+     * without a corresponding event (e.g. credential rotation) are picked up eventually.
+     * A value of zero or less disables the backstop.
+     */
+    private final long m_metadataCacheTtlMs =
+            SystemProperties.getLong(METADATA_CACHE_TTL_PROPERTY, TimeUnit.MINUTES.toMillis(15));
+
     private PollerConfig m_pollerConfig;
     private PollableService m_service;
     private Map<String,Object> m_parameters = null;
+    private long m_parametersTimestamp = 0;
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
@@ -72,7 +86,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private final ServiceMonitorAdaptor m_DeviceConfigMonitorAdaptor;
 
     private final ReadablePollOutagesDao m_pollOutagesDao;
-    
+
     /**
      * <p>Constructor for PollableServiceConfig.</p>
      *
@@ -114,6 +128,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .withMonitorLocator(m_pollerConfig.getServiceMonitorLocator(m_configService.getName()).orElseThrow())
                 .withTimeToLive(ttlInMs)
                 .withAttributes(getParameters())
+                .withPreInterpolatedAttributes(true)
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
                 .withAdaptor(m_statusStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
@@ -190,11 +205,32 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_pkg = newPkg;
 
         this.findService();
+        m_parameters = null;
+        m_parametersTimestamp = 0;
+    }
+
+    /**
+     * Discards the cached, interpolated service parameters so that the next poll
+     * re-resolves any metadata expressions. Called when the node's metadata may
+     * have changed; unlike {@link #refresh()} this does not re-resolve the package.
+     */
+    @Override
+    public synchronized void refreshMetadata() {
+        m_parameters = null;
+        m_parametersTimestamp = 0;
     }
 
     private synchronized Map<String,Object> getParameters() {
-        if (m_parameters == null) {
-            m_parameters = m_configService.getParameterMap();
+        final long now = m_timer.getCurrentTime();
+        if (m_parameters == null || (m_metadataCacheTtlMs > 0 && now - m_parametersTimestamp > m_metadataCacheTtlMs)) {
+            // Copy the interpolation result to materialize it: interpolateObjects returns a
+            // lazy transformed view that would otherwise re-interpolate on every read.
+            m_parameters = new HashMap<>(m_locationAwarePollerClient.poll()
+                    .withService(m_service)
+                    .withAttributes(m_configService.getParameterMap())
+                    .withPatternVariables(m_patternVariables)
+                    .getInterpolatedAttributes());
+            m_parametersTimestamp = now;
         }
         return m_parameters;
     }

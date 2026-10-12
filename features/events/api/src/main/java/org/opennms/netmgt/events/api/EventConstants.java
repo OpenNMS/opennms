@@ -105,6 +105,12 @@ public abstract class EventConstants {
      */
     public static final String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
 
+    /**
+     * The node metadata updated event UEI. Sent when the meta-data of a node, one of
+     * its interfaces or one of its services was changed, so that daemons can discard
+     * cached, metadata-interpolated configuration.
+     */
+    public static final String NODE_METADATA_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeMetadataUpdated";
 
     /**
      * The node location changed event UEI.
