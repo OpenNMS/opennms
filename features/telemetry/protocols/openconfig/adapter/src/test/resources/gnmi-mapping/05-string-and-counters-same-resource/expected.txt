@@ -1,0 +1,2 @@
+if|Ethernet1|oc-if-counters|in-octets|counter|7
+if|Ethernet1|oc-if-description|description|string|uplink to core

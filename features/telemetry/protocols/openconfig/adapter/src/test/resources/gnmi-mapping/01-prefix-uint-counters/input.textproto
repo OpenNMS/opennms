@@ -1,0 +1,19 @@
+update {
+  timestamp: 1751293808127192960
+  prefix {
+    elem { name: "interfaces" }
+    elem { name: "interface" key { key: "name" value: "Ethernet1" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "in-octets" } }
+    val { uint_val: 1000 }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "out-octets" } }
+    val { uint_val: 2000 }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "in-errors" } }
+    val { uint_val: 3 }
+  }
+}
