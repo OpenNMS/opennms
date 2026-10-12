@@ -486,3 +486,146 @@ class LeafFlattener {
         return '/' + names.join('/')
     }
 }
+
+class Values {
+    static Number toNumber(Object v) {
+        if (v instanceof Boolean) {
+            return ((Boolean) v) ? 1L : 0L
+        }
+        if (v instanceof Float || v instanceof Double) {
+            return ((Number) v).doubleValue()
+        }
+        if (v instanceof BigDecimal) {
+            BigDecimal d = (BigDecimal) v
+            return d.scale() <= 0 ? integral(d.toBigInteger()) : (Number) d.doubleValue()
+        }
+        if (v instanceof BigInteger) {
+            return integral((BigInteger) v)
+        }
+        if (v instanceof Number) {
+            return ((Number) v).longValue()
+        }
+        if (v instanceof String) {
+            String s = ((String) v).trim()
+            if (s ==~ /-?\d+/) {
+                return integral(new BigInteger(s))
+            }
+            if (s ==~ /-?\d+(\.\d+)?([eE][-+]?\d+)?/) {
+                return Double.parseDouble(s)
+            }
+        }
+        return null
+    }
+
+    private static Number integral(BigInteger b) {
+        return b.bitLength() < 64 ? (Number) b.longValue() : (Number) b
+    }
+}
+
+class Template {
+    private static final Pattern PLACEHOLDER = Pattern.compile('\\{([^}.]+)\\.([^}]+)\\}')
+
+    static String render(String template, List<PathElem> path) {
+        Matcher m = PLACEHOLDER.matcher(template)
+        StringBuffer sb = new StringBuffer()
+        while (m.find()) {
+            String value = null
+            for (PathElem e : path) {
+                if (e.name == m.group(1) && e.keys.containsKey(m.group(2))) {
+                    value = e.keys.get(m.group(2))
+                    break
+                }
+            }
+            if (value == null) {
+                return null
+            }
+            m.appendReplacement(sb, Matcher.quoteReplacement(value))
+        }
+        m.appendTail(sb)
+        return sb.toString()
+    }
+}
+
+class Sanitizer {
+    // Same characters as GenericTypeResource.sanitizeInstance; ResourcePath rejects "/"
+    static String instance(String raw) {
+        return raw.replaceAll('[\\s:\\\\\\[\\]/]', '_')
+    }
+}
+
+class Match {
+    final Group group
+    final String attrName
+    final String type
+    final String instance
+    final Object value
+
+    Match(Group group, String attrName, String type, String instance, Object value) {
+        this.group = group
+        this.attrName = attrName
+        this.type = type
+        this.instance = instance
+        this.value = value
+    }
+
+    String toString() {
+        return group.name + '|' + attrName + '|' + type + '|' + instance + '|' + value
+    }
+}
+
+@Slf4j
+class LeafMatcher {
+    static List<Match> match(Leaf leaf, CompiledMapping mapping) {
+        List<Match> matches = new ArrayList<>()
+        for (Group group : mapping.groups) {
+            Match m = matchGroup(leaf, group)
+            if (m != null) {
+                matches.add(m)
+            }
+        }
+        return matches
+    }
+
+    private static Match matchGroup(Leaf leaf, Group group) {
+        int depth = group.match.size()
+        if (leaf.path.size() <= depth) {
+            return null
+        }
+        for (int i = 0; i < depth; i++) {
+            if (!group.match.get(i).matches(leaf.path.get(i))) {
+                return null
+            }
+        }
+        List<String> rest = new ArrayList<>()
+        for (PathElem e : leaf.path.subList(depth, leaf.path.size())) {
+            rest.add(e.name)
+        }
+        String relative = rest.join('/')
+
+        String type
+        String name
+        AttrSpec spec = group.attributes.get(relative)
+        if (spec != null) {
+            type = spec.type
+            name = spec.name
+        } else if (group.all && Values.toNumber(leaf.value) != null) {
+            type = group.defaultType
+            name = relative.replace('/', '-')
+        } else {
+            return null
+        }
+
+        String instance = null
+        if (group.instance != null) {
+            String rendered = Template.render(group.instance, leaf.path)
+            if (rendered == null) {
+                if (log.isDebugEnabled() && RateLimitedLog.allow('instance:' + group.name)) {
+                    log.debug('Group {}: leaf {} has no key for instance {}, skipped', group.name, leaf, group.instance)
+                }
+                return null
+            }
+            instance = Sanitizer.instance(rendered)
+        }
+        return new Match(group, name, type, instance, leaf.value)
+    }
+}
