@@ -32,6 +32,7 @@ import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class LocationAwarePollerClientImpl implements LocationAwarePollerClient, InitializingBean {
 
@@ -48,6 +49,7 @@ public class LocationAwarePollerClientImpl implements LocationAwarePollerClient,
     private RpcTargetHelper rpcTargetHelper;
 
     @Autowired
+    @Qualifier("cachedEntityScopeProvider")
     private EntityScopeProvider entityScopeProvider;
 
     private RpcClient<PollerRequestDTO, PollerResponseDTO> delegate;

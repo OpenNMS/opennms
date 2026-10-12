@@ -31,6 +31,10 @@ Support for `confd` has been added to the Sentinel container.
 
 An enhanced node list has been introduced with options for sorting and filtering.
 
+=== Metadata cache
+
+A metadata cache has been introduced for various OpenNMS components, such as Collectd, Threshd and Pollerd.
+
 == Breaking changes
 
 === Jasper Reports engine
