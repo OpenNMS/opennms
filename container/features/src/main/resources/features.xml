@@ -949,7 +949,7 @@
         <feature>jolokia-client</feature>
         <feature>json-simple</feature>
         <feature>jcifs</feature>
-        <feature>ssh</feature>
+        <feature version="${karafSshdVersion}">ssh</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-dhcpd</feature>
