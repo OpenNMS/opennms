@@ -32,14 +32,15 @@
     </ul>
 
     <FormField :label="mode === 'node' ? 'Add a node' : 'Add an interface'" :for="`picker-${mode}-input`">
-      <div class="search-row">
+      <div class="search-row" @keydown.enter="onEnter">
         <OnmsAutoComplete
+          ref="searchBox"
           v-model="selection"
+          :unsafePt="{ pcInputText: { root: { 'aria-describedby': `picker-${mode}-enter-miss` }}}"
           :inputId="`picker-${mode}-input`"
           :suggestions="suggestions"
           optionLabel="label"
           :placeholder="mode === 'node' ? 'Search by node label' : 'Search by IP address or host name'"
-          forceSelection
           fluid
           :data-test="`picker-${mode}-search`"
           @complete="onComplete"
@@ -53,12 +54,14 @@
         />
       </div>
     </FormField>
+    <!-- always rendered, so screen readers announce the text when it changes -->
+    <small :id="`picker-${mode}-enter-miss`" class="field-note" role="status" :data-test="`picker-${mode}-enter-miss`">{{ enterMiss }}</small>
     <small class="hint">Up to 200 matches are listed.</small>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { OnmsAutoComplete, OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -87,17 +90,28 @@ const emit = defineEmits<{
 // typed text is a string until a suggestion is picked
 const selection = ref<Suggestion | string | null>(null)
 const suggestions = ref<Suggestion[]>([])
+// why Enter added nothing; cleared as soon as the text or pick changes
+const enterMiss = ref('')
+watch(selection, () => {
+  enterMiss.value = ''
+})
+
+const searchBox = ref<{ clearInput: () => void } | null>(null)
+// the query the current suggestions answer; a newer search supersedes an older one
+let suggestionsFor: string | null = null
+let searchSeq = 0
 
 const onComplete = async (query: string) => {
-  if (props.mode === 'node') {
-    const nodes = await searchOutageNodes(query)
-    suggestions.value = nodes.map(n => ({ label: `${n.label} (id ${n.id})`, id: n.id, nodeLabel: n.label }))
-  } else {
-    const interfaces = await searchOutageInterfaces(query)
-    suggestions.value = interfaces.map(i => ({
+  const seq = ++searchSeq
+  const results: Suggestion[] = props.mode === 'node'
+    ? (await searchOutageNodes(query)).map(n => ({ label: `${n.label} (id ${n.id})`, id: n.id, nodeLabel: n.label }))
+    : (await searchOutageInterfaces(query)).map(i => ({
       label: i.nodeLabel ? `${i.address} — ${i.nodeLabel}` : i.address,
       address: i.address
     }))
+  if (seq === searchSeq) {
+    suggestions.value = results
+    suggestionsFor = query
   }
 }
 
@@ -115,7 +129,47 @@ const addSelection = () => {
   } else if (props.mode === 'interface' && 'address' in sel) {
     emit('add', { address: sel.address })
   }
+  // also cancels a search still pending for the text just added
+  searchBox.value?.clearInput()
   selection.value = null
+}
+
+// The text the user typed, matched against the current suggestions.
+const exactMatches = (text: string): Suggestion[] => {
+  const typed = text.trim().toLowerCase()
+  return suggestions.value.filter(s => [s.label, 'address' in s ? s.address : s.nodeLabel]
+    .some(v => v.toLowerCase() === typed))
+}
+
+// Enter adds the highlighted suggestion (the autocomplete has already picked it
+// by the time the key reaches this row) or the one suggestion the typed text
+// names exactly; anything else is explained instead of silently dropped.
+const onEnter = async (event: KeyboardEvent) => {
+  // Enter on the Add button is already a click
+  if (!(event.target instanceof HTMLInputElement)) {
+    return
+  }
+  await nextTick()
+  if (!picked.value && typeof selection.value === 'string' && selection.value.trim()) {
+    const text = selection.value
+    // Enter can beat the debounced search; match against results for this text
+    if (suggestionsFor !== text) {
+      await onComplete(text)
+    }
+    if (selection.value !== text) {
+      return
+    }
+    const matches = exactMatches(text)
+    if (matches.length === 1) {
+      selection.value = matches[0]
+    } else {
+      enterMiss.value = matches.length
+        ? `"${text.trim()}" matches more than one entry. Pick one from the list, then press Add.`
+        : `No exact match for "${text.trim()}". Pick a match from the list, then press Add.`
+      return
+    }
+  }
+  addSelection()
 }
 
 const labelFor = (item: OutageNode | OutageInterface): string => {
@@ -164,6 +218,11 @@ const labelFor = (item: OutageNode | OutageInterface): string => {
     padding: 0 0.25rem 0 0.5rem;
     border-radius: 4px;
     background: var(--p-content-hover-background, rgba(127, 127, 127, 0.08));
+
+    > span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
   }
 
   .none {
@@ -171,8 +230,14 @@ const labelFor = (item: OutageNode | OutageInterface): string => {
     color: var(--p-text-muted-color);
   }
 
-  .hint {
+  .hint,
+  .field-note {
     color: var(--p-text-muted-color);
+  }
+
+  small.hint,
+  small.field-note {
+    display: block;
   }
 }
 </style>

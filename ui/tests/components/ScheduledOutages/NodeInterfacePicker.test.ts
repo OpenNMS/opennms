@@ -38,7 +38,10 @@ const mountPicker = (props: any) => mount(NodeInterfacePicker, {
 
 describe('NodeInterfacePicker.vue', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    // reset, not clear: a test's mockResolvedValue must not leak into the next
+    vi.resetAllMocks()
+    vi.mocked(searchOutageNodes).mockResolvedValue([])
+    vi.mocked(searchOutageInterfaces).mockResolvedValue([])
   })
 
   it('lists the selection before the search, with resolved labels and missing ids flagged', () => {
@@ -105,6 +108,143 @@ describe('NodeInterfacePicker.vue', () => {
     await wrapper.find('[data-test="picker-node-add"]').trigger('click')
     expect(wrapper.emitted('add')).toEqual([[{ id: 5 }, 'core-router']])
     expect(vm.selection).toBeNull()
+  })
+
+  // NMS-4952: Enter used to wipe the typed text (forceSelection) and add nothing
+  describe('Enter in the search', () => {
+    const pressEnter = async (wrapper: any) => {
+      await wrapper.find('.search-row input').trigger('keydown', { key: 'Enter' })
+      await flushPromises()
+    }
+
+    it('leaves Enter on the Add button to the button', async () => {
+      const wrapper = mountPicker({ mode: 'node', items: [] })
+      ;(wrapper.vm as any).selection = { label: 'core-router (id 5)', id: 5, nodeLabel: 'core-router' }
+      await wrapper.find('[data-test="picker-node-add"]').trigger('keydown', { key: 'Enter' })
+      await flushPromises()
+      expect(wrapper.emitted('add')).toBeUndefined()
+    })
+
+    it('adds a suggestion that was already picked', async () => {
+      const wrapper = mountPicker({ mode: 'node', items: [] })
+      ;(wrapper.vm as any).selection = { label: 'core-router (id 5)', id: 5, nodeLabel: 'core-router' }
+      await pressEnter(wrapper)
+      expect(wrapper.emitted('add')).toEqual([[{ id: 5 }, 'core-router']])
+    })
+
+    it('adds the one suggestion the typed text names exactly, ignoring case', async () => {
+      vi.mocked(searchOutageInterfaces).mockResolvedValueOnce([{ address: '10.0.0.9', nodeLabel: 'edge' }, { address: '10.0.0.90', nodeLabel: '' }])
+      const wrapper = mountPicker({ mode: 'interface', items: [] })
+      const vm = wrapper.vm as any
+      await vm.onComplete('10.0.0.9')
+      vm.selection = '10.0.0.9'
+      await pressEnter(wrapper)
+      expect(wrapper.emitted('add')).toEqual([[{ address: '10.0.0.9' }]])
+
+      vi.mocked(searchOutageNodes).mockResolvedValue([{ id: 5, label: 'Core-Router' }])
+      const nodes = mountPicker({ mode: 'node', items: [] })
+      await (nodes.vm as any).onComplete('core')
+      ;(nodes.vm as any).selection = 'core-router'
+      await pressEnter(nodes)
+      expect(nodes.emitted('add')).toEqual([[{ id: 5 }, 'Core-Router']])
+    })
+
+    it('keeps partial text and explains instead of adding a guess', async () => {
+      vi.mocked(searchOutageNodes).mockResolvedValueOnce([{ id: 5, label: 'core-router' }, { id: 6, label: 'core-switch' }])
+      const wrapper = mountPicker({ mode: 'node', items: [] })
+      const vm = wrapper.vm as any
+      await vm.onComplete('core')
+      vm.selection = 'core'
+      await pressEnter(wrapper)
+
+      expect(wrapper.emitted('add')).toBeUndefined()
+      expect(vm.selection).toBe('core')
+      expect(wrapper.find('[data-test="picker-node-enter-miss"]').text()).toBe('No exact match for "core". Pick a match from the list, then press Add.')
+
+      vm.selection = 'core-'
+      await flushPromises()
+      expect(wrapper.find('[data-test="picker-node-enter-miss"]').text()).toBe('')
+    })
+
+    it('does not pick between suggestions that share a label', async () => {
+      vi.mocked(searchOutageNodes).mockResolvedValueOnce([{ id: 5, label: 'edge' }, { id: 6, label: 'edge' }])
+      const wrapper = mountPicker({ mode: 'node', items: [] })
+      const vm = wrapper.vm as any
+      await vm.onComplete('edge')
+      vm.selection = 'edge'
+      await pressEnter(wrapper)
+      expect(wrapper.emitted('add')).toBeUndefined()
+      expect(wrapper.find('[data-test="picker-node-enter-miss"]').text()).toContain('matches more than one entry')
+    })
+
+    // the autocomplete's own Enter handling (highlighted option -> select) runs
+    // first; only real key codes reach it
+    it('adds the option highlighted with the arrow keys', async () => {
+      vi.mocked(searchOutageNodes).mockResolvedValue([{ id: 5, label: 'core-router' }])
+      const wrapper = mountPicker({ mode: 'node', items: [] })
+      const input = wrapper.find('.search-row input')
+      await input.trigger('focus')
+      await input.setValue('core')
+      await new Promise(resolve => setTimeout(resolve, 400))
+      await flushPromises()
+
+      await input.trigger('keydown', { code: 'ArrowDown', key: 'ArrowDown' })
+      await input.trigger('keydown', { code: 'Enter', key: 'Enter' })
+      await flushPromises()
+      expect(wrapper.emitted('add')).toEqual([[{ id: 5 }, 'core-router']])
+    })
+
+    it('searches the typed text first when Enter beats the debounced search', async () => {
+      vi.mocked(searchOutageInterfaces).mockResolvedValueOnce([{ address: '10.0.0.5', nodeLabel: '' }])
+      const wrapper = mountPicker({ mode: 'interface', items: [] })
+      ;(wrapper.vm as any).selection = '10.0.0.5'
+      await pressEnter(wrapper)
+      expect(searchOutageInterfaces).toHaveBeenCalledWith('10.0.0.5')
+      expect(wrapper.emitted('add')).toEqual([[{ address: '10.0.0.5' }]])
+    })
+
+    it('cancels a search still pending for text that was just added', async () => {
+      vi.mocked(searchOutageNodes).mockResolvedValue([])
+      const wrapper = mountPicker({ mode: 'node', items: [] })
+      const input = wrapper.find('.search-row input')
+      await input.trigger('focus')
+      await input.setValue('core')
+      ;(wrapper.vm as any).selection = { label: 'core-router (id 5)', id: 5, nodeLabel: 'core-router' }
+      await pressEnter(wrapper)
+      await new Promise(resolve => setTimeout(resolve, 400))
+      expect(wrapper.emitted('add')).toHaveLength(1)
+      expect(searchOutageNodes).not.toHaveBeenCalled()
+    })
+
+    it('ignores Enter on an empty search', async () => {
+      const wrapper = mountPicker({ mode: 'node', items: [] })
+      ;(wrapper.vm as any).selection = '  '
+      await pressEnter(wrapper)
+      expect(wrapper.emitted('add')).toBeUndefined()
+      expect(wrapper.find('[data-test="picker-node-enter-miss"]').text()).toBe('')
+    })
+  })
+
+  it('keeps only the newest search when responses arrive out of order', async () => {
+    let releaseOld: (v: any) => void = () => {}
+    vi.mocked(searchOutageNodes)
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        releaseOld = resolve
+      }))
+      .mockResolvedValueOnce([{ id: 6, label: 'core-switch' }])
+    const wrapper = mountPicker({ mode: 'node', items: [] })
+    const vm = wrapper.vm as any
+    const older = vm.onComplete('co')
+    await vm.onComplete('core-s')
+    releaseOld([{ id: 5, label: 'core-router' }])
+    await older
+    expect(vm.suggestions).toEqual([{ label: 'core-switch (id 6)', id: 6, nodeLabel: 'core-switch' }])
+  })
+
+  it('points the search input at the Enter message', () => {
+    const wrapper = mountPicker({ mode: 'interface', items: [] })
+    expect(wrapper.find('.search-row input').attributes('aria-describedby')).toBe('picker-interface-enter-miss')
+    expect(wrapper.find('#picker-interface-enter-miss').attributes('role')).toBe('status')
   })
 
   it('emits an interface by address', async () => {
