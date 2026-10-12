@@ -68,16 +68,19 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
 /**
  * Copies users.xml, groups.xml and security-roles.properties into the user management tables (37.0.0).
  *
- * <p>Everything is written in one transaction. Data that already exists by name (a user, a group, an
- * on-call role or a security role) is kept as is, so the task can run again safely. Entries that the
- * tables cannot hold are skipped with a message: unknown security roles (which login drops today as
+ * <p>The task copies only into a database without user data: if there is a user, a group, an on-call
+ * role or a custom security role, it copies nothing and logs why. With the run-once marker of
+ * {@code Upgrade}, this makes the copy a one-time step of the upgrade that never changes existing data.</p>
+ *
+ * <p>Everything is written in one transaction. Entries that the tables cannot hold are skipped with a message: unknown security roles (which login drops today as
  * well), group members and schedule users that do not exist, on-call roles whose membership group or
  * supervisor does not exist, a second contact of the same type, unknown contact and schedule types, and
  * values longer than their column. Names are matched exactly, without trimming, as OpenNMS matches them
  * today. The XSDs normally reject unknown types, but JaxbUtils reads a file without validation when it
  * cannot find the XSD.</p>
  *
- * <p>The files stay in {@code etc}, because OpenNMS still reads them; copies go to {@code etc_archive}.</p>
+ * <p>The files stay in {@code etc}, because OpenNMS still reads them; copies go to {@code etc_archive}
+ * before the data is written.</p>
  */
 public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
@@ -154,20 +157,28 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void execute() throws OnmsUpgradeException {
-        final List<String> customRoles = readSecurityRoles(etcFile(SECURITY_ROLES_FILE_NAME));
-        final Userinfo userinfo = read(Userinfo.class, etcFile(USERS_FILE_NAME));
-        final Groupinfo groupinfo = read(Groupinfo.class, etcFile(GROUPS_FILE_NAME));
-
         try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            final String existingData = existingData(connection);
+            if (existingData != null) {
+                log("The database already contains user data (%s), so nothing is copied from the files\n", existingData);
+                return;
+            }
+
+            final List<String> customRoles = readSecurityRoles(etcFile(SECURITY_ROLES_FILE_NAME));
+            final Userinfo userinfo = read(Userinfo.class, etcFile(USERS_FILE_NAME));
+            final Groupinfo groupinfo = read(Groupinfo.class, etcFile(GROUPS_FILE_NAME));
+            // before the data, not in postExecute(): Upgrade marks the task as done before postExecute(),
+            // so a failure there would never be retried, and after the data the next run copies nothing
+            archive();
+
             connection.setAutoCommit(false);
+            final Import migration = new Import(connection);
             try {
-                final Import migration = new Import(connection);
                 migration.securityRoles(customRoles);
                 migration.users(userinfo == null ? Collections.emptyList() : userinfo.getUsers());
                 migration.groups(groupinfo == null ? Collections.emptyList() : groupinfo.getGroups());
                 migration.onCallRoles(groupinfo == null ? Collections.emptyList() : groupinfo.getRoles());
                 connection.commit();
-                migration.logSummary();
             } catch (final SQLException | RuntimeException e) {
                 try {
                     connection.rollback();
@@ -176,15 +187,32 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     e.addSuppressed(rollbackException);
                 }
                 throw e;
-            } finally {
-                connection.setAutoCommit(true);
             }
+            // not in a finally block, where a failure on a lost connection would hide the real error
+            connection.setAutoCommit(true);
+            migration.logSummary();
         } catch (final SQLException | RuntimeException e) {
             throw new OnmsUpgradeException("Can't copy users and groups to the database: " + e.getMessage(), e);
         }
-        // here, not in postExecute(): Upgrade marks the task as done before postExecute(), so a failure
-        // there would never be retried. A failure here is, and the copy above can safely run again.
-        archive();
+    }
+
+    /** @return a description of the user data in the database, or null if there is none */
+    private static String existingData(final Connection connection) throws SQLException {
+        try (final PreparedStatement statement = connection.prepareStatement("SELECT "
+                + "(SELECT COUNT(*) FROM users), (SELECT COUNT(*) FROM groups), (SELECT COUNT(*) FROM oncall_roles), "
+                + "(SELECT COUNT(*) FROM security_roles WHERE NOT builtin)");
+             final ResultSet rs = statement.executeQuery()) {
+            rs.next();
+            final List<String> data = new ArrayList<>();
+            final String[] names = { "users", "groups", "on-call roles", "custom security roles" };
+            for (int i = 0; i < names.length; i++) {
+                final long count = rs.getLong(i + 1);
+                if (count > 0) {
+                    data.add(names[i] + ": " + count);
+                }
+            }
+            return data.isEmpty() ? null : String.join(", ", data);
+        }
     }
 
     @Override
@@ -195,7 +223,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     private void archive() throws OnmsUpgradeException {
         final File archive = new File(getHomeDirectory(), "etc_archive");
         if (!archive.isDirectory() && !archive.mkdirs()) {
-            throw new OnmsUpgradeException("The data was copied to the database, but the folder '" + archive + "' can't be created");
+            throw new OnmsUpgradeException("Can't create the folder '" + archive + "'");
         }
         for (final String name : Arrays.asList(USERS_FILE_NAME, GROUPS_FILE_NAME, SECURITY_ROLES_FILE_NAME)) {
             final File source = etcFile(name);
@@ -204,7 +232,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     Files.copy(source.toPath(), new File(archive, name).toPath(), REPLACE_EXISTING, COPY_ATTRIBUTES);
                     log("Copied %s to %s\n", source, archive);
                 } catch (final IOException e) {
-                    throw new OnmsUpgradeException("The data was copied to the database, but '" + source + "' can't be copied to '" + archive + "': " + e.getMessage(), e);
+                    throw new OnmsUpgradeException("Can't copy '" + source + "' to '" + archive + "': " + e.getMessage(), e);
                 }
             }
         }
@@ -265,31 +293,27 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     private class Import {
         private final Connection m_connection;
 
-        // name -> id for every row by name, the existing ones included, to resolve references
+        // name -> id, to resolve references; the database has no user data yet, only the built-in roles
         private final Map<String, Integer> m_securityRoleIds;
-        private final Map<String, Integer> m_userIds;
-        private final Map<String, Integer> m_groupIds;
-        private final Set<String> m_onCallRoleNames;
+        private final Map<String, Integer> m_userIds = new HashMap<>();
+        private final Map<String, Integer> m_groupIds = new HashMap<>();
 
-        private final Map<String, int[]> m_counts = new LinkedHashMap<>();
+        private final Map<String, Integer> m_counts = new LinkedHashMap<>();
         private int m_skipped;
+        private int m_warnings;
 
         Import(final Connection connection) throws SQLException {
             m_connection = connection;
             m_securityRoleIds = loadIds("SELECT name, id FROM security_roles");
-            m_userIds = loadIds("SELECT username, id FROM users");
-            m_groupIds = loadIds("SELECT name, id FROM groups");
-            m_onCallRoleNames = new HashSet<>(loadIds("SELECT name, id FROM oncall_roles").keySet());
         }
 
         void securityRoles(final List<String> names) throws SQLException {
             for (final String name : new LinkedHashSet<>(names)) {
-                if (m_securityRoleIds.containsKey(name)) {
-                    count("security roles", false);
-                } else if (fits(name, SECURITY_ROLE_NAME_LENGTH, "security role", name, "security-roles.properties")) {
+                // a built-in role in security-roles.properties is no custom role
+                if (!m_securityRoleIds.containsKey(name) && fits(name, SECURITY_ROLE_NAME_LENGTH, "security role", name, "security-roles.properties")) {
                     m_securityRoleIds.put(name, insert("INSERT INTO security_roles (id, name, builtin, created_time, last_modified) "
                             + "VALUES (nextval('security_roles_id_seq'), ?, false, NOW(), NOW()) RETURNING id", name));
-                    count("security roles", true);
+                    count("custom security roles");
                 }
             }
         }
@@ -307,10 +331,6 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             }
             for (final User user : users.values()) {
                 final String username = user.getUserId();
-                if (m_userIds.containsKey(username)) {
-                    count("users", false);
-                    continue;
-                }
                 final String password = user.getPassword() == null ? null : user.getPassword().getEncryptedPassword();
                 if (!fits(username, USERNAME_LENGTH, "user", username, "the user name") || !fits(password, PASSWORD_LENGTH, "user", username, "the password")) {
                     continue;
@@ -325,7 +345,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                         valueOrNull(user.getTuiPin().orElse(null), TUI_PIN_LENGTH, "user", username, "tui-pin"),
                         valueOrNull(user.getTimeZoneId().map(ZoneId::getId).orElse(null), TIME_ZONE_ID_LENGTH, "user", username, "time-zone-id"));
                 m_userIds.put(username, userId);
-                count("users", true);
+                count("users");
 
                 contacts(userId, username, user.getContacts());
                 dutySchedules("INSERT INTO user_duty_schedules (user_id, position, schedule) VALUES (?, ?, ?)", userId, "user", username, user.getDutySchedules());
@@ -379,10 +399,6 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             }
             for (final Group group : groups.values()) {
                 final String name = group.getName();
-                if (m_groupIds.containsKey(name)) {
-                    count("groups", false);
-                    continue;
-                }
                 if (!fits(name, GROUP_NAME_LENGTH, "group", name, "the name")) {
                     continue;
                 }
@@ -392,7 +408,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                         valueOrNull(group.getDefaultMap().orElse(null), DEFAULT_MAP_LENGTH, "group", name, "default-map"),
                         group.getComments().orElse(null));
                 m_groupIds.put(name, groupId);
-                count("groups", true);
+                count("groups");
 
                 // matched as is: users.xml trims user ids, but nothing trims group members
                 int position = 0;
@@ -421,10 +437,6 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             }
             for (final Role role : roles.values()) {
                 final String name = role.getName();
-                if (m_onCallRoleNames.contains(name)) {
-                    count("on-call roles", false);
-                    continue;
-                }
                 final Integer groupId = m_groupIds.get(role.getMembershipGroup());
                 final Integer supervisorId = m_userIds.get(role.getSupervisor());
                 if (groupId == null) {
@@ -441,8 +453,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                 final int roleId = insert("INSERT INTO oncall_roles (id, name, description, membership_group_id, supervisor_user_id, created_time, last_modified) "
                                 + "VALUES (nextval('oncall_roles_id_seq'), ?, ?, ?, ?, NOW(), NOW()) RETURNING id",
                         name, role.getDescription().orElse(null), groupId, supervisorId);
-                m_onCallRoleNames.add(name);
-                count("on-call roles", true);
+                count("on-call roles");
 
                 int position = 0;
                 for (final Schedule schedule : role.getSchedules()) {
@@ -502,16 +513,16 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         }
 
         void logSummary() {
-            for (final Map.Entry<String, int[]> entry : m_counts.entrySet()) {
-                log("%s: %d copied, %d already in the database\n", entry.getKey(), entry.getValue()[0], entry.getValue()[1]);
+            for (final Map.Entry<String, Integer> entry : m_counts.entrySet()) {
+                log("%s: %d copied\n", entry.getKey(), entry.getValue());
             }
-            if (m_skipped > 0) {
-                log("%d entries were skipped; see the messages above\n", m_skipped);
+            if (m_skipped > 0 || m_warnings > 0) {
+                log("Entries skipped: %d, warnings: %d; see the messages above\n", m_skipped, m_warnings);
             }
         }
 
-        private void count(final String what, final boolean copied) {
-            m_counts.computeIfAbsent(what, k -> new int[2])[copied ? 0 : 1]++;
+        private void count(final String what) {
+            m_counts.merge(what, 1, Integer::sum);
         }
 
         /** @return true if the value is null or fits its column; otherwise logs that the entry is skipped */
@@ -539,6 +550,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         }
 
         private void warn(final String format, final Object... args) {
+            m_warnings++;
             log("Warning: " + format + "\n", args);
         }
 

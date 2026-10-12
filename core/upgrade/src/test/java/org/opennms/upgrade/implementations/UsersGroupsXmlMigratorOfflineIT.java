@@ -259,27 +259,31 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
-    public void testKeepsWhatIsAlreadyInTheDatabase() throws Exception {
+    public void testCopiesNothingWhenTheDatabaseHasUsers() throws Exception {
         copyFixtures();
-        m_jdbc.update("INSERT INTO users (id, username, full_name, password_salted) VALUES (nextval('users_id_seq'), 'bob', 'Existing Bob', false)");
-        m_jdbc.update("INSERT INTO groups (id, name, comments) VALUES (nextval('groups_id_seq'), 'Ops', 'Existing Ops')");
+        // for example, a seeded admin: the file must not be merged into it
+        m_jdbc.update("INSERT INTO users (id, username, full_name, password_hash, password_salted) VALUES (nextval('users_id_seq'), 'admin', 'Seeded', 'seed', true)");
+        final Map<String, Integer> counts = countAll();
         migrate();
 
+        assertEquals(counts, countAll());
         m_sessionUtils.withReadOnlyTransaction(() -> {
-            final UserAccount bob = m_userDao.findByUsername("bob");
-            assertEquals("Existing Bob", bob.getFullName());
-            assertNull(bob.getPasswordHash());
-            assertTrue(bob.getSecurityRoles().isEmpty());
-
-            final UserGroup ops = m_groupDao.findByName("Ops");
-            assertEquals("Existing Ops", ops.getComments());
-            assertTrue(ops.getMembers().isEmpty());
-
-            // new rows refer to the existing bob
-            assertEquals(List.of("admin", "bob"), usernames(m_groupDao.findByName("Admin").getMembers()));
-            assertEquals("bob", m_onCallRoleDao.findByName("night").getSchedules().get(0).getUser().getUsername());
+            final UserAccount admin = m_userDao.findByUsername("admin");
+            assertEquals("Seeded", admin.getFullName());
+            assertEquals("seed", admin.getPasswordHash());
+            assertTrue(admin.getContacts().isEmpty());
         });
-        assertEquals(4, count("users"));
+        assertFalse(new File(m_home.getRoot(), "etc_archive").exists());
+    }
+
+    @Test
+    public void testCopiesNothingWhenTheDatabaseHasACustomSecurityRole() throws Exception {
+        copyFixtures();
+        m_jdbc.update("INSERT INTO security_roles (id, name, builtin) VALUES (nextval('security_roles_id_seq'), 'ROLE_CUSTOM', false)");
+        final Map<String, Integer> counts = countAll();
+        migrate();
+
+        assertEquals(counts, countAll());
     }
 
     @Test
@@ -321,7 +325,21 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         assertEquals(0, count("users"));
         assertEquals(0, count("groups"));
         assertEquals(SecurityRoles.BUILTIN_ROLES.size(), count("security_roles"));
-        assertFalse(new File(m_home.getRoot(), "etc_archive").exists());
+    }
+
+    @Test
+    public void testALostConnectionReportsTheRealError() throws Exception {
+        copyFixtures();
+        // the connection dies in the middle of the writes
+        m_jdbc.execute("CREATE FUNCTION kill_backend() RETURNS trigger AS $$ BEGIN PERFORM pg_terminate_backend(pg_backend_pid()); RETURN NEW; END $$ LANGUAGE plpgsql");
+        m_jdbc.execute("CREATE TRIGGER kill_backend BEFORE INSERT ON groups FOR EACH ROW EXECUTE PROCEDURE kill_backend()");
+
+        final UsersGroupsXmlMigratorOffline migrator = new UsersGroupsXmlMigratorOffline();
+        migrator.preExecute();
+        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, migrator::execute);
+        // the error of the insert, not of a later call on the closed connection
+        assertFalse(e.getMessage(), e.getMessage().contains("Connection is closed"));
+        assertEquals(0, count("users"));
     }
 
     @Test
@@ -333,14 +351,13 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
 
         final UsersGroupsXmlMigratorOffline migrator = new UsersGroupsXmlMigratorOffline();
         migrator.preExecute();
-        // the task fails, so Upgrade does not mark it as done and runs it again next time
+        // the task fails before it writes data, so Upgrade does not mark it as done and runs it again next time
         assertThrows(OnmsUpgradeException.class, migrator::execute);
-        final Map<String, Integer> counts = countAll();
-        assertEquals(4, (int) counts.get("users"));
+        assertEquals(0, count("users"));
 
         assertTrue(archive.delete());
         migrate();
-        assertEquals(counts, countAll());
+        assertEquals(4, count("users"));
         assertTrue(new File(archive, "users.xml").exists());
     }
 
