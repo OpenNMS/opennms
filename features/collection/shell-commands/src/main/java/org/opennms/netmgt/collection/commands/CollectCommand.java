@@ -105,7 +105,7 @@ public class CollectCommand implements Action {
     @Argument(index = 2, name = "attributes", description = "Collector specific attributes in key=value form", multiValued = true)
     List<String> attributes;
 
-    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the pristine content on datacollection-config.xml", required=false, multiValued=true)
+    @Option(name="-x", aliases="--rra", description="Override the RRA of the specified collection", required=false, multiValued=true)
     List<String> rras = null;
 
 
