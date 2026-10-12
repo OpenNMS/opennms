@@ -21,19 +21,104 @@
  */
 package org.opennms.netmgt.telemetry.protocols.openconfig.adapter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
+import org.opennms.features.openconfig.proto.gnmi.Gnmi;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
+
+import groovy.lang.GroovyClassLoader;
 
 public class GnmiMappingScriptTest {
+
+    @Rule
+    public TemporaryFolder tmp = new TemporaryFolder();
+
+    private String previousHome;
+
+    @Before
+    public void pointHomeAtTempDir() {
+        previousHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tmp.getRoot().getAbsolutePath());
+    }
+
+    @After
+    public void restoreHome() {
+        if (previousHome == null) {
+            System.clearProperty("opennms.home");
+        } else {
+            System.setProperty("opennms.home", previousHome);
+        }
+    }
+
+    private static Gnmi.SubscribeResponse oneCounter() {
+        return Gnmi.SubscribeResponse.newBuilder()
+                .setUpdate(Gnmi.Notification.newBuilder()
+                        .addUpdate(Gnmi.Update.newBuilder()
+                                .setPath(Gnmi.Path.newBuilder()
+                                        .addElem(Gnmi.PathElem.newBuilder().setName("system"))
+                                        .addElem(Gnmi.PathElem.newBuilder().setName("uptime")))
+                                .setVal(Gnmi.TypedValue.newBuilder().setUintVal(3))))
+                .build();
+    }
 
     @Test
     public void scriptHasNoMavenFilterTokens() throws Exception {
         String text = Files.readString(GnmiMappingScript.file().toPath());
         assertFalse("the script must not contain a dollar sign", text.contains("$"));
         assertFalse("the script must not contain an @word@ token", Pattern.compile("@[A-Za-z0-9._-]+@").matcher(text).find());
+    }
+
+    @Test
+    public void noMappingEmitsNothing() throws Exception {
+        assertEquals("", GnmiMappingScript.render(GnmiMappingScript.run(oneCounter())));
+    }
+
+    @Test
+    public void nullAgentEmitsNothing() throws Exception {
+        GnmiMappingScript.writeFile(new File(tmp.getRoot(), "etc/telemetryd-adapters"), "openconfig-gnmi-mapping.yaml",
+                "version: 1",
+                "groups:",
+                "  - name: sys",
+                "    match: /system",
+                "    resource-type: node",
+                "    attributes: { uptime: { type: gauge } }");
+        GroovyClassLoader gcl = GnmiMappingScript.load();
+        CollectionSetBuilder builder = new CollectionSetBuilder(Mockito.mock(CollectionAgent.class));
+        GnmiMappingScript.call(gcl, "GnmiMapping", "apply", null, builder, oneCounter());
+        assertEquals(0, builder.getNumAttributes());
+    }
+
+    @Test
+    public void gnmiNanosecondTimestampBecomesMilliseconds() throws Exception {
+        GnmiMappingScript.writeFile(new File(tmp.getRoot(), "etc/telemetryd-adapters"), "openconfig-gnmi-mapping.yaml",
+                "version: 1",
+                "groups:",
+                "  - name: sys",
+                "    match: /system",
+                "    resource-type: node",
+                "    attributes: { uptime: { type: gauge } }");
+        long nanos = 1751293808127192960L;
+        Gnmi.SubscribeResponse message = oneCounter().toBuilder()
+                .setUpdate(oneCounter().getUpdate().toBuilder().setTimestamp(nanos))
+                .build();
+        CollectionAgent agent = Mockito.mock(CollectionAgent.class);
+        Mockito.when(agent.getNodeId()).thenReturn(1);
+        // OpenConfigAdapter passes the notification timestamp straight through as milliseconds
+        CollectionSet set = new ScriptedCollectionSetBuilder(GnmiMappingScript.file()).build(agent, message, nanos);
+        assertEquals(1751293808127L, set.getCollectionTimestamp().getTime());
     }
 }
