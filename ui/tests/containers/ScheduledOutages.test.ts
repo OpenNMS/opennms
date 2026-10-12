@@ -36,7 +36,8 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push })
 }))
 
-vi.mock('@/services/scheduledOutagesService', () => ({
+vi.mock('@/services/scheduledOutagesService', async importOriginal => ({
+  outageNameProblem: (await importOriginal<typeof import('@/services/scheduledOutagesService')>()).outageNameProblem,
   getScheduledOutages: vi.fn(),
   getOutageApplicability: vi.fn(),
   getNodeLabels: vi.fn(),
@@ -144,6 +145,41 @@ describe('ScheduledOutages.vue', () => {
 
     expect(push).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('already exists')
+  })
+
+  it('rejects a name with a slash, which the REST path cannot read back or delete', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    await wrapper.find('[data-test="new-name"]').setValue('rack/7')
+    await wrapper.find('[data-test="create-confirm"]').trigger('click')
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('cannot contain a slash')
+  })
+
+  it('rejects reserved names and clears the error once the name changes', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    const input = wrapper.find('[data-test="new-name"]')
+    for (const reserved of ['applies-to', '..']) {
+      await input.setValue(reserved)
+      await wrapper.find('[data-test="create-confirm"]').trigger('click')
+      expect(wrapper.text()).toContain('is reserved')
+    }
+    await input.setValue('applies-to-rack')
+    expect(wrapper.text()).not.toContain('is reserved')
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('trims the name and creates on Enter', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    const input = wrapper.find('[data-test="new-name"]')
+    expect(input.attributes('autofocus')).toBeDefined()
+    await input.setValue('  weekend  ')
+    await input.trigger('keyup.enter')
+
+    expect(push).toHaveBeenCalledWith({ path: '/scheduled-outages/edit', query: { name: 'weekend', new: 'true' }})
   })
 
   it('keeps a failed delete visible after the list reloads', async () => {
