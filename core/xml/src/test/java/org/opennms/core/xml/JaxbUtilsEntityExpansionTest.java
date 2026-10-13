@@ -119,4 +119,29 @@ public class JaxbUtilsEntityExpansionTest {
             assertTrue("rejected for an unexpected reason: " + cause, String.valueOf(cause.getMessage()).contains("entity expansions"));
         }
     }
+
+    @Test
+    public void disableDoctypeRejectsEntityExpansion() {
+        // A large entity referenced a few times stays under the expansion-count limit but expands to a huge
+        // size (the amplification the count limit does not stop). Disabling DOCTYPE rejects it before any expansion.
+        final StringBuilder big = new StringBuilder();
+        for (int i = 0; i < 50_000; i++) {
+            big.append('x');
+        }
+        final StringBuilder xml = new StringBuilder("<?xml version=\"1.0\"?>\n<!DOCTYPE probe [ <!ENTITY big \"" + big + "\"> ]>\n<probe>");
+        for (int i = 0; i < 1_000; i++) {
+            xml.append("&big;");
+        }
+        xml.append("</probe>");
+        try {
+            JaxbUtils.unmarshal(Probe.class, xml.toString(), false, true);
+            fail("expected the DOCTYPE to be rejected when DOCTYPE processing is disabled");
+        } catch (final RuntimeException e) {
+            Throwable cause = e;
+            while (cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            assertTrue("rejected for an unexpected reason: " + cause, String.valueOf(cause.getMessage()).toLowerCase().contains("doctype"));
+        }
+    }
 }

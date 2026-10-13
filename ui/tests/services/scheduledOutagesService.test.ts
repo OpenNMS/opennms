@@ -28,6 +28,8 @@ import {
   getScheduledOutage,
   getScheduledOutages,
   ipv4PrefixPattern,
+  outageNameProblem,
+  scheduledOutageExists,
   searchOutageInterfaces,
   searchOutageNodes,
   setNotificationMembership,
@@ -65,6 +67,37 @@ describe('scheduledOutagesService', () => {
     expect(outage?.time).toEqual([{ begins: '00:00:00', ends: '23:59:59', day: 'monday' }])
     expect(outage?.node).toEqual([{ id: 3 }])
     expect(outage?.interface).toEqual([])
+  })
+
+  it('treats a body for a different resource as a failed read', async () => {
+    // "applies-to" (and ".." after URL normalisation) reach another endpoint; an
+    // empty form built from that body would overwrite the real outage on Save
+    vi.mocked(rest.get).mockResolvedValueOnce({ data: { notifications: false, pollers: [] }})
+    expect(await getScheduledOutage('applies-to')).toBeNull()
+    vi.mocked(rest.get).mockResolvedValueOnce({ data: { outage: [] }})
+    expect(await getScheduledOutage('..')).toBeNull()
+    vi.mocked(rest.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getScheduledOutage('x')).toBeNull()
+  })
+
+  it('reports whether an outage exists, and null when the check fails', async () => {
+    vi.mocked(rest.get).mockResolvedValueOnce({ data: { name: 'x' }})
+    expect(await scheduledOutageExists('x')).toBe(true)
+    vi.mocked(rest.get).mockRejectedValueOnce({ response: { status: 404 }})
+    expect(await scheduledOutageExists('x')).toBe(false)
+    vi.mocked(rest.get).mockRejectedValueOnce({ response: { status: 500 }})
+    expect(await scheduledOutageExists('x')).toBeNull()
+    expect(rest.get).toHaveBeenLastCalledWith('/sched-outages/x')
+  })
+
+  it('rejects names the REST path cannot address', () => {
+    expect(outageNameProblem('rack/7')).toContain('slash')
+    expect(outageNameProblem('.')).toContain('reserved')
+    expect(outageNameProblem('..')).toContain('reserved')
+    expect(outageNameProblem('applies-to')).toContain('reserved')
+    for (const ok of ['nightly', 'a.b', '..x', 'x.', 'a b', '50%', 'a\\b', 'a+b&c', 'q?', '#1', 'Applies-To']) {
+      expect(outageNameProblem(ok)).toBeNull()
+    }
   })
 
   it('reads applies-to without a name for a new outage', async () => {
