@@ -13,7 +13,8 @@
           <span class="label">{{ item.label }}</span>
         </div>
         <div class="onms-col-8">
-          <a v-if="item.link" :href="item.link">{{ item.text }}</a>
+          <router-link v-if="item.to" :to="item.to">{{ item.text }}</router-link>
+          <a v-else-if="item.link" :href="item.link">{{ item.text }}</a>
           <span v-else>{{ item.text }}</span>
         </div>
       </div>
@@ -28,7 +29,8 @@ import { hasEgressFlow, hasIngressFlow } from './utils'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { interfaceLink, nodeLink } from '@/lib/linkUtils'
+import { interfaceLink } from '@/lib/linkUtils'
+import { nodeDetailsRoute } from './nodeDetailsRoute'
 import { Node } from '@/types'
 
 const props = defineProps({
@@ -57,13 +59,13 @@ const { getBestIpInterfaceForNode } = useIpInterfaceQuery()
 
 const nodeItems = computed(() => {
   const ipLabel = getBestIpInterfaceForNode(props.node?.id || '', nodeStore.nodeToIpInterfaceMap)
-  const { baseHref, baseNodeUrl } = menuStore.mainMenu
+  const { baseHref } = menuStore.mainMenu
   const nodeId = props.node?.id || 0
-  const nodeHref = nodeLink(baseHref, baseNodeUrl, nodeId)
+  const nodeRoute = nodeDetailsRoute(nodeId)
 
   return [
-    { label: 'Node ID', text: props.node?.id, link: nodeHref },
-    { label: 'Node Label', text: props.node?.label, link: nodeHref },
+    { label: 'Node ID', text: props.node?.id, to: nodeRoute },
+    { label: 'Node Label', text: props.node?.label, to: nodeRoute },
     { label: 'IP Address', text: ipLabel.label, link: interfaceLink(baseHref, nodeId, ipLabel.label) },
     { label: 'Location', text: props.node?.location },
     { label: 'FS:FID', text: `${props.node?.foreignSource}:${props.node?.foreignId}` },

@@ -8,7 +8,7 @@ import { defaultColumns } from '@/components/Nodes/utils'
 import { SORT } from '@/types'
 import { OnmsChip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -16,6 +16,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 // ── Module mocks ───────────────────────────────────────────────────────────────
+
+const push = vi.fn()
+
+vi.mock('vue-router', async importOriginal => ({
+  ...(await importOriginal<typeof import('vue-router')>()),
+  useRouter: () => ({ push, replace: vi.fn(), resolve: (to: { params: { id: string }}) => ({ href: `/opennms/ui#/node/${to.params.id}` }) })
+}))
 
 vi.mock('@/composables/useSnackbar', () => ({
   default: () => ({ showSnackBar: vi.fn() })
@@ -113,7 +120,7 @@ const mountTable = () =>
   mount(NodesTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      stubs
+      stubs: { ...stubs, RouterLink: RouterLinkStub }
     }
   })
 
@@ -199,6 +206,28 @@ describe('NodesTable.vue', () => {
 
     expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('snmpPrimaryIpAddress'))
       .toBe('10.0.0.44')
+  })
+
+  it('links the node id and label columns to Node Details through the router', async () => {
+    const wrapper = mountTable()
+    const ns = useNodeStore()
+    ns.nodes = [{ id: '42', label: 'srv-42' }] as any
+    ns.totalCount = 1
+    await nextTick()
+
+    const links = wrapper.findAllComponents(RouterLinkStub)
+    expect(links.some(l => (l.props('to') as { params: { id: string }}).params.id === '42')).toBe(true)
+  })
+
+  it('opens Node Details from the View Details button', async () => {
+    const wrapper = mountTable()
+    const ns = useNodeStore()
+    ns.nodes = [{ id: '42', label: 'srv-42' }] as any
+    ns.totalCount = 1
+    await nextTick()
+
+    await wrapper.find('[data-test="view-details-button"]').trigger('click')
+    expect(push).toHaveBeenCalledWith({ name: 'Node Details', params: { id: '42' }})
   })
 
   it('onSort updates query order and refetches — descending', () => {

@@ -22,10 +22,9 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { buildNodeDetailUrl, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-import { MainMenu } from '@/types/mainMenu'
 
 const {
   buildNodeQueryFilterFromQueryString,
@@ -984,8 +983,6 @@ describe('Nodes useNodeQuery test', () => {
   })
 
   describe('legacy nodeId redirect', () => {
-    const loadedMainMenu = { baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' } as MainMenu
-
     describe('parseNodeIdQueryParam', () => {
       test.each([
         [ 'positive integer string', { nodeId: '42' }, 42 ],
@@ -1000,22 +997,6 @@ describe('Nodes useNodeQuery test', () => {
         [ 'whitespace', { nodeId: '  ' }, null ]
       ])('%s -> %s', (_title, query, expected) => {
         expect(parseNodeIdQueryParam(query as any)).toBe(expected)
-      })
-    })
-
-    describe('buildNodeDetailUrl', () => {
-      test('builds the node detail url when mainMenu has loaded', () => {
-        expect(buildNodeDetailUrl(loadedMainMenu, 42)).toBe('/opennms/element/node.jsp?node=42')
-      })
-
-      test.each([
-        [ 'undefined mainMenu', undefined ],
-        [ 'null mainMenu', null ],
-        [ 'empty mainMenu', {} as MainMenu ],
-        [ 'missing baseNodeUrl', { baseHref: '/opennms/' } as MainMenu ],
-        [ 'missing baseHref', { baseNodeUrl: 'element/node.jsp?node=' } as MainMenu ]
-      ])('returns null when mainMenu is not loaded: %s', (_title, mainMenu) => {
-        expect(buildNodeDetailUrl(mainMenu, 42)).toBe(null)
       })
     })
   })
