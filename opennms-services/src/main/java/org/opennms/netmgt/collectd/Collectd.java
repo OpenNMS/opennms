@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -1255,6 +1256,7 @@ public class Collectd extends AbstractServiceDaemon implements
         // address for reinitialization
         //
         OnmsIpInterface iface = null;
+        final Set<String> scheduledServices = new HashSet<>();
         synchronized (getCollectableServices()) {
             Iterator<CollectableService> iter = getCollectableServices().iterator();
             while (iter.hasNext()) {
@@ -1264,6 +1266,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 final String addrString = str(addr);
                 LOG.debug("Comparing CollectableService ip address = {} and event ip interface = {}", addrString, ipAddress);
                 if (addrString != null && addrString.equals(ipAddress) && cSvc.getNodeId() == nodeid.intValue()) {
+                    scheduledServices.add(cSvc.getServiceName());
                     synchronized (cSvc) {
                     	if (iface == null) {
                             iface = getIpInterface(nodeid.intValue(), ipAddress);
@@ -1278,6 +1281,20 @@ public class Collectd extends AbstractServiceDaemon implements
                         LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking {} for reinitialization for service SNMP.", ipAddress);
                     }
                 }
+            }
+        }
+
+        // A service rejected when the node gained it (e.g. no sysObjectId yet because
+        // the agent was unreachable during import) has no CollectableService to update.
+        if (iface == null) {
+            iface = m_ifaceDao.findByNodeIdAndIpAddress(nodeid.intValue(), ipAddress);
+        }
+        if (iface == null) {
+            return;
+        }
+        for (OnmsMonitoredService svc : iface.getMonitoredServices()) {
+            if (!scheduledServices.contains(svc.getServiceName())) {
+                scheduleInterface(iface, svc.getServiceName());
             }
         }
     }

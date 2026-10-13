@@ -75,14 +75,19 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDa
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
@@ -107,6 +112,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 public class CollectdIT {
+    private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipIfDao;
     private FilterDao m_filterDao;
     private Collectd m_collectd;
@@ -123,8 +129,6 @@ public class CollectdIT {
 
     @Before
     public void setUp() throws Exception {
-        NodeDao m_nodeDao;
-
         MockLogAppender.setupLogging();
 
         Resource threshdResource = new ClassPathResource("/etc/thresholds.xml");
@@ -375,6 +379,62 @@ public class CollectdIT {
         m_scheduler.next();
 
         assertEquals("scheduler entry count", 0, m_scheduler.getEntryCount());
+
+        m_collectd.stop();
+
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: a service rejected when it was first scheduled (sysObjectId still null
+     * because the agent was unreachable during import) is scheduled by the
+     * reinitializePrimarySnmpInterface event that the next successful rescan sends.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReinitializeSchedulesServiceRejectedAtStartup() throws Exception {
+        ServiceCollector svcCollector = mock(ServiceCollector.class);
+        doThrow(new CollectionInitializationException("No sysObjectId"))
+            .doNothing()
+            .when(svcCollector).validateAgent(isA(CollectionAgent.class), isA(Map.class));
+        when(svcCollector.getEffectiveLocation(anyString())).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
+
+        setupCollector("SNMP", svcCollector);
+
+        OnmsIpInterface iface = getInterface();
+        new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
+
+        setupInterface(iface);
+        when(m_ipIfDao.findByNodeIdAndIpAddress(1, "192.168.1.1")).thenReturn(iface);
+        when(m_nodeDao.load(1)).thenReturn(iface.getNode());
+        setupTransactionManager();
+
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next();
+
+        assertEquals("rejected at startup", 0, m_scheduler.getEntryCount());
+
+        final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
+            .setNodeid(1)
+            .setInterface(addr("192.168.1.1"))
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+
+        assertEquals("scheduled by the rescan's reinitialize event", 1, m_scheduler.getEntryCount());
+
+        // a second rescan updates the existing service instead of adding another
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+        assertEquals(1, m_scheduler.getEntryCount());
 
         m_collectd.stop();
 
