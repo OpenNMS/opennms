@@ -24,6 +24,7 @@ package org.opennms.smoketest.ui;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response;
 
@@ -81,13 +82,19 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     private void waitForNodeLinkOn(final String path) {
         final By link = By.xpath("//a[contains(@href, '#/node/" + nodeId + "')]");
         getDriver().get(getBaseUrlInternal() + path);
-        wait.until(driver -> {
-            if (driver.findElements(link).isEmpty()) {
-                driver.navigate().refresh();
-                return false;
-            }
-            return true;
-        });
+        try {
+            setImplicitWait(1, TimeUnit.SECONDS);
+            wait.until(driver -> {
+                if (driver.findElements(link).isEmpty()) {
+                    sleepQuietly(2000);
+                    driver.navigate().refresh();
+                    return false;
+                }
+                return true;
+            });
+        } finally {
+            setImplicitWait();
+        }
         clickElement(link);
     }
 
