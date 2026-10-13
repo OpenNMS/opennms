@@ -30,6 +30,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel.hardening</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.activemq</groupId>
       <artifactId>org.opennms.features.activemq.pool</artifactId>
       <version>${project.version}</version>

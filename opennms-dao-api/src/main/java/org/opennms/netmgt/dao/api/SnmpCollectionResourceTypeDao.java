@@ -58,5 +58,24 @@ public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionRes
 
     List<String> findAllResourceTypeNames();
 
+    /**
+     * Find the resource types with this exact name in all sources. Names are not
+     * unique across sources, so the result can contain more than one entry.
+     * The owning source is fetched with each entry.
+     */
+    List<SnmpCollectionResourceType> findAllByName(String name);
+
+    /**
+     * Find all resource types, enabled and disabled, ordered by source id. The
+     * owning source is fetched with each entry, in the same query.
+     */
+    List<SnmpCollectionResourceType> findAllWithSource();
+
+    /**
+     * Find the disabled resource types, with their source. There are usually
+     * few, so this is much cheaper than {@link #findAllWithSource()}.
+     */
+    List<SnmpCollectionResourceType> findAllDisabledWithSource();
+
     void updateResourceTypeEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled);
 }
