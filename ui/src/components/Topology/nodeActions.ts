@@ -35,10 +35,10 @@ export interface NodeActionLink {
 // OpenNMS webapp context root.
 const ROOT = '/opennms'
 
-export const nodeActionLinks = (nodeId: number): NodeActionLink[] => [
-  // The JSP page, not the Vue one: the new node detail page is incomplete in
-  // H36, and this menu should land somewhere finished.
-  { label: 'Node Details', url: `${ROOT}/element/node.jsp?node=${nodeId}` },
+// The Node Details href comes from the caller (useRouter().resolve), so this module stays a plain
+// function with no router import.
+export const nodeActionLinks = (nodeId: number, nodeDetailsHref: string): NodeActionLink[] => [
+  { label: 'Node Details', url: nodeDetailsHref },
   { label: 'Resource Graphs', url: `${ROOT}/graph/chooseresource.jsp?node=${nodeId}` },
   { label: 'Events', url: `${ROOT}/event/list?filter=node%3D${nodeId}` },
   { label: 'Alarms', url: `${ROOT}/alarm/list.htm?filter=node%3D${nodeId}` }

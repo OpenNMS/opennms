@@ -25,10 +25,10 @@
 // an interface link without encoding the address, which corrupts an IPv6 one (a zone index's
 // '%' reads as the start of a percent-escape).
 //
-// Lives in lib rather than under a feature because the callers span features -- the node list,
-// the node details panels and its interface tables, and device config backup. Every builder
-// takes baseHref (from menuStore.mainMenu) rather than reading a store itself, so it stays
-// usable from components, hooks and plain functions alike.
+// Lives in lib rather than under a feature because the callers span features -- the node details panels
+// and its interface tables, and device config backup. Every builder takes baseHref (from
+// menuStore.mainMenu) rather than reading a store itself, so it stays usable from components,
+// hooks and plain functions alike.
 //
 // Will need to replace with the Vue pages once they are implemented.
 export const OUTAGE_LIST_PATH = 'outage/list.htm'
@@ -40,14 +40,6 @@ export const SERVICE_PATH = 'element/service.jsp'
 // outtype=both makes the legacy outage list show current AND resolved outages, matching what
 // the Recent Outages panel shows.
 export const OUTAGE_LIST_TYPE_BOTH = 'both'
-
-/**
- * The node detail page. Unlike every other link here the path is not a constant: it comes from
- * the menu configuration as `baseNodeUrl`, which already ends in whatever separator it needs
- * (e.g. 'element/node.jsp?node='), so the id is appended directly.
- */
-export const nodeLink = (baseHref: string, baseNodeUrl: string, nodeId: string | number) =>
-  `${baseHref}${baseNodeUrl}${nodeId}`
 
 /**
  * The '?node=&intf=' query the interface and service pages share. Both take the interface by

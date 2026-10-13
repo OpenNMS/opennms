@@ -71,11 +71,11 @@
       </template>
       <OnmsColumn field="id" header="Minion" sortable>
         <template #body="{ data }">
-          <a
+          <router-link
             v-if="store.nodeIdFor(data)"
-            :href="nodeUrl(store.nodeIdFor(data))"
+            :to="nodeDetailsRoute(store.nodeIdFor(data)!)"
             data-test="minion-node-link"
-          >{{ data.id }}</a>
+          >{{ data.id }}</router-link>
           <span v-else>{{ data.id }}</span>
         </template>
       </OnmsColumn>
@@ -161,7 +161,7 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import MinionDeleteDialog from '@/components/ManageMinions/MinionDeleteDialog.vue'
-import { legacyUrl } from '@/lib/legacyUrl'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 import { minionState, minionStateSeverity } from '@/lib/minionStatus'
 import { ageSeverity, formatAbsolute, isOlderThan, relativeTimeSince } from '@/lib/relativeTime'
 import { normalizeVersion, sameVersion, versionSortKey } from '@/lib/version'
@@ -185,7 +185,6 @@ const emit = defineEmits<{
 
 const store = useMinionAdminStore()
 
-const nodeUrl = (id?: number) => legacyUrl(`element/node.jsp?node=${id}`)
 
 const showDeleteDialog = ref(false)
 const minionToDelete = ref<Minion | null>(null)
