@@ -1,0 +1,44 @@
+services:
+  database:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  horizon:
+    image: ${HORIZON_IMAGE:-opennms/horizon:latest}
+    platform: ${HORIZON_PLATFORM:-linux/amd64}
+    depends_on:
+      database:
+        condition: service_healthy
+    command: ["-s"]
+    environment:
+      POSTGRES_HOST: database
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: opennms
+      OPENNMS_TIMESERIES_STRATEGY: ${OPENNMS_TIMESERIES_STRATEGY:-rrd}
+      JAVA_OPTS: ${HORIZON_JAVA_OPTS:--Xms1g -Xmx2g -XX:MaxMetaspaceSize=512m}
+    ports:
+      - "${HORIZON_WEB_PORT:-18980}:8980"
+      - "${HORIZON_SSH_PORT:-18101}:8101"
+      - "${HORIZON_TRAP_PORT:-11162}:1162/udp"
+      - "${HORIZON_SYSLOG_PORT:-20514}:10514/udp"
+    volumes:
+      - onms-data:/opennms-data
+      - onms-etc:/opt/opennms/etc
+
+volumes:
+  pgdata:
+  onms-data:
+  onms-etc:
