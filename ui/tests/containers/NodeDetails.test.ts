@@ -220,6 +220,15 @@ describe('NodeDetails.vue', () => {
       .toBe('10.0.0.44')
   })
 
+  it('points the Nodes breadcrumb at the node list', async () => {
+    const { wrapper } = mountComponent('42', true)
+    await flushPromises()
+
+    const items = wrapper.findComponent({ name: 'BreadCrumbs' }).props('items') as Array<{ label: string, to: string }>
+
+    expect(items.find(i => i.label === 'Nodes')?.to).toBe('/nodes')
+  })
+
   it('renders the node panels once the node has loaded', async () => {
     const { wrapper } = mountComponent('42', true)
     await flushPromises()
