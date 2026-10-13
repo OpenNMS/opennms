@@ -151,18 +151,6 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     }
   }
 
-  // The Notifications page's deep link (?preset=&node=) and its own URL sync go through here.
-  const applyQuery = async (newPreset: NotificationQueryPreset, nodeId: string | null): Promise<ValidationResult> => {
-    preset.value = newPreset
-    userFilter.value = null
-    if (nodeFilter.value?.id !== (nodeId ?? undefined)) {
-      nodeFilter.value = nodeId ? { id: nodeId, label: null } : null
-    }
-    first.value = 0
-    const [result] = await Promise.all([load(), nodeId ? lookUpNodeLabel(nodeId) : Promise.resolve()])
-    return result
-  }
-
   // Sets or clears the node filter on the current view: the preset and any user search stay, which
   // applyQuery (a whole new query) does not do. The page's node input and chip go through here.
   const setNodeFilter = async (nodeId: string | null): Promise<ValidationResult> => {
@@ -172,6 +160,13 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     first.value = 0
     const [result] = await Promise.all([load(), nodeId ? lookUpNodeLabel(nodeId) : Promise.resolve()])
     return result
+  }
+
+  // The Notifications page's deep link (?preset=&node=) and its own URL sync go through here.
+  const applyQuery = async (newPreset: NotificationQueryPreset, nodeId: string | null): Promise<ValidationResult> => {
+    preset.value = newPreset
+    userFilter.value = null
+    return await setNodeFilter(nodeId)
   }
 
   const clearNodeFilter = async (): Promise<ValidationResult> => {

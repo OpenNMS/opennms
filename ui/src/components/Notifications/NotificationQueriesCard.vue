@@ -202,9 +202,9 @@ const clearUserSearch = () => {
   applyPreset('userSearch')
 }
 
-// notification and node ids are positive integers; anything else would only reach the legacy
+// Notification and node ids are positive integers; anything else would only reach the legacy
 // detail page, or the node filter, as an error (leading zeros are fine: "007" is 7)
-const isNotificationId = (value: string) => /^\d+$/.test(value) && Number(value) > 0
+const isPositiveInteger = (value: string) => /^\d+$/.test(value) && Number(value) > 0
 
 // Not a mode: the filter narrows whatever is showing, user search included, so the preset and
 // any user search stay (the store's setNodeFilter keeps both).
@@ -213,7 +213,7 @@ const filterByNode = async () => {
   if (!id) {
     return
   }
-  if (!isNotificationId(id)) {
+  if (!isPositiveInteger(id)) {
     showError('Enter a node ID as a positive whole number, e.g. 42.')
     return
   }
@@ -225,7 +225,7 @@ const goToNotification = () => {
   if (!id) {
     return
   }
-  if (!isNotificationId(id)) {
+  if (!isPositiveInteger(id)) {
     showError('Enter a notification ID as a positive whole number, e.g. 42.')
     return
   }
