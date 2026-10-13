@@ -234,6 +234,10 @@ The asset fields `password`, `enable` and `snmpcommunity` are now write-only in 
 === Raw SQL query parameter requires ROLE_ADMIN
 The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
+=== DOCTYPE rejected in requisition and foreign-source XML
+Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
+Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
+
 === Ops Board and Wallboard removed
 
 The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
