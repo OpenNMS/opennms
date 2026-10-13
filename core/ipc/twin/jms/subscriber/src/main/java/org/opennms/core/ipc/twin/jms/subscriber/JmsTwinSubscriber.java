@@ -172,7 +172,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
             String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
             final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:topic:%s",
                     queueName), JmsEndpoint.class);
-            from(endpoint).setExchangePattern(ExchangePattern.InOnly)
+            from(endpoint).noStreamCaching().setExchangePattern(ExchangePattern.InOnly)
                     .process(new DiscardUnreadableBodies())
                     .process(processor)
                     .routeId(SystemInfoUtils.getInstanceId() + ".Twin.Sink");

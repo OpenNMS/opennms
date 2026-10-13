@@ -182,7 +182,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
             String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.RPC");
             final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:%s?asyncConsumer=true",
                     queueName), JmsEndpoint.class);
-            from(endpoint).setExchangePattern(ExchangePattern.InOut)
+            from(endpoint).noStreamCaching().setExchangePattern(ExchangePattern.InOut)
                     .process(new DiscardUnreadableBodies())
                     .process(asyncProcessor)
                     .routeId(SystemInfoUtils.getInstanceId() + ".Twin.RPC");

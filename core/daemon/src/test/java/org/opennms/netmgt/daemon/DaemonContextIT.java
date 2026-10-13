@@ -46,6 +46,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.spi.CamelEvent;
+import org.apache.camel.support.EventNotifierSupport;
 import org.opennms.core.camel.hardening.DiscardUnreadableBodies;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -148,11 +150,12 @@ public class DaemonContextIT {
 	    camel.getShutdownStrategy().setTimeout(5);
 	    camel.addComponent("queuingservice", queuingservice);
 	    final AtomicInteger deliveries = new AtomicInteger();
+	    final AtomicInteger failures = countFailures(camel);
 	    final BlockingQueue<String> bodies = new LinkedBlockingQueue<>();
 	    camel.addRoutes(new RouteBuilder() {
 	        @Override
 	        public void configure() {
-	            from("queuingservice:queue:NMS-20397.objects")
+	            from("queuingservice:queue:NMS-20397.objects").noStreamCaching()
 	                .process(exchange -> deliveries.incrementAndGet())
 	                .process(new DiscardUnreadableBodies())
 	                .process(exchange -> bodies.add(exchange.getIn().getBody(String.class)));
@@ -166,10 +169,24 @@ public class DaemonContextIT {
 	        Thread.sleep(2000); // long enough for a rollback to have been redelivered
 	        assertEquals("ObjectMessage consumed once, text message once", 2, deliveries.get());
 	        assertTrue(bodies.isEmpty());
+	        assertEquals("ObjectMessage dropped, not failed", 0, failures.get());
 	        assertFalse("payload must not be deserialized", DeserializationProbe.DESERIALIZED.get());
 	    } finally {
 	        camel.stop();
 	    }
+	}
+
+	private static AtomicInteger countFailures(final DefaultCamelContext camel) {
+	    final AtomicInteger failures = new AtomicInteger();
+	    camel.getManagementStrategy().addEventNotifier(new EventNotifierSupport() {
+	        @Override
+	        public void notify(final CamelEvent event) {
+	            if (event instanceof CamelEvent.ExchangeFailedEvent) {
+	                failures.incrementAndGet();
+	            }
+	        }
+	    });
+	    return failures;
 	}
 
 	private interface MessageFactory {
