@@ -46,8 +46,26 @@
             @clear="clearUserSearch"
           />
         </div>
-        <!-- Not a query: Enter opens that notification's detail page, so this is a
-             plain label and takes no part in the selection above. -->
+        <!-- A filter on the current view, not a query of its own: a plain label that takes no
+             part in the selection above. -->
+        <div class="query-search">
+          <label
+            for="notification-node-search"
+            class="query-search-label"
+            data-test="node-search-label"
+          >Filter by node:</label>
+          <OnmsSearchInput
+            v-model="nodeSearch"
+            class="query-search-input"
+            inputId="notification-node-search"
+            placeholder="Node ID"
+            ariaLabel="Node ID"
+            dataTest="node-search-input"
+            @keyup.enter="filterByNode"
+            @clear="clearNodeFilter"
+          />
+        </div>
+        <!-- Not a query either: Enter opens that notification's detail page. -->
         <div class="query-search">
           <label
             for="notification-id-search"
@@ -62,24 +80,6 @@
             ariaLabel="Notification ID"
             dataTest="notification-id-search-input"
             @keyup.enter="goToNotification"
-          />
-        </div>
-        <!-- A filter on the current view, not a query of its own, so it too is a plain label. -->
-        <div class="query-search">
-          <label
-            for="notification-node-search"
-            class="query-search-label"
-            data-test="node-search-label"
-          >Notifications for node:</label>
-          <OnmsSearchInput
-            v-model="nodeSearch"
-            class="query-search-input"
-            inputId="notification-node-search"
-            placeholder="Node ID"
-            ariaLabel="Node ID"
-            dataTest="node-search-input"
-            @keyup.enter="filterByNode"
-            @clear="clearNodeFilter"
           />
         </div>
       </div>

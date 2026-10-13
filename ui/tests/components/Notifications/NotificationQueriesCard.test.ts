@@ -257,7 +257,7 @@ describe('NotificationQueriesCard', () => {
     })
   })
 
-  describe('Notifications for node', () => {
+  describe('Filter by node', () => {
     const enterNode = async (value: string) => {
       const input = wrapper.find('#notification-node-search')
       await input.setValue(value)
@@ -277,11 +277,19 @@ describe('NotificationQueriesCard', () => {
 
       expect(label.element.tagName).toBe('LABEL')
       expect(label.attributes('for')).toBe('notification-node-search')
-      expect(label.text()).toBe('Notifications for node:')
+      expect(label.text()).toBe('Filter by node:')
 
       await wrapper.find('#notification-node-search').trigger('focusin')
       expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
       expect(store.applyPreset).not.toHaveBeenCalled()
+    })
+
+    it('sits between the user search and the notification id field', () => {
+      mountCard()
+      const fields = wrapper.findAll('.query-searches .query-search').map(field =>
+        field.find('[data-test="query-user-search"], [data-test="node-search-label"], [data-test="notification-id-label"]').attributes('data-test'))
+
+      expect(fields).toEqual(['query-user-search', 'node-search-label', 'notification-id-label'])
     })
 
     it('filters the current view by the trimmed node id on Enter', async () => {
