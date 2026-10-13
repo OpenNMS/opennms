@@ -208,10 +208,10 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     
     private String createNodePageUrl(AggregateStatusView statusView, AggregateStatus status) {
 
-        // A single down node links straight to the (unconverted) node detail page.
+        // A single down node links straight to the Vue node detail page.
         if (status.getDownEntityCount() == 1) {
             OnmsNode node = status.getDownNodes().iterator().next();
-            return "element/node.jsp?node=" + node.getId();
+            return "ui/index.html#/node/" + node.getId();
         }
 
         // Otherwise link to the Vue Nodes page. The legacy statusViewName/statusSite/statusRowLabel

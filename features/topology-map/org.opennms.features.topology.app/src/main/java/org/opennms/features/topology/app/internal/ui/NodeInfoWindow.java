@@ -40,7 +40,7 @@ public class NodeInfoWindow extends InfoWindow {
     private static URL getURL(int nodeId) {
         final URI currentLocation = Page.getCurrent().getLocation();
         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-        final String redirectFragment = contextRoot + "/element/node.jsp?node=" + nodeId;
+        final String redirectFragment = contextRoot + "/ui/index.html#/node/" + nodeId;
         try {
             return new URL(currentLocation.toURL(), redirectFragment);
         } catch (MalformedURLException e) {

@@ -151,7 +151,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
                         }
                     }
                 });
-                response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
+                response.sendRedirect(Util.calculateUrlBase(request, "ui/index.html#/node/" + nodeIdString));
             }
         } catch (SQLException e) {
             throw new ServletException("Database exception", e);
