@@ -348,7 +348,13 @@ applyOverlayConfig() {
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
     echo "Apply custom configuration from ${OPENNMS_OVERLAY}."
     # Use rsync so that we can overlay files into directories that are symlinked
-    rsync -K -rl --out-format="%n %C" ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/. || exit ${E_INIT_CONFIG}
+    # Newer rsync (CVE-2026-29518 fix) does not follow symlinked directories with -K.
+    # Use --insecure-links to keep the old behavior. Older rsync does not have this option.
+    RSYNC_OPTS=""
+    if rsync --help 2>/dev/null | grep -q -- '--insecure-links'; then
+      RSYNC_OPTS="--insecure-links"
+    fi
+    rsync -K -rl ${RSYNC_OPTS} --out-format="%n %C" ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY}. Use default configuration."
   fi
