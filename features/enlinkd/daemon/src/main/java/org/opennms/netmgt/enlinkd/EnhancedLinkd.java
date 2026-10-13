@@ -499,10 +499,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     /**
      * Applies the {@code threads} and {@code executor-threads} settings from the current
      * configuration to the running scheduler and priority executor, so that changed thread
-     * counts take effect on a reload without a restart. The executor queue size is fixed at
-     * creation and still needs a restart.
+     * counts take effect on a reload without a restart. The {@code executor-queue-size}
+     * setting is accepted but not used; the priority executor's queue is unbounded.
+     * <p>
+     * Synchronized like the lifecycle methods, since {@link #onStop()} clears the pools.
      */
-    public void resizeExecutors() {
+    public synchronized void resizeExecutors() {
         if (m_scheduler != null) {
             m_scheduler.setThreads(m_linkdConfig.getThreads());
         } else {

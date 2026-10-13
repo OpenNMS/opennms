@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.scheduler;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -106,10 +108,9 @@ public class LegacySchedulerTest {
             m_scheduler.schedule(0, blockingTask(running, release, threadNames));
         }
         final ThreadPoolExecutor pool = (ThreadPoolExecutor) m_scheduler.getRunner();
-        for (int i = 0; i < 100 && pool.getQueue().size() < 2; i++) {
-            Thread.sleep(50);
-        }
-        assertEquals("two tasks should be waiting behind the two busy workers", 2, pool.getQueue().size());
+        await("two tasks should be waiting behind the two busy workers")
+                .atMost(5, SECONDS)
+                .until(() -> pool.getQueue().size() == 2);
 
         // setCorePoolSize starts workers for the backlog at once; they must be named with the new size
         m_scheduler.setThreads(4);
