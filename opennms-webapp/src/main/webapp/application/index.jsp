@@ -125,9 +125,7 @@
             <%
                 for(final Map.Entry<OnmsMonitoredService, Map<String, Double>> serviceEntry : statuses.entrySet()) {
             %>
-            <c:url var="nodeLink" value="element/node.jsp">
-                <c:param name="node" value="<%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpInterface().getNode().getNodeId())%>"/>
-            </c:url>
+            <c:url var="nodeLink" value='<%= "ui/index.html#/node/" + WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpInterface().getNode().getNodeId()) %>'/>
             <c:url var="interfaceLink" value="element/interface.jsp">
                 <c:param name="node" value="<%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpInterface().getNode().getNodeId())%>"/>
                 <c:param name="intf" value="<%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpAddressAsString()) %>"/>

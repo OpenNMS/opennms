@@ -328,7 +328,7 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
 				  nodeLabel = "Error parsing nodeId";
 			  }
 		  %>
-      <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}"><%=nodeLabel%><br/>${svcCollector.serviceID}</a></td>
+      <td><a href="ui/index.html#/node/${svcCollector.parsedServiceID}"><%=nodeLabel%><br/>${svcCollector.serviceID}</a></td>
       <td align="right">${svcCollector.collectionCount}</td>
       <td align="right">${svcCollector.averageCollectionDuration}</td>
       <td align="right">${svcCollector.averageDurationBetweenCollections}</td>

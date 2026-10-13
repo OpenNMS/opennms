@@ -80,7 +80,7 @@
           .headTitle("${nodeLabel}")
           .headTitle("Linked Node Info")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "element/node.jsp?node=${nodeId}")
+          .breadcrumb("Node", "ui/index.html#/node/${nodeId}")
           .breadcrumb("Links")
           .build(request);
 %>

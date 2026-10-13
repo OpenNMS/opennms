@@ -70,9 +70,7 @@
 	
 %>
 
-<c:url var="nodeLink" value="element/node.jsp">
-  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-</c:url>
+<c:url var="nodeLink" value='<%= "ui/index.html#/node/" + nodeId %>'/>
 <c:url var="interfaceLink" value="element/interface.jsp">
   <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
   <c:param name="intf" value="<%=WebSecurityUtils.sanitizeString(ipAddr)%>"/>

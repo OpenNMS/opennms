@@ -161,7 +161,7 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Hardware Inventory")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "element/node.jsp?node=" + node.getId())
+          .breadcrumb("Node", "ui/index.html#/node/" + node.getId())
           .breadcrumb("Hardware Inventory")
           .build(request);
 %>

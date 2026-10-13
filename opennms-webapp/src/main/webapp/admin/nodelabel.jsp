@@ -87,7 +87,7 @@
       </div>
       <div class="card-body">
         <p>
-          <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=WebSecurityUtils.sanitizeString(currentLabel.getLabel())%></a> (<%=typeMap.get(currentLabel.getSource())%>)
+          <a href="ui/index.html#/node/<%=nodeId%>" title="More information for this node"><%=WebSecurityUtils.sanitizeString(currentLabel.getLabel())%></a> (<%=typeMap.get(currentLabel.getSource())%>)
         </p>
       </div>
     </div> <!-- panel -->

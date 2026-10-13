@@ -71,7 +71,7 @@
           <% for (Integer nodeid : nodeList) {
               String labelColor[] = PathOutageManagerDaoImpl.getInstance().getLabelAndStatus(nodeid.toString(), null); %>
               <tr>
-              <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
+              <td><a href="ui/index.html#/node/<%= nodeid %>"><%= labelColor[0] %></a></td>
               <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>
               </tr>
           <% } %>

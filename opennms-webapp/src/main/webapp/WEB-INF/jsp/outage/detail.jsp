@@ -71,7 +71,7 @@
           <th class="col-2">Node</th>
           <td class="col-2">
             <% if( outage.getNodeId() > 0 ) { %>
-              <a href="element/node.jsp?node=<%=outage.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(outage.getNodeLabel())%></a>
+              <a href="ui/index.html#/node/<%=outage.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(outage.getNodeLabel())%></a>
             <% } else {%>
               &nbsp;
             <% } %>

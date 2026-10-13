@@ -61,7 +61,7 @@
             </tr>
             <c:forEach items="${model.memberServices}" var="service">
               <tr>
-                <td><a href="element/node.jsp?node=${service.ipInterface.node.id}">${fn:escapeXml(service.ipInterface.node.label)}</a></td>
+                <td><a href="ui/index.html#/node/${service.ipInterface.node.id}">${fn:escapeXml(service.ipInterface.node.label)}</a></td>
                 <td><a href="element/interface.jsp?ipinterfaceid=${service.ipInterface.id}">${service.ipInterface.ipAddress.hostAddress}</a></td>
                 <td><a href="element/service.jsp?ifserviceid=${service.id}">${fn:escapeXml(service.serviceName)}</a></td>
               </tr>

@@ -67,7 +67,7 @@
         <div growl></div>
 
         <h4>
-          Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
+          Node: <strong><a href="ui/index.html#/node/${nodeId}">{{ nodeLabel }}</a></strong>
         </h4>
         <p>
           Last modified by {{ (master['lastModifiedBy'] || 'no one') }} at {{ master['lastModifiedDate'] | onmsDate }}

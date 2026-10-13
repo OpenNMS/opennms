@@ -245,9 +245,7 @@
 	pageContext.setAttribute("schedOutages", schedOutages.isEmpty() ? null : StringUtils.collectionToDelimitedString(schedOutages, ", "));
 %>
 
-<c:url var="nodeLink" value="element/node.jsp">
-  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-</c:url>
+<c:url var="nodeLink" value='<%= "ui/index.html#/node/" + nodeId %>'/>
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>

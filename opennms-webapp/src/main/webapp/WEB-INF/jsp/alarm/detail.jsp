@@ -142,9 +142,7 @@
         <th class="col-2">Node</th>
         <td class="col-4">
             <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
-            <c:url var="nodeLink" value="element/node.jsp">
-                <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
-            </c:url>
+            <c:url var="nodeLink" value='<%= "ui/index.html#/node/" + alarm.getNodeId() %>'/>
             <a href="${nodeLink}"><c:out value="<%=alarm.getNodeLabel()%>"/></a>
             <% } else {%>
             &nbsp;
@@ -320,7 +318,7 @@
                     </nobr>
                 </td>
                 <td class="divider" valign="middle">
-                    <a href="element/node.jsp?node=${relatedVar.nodeId}"><c:out value="${relatedVar.nodeLabel}"/></a>
+                    <a href="ui/index.html#/node/${relatedVar.nodeId}"><c:out value="${relatedVar.nodeLabel}"/></a>
                 </td>
                 <td class="divider" valign="middle">
                         ${relatedVar.counter}
@@ -387,7 +385,7 @@
                     </nobr>
                 </td>
                 <td class="divider" valign="middle">
-                    <a href="element/node.jsp?node=${relatedVar.nodeId}"><c:out value="${relatedVar.nodeLabel}"/></a>
+                    <a href="ui/index.html#/node/${relatedVar.nodeId}"><c:out value="${relatedVar.nodeLabel}"/></a>
                 </td>
                 <td class="divider" valign="middle">
                         ${relatedVar.counter}

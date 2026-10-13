@@ -125,9 +125,7 @@
     <th class="col-md-1">Node</th>
     <td class="col-md-2">
       <%if (nodeLabel!=null) { %>
-        <c:url var="nodeLink" value="element/node.jsp">
-          <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
-        </c:url>
+        <c:url var="nodeLink" value='<%= "ui/index.html#/node/" + notice.getNodeId() %>'/>
         <a href="${nodeLink}"><c:out value="<%=nodeLabel%>"/></a>
       <% } else { %>
         &nbsp;
@@ -169,9 +167,6 @@
     <td class="col-md-2">
       <c:choose>
         <c:when test="<%= nodeLocation != null %>">
-          <c:url var="nodeLocationLink" value="element/node.jsp">
-            <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
-          </c:url>
           <a href="${nodeLink}"><c:out value="<%=nodeLocation%>"/></a>
         </c:when>
         <c:otherwise>

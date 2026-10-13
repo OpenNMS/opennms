@@ -52,7 +52,7 @@
           .headTitle(entity.getServiceName())
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Node", "ui/index.html#/node/" + nodeId)
           .breadcrumb("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr)
           .breadcrumb("Service", "element/service.jsp?node=" + nodeId  + "&intf=" + ipAddr + "&service=" + entity.getServiceId())
           .breadcrumb("Meta-Data")
