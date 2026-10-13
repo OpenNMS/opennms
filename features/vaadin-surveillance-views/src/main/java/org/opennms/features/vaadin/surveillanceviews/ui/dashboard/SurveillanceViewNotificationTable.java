@@ -295,7 +295,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
                     public void buttonClick(Button.ClickEvent clickEvent) {
                         final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + notification.getNodeId();
+                        final String redirectFragment = contextRoot + "/ui/index.html#/node/" + notification.getNodeId();
                         ;
 
                         LOG.debug("node {} clicked, current location = {}, uri = {}", notification.getNodeId(), currentLocation, redirectFragment);

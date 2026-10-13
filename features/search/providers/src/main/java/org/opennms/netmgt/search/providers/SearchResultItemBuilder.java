@@ -41,7 +41,7 @@ public class SearchResultItemBuilder {
         Objects.requireNonNull(node);
 
         searchResultItem.setIdentifier(node.getNodeId());
-        searchResultItem.setUrl("element/node.jsp?node=" + node.getId());
+        searchResultItem.setUrl("ui/index.html#/node/" + node.getId());
         searchResultItem.setLabel(node.getLabel());
         searchResultItem.setInfo(Interpolator.interpolate(CUSTOM_INFO, entityScopeProvider.getScopeForNode(node.getId())).output);
 

@@ -102,7 +102,7 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
                     public void buttonClick(Button.ClickEvent clickEvent) {
                         final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeRtc.getNode().getId();
+                        final String redirectFragment = contextRoot + "/ui/index.html#/node/" + nodeRtc.getNode().getId();
 
                         LOG.debug("node {} clicked, current location = {}, uri = {}", nodeRtc.getNode().getId(), currentLocation, redirectFragment);
 
