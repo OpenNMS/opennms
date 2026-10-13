@@ -63,6 +63,11 @@ import io.netty.util.internal.SocketUtils;
 public class TcpListener implements GracefulShutdownListener {
     private static final Logger LOG = LoggerFactory.getLogger(TcpListener.class);
 
+    // No quiet period: the channel is closed before the group shuts down, so no new tasks arrive.
+    // Netty's default quiet period of 2 s per group delays every daemon stop.
+    private static final long SHUTDOWN_QUIET_PERIOD_MS = 0;
+    private static final long SHUTDOWN_TIMEOUT_MS = 1000;
+
     private final String name;
     private final TcpParser parser;
 
@@ -185,13 +190,8 @@ public class TcpListener implements GracefulShutdownListener {
         LOG.info("Disconnecting clients...");
         this.channels.close().awaitUninterruptibly();
 
-        LOG.info("Closing worker group...");
-        // switch to use even listener rather than sync to prevent shutdown deadlock hang
-        this.workerGroup.shutdownGracefully().addListener(workerListener);
-
-        LOG.info("Closing boss group...");
-        this.bossGroup.shutdownGracefully().addListener(bossListener);
-
+        // Close the channel and stop the parser before the groups shut down. A close task
+        // submitted after a group has terminated fails with RejectedExecutionException.
         if (this.socketFuture != null) {
             LOG.info("Closing channel...");
             this.socketFuture.channel().close().sync();
@@ -204,6 +204,13 @@ public class TcpListener implements GracefulShutdownListener {
         if (this.parser != null) {
             this.parser.stop();
         }
+
+        LOG.info("Closing worker group...");
+        // switch to use even listener rather than sync to prevent shutdown deadlock hang
+        this.workerGroup.shutdownGracefully(SHUTDOWN_QUIET_PERIOD_MS, SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS).addListener(workerListener);
+
+        LOG.info("Closing boss group...");
+        this.bossGroup.shutdownGracefully(SHUTDOWN_QUIET_PERIOD_MS, SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS).addListener(bossListener);
 
         stopFuture = new Future<String>() {
             @Override
