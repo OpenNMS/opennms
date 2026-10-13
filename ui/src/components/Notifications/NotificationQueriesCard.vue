@@ -64,6 +64,24 @@
             @keyup.enter="goToNotification"
           />
         </div>
+        <!-- A filter on the current view, not a query of its own, so it too is a plain label. -->
+        <div class="query-search">
+          <label
+            for="notification-node-search"
+            class="query-search-label"
+            data-test="node-search-label"
+          >Notifications for node:</label>
+          <OnmsSearchInput
+            v-model="nodeSearch"
+            class="query-search-input"
+            inputId="notification-node-search"
+            placeholder="Node ID"
+            ariaLabel="Node ID"
+            dataTest="node-search-input"
+            @keyup.enter="filterByNode"
+            @clear="clearNodeFilter"
+          />
+        </div>
       </div>
       <div v-if="store.nodeFilter" class="query-node-filter" data-test="node-filter-chip">
         <OnmsChip
@@ -134,12 +152,19 @@ const userSearchOptions: QueryModeOption[] = [{ label: 'Notifications for user:'
 const mode = ref<QueryMode>(store.preset)
 const userSearch = ref(store.preset === 'userSearch' ? store.userFilter ?? '' : '')
 const notificationIdSearch = ref('')
+const nodeSearch = ref(store.nodeFilter?.id ?? '')
 
 const userSearchInput = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
 
 // Follow preset changes made elsewhere (e.g. the top-bar bell deep link).
 watch(() => store.preset, (preset) => {
   mode.value = preset
+})
+
+// Show the filter that is applied: a deep link (?node=153) fills the input, and removing the chip
+// empties it.
+watch(() => store.nodeFilter?.id, (id) => {
+  nodeSearch.value = id ?? ''
 })
 
 const onModeChange = (value: unknown) => {
@@ -177,9 +202,23 @@ const clearUserSearch = () => {
   applyPreset('userSearch')
 }
 
-// notification ids are positive integers; anything else would only reach the
-// legacy detail page as an error (leading zeros are fine: "007" is notice 7)
+// notification and node ids are positive integers; anything else would only reach the legacy
+// detail page, or the node filter, as an error (leading zeros are fine: "007" is 7)
 const isNotificationId = (value: string) => /^\d+$/.test(value) && Number(value) > 0
+
+// Not a mode: the filter narrows whatever is showing, user search included, so the preset and
+// any user search stay (the store's setNodeFilter keeps both).
+const filterByNode = async () => {
+  const id = nodeSearch.value.trim()
+  if (!id) {
+    return
+  }
+  if (!isNotificationId(id)) {
+    showError('Enter a node ID as a positive whole number, e.g. 42.')
+    return
+  }
+  report(await withSpinner(() => store.setNodeFilter(String(Number(id)))))
+}
 
 const goToNotification = () => {
   const id = notificationIdSearch.value.trim()

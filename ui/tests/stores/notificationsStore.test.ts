@@ -397,6 +397,42 @@ describe('useNotificationsStore', () => {
       expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ nodeId: null }))
     })
 
+    it('sets a node filter on the current preset and reloads from the first page', async () => {
+      await store.applyPreset('allAcknowledged')
+      await store.onPage(20, 10)
+
+      await store.setNodeFilter('16')
+
+      expect(store.preset).toBe('allAcknowledged')
+      expect(store.first).toBe(0)
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ acktype: 'ack', nodeId: '16', offset: 0 }))
+      expect(store.nodeFilter).toEqual({ id: '16', label: 'Core-Router-01' })
+    })
+
+    it('keeps the user search when a node filter is set', async () => {
+      await store.applyPreset('userSearch', 'operator')
+
+      await store.setNodeFilter('16')
+
+      expect(store.preset).toBe('userSearch')
+      expect(store.userFilter).toBe('operator')
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ user: 'operator', nodeId: '16' }))
+    })
+
+    it('replaces the node filter, dropping the old label, and clears it with null', async () => {
+      vi.mocked(API.getNodeById).mockResolvedValue({ id: '17', label: 'Other' })
+      await store.setNodeFilter('16')
+
+      const pending = store.setNodeFilter('17')
+      expect(store.nodeFilter).toEqual({ id: '17', label: null })
+      await pending
+      expect(store.nodeFilter).toEqual({ id: '17', label: 'Other' })
+
+      await store.setNodeFilter(null)
+      expect(store.nodeFilter).toBeNull()
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ nodeId: null }))
+    })
+
     it('passes the node filter to the export as well', async () => {
       await store.applyQuery('allOutstanding', '16')
       await store.fetchForExport(500)
