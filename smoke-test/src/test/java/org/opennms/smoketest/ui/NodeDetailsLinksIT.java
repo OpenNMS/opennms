@@ -184,7 +184,7 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     public void centralSearchResultOpensTheNode() {
         getDriver().get(getBaseUrlInternal() + "opennms/index.jsp");
         findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']").sendKeys(LABEL);
-        clickElement(By.xpath("//div[@id='onms-central-search-control']//div[contains(@class, 'search-result-item')][contains(., '" + LABEL + "')]"));
+        clickElement(By.xpath("//div[@id='onms-central-search-control']//div[contains(@class, 'search-result-item')][contains(., '" + LABEL + "')]//button[contains(@class, 'search-result-button')]"));
         waitForVueNodeDetails();
     }
 
