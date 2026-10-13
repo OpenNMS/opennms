@@ -21,11 +21,15 @@
  */
 package org.opennms.netmgt.telemetry.protocols.openconfig.adapter;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.junit.After;
@@ -120,5 +124,13 @@ public class GnmiMappingScriptTest {
         // OpenConfigAdapter passes the notification timestamp straight through as milliseconds
         CollectionSet set = new ScriptedCollectionSetBuilder(GnmiMappingScript.file()).build(agent, message, nanos);
         assertEquals(1751293808127L, set.getCollectionTimestamp().getTime());
+    }
+
+    @Test
+    public void shippedSampleMappingIsValid() throws Exception {
+        File sample = new File(GnmiMappingScript.class.getResource("/openconfig-gnmi-mapping.yaml").toURI());
+        Object result = GnmiMappingScript.call(GnmiMappingScript.load(), "MappingLoader", "load", sample);
+        assertThat((List<?>) GnmiMappingScript.prop(result, "errors"), is(empty()));
+        assertThat((List<?>) GnmiMappingScript.prop(result, "warnings"), is(empty()));
     }
 }

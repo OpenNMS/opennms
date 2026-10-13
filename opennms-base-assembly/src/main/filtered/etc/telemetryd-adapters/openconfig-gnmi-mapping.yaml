@@ -1,0 +1,36 @@
+# Declarative gNMI mapping read by openconfig-gnmi-mapping.groovy.
+# To use it, set the OpenConfig adapter's script parameter in
+# telemetryd-configuration.xml to openconfig-gnmi-mapping.groovy.
+# Reference: OpenConfig telemetry docs, section "Declarative mapping".
+version: 1
+aliases:
+  if-counters: /interfaces/interface/state/counters
+  if-state: /interfaces/interface/state
+  cpu-utilization: /components/component/cpu/utilization/state
+groups:
+  - name: oc-if-counters
+    match: if-counters
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      in-octets: { type: counter, name: ifHCInOctets }
+      out-octets: { type: counter, name: ifHCOutOctets }
+      in-unicast-pkts: { type: counter, name: ifHCInUcastPkts }
+      out-unicast-pkts: { type: counter, name: ifHCOutUcastPkts }
+      in-errors: { type: counter, name: ifInErrors }
+      out-errors: { type: counter, name: ifOutErrors }
+      in-discards: { type: counter, name: ifInDiscards }
+      out-discards: { type: counter, name: ifOutDiscards }
+  - name: oc-if-description
+    match: if-state
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      description: { type: string, name: ifAlias }
+  - name: oc-cpu
+    match: cpu-utilization
+    resource-type: ocComponent
+    instance: "{component.name}"
+    attributes:
+      avg: { type: gauge, name: cpuAvg }
+      instant: { type: gauge, name: cpuInstant }
