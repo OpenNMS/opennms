@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath } from '@/services/nodeService'
+import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath, resolveNodeId } from '@/services/nodeService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -112,5 +112,38 @@ describe('nodeService.getNodeAvailabilityPercentage', () => {
     vi.mocked(rest.get).mockRejectedValue(new Error('boom'))
 
     expect(await getNodeAvailabilityPercentage('144')).toBe(false)
+  })
+})
+
+describe('nodeService.resolveNodeId', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('asks v2 for the node, encoding the foreign id as one path segment', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: '153', label: 'something-226' }})
+
+    const result = await resolveNodeId('My Source:a/b#c')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/My%20Source%3Aa%2Fb%23c')
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('153')
+  })
+
+  it('answers null for a node that does not exist', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 404 }})
+
+    const result = await resolveNodeId('req3:nope')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('fails on any other error', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
+
+    const result = await resolveNodeId('req3:1')
+
+    expect(result.success).toBe(false)
   })
 })
