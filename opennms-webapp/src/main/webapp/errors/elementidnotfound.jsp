@@ -53,7 +53,10 @@
   To search again by <%=einfe.getElemType()%> ID, enter the ID here:
   </p>
 
-  <form role="form" method="get" action="<%=einfe.getDetailUri()%>" class="form">
+  <% final boolean hashRoute = einfe.getDetailUri().contains("#"); %>
+  <form role="form" method="get" class="form"
+        action="<%= hashRoute ? "#" : einfe.getDetailUri() %>"
+        <% if (hashRoute) { %>onsubmit="var v = this.elements['<%=einfe.getDetailParam()%>'].value.trim(); if (v) { window.location.href = '<%=einfe.getDetailUri()%>' + encodeURIComponent(v); } return false;"<% } %>>
     <div class="row">
       <div class="form-group col-md-2">
         <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=einfe.getElemType()%>&nbsp;ID</label>

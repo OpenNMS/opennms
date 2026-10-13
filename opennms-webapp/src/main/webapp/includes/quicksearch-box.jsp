@@ -55,8 +55,10 @@ function submitNodeSearch(params) {
     <span>Quick Search</span>
   </div>
   <div class="card-body">
-    <%-- Node ID: submit directly to node detail page --%>
-    <form class="form-group" action="element/node.jsp" method="get">
+    <%-- Node ID or foreignSource:foreignId: go straight to the Vue node detail page. A GET form
+         can't target a hash route, so the form navigates itself. --%>
+    <form class="form-group" action="#" method="get"
+          onsubmit="var v = this.node.value.trim(); if (v) { window.location.href = 'ui/index.html#/node/' + encodeURIComponent(v); } return false;">
       <label for="nodeId" class=" col-form-label ">Node ID</label>
       <div class="input-group">
         <input class="form-control" type="text" id="nodeId" name="node" placeholder="Node ID"/>
