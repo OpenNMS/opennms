@@ -166,7 +166,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const items = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-  { label: 'Nodes', to: '/' },
+  { label: 'Nodes', to: '/nodes' },
   { label: 'Node Details', to: '#', position: 'last' }
 ])
 
