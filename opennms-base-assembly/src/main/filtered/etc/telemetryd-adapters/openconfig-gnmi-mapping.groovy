@@ -339,6 +339,9 @@ class MappingLoader {
         if (group.resourceType != null && group.resourceType != 'node' && group.instance == null) {
             result.errors.add(label + ': instance is required for resource-type ' + group.resourceType)
         }
+        if (group.resourceType != 'node' && group.instance != null) {
+            checkInstance(group, label, result)
+        }
 
         Object attributes = raw.get('attributes')
         if (attributes == 'all') {
@@ -368,6 +371,35 @@ class MappingLoader {
             result.errors.add(label + ': attributes must be a map or the word all')
         }
         return result.errors.size() == errorsBefore ? group : null
+    }
+
+    // Without a well-formed placeholder every leaf lands on one literal instance
+    private static void checkInstance(Group group, String label, LoadResult result) {
+        Matcher m = Template.PLACEHOLDER.matcher(group.instance)
+        StringBuffer rest = new StringBuffer()
+        int placeholders = 0
+        while (m.find()) {
+            placeholders++
+            String elem = m.group(1)
+            if (group.match != null && !matchMentions(group.match, elem)) {
+                result.warnings.add(label + ': instance placeholder \'' + m.group() + '\' names element \'' + elem + '\', which is not in the match path')
+            }
+            m.appendReplacement(rest, '')
+        }
+        m.appendTail(rest)
+        if (placeholders == 0 || rest.indexOf('{') >= 0 || rest.indexOf('}') >= 0) {
+            result.errors.add(label + ': instance \'' + group.instance + '\' must use {element.key} placeholders')
+        }
+    }
+
+    // A wildcard could stand for any element, so it counts as a mention
+    private static boolean matchMentions(List<PatternElem> match, String elem) {
+        for (PatternElem p : match) {
+            if (p.name == '*' || p.name == elem) {
+                return true
+            }
+        }
+        return false
     }
 }
 
@@ -527,7 +559,7 @@ class Values {
 }
 
 class Template {
-    private static final Pattern PLACEHOLDER = Pattern.compile('\\{([^}.]+)\\.([^}]+)\\}')
+    static final Pattern PLACEHOLDER = Pattern.compile('\\{([^}.]+)\\.([^}]+)\\}')
 
     static String render(String template, List<PathElem> path) {
         Matcher m = PLACEHOLDER.matcher(template)
