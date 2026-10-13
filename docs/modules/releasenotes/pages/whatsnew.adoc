@@ -83,6 +83,10 @@ The asset fields `password`, `enable` and `snmpcommunity` are now write-only in 
 === Raw SQL query parameter requires ROLE_ADMIN
 The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
+=== DOCTYPE rejected in requisition and foreign-source XML
+Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
+Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
+
 === SNMP4J upgrade
 The SNMP4J library has been upgraded to version 2.8.15.
 As part of this upgrade, the SNMP4J logger configuration in opennms.properties has been updated to use the SLF4J logging implementation:
