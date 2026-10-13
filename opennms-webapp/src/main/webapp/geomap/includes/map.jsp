@@ -67,7 +67,7 @@
 
   <!-- Template to build the popup for each single marker -->
   <div id="single-popup" class="node-marker-single" style="display:none">
-    <h4>Node <a class="node" href="<%= baseHref %>element/node.jsp?node={NODE_ID}">{NODE_LABEL}</a></h4>
+    <h4>Node <a class="node" href="<%= baseHref %>ui/index.html#/node/{NODE_ID}">{NODE_LABEL}</a></h4>
     <p>
       <a href="<%= baseHref %>topology?provider=Enhanced+Linkd&focus-vertices={NODE_ID}" target="_blank">View in Topology Map</a>
     </p>
@@ -96,7 +96,7 @@
     <table class="node-marker-list">
       <tr class="node-marker-{SEVERITY_LABEL}">
         <td class="node-marker-label">
-          <a class="node" href="<%= baseHref %>element/node.jsp?node={NODE_ID}">{NODE_LABEL}</a>
+          <a class="node" href="<%= baseHref %>ui/index.html#/node/{NODE_ID}">{NODE_LABEL}</a>
         </td>
         <td class="node-marker-ipaddress">
           {IP_ADDRESS}

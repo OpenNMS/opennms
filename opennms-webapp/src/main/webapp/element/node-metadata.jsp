@@ -44,7 +44,7 @@
           .headTitle(entity.getLabel())
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "element/node.jsp?node=" + entity.getId())
+          .breadcrumb("Node", "ui/index.html#/node/" + entity.getId())
           .breadcrumb("Meta-Data")
           .build(request);
 %>

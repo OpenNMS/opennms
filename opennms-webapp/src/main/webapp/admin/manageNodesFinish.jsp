@@ -73,7 +73,7 @@
       <a href="element/rescan.jsp?node=<%= node.getId() %>">Rescan this node</a>
     </p>
     <p>
-      <a href="element/node.jsp?node=<%= node.getId() %>">Return to node page</a>
+      <a href="ui/index.html#/node/<%= node.getId() %>">Return to node page</a>
     </p>
     <% } %>
   </div> <!-- card-body -->

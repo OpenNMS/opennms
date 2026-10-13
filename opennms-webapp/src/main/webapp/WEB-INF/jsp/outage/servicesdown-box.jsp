@@ -53,9 +53,7 @@
       <c:otherwise>
         <ul class="list-unstyled mb-0">
           <c:forEach var="summary" items="${summaries}">
-            <c:url var="nodeLink" value="element/node.jsp">
-              <c:param name="node" value="${summary.nodeId}"/>
-            </c:url>
+            <c:url var="nodeLink" value="ui/index.html#/node/${summary.nodeId}"/>
             <li><a href="${nodeLink}"><c:out value="${summary.nodeLabel}"/></a> <span style="white-space:nowrap;">(${summary.fuzzyTimeDown})</span></li>
           </c:forEach>
         </ul>

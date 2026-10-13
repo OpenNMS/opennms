@@ -46,9 +46,7 @@
   String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
 %>
 
-<c:url var="nodeLink" value="element/node.jsp">
-	<c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-</c:url>
+<c:url var="nodeLink" value='<%= "ui/index.html#/node/" + nodeId %>'/>
 <c:choose>
 	<c:when test="<%=(ipAddr == null)%>">
 		<c:set var="returnUrl" value="${nodeLink}"/>

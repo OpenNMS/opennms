@@ -52,7 +52,7 @@ function toggleFormEnablement() {
       </div>
       <div class="card-body">
         <p>
-        Node <a href="<c:url value='element/node.jsp?node=${model.node.id}'/>">${model.node.label}</a> (node ID: ${model.node.id}) has ${fn:length(model.node.categories)} categories 
+        Node <a href="<c:url value='ui/index.html#/node/${model.node.id}'/>">${model.node.label}</a> (node ID: ${model.node.id}) has ${fn:length(model.node.categories)} categories 
         </p>
 
         <form action="admin/categories.htm" method="get">

@@ -70,7 +70,7 @@
 			<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
 			<td><a href="ui/#/nodes?iplike=<%= pth[1] %>"><%= pthData[0] %></a></td>
 			<% } else { %>
-			<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
+			<td><a href="ui/index.html#/node/<%= pthData[1] %>"><%= pthData[0] %></a></td>
 			<% } %>
 			<td><%= pth[1] %></td>
 			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>

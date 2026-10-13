@@ -56,7 +56,7 @@
           </tr>
           <c:forEach items="${model.memberNodes}" var="node">
             <tr>
-              <td><a href="element/node.jsp?node=${node.id}">${fn:escapeXml(node.label)}</a></td>
+              <td><a href="ui/index.html#/node/${node.id}">${fn:escapeXml(node.label)}</a></td>
             </tr>
           </c:forEach>
         </table>

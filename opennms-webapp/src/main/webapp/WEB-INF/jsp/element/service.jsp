@@ -154,9 +154,7 @@
   <c:param name="filter" value="interface=${service.ipInterface.ipAddress.hostAddress}"/>
   <c:param name="filter" value="service=${service.serviceId}"/>
 </c:url>
-<c:url var="nodeLink" value="element/node.jsp">
-  <c:param name="node" value="${service.ipInterface.node.id}"/>
-</c:url>
+<c:url var="nodeLink" value="ui/index.html#/node/${service.ipInterface.node.id}"/>
 <c:url var="interfaceLink" value="element/interface.jsp">
   <c:param name="ipinterfaceid" value="${service.ipInterface.id}"/>
 </c:url>
@@ -237,9 +235,7 @@ function doDelete() {
             </div>
             <table class="table table-sm">
               <tr>
-                <c:url var="nodeLink" value="element/node.jsp">
-                  <c:param name="node" value="${service.ipInterface.node.id}"/>
-                </c:url>
+                <c:url var="nodeLink" value="ui/index.html#/node/${service.ipInterface.node.id}"/>
                 <th>Node</th>
                 <td><a href="${fn:escapeXml(nodeLink)}"><c:out value="${service.ipInterface.node.label}"/></a></td>
               </tr>

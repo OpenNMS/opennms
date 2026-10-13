@@ -82,7 +82,7 @@
           <tr>
             <td><%=assets[i].matchingValue%></td>
             <td><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
-            <td><a href="element/node.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
+            <td><a href="ui/index.html#/node/<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
           </tr>
         <% } %>
         </table>
