@@ -65,6 +65,13 @@
           />
         </div>
       </div>
+      <div v-if="store.nodeFilter" class="query-node-filter" data-test="node-filter-chip">
+        <OnmsChip
+          :label="`Node: ${store.nodeFilter.label ?? store.nodeFilter.id}`"
+          removable
+          @remove="clearNodeFilter"
+        />
+      </div>
     </div>
   </TableCard>
 </template>
@@ -72,7 +79,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@opennms/onms-ui'
+import { OnmsChip, OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@opennms/onms-ui'
 
 import TableCard from '@/components/Common/TableCard.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
@@ -109,10 +116,15 @@ const refresh = async () => {
   report(await withSpinner(() => store.load()))
 }
 
+const clearNodeFilter = async () => {
+  report(await withSpinner(() => store.clearNodeFilter()))
+}
+
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
 const presetOptions: QueryModeOption[] = [
   { label: 'Your outstanding notifications', value: 'yourOutstanding' },
+  { label: 'Your acknowledged notifications', value: 'yourAcknowledged' },
   { label: 'Outstanding for anyone but you', value: 'teamOutstanding' },
   { label: 'All outstanding notifications', value: 'allOutstanding' },
   { label: 'All acknowledged notifications', value: 'allAcknowledged' }
@@ -199,6 +211,7 @@ const goToNotification = () => {
 
 .query-presets {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem;
 }
