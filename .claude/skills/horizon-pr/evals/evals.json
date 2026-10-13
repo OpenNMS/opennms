@@ -1,0 +1,41 @@
+{
+  "skill_name": "horizon-pr",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Can you get PR 8964 running locally so I can click around the UI? Don't build it, just use whatever CI already produced.",
+      "expected_output": "Horizon from the CircleCI image of PR 8964 running with PostgreSQL; user told the URL, the port, and admin/admin.",
+      "files": [],
+      "assertions": [
+        "Horizon container built from the PR 8964 CI image (opennms/horizon:ci-455741 or compose project horizon-pr-8964) is running at the end",
+        "No Maven build and no local docker build was run",
+        "The OCI artifact was not downloaded again (no curl of horizon-linux-amd64.oci), because the image was already loaded",
+        "Final message gives the web UI URL with the host port the stack actually uses, plus the admin/admin credentials",
+        "Final message tells the user how to stop or remove the stack"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "I already have the horizon stack for PR 8964 up. Now I also need the CI image for branch mm/NMS-20432-smoke running next to it so I can compare the two. Tell me the URLs for both when done.",
+      "expected_output": "A second stack on the next free port slot, the first one untouched, both URLs reported.",
+      "files": [],
+      "assertions": [
+        "A second Horizon stack for branch mm/NMS-20432-smoke is running on different host ports than the 8964 stack, with no port-clash error",
+        "The existing PR 8964 stack was not stopped, removed or recreated",
+        "Final message gives both URLs with the correct host ports",
+        "No Maven build and no local docker build was run"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Has CircleCI built a horizon container image for PR 8961 yet? If so tell me which pipeline and job it came from. Don't start anything.",
+      "expected_output": "Resolve-only answer with pipeline number and job number, or a clear statement that no image job has finished; nothing downloaded or started.",
+      "files": [],
+      "assertions": [
+        "Final message correctly states that no finished horizon image exists for PR 8961 yet (no successful horizon-image-single-arch-linux-amd64 job), and names the newest pipeline 46875 or the current status of its image job, matching ground_truth.txt",
+        "Nothing was downloaded, loaded or started: no curl of a .oci artifact, no docker image load, no docker compose up",
+        "Final message includes a CircleCI link for the pipeline or job"
+      ]
+    }
+  ]
+}
