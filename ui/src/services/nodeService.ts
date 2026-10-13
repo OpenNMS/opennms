@@ -67,7 +67,8 @@ const getNodeById = async (id: string): Promise<any> => {
 
 // Turns a database id or foreignSource:foreignId into the database id. v2 /nodes/{id} resolves
 // both (NodeDao.get(String)); %3A works as well as ':', so the value is encoded as one path
-// segment and a foreign id holding '/', '#' or spaces survives. A 404 is an answer -- no such
+// segment and ':', '#' and spaces survive. A foreign id holding '/' cannot be looked up this
+// way: the server's firewall rejects %2F. A 404 is an answer -- no such
 // node -- and is told apart from a failed lookup.
 const resolveNodeId = async (idOrForeignId: string): Promise<ValidationResultWithPayload<string | null>> => {
   try {

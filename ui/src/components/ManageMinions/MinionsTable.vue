@@ -185,7 +185,6 @@ const emit = defineEmits<{
 
 const store = useMinionAdminStore()
 
-
 const showDeleteDialog = ref(false)
 const minionToDelete = ref<Minion | null>(null)
 

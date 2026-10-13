@@ -153,6 +153,51 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeLookupMessage' }).props('state')).toBe('error')
   })
 
+  it('looks the foreign id up again when the lookup message asks to retry', async () => {
+    vi.mocked(API.resolveNodeId).mockResolvedValue(createResultWithPayload<string | null>(false, 'Failed'))
+    const { wrapper } = mountComponent('req3:1')
+    await flushPromises()
+    expect(API.resolveNodeId).toHaveBeenCalledTimes(1)
+
+    wrapper.findComponent({ name: 'NodeLookupMessage' }).vm.$emit('retry')
+    await flushPromises()
+
+    expect(API.resolveNodeId).toHaveBeenCalledTimes(2)
+  })
+
+  // The store outlives the page: a failure left by an earlier visit must not show as Node Not
+  // Found while this one is still being fetched. getNodeById clears the flag synchronously, so
+  // the fetch has to start before the first render.
+  it('does not show Node Not Found on first render from an earlier visit\'s failure', () => {
+    const pinia = createTestingPinia({ stubActions: false })
+    setActivePinia(pinia)
+    const nodeStore = useNodeStore()
+    nodeStore.nodeLoadFailed = true
+    nodeStore.getNodeById = vi.fn(async () => {
+      nodeStore.nodeLoadFailed = false
+    })
+    nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeExistsInRequisition = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeCriticalPath = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeLinkServices = vi.fn().mockResolvedValue(undefined)
+
+    const wrapper = mount(NodeDetails, {
+      props: { id: '42' },
+      global: {
+        plugins: [PrimeVue, pinia],
+        stubs: {
+          BreadCrumbs: true,
+          NodeDetailsLinks: true,
+          NodeDetailsDialog: true,
+          NodeLookupMessage: true,
+          NodeDetailsMainTab: true
+        }
+      }
+    })
+
+    expect(wrapper.findComponent({ name: 'NodeLookupMessage' }).exists()).toBe(false)
+  })
+
   it('leaves the title unnamed while the node is still being fetched', async () => {
     const { wrapper } = mountComponent()
     await flushPromises()

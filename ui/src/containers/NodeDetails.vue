@@ -33,6 +33,7 @@
       v-else-if="pageState === 'invalid' || pageState === 'notFound' || pageState === 'error'"
       :state="pageState"
       :value="lookupValue"
+      @retry="followRoute"
     />
     <template v-else>
       <div
@@ -78,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -138,7 +139,6 @@ const nodeLoaded = computed<boolean>(() => nodeStore.nodeLoaded)
 // Fetched alongside the node: the node payload carries no interfaces, and the IP Interfaces
 // table holds only whatever page it is showing.
 const snmpPrimaryIpAddress = computed<string | undefined>(() => nodeStore.snmpPrimaryIpAddress)
-
 
 type PageState = 'node' | 'resolving' | 'invalid' | 'notFound' | 'error'
 
@@ -212,9 +212,9 @@ const followRoute = async () => {
   }
 }
 
-onMounted(followRoute)
-
-watch(() => props.id, followRoute)
+// Immediate, so the fetch starts (and the store clears an earlier visit's failure) before the
+// first render.
+watch(() => props.id, followRoute, { immediate: true })
 
 // The Edit in Requisition action needs to know whether the node is in its requisition, which the
 // node payload does not say. Asked once the node has loaded, and only of a user who could use
