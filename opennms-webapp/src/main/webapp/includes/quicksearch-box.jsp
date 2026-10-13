@@ -61,7 +61,7 @@ function submitNodeSearch(params) {
           onsubmit="var v = this.node.value.trim(); if (v) { window.location.href = 'ui/index.html#/node/' + encodeURIComponent(v); } return false;">
       <label for="nodeId" class=" col-form-label ">Node ID</label>
       <div class="input-group">
-        <input class="form-control" type="text" id="nodeId" name="node" placeholder="Node ID"/>
+        <input class="form-control" type="text" id="nodeId" name="node" placeholder="Node ID or foreignSource:foreignId"/>
         <div class="input-group-append">
           <button name="nodeIdSearchButton" class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
