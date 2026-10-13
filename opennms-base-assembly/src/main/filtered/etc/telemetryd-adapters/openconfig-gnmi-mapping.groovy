@@ -37,6 +37,7 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource
 import org.opennms.netmgt.collection.support.builder.Resource
 
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -757,6 +758,10 @@ class GnmiMapping {
                 log.error('No valid gNMI mapping loaded from {}, no metrics are emitted', MappingHolder.locate())
             }
             return
+        }
+        if (response.hasUpdate() && response.getUpdate().getTimestamp() > 0) {
+            // gNMI timestamps are nanoseconds, but the adapter hands them to the builder as milliseconds
+            builder.withTimestamp(new Date(TimeUnit.NANOSECONDS.toMillis(response.getUpdate().getTimestamp())))
         }
         int nodeId = agent.getNodeId()
         int seen = 0

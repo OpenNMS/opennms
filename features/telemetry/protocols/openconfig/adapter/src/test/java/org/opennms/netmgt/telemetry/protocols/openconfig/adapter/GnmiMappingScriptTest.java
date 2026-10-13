@@ -36,7 +36,9 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.opennms.features.openconfig.proto.gnmi.Gnmi;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 
 import groovy.lang.GroovyClassLoader;
 
@@ -98,5 +100,25 @@ public class GnmiMappingScriptTest {
         CollectionSetBuilder builder = new CollectionSetBuilder(Mockito.mock(CollectionAgent.class));
         GnmiMappingScript.call(gcl, "GnmiMapping", "apply", null, builder, oneCounter());
         assertEquals(0, builder.getNumAttributes());
+    }
+
+    @Test
+    public void gnmiNanosecondTimestampBecomesMilliseconds() throws Exception {
+        GnmiMappingScript.writeFile(new File(tmp.getRoot(), "etc/telemetryd-adapters"), "openconfig-gnmi-mapping.yaml",
+                "version: 1",
+                "groups:",
+                "  - name: sys",
+                "    match: /system",
+                "    resource-type: node",
+                "    attributes: { uptime: { type: gauge } }");
+        long nanos = 1751293808127192960L;
+        Gnmi.SubscribeResponse message = oneCounter().toBuilder()
+                .setUpdate(oneCounter().getUpdate().toBuilder().setTimestamp(nanos))
+                .build();
+        CollectionAgent agent = Mockito.mock(CollectionAgent.class);
+        Mockito.when(agent.getNodeId()).thenReturn(1);
+        // OpenConfigAdapter passes the notification timestamp straight through as milliseconds
+        CollectionSet set = new ScriptedCollectionSetBuilder(GnmiMappingScript.file()).build(agent, message, nanos);
+        assertEquals(1751293808127L, set.getCollectionTimestamp().getTime());
     }
 }
