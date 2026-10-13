@@ -88,4 +88,7 @@ export const nodeOutageListLink = (baseHref: string, nodeId: string | number, ou
 // The legacy alarm detail page, and the legacy alarm list filtered to one node.
 export const alarmDetailLink = (baseHref: string, alarmId: string | number) => `${baseHref}alarm/detail.htm?id=${alarmId}`
 
+// The legacy event detail page.
+export const eventDetailLink = (baseHref: string, eventId: string | number) => `${baseHref}event/detail.jsp?id=${eventId}`
+
 export const nodeAlarmListLink = (baseHref: string, nodeId: string | number) => `${baseHref}alarm/list.htm?filter=node%3D${nodeId}`
