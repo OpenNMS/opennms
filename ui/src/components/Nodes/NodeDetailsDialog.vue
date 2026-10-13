@@ -13,7 +13,7 @@
           <span class="label">{{ item.label }}</span>
         </div>
         <div class="onms-col-8">
-          <router-link v-if="item.to" :to="item.to">{{ item.text }}</router-link>
+          <router-link v-if="item.to" :to="item.to" @click="onUpdateVisible(false)">{{ item.text }}</router-link>
           <a v-else-if="item.link" :href="item.link">{{ item.text }}</a>
           <span v-else>{{ item.text }}</span>
         </div>

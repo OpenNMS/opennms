@@ -59,6 +59,15 @@ describe('NodeDetailsDialog.vue', () => {
     ])
   })
 
+  // On the Node Details page these links point at the current route, so following them does
+  // nothing; the dialog has to close itself.
+  it('emits close when a node link is clicked', async () => {
+    const wrapper = mountIt(true)
+    await wrapper.findAllComponents(RouterLinkStub)[0].trigger('click')
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
   it('emits close when the dialog requests hide', async () => {
     const wrapper = mountIt(true)
     // Simulate PrimeVue Dialog update:visible(false)

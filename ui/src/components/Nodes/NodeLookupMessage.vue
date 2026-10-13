@@ -52,6 +52,8 @@ const props = defineProps<{
   value: string
 }>()
 
+const emit = defineEmits<{ retry: [] }>()
+
 const router = useRouter()
 const entry = ref('')
 
@@ -78,6 +80,12 @@ const detail = computed(() => {
 const lookUp = () => {
   const value = entry.value.trim()
   if (!value) {
+    return
+  }
+  // The same value is the route already shown, which the router ignores; ask the page to look
+  // it up again instead.
+  if (value === props.value) {
+    emit('retry')
     return
   }
   router.push(nodeDetailsRoute(value))

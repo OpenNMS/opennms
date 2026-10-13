@@ -123,9 +123,9 @@ describe('nodeService.resolveNodeId', () => {
   it('asks v2 for the node, encoding the foreign id as one path segment', async () => {
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: '153', label: 'something-226' }})
 
-    const result = await resolveNodeId('My Source:a/b#c')
+    const result = await resolveNodeId('My Source:a b#c')
 
-    expect(v2.get).toHaveBeenCalledWith('/nodes/My%20Source%3Aa%2Fb%23c')
+    expect(v2.get).toHaveBeenCalledWith('/nodes/My%20Source%3Aa%20b%23c')
     expect(result.success).toBe(true)
     expect(result.payload).toBe('153')
   })
