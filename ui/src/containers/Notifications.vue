@@ -80,38 +80,67 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 // silently drop the user filter and show every user's notifications.
 const authLoaded = computed<boolean>(() => authStore.loaded)
 
-// the top-bar bell deep-links here with a preset (NMS-20124)
-const PRESETS = ['yourOutstanding', 'teamOutstanding', 'allOutstanding', 'allAcknowledged'] as const
-const initialLoad = async () => {
+// Presets a URL can name: the top-bar bell (NMS-20124), Node Details and the dashboard link here.
+// userSearch is not one of them; it is typed on the page.
+const LINKABLE_PRESETS: readonly NotificationQueryPreset[] = ['yourOutstanding', 'yourAcknowledged', 'teamOutstanding', 'allOutstanding', 'allAcknowledged']
+
+const queryFor = (preset: NotificationQueryPreset, nodeId: string | null | undefined): Record<string, string> => ({
+  ...(preset !== 'userSearch' ? { preset } : {}),
+  ...(nodeId ? { node: nodeId } : {})
+})
+
+const sameQuery = (a: Record<string, unknown>, b: Record<string, unknown>) =>
+  JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort())
+
+const readRoute = () => {
   const preset = route.query.preset as string
-  if ((PRESETS as readonly string[]).includes(preset)) {
-    report(await withSpinner(() => notificationsStore.applyPreset(preset as NotificationQueryPreset)))
-  } else {
-    report(await withSpinner(() => notificationsStore.load()))
+  const node = route.query.node as string
+  return {
+    preset: (LINKABLE_PRESETS as readonly string[]).includes(preset) ? preset as NotificationQueryPreset : 'yourOutstanding' as NotificationQueryPreset,
+    nodeId: typeof node === 'string' && /^\d+$/.test(node) && Number(node) > 0 ? String(Number(node)) : null
   }
+}
+
+const loadFromRoute = async () => {
+  const { preset, nodeId } = readRoute()
+  report(await withSpinner(() => notificationsStore.applyQuery(preset, nodeId)))
 }
 
 onMounted(() => {
   if (authLoaded.value) {
-    initialLoad()
+    loadFromRoute()
   } else {
-    whenever(authLoaded, () => initialLoad(), { once: true })
+    whenever(authLoaded, () => loadFromRoute(), { once: true })
   }
 })
 
-// Clicking a bell link while already on this page only changes the hash query,
-// so the component is not remounted — re-apply the preset when it changes.
-watch(() => route.query.preset, () => {
-  if (authLoaded.value) {
-    initialLoad()
+// Another link changing the hash query does not remount the page. The page's own router.replace
+// (below) also lands here; its query already matches the store, so it is skipped rather than
+// loaded a second time.
+watch(() => route.query, (query) => {
+  if (!authLoaded.value) {
+    return
+  }
+  if (sameQuery(query, queryFor(notificationsStore.preset, notificationsStore.nodeFilter?.id))) {
+    return
+  }
+  loadFromRoute()
+})
+
+// Presets chosen and the node chip removed on the page go into the URL, so refresh and bookmarks
+// keep the view.
+watch(() => [notificationsStore.preset, notificationsStore.nodeFilter?.id] as const, ([preset, nodeId]) => {
+  const query = queryFor(preset, nodeId)
+  if (!sameQuery(route.query, query)) {
+    router.replace({ query })
   }
 })
 
-// ...and re-clicking the link for the preset already showing leaves the hash
-// unchanged, so the watch above never fires; the menu signals it instead.
+// ...and re-clicking the link for the view already showing leaves the hash unchanged, so neither
+// watch fires; the menu signals it instead.
 useEventListener(window, SAME_PAGE_NAVIGATION_EVENT, () => {
   if (authLoaded.value) {
-    initialLoad()
+    loadFromRoute()
   }
 })
 </script>

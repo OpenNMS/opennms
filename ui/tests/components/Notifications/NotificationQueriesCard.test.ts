@@ -57,6 +57,31 @@ describe('NotificationQueriesCard', () => {
     expect(pressed(wrapper, 'query-user-search')).toEqual([])
   })
 
+  it('offers your acknowledged notifications as a preset', () => {
+    mountCard()
+    expect(wrapper.find('[data-test="query-presets"]').text()).toContain('Your acknowledged notifications')
+  })
+
+  it('shows the node filter as a removable chip, and removing it clears the filter', async () => {
+    mountCard()
+    store.nodeFilter = { id: '16', label: 'Core-Router-01' }
+    vi.mocked(store.clearNodeFilter).mockResolvedValue(createSuccessResponse())
+    await flushPromises()
+
+    const chip = wrapper.find('[data-test="node-filter-chip"]')
+    expect(chip.text()).toContain('Node: Core-Router-01')
+
+    await wrapper.findComponent({ name: 'OnmsChip' }).vm.$emit('remove', new Event('click'))
+    await flushPromises()
+
+    expect(store.clearNodeFilter).toHaveBeenCalled()
+  })
+
+  it('shows no chip without a node filter', () => {
+    mountCard()
+    expect(wrapper.find('[data-test="node-filter-chip"]').exists()).toBe(false)
+  })
+
   it('applies a preset when one is chosen', async () => {
     mountCard()
 
