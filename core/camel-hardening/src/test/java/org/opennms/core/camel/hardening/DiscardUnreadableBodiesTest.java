@@ -64,7 +64,7 @@ public class DiscardUnreadableBodiesTest {
     public void dropsRefusedBodiesWithoutReplyOrException() {
         final Exchange exchange = exchange(new RefusingMessage());
         new DiscardUnreadableBodies().process(exchange);
-        assertTrue(exchange.getProperty(Exchange.ROUTE_STOP, Boolean.class));
+        assertTrue(exchange.isRouteStop());
         assertEquals(ExchangePattern.InOnly, exchange.getPattern());
         assertNull(exchange.getException());
     }
@@ -75,7 +75,7 @@ public class DiscardUnreadableBodiesTest {
         in.setBody("payload");
         final Exchange exchange = exchange(in);
         new DiscardUnreadableBodies().process(exchange);
-        assertFalse(exchange.getProperty(Exchange.ROUTE_STOP, false, Boolean.class));
+        assertFalse(exchange.isRouteStop());
         assertEquals(ExchangePattern.InOut, exchange.getPattern());
     }
 
