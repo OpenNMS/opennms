@@ -61,7 +61,7 @@ public class MenuProviderTest {
         assertEquals("20:30:00 UTC+00", mainMenu.formattedTime);
         assertEquals("On", mainMenu.noticeStatus);
         assertEquals("admin1", mainMenu.username);
-        assertEquals("element/node.jsp?node=", mainMenu.baseNodeUrl);
+        assertEquals("ui/index.html#/node/", mainMenu.baseNodeUrl);
         assertTrue(mainMenu.zenithConnectEnabled);
         assertEquals("https://zenith.opennms.com", mainMenu.zenithConnectBaseUrl);
         assertEquals("/zenith-connect", mainMenu.zenithConnectRelativeUrl);
