@@ -91,7 +91,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 
 	$scope.getLink = function(minion) {
 		if (minion && $scope.minionNodes[minion.id + '\0' + minion.location]) {
-			return 'element/node.jsp?node=' + $scope.minionNodes[minion.id + '\0' + minion.location].id;
+			return 'ui/index.html#/node/' + $scope.minionNodes[minion.id + '\0' + minion.location].id;
 		}
 		return undefined;
 	};
