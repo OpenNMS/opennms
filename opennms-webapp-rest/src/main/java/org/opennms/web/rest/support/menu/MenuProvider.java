@@ -111,8 +111,9 @@ public class MenuProvider {
         mainMenu.formattedDate = menuRequestContext.getFormattedDate();
         mainMenu.formattedTime = menuRequestContext.getFormattedTime();
         mainMenu.username = menuRequestContext.getRemoteUser();
-        // for navigating to a specific node id
-        mainMenu.baseNodeUrl = "element/node.jsp?node=";
+        // The Vue Node Details page. No OpenNMS Vue code reads this any more (it links through the
+        // router), but plugins may. Callers append the node id.
+        mainMenu.baseNodeUrl = "ui/index.html#/node/";
 
         mainMenu.zenithConnectEnabled =
                 Strings.nullToEmpty(menuRequestContext.getSystemProperty(ZENITH_CONNECT_ENABLED_KEY, "false")).equals("true");
