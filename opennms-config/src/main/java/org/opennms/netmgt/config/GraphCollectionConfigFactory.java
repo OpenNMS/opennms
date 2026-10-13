@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.graphcollections.Graph;
 import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.config.graphcollections.GraphCollectionList;
 import org.slf4j.Logger;
@@ -151,6 +152,7 @@ public class GraphCollectionConfigFactory {
 
         m_config = JaxbUtils.unmarshal(GraphCollectionList.class, new FileSystemResource(s_configFile));
 
+        decodeLegacyTitles();
         setIdsOnAllReports();
 
         m_reportList = createReportList();
@@ -158,6 +160,44 @@ public class GraphCollectionConfigFactory {
 
     public static void setConfigFile(final File configFile) {
         s_configFile = configFile;
+    }
+
+    /**
+     * Older versions stored report and graph titles from the web UI as HTML-encoded text.
+     * The web UI now stores titles raw and encodes them on output.
+     * Decode the stored titles so that they do not show as encoded text.
+     */
+    private void decodeLegacyTitles() {
+        if (m_config == null || m_config.getCollections() == null) {
+            return;
+        }
+        for (final GraphCollection report : m_config.getCollections()) {
+            final String reportTitle = decodeLegacyTitle(report.getTitle());
+            if (!Objects.equals(reportTitle, report.getTitle())) {
+                report.setTitle(reportTitle);
+            }
+            for (final Graph graph : report.getGraphs()) {
+                final String graphTitle = decodeLegacyTitle(graph.getTitle());
+                if (!Objects.equals(graphTitle, graph.getTitle())) {
+                    graph.setTitle(graphTitle);
+                }
+            }
+        }
+    }
+
+    /**
+     * Reverses the HTML encoding that older versions applied to KSC titles.
+     * Decodes only the entities that the encoder wrote. Decodes "&amp;" last, so that "&amp;lt;" becomes "&lt;" and not "<".
+     */
+    static String decodeLegacyTitle(final String title) {
+        if (title == null || title.indexOf('&') < 0) {
+            return title;
+        }
+        return title.replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&#34;", "\"")
+                .replace("&#39;", "'")
+                .replace("&amp;", "&");
     }
 
     private void setIdsOnAllReports() {

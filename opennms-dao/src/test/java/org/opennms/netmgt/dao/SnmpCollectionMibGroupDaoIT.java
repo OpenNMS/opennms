@@ -131,6 +131,48 @@ public class SnmpCollectionMibGroupDaoIT {
 
     @Test
     @Transactional
+    public void testFindAllByNameAndFindAllWithSource() {
+        final SnmpCollectionSource disabledSource = new SnmpCollectionSource();
+        disabledSource.setName("Disabled Source");
+        disabledSource.setEnabled(false);
+        disabledSource.setCreatedTime(new Date());
+        snmpSourceDao.saveOrUpdate(disabledSource);
+
+        final SnmpCollectionMibGroup copy = new SnmpCollectionMibGroup();
+        copy.setName("Mib-Group-1");
+        copy.setEnabled(true);
+        copy.setIfType("all");
+        copy.setMibObjects("ifIndex");
+        copy.setCollectionSource(disabledSource);
+        mibGroupDao.saveOrUpdate(copy);
+        mibGroupDao.flush();
+
+        // The same name in two sources: the lookup returns both, ordered by source name.
+        final List<SnmpCollectionMibGroup> byName = mibGroupDao.findAllByName("Mib-Group-1");
+        assertEquals(2, byName.size());
+        assertEquals("Disabled Source", byName.get(0).getCollectionSource().getName());
+        assertEquals("JUnit Source", byName.get(1).getCollectionSource().getName());
+        assertTrue(mibGroupDao.findAllByName("Mib-Group").isEmpty());
+
+        // All groups are returned, also the one in the disabled source, ordered by source id.
+        final List<SnmpCollectionMibGroup> all = mibGroupDao.findAllWithSource().stream()
+                .filter(g -> g.getName().equals("Mib-Group-1")).toList();
+        assertEquals(2, all.size());
+        assertEquals(source.getId(), all.get(0).getCollectionSource().getId());
+        assertEquals(disabledSource.getId(), all.get(1).getCollectionSource().getId());
+
+        // Only disabled groups are returned. The copy in the disabled source is an enabled group.
+        assertTrue(mibGroupDao.findAllDisabledWithSource().stream().noneMatch(g -> g.getName().equals("Mib-Group-1")));
+        copy.setEnabled(false);
+        mibGroupDao.saveOrUpdate(copy);
+        mibGroupDao.flush();
+        final List<SnmpCollectionMibGroup> disabled = mibGroupDao.findAllDisabledWithSource();
+        assertEquals(1, disabled.size());
+        assertEquals("Disabled Source", disabled.get(0).getCollectionSource().getName());
+    }
+
+    @Test
+    @Transactional
     public void testGetById() {
         SnmpCollectionMibGroup found = mibGroupDao.get(mibGroup.getId());
         assertNotNull(found);

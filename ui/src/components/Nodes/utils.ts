@@ -26,6 +26,7 @@ import {
   SnmpIfStatus,
   SnmpInterface
 } from '@/types'
+import type { OnmsTagSeverity } from '@opennms/onms-ui'
 import { isNumber } from '@/lib/utils'
 import { normalizeMacSearch, type InterfaceListMode } from './hooks/useInterfaceListing'
 
@@ -58,6 +59,22 @@ export const hasIngressFlow = (node: Node) => {
 export const hasEgressFlow = (node: Node) => {
   return node.lastEgressFlow && isNumber(node.lastEgressFlow)
 }
+
+// How old a node's last flow may be and still count, matching the server's default for
+// org.opennms.features.telemetry.maxFlowAgeSeconds (7 days).
+export const MAX_FLOW_AGE_MS = 7 * 24 * 60 * 60 * 1000
+
+const isRecentFlow = (lastFlow: unknown, now: number) =>
+  isNumber(lastFlow) && lastFlow > 0 && now - lastFlow < MAX_FLOW_AGE_MS
+
+/**
+ * Whether the node has flow data, as the legacy node page's "flow data" badge decided it: a flow
+ * in either direction within the last 7 days. This mirrors OnmsNode.getHasFlows, which the REST
+ * payload does not carry, with the server's default settings; it will disagree only where an
+ * admin changed maxFlowAgeSeconds or set ingressAndEgressRequired.
+ */
+export const hasRecentFlows = (node: Node, now = Date.now()): boolean =>
+  isRecentFlow(node.lastIngressFlow, now) || isRecentFlow(node.lastEgressFlow, now)
 
 export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
@@ -350,3 +367,17 @@ export const formatIfSpeed = (ifSpeed: number | null | undefined) => {
 
   return `${ifSpeed} bps`
 }
+
+// The tag colour for an event or alarm severity (any case); grey for one it does not know.
+const SEVERITY_TAGS: Record<string, OnmsTagSeverity> = {
+  critical: 'danger',
+  major: 'danger',
+  minor: 'warn',
+  warning: 'warn',
+  normal: 'success',
+  cleared: 'success',
+  indeterminate: 'secondary'
+}
+
+export const severityTag = (severity: string | undefined): OnmsTagSeverity =>
+  SEVERITY_TAGS[(severity ?? '').toLowerCase()] ?? 'secondary'

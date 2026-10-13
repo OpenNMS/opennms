@@ -24,8 +24,10 @@ package org.opennms.netmgt.scheduler;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.FixedThreadPools;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
 import org.slf4j.Logger;
@@ -40,13 +42,15 @@ public class LegacyPriorityExecutor implements PausableFiber {
 
     private final String m_parent;
     private final ExecutorService priorityJobPoolExecutor;
+    private final LogPreservingThreadFactory m_threadFactory;
     private final DelayQueue<PriorityReadyRunnable> priorityQueue;
     private final ExecutorService m_worker = Executors.newSingleThreadExecutor();
     private volatile int m_status;
     public LegacyPriorityExecutor(String parent, Integer poolSize, Integer queueSize) {
         m_parent=parent;
         m_status = START_PENDING;
-        priorityJobPoolExecutor = Executors.newFixedThreadPool(poolSize, new LogPreservingThreadFactory(parent, poolSize));
+        m_threadFactory = new LogPreservingThreadFactory(parent, poolSize);
+        priorityJobPoolExecutor = Executors.newFixedThreadPool(poolSize, m_threadFactory);
         priorityQueue = new DelayQueue<>();
     }
 
@@ -176,6 +180,23 @@ public class LegacyPriorityExecutor implements PausableFiber {
     @Override
     public String getName() {
         return  priorityJobPoolExecutor.toString();
+    }
+
+    /**
+     * Resizes the pool that runs priority jobs, see {@link LegacyScheduler#setThreads(int)}.
+     * The job queue is unbounded; the {@code queueSize} constructor argument is not used.
+     *
+     * @param threads the wanted pool size; values below one are applied as one
+     */
+    public synchronized void setThreads(final int threads) {
+        FixedThreadPools.resize((ThreadPoolExecutor) priorityJobPoolExecutor, m_threadFactory, m_parent + " priority executor", threads);
+    }
+
+    /**
+     * @return the current size of the pool that runs priority jobs
+     */
+    public int getThreads() {
+        return ((ThreadPoolExecutor) priorityJobPoolExecutor).getCorePoolSize();
     }
 
 }

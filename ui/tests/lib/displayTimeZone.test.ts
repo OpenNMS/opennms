@@ -27,7 +27,9 @@ import {
   DEFAULT_DATETIME_FORMAT,
   displayDateFormat,
   displayTimeZone,
-  formatInDisplayZone
+  formatDateAndTimeInDisplayZone,
+  formatInDisplayZone,
+  splitDateTimePattern
 } from '@/lib/displayTimeZone'
 
 const setConfig = (config?: { zoneId?: string; datetimeformat?: string }) => {
@@ -84,5 +86,47 @@ describe('formatInDisplayZone', () => {
   it('formats in the configured zone when none is passed', () => {
     setConfig({ zoneId: 'Asia/Kolkata', datetimeformat: 'HH:mm' })
     expect(formatInDisplayZone(Date.UTC(2026, 5, 15, 12, 0, 0))).toBe('17:30')
+  })
+})
+
+describe('splitDateTimePattern', () => {
+  it.each([
+    [DEFAULT_DATETIME_FORMAT, 'yyyy-MM-dd', 'HH:mm:ssxxx'],
+    ['MM/dd/yyyy hh:mm a z', 'MM/dd/yyyy', 'hh:mm a z'],
+    ['EEE, MMM d, yyyy, h:mm:ss a', 'EEE, MMM d, yyyy', 'h:mm:ss a'],
+    ['dd/MM/yyyy - HH:mm', 'dd/MM/yyyy', 'HH:mm'],
+    ['yyyy-MM-dd \'at\' HH:mm', 'yyyy-MM-dd', 'HH:mm']
+  ])('%s -> %s | %s', (pattern, date, time) => {
+    expect(splitDateTimePattern(pattern)).toEqual({ date, time })
+  })
+
+  // A time-looking letter inside a quoted literal is text, not a token.
+  it('ignores letters inside quoted literals', () => {
+    expect(splitDateTimePattern('\'Day\' dd MMM \'hm\' HH:mm')).toEqual({ date: '\'Day\' dd MMM', time: 'HH:mm' })
+  })
+
+  it('treats a pattern with no time of day as all date', () => {
+    expect(splitDateTimePattern('yyyy-MM-dd')).toEqual({ date: 'yyyy-MM-dd', time: '' })
+  })
+})
+
+describe('formatDateAndTimeInDisplayZone', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  // 2026-10-06T16:38:50Z
+  const instant = Date.UTC(2026, 9, 6, 16, 38, 50)
+
+  it('splits the default format into date and time with its offset', () => {
+    setConfig({ zoneId: 'America/New_York' })
+
+    expect(formatDateAndTimeInDisplayZone(instant)).toEqual({ date: '2026-10-06', time: '12:38:50-04:00' })
+  })
+
+  it('follows a configured format', () => {
+    setConfig({ zoneId: 'UTC', datetimeformat: 'MM/dd/yyyy hh:mm a' })
+
+    expect(formatDateAndTimeInDisplayZone(instant)).toEqual({ date: '10/06/2026', time: '04:38 PM' })
   })
 })

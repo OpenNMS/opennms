@@ -76,6 +76,8 @@ const nodeItems = computed(() => {
     { label: 'Latitude/Longitude', text: `${props.node?.assetRecord.latitude ?? EMPTY} / ${props.node?.assetRecord.longitude ?? EMPTY}` },
     { label: 'Asset Category', text: props.node?.assetRecord.category || EMPTY },
     { label: 'Asset Description', text: props.node?.assetRecord.description || EMPTY },
+    // The legacy node page's Asset Information box showed the description and these comments.
+    { label: 'Asset Comments', text: props.node?.assetRecord.comment || EMPTY },
     { label: 'Maintenance Contract', text: props.node?.assetRecord.maintcontract || EMPTY }
   ]
 })

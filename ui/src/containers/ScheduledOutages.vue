@@ -98,18 +98,21 @@
       data-test="create-dialog"
       @update:visible="(value: boolean) => { if (!value) closeCreateDialog() }"
     >
-      <FormField label="Name" for="new-outage-name" :error="createError">
-        <OnmsInputText
-          id="new-outage-name"
-          v-model="newName"
-          placeholder="Outage name"
-          fluid
-          data-test="new-name"
-          @keyup.enter="createOutage"
-        />
-      </FormField>
+      <div class="dialog-body">
+        <FormField label="Name" for="new-outage-name" :error="createError">
+          <OnmsInputText
+            id="new-outage-name"
+            v-model="newName"
+            placeholder="Outage name"
+            fluid
+            autofocus
+            data-test="new-name"
+            @keyup.enter="createOutage"
+          />
+        </FormField>
+      </div>
       <div class="dialog-actions">
-        <OnmsButton variant="text" label="Cancel" data-test="create-cancel" @click="closeCreateDialog" />
+        <OnmsButton variant="ghost" label="Cancel" data-test="create-cancel" @click="closeCreateDialog" />
         <OnmsButton label="Create" :disabled="!newName.trim()" data-test="create-confirm" @click="createOutage" />
       </div>
     </OnmsDialog>
@@ -132,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, onMounted, ref } from 'vue'
+import { computed, h, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
@@ -150,6 +153,7 @@ import {
   getNodeLabels,
   getOutageApplicability,
   getScheduledOutages,
+  outageNameProblem,
   scheduledOutageErrorMessage
 } from '@/services/scheduledOutagesService'
 import { ScheduledOutage } from '@/types/scheduledOutage'
@@ -181,6 +185,10 @@ const nodeLabels = ref<Record<number, string>>({})
 const loading = ref(true)
 const newName = ref('')
 const createError = ref('')
+// an error about the previous name would otherwise linger while the user fixes it
+watch(newName, () => {
+  createError.value = ''
+})
 const loadError = ref('')
 // kept separate from loadError, which the post-action reload resets
 const actionError = ref('')
@@ -270,6 +278,11 @@ const createOutage = () => {
   if (!name) {
     return
   }
+  const problem = outageNameProblem(name)
+  if (problem) {
+    createError.value = problem
+    return
+  }
   if (outages.value.some(o => o.name === name)) {
     createError.value = `An outage named "${name}" already exists.`
     return
@@ -301,6 +314,13 @@ const confirmDelete = async () => {
 
 <style scoped lang="scss">
 .scheduled-outages {
+  padding: 0 2px 2rem 2px;
+
+  // the card only pads vertically; give the header and table room at the sides
+  :deep(.table-card) {
+    padding: 1.5rem;
+  }
+
   .header {
     display: flex;
     align-items: flex-start;
@@ -324,13 +344,6 @@ const confirmDelete = async () => {
     color: var(--p-text-muted-color);
   }
 
-  .dialog-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
   .action-container {
     display: flex;
     gap: 0.25rem;
@@ -349,5 +362,20 @@ const confirmDelete = async () => {
   :deep(.mark.unknown) {
     color: var(--p-text-muted-color);
   }
+}
+
+// the create dialog is teleported to <body>, so these cannot sit under .scheduled-outages
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 </style>

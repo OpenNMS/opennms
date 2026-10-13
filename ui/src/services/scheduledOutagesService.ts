@@ -55,13 +55,37 @@ export const getScheduledOutages = async (): Promise<ScheduledOutage[] | null> =
   }
 }
 
+// null unless the body is this outage: names such as "applies-to" or ".." reach a
+// different resource, and an empty form would then overwrite the real outage on Save
 export const getScheduledOutage = async (name: string): Promise<ScheduledOutage | null> => {
   try {
     const resp = await rest.get(`${endpoint}/${seg(name)}`)
-    return normalizeOutage(resp.data)
+    return resp.data?.name === name ? normalizeOutage(resp.data) : null
   } catch (_err) {
     return null
   }
+}
+
+// Whether an outage with this name exists: true, false, or null when the read failed.
+export const scheduledOutageExists = async (name: string): Promise<boolean | null> => {
+  try {
+    await rest.get(`${endpoint}/${seg(name)}`)
+    return true
+  } catch (err: any) {
+    return err?.response?.status === 404 ? false : null
+  }
+}
+
+// Why a new outage name cannot be used, or null. The name is a REST path segment, so
+// a slash, a dot segment, or the applies-to sub-resource can never be read back.
+export const outageNameProblem = (name: string): string | null => {
+  if (name.includes('/')) {
+    return 'The name cannot contain a slash (/).'
+  }
+  if (name === '.' || name === '..' || name === 'applies-to') {
+    return `"${name}" is reserved and cannot be used as an outage name.`
+  }
+  return null
 }
 
 // POST adds a new outage or updates an existing one (matched by name).
@@ -202,6 +226,21 @@ export const getNodeLabels = async (ids: number[]): Promise<Record<number, strin
     return labels
   } catch (_err) {
     return {}
+  }
+}
+
+/**
+ * The names of the scheduled outages in effect right now for a node: calendars inside one of their
+ * windows that name the node or cover one of its interfaces. Names only, as the legacy node page
+ * showed them. null on failure, so a caller can tell a failed check from a node with none.
+ */
+export const getActiveOutageNamesForNode = async (nodeId: string | number): Promise<string[] | null> => {
+  try {
+    const resp = await rest.get(`${endpoint}/activeForNode/${seg(String(nodeId))}`)
+
+    return asArray<string>(resp.data)
+  } catch (_err) {
+    return null
   }
 }
 
