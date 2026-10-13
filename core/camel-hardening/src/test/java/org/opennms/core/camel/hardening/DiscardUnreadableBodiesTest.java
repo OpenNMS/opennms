@@ -29,18 +29,24 @@ import static org.junit.Assert.fail;
 
 import javax.jms.JMSException;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.DefaultExchange;
-import org.apache.camel.impl.DefaultMessage;
+import org.apache.camel.support.DefaultExchange;
+import org.apache.camel.support.DefaultMessage;
 import org.junit.Test;
 
 public class DiscardUnreadableBodiesTest {
+    private static final CamelContext CONTEXT = new DefaultCamelContext();
 
     /** Mimics JmsMessage: the body is extracted lazily and the client may refuse it. */
     private static class RefusingMessage extends DefaultMessage {
+        RefusingMessage() {
+            super(CONTEXT);
+        }
+
         @Override
         protected Object createBody() {
             throw new RuntimeCamelException("Failed to extract body due to: javax.jms.JMSException",
@@ -49,7 +55,7 @@ public class DiscardUnreadableBodiesTest {
     }
 
     private static Exchange exchange(final org.apache.camel.Message in) {
-        final Exchange exchange = new DefaultExchange(new DefaultCamelContext(), ExchangePattern.InOut);
+        final Exchange exchange = new DefaultExchange(CONTEXT, ExchangePattern.InOut);
         exchange.setIn(in);
         return exchange;
     }
@@ -58,24 +64,24 @@ public class DiscardUnreadableBodiesTest {
     public void dropsRefusedBodiesWithoutReplyOrException() {
         final Exchange exchange = exchange(new RefusingMessage());
         new DiscardUnreadableBodies().process(exchange);
-        assertTrue(exchange.getProperty(Exchange.ROUTE_STOP, Boolean.class));
+        assertTrue(exchange.isRouteStop());
         assertEquals(ExchangePattern.InOnly, exchange.getPattern());
         assertNull(exchange.getException());
     }
 
     @Test
     public void passesReadableBodies() {
-        final DefaultMessage in = new DefaultMessage();
+        final DefaultMessage in = new DefaultMessage(CONTEXT);
         in.setBody("payload");
         final Exchange exchange = exchange(in);
         new DiscardUnreadableBodies().process(exchange);
-        assertFalse(exchange.getProperty(Exchange.ROUTE_STOP, false, Boolean.class));
+        assertFalse(exchange.isRouteStop());
         assertEquals(ExchangePattern.InOut, exchange.getPattern());
     }
 
     @Test
     public void rethrowsFailuresThatAreNotFromTheJmsClient() {
-        final Exchange exchange = exchange(new DefaultMessage() {
+        final Exchange exchange = exchange(new DefaultMessage(CONTEXT) {
             @Override
             protected Object createBody() {
                 throw new RuntimeCamelException("something else");
