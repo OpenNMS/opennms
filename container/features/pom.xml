@@ -526,6 +526,7 @@
                           <feature>opennms-alarm-history-elastic</feature>
                           <feature>opennms-camel-amqp</feature>
                           <feature>opennms-core-camel</feature>
+                          <feature>opennms-core-camel-hardening</feature>
                           <feature>opennms-core-daemon</feature>
                           <feature>opennms-core-ipc-jms</feature>
                           <feature>opennms-core-ipc-rpc-api</feature>
@@ -1227,6 +1228,12 @@
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.shell</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

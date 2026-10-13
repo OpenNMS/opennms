@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
@@ -1474,6 +1475,52 @@ public class DataCollectionConfPersistenceServiceIT {
         final var r2 = snmpCollectionSystemDefDao.get(def2.getId());
         Assert.assertFalse(r1.getEnabled());
         Assert.assertFalse(r2.getEnabled());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testFindDefinitionsByName() {
+        final DatacollectionGroup a = new DatacollectionGroup();
+        a.setName("NMS20429-A");
+        a.addGroup(group("nms20429-shared"));
+        a.addSystemDef(systemDef("nms20429 NT/2000", "nms20429-shared"));
+        final DatacollectionGroup b = new DatacollectionGroup();
+        b.setName("NMS20429-B");
+        b.addGroup(group("nms20429-shared"));
+        dataCollectionConfPersistenceService.bulkUploadConfig(List.of(a, b), null, "testuser", new Date());
+
+        final List<SnmpCollectionMibGroupDto> groups = dataCollectionConfPersistenceService.findMibGroupsByName("nms20429-shared");
+        assertEquals(List.of("NMS20429-A", "NMS20429-B"),
+                groups.stream().map(SnmpCollectionMibGroupDto::getCollectionSourceName).toList());
+
+        final List<SnmpCollectionSystemDefDto> sds = dataCollectionConfPersistenceService.findSystemDefsByName("nms20429 NT/2000");
+        assertEquals(1, sds.size());
+        assertEquals("NMS20429-A", sds.get(0).getCollectionSourceName());
+        assertTrue(dataCollectionConfPersistenceService.getAllSystemDefNames().contains("nms20429 NT/2000"));
+
+        assertTrue(dataCollectionConfPersistenceService.findMibGroupsByName("nms20429").isEmpty());
+        assertTrue(dataCollectionConfPersistenceService.findResourceTypesByName("nms20429-none").isEmpty());
+    }
+
+    private static Group group(final String name) {
+        final Group g = new Group();
+        g.setName(name);
+        g.setIfType("ignore");
+        g.addMibObj(createMibObj(".1.3.6.1.2.1.1.3", "0", "nms20429Up", "timeticks"));
+        return g;
+    }
+
+    private static SystemDef systemDef(final String name, final String... groups) {
+        final SystemDef sd = new SystemDef();
+        sd.setName(name);
+        sd.setSysoidMask(".1.3.6.1.4.1.99999.");
+        final Collect collect = new Collect();
+        for (final String g : groups) {
+            collect.addIncludeGroup(g);
+        }
+        sd.setCollect(collect);
+        return sd;
     }
 
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {

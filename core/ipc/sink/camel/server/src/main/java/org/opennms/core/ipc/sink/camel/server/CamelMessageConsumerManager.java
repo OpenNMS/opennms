@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
+import org.opennms.core.camel.hardening.DiscardUnreadableBodies;
 import org.apache.camel.builder.RouteBuilder;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.Message;
@@ -163,6 +164,7 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
                     CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
             from(String.format("queuingservice:%s?concurrentConsumers=%d", queueNameFactory.getName(), numberConsumerThrads))
                 .setExchangePattern(ExchangePattern.InOnly)
+                .process(new DiscardUnreadableBodies())
                 .process(new CamelSinkServerProcessor(consumerManager, module, tracerRegistry, metricRegistry))
                 .routeId(getRouteId());
         }

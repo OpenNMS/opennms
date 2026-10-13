@@ -24,6 +24,7 @@ package org.opennms.core.rpc.jms;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Converter;
 import org.apache.camel.ExchangePattern;
+import org.opennms.core.camel.hardening.DiscardUnreadableBodies;
 import org.apache.camel.TypeConverters;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
@@ -98,6 +99,7 @@ public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
             // Initialize Tracer registry with service name.
             tracerRegistry.init(identity.getLocation()+"@"+identity.getId());
             from(endpoint).setExchangePattern(ExchangePattern.InOut)
+                    .process(new DiscardUnreadableBodies())
                     .process(new CamelRpcServerProcessor(module, tracerRegistry))
                     .routeId(getRouteId(module));
         }
