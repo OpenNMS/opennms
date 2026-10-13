@@ -82,7 +82,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy",
+        "org.opennms.rrd.usequeue=false"
 })
 @JUnitTemporaryDatabase
 public class SnmpInterfaceMetricsRestServiceIT {

@@ -32,6 +32,7 @@ import javax.jms.Message;
 
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.camel.component.jms.JmsBinding;
+import org.apache.camel.component.jms.JmsConfiguration;
 import org.apache.camel.component.jms.JmsEndpoint;
 import org.apache.camel.component.jms.JmsHeaderFilterStrategy;
 import org.junit.Test;
@@ -44,6 +45,7 @@ public class JmsBindingInboundFilterTest {
 
     private static Map<String, Object> extract(final Message message) {
         final JmsEndpoint endpoint = new JmsEndpoint();
+        endpoint.setConfiguration(new JmsConfiguration());
         endpoint.setHeaderFilterStrategy(new InboundHeaderAllowList(new JmsHeaderFilterStrategy(), Arrays.asList("JmsQueueName", "SystemId")));
         return new JmsBinding(endpoint).extractHeadersFromJms(message, null);
     }

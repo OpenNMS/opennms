@@ -163,6 +163,7 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
             final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
                     CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
             from(String.format("queuingservice:%s?concurrentConsumers=%d", queueNameFactory.getName(), numberConsumerThrads))
+                .noStreamCaching()
                 .setExchangePattern(ExchangePattern.InOnly)
                 .process(new DiscardUnreadableBodies())
                 .process(new CamelSinkServerProcessor(consumerManager, module, tracerRegistry, metricRegistry))
