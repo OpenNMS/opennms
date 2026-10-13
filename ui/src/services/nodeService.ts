@@ -65,6 +65,23 @@ const getNodeById = async (id: string): Promise<any> => {
   }
 }
 
+// Turns a database id or foreignSource:foreignId into the database id. v2 /nodes/{id} resolves
+// both (NodeDao.get(String)); %3A works as well as ':', so the value is encoded as one path
+// segment and a foreign id holding '/', '#' or spaces survives. A 404 is an answer -- no such
+// node -- and is told apart from a failed lookup.
+const resolveNodeId = async (idOrForeignId: string): Promise<ValidationResultWithPayload<string | null>> => {
+  try {
+    const resp = await v2.get(`${endpoint}/${encodeURIComponent(idOrForeignId)}`)
+    const id = resp.data?.id
+    return createResultWithPayload(true, '', id === undefined || id === null ? null : String(id))
+  } catch (err) {
+    if ((err as { response?: { status?: number }})?.response?.status === 404) {
+      return createResultWithPayload<string | null>(true, '', null)
+    }
+    return createResultWithPayload<string | null>(false, 'Failed to look up the node.')
+  }
+}
+
 const getNodeSnmpInterfaces = async (
   id: string,
   queryParameters?: QueryParameters
@@ -187,6 +204,7 @@ export {
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeById,
+  resolveNodeId,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
