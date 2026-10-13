@@ -27,6 +27,10 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel.hardening</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>

@@ -34,6 +34,7 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
+import org.opennms.core.camel.hardening.DiscardUnreadableBodies;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.TypeConverters;
 import org.apache.camel.builder.RouteBuilder;
@@ -171,6 +172,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
             final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:%s?asyncConsumer=true",
                     queueName), JmsEndpoint.class);
             from(endpoint).setExchangePattern(ExchangePattern.InOut)
+                    .process(new DiscardUnreadableBodies())
                     .process(asyncProcessor)
                     .routeId(SystemInfoUtils.getInstanceId() + ".Twin.RPC");
         }
