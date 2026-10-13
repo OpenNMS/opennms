@@ -276,6 +276,45 @@ public class GnmiMappingLoaderTest {
     }
 
     @Test
+    public void malformedInstanceTemplateIsAnError() throws Exception {
+        for (String instance : new String[] {"{interface}", "interface.name", "{interface.name"}) {
+            Object result = loadYaml(
+                    "version: 1",
+                    "groups:",
+                    "  - name: g",
+                    "    match: /interfaces/interface/state",
+                    "    resource-type: interface",
+                    "    instance: \"" + instance + "\"",
+                    "    attributes: { mtu: { type: gauge } }");
+            assertThat(errors(result), contains("group 'g': instance '" + instance + "' must use {element.key} placeholders"));
+        }
+    }
+
+    @Test
+    public void placeholderElementOutsideMatchPathWarns() throws Exception {
+        Object typo = loadYaml(
+                "version: 1",
+                "groups:",
+                "  - name: g",
+                "    match: /interfaces/interface/state",
+                "    resource-type: interface",
+                "    instance: \"{interfac.name}\"",
+                "    attributes: { mtu: { type: gauge } }");
+        assertThat(errors(typo), is(empty()));
+        assertThat(warnings(typo), contains("group 'g': instance placeholder '{interfac.name}' names element 'interfac', which is not in the match path"));
+
+        Object wildcard = loadYaml(
+                "version: 1",
+                "groups:",
+                "  - name: g",
+                "    match: /interfaces/*/state",
+                "    resource-type: interface",
+                "    instance: \"{interface.name}\"",
+                "    attributes: { mtu: { type: gauge } }");
+        assertThat(warnings(wildcard), is(empty()));
+    }
+
+    @Test
     public void aliasWithBrokenPathIsAnError() throws Exception {
         Object result = loadYaml(
                 "version: 1",
