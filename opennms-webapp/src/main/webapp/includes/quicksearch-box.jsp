@@ -29,7 +29,6 @@
 		org.opennms.web.element.*
 	"
 %>
-<%@ page import="org.opennms.web.api.ElementConstants" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
   pageContext.setAttribute("serviceNameMap", new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
@@ -59,7 +58,7 @@ function submitNodeSearch(params) {
     <%-- Node ID or foreignSource:foreignId: go straight to the Vue node detail page. A GET form
          can't target a hash route, so the form navigates itself. --%>
     <form class="form-group" action="#" method="get"
-          onsubmit="var v = this.node.value.trim(); if (v) { window.location.href = '<%= ElementConstants.NODE_DETAILS_URI %>' + encodeURIComponent(v); } return false;">
+          onsubmit="return onmsGoToNodeDetails(this.elements['node'])">
       <label for="nodeId" class=" col-form-label ">Node ID</label>
       <div class="input-group">
         <input class="form-control" type="text" id="nodeId" name="node" placeholder="Node ID or foreignSource:foreignId"/>
