@@ -168,7 +168,7 @@
     <td class="col-md-2">
       <c:choose>
         <c:when test="<%= nodeLocation != null %>">
-          <a href="${nodeLink}"><c:out value="<%=nodeLocation%>"/></a>
+          <a href="<%= ElementConstants.NODE_DETAILS_URI + notice.getNodeId() %>"><c:out value="<%=nodeLocation%>"/></a>
         </c:when>
         <c:otherwise>
           &nbsp;
