@@ -97,7 +97,7 @@ public class MenuRestService {
                       "displayAddNodeButton": false,
                       "sideMenuInitialExpand": false,
                       "copyrightDates": "2002-2026",
-                      "version": "36.0.5",
+                      "version": "36.0.6-SNAPSHOT",
                       "menus": [
                         {
                           "type": "header",
