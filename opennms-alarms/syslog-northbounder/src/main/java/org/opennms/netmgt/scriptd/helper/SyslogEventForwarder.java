@@ -45,7 +45,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
  * The Class SyslogEventForwarder.
@@ -178,12 +178,12 @@ public class SyslogEventForwarder {
      * @return true, if successful
      */
     private boolean passFilter(SyslogFilter filter, Event event) {
-        StandardEvaluationContext context = new StandardEvaluationContext(event);
+        SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(filter.getRule());
         boolean passed = false;
         try {
-            passed = (Boolean)exp.getValue(context, Boolean.class);
+            passed = (Boolean)exp.getValue(context, event, Boolean.class);
         } catch (Exception e) {
             LOG.warn("passFilter: can't evaluate expression {} for alarm {} because: {}", filter.getRule(), event.getUei(), e.getMessage());
         }
@@ -200,14 +200,14 @@ public class SyslogEventForwarder {
      * @return the translated message
      */
     private String getTranslatedMessage(Event event, OnmsNode node, String msgFormat) {
-        StandardEvaluationContext context = new StandardEvaluationContext(event);
+        SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         if (node != null) {
             context.setVariable("node", node);
         }
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(msgFormat, new TemplateParserContext("${", "}"));
         try {
-            final String msg = (String) exp.getValue(context, String.class);
+            final String msg = (String) exp.getValue(context, event, String.class);
             LOG.debug("getTranslatedMessage: {} ==> {}", msgFormat, msg);
             return msg;
         } catch (Exception e) {

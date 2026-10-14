@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.4</version>
+    <version>36.0.5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -28,6 +28,7 @@
     <module>api</module>
     <module>cache</module>
     <module>camel</module>
+    <module>camel-hardening</module>
     <module>cli</module>
     <module>commands</module>
     <module>config</module>

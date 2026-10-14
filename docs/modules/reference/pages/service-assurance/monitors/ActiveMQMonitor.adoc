@@ -58,7 +58,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Sample configuration on how to configure the monitor in `poller-configuration.xml`.
+Sample configuration showing how to configure the monitor in `poller-configuration.xml`.
 
 Note that you must include the `monitor` section for each service in your definition.
 

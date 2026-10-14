@@ -67,7 +67,7 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
 
     @Override
     public List<SnmpCollectionSystemDef> findAllEnabledBySource(Integer snmpCollectionSourceId) {
-        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1 and d.enabled = true", snmpCollectionSourceId);
+        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1 and d.enabled = true order by d.id", snmpCollectionSourceId);
     }
 
     @Override
@@ -183,6 +183,16 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     @Override
     public SnmpCollectionSystemDef findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
         return findUnique("from SnmpCollectionSystemDef d where d.collectionSource.id = ?1 AND d.id = ?2 ", snmpCollectionSourceId, id);
+    }
+
+    @Override
+    public List<SnmpCollectionSystemDef> findAllByName(String name) {
+        return find("from SnmpCollectionSystemDef d join fetch d.collectionSource s where d.name = ?1 order by s.name, d.id", name);
+    }
+
+    @Override
+    public List<String> findAllSystemDefNames() {
+        return findObjects(String.class, "select distinct d.name from SnmpCollectionSystemDef d order by d.name");
     }
 
     @Override

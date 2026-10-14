@@ -83,7 +83,7 @@ NOTE: You can also create an external requisition via the xref:development:rest/
 . From the *Type* drop-down, choose *DNS*.
 . Type "localhost" in the *Host* field.
 . Type "localhost" as the *Zone* field.
-. Type "DNS-example" in the *Requsition Name* field.
+. Type "DNS-example" in the *Requisition Name* field.
 .. The URL "dns://localhost/localhost/DNS-example" appears at the bottom of the dialog.
 . Choose *Daily* for the schedule type and specify 12:00 a.m. for the time.
 +

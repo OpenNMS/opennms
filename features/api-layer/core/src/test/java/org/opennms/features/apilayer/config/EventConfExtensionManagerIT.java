@@ -168,6 +168,10 @@ public class EventConfExtensionManagerIT implements InitializingBean {
             assertNotNull("Event should have created time", event.getCreatedTime());
             assertEquals("Event should have correct modified by", "opennms-plugins", event.getModifiedBy());
         }
+
+        // Verify within-source evaluation order was assigned (1..N, findBySourceId returns that order)
+        assertEquals(Integer.valueOf(1), events.get(0).getEventOrder());
+        assertEquals(Integer.valueOf(2), events.get(1).getEventOrder());
     }
 
     @Test

@@ -66,7 +66,7 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
 
     @Override
     public List<SnmpCollectionMibGroup> findAllEnabledBySource(Integer snmpCollectionSourceId) {
-        return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ?1 and s.enabled = true", snmpCollectionSourceId);
+        return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ?1 and s.enabled = true order by s.id", snmpCollectionSourceId);
     }
 
     @Override
@@ -190,6 +190,22 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     public List<String> findAllMibGroupNames() {
         return findObjects(String.class,
                 "select distinct g.name from SnmpCollectionMibGroup g");
+    }
+
+    @Override
+    public List<SnmpCollectionMibGroup> findAllByName(String name) {
+        return find("from SnmpCollectionMibGroup g join fetch g.collectionSource s where g.name = ?1 order by s.name, g.id", name);
+    }
+
+    @Override
+    public List<SnmpCollectionMibGroup> findAllWithSource() {
+        return find("from SnmpCollectionMibGroup g join fetch g.collectionSource s order by s.id, g.id");
+    }
+
+    @Override
+    public List<SnmpCollectionMibGroup> findAllDisabledWithSource() {
+        return find("from SnmpCollectionMibGroup g join fetch g.collectionSource s "
+                + "where g.enabled = false or g.enabled is null order by s.id, g.id");
     }
 
     @Override

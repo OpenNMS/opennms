@@ -66,6 +66,8 @@ public class OnmsOutageTest {
                 "    },\n" +
                 "    \"lastGood\" : null,\n" +
                 "    \"lastFail\" : null,\n" +
+                "    \"collectLastGood\" : null,\n" +
+                "    \"collectLastFail\" : null,\n" +
                 "    \"qualifier\" : null,\n" +
                 "    \"status\" : null,\n" +
                 "    \"statusLong\" : null,\n" +

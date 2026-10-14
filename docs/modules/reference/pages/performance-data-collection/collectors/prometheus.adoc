@@ -192,7 +192,7 @@ Excerpt of the `node_exporter` collection:
 </group>
 ----
 
-This group definition matches metrics that start the `node_memory_` prefix, extracts the suffix as the metric name, and associates these metrics with the `node_exporter_memory` group in the node-level resource.
+This group definition matches metrics that start with the `node_memory_` prefix, extracts the suffix as the metric name, and associates these metrics with the `node_exporter_memory` group in the node-level resource.
 
 Expressions are written in link:https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
 The metric instances are used as the expression context, which means you have access to the `name` and `label` properties.

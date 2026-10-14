@@ -176,7 +176,7 @@ Separate the context and the key using a colon.
 Use a vertical bar (`|`) to separate any fallback context-key pairs and default values.
 
 If the first context-key value is not available (not found on a service, interface, node, or any other special context), the next value following the vertical bar is used.
-The final value--the default value--is interpreted if it contains a valid context-key pair, otherwise is is used as a literal.
+The final value--the default value--is interpreted if it contains a valid context-key pair, otherwise it is used as a literal.
 You can enforce a value to be interpreted as a literal by enclosing it with single or double quotes.
 Its evaluation will always succeed.
 
@@ -274,6 +274,10 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<deep-dive/notifications/introduction.adoc#ga-notifications, Notifications>>.
 * <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
 * <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.
+
+The Kafka Producer additionally uses metadata directly, rather than through the DSL, to decide which topic to publish collected metrics to.
+Define `metricRouting.package` in the `requisition` context on a node, interface, or service, and its metrics are published to the topic of that name -- see <<deep-dive/kafka-producer/configure-kafka.adoc#metric-routing, Route metrics to multiple topics>>.
+The value is used verbatim as the topic name and is not interpolated.
 
 Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scopes `scv` and `env`:
 

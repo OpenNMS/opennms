@@ -1,0 +1,172 @@
+[[ref-daemon-dependencies]]
+= Daemon Dependencies
+:description: How OpenNMS {page-component-title} daemons depend on each other, and what stops working if you disable one.
+
+You can enable and disable daemons in `$\{OPENNMS_HOME}/etc/service-configuration.xml`, or through the `CORE_SERVICE_<NAME>_ENABLED` environment variables in a container.
+Daemons are not independent, so disabling one can stop a function that appears to belong to another.
+This page describes those dependencies.
+
+== Before you disable a daemon
+
+If a daemon cannot start, {page-component-title} stops the daemons that already started and shuts down.
+A missing dependency usually prevents startup rather than leaving the system partly working.
+
+Some daemons start cleanly and then do nothing, because the function they lost is only needed later.
+The sections below note where this happens, as there is no error to alert you.
+
+PostgreSQL, the Manager daemon, and Eventd are needed by everything, and neither Manager nor Eventd should be disabled.
+`service-configuration.xml` lists daemons in the order they start, and the file warns against reordering its entries.
+
+== Dependency overview
+
+Every daemon needs PostgreSQL, and most need Eventd.
+This table lists dependencies beyond those two.
+
+[options="header"]
+[cols="1,1,2"]
+|===
+| Daemon
+| Also requires
+| Disabling it also stops
+
+| Ackd
+|
+| Acknowledgements read from a mailbox
+
+| Actiond
+|
+| Event-triggered actions
+
+| Alarmd
+|
+| Every alarm consumer: Bsmd, the northbound interfaces, alarm forwarding in the Kafka producer, and alarm history
+
+| Bsmd
+| Alarmd
+| Business service status
+
+| Collectd
+|
+| Telemetryd, flow processing, and thresholding for application perspectives
+
+| Correlator
+| Drools rule files
+| Event correlation
+
+| Discovery
+| Provisiond
+| Automatic detection of new nodes
+
+| Enlinkd
+| Provisiond, SNMP configuration
+| Link discovery, the Enlinkd-populated layers of the topology map and the graph service ReST API, and user-defined link layers
+
+| EventTranslator
+|
+| Translated events, including link state events derived from traps
+
+| JettyServer
+|
+| The web UI and the ReST API
+
+| KarafStartupMonitor
+|
+| Startup verification
+
+| Notifd
+|
+| Notifications
+
+| PassiveStatusd
+|
+| Passive status events
+
+| PerspectivePoller
+| Pollerd
+| Application perspective monitoring
+
+| Pollerd
+|
+| Service availability, outage records, and device configuration backups
+
+| Provisiond
+|
+| Node lifecycle events that Pollerd, Collectd, Enlinkd, and RTC rely on
+
+| Queued
+|
+| Promotion of queued RRD files, with the default RRD storage
+
+| Rtcd
+|
+| Availability figures in the web UI
+
+| Scriptd
+|
+| Event-triggered scripts
+
+| SnmpPoller
+| Provisiond
+| SNMP interface status monitoring
+
+| Statsd
+|
+| Scheduled statistical reports
+
+| Syslogd
+|
+| Syslog-derived events
+
+| Telemetryd
+| Collectd
+| Streaming telemetry and flow ingest
+
+| Ticketer
+| A ticketing plugin
+| Trouble ticket creation
+
+| Trapd
+|
+| Trap-derived events, including the link state events the event translator produces
+
+| Vacuumd
+|
+| Path outage alarm cleanup and scheduled database maintenance
+|===
+
+== Monitoring and collection
+
+Telemetryd requires Collectd.
+With Collectd disabled, Telemetryd cannot start, which prevents {page-component-title} from starting.
+Disabling Collectd also stops flow processing.
+
+PerspectivePoller requires Pollerd.
+It polls through a client that Pollerd provides, so with Pollerd disabled it starts without error and monitors nothing.
+
+SnmpPoller depends on provisioning rather than on another daemon directly: it only schedules interfaces that provisioning has marked as the SNMP primary and as managed.
+
+Device configuration backup has no daemon of its own and does not appear in `service-configuration.xml`.
+Backups run as Pollerd polls of the device configuration services, on a schedule that the shipped poller configuration sets to `never`.
+
+== Alarms and notifications
+
+Everything that consumes alarms is hosted by Alarmd itself, so disabling it removes the northbound interfaces, alarm history, and business service status along with it.
+None of those report an error; they stop receiving alarms.
+
+Disabling Alarmd stops only the alarm-related part of the Kafka producer, which covers alarms and alarm feedback.
+The producer continues to forward events, topology updates, and collected metrics, because those do not pass through Alarmd.
+
+[WARNING]
+====
+Alarmd starts successfully when `etc/alarmd/drools-rules.d` is empty, and only fails when the directory is missing entirely.
+An installation whose `etc` directory has been trimmed can run with alarm correlation, cleanup, and garbage collection silently absent.
+====
+
+The Correlator behaves similarly.
+It tolerates missing rule files, so enabling it on a stock installation starts it with no correlation rules loaded.
+
+== Automation
+
+Actiond and Scriptd are enabled by default but do nothing on a stock installation, because no shipped event definition triggers them.
+
+Queued is not involved in writing performance data, and does nothing unless you use the default RRD storage.

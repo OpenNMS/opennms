@@ -72,9 +72,12 @@ public class EventConfDbBootstrap implements InitializingBean {
             final long started = System.currentTimeMillis();
             final List<EventConfEvent> events = m_eventConfEventDao.findEnabledEvents();
             final List<EventConfGlobalSecurity> security = m_eventConfGlobalSecurityDao.findAll();
+            final long fetchedAt = System.currentTimeMillis();
             m_eventConfDao.loadEventsFromDB(events, security);
-            LOG.info("Loaded {} events from the database in {} ms", events.size(),
-                    System.currentTimeMillis() - started);
+            final long finishedAt = System.currentTimeMillis();
+            // This runs during context refresh, so every millisecond here is startup time
+            LOG.info("Event configuration loaded during startup: {} events in {} ms ({} ms database fetch, {} ms in-memory build)",
+                    events.size(), finishedAt - started, fetchedAt - started, finishedAt - fetchedAt);
         } catch (final Exception e) {
             // Starting with no event configuration loses events, but refusing to
             // start loses the ability to fix it: the web application reloads the

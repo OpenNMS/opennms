@@ -1,5 +1,6 @@
 import {
   EventConfigEvent,
+  EventConfigEventSummary,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
@@ -15,7 +16,9 @@ export const mapUploadedEventConfigFilesResponseFromServer = (response: any): Ev
       error: err.error
     })),
     success: response.success.map((success: any) => ({
-      file: success.file
+      file: success.file,
+      message: success.message,
+      eventCount: success.eventCount
     }))
   }
 }
@@ -28,6 +31,7 @@ export const mapEventConfigSourceFromServer = (source: any): EventConfigSource =
     enabled: source.enabled,
     eventCount: source.eventCount,
     fileOrder: source.fileOrder,
+    evaluationOrder: source.evaluationOrder,
     vendor: source.vendor,
     uploadedBy: source.uploadedBy,
     createdTime: new Date(source.createdTime),
@@ -76,7 +80,8 @@ export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
     modifiedBy: event.modifiedBy,
     sourceName: event.sourceName,
     vendor: event.vendor,
-    fileOrder: event.fileOrder
+    fileOrder: event.fileOrder,
+    eventOrder: event.eventOrder
   }
 }
 
@@ -84,6 +89,17 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
   return {
     events: response.eventConfSourceList.map((event: any) => mapEventConfigEventFromServer(event)),
     totalRecords: response.totalRecords
+  }
+}
+
+export const mapEventConfigEventSummaryFromServer = (event: any): EventConfigEventSummary => {
+  return {
+    id: event.id,
+    uei: event.uei,
+    eventLabel: event.eventLabel,
+    severity: event.severity || '',
+    enabled: event.enabled,
+    eventOrder: event.eventOrder
   }
 }
 

@@ -117,6 +117,13 @@ html:has(.p-dialog-mask.p-overlay-mask),
 html:has(.p-drawer-mask.p-overlay-mask) {
   overflow: hidden;
 }
+// PrimeVue pads the body by the measured scrollbar width while it locks scroll,
+// to hold the space of a scrollbar it expects to disappear. The stable gutter
+// above keeps that space reserved, so the padding only narrows the page and
+// shifts its in-flow content left for as long as a modal is open.
+body.p-overflow-hidden {
+  padding-right: 0;
+}
 // Offsets for the SPA content, clearing the two fixed chrome elements:
 // - padding-top clears the fixed top menu bar (Menubar, --onms-header-height).
 // - padding-left clears the fixed side-menu rail. SideMenu's applyPush only

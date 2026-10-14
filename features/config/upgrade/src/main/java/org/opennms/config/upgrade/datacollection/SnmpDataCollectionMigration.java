@@ -48,7 +48,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -70,9 +72,8 @@ import java.util.regex.PatternSyntaxException;
  * (datacollection-config.xml + datacollection/*.xml) into the database tables
  * created by the 36.0.0 Liquibase schema changesets.
  *
- * Called from the OpenNMS upgrade framework via
- * {@code SnmpDataCollectionDbMigratorOffline} after Liquibase schema creation
- * and after older upgrade tasks (e.g. DataCollectionConfigMigratorOffline)
+ * Called from {@code UpgradeConfigService} at startup, after Liquibase schema
+ * creation and after older upgrade tasks (e.g. DataCollectionConfigMigratorOffline)
  * have already patched the XML files.
  *
  * Uses an idempotency check (SELECT COUNT(*) FROM snmp_collection_sources = 0)
@@ -115,6 +116,8 @@ public class SnmpDataCollectionMigration {
         try {
             // Parse the main config
             final DatacollectionConfig config = unmarshal(DatacollectionConfig.class, configFile);
+
+            warnIfCustomRrdRepository(config.getRrdRepository());
 
             // Parse all datacollection group XML files
             final Map<String, DatacollectionGroup> groupsByName = parseDatacollectionGroups(etcDir);
@@ -162,6 +165,34 @@ public class SnmpDataCollectionMigration {
         }
         migrated = true;
         return true;
+    }
+
+    /**
+     * The database configuration does not store rrdRepository. After the
+     * migration, SNMP data collection writes to ${rrd.base.dir}/snmp/. Write a
+     * warning when the XML value points to a different directory, because the
+     * existing RRD files stay in that directory.
+     */
+    private void warnIfCustomRrdRepository(final String rrdRepository) {
+        final String expected = System.getProperty("rrd.base.dir", "/opt/opennms/share/rrd") + "/snmp/";
+        if (isCustomRrdRepository(rrdRepository, expected)) {
+            LOG.warn("datacollection-config.xml sets rrdRepository=\"{}\". The database configuration does not keep this value. "
+                    + "SNMP data collection now writes to {}, which comes from rrd.base.dir in opennms.properties. "
+                    + "Move the existing RRD files to {}, or set rrd.base.dir so that the two paths are the same.",
+                    rrdRepository, expected, expected);
+        }
+    }
+
+    /** Package-private for testing. */
+    static boolean isCustomRrdRepository(final String rrdRepository, final String expected) {
+        if (rrdRepository == null || rrdRepository.isBlank()) {
+            return false;
+        }
+        try {
+            return !Paths.get(rrdRepository.trim()).normalize().equals(Paths.get(expected).normalize());
+        } catch (final InvalidPathException e) {
+            return true;
+        }
     }
 
     /**

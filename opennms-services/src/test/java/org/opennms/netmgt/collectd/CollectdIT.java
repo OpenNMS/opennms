@@ -22,6 +22,9 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,6 +42,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +55,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
@@ -75,6 +80,10 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDa
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.collection.api.CollectionTimedOut;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.dao.mock.UnimplementedMonitoredServiceDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
@@ -114,6 +123,47 @@ public class CollectdIT {
     private CollectdConfigFactory m_collectdConfigFactory;
     
     private EventIpcManager m_eventIpcManager;
+
+    /** In-memory stand-in for the ifservices table, so the collection timestamp writes can be asserted. */
+    private RecordingMonitoredServiceDao m_monitoredServiceDao;
+
+    /**
+     * Holds the monitored services of a test and answers the two calls CollectableService makes:
+     * the key lookup by node, address and service name, and the timestamp update by key.
+     */
+    private static class RecordingMonitoredServiceDao extends UnimplementedMonitoredServiceDao {
+        private final Map<Integer, OnmsMonitoredService> m_services = new HashMap<>();
+        private int m_nextId = 1;
+
+        OnmsMonitoredService add(OnmsMonitoredService svc) {
+            svc.setId(m_nextId++);
+            m_services.put(svc.getId(), svc);
+            return svc;
+        }
+
+        @Override
+        public OnmsMonitoredService get(Integer nodeId, InetAddress ipAddress, String svcName) {
+            return m_services.values().stream()
+                    .filter(svc -> nodeId.equals(svc.getNodeId()) && ipAddress.equals(svc.getIpAddress()) && svcName.equals(svc.getServiceName()))
+                    .findFirst().orElse(null);
+        }
+
+        @Override
+        public int updateCollectLastGood(int ifServiceId, Date timestamp) {
+            OnmsMonitoredService svc = m_services.get(ifServiceId);
+            if (svc == null) return 0;
+            svc.setCollectLastGood(timestamp);
+            return 1;
+        }
+
+        @Override
+        public int updateCollectLastFail(int ifServiceId, Date timestamp) {
+            OnmsMonitoredService svc = m_services.get(ifServiceId);
+            if (svc == null) return 0;
+            svc.setCollectLastFail(timestamp);
+            return 1;
+        }
+    }
 
     @Autowired
     private OverrideableThresholdingDao m_thresholdingDao;
@@ -170,6 +220,8 @@ public class CollectdIT {
         m_collectd.setEventIpcManager(m_eventIpcManager);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setIpInterfaceDao(m_ipIfDao);
+        m_monitoredServiceDao = new RecordingMonitoredServiceDao();
+        m_collectd.setMonitoredServiceDao(m_monitoredServiceDao);
         m_collectd.setFilterDao(m_filterDao);
         m_collectd.setScheduler(m_scheduler);
         m_collectd.setTransactionTemplate(transTemplate);
@@ -343,6 +395,73 @@ public class CollectdIT {
     }
 
     /**
+     * A successful collection stamps collectlastgood on the service's ifservices row and leaves
+     * collectlastfail alone. This drives the real chain: Collectd wiring, CollectableService,
+     * the transaction template, and the MonitoredServiceDao update by primary key.
+     */
+    @Test
+    public void testSuccessfulCollectionRecordsCollectLastGood() throws Exception {
+        OnmsIpInterface iface = getInterface();
+        OnmsMonitoredService svc = setupMonitoredService(iface, "SNMP");
+
+        setupCollector("SNMP");
+        setupInterface(iface);
+        setupTransactionManager();
+        setupOnePackageAndThresholding(iface);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next(); // schedules the collector for the one matching interface
+        assertEquals("scheduler entry count", 1, m_scheduler.getEntryCount());
+        m_scheduler.next(); // runs the collection
+        m_collectd.stop();
+
+        assertNotNull("collectLastGood should be set after a successful collection", svc.getCollectLastGood());
+        assertNull("collectLastFail should stay unset after a successful collection", svc.getCollectLastFail());
+
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+        verify(m_eventIpcManager, times(1)).sendNow(isA(Event.class)); // dataCollectionSucceeded
+    }
+
+    /**
+     * A failed collection stamps collectlastfail and leaves collectlastgood alone. A timeout is
+     * used because CollectableService logs it at INFO, which keeps tearDown's log check quiet.
+     */
+    @Test
+    public void testFailedCollectionRecordsCollectLastFail() throws Exception {
+        OnmsIpInterface iface = getInterface();
+        OnmsMonitoredService svc = setupMonitoredService(iface, "SNMP");
+
+        ServiceCollector svcCollector = newCollectorMock();
+        when(svcCollector.collect(isA(CollectionAgent.class), isA(Map.class))).thenThrow(new CollectionTimedOut("no answer from agent"));
+        setupCollector("SNMP", svcCollector);
+        setupInterface(iface);
+        setupTransactionManager();
+        setupOnePackageAndThresholding(iface);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next(); // schedules the collector for the one matching interface
+        assertEquals("scheduler entry count", 1, m_scheduler.getEntryCount());
+        m_scheduler.next(); // runs the collection
+        m_collectd.stop();
+
+        assertNotNull("collectLastFail should be set after a failed collection", svc.getCollectLastFail());
+        assertNull("collectLastGood should stay unset after a failed collection", svc.getCollectLastGood());
+
+        // CollectableService warns once about the failed collection; account for it so tearDown's
+        // no-warnings check only guards against anything unexpected.
+        assertEquals(1, MockLogAppender.getEventsGreaterOrEqual(Level.WARN).length);
+        assertTrue(MockLogAppender.getEventsGreaterOrEqual(Level.WARN)[0].getMessage().contains("failed collection"));
+        MockLogAppender.resetState();
+
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+        verify(m_eventIpcManager, times(1)).sendNow(isA(Event.class)); // dataCollectionFailed
+    }
+
+    /**
      * NMS-9413: Verifies that collectd does not schedule interfaces when the
      * {@link ServiceCollector} throws a {@link CollectionInitializationException}
      * while validating the agent.
@@ -402,19 +521,44 @@ public class CollectdIT {
         verify(m_transactionManager, times(1)).commit(null);
     }
 
+    /** Attaches a monitored service to the interface and stores it in the mock DAO with an id. */
+    private OnmsMonitoredService setupMonitoredService(OnmsIpInterface iface, String svcName) {
+        OnmsServiceType type = new OnmsServiceType(svcName);
+        type.setId(1);
+        return m_monitoredServiceDao.add(new OnmsMonitoredService(iface, type));
+    }
+
+    /** One package matching the interface, and a thresholding service that hands out a mock session. */
+    private void setupOnePackageAndThresholding(OnmsIpInterface iface) throws Exception {
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        ThresholdingSession mockThresholdingSession = mock(ThresholdingSession.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mockThresholdingSession);
+        m_collectd.setThresholdingService(mockThresholdingService);
+    }
+
     private void setupInterface(OnmsIpInterface iface) {
         when(m_ipIfDao.findByServiceType("SNMP")).thenReturn(Collections.singletonList(iface));
         when(m_ipIfDao.load(iface.getId())).thenReturn(iface);
     }
 
     @SuppressWarnings("unchecked")
-    private void setupCollector(String svcName) throws CollectionInitializationException {
+    /** A collector mock with the location and attribute stubs every collection needs; collect() is left to the caller. */
+    private static ServiceCollector newCollectorMock() throws CollectionInitializationException {
         ServiceCollector svcCollector = mock(ServiceCollector.class);
         svcCollector.initialize();
         svcCollector.validateAgent(isA(CollectionAgent.class), isA(Map.class));
 
         when(svcCollector.getEffectiveLocation(anyString())).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
         when(svcCollector.getRuntimeAttributes(isA(CollectionAgent.class),isA(Map.class))).thenReturn(Collections.emptyMap());
+        return svcCollector;
+    }
+
+    private void setupCollector(String svcName) throws CollectionInitializationException {
+        ServiceCollector svcCollector = newCollectorMock();
         when(svcCollector.collect(isA(CollectionAgent.class),isA(Map.class))).thenAnswer(new Answer<CollectionSet>() {
             @Override
             public CollectionSet answer(final InvocationOnMock invocation) throws Throwable {

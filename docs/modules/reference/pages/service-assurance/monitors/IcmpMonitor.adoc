@@ -49,7 +49,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Response time
 
-Unlike other monitors, the IcmpMonitor returns response time time in _microseconds_.
+Unlike other monitors, the IcmpMonitor returns response time in _microseconds_.
 
 == Examples
 

@@ -51,7 +51,7 @@ Also includes service detection and policy results.
 
 == Provisiond thread configuration
 
-Provisiond uses for a few thread pools to manage various tasks.
+Provisiond uses a few thread pools to manage various tasks.
 You can configure these via the Web UI by selecting menu:Info[External Requisitions] in the top menu bar.
 
 NOTE: Any changes to the thread pools require a restart of the {page-component-title} service to apply the new thread limits.
@@ -82,7 +82,7 @@ Increase this number if you have a large number of nodes in a single requisition
 
 | Rescan
 | 10
-| Number of threads to allocate for automated rescanning existing nodes.
+| Number of threads to allocate for automated rescanning of existing nodes.
 This pool is used for rescanning nodes in a requisition based on the foreign source definition or the external requisition schedule.
 Rescan threads will spawn a scan thread to process the applicable detectors, so this value typically should be the same as the Scan thread pool size.
 

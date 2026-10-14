@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.bsm</groupId>
     <artifactId>org.opennms.features.bsm.rest</artifactId>
-    <version>36.0.4</version>
+    <version>36.0.5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
@@ -86,6 +86,17 @@
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

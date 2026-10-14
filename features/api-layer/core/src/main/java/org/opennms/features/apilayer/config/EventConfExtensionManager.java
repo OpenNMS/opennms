@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import org.opennms.core.xml.JaxbUtils;
@@ -69,7 +68,6 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
     private final EventConfEventDao eventConfEventDao;
     private final EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private final SessionUtils sessionUtils;
-    private final ExecutorService executor;
     private volatile EventConfSource pluginSource;
 
     public EventConfExtensionManager(EventConfDao eventConfDao, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, EventConfGlobalSecurityDao eventConfGlobalSecurityDao, SessionUtils sessionUtils) {
@@ -79,7 +77,6 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         this.eventConfEventDao = Objects.requireNonNull(eventConfEventDao);
         this.eventConfGlobalSecurityDao = Objects.requireNonNull(eventConfGlobalSecurityDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
-        this.executor = EventConfServiceHelper.createEventConfExecutor("integration-api-eventconf-%d");
         LOG.debug("EventConfExtensionManager initialized.");
     }
 
@@ -101,7 +98,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         LOG.debug("Event configuration changed. Syncing to database and triggering reload.");
         boolean changesApplied = syncEventsToDatabase();
         if (changesApplied) {
-            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, executor);
+            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
         } else {
             LOG.debug("No changes to sync, skipping reload.");
         }
@@ -117,8 +114,9 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
             }
 
             return sessionUtils.withTransaction(() -> {
-                // Get or create the plugin source
-                EventConfSource source = getOrCreatePluginSource();
+                // Get or create the plugin source, row-locked and re-read so the metadata written at the
+                // end cannot carry a fileOrder from before a concurrent renumbering
+                EventConfSource source = eventConfSourceDao.lockForUpdate(getOrCreatePluginSource().getId());
 
                 // Load existing events from database for this source
                 List<EventConfEvent> dbEvents = eventConfEventDao.findBySourceId(source.getId());
@@ -173,8 +171,9 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
                 List<EventConfEvent> allEventsToSave = new ArrayList<>();
 
                 if (!newEvents.isEmpty()) {
+                    // New plugin events are appended after the existing ones of the source
                     List<EventConfEvent> newEntities = EventConfServiceHelper.createEventConfEventEntities(
-                            source, newEvents, USERNAME, now
+                            source, newEvents, USERNAME, now, eventConfEventDao.nextEventOrder(source.getId())
                     );
                     allEventsToSave.addAll(newEntities);
                 }
@@ -219,8 +218,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
             source.setDescription("Events from OpenNMS plugins");
             source.setVendor("OpenNMS-Plugins");
             source.setEnabled(true);
-            Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
-            source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
+            source.setFileOrder(eventConfSourceDao.nextFileOrder());
             source.setCreatedTime(now);
             source.setLastModified(now);
             source.setUploadedBy(USERNAME);
@@ -233,11 +231,6 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         return source;
     }
 
-    public void destroy() {
-        if (executor != null) {
-            executor.shutdown();
-        }
-    }
 
     private static Event toEvent(EventDefinition def) {
         final Event event = new Event();

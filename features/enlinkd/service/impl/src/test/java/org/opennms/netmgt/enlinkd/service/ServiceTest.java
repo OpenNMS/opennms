@@ -239,6 +239,36 @@ public class ServiceTest {
         verify(topologyEntityCache, atLeastOnce()).getLldpLinkTopologyEntities();
     }
 
+    @Test
+    public void lldpMatchShouldTolerateDuplicateElementsPerNode() {
+
+        // NMS-16199: a second lldpelement row for the same nodeid used to abort the whole
+        // topology build with "IllegalStateException: Duplicate key <nodeid>"
+        List<LldpElementTopologyEntity> withDuplicate = new ArrayList<>(lldpelements);
+        withDuplicate.add(createLldpElement(36, nodes.get(1), "match1.1", "host31"));
+        when(topologyEntityCache.getLldpElementTopologyEntities()).thenReturn(withDuplicate);
+
+        List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> matchedLinks = lldpTopologyService.match();
+        assertMatching(lldpLinks, matchedLinks);
+        verify(topologyEntityCache, atLeastOnce()).getLldpElementTopologyEntities();
+        verify(topologyEntityCache, atLeastOnce()).getLldpLinkTopologyEntities();
+    }
+
+    @Test
+    public void lldpMatchShouldTolerateMissingElement() {
+
+        // the element list and the link list are independently expiring caches, so a link
+        // can show up for a node whose element is not (yet) part of the element list
+        List<LldpElementTopologyEntity> withoutFirst = new ArrayList<>(lldpelements);
+        withoutFirst.remove(0);
+        when(topologyEntityCache.getLldpElementTopologyEntities()).thenReturn(withoutFirst);
+
+        List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> matchedLinks = lldpTopologyService.match();
+        assertMatching(lldpLinks, matchedLinks);
+        verify(topologyEntityCache, atLeastOnce()).getLldpElementTopologyEntities();
+        verify(topologyEntityCache, atLeastOnce()).getLldpLinkTopologyEntities();
+    }
+
     private <Link> void assertMatching(List<Link> allLinks, List<TopologyConnection<Link, Link>> matchedLinks){
         // we expect:
         // 1 and 3 will match

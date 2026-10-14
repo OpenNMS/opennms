@@ -417,6 +417,29 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
     
     /**
+     * Executes a single HQL update (or delete) statement without loading any entity.
+     * Positional parameters are 1-based.
+     *
+     * @param hql an HQL update statement
+     * @param values positional parameter values
+     * @return the number of rows updated
+     * @throws org.springframework.dao.DataAccessException if any.
+     */
+    public int bulkUpdate(final String hql, final Object... values) throws DataAccessException {
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query hibernateQuery = session.createQuery(hql);
+                for (int i = 0; i < values.length; i++) {
+                    hibernateQuery.setParameter(i + 1, values[i]);
+                }
+                return hibernateQuery.executeUpdate();
+            }
+        };
+        return getHibernateTemplate().execute(callback);
+    }
+
+    /**
      * <p>bulkDelete</p>
      *
      * @param hql a {@link java.lang.String} object.
@@ -425,18 +448,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @throws org.springframework.dao.DataAccessException if any.
      */
     public int bulkDelete(final String hql, final Object... values ) throws DataAccessException {
-        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
-            @Override
-            public Integer doInHibernate(final Session session) throws HibernateException {
-                final Query hibernateQuery = session.createQuery(hql);
-                for (int i = 0; i < values.length; i++) {
-                    // Hibernate 5 uses 1-based parameter indexing
-                    hibernateQuery.setParameter(i + 1, values[i]);
-                }
-                return hibernateQuery.executeUpdate();
-            }
-        };
-        return getHibernateTemplate().execute(callback);
+        // An HQL delete is executed exactly like an HQL update
+        return bulkUpdate(hql, values);
     }
     
     /**

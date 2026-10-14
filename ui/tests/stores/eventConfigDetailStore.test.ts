@@ -2,17 +2,28 @@ import { Severity } from '@/components/EventConfigEventCreate/constants'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
-  filterEventConfigEvents
+  filterEventConfigEvents,
+  getEventConfSourceById,
+  getOrderedEventConfigEvents,
+  updateEventConfigEventsOrder
 } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+const mockShowSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: mockShowSnackBar, hideSnackbar: vi.fn() })
+}))
+
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigEventStatus: vi.fn(),
   changeEventConfigSourceStatus: vi.fn(),
-  filterEventConfigEvents: vi.fn()
+  filterEventConfigEvents: vi.fn(),
+  getEventConfSourceById: vi.fn(),
+  getOrderedEventConfigEvents: vi.fn(),
+  updateEventConfigEventsOrder: vi.fn()
 }))
 
 describe('useEventConfigDetailStore', () => {
@@ -26,6 +37,7 @@ describe('useEventConfigDetailStore', () => {
     enabled: true,
     eventCount: 10,
     fileOrder: 1,
+    evaluationOrder: 1,
     uploadedBy: 'testuser',
     createdTime: new Date('2024-01-01'),
     lastModified: new Date('2024-01-02')
@@ -45,7 +57,8 @@ describe('useEventConfigDetailStore', () => {
       modifiedBy: 'user1',
       sourceName: 'Test Source',
       vendor: 'Test Vendor',
-      fileOrder: 1
+      fileOrder: 1,
+      eventOrder: 1
     },
     {
       id: 2,
@@ -60,7 +73,8 @@ describe('useEventConfigDetailStore', () => {
       modifiedBy: 'user2',
       sourceName: 'Test Source',
       vendor: 'Test Vendor',
-      fileOrder: 2
+      fileOrder: 2,
+      eventOrder: 1
     }
   ]
 
@@ -88,8 +102,8 @@ describe('useEventConfigDetailStore', () => {
     })
     expect(store.eventsSearchTerm).toBe('')
     expect(store.eventsSorting).toEqual({
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
+      sortOrder: 'asc',
+      sortKey: 'eventOrder'
     })
     expect(store.selectedSource).toBeNull()
     expect(store.isLoading).toBe(false)
@@ -117,7 +131,7 @@ describe('useEventConfigDetailStore', () => {
 
     await store.fetchEventsBySourceId()
 
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'eventOrder', 'asc')
     expect(store.events).toEqual(mockEvents)
     expect(store.eventsPagination.total).toBe(2)
     expect(store.isLoading).toBe(false)
@@ -142,7 +156,7 @@ describe('useEventConfigDetailStore', () => {
 
     await store.fetchEventsBySourceId()
 
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 40, 20, '', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 40, 20, '', 'eventOrder', 'asc')
   })
 
   it('should fetch with search term', async () => {
@@ -152,7 +166,7 @@ describe('useEventConfigDetailStore', () => {
 
     await store.fetchEventsBySourceId()
 
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, 'test search', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, 'test search', 'eventOrder', 'asc')
   })
 
   it('should handle errors when fetching events', async () => {
@@ -256,10 +270,10 @@ describe('useEventConfigDetailStore', () => {
     expect(store.eventsPagination.total).toBe(2)
     expect(store.eventsSearchTerm).toBe('')
     expect(store.eventsSorting).toEqual({
-      sortKey: 'createdTime',
-      sortOrder: 'desc'
+      sortKey: 'eventOrder',
+      sortOrder: 'asc'
     })
-    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'createdTime', 'desc')
+    expect(filterEventConfigEvents).toHaveBeenCalledWith(1, 0, 10, '', 'eventOrder', 'asc')
   })
 
   it('should show delete event dialog', () => {
@@ -538,9 +552,86 @@ describe('useEventConfigDetailStore', () => {
 
     store.refreshEventConfigEvents()
 
-    expect(store.eventsSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
+    expect(store.eventsSorting).toEqual({ sortKey: 'eventOrder', sortOrder: 'asc' })
     expect(store.eventsSearchTerm).toBe('')
     expect(store.eventsPagination).toEqual({ page: 1, pageSize: 10, total: 0 })
+  })
+
+  describe('events reorder mode', () => {
+    const orderedEvents = [
+      { id: 7, uei: 'uei.opennms.org/a', eventLabel: 'A', severity: 'Normal', enabled: true, eventOrder: 1 },
+      { id: 8, uei: 'uei.opennms.org/b', eventLabel: 'B', severity: 'Major', enabled: true, eventOrder: 2 }
+    ]
+
+    it('startEventsReorder enters the mode and fetches the ordered list', async () => {
+      store.selectedSource = mockSource
+      vi.mocked(getOrderedEventConfigEvents).mockResolvedValue(orderedEvents)
+
+      await store.startEventsReorder()
+
+      expect(store.eventsReorderMode).toBe(true)
+      expect(getOrderedEventConfigEvents).toHaveBeenCalledWith(mockSource.id)
+      expect(store.orderedEvents).toEqual(orderedEvents)
+
+      store.stopEventsReorder()
+      expect(store.eventsReorderMode).toBe(false)
+    })
+
+    it('fetchOrderedEvents failure leaves the reorder mode and says why', async () => {
+      store.selectedSource = mockSource
+      vi.mocked(getOrderedEventConfigEvents).mockRejectedValue(new Error('boom'))
+
+      await store.startEventsReorder()
+
+      expect(store.orderedEvents).toEqual([])
+      // an empty reorder view with no explanation is worse than no reorder view
+      expect(store.eventsReorderMode).toBe(false)
+      expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the event order. Try again.', error: true })
+    })
+
+    it('saveEventsOrder refreshes the table page on success', async () => {
+      store.selectedSource = mockSource
+      vi.mocked(updateEventConfigEventsOrder).mockResolvedValue({ ok: true, status: 200, message: '' })
+      vi.mocked(filterEventConfigEvents).mockResolvedValue(mockFilterResponse)
+
+      const result = await store.saveEventsOrder([8, 7])
+
+      expect(updateEventConfigEventsOrder).toHaveBeenCalledWith(mockSource.id, [8, 7])
+      expect(result.ok).toBe(true)
+      expect(filterEventConfigEvents).toHaveBeenCalled()
+      expect(store.isSavingEventsOrder).toBe(false)
+    })
+
+    it('saveEventsOrder passes a rejection through without refreshing', async () => {
+      store.selectedSource = mockSource
+      vi.mocked(updateEventConfigEventsOrder).mockResolvedValue({ ok: false, status: 400, message: 'missing: A' })
+
+      const result = await store.saveEventsOrder([8])
+
+      expect(result).toEqual({ ok: false, status: 400, message: 'missing: A' })
+      expect(filterEventConfigEvents).not.toHaveBeenCalled()
+    })
+
+    it('saveEventsOrder without a selected source fails fast', async () => {
+      store.selectedSource = null
+
+      const result = await store.saveEventsOrder([7, 8])
+
+      expect(result.ok).toBe(false)
+      expect(updateEventConfigEventsOrder).not.toHaveBeenCalled()
+    })
+
+    it('loading a source drops reorder state left over from another source', async () => {
+      store.eventsReorderMode = true
+      store.orderedEvents = orderedEvents
+      vi.mocked(getEventConfSourceById).mockResolvedValue(mockSource)
+      vi.mocked(filterEventConfigEvents).mockResolvedValue(mockFilterResponse)
+
+      await store.fetchSourceById('1')
+
+      expect(store.eventsReorderMode).toBe(false)
+      expect(store.orderedEvents).toEqual([])
+    })
   })
 
 })

@@ -61,7 +61,7 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
 
     @Override
     public List<SnmpCollectionResourceType> findAllEnabledBySource(Integer snmpCollectionSourceId) {
-        return find("from SnmpCollectionResourceType t where t.collectionSource.id = ?1 and t.enabled = true", snmpCollectionSourceId);
+        return find("from SnmpCollectionResourceType t where t.collectionSource.id = ?1 and t.enabled = true order by t.id", snmpCollectionSourceId);
     }
 
     @Override
@@ -195,6 +195,22 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
         names.addAll(findObjects(String.class,
                 "select distinct r.name from SnmpCollectionResourceType r"));
         return names;
+    }
+
+    @Override
+    public List<SnmpCollectionResourceType> findAllByName(String name) {
+        return find("from SnmpCollectionResourceType t join fetch t.collectionSource s where t.name = ?1 order by s.name, t.id", name);
+    }
+
+    @Override
+    public List<SnmpCollectionResourceType> findAllWithSource() {
+        return find("from SnmpCollectionResourceType t join fetch t.collectionSource s order by s.id, t.id");
+    }
+
+    @Override
+    public List<SnmpCollectionResourceType> findAllDisabledWithSource() {
+        return find("from SnmpCollectionResourceType t join fetch t.collectionSource s "
+                + "where t.enabled = false or t.enabled is null order by s.id, t.id");
     }
 
     @Override

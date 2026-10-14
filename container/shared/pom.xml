@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>36.0.4</version>
+        <version>36.0.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -72,7 +72,6 @@
                         <feature>cassandra-driver/${cassandraVersion}</feature>
                         <feature>jetty/${jettyVersion}</feature>
                         <feature>pax-jetty/${jettyVersion}</feature>
-                        <feature>pax-http-whiteboard</feature>
                     </installedFeatures>
                     <startupFeatures>
                         <feature>eventadmin</feature>
