@@ -21,7 +21,6 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue'
 import { useRouter } from 'vue-router'
 import { OnmsIconButton } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
@@ -29,12 +28,9 @@ import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import { Node } from '@/types'
 import { NotificationQueryPreset } from '@/types/notifications'
 
-defineProps({
-  node: {
-    required: true,
-    type: Object as PropType<Node>
-  }
-})
+defineProps<{
+  node: Node
+}>()
 
 const router = useRouter()
 
