@@ -21,17 +21,21 @@
 ///
 
 import ScheduledOutageEditor from '@/containers/ScheduledOutageEditor.vue'
-import { flushPromises, mount } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { getNodeLabels, getOutageApplicability, getScheduledOutage, saveScheduledOutage, scheduledOutageExists, setNotificationMembership, setPackageMembership } from '@/services/scheduledOutagesService'
 
 const push = vi.fn()
 const replace = vi.fn()
 let query: Record<string, string> = {}
+let leaveGuard: (() => boolean | Promise<boolean>) | null = null
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push, replace }),
-  useRoute: () => ({ query, fullPath: '/scheduled-outages/edit' })
+  useRoute: () => ({ query, fullPath: '/scheduled-outages/edit' }),
+  onBeforeRouteLeave: (guard: () => boolean | Promise<boolean>) => {
+    leaveGuard = guard
+  }
 }))
 
 vi.mock('@/services/scheduledOutagesService', async importOriginal => ({
@@ -45,6 +49,9 @@ vi.mock('@/services/scheduledOutagesService', async importOriginal => ({
   setNotificationMembership: vi.fn(),
   scheduledOutageErrorMessage: (_err: any, fallback: string) => fallback
 }))
+
+// each editor adds a window beforeunload listener; unmount so they do not pile up
+enableAutoUnmount(afterEach)
 
 const EMPTY_APPLIES = { notifications: false, notificationCalendars: [], pollers: [], thresholders: [], collectors: [] }
 
@@ -386,6 +393,99 @@ describe('ScheduledOutageEditor.vue', () => {
       expect(saveScheduledOutage).not.toHaveBeenCalled()
     })
 
+    // NMS-4952 follow-up: Cancel and Go Back used to drop unsaved edits silently
+    it('leaves without asking when nothing changed', async () => {
+      await mountPage()
+      expect(leaveGuard?.()).toBe(true)
+    })
+
+    it('asks before leaving with unsaved changes, and stays on Keep editing', async () => {
+      const wrapper = await mountPage()
+      const vm = wrapper.vm as any
+      wrapper.findComponent({ name: 'TimeSpanEditor' }).vm.$emit('add', { begins: '03:00:00', ends: '04:00:00' })
+      await flushPromises()
+
+      const stay = leaveGuard?.() as Promise<boolean>
+      expect(vm.showLeaveConfirm).toBe(true)
+      const dialog = wrapper.findAllComponents({ name: 'OnmsConfirmationDialog' })
+        .find(d => d.props('title') === 'Discard Changes')!
+      expect(dialog.props('cancelButtonText')).toBe('Keep editing')
+      dialog.vm.$emit('cancel')
+      expect(await stay).toBe(false)
+      expect(vm.showLeaveConfirm).toBe(false)
+
+      const leave = leaveGuard?.() as Promise<boolean>
+      dialog.vm.$emit('ok')
+      expect(await leave).toBe(true)
+    })
+
+    it('settles every navigation that waited on the dialog', async () => {
+      const wrapper = await mountPage()
+      wrapper.findComponent({ name: 'TimeSpanEditor' }).vm.$emit('add', { begins: '03:00:00', ends: '04:00:00' })
+      await flushPromises()
+      const first = leaveGuard?.() as Promise<boolean>
+      const second = leaveGuard?.() as Promise<boolean>
+      ;(wrapper.vm as any).settleLeave(false)
+      expect(await Promise.all([first, second])).toEqual([false, false])
+    })
+
+    it('holds navigation while a save is running', async () => {
+      let finishSave: () => void = () => {}
+      vi.mocked(saveScheduledOutage).mockImplementation(() => new Promise<any>((resolve) => {
+        finishSave = () => resolve(undefined)
+      }))
+      const wrapper = await mountPage()
+      wrapper.findAllComponents({ name: 'NodeInterfacePicker' })[0].vm.$emit('remove', 0)
+      await wrapper.find('[data-test="save"]').trigger('click')
+      expect(leaveGuard?.()).toBe(false)
+      finishSave()
+      await flushPromises()
+      expect(leaveGuard?.()).toBe(true)
+    })
+
+    it('treats the form as saved after a partial save failure reloads the matrix', async () => {
+      vi.mocked(saveScheduledOutage).mockResolvedValue(undefined as any)
+      vi.mocked(setPackageMembership).mockRejectedValueOnce(new Error('500'))
+      const wrapper = await mountPage()
+      wrapper.findComponent({ name: 'AppliesToMatrix' }).vm.$emit('togglePackage', 'pollerd', 'strafer', true)
+      await flushPromises()
+      await wrapper.find('[data-test="save"]').trigger('click')
+      await flushPromises()
+      expect(wrapper.find('[data-test="editor-error"]').text()).toContain('The outage was saved')
+      expect(leaveGuard?.()).toBe(true)
+    })
+
+    it('asks the browser before a full page unload with unsaved changes', async () => {
+      const wrapper = await mountPage()
+      const clean = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(clean)
+      expect(clean.defaultPrevented).toBe(false)
+
+      wrapper.findComponent({ name: 'TimeSpanEditor' }).vm.$emit('add', { begins: '03:00:00', ends: '04:00:00' })
+      await flushPromises()
+      const dirty = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(dirty)
+      expect(dirty.defaultPrevented).toBe(true)
+    })
+
+    it('counts an Applies To change as unsaved', async () => {
+      const wrapper = await mountPage()
+      wrapper.findComponent({ name: 'AppliesToMatrix' }).vm.$emit('togglePackage', 'pollerd', 'strafer', true)
+      await flushPromises()
+      expect(leaveGuard?.()).toBeInstanceOf(Promise)
+    })
+
+    it('does not ask again after a successful save', async () => {
+      vi.mocked(saveScheduledOutage).mockResolvedValue(undefined as any)
+      const wrapper = await mountPage()
+      wrapper.findAllComponents({ name: 'NodeInterfacePicker' })[0].vm.$emit('remove', 0)
+      await flushPromises()
+      await wrapper.find('[data-test="save"]').trigger('click')
+      await flushPromises()
+      expect(push).toHaveBeenCalledWith({ path: '/scheduled-outages' })
+      expect(leaveGuard?.()).toBe(true)
+    })
+
     it('goes back to the list from the back button and Cancel', async () => {
       const wrapper = await mountPage()
       await wrapper.find('[data-test="back-button"]').trigger('click')
@@ -393,6 +493,29 @@ describe('ScheduledOutageEditor.vue', () => {
       expect(push).toHaveBeenCalledTimes(2)
       expect(push).toHaveBeenCalledWith({ path: '/scheduled-outages' })
     })
+  })
+
+  it('lets the page be left while it is still loading', () => {
+    vi.mocked(getScheduledOutage).mockReturnValue(new Promise(() => {}))
+    mount(ScheduledOutageEditor, { global: { plugins: [PrimeVue], stubs: { BreadCrumbs: true }}})
+    expect(leaveGuard?.()).toBe(true)
+  })
+
+  it('lets a page that could not load be left without asking', async () => {
+    vi.mocked(getScheduledOutage).mockResolvedValue(null)
+    await mountPage()
+    expect(leaveGuard?.()).toBe(true)
+  })
+
+  it('shortens a long name in the breadcrumb but not in the heading', async () => {
+    const long = `cc-${'x'.repeat(100)}`
+    query = { name: long, new: 'true' }
+    vi.mocked(scheduledOutageExists).mockResolvedValue(false)
+    vi.mocked(getOutageApplicability).mockResolvedValue(EMPTY_APPLIES as any)
+    const wrapper = await mountPage()
+    const crumbs = wrapper.findComponent({ name: 'BreadCrumbs' }).props('items')
+    expect(crumbs[2].label).toBe(`${long.slice(0, 60)}…`)
+    expect(wrapper.find('[data-test="editor-title"]').text()).toContain(long)
   })
 
   it('renders the saved nodes, interfaces and spans on the page itself', async () => {

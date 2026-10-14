@@ -82,9 +82,10 @@ export const timeSpanProblem = (type: OutageType, f: TimeSpanFields): string | n
   return ordered ? null : 'The end must come after the start.'
 }
 
-export const defaultTimeSpanFields = (currentYear: number): CompleteTimeSpanFields => ({
-  start: new Date(currentYear, 0, 1, 0, 0, 0),
-  end: new Date(currentYear, 0, 1, 23, 59, 59),
+// A whole-day span on the given date; for a specific outage that is today.
+export const defaultTimeSpanFields = (today: Date): CompleteTimeSpanFields => ({
+  start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0),
+  end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59),
   day: 'sunday'
 })
 

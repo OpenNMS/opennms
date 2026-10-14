@@ -34,7 +34,7 @@ import {
 // 'dd-MMM-yyyy HH:mm:ss' (specific) format, 8 for 'HH:mm:ss' (recurring).
 describe('buildOutageTime', () => {
   const base = () => ({
-    ...defaultTimeSpanFields(2026),
+    ...defaultTimeSpanFields(new Date(2026, 0, 1)),
     start: new Date(2026, 7, 5, 1, 2, 3),
     end: new Date(2026, 8, 6, 23, 59, 59),
     day: 'wednesday'
@@ -70,12 +70,18 @@ describe('buildOutageTime', () => {
 
   // Regression: a single-digit day or hour must still be zero-padded, or the
   // length-keyed Java parser misreads the string.
-  it('pads every field, so the default (1 January, midnight) span is 20 chars', () => {
-    const t = buildOutageTime('specific', defaultTimeSpanFields(2026))
+  it('pads every field, so a default span starting on 1 January is 20 chars', () => {
+    const t = buildOutageTime('specific', defaultTimeSpanFields(new Date(2026, 0, 1, 14, 30)))
     expect(t.begins).toBe('01-Jan-2026 00:00:00')
     expect(t.ends).toBe('01-Jan-2026 23:59:59')
     expect(formatSpecific(new Date(2026, 0, 9, 7, 8, 9))).toBe('09-Jan-2026 07:08:09')
     expect(formatTimeOfDay(new Date(2026, 0, 9, 7, 8, 9))).toBe('07:08:09')
+  })
+
+  it('defaults to the whole of the given day', () => {
+    const f = defaultTimeSpanFields(new Date(2026, 9, 12, 10, 27, 18))
+    expect(f.start).toEqual(new Date(2026, 9, 12, 0, 0, 0))
+    expect(f.end).toEqual(new Date(2026, 9, 12, 23, 59, 59))
   })
 
   it('keeps unpadded 1..31 day-of-month values for the monthly attribute', () => {

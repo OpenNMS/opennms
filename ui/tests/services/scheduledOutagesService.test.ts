@@ -155,13 +155,43 @@ describe('scheduledOutagesService', () => {
   // valid there; a partial IPv4 is widened to one and ORed with the hostname
   // wildcard, since ipHostName holds the hostname wherever reverse DNS resolved
   it('searches a partial IPv4 as an iplike pattern ORed with the hostname wildcard', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { ipInterface: [{ ipAddress: '192.168.1.1', nodeLabel: 'gw' }] }})
+    vi.mocked(v2.get).mockResolvedValue({ data: { ipInterface: [{ ipAddress: '192.168.1.1' }] }})
     const result = await searchOutageInterfaces('192')
     expect(v2.get).toHaveBeenCalledWith('/ipinterfaces?limit=200&_s=ipAddress==192.*.*.*,ipHostName==*192*')
-    expect(result).toEqual([{ address: '192.168.1.1', nodeLabel: 'gw' }])
+    expect(result).toEqual([{ address: '192.168.1.1', nodeLabel: '' }])
 
     await searchOutageInterfaces('192.168.1.')
     expect(v2.get).toHaveBeenLastCalledWith('/ipinterfaces?limit=200&_s=ipAddress==192.168.1.*,ipHostName==*192.168.1.*')
+  })
+
+  // the outage matches an address on every node, so duplicates collapse into one
+  // row named after its nodes; v2 ipinterfaces carries node ids, not labels
+  it('offers one suggestion per address, labelled with the nodes that carry it', async () => {
+    vi.mocked(v2.get).mockImplementation(async (url: string) => url.startsWith('/nodes')
+      ? { data: { node: [{ id: 40, label: 'edge-a' }, { id: 52, label: 'edge-b' }] }}
+      : { data: { ipInterface: [
+        { ipAddress: '192.0.2.11', nodeId: 40 },
+        { ipAddress: '192.0.2.11', nodeId: 52 },
+        { ipAddress: '192.0.2.12', nodeId: 52 },
+        { ipAddress: '192.0.2.13', nodeId: 99 }
+      ] }})
+
+    const result = await searchOutageInterfaces('192.0.2.')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes?limit=3&_s=id==40,id==52,id==99')
+    expect(result).toEqual([
+      { address: '192.0.2.11', nodeLabel: 'edge-a, edge-b' },
+      { address: '192.0.2.12', nodeLabel: 'edge-b' },
+      { address: '192.0.2.13', nodeLabel: '' }
+    ])
+  })
+
+  it('summarises an address on more than three nodes', async () => {
+    vi.mocked(v2.get).mockImplementation(async (url: string) => url.startsWith('/nodes')
+      ? { data: { node: [1, 2, 3, 4, 5].map(id => ({ id, label: `n${id}` })) }}
+      : { data: { ipInterface: [1, 2, 3, 4, 5].map(nodeId => ({ ipAddress: '10.0.0.1', nodeId })) }})
+
+    expect(await searchOutageInterfaces('10.0')).toEqual([{ address: '10.0.0.1', nodeLabel: 'n1, n2, n3 +2 more' }])
   })
 
   it('widens a dotted prefix to four octets and rejects anything else', () => {
