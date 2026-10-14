@@ -433,6 +433,34 @@ describe('useNotificationsStore', () => {
       expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ nodeId: null }))
     })
 
+    it('looks the node label up once when the same node is applied twice', async () => {
+      await store.setNodeFilter('16')
+      await store.setNodeFilter('16')
+
+      expect(API.getNodeById).toHaveBeenCalledTimes(1)
+      expect(store.nodeFilter).toEqual({ id: '16', label: 'Core-Router-01' })
+    })
+
+    it('looks the node label up again when a different node is applied', async () => {
+      await store.setNodeFilter('16')
+      vi.mocked(API.getNodeById).mockResolvedValue({ id: '17', label: 'Other' })
+      await store.setNodeFilter('17')
+
+      expect(API.getNodeById).toHaveBeenCalledTimes(2)
+      expect(API.getNodeById).toHaveBeenLastCalledWith('17')
+    })
+
+    it('looks the node label up again when the first lookup failed', async () => {
+      vi.mocked(API.getNodeById).mockResolvedValueOnce(false)
+      await store.setNodeFilter('16')
+      expect(store.nodeFilter).toEqual({ id: '16', label: null })
+
+      await store.setNodeFilter('16')
+
+      expect(API.getNodeById).toHaveBeenCalledTimes(2)
+      expect(store.nodeFilter).toEqual({ id: '16', label: 'Core-Router-01' })
+    })
+
     it('passes the node filter to the export as well', async () => {
       await store.applyQuery('allOutstanding', '16')
       await store.fetchForExport(500)
