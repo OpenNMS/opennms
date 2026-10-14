@@ -56,7 +56,8 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
 
     /**
      * The Vue node detail page. This module cannot depend on opennms-web-api, so this value
-     * must match {@code org.opennms.web.api.ElementConstants.NODE_DETAILS_URI}.
+     * must match {@code org.opennms.web.api.ElementConstants.NODE_DETAILS_URI}
+     * (kept equal by NodeDetailsUriTest in opennms-webapp-rest).
      */
     public static final String NODE_DETAILS_URI = "ui/index.html#/node/";
 
