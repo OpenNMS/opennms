@@ -213,6 +213,17 @@ public class CollectableService implements ReadyRunnable {
     }
 
     /**
+     * True if this service belongs to the node, or is marked for reparenting to it.
+     * The node id itself only changes at the service's next run.
+     */
+    boolean isForNode(int nodeId) {
+        synchronized (this) {
+            return m_nodeId == nodeId
+                    || (m_updates.isReparentingFlagSet() && Integer.toString(nodeId).equals(m_updates.getReparentNewNodeId()));
+        }
+    }
+
+    /**
      * Returns the service name
      *
      * @return a {@link java.lang.String} object.

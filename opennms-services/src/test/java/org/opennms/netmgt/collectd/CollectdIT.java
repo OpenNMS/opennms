@@ -22,6 +22,7 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -422,7 +423,7 @@ public class CollectdIT {
         m_collectd.start();
         m_scheduler.next();
 
-        assertEquals("rejected at startup", 0, m_scheduler.getEntryCount());
+        assertEquals("rejected at startup", 0, m_collectd.getCollectableServices().size());
 
         final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
             .setNodeid(1)
@@ -430,11 +431,69 @@ public class CollectdIT {
             .getEvent();
         m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
 
-        assertEquals("scheduled by the rescan's reinitialize event", 1, m_scheduler.getEntryCount());
+        assertEquals("scheduled by the rescan's reinitialize event", 1, m_collectd.getCollectableServices().size());
 
         // a second rescan updates the existing service instead of adding another
         m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
-        assertEquals(1, m_scheduler.getEntryCount());
+        assertEquals(1, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: until its next run, a service marked for reparenting keeps the old node id.
+     * A reinitialize event for the new node in that window must not schedule a second collector.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReinitializeDuringReparentDoesNotScheduleDuplicate() throws Exception {
+        setupCollector("SNMP");
+
+        OnmsIpInterface iface = getInterface();
+        new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
+
+        OnmsNode newNode = new OnmsNode();
+        newNode.setId(2);
+        OnmsIpInterface reparented = new OnmsIpInterface(InetAddressUtils.getInetAddress("192.168.1.1"), newNode);
+        reparented.setId(1);
+        new OnmsMonitoredService(reparented, new OnmsServiceType("SNMP"));
+
+        setupInterface(iface);
+        when(m_nodeDao.load(2)).thenReturn(newNode);
+        when(m_ipIfDao.findByNodeIdAndIpAddress(2, "192.168.1.1")).thenReturn(reparented);
+        setupTransactionManager();
+
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(getCollectionPackageThatMatchesSNMP()))).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next();
+        assertEquals(1, m_collectd.getCollectableServices().size());
+
+        final Event reparent = new EventBuilder(EventConstants.INTERFACE_REPARENTED_EVENT_UEI, "test")
+            .setNodeid(2)
+            .setInterface(addr("192.168.1.1"))
+            .addParam(EventConstants.PARM_OLD_NODEID, "1")
+            .addParam(EventConstants.PARM_NEW_NODEID, "2")
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reparent));
+
+        final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
+            .setNodeid(2)
+            .setInterface(addr("192.168.1.1"))
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+
+        assertEquals(1, m_collectd.getCollectableServices().size());
 
         m_collectd.stop();
 
