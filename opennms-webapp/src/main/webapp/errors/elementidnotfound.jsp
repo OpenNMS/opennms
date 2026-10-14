@@ -28,6 +28,7 @@
 	import="org.opennms.web.element.*, org.opennms.web.utils.ExceptionUtils"
 %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@page import="org.opennms.web.api.ElementConstants" %>
 
 <%
     ElementIdNotFoundException einfe = ExceptionUtils.getRootCause(exception, ElementIdNotFoundException.class);
@@ -53,10 +54,10 @@
   To search again by <%=einfe.getElemType()%> ID, enter the ID here:
   </p>
 
-  <% final boolean hashRoute = einfe.getDetailUri().contains("#"); %>
+  <% final boolean nodeDetails = ElementConstants.NODE_DETAILS_URI.equals(einfe.getDetailUri()); %>
   <form role="form" method="get" class="form"
-        action="<%= hashRoute ? "#" : einfe.getDetailUri() %>"
-        <% if (hashRoute) { %>onsubmit="var v = this.elements['<%=einfe.getDetailParam()%>'].value.trim(); if (v) { window.location.href = '<%=einfe.getDetailUri()%>' + encodeURIComponent(v); } return false;"<% } %>>
+        action="<%= nodeDetails ? "#" : einfe.getDetailUri() %>"
+        <% if (nodeDetails) { %>onsubmit="return onmsGoToNodeDetails(this.elements['<%=einfe.getDetailParam()%>'])"<% } %>>
     <div class="row">
       <div class="form-group col-md-2">
         <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=einfe.getElemType()%>&nbsp;ID</label>

@@ -69,6 +69,7 @@
 <%@page language="java"
         import="
 		org.opennms.core.utils.TimeSeries,
+		org.opennms.web.api.ElementConstants,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory,
 		org.owasp.encoder.Encode
@@ -178,6 +179,18 @@
     if (!window.name) {
       window.name = "opennms-" + Math.random();
     }
+  </script>
+
+  <script type="text/javascript">
+    // Opens the Vue node detail page for the node id or foreignSource:foreignId typed into a
+    // form field. A GET form can't target a hash route, so node lookup forms call this from onsubmit.
+    window.onmsGoToNodeDetails = function (input) {
+      var value = input.value.trim();
+      if (value) {
+        window.location.href = '<%= ElementConstants.NODE_DETAILS_URI %>' + encodeURIComponent(value);
+      }
+      return false;
+    };
   </script>
 
   <c:if test='${__bs_flags.contains("renderGraphs")}'>
