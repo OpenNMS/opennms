@@ -96,15 +96,39 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
   })
 
-  it('shows Node Not Found, and no tabs, when the node could not be fetched', async () => {
+  it('shows Node Not Found, and no tabs, when the node does not exist', async () => {
     const { wrapper, nodeStore } = mountComponent()
-    nodeStore.nodeLoadFailed = true
+    nodeStore.nodeLoadError = 'notFound'
     await flushPromises()
 
     const message = wrapper.findComponent({ name: 'NodeLookupMessage' })
     expect(message.exists()).toBe(true)
     expect(message.props()).toEqual({ state: 'notFound', value: '42' })
     expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+  })
+
+  it('shows Node Lookup Failed, and no tabs, when the node could not be loaded for another reason', async () => {
+    const { wrapper, nodeStore } = mountComponent()
+    nodeStore.nodeLoadError = 'failed'
+    await flushPromises()
+
+    const message = wrapper.findComponent({ name: 'NodeLookupMessage' })
+    expect(message.exists()).toBe(true)
+    expect(message.props()).toEqual({ state: 'error', value: '42' })
+    expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+  })
+
+  it('fetches the node again when the lookup message asks to retry after a failed load', async () => {
+    const { wrapper, nodeStore } = mountComponent()
+    nodeStore.nodeLoadError = 'failed'
+    await flushPromises()
+    expect(nodeStore.getNodeById).toHaveBeenCalledTimes(1)
+
+    wrapper.findComponent({ name: 'NodeLookupMessage' }).vm.$emit('retry')
+    await flushPromises()
+
+    expect(nodeStore.getNodeById).toHaveBeenCalledTimes(2)
+    expect(nodeStore.getNodeById).toHaveBeenLastCalledWith({ id: '42' })
   })
 
   it('shows Invalid Node ID, fetches nothing and mounts no tabs, for a bad id', async () => {
@@ -172,9 +196,9 @@ describe('NodeDetails.vue', () => {
     const pinia = createTestingPinia({ stubActions: false })
     setActivePinia(pinia)
     const nodeStore = useNodeStore()
-    nodeStore.nodeLoadFailed = true
+    nodeStore.nodeLoadError = 'notFound'
     nodeStore.getNodeById = vi.fn(async () => {
-      nodeStore.nodeLoadFailed = false
+      nodeStore.nodeLoadError = null
     })
     nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
     nodeStore.getNodeExistsInRequisition = vi.fn().mockResolvedValue(undefined)

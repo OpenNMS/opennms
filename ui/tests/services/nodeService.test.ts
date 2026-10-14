@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath, resolveNodeId } from '@/services/nodeService'
+import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath, lookupNodeById, resolveNodeId } from '@/services/nodeService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -143,6 +143,40 @@ describe('nodeService.resolveNodeId', () => {
     vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
 
     const result = await resolveNodeId('req3:1')
+
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('nodeService.lookupNodeById', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('answers the node, encoding the id as one path segment', async () => {
+    const node = { id: '153', label: 'something-226' }
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: node })
+
+    const result = await lookupNodeById('My Source:a b#c')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/My%20Source%3Aa%20b%23c')
+    expect(result.success).toBe(true)
+    expect(result.payload).toEqual(node)
+  })
+
+  it('answers a successful null on a 404', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 404 }})
+
+    const result = await lookupNodeById('42')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('fails on any other error', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
+
+    const result = await lookupNodeById('42')
 
     expect(result.success).toBe(false)
   })

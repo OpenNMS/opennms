@@ -156,7 +156,10 @@ const pageState = computed<PageState>(() => {
   if (rid.kind === 'foreign' || rid.id !== props.id) {
     return resolveState.value ?? 'resolving'
   }
-  return nodeStore.nodeLoadFailed ? 'notFound' : 'node'
+  if (nodeStore.nodeLoadError === 'notFound') {
+    return 'notFound'
+  }
+  return nodeStore.nodeLoadError === 'failed' ? 'error' : 'node'
 })
 
 const heading = computed<string>(() =>
