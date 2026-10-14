@@ -92,18 +92,28 @@ const queryFor = (preset: NotificationQueryPreset, nodeId: string | null | undef
 const sameQuery = (a: Record<string, unknown>, b: Record<string, unknown>) =>
   JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort())
 
+// preset is null when the URL names no valid preset, so the page can keep the view it has.
 const readRoute = () => {
   const preset = route.query.preset as string
   const node = route.query.node as string
   return {
-    preset: (LINKABLE_PRESETS as readonly string[]).includes(preset) ? preset as NotificationQueryPreset : 'yourOutstanding' as NotificationQueryPreset,
+    preset: (LINKABLE_PRESETS as readonly string[]).includes(preset) ? preset as NotificationQueryPreset : null,
     nodeId: typeof node === 'string' && /^\d+$/.test(node) && Number(node) > 0 ? String(Number(node)) : null
   }
 }
 
+// A link with a preset applies exactly what it says. Without one (a bare #/notifications, a menu
+// re-click) the current view stays: a user search is never in the URL, so applying the default
+// preset would silently drop it.
 const loadFromRoute = async () => {
   const { preset, nodeId } = readRoute()
-  report(await withSpinner(() => notificationsStore.applyQuery(preset, nodeId)))
+  if (preset) {
+    report(await withSpinner(() => notificationsStore.applyQuery(preset, nodeId)))
+  } else if (nodeId) {
+    report(await withSpinner(() => notificationsStore.setNodeFilter(nodeId)))
+  } else {
+    report(await withSpinner(() => notificationsStore.load()))
+  }
 }
 
 onMounted(() => {
