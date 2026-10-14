@@ -21,6 +21,7 @@
 ///
 
 import Notifications from '@/containers/Notifications.vue'
+import { SAME_PAGE_NAVIGATION_EVENT } from '@/lib/navigation'
 import { useAuthStore } from '@/stores/authStore'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { createSuccessResponse } from '@/types/validation'
@@ -57,6 +58,10 @@ const mountPage = (query: Record<string, string>) => {
     store.nodeFilter = nodeId ? { id: nodeId, label: null } : null
     return createSuccessResponse()
   })
+  vi.mocked(store.setNodeFilter).mockImplementation(async (nodeId) => {
+    store.nodeFilter = nodeId ? { id: nodeId, label: null } : null
+    return createSuccessResponse()
+  })
   const wrapper = mount(Notifications, {
     global: {
       plugins: [PrimeVue, pinia],
@@ -90,7 +95,53 @@ describe('Notifications page URL', () => {
     const { store } = mountPage({ preset: 'bogus', node: 'abc' })
     await flushPromises()
 
-    expect(store.applyQuery).toHaveBeenCalledWith('yourOutstanding', null)
+    expect(store.load).toHaveBeenCalledTimes(1)
+    expect(store.applyQuery).not.toHaveBeenCalled()
+    expect(store.setNodeFilter).not.toHaveBeenCalled()
+  })
+
+  it('reloads the current view on a URL without a preset, keeping a user search', async () => {
+    const { store } = mountPage({})
+    await flushPromises()
+
+    expect(store.load).toHaveBeenCalledTimes(1)
+    expect(store.applyQuery).not.toHaveBeenCalled()
+
+    store.preset = 'userSearch'
+    store.userFilter = 'bob'
+    vi.mocked(store.load).mockClear()
+    window.dispatchEvent(new CustomEvent(SAME_PAGE_NAVIGATION_EVENT))
+    await flushPromises()
+
+    expect(store.load).toHaveBeenCalledTimes(1)
+    expect(store.applyQuery).not.toHaveBeenCalled()
+    expect(store.preset).toBe('userSearch')
+    expect(store.userFilter).toBe('bob')
+  })
+
+  it('applies only the node when the URL has a node but no preset', async () => {
+    const { store } = mountPage({ node: '16' })
+    await flushPromises()
+
+    expect(store.setNodeFilter).toHaveBeenCalledWith('16')
+    expect(store.applyQuery).not.toHaveBeenCalled()
+    expect(store.load).not.toHaveBeenCalled()
+  })
+
+  it('does not rewrite the URL when a bare-URL reload runs during a user search', async () => {
+    const { store } = mountPage({})
+    await flushPromises()
+    store.preset = 'userSearch'
+    store.userFilter = 'bob'
+    await flushPromises()
+    replace.mockClear()
+    vi.mocked(store.load).mockClear()
+
+    window.dispatchEvent(new CustomEvent(SAME_PAGE_NAVIGATION_EVENT))
+    await flushPromises()
+
+    expect(replace).not.toHaveBeenCalled()
+    expect(store.load).toHaveBeenCalledTimes(1)
   })
 
   it('writes a preset chosen on the page to the URL, without loading twice', async () => {
