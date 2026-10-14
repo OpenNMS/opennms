@@ -154,11 +154,14 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   // Sets or clears the node filter on the current view: the preset and any user search stay, which
   // applyQuery (a whole new query) does not do. The page's node input and chip go through here.
   const setNodeFilter = async (nodeId: string | null): Promise<ValidationResult> => {
+    // Look the label up only for a new node, or when the stored one is still unknown (a failed
+    // lookup is worth retrying); re-applying the same labelled node needs no request.
+    const needsLabel = !!nodeId && (nodeFilter.value?.id !== nodeId || nodeFilter.value.label === null)
     if (nodeFilter.value?.id !== (nodeId ?? undefined)) {
       nodeFilter.value = nodeId ? { id: nodeId, label: null } : null
     }
     first.value = 0
-    const [result] = await Promise.all([load(), nodeId ? lookUpNodeLabel(nodeId) : Promise.resolve()])
+    const [result] = await Promise.all([load(), needsLabel && nodeId ? lookUpNodeLabel(nodeId) : Promise.resolve()])
     return result
   }
 
