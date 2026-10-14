@@ -6,6 +6,7 @@
     :saveLabel="isCreate ? 'Create Service' : 'Save Changes'"
     :saveDisabled="hasErrors(errors) || isSaving"
     :notFoundMessage="notFoundMessage"
+    wide
     @back="goBack"
     @cancel="goBack"
     @save="onSave"
@@ -33,6 +34,7 @@
         data-test="package-service-interval"
         :modelValue="draft.interval"
         :invalid="!!errors.interval"
+        fluid
         @update:modelValue="onIntervalChange"
       />
     </FormField>
@@ -52,6 +54,7 @@
         :options="groupOptions"
         :modelValue="thresholdingGroup"
         :invalid="!!errors.thresholdingGroup"
+        fluid
         @update:modelValue="onThresholdingGroupChange"
       />
     </FormField>
@@ -64,6 +67,7 @@
         optionValue="_value"
         :options="SERVICE_STATUS_OPTIONS"
         :modelValue="draft.status"
+        fluid
         @update:modelValue="draft.status = String($event ?? ThreshdServiceStatus.On)"
       />
     </FormField>
