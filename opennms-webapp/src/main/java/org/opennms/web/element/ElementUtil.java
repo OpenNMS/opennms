@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.util.Assert;
 
@@ -44,12 +45,6 @@ import org.springframework.util.Assert;
  * @since 1.8.1
  */
 public abstract class ElementUtil {
-    /**
-     * The Vue node detail page. Callers append the node id or foreignSource:foreignId. It is a
-     * hash route, so it takes no query parameters.
-     */
-    public static final String NODE_DETAILS_URI = "ui/index.html#/node/";
-
     /**
      * Do not use directly. Call {@link #getNodeStatusMap 
      * getInterfaceStatusMap} instead.
@@ -607,14 +602,14 @@ public abstract class ElementUtil {
             } catch (NumberFormatException e) {
                 throw new ElementIdNotFoundException("Wrong data type for \""
                         + nodeLookupString + "\", should be integer", nodeLookupString, 
-                        "node", NODE_DETAILS_URI, "node", "ui/#/nodes");
+                        "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
             }
         }
 
         OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeLookupString);
 
         if (node == null) {
-            throw new ElementNotFoundException("No such node in database", "node", NODE_DETAILS_URI, "node", "ui/#/nodes");
+            throw new ElementNotFoundException("No such node in database", "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
         }
         
         return node;
@@ -696,7 +691,7 @@ public abstract class ElementUtil {
                 if (node != null) {
                     nodeId = node.getId();
                 } else {
-                    throw new ElementNotFoundException("No such node in database", "node", NODE_DETAILS_URI, "node", "ui/#/nodes");
+                    throw new ElementNotFoundException("No such node in database", "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
                 }
             } else {
                 try {
@@ -923,7 +918,7 @@ public abstract class ElementUtil {
     		nodeId = Integer.parseInt(request.getParameter("node"));
     	} catch (NumberFormatException nfe) {
     		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
-    					request.getParameter("node"), "node", NODE_DETAILS_URI, "node", "ui/#/nodes");
+    					request.getParameter("node"), "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
     	}
     	services = NetworkElementFactory.getInstance(servletContext).getServicesOnNode(nodeId, serviceId);
     	return services;

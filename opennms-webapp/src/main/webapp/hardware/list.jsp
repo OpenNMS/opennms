@@ -158,10 +158,11 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Hardware Inventory")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "ui/index.html#/node/" + node.getId())
+          .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + node.getId())
           .breadcrumb("Hardware Inventory")
           .build(request);
 %>

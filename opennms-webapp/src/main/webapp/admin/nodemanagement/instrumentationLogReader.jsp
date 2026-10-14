@@ -38,6 +38,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Admin")
           .headTitle("Instrumentation Log Reader")
@@ -328,7 +329,7 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
 				  nodeLabel = "Error parsing nodeId";
 			  }
 		  %>
-      <td><a href="ui/index.html#/node/${svcCollector.parsedServiceID}"><%=nodeLabel%><br/>${svcCollector.serviceID}</a></td>
+      <td><a href="${ElementConstants.NODE_DETAILS_URI}${svcCollector.parsedServiceID}"><%=nodeLabel%><br/>${svcCollector.serviceID}</a></td>
       <td align="right">${svcCollector.collectionCount}</td>
       <td align="right">${svcCollector.averageCollectionDuration}</td>
       <td align="right">${svcCollector.averageDurationBetweenCollections}</td>

@@ -89,6 +89,7 @@
 
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("List")
           .headTitle("Outage")
@@ -159,7 +160,7 @@
             <% if(outages[i].getNodeId() != 0 ) { %>             
               <% String longLabel  = WebSecurityUtils.sanitizeString(outages[i].getNodeLabel()); %>
               <% String shortLabel = ElementUtil.truncateLabel(longLabel, 32); %>
-              <a href="ui/index.html#/node/<%=outages[i].getNodeId()%>" title="<%=longLabel%>"><%=shortLabel%></a>
+              <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=outages[i].getNodeId()%>" title="<%=longLabel%>"><%=shortLabel%></a>
               <% Filter nodeFilter = new NodeFilter(outages[i].getNodeId(), getServletContext()); %>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, nodeFilter, true)%>" title="Show only outages on this node"><%=ZOOM_IN_ICON%></a>

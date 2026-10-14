@@ -31,6 +31,7 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Manage Interfaces")
           .headTitle("Admin")
@@ -73,7 +74,7 @@
       <a href="element/rescan.jsp?node=<%= node.getId() %>">Rescan this node</a>
     </p>
     <p>
-      <a href="ui/index.html#/node/<%= node.getId() %>">Return to node page</a>
+      <a href="<%= ElementConstants.NODE_DETAILS_URI %><%= node.getId() %>">Return to node page</a>
     </p>
     <% } %>
   </div> <!-- card-body -->

@@ -52,6 +52,7 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Outages")
@@ -71,7 +72,7 @@
           <th class="col-2">Node</th>
           <td class="col-2">
             <% if( outage.getNodeId() > 0 ) { %>
-              <a href="ui/index.html#/node/<%=outage.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(outage.getNodeLabel())%></a>
+              <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=outage.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(outage.getNodeLabel())%></a>
             <% } else {%>
               &nbsp;
             <% } %>

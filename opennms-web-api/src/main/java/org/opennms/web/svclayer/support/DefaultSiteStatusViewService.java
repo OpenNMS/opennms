@@ -38,6 +38,7 @@ import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.SiteStatusViewService;
 import org.opennms.web.svclayer.model.AggregateStatus;
@@ -211,7 +212,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         // A single down node links straight to the Vue node detail page.
         if (status.getDownEntityCount() == 1) {
             OnmsNode node = status.getDownNodes().iterator().next();
-            return "ui/index.html#/node/" + node.getId();
+            return ElementConstants.NODE_DETAILS_URI + node.getId();
         }
 
         // Otherwise link to the Vue Nodes page. The legacy statusViewName/statusSite/statusRowLabel

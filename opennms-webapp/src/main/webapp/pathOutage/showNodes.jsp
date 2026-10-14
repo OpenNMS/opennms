@@ -32,6 +32,7 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Path Outage Nodes")
           .breadcrumb("Path Outages", "pathOutage/index.jsp")
@@ -71,7 +72,7 @@
           <% for (Integer nodeid : nodeList) {
               String labelColor[] = PathOutageManagerDaoImpl.getInstance().getLabelAndStatus(nodeid.toString(), null); %>
               <tr>
-              <td><a href="ui/index.html#/node/<%= nodeid %>"><%= labelColor[0] %></a></td>
+              <td><a href="<%= ElementConstants.NODE_DETAILS_URI %><%= nodeid %>"><%= labelColor[0] %></a></td>
               <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>
               </tr>
           <% } %>
