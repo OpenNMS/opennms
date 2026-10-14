@@ -54,6 +54,12 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
 
     public static final String RESOURCE_TYPE_NAME = "node";
 
+    /**
+     * The Vue node detail page. This module cannot depend on opennms-web-api, so this value
+     * must match {@code org.opennms.web.api.ElementConstants.NODE_DETAILS_URI}.
+     */
+    public static final String NODE_DETAILS_URI = "ui/index.html#/node/";
+
     /** Constant <code>s_emptyAttributeSet</code> */
     private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
 
@@ -95,7 +101,7 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
     public String getLinkForResource(OnmsResource resource) {
         // The Vue node detail page takes the db id or foreignSource:foreignId. The name is one path
         // segment of a hash route, so reserved characters in a foreign id are escaped (':' is legal).
-        return "ui/index.html#/node/" + UrlEscapers.urlPathSegmentEscaper().escape(resource.getName());
+        return NODE_DETAILS_URI + UrlEscapers.urlPathSegmentEscaper().escape(resource.getName());
     }
 
     @Override

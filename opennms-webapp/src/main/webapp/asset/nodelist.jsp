@@ -47,6 +47,7 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Asset List")
           .breadcrumb("Assets", "asset/index.jsp")
@@ -82,7 +83,7 @@
           <tr>
             <td><%=assets[i].matchingValue%></td>
             <td><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
-            <td><a href="ui/index.html#/node/<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
+            <td><a href="<%= ElementConstants.NODE_DETAILS_URI %><%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
           </tr>
         <% } %>
         </table>

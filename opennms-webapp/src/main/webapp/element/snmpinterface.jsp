@@ -50,10 +50,11 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Snmp Interface")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "ui/index.html#/node/" + nodeId)
+          .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + nodeId)
           .breadcrumb("SnmpInterface")
           .build(request);
 %>
@@ -135,7 +136,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       <table class="table table-sm">
         <tr>
           <th>Node</th>
-          <td><a href="ui/index.html#/node/<%=intf_db.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(node.getLabel())%></a></td>
+          <td><a href="<%= ElementConstants.NODE_DETAILS_URI %><%=intf_db.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(node.getLabel())%></a></td>
         </tr>
         <tr>
           <th>Interface Index</th>

@@ -37,6 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.startsWith;
 
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
 
@@ -61,7 +62,7 @@ public class MenuProviderTest {
         assertEquals("20:30:00 UTC+00", mainMenu.formattedTime);
         assertEquals("On", mainMenu.noticeStatus);
         assertEquals("admin1", mainMenu.username);
-        assertEquals("ui/index.html#/node/", mainMenu.baseNodeUrl);
+        assertEquals(ElementConstants.NODE_DETAILS_URI, mainMenu.baseNodeUrl);
         assertTrue(mainMenu.zenithConnectEnabled);
         assertEquals("https://zenith.opennms.com", mainMenu.zenithConnectBaseUrl);
         assertEquals("/zenith-connect", mainMenu.zenithConnectRelativeUrl);

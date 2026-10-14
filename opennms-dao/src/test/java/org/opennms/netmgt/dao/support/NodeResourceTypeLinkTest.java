@@ -37,12 +37,12 @@ public class NodeResourceTypeLinkTest {
 
     @Test
     public void linksANodeIdToVueNodeDetails() {
-        assertEquals("ui/index.html#/node/42", linkFor("42"));
+        assertEquals(NodeResourceType.NODE_DETAILS_URI + "42", linkFor("42"));
     }
 
     @Test
     public void keepsForeignSourceAndIdAndEncodesReservedCharacters() {
-        assertEquals("ui/index.html#/node/SmokeTests:TestMachine1", linkFor("SmokeTests:TestMachine1"));
-        assertEquals("ui/index.html#/node/My%20Source:a%2Fb%23c", linkFor("My Source:a/b#c"));
+        assertEquals(NodeResourceType.NODE_DETAILS_URI + "SmokeTests:TestMachine1", linkFor("SmokeTests:TestMachine1"));
+        assertEquals(NodeResourceType.NODE_DETAILS_URI + "My%20Source:a%2Fb%23c", linkFor("My Source:a/b#c"));
     }
 }

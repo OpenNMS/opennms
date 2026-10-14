@@ -43,6 +43,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.slf4j.Logger;
@@ -128,7 +129,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
         }
 
         // Show the node's Vue detail page.
-        response.sendRedirect(Util.calculateUrlBase(request, "ui/index.html#/node/" + currNodeId));
+        response.sendRedirect(Util.calculateUrlBase(request, ElementConstants.NODE_DETAILS_URI + currNodeId));
     }
 
     @SuppressWarnings("unchecked")

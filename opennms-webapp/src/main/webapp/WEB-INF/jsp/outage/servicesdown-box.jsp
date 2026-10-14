@@ -33,6 +33,7 @@
         contentType="text/html"
         session="true"
 %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -53,7 +54,7 @@
       <c:otherwise>
         <ul class="list-unstyled mb-0">
           <c:forEach var="summary" items="${summaries}">
-            <c:url var="nodeLink" value="ui/index.html#/node/${summary.nodeId}"/>
+            <c:url var="nodeLink" value="${ElementConstants.NODE_DETAILS_URI}${summary.nodeId}"/>
             <li><a href="${nodeLink}"><c:out value="${summary.nodeLabel}"/></a> <span style="white-space:nowrap;">(${summary.fuzzyTimeDown})</span></li>
           </c:forEach>
         </ul>

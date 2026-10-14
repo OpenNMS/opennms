@@ -33,6 +33,7 @@
         contentType="text/html"
         session="true"
 %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -53,7 +54,7 @@
     <c:otherwise>
       <table class="table table-sm severity mb-0">
         <c:forEach var="summary" items="${summaries}">
-          <c:url var="nodeLink" value="ui/index.html#/node/${summary.nodeId}"/>
+          <c:url var="nodeLink" value="${ElementConstants.NODE_DETAILS_URI}${summary.nodeId}"/>
           <tr class="severity-${summary.maxSeverity.label} nodivider"><td class="bright">
               <a href="${nodeLink}"><c:out value="${summary.nodeLabel}"/></a> has
               <a href="alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${summary.nodeId}">${summary.alarmCount}&nbsp;alarm${summary.alarmCount > 1 ? "s" : ""}</a>
