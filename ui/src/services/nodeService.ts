@@ -22,6 +22,7 @@
 
 import { v2, rest } from './axiosInstances'
 import {
+  Node,
   NodeApiResponse,
   SnmpInterfaceApiResponse,
   QueryParameters,
@@ -65,22 +66,31 @@ const getNodeById = async (id: string): Promise<any> => {
   }
 }
 
-// Turns a database id or foreignSource:foreignId into the database id. v2 /nodes/{id} resolves
+// Looks a node up by database id or foreignSource:foreignId. v2 /nodes/{id} resolves
 // both (NodeDao.get(String)); %3A works as well as ':', so the value is encoded as one path
 // segment and ':', '#' and spaces survive. A foreign id holding '/' cannot be looked up this
 // way: the server's firewall rejects %2F. A 404 is an answer -- no such
 // node -- and is told apart from a failed lookup.
-const resolveNodeId = async (idOrForeignId: string): Promise<ValidationResultWithPayload<string | null>> => {
+const lookupNodeById = async (idOrForeignId: string): Promise<ValidationResultWithPayload<Node | null>> => {
   try {
     const resp = await v2.get(`${endpoint}/${encodeURIComponent(idOrForeignId)}`)
-    const id = resp.data?.id
-    return createResultWithPayload(true, '', id === undefined || id === null ? null : String(id))
+    return createResultWithPayload<Node | null>(true, '', resp.data ?? null)
   } catch (err) {
     if ((err as { response?: { status?: number }})?.response?.status === 404) {
-      return createResultWithPayload<string | null>(true, '', null)
+      return createResultWithPayload<Node | null>(true, '', null)
     }
-    return createResultWithPayload<string | null>(false, 'Failed to look up the node.')
+    return createResultWithPayload<Node | null>(false, 'Failed to look up the node.')
   }
+}
+
+// Turns a database id or foreignSource:foreignId into the database id; null when no such node.
+const resolveNodeId = async (idOrForeignId: string): Promise<ValidationResultWithPayload<string | null>> => {
+  const result = await lookupNodeById(idOrForeignId)
+  if (!result.success) {
+    return createResultWithPayload<string | null>(false, result.message)
+  }
+  const id = result.payload?.id
+  return createResultWithPayload<string | null>(true, '', id === undefined || id === null ? null : String(id))
 }
 
 const getNodeSnmpInterfaces = async (
@@ -205,6 +215,7 @@ export {
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeById,
+  lookupNodeById,
   resolveNodeId,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
