@@ -61,7 +61,8 @@ public class SurrogateCharacterReferencesTest {
 
     @Test
     public void otherReferencesAndTextAreUntouched() {
-        final String plain = "<a b=\"&#60;&#x3C;&amp;\">&#128169; &#1114111; &# &#; &#x; &#xZZ; & &#5535</a>";
+        // the XML production allows ASCII digits only, so fullwidth digits are not a reference
+        final String plain = "<a b=\"&#60;&#x3C;&amp;\">&#128169; &#1114111; &# &#; &#x; &#xZZ; & &#5535 &#\uff15\uff15\uff13\uff15\uff17;&#00055357;</a>";
         assertEquals(plain, SurrogateCharacterReferences.repair(plain));
         final String noRefs = "<a>" + POO + "</a>";
         assertSame(noRefs, SurrogateCharacterReferences.repair(noRefs));
@@ -122,6 +123,19 @@ public class SurrogateCharacterReferencesTest {
             out.write(b);
         }
         assertArrayEquals("<a b=\"&#128519;\">café &#128169; &#65533;</a>".getBytes(StandardCharsets.ISO_8859_1), out.toByteArray());
+    }
+
+    /** The filter hands decided output on in chunks; an explicit finish flushes the target. */
+    @Test
+    public void writerFinishFlushesTheTarget() throws IOException {
+        final StringWriter target = new StringWriter();
+        final java.io.BufferedWriter buffered = new java.io.BufferedWriter(target);
+        final SurrogateCharacterReferences.RepairingWriter writer = SurrogateCharacterReferences.repairing(buffered);
+        for (final char c : "<p>&#55357;&#56489;</p>".toCharArray()) {
+            writer.write(c);
+        }
+        writer.finish();
+        assertEquals("<p>" + POO + "</p>", target.toString());
     }
 
     @Test

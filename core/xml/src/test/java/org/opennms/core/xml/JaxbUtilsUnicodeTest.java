@@ -24,13 +24,18 @@ package org.opennms.core.xml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -42,6 +47,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.dao.DataAccessException;
 import org.xml.sax.InputSource;
 
 /**
@@ -55,6 +61,13 @@ public class JaxbUtilsUnicodeTest {
     public static class Probe {
         @XmlAttribute(name = "pattern")
         public String pattern;
+        @XmlValue
+        public String value;
+    }
+
+    /** A root element shorter than the scanner's lookahead, so the closing tag is held back until the end. */
+    @XmlRootElement(name = "p")
+    public static class Short {
         @XmlValue
         public String value;
     }
@@ -207,6 +220,34 @@ public class JaxbUtilsUnicodeTest {
         final long elapsedMillis = (System.nanoTime() - start) / 1_000_000;
         assertEquals(hostile.toString(), repaired);
         assertTrue("took " + elapsedMillis + " ms", elapsedMillis < 5_000);
+    }
+
+    /** MOXy flushes the writer before the filter can let go of its lookahead, so the filter flushes again at the end. */
+    @Test
+    public void marshalToAnUnflushedWriterWritesTheClosingTag() {
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        final Writer writer = new BufferedWriter(new OutputStreamWriter(bytes, StandardCharsets.UTF_8));
+        final Short s = new Short();
+        s.value = POO;
+        JaxbUtils.marshal(s, writer);
+        final String xml = new String(bytes.toByteArray(), StandardCharsets.UTF_8);
+        assertTrue(xml, xml.endsWith("</p>") || xml.endsWith("</p>\n"));
+        assertEquals(POO, JaxbUtils.unmarshal(Short.class, xml).value);
+    }
+
+    /**
+     * Bytes that are not valid in the declared or default encoding are rejected by the parser,
+     * where the old default-charset reader replaced them silently.
+     */
+    @Test
+    public void invalidBytesAreRejectedByTheParser() {
+        final byte[] latin1Undeclared = "<probe>caf\u00e9</probe>".getBytes(StandardCharsets.ISO_8859_1);
+        try {
+            JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(latin1Undeclared));
+            fail("the parser was expected to reject an invalid UTF-8 sequence");
+        } catch (final DataAccessException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("UTF-8"));
+        }
     }
 
     /** The parser closes the caller's stream, as it did before the repair was added. */

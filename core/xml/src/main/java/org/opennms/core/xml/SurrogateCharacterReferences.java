@@ -21,14 +21,12 @@
  */
 package org.opennms.core.xml;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.SequenceInputStream;
 import java.io.Writer;
-import java.nio.CharBuffer;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +38,9 @@ import org.slf4j.LoggerFactory;
  * the character they encode; an unpaired half becomes U+FFFD. References inside comments,
  * CDATA sections and processing instructions are literal text and are left alone.
  *
- * The filters stream with at most ten units of lookahead, so they add no buffering and
- * run in linear time on any input.
+ * Only references of up to seven decimal or six hexadecimal ASCII digits are recognised,
+ * which covers everything the marshaller ever wrote. The filters stream with at most ten
+ * units of lookahead, so they add no buffering and run in linear time on any input.
  */
 public final class SurrogateCharacterReferences {
     private static final Logger LOG = LoggerFactory.getLogger(SurrogateCharacterReferences.class);
@@ -49,10 +48,14 @@ public final class SurrogateCharacterReferences {
     /** Longest unit of markup the scanner has to see at once: {@code &#1114111;} or {@code <![CDATA[}. */
     private static final int LOOKAHEAD = 10;
 
+    /** Unpaired halves are data loss, but one bad document replayed over IPC must not flood the log. */
+    private static final long WARN_INTERVAL_MILLIS = 60_000L;
+    private static final AtomicLong LAST_WARNING = new AtomicLong();
+
     private SurrogateCharacterReferences() {
     }
 
-    /** Repairs a complete document or fragment. Returns the argument itself if there is nothing to do. */
+    /** Repairs a complete document or fragment. Returns the argument itself if it holds no reference at all. */
     public static String repair(final String xml) {
         if (xml == null || xml.indexOf("&#") < 0) {
             return xml;
@@ -66,7 +69,7 @@ public final class SurrogateCharacterReferences {
     /**
      * Repairs what is written through the returned writer. Repaired characters are written
      * as characters. Closing the writer closes the target; {@link RepairingWriter#finish()}
-     * writes the lookahead out without closing.
+     * writes the lookahead out and flushes the target without closing it.
      */
     public static RepairingWriter repairing(final Writer out) {
         return new RepairingWriter(out);
@@ -80,8 +83,8 @@ public final class SurrogateCharacterReferences {
     /**
      * Repairs what is read through the returned stream. Repaired characters are read as a
      * single numeric reference, which is valid in every encoding, so the parser still honours
-     * the document's own encoding declaration. A stream that starts like UTF-16 or UTF-32 is
-     * passed through untouched.
+     * the document's own encoding declaration. In a UTF-16 or UTF-32 stream a NUL byte sits
+     * between {@code &} and {@code #}, so such a stream passes through unchanged.
      */
     public static InputStream repairing(final InputStream in) {
         return new RepairingInputStream(in);
@@ -106,10 +109,19 @@ public final class SurrogateCharacterReferences {
             this.references = references;
         }
 
+        void accept(final char c) {
+            if (plain() && c != '&' && c != '<') {
+                out.append(c);
+            } else {
+                in.append(c);
+                drain(false);
+            }
+        }
+
         void accept(final CharSequence chars, final int from, final int to) {
             int i = from;
             while (i < to) {
-                if (mode == Mode.TEXT && in.length() == 0 && pendingHigh < 0) {
+                if (plain()) {
                     // fast path: copy a run of plain text without going through the lookahead
                     int run = i;
                     while (run < to && chars.charAt(run) != '&' && chars.charAt(run) != '<') {
@@ -127,14 +139,38 @@ public final class SurrogateCharacterReferences {
         }
 
         void accept(final char[] chars, final int off, final int len) {
-            accept(CharBuffer.wrap(chars, off, len), 0, len);
+            final int to = off + len;
+            int i = off;
+            while (i < to) {
+                if (plain()) {
+                    int run = i;
+                    while (run < to && chars[run] != '&' && chars[run] != '<') {
+                        run++;
+                    }
+                    if (run > i) {
+                        out.append(chars, i, run - i);
+                        i = run;
+                        continue;
+                    }
+                }
+                in.append(chars[i++]);
+                drain(false);
+            }
         }
 
+        /** Decides whatever is still held back. The scanner is ready for another document afterwards. */
         void finish() {
             drain(true);
             flushPendingLone();
+            mode = Mode.TEXT;
             if (unpaired > 0) {
-                LOG.warn("Replaced {} unpaired surrogate character reference(s) with U+FFFD", unpaired);
+                final long now = System.currentTimeMillis();
+                final long last = LAST_WARNING.get();
+                if (now - last >= WARN_INTERVAL_MILLIS && LAST_WARNING.compareAndSet(last, now)) {
+                    LOG.warn("Replaced {} unpaired surrogate character reference(s) with U+FFFD; further replacements are logged at debug level for a minute", unpaired);
+                } else {
+                    LOG.debug("Replaced {} unpaired surrogate character reference(s) with U+FFFD", unpaired);
+                }
                 unpaired = 0;
             }
         }
@@ -143,11 +179,20 @@ public final class SurrogateCharacterReferences {
             return out.length() > 0;
         }
 
+        int outputLength() {
+            return out.length();
+        }
+
         int take(final char[] buf, final int off, final int len) {
             final int n = Math.min(len, out.length());
             out.getChars(0, n, buf, off);
             out.delete(0, n);
             return n;
+        }
+
+        /** Plain text with nothing held back: the next unit can only matter if it opens markup or a reference. */
+        private boolean plain() {
+            return mode == Mode.TEXT && in.length() == 0 && pendingHigh < 0;
         }
 
         private void drain(final boolean eof) {
@@ -243,7 +288,7 @@ public final class SurrogateCharacterReferences {
                 i++;
             }
             final int digits = i;
-            while (i < in.length() && i - digits < (hex ? 6 : 7) && Character.digit(in.charAt(i), hex ? 16 : 10) >= 0) {
+            while (i < in.length() && i - digits < (hex ? 6 : 7) && digit(in.charAt(i), hex) >= 0) {
                 i++;
             }
             if (i == digits || i >= in.length() || in.charAt(i) != ';') {
@@ -254,11 +299,37 @@ public final class SurrogateCharacterReferences {
 
         private int referenceValue(final int end) {
             final boolean hex = in.charAt(2) == 'x' || in.charAt(2) == 'X';
-            return Integer.parseInt(in.substring(hex ? 3 : 2, end - 1), hex ? 16 : 10);
+            int value = 0;
+            for (int i = hex ? 3 : 2; i < end - 1; i++) {
+                value = value * (hex ? 16 : 10) + digit(in.charAt(i), hex);
+            }
+            return value;
+        }
+
+        /** ASCII digits only: the XML production allows nothing else, unlike Character.digit(). */
+        private static int digit(final char c, final boolean hex) {
+            if (c >= '0' && c <= '9') {
+                return c - '0';
+            }
+            if (hex && c >= 'a' && c <= 'f') {
+                return c - 'a' + 10;
+            }
+            if (hex && c >= 'A' && c <= 'F') {
+                return c - 'A' + 10;
+            }
+            return -1;
         }
 
         private boolean startsWith(final String s) {
-            return in.length() >= s.length() && in.indexOf(s) == 0;
+            if (in.length() < s.length()) {
+                return false;
+            }
+            for (int i = 0; i < s.length(); i++) {
+                if (in.charAt(i) != s.charAt(i)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void shift(final int n) {
@@ -287,13 +358,27 @@ public final class SurrogateCharacterReferences {
         }
     }
 
+    /**
+     * MOXy writes text one character at a time, so decided output is handed on in chunks
+     * rather than per character, and on flush, finish and close.
+     */
     public static final class RepairingWriter extends Writer {
+        private static final int CHUNK = 8192;
+
         private final Writer out;
         private final Scanner scanner = new Scanner(false);
-        private final char[] buffer = new char[8192];
+        private final char[] buffer = new char[CHUNK];
 
         RepairingWriter(final Writer out) {
             this.out = Objects.requireNonNull(out);
+        }
+
+        @Override
+        public void write(final int c) throws IOException {
+            scanner.accept((char) c);
+            if (scanner.outputLength() >= CHUNK) {
+                forward();
+            }
         }
 
         @Override
@@ -314,10 +399,14 @@ public final class SurrogateCharacterReferences {
             out.flush();
         }
 
-        /** Writes the lookahead out, closing any pending pair, without closing the target. */
+        /**
+         * Writes the lookahead out, closing any pending pair, and flushes the target without
+         * closing it. MOXy flushes the writer before this can run, so a caller that relies on
+         * that flush gets one here.
+         */
         public void finish() throws IOException {
             scanner.finish();
-            forward();
+            flush();
         }
 
         @Override
@@ -374,9 +463,6 @@ public final class SurrogateCharacterReferences {
         private final Scanner scanner = new Scanner(true);
         private final byte[] buffer = new byte[8192];
         private final char[] chars = new char[8192];
-        /** Set once the first bytes have been seen: the raw stream (with those bytes put back) or null to repair. */
-        private InputStream passthrough;
-        private boolean sniffed;
         private boolean eof;
 
         RepairingInputStream(final InputStream in) {
@@ -395,12 +481,6 @@ public final class SurrogateCharacterReferences {
             if (len == 0) {
                 return 0;
             }
-            if (!sniffed) {
-                sniff();
-            }
-            if (passthrough != null) {
-                return passthrough.read(b, off, len);
-            }
             while (!scanner.hasOutput()) {
                 if (eof) {
                     return -1;
@@ -410,49 +490,18 @@ public final class SurrogateCharacterReferences {
                     eof = true;
                     scanner.finish();
                 } else {
-                    feed(buffer, n);
+                    for (int i = 0; i < n; i++) {
+                        chars[i] = (char) (buffer[i] & 0xFF);
+                    }
+                    scanner.accept(chars, 0, n);
                 }
             }
+            // the scanner only ever adds ASCII, so every output unit fits a byte again
             final int n = scanner.take(chars, 0, Math.min(len, chars.length));
             for (int i = 0; i < n; i++) {
                 b[off + i] = (byte) chars[i];
             }
             return n;
-        }
-
-        /** A NUL or a byte-order mark among the first bytes means UTF-16 or UTF-32, which the scanner cannot read. */
-        private void sniff() throws IOException {
-            sniffed = true;
-            int n = 0;
-            while (n < 4) {
-                final int r = in.read(buffer, n, 4 - n);
-                if (r < 0) {
-                    break;
-                }
-                n += r;
-            }
-            boolean wide = n >= 2 && ((buffer[0] == (byte) 0xFE && buffer[1] == (byte) 0xFF) || (buffer[0] == (byte) 0xFF && buffer[1] == (byte) 0xFE));
-            for (int i = 0; i < n; i++) {
-                wide |= buffer[i] == 0;
-            }
-            if (wide) {
-                final byte[] head = new byte[n];
-                System.arraycopy(buffer, 0, head, 0, n);
-                passthrough = new SequenceInputStream(new ByteArrayInputStream(head), in);
-                return;
-            }
-            feed(buffer, n);
-            if (n < 4) {
-                eof = true;
-                scanner.finish();
-            }
-        }
-
-        private void feed(final byte[] bytes, final int n) {
-            for (int i = 0; i < n; i++) {
-                chars[i] = (char) (bytes[i] & 0xFF);
-            }
-            scanner.accept(chars, 0, n);
         }
 
         @Override

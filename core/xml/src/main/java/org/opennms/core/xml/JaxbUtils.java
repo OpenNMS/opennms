@@ -293,15 +293,8 @@ public abstract class JaxbUtils {
 
         LOG.trace("unmarshalling class {} from input source {} with unmarshaller {}", clazz.getSimpleName(), inputSource, um);
         try {
-            if (repair) {
-                if (inputSource.getCharacterStream() != null) {
-                    inputSource.setCharacterStream(SurrogateCharacterReferences.repairing(inputSource.getCharacterStream()));
-                } else if (inputSource.getByteStream() != null) {
-                    inputSource.setByteStream(SurrogateCharacterReferences.repairing(inputSource.getByteStream()));
-                }
-            }
             final XMLFilter filter = getXMLFilterForClass(clazz, disableDOCTYPE);
-            final SAXSource source = new SAXSource(filter, inputSource);
+            final SAXSource source = new SAXSource(filter, repair ? repairing(inputSource) : inputSource);
 
             um.setEventHandler(new LoggingValidationEventHandler());
 
@@ -323,6 +316,23 @@ public abstract class JaxbUtils {
             }
         }
         return null;
+    }
+
+    /** A copy of the source whose stream, if it has one, is read through the repairing filter. */
+    private static InputSource repairing(final InputSource inputSource) {
+        if (inputSource.getCharacterStream() == null && inputSource.getByteStream() == null) {
+            return inputSource;
+        }
+        final InputSource repaired = new InputSource();
+        repaired.setPublicId(inputSource.getPublicId());
+        repaired.setSystemId(inputSource.getSystemId());
+        repaired.setEncoding(inputSource.getEncoding());
+        if (inputSource.getCharacterStream() != null) {
+            repaired.setCharacterStream(SurrogateCharacterReferences.repairing(inputSource.getCharacterStream()));
+        } else {
+            repaired.setByteStream(SurrogateCharacterReferences.repairing(inputSource.getByteStream()));
+        }
+        return repaired;
     }
 
     public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz, boolean disableDOCTYPE) throws SAXException {
