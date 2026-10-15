@@ -17,7 +17,6 @@
           <router-link :to="groupPath(data.name)" data-test="threshold-group-link">{{ data.name }}</router-link>
         </template>
       </OnmsColumn>
-      <OnmsColumn header="RRD repository" field="rrdRepository" />
       <OnmsColumn header="Thresholds" field="thresholdCount" />
       <OnmsColumn header="Expressions" field="expressionCount" />
       <OnmsColumn header="Used by">
@@ -100,10 +99,7 @@ const filteredGroups = computed(() => {
     return store.groups
   }
 
-  return store.groups.filter(
-    group =>
-      group.name.toLowerCase().includes(term) || (group.rrdRepository ?? '').toLowerCase().includes(term)
-  )
+  return store.groups.filter(group => group.name.toLowerCase().includes(term))
 })
 
 const usedBy = (name: string) => {
