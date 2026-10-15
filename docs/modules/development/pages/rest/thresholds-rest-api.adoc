@@ -79,11 +79,6 @@ Generated definitions are stored under the `opennms.programmatic.events` event c
 | `application/json`
 | The datasource types, threshold types and filter operators an editor can choose from.
 
-| `POST`
-| `/api/v2/thresholding/reload`
-| --
-| Ask threshd to re-read `thresholds.xml`.
-
 | `GET`
 | `/api/v2/thresholding/download`
 | `application/json` or `application/xml`
@@ -215,11 +210,6 @@ curl -u admin:admin -X POST -F upload=@thresholds.xml \
 | --
 | Delete a package. The last one cannot be deleted.
 
-| `POST`
-| `/api/v2/threshd/reload`
-| --
-| Ask threshd to re-read `threshd-configuration.xml`.
-
 | `GET`
 | `/api/v2/threshd/download`
 | `application/json` or `application/xml`
@@ -275,7 +265,6 @@ curl -u admin:admin http://localhost:8980/opennms/api/v2/threshd/packages/exampl
 
 | `200` | Read succeeded, or an upload was applied.
 | `201` | Created. The `Location` header points at the new resource.
-| `202` | Reload event sent. The daemon reloads asynchronously.
 | `204` | Write succeeded. No response body.
 | `400` | A failed validation rule, an unparseable upload, or a missing body. The response body carries the reason.
 | `403` | Admin role required, or the group is provided by an extension and cannot be modified.

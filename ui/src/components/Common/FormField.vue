@@ -3,8 +3,34 @@
     ref="rootEl"
     class="form-field"
   >
+    <!-- With an info text the label shares a row with an info icon that shows the
+         text as a tooltip. The icon sits outside the <label>, so hovering or
+         clicking it does not focus the control. -->
+    <div
+      v-if="label && info"
+      class="form-field__label-row"
+    >
+      <label
+        :for="controlId"
+        class="form-field__label"
+      >
+        {{ label }}<span
+          v-if="required"
+          class="form-field__required"
+          aria-hidden="true"
+        >*</span>
+      </label>
+      <OnmsIcon
+        v-onms-tooltip.top="info"
+        :icon="InfoIcon"
+        class="form-field__info-icon"
+        tabindex="0"
+        :title="info"
+        data-test="form-field-info"
+      />
+    </div>
     <label
-      v-if="label"
+      v-else-if="label"
       :for="controlId"
       class="form-field__label"
     >
@@ -43,6 +69,8 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { OnmsIcon } from '@opennms/onms-ui'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 const props = withDefaults(defineProps<{
   label?: string
@@ -50,6 +78,8 @@ const props = withDefaults(defineProps<{
   required?: boolean
   error?: string
   hint?: string
+  /** Description of the field, shown as a tooltip on an info icon beside the label. */
+  info?: string
   reserveLabelSpace?: boolean
 }>(), {
   label: undefined,
@@ -57,6 +87,7 @@ const props = withDefaults(defineProps<{
   required: false,
   error: undefined,
   hint: undefined,
+  info: undefined,
   reserveLabelSpace: false
 })
 
@@ -127,6 +158,31 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--p-text-color);
+}
+
+// The label's font size, so the info icon is sized relative to the label text.
+.form-field__label-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+
+  .form-field__label {
+    margin-bottom: 0;
+  }
+}
+
+// Looks like InfoIconButton, but shows help on hover rather than acting on a click.
+.form-field__info-icon {
+  font-size: 1.2em;
+  vertical-align: -0.2em;
+  margin-left: 0.3em;
+  cursor: help;
+  color: var(--p-text-muted-color);
+
+  &:hover {
+    color: var(--p-primary-color);
+  }
 }
 
 .form-field__required {

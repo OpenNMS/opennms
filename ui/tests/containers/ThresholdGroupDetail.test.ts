@@ -1,6 +1,7 @@
 import ThresholdGroupDetail from '@/containers/ThresholdGroupDetail.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import ThresholdDefinitionTable from '@/components/ThresholdConfiguration/Group/ThresholdDefinitionTable.vue'
+import ThresholdGroupHeader from '@/components/ThresholdConfiguration/Group/ThresholdGroupHeader.vue'
 import { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
 import { useMenuStore } from '@/stores/menuStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
@@ -38,8 +39,6 @@ describe('ThresholdGroupDetail.vue', () => {
         plugins: [PrimeVue],
         stubs: {
           BreadCrumbs: true,
-          ThresholdDefinitionDrawer: true,
-          ThresholdGroupDrawer: true,
           ThresholdGroupHeader: true,
           ThresholdDefinitionTable: true
         }
@@ -113,6 +112,15 @@ describe('ThresholdGroupDetail.vue', () => {
     const wrapper = mountComponent()
 
     expect(wrapper.find('[data-test="threshold-group-not-found"]').exists()).toBe(false)
+  })
+
+  it('opens the edit page when the header asks to edit', async () => {
+    routeParams.value = { name: 'my%20group' }
+
+    const wrapper = mountComponent()
+    await wrapper.findComponent(ThresholdGroupHeader).vm.$emit('edit')
+
+    expect(pushMock).toHaveBeenCalledWith('/threshold-config/group/my%20group/edit')
   })
 
   it('puts the group name last in the breadcrumbs', () => {

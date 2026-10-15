@@ -1,6 +1,6 @@
 <template>
   <div class="transfer-tab">
-    <TableCard v-for="section in sections" :key="section.key">
+    <TableCard class="threshold-transfer-card" v-for="section in sections" :key="section.key">
       <div class="section">
         <div class="section-heading">
           <h3>{{ section.title }}</h3>
@@ -147,6 +147,13 @@ const onConfirmUpload = async () => {
 </script>
 
 <style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.threshold-transfer-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
 .transfer-tab {
   display: flex;
   flex-direction: column;
@@ -157,7 +164,6 @@ const onConfirmUpload = async () => {
     align-items: center;
     justify-content: space-between;
     gap: 1em;
-    padding: 0 1em;
   }
 
   .section-heading {

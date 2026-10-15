@@ -1,28 +1,26 @@
 <template>
   <div class="group-header">
     <div class="left">
-      <OnmsIconButton
-        :icon="BackIcon"
-        tooltip="Back to threshold groups"
-        aria-label="Back to threshold groups"
+      <OnmsButton
+        variant="text"
         data-test="threshold-group-back"
         @click="router.push('/threshold-config')"
-      />
+      >
+        <OnmsIcon :icon="ArrowBack" />
+        Go Back
+      </OnmsButton>
       <div class="titles">
-        <h2 data-test="threshold-group-name">{{ group.name }}</h2>
+        <h2 data-test="threshold-group-name">
+          {{ group.name }}
+          <InfoIconButton
+            ariaLabel="About threshold groups"
+            data-test="threshold-group-info-icon"
+            @click="isHelpVisible = true"
+          />
+        </h2>
         <p class="subtitle" data-test="threshold-group-repository">{{ group.rrdRepository }}</p>
       </div>
       <OnmsTag v-if="group.readOnly" value="Read only" data-test="threshold-group-readonly" />
-      <OnmsIcon
-        :icon="InfoIcon"
-        class="info-icon"
-        data-test="threshold-group-info-icon"
-        role="button"
-        tabindex="0"
-        aria-label="About threshold groups"
-        @click="isHelpVisible = true"
-        @keyup.enter="isHelpVisible = true"
-      />
     </div>
 
     <div class="right">
@@ -57,12 +55,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import InfoIconButton from '@/components/Common/InfoIconButton.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
 import { GROUP_HELP } from '@/lib/thresholdHelpText'
 import type { ThresholdGroup } from '@/types/thresholdConfig'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsTag } from '@opennms/onms-ui'
-import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
-import BackIcon from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
+import { OnmsButton, OnmsIcon, OnmsTag } from '@opennms/onms-ui'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
 defineProps<{
   group: ThresholdGroup
@@ -88,7 +86,7 @@ const isHelpVisible = ref(false)
   .left {
     display: flex;
     align-items: center;
-    gap: 0.75em;
+    gap: 20px;
   }
 
   .titles h2 {
@@ -97,11 +95,6 @@ const isHelpVisible = ref(false)
 
   .subtitle {
     margin: 0;
-    color: var(--p-text-muted-color);
-  }
-
-  .info-icon {
-    cursor: pointer;
     color: var(--p-text-muted-color);
   }
 
