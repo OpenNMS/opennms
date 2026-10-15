@@ -3,9 +3,9 @@
     ref="rootEl"
     class="form-field"
   >
-    <!-- With an info text the label shares a row with an info icon. The icon sits
-         outside the <label>, so clicking it opens the dialog instead of focusing
-         the control. -->
+    <!-- With an info text the label shares a row with an info icon that shows the
+         text as a tooltip. The icon sits outside the <label>, so hovering or
+         clicking it does not focus the control. -->
     <div
       v-if="label && info"
       class="form-field__label-row"
@@ -20,10 +20,13 @@
           aria-hidden="true"
         >*</span>
       </label>
-      <InfoIconButton
-        :ariaLabel="`About ${label}`"
+      <OnmsIcon
+        v-onms-tooltip.top="info"
+        :icon="InfoIcon"
+        class="form-field__info-icon"
+        tabindex="0"
+        :title="info"
         data-test="form-field-info"
-        @click="isInfoVisible = true"
       />
     </div>
     <label
@@ -61,24 +64,13 @@
       v-else-if="hint"
       class="field-hint"
     >{{ hint }}</small>
-    <OnmsMessageDialog
-      v-if="isInfoVisible"
-      :visible="true"
-      :title="infoTitle || label"
-      data-test="form-field-info-dialog"
-      @close="isInfoVisible = false"
-    >
-      <template #content>
-        <p class="form-field__info-text">{{ info }}</p>
-      </template>
-    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import InfoIconButton from '@/components/Common/InfoIconButton.vue'
-import { OnmsMessageDialog } from '@opennms/onms-ui'
+import { OnmsIcon } from '@opennms/onms-ui'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 const props = withDefaults(defineProps<{
   label?: string
@@ -86,10 +78,8 @@ const props = withDefaults(defineProps<{
   required?: boolean
   error?: string
   hint?: string
-  /** Description of the field, shown in a dialog behind an info icon beside the label. */
+  /** Description of the field, shown as a tooltip on an info icon beside the label. */
   info?: string
-  /** Title of the info dialog; defaults to the label. */
-  infoTitle?: string
   reserveLabelSpace?: boolean
 }>(), {
   label: undefined,
@@ -98,11 +88,8 @@ const props = withDefaults(defineProps<{
   error: undefined,
   hint: undefined,
   info: undefined,
-  infoTitle: undefined,
   reserveLabelSpace: false
 })
-
-const isInfoVisible = ref(false)
 
 // `for` is a reserved word; alias it for use in the template.
 const controlId = computed(() => props.for)
@@ -185,9 +172,17 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   }
 }
 
-.form-field__info-text {
-  margin: 0;
-  line-height: 1.5;
+// Looks like InfoIconButton, but shows help on hover rather than acting on a click.
+.form-field__info-icon {
+  font-size: 1.2em;
+  vertical-align: -0.2em;
+  margin-left: 0.3em;
+  cursor: help;
+  color: var(--p-text-muted-color);
+
+  &:hover {
+    color: var(--p-primary-color);
+  }
 }
 
 .form-field__required {
