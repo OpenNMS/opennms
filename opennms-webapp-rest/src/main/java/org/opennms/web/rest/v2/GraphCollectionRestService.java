@@ -26,6 +26,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -34,6 +36,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -70,9 +74,21 @@ import org.springframework.stereotype.Component;
  *
  * The collection is the unit of update: a PUT replaces the whole thing, which gives the editor
  * reorder, edit and delete in one call and keeps the file writes to one per save. Check-then-act
- * sequences synchronize on the factory instance, whose own methods are synchronized on it too, so
- * the legacy controllers that still write through the same singleton cannot interleave with a
- * REST write inside a single factory call.
+ * sequences synchronize on the factory instance, whose own methods are synchronized on it too,
+ * and the v1 service and the legacy controllers take the same monitor around their own
+ * read-change-save sequences. The factory hands out its live objects, so this service never
+ * changes a stored collection in place: writes build a copy and swap it in under the lock, and
+ * reads copy under the lock before resolving outside it.
+ *
+ * The file is validated against its XSD on load, so title, timespan and graphtype are never null
+ * on a stored graph; the null guards in the mappers only matter where no XSD can be found. The
+ * link rule is applied on the way out as well as on the way in, since the v1 API and hand edits
+ * store links without it.
+ *
+ * Single-collection reads carry an ETag over the stored content, and the writes honour If-Match
+ * with a 412, so two editors cannot overwrite each other unnoticed and a stale page cannot act on
+ * a collection whose id was reused after a delete. The header is optional: a write without it
+ * always goes through.
  *
  * No event is sent on writes. The historical kscReportUpdated event announces that graphs were
  * removed by the view page's cleanup, which this API deliberately does not do.
@@ -118,10 +134,10 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         final List<GraphCollectionDto> collections = new ArrayList<>();
         synchronized (m_configFactory) {
             for (final GraphCollection collection : m_configFactory.getCollectionMap().values()) {
-                collections.add(toDto(collection));
+                collections.add(toResponse(collection));
             }
         }
-        collections.sort(Comparator.comparing(GraphCollectionDto::getTitle, String.CASE_INSENSITIVE_ORDER));
+        collections.sort(Comparator.comparing(GraphCollectionDto::getTitle, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
         return Response.ok(collections).build();
     }
 
@@ -135,23 +151,24 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
     }
 
     @Override
-    public Response getCollection(final int id) {
+    public Response getCollection(final Request request, final int id) {
         synchronized (m_configFactory) {
             final GraphCollection collection = m_configFactory.getCollectionById(id);
             if (collection == null) {
                 return notFound(id);
             }
-            return Response.ok(toDto(collection)).build();
+            return Response.ok(toResponse(collection)).tag(etagOf(collection)).build();
         }
     }
 
     @Override
-    public Response getResolvedCollection(final int id, final String timespan, final String graphtype) {
+    public Response getResolvedCollection(final Request request, final int id, final String timespan, final String graphtype) {
         final String timespanProblem = validateOverrideTimespan(timespan);
         if (timespanProblem != null) {
             return badRequest(timespanProblem);
         }
         final GraphCollection snapshot;
+        final EntityTag etag;
         synchronized (m_configFactory) {
             final GraphCollection collection = m_configFactory.getCollectionById(id);
             if (collection == null) {
@@ -159,8 +176,9 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             }
             // Resolve a copy: the legacy view page still prunes graphs from the live list.
             snapshot = toModel(toDto(collection), id);
+            etag = etagOf(collection);
         }
-        return Response.ok(resolve(snapshot, TYPE_CUSTOM, timespan, graphtype)).build();
+        return Response.ok(resolve(snapshot, TYPE_CUSTOM, timespan, graphtype)).tag(etag).build();
     }
 
     @Override
@@ -187,9 +205,9 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         if (denied != null) {
             return denied;
         }
-        final String problem = validate(dto);
-        if (problem != null) {
-            return badRequest(problem);
+        final List<String> problems = validate(dto);
+        if (!problems.isEmpty()) {
+            return badRequest(problems);
         }
         synchronized (m_configFactory) {
             final GraphCollection collection = toModel(dto, null);
@@ -203,23 +221,28 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             }
             final GraphCollection saved = m_configFactory.getCollectionById(id);
             final URI location = uriInfo.getBaseUriBuilder().path("graph-collections").path(Integer.toString(id)).build();
-            return Response.created(location).entity(toDto(saved)).build();
+            return Response.created(location).entity(toResponse(saved)).tag(etagOf(saved)).build();
         }
     }
 
     @Override
-    public Response updateCollection(final SecurityContext securityContext, final int id, final GraphCollectionDto dto) {
+    public Response updateCollection(final SecurityContext securityContext, final Request request, final int id, final GraphCollectionDto dto) {
         final Response denied = denyReadOnly(securityContext);
         if (denied != null) {
             return denied;
         }
-        final String problem = validate(dto);
-        if (problem != null) {
-            return badRequest(problem);
+        final List<String> problems = validate(dto);
+        if (!problems.isEmpty()) {
+            return badRequest(problems);
         }
         synchronized (m_configFactory) {
-            if (m_configFactory.getCollectionById(id) == null) {
+            final GraphCollection current = m_configFactory.getCollectionById(id);
+            if (current == null) {
                 return notFound(id);
+            }
+            final Response stale = precondition(request, current);
+            if (stale != null) {
+                return stale;
             }
             m_configFactory.setCollection(id, toModel(dto, id));
             try {
@@ -229,12 +252,12 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
                 return saveFailed(e);
             }
             final GraphCollection saved = m_configFactory.getCollectionById(id);
-            return Response.ok(toDto(saved)).build();
+            return Response.ok(toResponse(saved)).tag(etagOf(saved)).build();
         }
     }
 
     @Override
-    public Response deleteCollection(final SecurityContext securityContext, final int id) {
+    public Response deleteCollection(final SecurityContext securityContext, final Request request, final int id) {
         final Response denied = denyReadOnly(securityContext);
         if (denied != null) {
             return denied;
@@ -243,6 +266,10 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             final GraphCollection collection = m_configFactory.getCollectionById(id);
             if (collection == null) {
                 return notFound(id);
+            }
+            final Response stale = precondition(request, collection);
+            if (stale != null) {
+                return stale;
             }
             try {
                 m_configFactory.deleteCollectionAndSave(id);
@@ -255,7 +282,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
     }
 
     @Override
-    public Response addGraph(final SecurityContext securityContext, final int id, final Integer index, final GraphCollectionGraphDto graphDto) {
+    public Response addGraph(final SecurityContext securityContext, final Request request, final int id, final Integer index, final GraphCollectionGraphDto graphDto) {
         final Response denied = denyReadOnly(securityContext);
         if (denied != null) {
             return denied;
@@ -272,17 +299,24 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             if (collection == null) {
                 return notFound(id);
             }
+            final Response stale = precondition(request, collection);
+            if (stale != null) {
+                return stale;
+            }
             final int size = collection.getGraphs().size();
             if (index != null && (index < 0 || index > size)) {
                 return badRequest("index must be between 0 and " + size + ".");
             }
+            // Change a copy, not the stored object: readers that do not take the lock must never
+            // see a graph that has not been saved yet.
+            final GraphCollection changed = toModel(toDto(collection), id);
             final Graph graph = toModel(graphDto);
             if (index == null) {
-                collection.addGraph(graph);
+                changed.addGraph(graph);
             } else {
-                collection.addGraph(index, graph);
+                changed.addGraph(index, graph);
             }
-            m_configFactory.setCollection(id, collection);
+            m_configFactory.setCollection(id, changed);
             try {
                 m_configFactory.saveCurrent();
             } catch (final Exception e) {
@@ -290,7 +324,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
                 return saveFailed(e);
             }
             final GraphCollection saved = m_configFactory.getCollectionById(id);
-            return Response.ok(toDto(saved)).build();
+            return Response.ok(toResponse(saved)).tag(etagOf(saved)).build();
         }
     }
 
@@ -366,10 +400,14 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             dto.setIndex(index++);
             dto.setKind(KIND_PREFAB);
             dto.setTitle(graph.getTitle());
-            dto.setExtlink(graph.getExtlink().orElse(null));
+            dto.setExtlink(safeLink(graph.getExtlink().orElse(null)));
             dto.setTimespan(timespan != null ? timespan : graph.getTimespan());
             dto.setGraphtype(graphtype != null ? graphtype : graph.getGraphtype());
             dto.setResourceId(graph.getResourceId().orElse(null));
+
+            // What the editor would reject on save is flagged here too, so a hand-edited entry shows
+            // its problem where the user can fix it instead of blocking the next save unexplained.
+            final String invalid = validateGraph(toDto(graph), null);
 
             OnmsResource resource = null;
             String error = null;
@@ -409,8 +447,8 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             if (available != null) {
                 dto.setPrefabGraphTitle(available.getTitle());
             }
-            dto.setValid(resource != null && available != null);
-            dto.setError(error);
+            dto.setValid(resource != null && available != null && invalid == null);
+            dto.setError(joinErrors(invalid, error));
 
             Calendar begin = Calendar.getInstance();
             Calendar end = Calendar.getInstance();
@@ -423,7 +461,9 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
                 end = Calendar.getInstance();
                 GraphCollectionConfigFactory.getBeginEndTime("7_day", begin, end);
                 dto.setValid(false);
-                dto.setError(error != null ? error : "Unknown timespan '" + dto.getTimespan() + "'.");
+                if (dto.getError() == null) {
+                    dto.setError("Unknown timespan '" + dto.getTimespan() + "'.");
+                }
             }
             dto.setStart(begin.getTimeInMillis());
             dto.setEnd(end.getTimeInMillis());
@@ -460,27 +500,32 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
 
     // -- validation and mapping ------------------------------------------------------------------
 
-    static String validate(final GraphCollectionDto dto) {
+    /**
+     * Every problem with the collection, one per graph at most, so a client can show them all at
+     * once; an older file with several hand-edited graphs would otherwise be fixed one save at a time.
+     */
+    static List<String> validate(final GraphCollectionDto dto) {
+        final List<String> problems = new ArrayList<>();
         if (dto == null) {
-            return "A graph collection body is required.";
+            problems.add("A graph collection body is required.");
+            return problems;
         }
         if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
-            return "A title is required.";
-        }
-        if (dto.getTitle().trim().length() > MAX_TITLE_LENGTH) {
-            return "The title must be at most " + MAX_TITLE_LENGTH + " characters.";
+            problems.add("A title is required.");
+        } else if (dto.getTitle().trim().length() > MAX_TITLE_LENGTH) {
+            problems.add("The title must be at most " + MAX_TITLE_LENGTH + " characters.");
         }
         if (dto.getGraphsPerLine() != null && dto.getGraphsPerLine() < 0) {
-            return "graphsPerLine must be 0 or greater.";
+            problems.add("graphsPerLine must be 0 or greater.");
         }
         int index = 0;
         for (final GraphCollectionGraphDto graph : dto.getGraphs()) {
             final String problem = validateGraph(graph, index++);
             if (problem != null) {
-                return problem;
+                problems.add(problem);
             }
         }
-        return null;
+        return problems;
     }
 
     /** index is the zero-based position in a collection body, or null for a single graph on its own. */
@@ -516,7 +561,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             return where + "'" + graph.getResourceId() + "' is not a well-formed resourceId.";
         }
         if (!StringUtils.isBlank(graph.getExtlink()) && !isSafeLink(graph.getExtlink())) {
-            return where + "extlink must be a relative link or an http or https URL.";
+            return where + "extlink must be a relative link or an http, https or mailto URL.";
         }
         return null;
     }
@@ -532,9 +577,10 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
 
     /**
      * extlink ends up as a link on the view page. Relative links (what hand-edited files tend to
-     * carry) and web URLs are fine; anything with another scheme, javascript: above all, is not.
+     * carry), web URLs and mailto links are fine; anything with another scheme, javascript: above
+     * all, is not.
      */
-    private static boolean isSafeLink(final String value) {
+    public static boolean isSafeLink(final String value) {
         final String trimmed = value.trim();
         if (trimmed.startsWith("//") || trimmed.startsWith("\\")) {
             // Protocol-relative: no scheme, yet it leaves the site.
@@ -546,10 +592,15 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             if (scheme == null) {
                 return uri.getAuthority() == null;
             }
-            return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
+            return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme) || "mailto".equalsIgnoreCase(scheme);
         } catch (final URISyntaxException e) {
             return false;
         }
+    }
+
+    /** The link if it passes the rule above, else null: the v1 API and hand edits store links without the rule. */
+    static String safeLink(final String link) {
+        return StringUtils.isBlank(link) || isSafeLink(link) ? link : null;
     }
 
     /** An absent kind means prefab, so entries written before the field existed keep working. */
@@ -560,7 +611,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
     static GraphCollection toModel(final GraphCollectionDto dto, final Integer id) {
         final GraphCollection collection = new GraphCollection();
         collection.setId(id);
-        collection.setTitle(dto.getTitle().trim());
+        collection.setTitle(StringUtils.trimToEmpty(dto.getTitle()));
         collection.setShowTimespanButton(dto.getShowTimespanButton());
         collection.setShowGraphtypeButton(dto.getShowGraphtypeButton());
         collection.setGraphsPerLine(dto.getGraphsPerLine());
@@ -574,7 +625,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         final Graph graph = new Graph();
         graph.setTitle(dto.getTitle() == null ? "" : dto.getTitle());
         graph.setResourceId(dto.getResourceId());
-        graph.setGraphtype(dto.getGraphtype().trim());
+        graph.setGraphtype(StringUtils.trimToEmpty(dto.getGraphtype()));
         graph.setTimespan(dto.getTimespan());
         graph.setExtlink(dto.getExtlink() == null ? null : dto.getExtlink().trim());
         graph.setNodeId(dto.getNodeId());
@@ -593,6 +644,15 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         dto.setGraphsPerLine(collection.getGraphsPerLine().orElse(null));
         for (final Graph graph : collection.getGraphs()) {
             dto.getGraphs().add(toDto(graph));
+        }
+        return dto;
+    }
+
+    /** What leaves the service: the stored collection with any link that fails the link rule withheld. */
+    private static GraphCollectionDto toResponse(final GraphCollection collection) {
+        final GraphCollectionDto dto = toDto(collection);
+        for (final GraphCollectionGraphDto graph : dto.getGraphs()) {
+            graph.setExtlink(safeLink(graph.getExtlink()));
         }
         return dto;
     }
@@ -636,12 +696,65 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         return null;
     }
 
+    /**
+     * A strong tag over the stored content, id included, so the same id reused after a delete does
+     * not match a tag taken before it.
+     */
+    static EntityTag etagOf(final GraphCollection collection) {
+        final GraphCollectionDto dto = toDto(collection);
+        final StringBuilder canonical = new StringBuilder()
+                .append(dto.getId()).append('|').append(dto.getTitle()).append('|')
+                .append(dto.getShowTimespanButton()).append('|').append(dto.getShowGraphtypeButton()).append('|')
+                .append(dto.getGraphsPerLine());
+        for (final GraphCollectionGraphDto graph : dto.getGraphs()) {
+            canonical.append('\n').append(graph.getKind()).append('|').append(graph.getTitle()).append('|')
+                    .append(graph.getResourceId()).append('|').append(graph.getGraphtype()).append('|')
+                    .append(graph.getTimespan()).append('|').append(graph.getExtlink()).append('|')
+                    .append(graph.getNodeId()).append('|').append(graph.getNodeSource()).append('|')
+                    .append(graph.getDomain()).append('|').append(graph.getInterfaceId());
+        }
+        try {
+            final byte[] digest = MessageDigest.getInstance("SHA-256").digest(canonical.toString().getBytes(StandardCharsets.UTF_8));
+            final StringBuilder hex = new StringBuilder();
+            for (int i = 0; i < 16; i++) {
+                hex.append(String.format("%02x", digest[i]));
+            }
+            return new EntityTag(hex.toString());
+        } catch (final NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is not available", e);
+        }
+    }
+
+    /** 412 when the caller's If-Match no longer names the stored collection; null to go ahead. */
+    private static Response precondition(final Request request, final GraphCollection collection) {
+        if (request == null) {
+            return null;
+        }
+        final Response.ResponseBuilder failed = request.evaluatePreconditions(etagOf(collection));
+        if (failed == null) {
+            return null;
+        }
+        return failed.entity("Graph collection " + collection.getId() + " has changed since it was read; fetch it again before writing.").build();
+    }
+
     private static Response notFound(final int id) {
         return Response.status(Status.NOT_FOUND).entity("Graph collection " + id + " was not found.").build();
     }
 
     private static Response badRequest(final String message) {
         return Response.status(Status.BAD_REQUEST).entity(message).build();
+    }
+
+    /** One problem per line, so a single-problem body reads exactly as before. */
+    private static Response badRequest(final List<String> problems) {
+        return badRequest(String.join("\n", problems));
+    }
+
+    private static String joinErrors(final String first, final String second) {
+        if (first == null) {
+            return second;
+        }
+        return second == null ? first : first + " " + second;
     }
 
     private static Response saveFailed(final Exception e) {

@@ -59,6 +59,7 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.GraphCollectionConfigFactory;
 import org.opennms.netmgt.config.graphcollections.Graph;
 import org.opennms.netmgt.config.graphcollections.GraphCollection;
+import org.opennms.web.rest.v2.GraphCollectionRestService;
 import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,9 +138,12 @@ public class KscRestService extends OnmsRestService {
                     })
     })
     public KscReportCollection getReports() throws ParseException {
-        final KscReportCollection reports = new KscReportCollection(m_graphCollectionService.getCollectionMap(), true);
-        reports.setTotalCount(reports.size());
-        return reports;
+        // The map holds the live stored objects; copy them under the monitor the writers take.
+        synchronized (m_graphCollectionConfigFactory) {
+            final KscReportCollection reports = new KscReportCollection(m_graphCollectionService.getCollectionMap(), true);
+            reports.setTotalCount(reports.size());
+            return reports;
+        }
     }
 
     @GET
@@ -192,12 +196,14 @@ public class KscRestService extends OnmsRestService {
     public KscReport getReport(
             @Parameter(description = "Report id, as assigned when the report was created.", required = true, example = "8100")
             @PathParam("reportId") final Integer reportId) {
-        final Map<Integer, GraphCollection> reportList = m_graphCollectionService.getCollectionMap();
-        final GraphCollection report = reportList.get(reportId);
-        if (report == null) {
-            throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
+        synchronized (m_graphCollectionConfigFactory) {
+            final Map<Integer, GraphCollection> reportList = m_graphCollectionService.getCollectionMap();
+            final GraphCollection report = reportList.get(reportId);
+            if (report == null) {
+                throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
+            }
+            return new KscReport(report);
         }
-        return new KscReport(report);
     }
 
     @GET
@@ -403,6 +409,11 @@ public class KscRestService extends OnmsRestService {
                 if (kscReport.hasGraphs()) {
                     for (KscGraph kscGraph : kscReport.getGraphs()) {
                         final Graph graph = kscGraph.buildGraph();
+                        // The same link rule as the v2 API: the stored link ends up on a page.
+                        final String link = graph.getExtlink().orElse(null);
+                        if (link != null && !link.isBlank() && !GraphCollectionRestService.isSafeLink(link)) {
+                            throw getException(Status.BAD_REQUEST, "Invalid request: extlink must be a relative link or an http, https or mailto URL.");
+                        }
                         report.addGraph(graph);
                     }
                 }

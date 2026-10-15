@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.GraphCollectionConfigFactory;
 import org.opennms.netmgt.config.graphcollections.Graph;
 import org.opennms.netmgt.config.graphcollections.GraphCollection;
@@ -138,6 +139,9 @@ public class CustomViewController extends AbstractController implements Initiali
             if (report == null) {
                 throw new ServletException("Report could not be found in config file for index '" + reportId + "'");
             }
+            // Work on a copy: the broken-graph cleanup below prunes the list while the REST services
+            // may be reading the stored object, and the lookups it makes are too slow to hold the lock for.
+            report = JaxbUtils.duplicateObject(report, GraphCollection.class);
         } else {
             throw new IllegalArgumentException("value to 'type' parameter of '" + reportType + "' is not supported.  Must be one of: node, nodeSource, domain, or custom");
         }
@@ -146,8 +150,10 @@ public class CustomViewController extends AbstractController implements Initiali
         Map<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
         Set<PrefabGraph> prefabGraphs = new TreeSet<>();
         if (removeBrokenGraphsFromReport(report) && reportId > -1) {
-            m_graphCollectionConfigFactory.setCollection(reportId, report);
-            m_graphCollectionConfigFactory.saveCurrent();
+            synchronized (m_graphCollectionConfigFactory) {
+                m_graphCollectionConfigFactory.setCollection(reportId, report);
+                m_graphCollectionConfigFactory.saveCurrent();
+            }
             EventBuilder eb = new EventBuilder(EventConstants.GRAPH_COLLECTION_UPDATED_UEI, "Web UI");
             eb.addParam(EventConstants.PARAM_REPORT_TITLE, report.getTitle() == null ? "Report #" + report.getId() : report.getTitle());
             eb.addParam(EventConstants.PARAM_REPORT_GRAPH_COUNT, report.getGraphs().size());

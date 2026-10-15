@@ -38,7 +38,7 @@ This matches the behavior of the legacy Graph Collections  / KSC Reports pages.
 
 | /graph-collections/\{id}/resolved
 | Get a collection prepared for rendering.
-Each graph carries its effective timespan and graph type, the `start` and `end` of the timespan as epoch milliseconds, the resolved resource (with its parent), the prefabricated graph title, and `valid` with an `error` message when the resource no longer exists or the graph is not available for it.
+Each graph carries its effective timespan and graph type, the `start` and `end` of the timespan as epoch milliseconds, the resolved resource (with its parent), the prefabricated graph title, and `valid` with an `error` message when the resource no longer exists, the graph is not available for it, or the stored entry would fail the validation below (for example a hand-edited timespan).
 Invalid graphs are reported, not removed.
 `graphsPerLine` has the system default applied, and `graphTypes` is the union of the prefabricated graphs available to the resolved resources.
 
@@ -127,6 +127,15 @@ Returns the saved collection.
 Returns `204 No Content`.
 |===
 
+== Detecting concurrent edits
+
+`GET /graph-collections/\{id}` and `GET /graph-collections/\{id}/resolved` return an `ETag` header computed from the stored collection.
+`PUT`, `DELETE` and `POST /graph-collections/\{id}/graphs` accept an `If-Match` header carrying that tag.
+When the collection has changed since it was read, the write is refused with `412 Precondition Failed` and nothing is changed; the client should read the collection again before retrying.
+This stops two editors from silently overwriting each other, and stops a stale page from acting on a collection that was deleted and whose id was given to a new one.
+`If-Match` is optional: a write without it always goes through.
+Every write response carries the collection's new `ETag`.
+
 == Collection fields
 
 [caption=]
@@ -195,7 +204,8 @@ Unlike the legacy API, an unknown value is rejected with `400 Bad Request` rathe
 | extlink
 | No
 | A link shown with the graph.
-Either a relative link or an `http` or `https` URL; other schemes are rejected.
+Either a relative link or an `http`, `https` or `mailto` URL; other schemes are rejected.
+A stored link that fails this rule, for example one written by hand, is withheld from responses and the graph is flagged in the `resolved` view.
 
 | nodeId, nodeSource, domain, interfaceId
 | No
@@ -204,7 +214,8 @@ Carried through unchanged; new graphs should use `resourceId`.
 |===
 
 Unknown fields in request bodies are ignored, so a resolved graph can be posted back as is.
-Validation failures return `400 Bad Request` with a plain-text message naming the graph, for example `Graph 2: unknown timespan 'fortnight'.`
+Validation failures return `400 Bad Request` with a plain-text body listing every problem, one per line, each naming its graph, for example `Graph 2: unknown timespan 'fortnight'.`
+The whole collection is validated on every `PUT`, so an older file whose entries no longer pass has to be fixed in the same save; the `resolved` view flags those entries ahead of time.
 
 == Examples using cURL
 
@@ -292,4 +303,14 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3/re
 [source,bash]
 ----
 curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3"
+----
+
+.Rename collection 3 only if nobody has changed it since it was read
+[source,bash]
+----
+curl -u admin:admin -i "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3"
+# ... ETag: "9f86d081884c7d659a2feaa0c55ad015" ...
+curl -u admin:admin -X PUT -H 'Content-Type: application/json' -H 'If-Match: "9f86d081884c7d659a2feaa0c55ad015"' \
+  -d '{"title":"Core routers (renamed)","graphs":[]}' \
+  "http://127.0.0.1:8980/opennms/api/v2/graph-collections/3"
 ----

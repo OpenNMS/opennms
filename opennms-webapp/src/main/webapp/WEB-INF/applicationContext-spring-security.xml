@@ -240,7 +240,7 @@
   </http>
 
   <!--
-    Graph Collections (NMS-19771): any authenticated user may create, edit and delete
+    Graph Collections (NMS-20420): any authenticated user may create, edit and delete
     collections, as the legacy KSC pages allowed, but a ROLE_READONLY user may not.
     Kept in its own use-expressions block so ROLE_READONLY can be excluded, mirroring
     the alarms and notifications rules; it must precede the generic /api/v2/** block.

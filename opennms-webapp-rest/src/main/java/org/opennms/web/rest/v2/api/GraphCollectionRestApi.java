@@ -32,6 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
@@ -43,6 +44,9 @@ import org.opennms.web.rest.v2.model.graphCollection.GraphCollectionTimespanDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -65,13 +69,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         and graph list in one call, which is how graphs are edited, reordered and removed.
 
         Any authenticated user may read and write collections, except users holding `ROLE_READONLY`, who
-        may only read. Validation failures return a `text/plain` message with status 400.
+        may only read. Validation failures return a `text/plain` body with status 400 listing every
+        problem, one per line.
+
+        Reads of one collection return an `ETag` over its stored content. The writes accept `If-Match`
+        and answer 412 when the tag no longer matches, so concurrent editors do not overwrite each other
+        unnoticed; the header is optional and a write without it always goes through.
 
         The `resolved` operations return a collection prepared for rendering: view-time timespan and
         graph type overrides applied, named timespans turned into start and end times, and every graph's
         resource and prefabricated graph looked up, with graphs whose resource has gone marked invalid
         rather than silently dropped.""")
 public interface GraphCollectionRestApi {
+
+    String ETAG_DESCRIPTION = "Tag of the stored collection, to send back as `If-Match` on a later write.";
+    String IF_MATCH_DESCRIPTION = "Optional. The `ETag` the collection had when it was read; the write is refused with 412 if the collection has changed since.";
 
     String COLLECTION_EXAMPLE = """
             {
@@ -176,6 +188,7 @@ public interface GraphCollectionRestApi {
     @Operation(summary = "Get one graph collection", operationId = "getGraphCollection")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The graph collection.",
+                    headers = @Header(name = "ETag", description = ETAG_DESCRIPTION, schema = @Schema(type = "string")),
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = GraphCollectionDto.class),
                             examples = @ExampleObject(value = COLLECTION_EXAMPLE))),
@@ -183,7 +196,7 @@ public interface GraphCollectionRestApi {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Graph collection 3 was not found.")))
     })
-    Response getCollection(
+    Response getCollection(@Context Request request,
             @Parameter(description = "Collection id.", required = true, example = "3")
             @PathParam("id") int id);
 
@@ -193,12 +206,14 @@ public interface GraphCollectionRestApi {
     @Operation(summary = "Get a graph collection prepared for rendering",
             description = """
             Return the collection with the view-time overrides applied and every graph's resource, prefabricated
-            graph and start and end times resolved. Graphs whose resource no longer exists, or whose
-            prefabricated graph is not available for that resource, come back with `valid` false and an
-            `error`; nothing is removed from the stored collection.""",
+            graph and start and end times resolved. Graphs whose resource no longer exists, whose
+            prefabricated graph is not available for that resource, or whose stored entry would not pass
+            validation on save, come back with `valid` false and an `error`; nothing is removed from the
+            stored collection.""",
             operationId = "getResolvedGraphCollection")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The resolved collection.",
+                    headers = @Header(name = "ETag", description = ETAG_DESCRIPTION, schema = @Schema(type = "string")),
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = GraphCollectionResolvedDto.class),
                             examples = @ExampleObject(value = RESOLVED_EXAMPLE))),
@@ -207,7 +222,7 @@ public interface GraphCollectionRestApi {
             @ApiResponse(responseCode = "404", description = "No collection with that id exists.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
     })
-    Response getResolvedCollection(
+    Response getResolvedCollection(@Context Request request,
             @Parameter(description = "Collection id.", required = true, example = "3")
             @PathParam("id") int id,
             @Parameter(description = "Timespan to apply to every graph instead of its own. " + TIMESPAN_VALUES + " Omit, or pass `none`, for no override.", example = "1_day")
@@ -303,6 +318,7 @@ public interface GraphCollectionRestApi {
                     examples = @ExampleObject(value = COLLECTION_EXAMPLE)))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created. `Location` points at the new collection, which is also returned in the body.",
+                    headers = @Header(name = "ETag", description = ETAG_DESCRIPTION, schema = @Schema(type = "string")),
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = GraphCollectionDto.class))),
             @ApiResponse(responseCode = "400", description = "The body is missing or invalid: no title, a negative `graphsPerLine`, or a graph without a resource, graph type or known timespan.",
@@ -323,14 +339,19 @@ public interface GraphCollectionRestApi {
             description = """
             Replace the collection's title, options and graph list with the body. This is the one write for
             editing: send the full graph list in the order wanted to edit, reorder or remove graphs. The id in
-            the path wins over any id in the body.""",
+            the path wins over any id in the body. Send the `ETag` from the read as `If-Match` to be sure
+            nobody else has changed the collection in between.""",
             operationId = "updateGraphCollection")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"9f86d081884c7d659a2feaa0c55ad015\"")
+    })
     @RequestBody(required = true, description = "The full replacement collection.",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = GraphCollectionDto.class),
                     examples = @ExampleObject(value = COLLECTION_EXAMPLE)))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The collection as saved.",
+                    headers = @Header(name = "ETag", description = ETAG_DESCRIPTION, schema = @Schema(type = "string")),
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = GraphCollectionDto.class))),
             @ApiResponse(responseCode = "400", description = "The body is missing or invalid.",
@@ -339,10 +360,12 @@ public interface GraphCollectionRestApi {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No collection with that id exists.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "412", description = "`If-Match` was sent and does not match the collection's current `ETag`; nothing was changed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The configuration file could not be written.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
     })
-    Response updateCollection(@Context SecurityContext securityContext,
+    Response updateCollection(@Context SecurityContext securityContext, @Context Request request,
             @Parameter(description = "Collection id.", required = true, example = "3")
             @PathParam("id") int id,
             GraphCollectionDto collection);
@@ -350,16 +373,21 @@ public interface GraphCollectionRestApi {
     @DELETE
     @Path("{id}")
     @Operation(summary = "Delete a graph collection", operationId = "deleteGraphCollection")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"9f86d081884c7d659a2feaa0c55ad015\"")
+    })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted."),
             @ApiResponse(responseCode = "403", description = "The user holds `ROLE_READONLY`.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No collection with that id exists.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "412", description = "`If-Match` was sent and does not match the collection's current `ETag`; nothing was changed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The configuration file could not be written.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
     })
-    Response deleteCollection(@Context SecurityContext securityContext,
+    Response deleteCollection(@Context SecurityContext securityContext, @Context Request request,
             @Parameter(description = "Collection id.", required = true, example = "3")
             @PathParam("id") int id);
 
@@ -373,6 +401,9 @@ public interface GraphCollectionRestApi {
             collection" action used from graph pages; editing an existing graph is done by replacing the
             collection with `PUT /graph-collections/{id}`.""",
             operationId = "addGraphToGraphCollection")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"9f86d081884c7d659a2feaa0c55ad015\"")
+    })
     @RequestBody(required = true, description = "The graph to add.",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = GraphCollectionGraphDto.class),
@@ -380,6 +411,7 @@ public interface GraphCollectionRestApi {
                     { "kind": "prefab", "title": "Uplink traffic", "resourceId": "node[Routers:rtr-01].interfaceSnmp[ge-0_0_0-00112233aabb]", "graphtype": "mib2.HCbits", "timespan": "7_day" }""")))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The collection as saved, with the new graph in place.",
+                    headers = @Header(name = "ETag", description = ETAG_DESCRIPTION, schema = @Schema(type = "string")),
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = GraphCollectionDto.class))),
             @ApiResponse(responseCode = "400", description = "The graph is missing or invalid, or `index` is out of range.",
@@ -388,10 +420,12 @@ public interface GraphCollectionRestApi {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No collection with that id exists.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "412", description = "`If-Match` was sent and does not match the collection's current `ETag`; nothing was changed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The configuration file could not be written.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
     })
-    Response addGraph(@Context SecurityContext securityContext,
+    Response addGraph(@Context SecurityContext securityContext, @Context Request request,
             @Parameter(description = "Collection id.", required = true, example = "3")
             @PathParam("id") int id,
             @Parameter(description = "Zero-based position to insert at. Omit to append.", example = "0")

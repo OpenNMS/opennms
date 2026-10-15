@@ -23,6 +23,7 @@ package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -35,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -177,6 +179,16 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         assertEquals("Graph 1: a timespan is required.", noTimespan.getContentAsString());
         final String longTitle = "x".repeat(256);
         sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"" + longTitle + "\"}", 400);
+        // Every problem comes back at once, one per line, so a client can show them all.
+        final MockHttpServletResponse several = sendData(POST, MediaType.APPLICATION_JSON, BASE,
+                "{\"title\":\" \",\"graphsPerLine\":-2,\"graphs\":["
+                + "{\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"fortnight\"},"
+                + "{\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\"},"
+                + "{\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\",\"extlink\":\"javascript:alert(1)\"}]}", 400);
+        assertEquals("A title is required.\n"
+                + "graphsPerLine must be 0 or greater.\n"
+                + "Graph 1: unknown timespan 'fortnight'.\n"
+                + "Graph 3: extlink must be a relative link or an http, https or mailto URL.", several.getContentAsString());
         assertEquals(2, new JSONArray(getJson(BASE, 200)).length());
         assertFalse(slurp().contains("title=\"x\""));
     }
@@ -198,6 +210,9 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         final String relative = "{\"title\":\"r\",\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\",\"extlink\":\"element/node.jsp?node=1\"}";
         final JSONObject withRelative = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, BASE + "/0/graphs", relative, 200).getContentAsString());
         assertEquals("element/node.jsp?node=1", withRelative.getJSONArray("graphs").getJSONObject(1).getString("extlink"));
+        final String mailto = "{\"title\":\"m\",\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\",\"extlink\":\"mailto:noc@example.org\"}";
+        final JSONObject withMailto = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, BASE + "/0/graphs", mailto, 200).getContentAsString());
+        assertEquals("mailto:noc@example.org", withMailto.getJSONArray("graphs").getJSONObject(2).getString("extlink"));
         // The single-graph error message carries no "Graph N:" prefix.
         final String bad = "{\"title\":\"r\",\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"nope\"}";
         final MockHttpServletResponse badResponse = sendData(POST, MediaType.APPLICATION_JSON, BASE + "/0/graphs", bad, 400);
@@ -338,12 +353,140 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
     @Test
+    public void testStoredGraphProblemsAreReportedNotHidden() throws Exception {
+        // A hand-edited file that the XSD accepts can still hold entries the editor would reject.
+        // The resolved view flags each one with the same message the save would give, and a PUT
+        // that keeps them lists every one, so the user can fix them in one go.
+        Files.writeString(m_configFile.toPath(), "<ReportsList xmlns=\"http://xmlns.opennms.org/xsd/config/kscReports\">\n"
+                + "  <Report id=\"7\" title=\"Hand edited\">\n"
+                + "    <Graph title=\"ok\" resourceId=\"node[8].responseTime[216.216.217.254]\" timespan=\"7_day\" graphtype=\"ssh\"/>\n"
+                + "    <Graph title=\"odd span\" resourceId=\"node[8].responseTime[216.216.217.254]\" timespan=\"fortnight\" graphtype=\"ssh\"/>\n"
+                + "    <Graph title=\"bad link\" resourceId=\"node[8].responseTime[216.216.217.254]\" timespan=\"7_day\" graphtype=\"ssh\" extlink=\"javascript:alert(1)\"/>\n"
+                + "  </Report>\n"
+                + "</ReportsList>\n", StandardCharsets.UTF_8);
+        sendRequest(POST, BASE + "/reload", 204);
+
+        final JSONArray graphs = new JSONObject(getJson(BASE + "/7/resolved", 200)).getJSONArray("graphs");
+        assertEquals(3, graphs.length());
+        // Node 8 does not exist in the test database, so the first graph's only problem is its resource.
+        assertFalse(graphs.getJSONObject(0).getBoolean("valid"));
+        assertTrue(graphs.getJSONObject(0).getString("error").startsWith("The resource this graph refers to"));
+        assertFalse(graphs.getJSONObject(1).getBoolean("valid"));
+        assertTrue(graphs.getJSONObject(1).getString("error"), graphs.getJSONObject(1).getString("error").startsWith("unknown timespan 'fortnight'."));
+        assertFalse(graphs.getJSONObject(2).getBoolean("valid"));
+        assertTrue(graphs.getJSONObject(2).getString("error"), graphs.getJSONObject(2).getString("error").startsWith("extlink must be a relative link"));
+        // The stored link stays in the file but is withheld from every response, resolved or plain.
+        assertTrue(graphs.getJSONObject(2).isNull("extlink"));
+        assertTrue(slurp().contains("javascript:alert(1)"));
+
+        final JSONObject stored = new JSONObject(getJson(BASE + "/7", 200));
+        assertTrue(stored.getJSONArray("graphs").getJSONObject(2).isNull("extlink"));
+        stored.put("title", "Renamed");
+        final MockHttpServletResponse rejected = sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/7", stored.toString(), 400);
+        assertEquals("Graph 2: unknown timespan 'fortnight'.", rejected.getContentAsString());
+        assertEquals("Hand edited", new JSONObject(getJson(BASE + "/7", 200)).getString("title"));
+
+        // Posting the read-back body with the timespan fixed also drops the withheld link from the file.
+        stored.getJSONArray("graphs").getJSONObject(1).put("timespan", "1_day");
+        final JSONObject saved = new JSONObject(sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/7", stored.toString(), 200).getContentAsString());
+        assertEquals("Renamed", saved.getString("title"));
+        assertEquals("1_day", saved.getJSONArray("graphs").getJSONObject(1).getString("timespan"));
+        assertTrue(saved.getJSONArray("graphs").getJSONObject(2).isNull("extlink"));
+        assertTrue(slurp().contains("timespan=\"1_day\""));
+        assertFalse(slurp().contains("javascript"));
+    }
+
+    @Test
+    public void testFailedSaveRollsBackTheUnsavedChange() throws Exception {
+        // A write that cannot reach the file must not leave the change visible in memory.
+        assertTrue(m_configFile.setWritable(false));
+        Assume.assumeFalse("the file is still writable (running as root?), so a failed write cannot be provoked", m_configFile.canWrite());
+        try {
+            sendData(POST, MediaType.APPLICATION_JSON, BASE + "/0/graphs", GRAPH.replace("\"g\"", "\"never saved\""), 500);
+            assertEquals(1, new JSONObject(getJson(BASE + "/0", 200)).getJSONArray("graphs").length());
+            sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/0", "{\"title\":\"never saved\"}", 500);
+            assertEquals("Test", new JSONObject(getJson(BASE + "/0", 200)).getString("title"));
+            sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"never saved\"}", 500);
+            assertEquals(2, new JSONArray(getJson(BASE, 200)).length());
+            sendRequest(DELETE, BASE + "/1", 500);
+            sendRequest(GET, BASE + "/1", 200);
+        } finally {
+            assertTrue(m_configFile.setWritable(true));
+        }
+        assertFalse(slurp().contains("never saved"));
+    }
+
+    @Test
+    public void testEtagAndIfMatch() throws Exception {
+        final String etag = getResponse(BASE + "/0").getHeader("ETag");
+        assertNotNull(etag);
+        assertTrue(etag, etag.startsWith("\""));
+        // The resolved view carries the stored collection's tag too, and a different collection differs.
+        assertEquals(etag, getResponse(BASE + "/0/resolved").getHeader("ETag"));
+        assertNotEquals(etag, getResponse(BASE + "/1").getHeader("ETag"));
+
+        // A stale tag is refused on every write and nothing changes.
+        final MockHttpServletResponse stale = sendWithHeader(PUT, BASE + "/0", "{\"title\":\"Stale\"}", 412, "If-Match", "\"0000\"");
+        assertTrue(stale.getContentAsString(), stale.getContentAsString().contains("has changed since it was read"));
+        assertEquals("Test", new JSONObject(getJson(BASE + "/0", 200)).getString("title"));
+        sendWithHeader(POST, BASE + "/0/graphs", GRAPH, 412, "If-Match", "\"0000\"");
+        sendWithHeader(DELETE, BASE + "/0", null, 412, "If-Match", "\"0000\"");
+        assertEquals(1, new JSONObject(getJson(BASE + "/0", 200)).getJSONArray("graphs").length());
+
+        // The current tag goes through and the response carries the next one.
+        final MockHttpServletResponse updated = sendWithHeader(PUT, BASE + "/0", "{\"title\":\"Fresh\"}", 200, "If-Match", etag);
+        final String next = updated.getHeader("ETag");
+        assertNotNull(next);
+        assertNotEquals(etag, next);
+        assertEquals(next, getResponse(BASE + "/0").getHeader("ETag"));
+        sendWithHeader(PUT, BASE + "/0", "{\"title\":\"Fresh\"}", 412, "If-Match", etag);
+        final MockHttpServletResponse added = sendWithHeader(POST, BASE + "/0/graphs", GRAPH, 200, "If-Match", next);
+        assertNotEquals(next, added.getHeader("ETag"));
+        // "*" and no header at all always go through.
+        sendWithHeader(PUT, BASE + "/0", "{\"title\":\"Any\"}", 200, "If-Match", "*");
+        sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/0", "{\"title\":\"Plain\"}", 200);
+
+        // A collection created with a deleted collection's id does not match the old tag.
+        final String tag1 = getResponse(BASE + "/1").getHeader("ETag");
+        sendWithHeader(DELETE, BASE + "/1", null, 204, "If-Match", tag1);
+        final JSONObject recreated = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"Test 2\"}", 201).getContentAsString());
+        assertEquals(1, recreated.getInt("id"));
+        sendWithHeader(DELETE, BASE + "/1", null, 412, "If-Match", tag1);
+        sendRequest(GET, BASE + "/1", 200);
+    }
+
+    @Test
     public void testResolvedNodeCollectionErrors() throws Exception {
         // Building a node's collection walks the timeseries storage for every interface, which this
         // harness does not provide, so only the paths that fail before that lookup are checked here:
         // the override is validated first, and an unknown node never reaches the storage.
         sendRequest(GET, BASE + "/resolved/node/999999?timespan=fortnight", 400);
         sendRequest(GET, BASE + "/resolved/node/999999", 404);
+    }
+
+    private static final String GRAPH = "{\"title\":\"g\",\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\"}";
+
+    private MockHttpServletResponse getResponse(final String url) throws Exception {
+        final MockHttpServletRequest request = createRequest(m_servletContext, GET, url, getUser(), getUserRoles());
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        final MockHttpServletResponse response = createResponse();
+        dispatch(request, response);
+        assertEquals(response.getContentAsString(), 200, response.getStatus());
+        return response;
+    }
+
+    private MockHttpServletResponse sendWithHeader(final String method, final String url, final String body, final int expectedStatus, final String header, final String value) throws Exception {
+        final MockHttpServletRequest request = createRequest(m_servletContext, method, url, getUser(), getUserRoles());
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        request.addHeader(header, value);
+        if (body != null) {
+            request.setContentType(MediaType.APPLICATION_JSON);
+            request.setContent(body.getBytes(StandardCharsets.UTF_8));
+        }
+        final MockHttpServletResponse response = createResponse();
+        dispatch(request, response);
+        assertEquals(response.getContentAsString(), expectedStatus, response.getStatus());
+        return response;
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {
