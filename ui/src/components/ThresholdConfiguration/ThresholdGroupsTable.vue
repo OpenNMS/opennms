@@ -2,13 +2,14 @@
   <TableCard class="threshold-groups-card">
     <div class="table-header">
       <OnmsSearchInput
+        class="group-search"
         :modelValue="search"
         placeholder="Search groups"
         ariaLabel="Search threshold groups"
         dataTest="threshold-group-search"
         @update:modelValue="search = $event ?? ''"
       />
-      <OnmsButton data-test="threshold-group-create" @click="router.push(GROUP_CREATE_PATH)">New group</OnmsButton>
+      <OnmsButton class="create-button" data-test="threshold-group-create" @click="router.push(GROUP_CREATE_PATH)">New group</OnmsButton>
     </div>
 
     <OnmsTable :value="filteredGroups" data-test="threshold-groups-table">
@@ -141,6 +142,21 @@ const onConfirmDelete = async () => {
   justify-content: space-between;
   gap: 1em;
   padding: 0 0 0.75em 0;
+}
+
+// The search field gives up width first so the button label stays on one line.
+.group-search {
+  flex: 0 1 auto;
+  min-width: 0;
+
+  :deep(input) {
+    width: 100%;
+  }
+}
+
+.create-button {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .actions {
