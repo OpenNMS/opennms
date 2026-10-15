@@ -116,6 +116,19 @@
     </OnmsConfirmationDialog>
 
     <OnmsConfirmationDialog
+      :visible="showLeaveConfirm"
+      title="Discard Changes"
+      actionButtonText="Discard changes"
+      cancelButtonText="Keep editing"
+      @ok="settleLeave(true)"
+      @cancel="settleLeave(false)"
+    >
+      <template #content>
+        <p>This outage has changes that are not saved. Leave the editor and discard them?</p>
+      </template>
+    </OnmsConfirmationDialog>
+
+    <OnmsConfirmationDialog
       :visible="showTypeChangeConfirm"
       title="Change Outage Type"
       actionButtonText="Change type"
@@ -130,8 +143,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsCard, OnmsConfirmationDialog, OnmsIcon, OnmsSelect } from '@opennms/onms-ui'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
@@ -185,7 +198,8 @@ const isNew = ref(route.query.new === 'true')
 const breadcrumbs: BreadCrumb[] = [
   { label: 'Home', to: '/' },
   { label: 'Scheduled Outages', to: '/scheduled-outages' },
-  { label: name, to: route.fullPath }
+  // the shared breadcrumb bar does not wrap, so a long name is shortened here
+  { label: name.length > 60 ? `${name.slice(0, 60)}…` : name, to: route.fullPath }
 ]
 
 const loading = ref(true)
@@ -198,6 +212,7 @@ const timeSpanNote = ref('')
 const existingNote = ref('')
 const showSelectAllConfirm = ref(false)
 const showTypeChangeConfirm = ref(false)
+const showLeaveConfirm = ref(false)
 // node id -> label for the picker rows; missing entries render as not-found
 const nodeLabels = reactive<Record<number, string>>({})
 // the type currently reflected by outage.time, so a type change can warn before
@@ -281,8 +296,57 @@ onMounted(async () => {
     }
   }
   await loadApplicability(isNew.value ? undefined : name)
+  pristine = snapshot()
   loading.value = false
 })
+
+// What Save would write, to tell whether leaving would lose anything.
+const snapshot = () => JSON.stringify({
+  type: outage.type,
+  time: outage.time,
+  node: outage.node,
+  interface: outage.interface,
+  applicability
+})
+let pristine = ''
+// set once Save succeeds, so the navigation back to the list is not questioned
+let leaveApproved = false
+// every navigation waiting on the dialog; browser Back can queue a second one
+let leaveResolvers: Array<(leave: boolean) => void> = []
+
+const isDirty = () =>
+  !leaveApproved && !loading.value && !loadFailed.value && snapshot() !== pristine
+
+onBeforeRouteLeave(() => {
+  // leaving mid-save would drop the save's outcome, including its error
+  if (saving.value) {
+    return false
+  }
+  if (!isDirty()) {
+    return true
+  }
+  showLeaveConfirm.value = true
+  return new Promise<boolean>((resolve) => {
+    leaveResolvers.push(resolve)
+  })
+})
+
+const settleLeave = (leave: boolean) => {
+  showLeaveConfirm.value = false
+  const resolvers = leaveResolvers
+  leaveResolvers = []
+  resolvers.forEach(resolve => resolve(leave))
+}
+
+// menubar links, reload and closing the tab bypass the router
+const onBeforeUnload = (event: BeforeUnloadEvent) => {
+  if (isDirty()) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
+}
+onMounted(() => window.addEventListener('beforeunload', onBeforeUnload))
+onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
 
 const blockEditing = (message: string) => {
   loadFailed.value = true
@@ -431,6 +495,7 @@ const save = async () => {
     })
     outageSaved = true
     await applyMembershipChanges()
+    leaveApproved = true
     goBack()
   } catch (err: any) {
     if (outageSaved) {
@@ -439,6 +504,8 @@ const save = async () => {
       errorMessage.value = scheduledOutageErrorMessage(
         err, 'The outage was saved, but applying some subsystem settings failed. The list below now shows the settings that were actually applied — review and Save again.')
       await reloadApplicability()
+      // the form now matches the server again, so leaving loses nothing
+      pristine = snapshot()
     } else {
       errorMessage.value = scheduledOutageErrorMessage(err, 'Failed to save the scheduled outage.')
     }
@@ -507,6 +574,12 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    max-width: 100%;
+
+    h2 {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
   }
 
   .editor-grid {

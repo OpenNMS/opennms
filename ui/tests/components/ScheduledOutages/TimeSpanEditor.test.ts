@@ -23,7 +23,7 @@
 import TimeSpanEditor from '@/components/ScheduledOutages/TimeSpanEditor.vue'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const mountEditor = (props: any) => mount(TimeSpanEditor, {
   props,
@@ -41,6 +41,22 @@ describe('TimeSpanEditor.vue', () => {
     expect(time.begins.length).toBe(20)
     expect(time.ends.length).toBe(20)
     expect(time.day).toBeUndefined()
+  })
+
+  // synqotik on #8873: a new Specific span should start on today, not on 1 January
+  describe('default specific span', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('covers the whole of today', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date(2026, 9, 12, 10, 27, 18))
+      const wrapper = mountEditor({ type: 'specific', times: [] })
+      await wrapper.find('[data-test="add-time"]').trigger('click')
+
+      expect(wrapper.emitted('add')![0][0]).toEqual({ begins: '12-Oct-2026 00:00:00', ends: '12-Oct-2026 23:59:59' })
+    })
   })
 
   it('emits an 8-char span with the weekday for a weekly outage', async () => {

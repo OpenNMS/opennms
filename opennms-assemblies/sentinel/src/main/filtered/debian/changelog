@@ -1,3 +1,10 @@
+opennms-sentinel (36.0.5-1) stable; urgency=low
+
+  * For details on what has changed, see:
+    https://docs.opennms.com/horizon/36.0.5/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Oct 2026 15:40:35 -0400
+
 opennms-sentinel (36.0.4-1) stable; urgency=low
 
   * Release 36.0.4 contains a couple of bug fixes and enhancements.

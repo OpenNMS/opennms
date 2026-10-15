@@ -84,7 +84,7 @@ const emit = defineEmits<{
   remove: [index: number]
 }>()
 
-const fields = reactive<TimeSpanFields>(defaultTimeSpanFields(new Date().getFullYear()))
+const fields = reactive<TimeSpanFields>(defaultTimeSpanFields(new Date()))
 
 // the day field is shared between weekly (names) and monthly (numbers), so a
 // type switch must reset it to a value that exists in the new option list
@@ -168,6 +168,11 @@ const addSpan = () => {
     padding: 0 0.25rem 0 0.5rem;
     border-radius: 4px;
     background: var(--p-content-hover-background, rgba(127, 127, 127, 0.08));
+
+    > span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
   }
 }
 </style>
