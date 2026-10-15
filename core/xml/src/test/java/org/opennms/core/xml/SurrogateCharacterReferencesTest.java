@@ -24,7 +24,9 @@ package org.opennms.core.xml;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
@@ -129,7 +132,7 @@ public class SurrogateCharacterReferencesTest {
     @Test
     public void writerFinishFlushesTheTarget() throws IOException {
         final StringWriter target = new StringWriter();
-        final java.io.BufferedWriter buffered = new java.io.BufferedWriter(target);
+        final BufferedWriter buffered = new BufferedWriter(target);
         final SurrogateCharacterReferences.RepairingWriter writer = SurrogateCharacterReferences.repairing(buffered);
         for (final char c : "<p>&#55357;&#56489;</p>".toCharArray()) {
             writer.write(c);
@@ -138,9 +141,14 @@ public class SurrogateCharacterReferencesTest {
         assertEquals("<p>" + POO + "</p>", target.toString());
     }
 
+    /** In UTF-16 the bytes of U+2623 U+3535 U+3335 U+373B U+2623 U+3536 U+3438 U+393B read as the ASCII of a pair of references. */
     @Test
     public void wideEncodingsAndShortStreamsPassThrough() throws IOException {
+        final String lookalike = "<?xml version=\"1.0\" encoding=\"UTF-16\"?><a>\u2623\u3535\u3335\u373b\u2623\u3536\u3438\u393b</a>";
         for (final byte[] input : new byte[][] {
+                lookalike.getBytes(StandardCharsets.UTF_16),
+                lookalike.getBytes(StandardCharsets.UTF_16BE),
+                lookalike.replace("UTF-16", "UTF-16LE").getBytes(StandardCharsets.UTF_16LE),
                 "<a>&#55357;&#56489;</a>".getBytes(StandardCharsets.UTF_16),
                 "<a>&#55357;&#56489;</a>".getBytes(StandardCharsets.UTF_16LE),
                 "<a>&#55357;&#56489;</a>".getBytes(StandardCharsets.UTF_16BE),
@@ -150,6 +158,26 @@ public class SurrogateCharacterReferencesTest {
         }) {
             assertArrayEquals(input, readAll(SurrogateCharacterReferences.repairing(new ByteArrayInputStream(input))));
         }
+    }
+
+    /** One large write is drained in a single pass, not chunk by chunk with a shrinking buffer. */
+    @Test
+    public void oneLargeWriteStaysLinear() throws IOException {
+        final StringBuilder sb = new StringBuilder(32 * 1024 * 1024);
+        while (sb.length() < 32 * 1024 * 1024) {
+            sb.append("lorem ipsum ");
+        }
+        final Writer sink = new Writer() {
+            @Override public void write(final char[] cbuf, final int off, final int len) { }
+            @Override public void flush() { }
+            @Override public void close() { }
+        };
+        final long start = System.nanoTime();
+        final SurrogateCharacterReferences.RepairingWriter writer = SurrogateCharacterReferences.repairing(sink);
+        writer.write(sb.toString());
+        writer.finish();
+        final long elapsedMillis = (System.nanoTime() - start) / 1_000_000;
+        assertTrue("took " + elapsedMillis + " ms", elapsedMillis < 2_000);
     }
 
     private static byte[] readAll(final InputStream stream) throws IOException {

@@ -21,9 +21,11 @@
  */
 package org.opennms.core.xml;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.SequenceInputStream;
 import java.io.Writer;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,13 +42,17 @@ import org.slf4j.LoggerFactory;
  *
  * Only references of up to seven decimal or six hexadecimal ASCII digits are recognised,
  * which covers everything the marshaller ever wrote. The filters stream with at most ten
- * units of lookahead, so they add no buffering and run in linear time on any input.
+ * units of lookahead and run in linear time on any input; the writer hands decided text
+ * on in chunks of {@link #CHUNK} characters.
  */
 public final class SurrogateCharacterReferences {
     private static final Logger LOG = LoggerFactory.getLogger(SurrogateCharacterReferences.class);
 
     /** Longest unit of markup the scanner has to see at once: {@code &#1114111;} or {@code <![CDATA[}. */
     private static final int LOOKAHEAD = 10;
+
+    /** Size of the filters' transfer buffers. */
+    private static final int CHUNK = 8192;
 
     /** Unpaired halves are data loss, but one bad document replayed over IPC must not flood the log. */
     private static final long WARN_INTERVAL_MILLIS = 60_000L;
@@ -83,8 +89,9 @@ public final class SurrogateCharacterReferences {
     /**
      * Repairs what is read through the returned stream. Repaired characters are read as a
      * single numeric reference, which is valid in every encoding, so the parser still honours
-     * the document's own encoding declaration. In a UTF-16 or UTF-32 stream a NUL byte sits
-     * between {@code &} and {@code #}, so such a stream passes through unchanged.
+     * the document's own encoding declaration. A UTF-16 or UTF-32 stream, recognised by a
+     * byte-order mark or a NUL among its first four bytes, passes through unchanged: its
+     * non-ASCII characters could otherwise spell a reference byte for byte.
      */
     public static InputStream repairing(final InputStream in) {
         return new RepairingInputStream(in);
@@ -175,19 +182,25 @@ public final class SurrogateCharacterReferences {
             }
         }
 
-        boolean hasOutput() {
-            return out.length() > 0;
-        }
-
         int outputLength() {
             return out.length();
         }
 
+        /** Removes up to len decided units from the front of the output. */
         int take(final char[] buf, final int off, final int len) {
             final int n = Math.min(len, out.length());
             out.getChars(0, n, buf, off);
             out.delete(0, n);
             return n;
+        }
+
+        /** Copies decided units without removing them; {@link #clearOutput()} removes them all at once. */
+        void copyOutput(final int from, final char[] buf, final int len) {
+            out.getChars(from, from + len, buf, 0);
+        }
+
+        void clearOutput() {
+            out.setLength(0);
         }
 
         /** Plain text with nothing held back: the next unit can only matter if it opens markup or a reference. */
@@ -363,8 +376,6 @@ public final class SurrogateCharacterReferences {
      * rather than per character, and on flush, finish and close.
      */
     public static final class RepairingWriter extends Writer {
-        private static final int CHUNK = 8192;
-
         private final Writer out;
         private final Scanner scanner = new Scanner(false);
         private final char[] buffer = new char[CHUNK];
@@ -415,17 +426,22 @@ public final class SurrogateCharacterReferences {
             out.close();
         }
 
+        /** One pass over the decided output, so a single large write stays linear. */
         private void forward() throws IOException {
-            while (scanner.hasOutput()) {
-                out.write(buffer, 0, scanner.take(buffer, 0, buffer.length));
+            final int length = scanner.outputLength();
+            for (int from = 0; from < length; from += CHUNK) {
+                final int n = Math.min(CHUNK, length - from);
+                scanner.copyOutput(from, buffer, n);
+                out.write(buffer, 0, n);
             }
+            scanner.clearOutput();
         }
     }
 
     private static final class RepairingReader extends Reader {
         private final Reader in;
         private final Scanner scanner = new Scanner(false);
-        private final char[] buffer = new char[8192];
+        private final char[] buffer = new char[CHUNK];
         private boolean eof;
 
         RepairingReader(final Reader in) {
@@ -437,7 +453,7 @@ public final class SurrogateCharacterReferences {
             if (len == 0) {
                 return 0;
             }
-            while (!scanner.hasOutput()) {
+            while (scanner.outputLength() == 0) {
                 if (eof) {
                     return -1;
                 }
@@ -461,8 +477,12 @@ public final class SurrogateCharacterReferences {
     private static final class RepairingInputStream extends InputStream {
         private final InputStream in;
         private final Scanner scanner = new Scanner(true);
-        private final byte[] buffer = new byte[8192];
-        private final char[] chars = new char[8192];
+        private final byte[] buffer = new byte[CHUNK];
+        private final char[] chars = new char[CHUNK];
+        private final byte[] one = new byte[1];
+        /** Set once the first bytes have been seen: the raw stream with those bytes put back, or null to repair. */
+        private InputStream passthrough;
+        private boolean sniffed;
         private boolean eof;
 
         RepairingInputStream(final InputStream in) {
@@ -471,7 +491,6 @@ public final class SurrogateCharacterReferences {
 
         @Override
         public int read() throws IOException {
-            final byte[] one = new byte[1];
             final int n = read(one, 0, 1);
             return n < 0 ? -1 : one[0] & 0xFF;
         }
@@ -481,7 +500,13 @@ public final class SurrogateCharacterReferences {
             if (len == 0) {
                 return 0;
             }
-            while (!scanner.hasOutput()) {
+            if (!sniffed) {
+                sniff();
+            }
+            if (passthrough != null) {
+                return passthrough.read(b, off, len);
+            }
+            while (scanner.outputLength() == 0) {
                 if (eof) {
                     return -1;
                 }
@@ -490,10 +515,7 @@ public final class SurrogateCharacterReferences {
                     eof = true;
                     scanner.finish();
                 } else {
-                    for (int i = 0; i < n; i++) {
-                        chars[i] = (char) (buffer[i] & 0xFF);
-                    }
-                    scanner.accept(chars, 0, n);
+                    feed(n);
                 }
             }
             // the scanner only ever adds ASCII, so every output unit fits a byte again
@@ -502,6 +524,43 @@ public final class SurrogateCharacterReferences {
                 b[off + i] = (byte) chars[i];
             }
             return n;
+        }
+
+        /**
+         * A UTF-16 or UTF-32 document starts with a byte-order mark or has a NUL among its
+         * first four bytes. Its non-ASCII characters can spell {@code &#55357;} byte for byte
+         * (U+2623 U+3535 ... in UTF-16BE does), so such a stream is not scanned at all.
+         */
+        private void sniff() throws IOException {
+            sniffed = true;
+            int n = 0;
+            while (n < 4) {
+                final int r = in.read(buffer, n, 4 - n);
+                if (r < 0) {
+                    break;
+                }
+                n += r;
+            }
+            boolean wide = n >= 2 && ((buffer[0] == (byte) 0xFE && buffer[1] == (byte) 0xFF) || (buffer[0] == (byte) 0xFF && buffer[1] == (byte) 0xFE));
+            for (int i = 0; i < n; i++) {
+                wide |= buffer[i] == 0;
+            }
+            if (wide) {
+                passthrough = new SequenceInputStream(new ByteArrayInputStream(buffer, 0, n), in);
+                return;
+            }
+            feed(n);
+            if (n < 4) {
+                eof = true;
+                scanner.finish();
+            }
+        }
+
+        private void feed(final int n) {
+            for (int i = 0; i < n; i++) {
+                chars[i] = (char) (buffer[i] & 0xFF);
+            }
+            scanner.accept(chars, 0, n);
         }
 
         @Override

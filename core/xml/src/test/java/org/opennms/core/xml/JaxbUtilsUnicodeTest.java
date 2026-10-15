@@ -164,6 +164,10 @@ public class JaxbUtilsUnicodeTest {
 
         final byte[] utf16 = ("<?xml version=\"1.0\" encoding=\"UTF-16\"?><probe>" + TEXT + "</probe>").getBytes(StandardCharsets.UTF_16);
         assertEquals(TEXT, JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(utf16)).value);
+        // these ideographs encode in UTF-16BE to the bytes of "&#55357;&#56489;"
+        final String lookalike = "\u2623\u3535\u3335\u373b\u2623\u3536\u3438\u393b";
+        final byte[] utf16Lookalike = ("<?xml version=\"1.0\" encoding=\"UTF-16\"?><probe>" + lookalike + "</probe>").getBytes(StandardCharsets.UTF_16);
+        assertEquals(lookalike, JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(utf16Lookalike)).value);
     }
 
     /** Inside a comment or CDATA section the references are literal text. */
