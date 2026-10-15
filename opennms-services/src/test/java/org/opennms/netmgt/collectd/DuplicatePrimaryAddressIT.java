@@ -196,7 +196,7 @@ public class DuplicatePrimaryAddressIT {
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getThreads();
         Mockito.verify(m_ifaceDao, atLeastOnce()).findByServiceType(anyString());
         Mockito.verify(m_ifaceDao, atLeastOnce()).load(anyInt());
-        Mockito.verify(m_nodeDao, atLeastOnce()).load(anyInt());
+        Mockito.verify(m_nodeDao, atLeastOnce()).get(anyInt());
     }
 
     /**
@@ -266,8 +266,8 @@ public class DuplicatePrimaryAddressIT {
 
         m_filterDao.flushActiveIpAddressListCache();
 
-        when(m_nodeDao.load(1)).thenReturn(n1);
-        when(m_nodeDao.load(3)).thenReturn(n2);
+        when(m_nodeDao.get(1)).thenReturn(n1);
+        when(m_nodeDao.get(3)).thenReturn(n2);
 
         createGetPackagesExpectation();
 

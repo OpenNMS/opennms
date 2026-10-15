@@ -214,13 +214,12 @@ public class CollectableService implements ReadyRunnable {
 
     /**
      * True if this service belongs to the node, or is marked for reparenting to it.
-     * The node id itself only changes at the service's next run.
+     * The node id itself only changes at the service's next run. Lock-free: the
+     * fields read here are volatile, and the caller may hold the global list lock.
      */
-    boolean isForNode(int nodeId) {
-        synchronized (this) {
-            return m_nodeId == nodeId
-                    || (m_updates.isReparentingFlagSet() && Integer.toString(nodeId).equals(m_updates.getReparentNewNodeId()));
-        }
+    public boolean belongsOrIsMovingToNode(int nodeId) {
+        return m_nodeId == nodeId
+                || (m_updates.isReparentingFlagSet() && Integer.toString(nodeId).equals(m_updates.getReparentNewNodeId()));
     }
 
     /**
