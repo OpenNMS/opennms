@@ -23,12 +23,12 @@ const node = {
 
 // The dialog builds its own links off menuStore now, rather than taking computeNodeLink /
 // computeNodeIpInterfaceLink props from NodesTable.
-const mountIt = (visible: boolean) => {
+const mountIt = (visible: boolean, nodeProp = node) => {
   const pinia = createTestingPinia({ createSpy: vi.fn })
   useMenuStore(pinia).mainMenu = { baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' } as never
 
   return mount(NodeDetailsDialog, {
-    props: { visible, node },
+    props: { visible, node: nodeProp },
     global: {
       plugins: [PrimeVue, pinia],
       stubs: { Dialog: DialogStub }
@@ -56,5 +56,28 @@ describe('NodeDetailsDialog.vue', () => {
     // Simulate PrimeVue Dialog update:visible(false)
     await (wrapper.findComponent({ name: 'Dialog' }) as any).vm.$emit('update:visible', false)
     expect(wrapper.emitted('close')).toBeTruthy()
+  })
+
+  // The legacy node page's Asset Information box showed the description and comments.
+  describe('asset rows', () => {
+    const rows = (assetRecord: object) => {
+      const wrapper = mountIt(true, { ...node, assetRecord })
+
+      return wrapper.findAll('.onms-row').map(row => row.text().replace(/\s+/g, ' ').trim())
+    }
+
+    it('shows the asset comments right after the asset description', () => {
+      const all = rows({ description: 'Core router', comment: 'Rack 4, top shelf' })
+      const description = all.findIndex(r => r.startsWith('Asset Description'))
+
+      expect(all[description]).toContain('Core router')
+      expect(all[description + 1]).toMatch(/^Asset Comments\s*Rack 4, top shelf$/)
+    })
+
+    it('shows the empty marker when the node has no asset comments', () => {
+      const comments = rows({ comment: null }).find(r => r.startsWith('Asset Comments'))
+
+      expect(comments).toMatch(/^Asset Comments\s*--$/)
+    })
   })
 })

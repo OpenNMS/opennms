@@ -13,13 +13,19 @@
           <OnmsIcon :icon="ArrowBack" />
           Go Back
         </OnmsButton>
-        <h2 class="headline3" data-test="editor-title">{{ isNew ? 'New Scheduled Outage' : 'Edit Scheduled Outage' }}: {{ name }}</h2>
+        <div class="title-row">
+          <h2 class="headline3" data-test="editor-title">{{ isNew ? 'New Scheduled Outage' : 'Edit Scheduled Outage' }}: {{ name }}</h2>
+          <AboutDialogButton title="Scheduled Outage Editor">
+            <ScheduledOutageEditorAbout />
+          </AboutDialogButton>
+        </div>
       </div>
 
       <div v-if="loading" data-test="editor-loading">Loading…</div>
 
       <template v-else>
         <p v-if="errorMessage" class="error" data-test="editor-error">{{ errorMessage }}</p>
+        <p v-if="existingNote" class="field-note existing-note" data-test="editor-existing-note">{{ existingNote }}</p>
 
         <div v-if="loadFailed" class="load-failed" data-test="editor-load-failed">
           <OnmsButton variant="outlined" label="Back to Scheduled Outages" @click="goBack" />
@@ -69,6 +75,11 @@
               You must have at least one time span defined.
             </p>
             <p v-if="timeSpanNote" class="field-note" data-test="time-note">{{ timeSpanNote }}</p>
+
+            <div class="actions">
+              <OnmsButton :label="isNew ? 'Create' : 'Save'" data-test="save" :disabled="saving" @click="save" />
+              <OnmsButton variant="ghost" label="Cancel" data-test="cancel-bottom" @click="goBack" />
+            </div>
           </section>
 
           <section class="applies">
@@ -88,10 +99,6 @@
           </section>
         </div>
 
-        <div v-if="!loadFailed" class="actions">
-          <OnmsButton :label="isNew ? 'Create' : 'Save'" data-test="save" :disabled="saving" @click="save" />
-          <OnmsButton variant="text" label="Cancel" data-test="cancel-bottom" @click="goBack" />
-        </div>
       </template>
       </template>
     </OnmsCard>
@@ -105,6 +112,19 @@
     >
       <template #content>
         <p>This clears the specific nodes and interfaces you selected and applies the outage everywhere. Continue?</p>
+      </template>
+    </OnmsConfirmationDialog>
+
+    <OnmsConfirmationDialog
+      :visible="showLeaveConfirm"
+      title="Discard Changes"
+      actionButtonText="Discard changes"
+      cancelButtonText="Keep editing"
+      @ok="settleLeave(true)"
+      @cancel="settleLeave(false)"
+    >
+      <template #content>
+        <p>This outage has changes that are not saved. Leave the editor and discard them?</p>
       </template>
     </OnmsConfirmationDialog>
 
@@ -123,23 +143,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsCard, OnmsConfirmationDialog, OnmsIcon, OnmsSelect } from '@opennms/onms-ui'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
+import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import FormField from '@/components/Common/FormField.vue'
 import AppliesToMatrix, { Subsystem } from '@/components/ScheduledOutages/AppliesToMatrix.vue'
+import ScheduledOutageEditorAbout from '@/components/ScheduledOutages/ScheduledOutageEditorAbout.vue'
 import NodeInterfacePicker from '@/components/ScheduledOutages/NodeInterfacePicker.vue'
 import TimeSpanEditor from '@/components/ScheduledOutages/TimeSpanEditor.vue'
+import { outageTimesEqual } from '@/components/ScheduledOutages/outageTime'
 import {
   getNodeLabels,
   getOutageApplicability,
   getScheduledOutage,
+  outageNameProblem,
   saveScheduledOutage,
   scheduledOutageErrorMessage,
+  scheduledOutageExists,
   setNotificationMembership,
   setPackageMembership
 } from '@/services/scheduledOutagesService'
@@ -167,12 +192,14 @@ const route = useRoute()
 const router = useRouter()
 
 const name = String(route.query.name ?? '')
-const isNew = route.query.new === 'true'
+// cleared when the name turns out to exist, so Create cannot replace that outage
+const isNew = ref(route.query.new === 'true')
 
 const breadcrumbs: BreadCrumb[] = [
   { label: 'Home', to: '/' },
   { label: 'Scheduled Outages', to: '/scheduled-outages' },
-  { label: name, to: route.fullPath }
+  // the shared breadcrumb bar does not wrap, so a long name is shortened here
+  { label: name.length > 60 ? `${name.slice(0, 60)}…` : name, to: route.fullPath }
 ]
 
 const loading = ref(true)
@@ -182,18 +209,20 @@ const saving = ref(false)
 const submitted = ref(false)
 const errorMessage = ref('')
 const timeSpanNote = ref('')
+const existingNote = ref('')
 const showSelectAllConfirm = ref(false)
 const showTypeChangeConfirm = ref(false)
-// node id -> label for the picker chips; missing entries render as not-found
+const showLeaveConfirm = ref(false)
+// node id -> label for the picker rows; missing entries render as not-found
 const nodeLabels = reactive<Record<number, string>>({})
 // the type currently reflected by outage.time, so a type change can warn before
 // discarding spans that were entered under the previous type
-const lastType = ref<OutageType | undefined>(isNew ? 'specific' : undefined)
+const lastType = ref<OutageType | undefined>(isNew.value ? 'specific' : undefined)
 
 const outage = reactive<ScheduledOutage>({
   name,
   // a new outage starts on a usable form: type pre-selected, spans addable
-  type: isNew ? 'specific' : undefined,
+  type: isNew.value ? 'specific' : undefined,
   time: [],
   node: [],
   interface: []
@@ -230,7 +259,27 @@ onMounted(async () => {
     router.replace({ path: '/scheduled-outages' })
     return
   }
-  if (!isNew) {
+  const nameProblem = outageNameProblem(name)
+  if (nameProblem) {
+    blockEditing(`${nameProblem} Editing is disabled.`)
+    return
+  }
+  if (isNew.value) {
+    // browser Back after Create, or a hand-typed URL, can land here for a saved outage
+    const exists = await scheduledOutageExists(name)
+    if (exists === null) {
+      blockEditing(`Could not check whether a scheduled outage named "${name}" already exists. Creating is disabled so an existing outage is not overwritten.`)
+      return
+    }
+    if (exists) {
+      isNew.value = false
+      outage.type = undefined
+      lastType.value = undefined
+      existingNote.value = `A scheduled outage named "${name}" already exists, so it was opened for editing.`
+      router.replace({ path: '/scheduled-outages/edit', query: { name }})
+    }
+  }
+  if (!isNew.value) {
     const loaded = await getScheduledOutage(name)
     if (loaded) {
       outage.type = loaded.type
@@ -242,15 +291,68 @@ onMounted(async () => {
     } else {
       // Distinguish "could not read the existing outage" from a new one: with
       // an empty form, Save would POST a whole-object replace and wipe it.
-      loadFailed.value = true
-      errorMessage.value = `Failed to load scheduled outage "${name}". It may have been deleted, or the server did not respond. Editing is disabled so the existing configuration is not overwritten.`
-      loading.value = false
+      blockEditing(`Failed to load scheduled outage "${name}". It may have been deleted, or the server did not respond. Editing is disabled so the existing configuration is not overwritten.`)
       return
     }
   }
-  await loadApplicability(isNew ? undefined : name)
+  await loadApplicability(isNew.value ? undefined : name)
+  pristine = snapshot()
   loading.value = false
 })
+
+// What Save would write, to tell whether leaving would lose anything.
+const snapshot = () => JSON.stringify({
+  type: outage.type,
+  time: outage.time,
+  node: outage.node,
+  interface: outage.interface,
+  applicability
+})
+let pristine = ''
+// set once Save succeeds, so the navigation back to the list is not questioned
+let leaveApproved = false
+// every navigation waiting on the dialog; browser Back can queue a second one
+let leaveResolvers: Array<(leave: boolean) => void> = []
+
+const isDirty = () =>
+  !leaveApproved && !loading.value && !loadFailed.value && snapshot() !== pristine
+
+onBeforeRouteLeave(() => {
+  // leaving mid-save would drop the save's outcome, including its error
+  if (saving.value) {
+    return false
+  }
+  if (!isDirty()) {
+    return true
+  }
+  showLeaveConfirm.value = true
+  return new Promise<boolean>((resolve) => {
+    leaveResolvers.push(resolve)
+  })
+})
+
+const settleLeave = (leave: boolean) => {
+  showLeaveConfirm.value = false
+  const resolvers = leaveResolvers
+  leaveResolvers = []
+  resolvers.forEach(resolve => resolve(leave))
+}
+
+// menubar links, reload and closing the tab bypass the router
+const onBeforeUnload = (event: BeforeUnloadEvent) => {
+  if (isDirty()) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
+}
+onMounted(() => window.addEventListener('beforeunload', onBeforeUnload))
+onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
+
+const blockEditing = (message: string) => {
+  loadFailed.value = true
+  errorMessage.value = message
+  loading.value = false
+}
 
 const loadApplicability = async (outageName?: string) => {
   const appl = await getOutageApplicability(outageName)
@@ -342,9 +444,7 @@ const cancelTypeChange = () => {
 }
 
 const addTime = (time: OutageTime) => {
-  const exists = (outage.time ?? []).some(
-    t => t.begins === time.begins && t.ends === time.ends && (t.day ?? '') === (time.day ?? '')
-  )
+  const exists = (outage.time ?? []).some(t => outageTimesEqual(t, time))
   if (exists) {
     timeSpanNote.value = 'That time span is already in the list.'
     return
@@ -395,6 +495,7 @@ const save = async () => {
     })
     outageSaved = true
     await applyMembershipChanges()
+    leaveApproved = true
     goBack()
   } catch (err: any) {
     if (outageSaved) {
@@ -403,6 +504,8 @@ const save = async () => {
       errorMessage.value = scheduledOutageErrorMessage(
         err, 'The outage was saved, but applying some subsystem settings failed. The list below now shows the settings that were actually applied — review and Save again.')
       await reloadApplicability()
+      // the form now matches the server again, so leaving loses nothing
+      pristine = snapshot()
     } else {
       errorMessage.value = scheduledOutageErrorMessage(err, 'Failed to save the scheduled outage.')
     }
@@ -467,6 +570,18 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
     padding-left: 0;
   }
 
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 100%;
+
+    h2 {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+  }
+
   .editor-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -509,6 +624,10 @@ const clone = (a: OutageApplicability): OutageApplicability => ({
   .field-note {
     color: var(--p-text-muted-color);
     margin: 0.5rem 0 0 0;
+  }
+
+  .existing-note {
+    margin: 0 0 1rem 0;
   }
 
   .load-failed {

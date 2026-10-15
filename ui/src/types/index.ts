@@ -254,6 +254,9 @@ export interface Alarm {
   count: number
   lastEventTime: number
   logMessage: string
+  // Both absent while the alarm is unacknowledged: the REST API omits null fields.
+  ackTime?: number
+  ackUser?: string
 }
 
 export interface Event {
@@ -350,6 +353,30 @@ export interface IpInterface {
   snmpPrimary: string
   hostName: string
 }
+// A monitored service on a node and the address it runs on, from /api/v2/ifservices: what the
+// Node Details Services menu links to.
+export interface NodeLinkService {
+  serviceName: string
+  ipAddress: string
+}
+
+// GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
+// GET /api/v2/nodes/{id}/alarmStatus: the node's problem alarms (above Normal), counted on the server.
+export interface NodeAlarmStatus {
+  // Highest unacknowledged problem severity, as an OnmsSeverity name; NORMAL when there is none.
+  severity: string
+  nodeDown: boolean
+  interfacesDown: number
+  servicesDown: number
+  acknowledgedCount: number
+  unacknowledgedCount: number
+}
+
+export interface NodeCriticalPath {
+  criticalPathIp: string | null
+  criticalPathServiceName: string | null
+}
+
 export interface MonitoredService {
   id: number
   lastGood?: Date | null
@@ -398,6 +425,12 @@ export interface Category {
   authorizedGroups: string[]
   id: number
   name: string
+}
+
+// The page a node slice holds: what its query asked for. A limit of 0 is every row.
+export interface NodePage {
+  offset: number
+  limit: number
 }
 
 export interface QueryParameters {
@@ -450,6 +483,8 @@ export interface NodeAvailability {
   ipinterfaces: NodeAvailabilityInterface[]
   'service-count': number
   'service-down-count': number
+  // The node's total interfaces, when `ipinterfaces` may hold only a page of them.
+  ipinterfaceCount?: number
 }
 
 export interface FileEditorResponseLog {

@@ -12,6 +12,18 @@
       <div class="node-badge-wrapper">
         <OnmsTag class="node-chip" :value="`Monitoring Location: ${props.node?.location}`" severity="info" />
       </div>
+      <div v-if="foreignSourceLabel" class="node-badge-wrapper">
+        <OnmsTag class="node-chip" :value="foreignSourceLabel" severity="info" data-test="foreign-source-tag" />
+      </div>
+      <div v-if="hasFlows" class="node-badge-wrapper">
+        <OnmsTag
+          v-onms-tooltip.top="{ value: flowsTooltip, class: 'node-flows-tooltip' }"
+          class="node-chip tooltip-target"
+          value="Flow data available"
+          severity="success"
+          data-test="flows-tag"
+        />
+      </div>
       <div class="node-badge-wrapper">
         <OnmsTag
           v-onms-tooltip.top="categoriesTooltip"
@@ -29,8 +41,9 @@
 import { computed, PropType } from 'vue'
 import { OnmsTag, OnmsTagSeverity } from '@opennms/onms-ui'
 
+import { formatInDisplayZone } from '@/lib/displayTimeZone'
 import { Node } from '@/types'
-import { getNodeStatusString } from './utils'
+import { getNodeStatusString, hasRecentFlows } from './utils'
 
 const props = defineProps({
   node: {
@@ -63,6 +76,24 @@ const categoriesTooltip = computed(() =>
     ? categories.value.map(category => category.name).join('\n')
     : undefined)
 
+// Only requisitioned nodes have a foreign source and id; the legacy page left the badge out for
+// the rest, and so does this.
+const foreignSourceLabel = computed<string | undefined>(() =>
+  props.node?.foreignSource ? `FS:FID: ${props.node.foreignSource}:${props.node.foreignId}` : undefined)
+
+const hasFlows = computed<boolean>(() => !!props.node && hasRecentFlows(props.node))
+
+const lastFlow = (time: number | undefined) => (time ? formatInDisplayZone(time) : 'None')
+
+// Each time on a line under its label: the tooltip is narrow, and a timestamp sharing a line with
+// its label wraps mid-date. The node-flows-tooltip class (styled below) keeps each line whole.
+const flowsTooltip = computed(() => [
+  'Last ingress flow:',
+  lastFlow(props.node?.lastIngressFlow),
+  'Last egress flow:',
+  lastFlow(props.node?.lastEgressFlow)
+].join('\n'))
+
 const nodeStatus = computed(() => {
   return getNodeStatusString(props.node)
 })
@@ -80,7 +111,6 @@ const nodeSeverity = computed<OnmsTagSeverity>(() => SEVERITY_BY_STATUS[nodeStat
 
 <style lang="scss" scoped>
 .card {
-  padding: 1rem;
   margin-bottom: 1rem;
 
   .node-badge-wrapper {
@@ -92,6 +122,18 @@ const nodeSeverity = computed<OnmsTagSeverity>(() => SEVERITY_BY_STATUS[nodeStat
   // is the only cue that hovering shows more.
   .tooltip-target {
     cursor: pointer;
+  }
+}
+</style>
+
+<style lang="scss">
+// The tooltip teleports to <body>, so this cannot be scoped. A timestamp is wider than a tooltip's
+// default max width and would break mid-date, so this one sizes to its longest line instead.
+.node-flows-tooltip {
+  max-width: none;
+
+  .p-tooltip-text {
+    white-space: pre;
   }
 }
 </style>

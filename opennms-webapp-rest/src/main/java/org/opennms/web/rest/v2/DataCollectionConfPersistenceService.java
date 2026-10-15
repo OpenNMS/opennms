@@ -169,6 +169,22 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionMibGroupDao.findAllMibGroupNames();
     }
 
+    public List<String> getAllSystemDefNames() {
+        return snmpCollectionSystemDefDao.findAllSystemDefNames();
+    }
+
+    public List<SnmpCollectionMibGroupDto> findMibGroupsByName(final String name) {
+        return SnmpCollectionMibGroupDto.fromEntity(snmpCollectionMibGroupDao.findAllByName(name));
+    }
+
+    public List<SnmpCollectionResourceTypeDto> findResourceTypesByName(final String name) {
+        return SnmpCollectionResourceTypeDto.fromEntity(snmpCollectionResourceTypeDao.findAllByName(name));
+    }
+
+    public List<SnmpCollectionSystemDefDto> findSystemDefsByName(final String name) {
+        return toSystemDefDtos(snmpCollectionSystemDefDao.findAllByName(name));
+    }
+
     @Transactional
     public Integer addMibGroupToSnmpCollectionSources(final SnmpCollectionSource snmpCollectionSource, final SnmpCollectionMibGroupDto request) {
         SnmpDataCollectionSyncToDb.requireNotPluginSourced(snmpCollectionSource, "Add MibGroup");

@@ -129,6 +129,9 @@
       "shell-quote": "^1.10.0",
       "svgo": "^3.3.4",
       "undici": "5.28.4"
+    },
+    "patchedDependencies": {
+      "primevue@4.5.5": "patches/primevue@4.5.5.patch"
     }
   }
 }

@@ -22,6 +22,8 @@
         <argument ref="brokerUrl"/>
         <argument ref="secureCredentialsVault"/>
         <argument value="opennms.broker"/>
+        <!-- Camel's JmsBinding deserializes ObjectMessage payloads; OpenNMS never sends any (CVE-2026-40860) -->
+        <property name="trustedPackages"><list/></property>
     </bean>
     <service ref="jmsConnectionFactory" interface="javax.jms.ConnectionFactory">
         <service-properties>
@@ -40,8 +42,20 @@
     </bean>
 
     <!-- A canonical JMS component (backed by ActiveMQ) pointing to the OpenNMS controller -->
+    <!-- Keep only the inbound properties OpenNMS reads, so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
+    <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList">
+        <argument>
+            <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy">
+                <argument>
+                    <bean factory-ref="jmsConfig" factory-method="isIncludeAllJMSXProperties"/>
+                </argument>
+            </bean>
+        </argument>
+    </bean>
+
     <bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
         <property name="configuration" ref="jmsConfig"/>
+        <property name="headerFilterStrategy" ref="jmsHeaderFilterStrategy"/>
     </bean>
     <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">
         <service-properties>

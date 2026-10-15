@@ -266,6 +266,19 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     /**
+     * Applies the {@code threads} setting from the current poller configuration to the
+     * running scheduler. Called after the configuration has been reloaded, so that a
+     * changed thread count takes effect without a restart.
+     */
+    public void resizeScheduler() {
+        if (m_scheduler == null) {
+            LOG.debug("resizeScheduler: no scheduler yet, nothing to resize.");
+            return;
+        }
+        m_scheduler.setThreads(getPollerConfig().getThreads());
+    }
+
+    /**
      * <p>setScheduler</p>
      *
      * @param scheduler a {@link org.opennms.netmgt.scheduler.LegacyScheduler} object.
