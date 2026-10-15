@@ -81,13 +81,13 @@ public class XmlHandler<U> {
             throw new RuntimeException(e);
         }
         // MOXy writes each half of a surrogate pair as its own character reference (NMS-19814)
-        return JaxbUtils.repairSurrogateCharacterReferences(jaxbWriter.toString());
+        return SurrogateCharacterReferences.repair(jaxbWriter.toString());
     }
 
     public U unmarshal(String xml) {
         XMLStreamReader reader = null;
         try {
-            reader = xmlInputFactory.createXMLStreamReader(new StringReader(JaxbUtils.repairSurrogateCharacterReferences(xml)));
+            reader = xmlInputFactory.createXMLStreamReader(new StringReader(SurrogateCharacterReferences.repair(xml)));
             return clazz.cast(unmarshaller.unmarshal(reader));
         } catch (XMLStreamException e) {
             throw new RuntimeException(new UnmarshalException(e));

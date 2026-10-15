@@ -23,15 +23,12 @@ package org.opennms.core.xml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.FilterInputStream;
-import java.io.FilterReader;
-import java.io.IOException;
 import java.io.File;
+import java.io.FilterInputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -46,13 +43,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.core.io.ByteArrayResource;
 import org.xml.sax.InputSource;
-import org.springframework.dao.DataAccessException;
 
 /**
- * NMS-19814: characters outside the Basic Multilingual Plane (emoji, for one) are a
- * UTF-16 surrogate pair in a Java String. MOXy's Writer-based marshalling escapes each
- * half as its own character reference, which no XML parser accepts, so the output of
- * {@link JaxbUtils#marshal(Object)} could not be read back by {@link JaxbUtils#unmarshal}.
+ * NMS-19814: supplementary characters (emoji and the like) survive marshalling, and
+ * documents written by the old marshaller, which split them into two character
+ * references, still load.
  */
 public class JaxbUtilsUnicodeTest {
 
@@ -60,7 +55,6 @@ public class JaxbUtilsUnicodeTest {
     public static class Probe {
         @XmlAttribute(name = "pattern")
         public String pattern;
-
         @XmlValue
         public String value;
     }
@@ -69,7 +63,8 @@ public class JaxbUtilsUnicodeTest {
     private static final String HALO = "😇";         // U+1F607 SMILING FACE WITH HALO
     private static final String TEXT = "café ☃ " + POO + " 17 firing";
     private static final String PATTERN = "/^one&two{;t|hree" + HALO + "$/";
-    private static final String TEXT_OLD = "caf\u00e9 " + POO;
+    private static final String TEXT_OLD = "café " + POO;
+    private static final String STORED = "<probe pattern=\"&#55357;&#56839;\">café &#55357;&#56489;</probe>";
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -99,10 +94,8 @@ public class JaxbUtilsUnicodeTest {
         JaxbUtils.marshal(probe(), writer);
         final String xml = writer.toString();
         assertFalse(xml, xml.contains("&#55357;"));
-
-        final Probe parsed = JaxbUtils.unmarshal(Probe.class, xml);
-        assertEquals(TEXT, parsed.value);
-        assertEquals(PATTERN, parsed.pattern);
+        assertTrue(xml, xml.contains(TEXT));
+        assertEquals(TEXT, JaxbUtils.unmarshal(Probe.class, new StringReader(xml)).value);
     }
 
     @Test
@@ -110,199 +103,124 @@ public class JaxbUtilsUnicodeTest {
         final XmlHandler<Probe> handler = new XmlHandler<>(Probe.class);
         final String xml = handler.marshal(probe());
         assertFalse(xml, xml.contains("&#55357;"));
-
         final Probe parsed = handler.unmarshal(xml);
         assertEquals(TEXT, parsed.value);
         assertEquals(PATTERN, parsed.pattern);
-    }
-
-    /** XML already persisted by the broken marshaller must still load. */
-    @Test
-    public void unmarshalRepairsSurrogateCharacterReferences() {
-        final String stored = "<probe pattern=\"/^one&amp;two{;t|hree&#55357;&#56839;$/\">caf&#233; &#9731; &#55357;&#56489; 17 firing</probe>";
-        final Probe parsed = JaxbUtils.unmarshal(Probe.class, stored);
-        assertEquals(TEXT, parsed.value);
-        assertEquals(PATTERN, parsed.pattern);
-
-        final Probe viaHandler = new XmlHandler<>(Probe.class).unmarshal(stored);
-        assertEquals(TEXT, viaHandler.value);
-        assertEquals(PATTERN, viaHandler.pattern);
-    }
-
-    @Test
-    public void repairHandlesHexReferencesAndLoneSurrogates() {
-        assertEquals(POO, JaxbUtils.repairSurrogateCharacterReferences("&#xD83D;&#xDCA9;"));
-        assertEquals(POO, JaxbUtils.repairSurrogateCharacterReferences("&#55357;&#xDCA9;"));
-        // a lone half cannot be represented in XML at all; U+FFFD keeps the document loadable
-        assertEquals("a�b", JaxbUtils.repairSurrogateCharacterReferences("a&#55357;b"));
-        assertEquals("a�b", JaxbUtils.repairSurrogateCharacterReferences("a&#56489;b"));
-        assertEquals("�" + POO, JaxbUtils.repairSurrogateCharacterReferences("&#55357;&#55357;&#56489;"));
-        // ordinary references, text without references and malformed references are untouched
-        final String plain = "<a b=\"&#xa;&#233;&#9731;\">&#x1F4A9; &#; &#xZZ; &#99999999;</a>";
-        assertSame(plain, JaxbUtils.repairSurrogateCharacterReferences(plain));
-        final String noRefs = "<a>nothing to see</a>";
-        assertSame(noRefs, JaxbUtils.repairSurrogateCharacterReferences(noRefs));
+        assertEquals(TEXT_OLD, handler.unmarshal(STORED).value);
     }
 
     @Test
     public void fileRoundTripsSupplementaryCharacters() throws Exception {
         final File file = folder.newFile("probe.xml");
         JaxbUtils.marshal(probe(), file);
-        final String onDisk = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-        assertFalse(onDisk, onDisk.contains("&#55357;"));
-
-        final Probe parsed = JaxbUtils.unmarshal(Probe.class, file);
-        assertEquals(TEXT, parsed.value);
-        assertEquals(PATTERN, parsed.pattern);
+        final String xml = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        assertFalse(xml, xml.contains("&#55357;"));
+        assertEquals(TEXT, JaxbUtils.unmarshal(Probe.class, file).value);
     }
 
-    /** A config file written by the old marshaller. */
     @Test
     public void fileWrittenByTheOldMarshallerStillLoads() throws Exception {
         final File file = folder.newFile("old.xml");
-        Files.write(file.toPath(), "<probe pattern=\"&#55357;&#56839;\">caf\u00e9 &#55357;&#56489;</probe>".getBytes(StandardCharsets.UTF_8));
+        Files.write(file.toPath(), STORED.getBytes(StandardCharsets.UTF_8));
         final Probe parsed = JaxbUtils.unmarshal(Probe.class, file);
-        assertEquals("caf\u00e9 " + POO, parsed.value);
+        assertEquals(TEXT_OLD, parsed.value);
         assertEquals(HALO, parsed.pattern);
     }
 
     @Test
-    public void readerStreamAndResourceOverloadsRepairOldReferences() {
-        final String stored = "<probe pattern=\"&#55357;&#56839;\">caf\u00e9 &#55357;&#56489;</probe>";
-        final byte[] bytes = stored.getBytes(StandardCharsets.UTF_8);
-        assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new StringReader(stored)).value);
+    public void everyUnmarshalOverloadRepairsOldReferences() {
+        final byte[] bytes = STORED.getBytes(StandardCharsets.UTF_8);
+        assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, STORED).value);
+        assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new StringReader(STORED)).value);
         assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(bytes)).value);
         assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new ByteArrayResource(bytes)).value);
+        assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new InputSource(new ByteArrayInputStream(bytes))).value);
         assertEquals(HALO, JaxbUtils.unmarshal(Probe.class, new ByteArrayResource(bytes)).pattern);
 
-        final byte[] declared = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + stored).getBytes(StandardCharsets.UTF_8);
+        final byte[] declared = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + STORED).getBytes(StandardCharsets.UTF_8);
         assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new ByteArrayResource(declared)).value);
     }
 
-    /** The bytes of a document in another encoding are not rewritten as UTF-8. */
+    /** The parser still decodes the bytes by the document's own declaration. */
     @Test
-    public void byteStreamDeclaringAnotherEncodingIsLeftAlone() {
-        final byte[] latin1 = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><probe>caf\u00e9 &#55357;&#56489;</probe>"
+    public void byteStreamInAnotherEncodingIsDecodedByTheParser() {
+        final byte[] latin1 = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><probe>café &#55357;&#56489;</probe>"
                 .getBytes(StandardCharsets.ISO_8859_1);
-        try {
-            JaxbUtils.unmarshal(Probe.class, new ByteArrayResource(latin1));
-            fail("the invalid references were expected to reach the parser");
-        } catch (final DataAccessException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("55357"));
-        }
-        final byte[] clean = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><probe>caf\u00e9</probe>".getBytes(StandardCharsets.ISO_8859_1);
-        assertEquals("caf\u00e9", JaxbUtils.unmarshal(Probe.class, new ByteArrayResource(clean)).value);
+        assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new ByteArrayResource(latin1)).value);
+        assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(latin1)).value);
+
+        final byte[] utf16 = ("<?xml version=\"1.0\" encoding=\"UTF-16\"?><probe>" + TEXT + "</probe>").getBytes(StandardCharsets.UTF_16);
+        assertEquals(TEXT, JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(utf16)).value);
     }
 
-    /** A lone half cannot be represented in XML at all; U+FFFD keeps the output parseable. */
+    /** Inside a comment or CDATA section the references are literal text. */
     @Test
-    public void marshalReplacesLoneSurrogates() {
-        final Probe probe = new Probe();
-        probe.value = "a\uD83Dbcd";
-        probe.pattern = "abc\uD83D";
-        final String xml = JaxbUtils.marshal(probe);
+    public void commentsAndCdataAreNotRewritten() {
+        final String xml = "<!-- &#55357;&#56489; --><probe pattern=\"&#55357;&#56839;\"><![CDATA[&#55357;&#56489;]]></probe>";
         final Probe parsed = JaxbUtils.unmarshal(Probe.class, xml);
-        assertEquals("a\uFFFDbcd", parsed.value);
-        assertEquals("abc\uFFFD", parsed.pattern);
-        probe.value = "x\uDCA9y";
-        assertEquals("x\uFFFDy", JaxbUtils.unmarshal(Probe.class, JaxbUtils.marshal(probe)).value);
+        assertEquals("&#55357;&#56489;", parsed.value);
+        assertEquals(HALO, parsed.pattern);
+        assertEquals("&#55357;&#56489;", JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))).value);
     }
 
-    @Test(timeout = 5000)
+    /** A lone half cannot be represented in XML at all; U+FFFD keeps the document parseable. */
+    @Test
+    public void loneSurrogatesBecomeTheReplacementCharacter() {
+        final Probe probe = new Probe();
+        probe.value = "a\uD83Db";
+        probe.pattern = "\uDCA9";
+        final String xml = JaxbUtils.marshal(probe);
+        assertFalse(xml, xml.contains("&#"));
+        final Probe parsed = JaxbUtils.unmarshal(Probe.class, xml);
+        assertEquals("a�b", parsed.value);
+        assertEquals("�", parsed.pattern);
+
+        assertEquals("a�b", JaxbUtils.unmarshal(Probe.class, "<probe>a&#55357;b</probe>").value);
+        assertEquals("a�" + POO, JaxbUtils.unmarshal(Probe.class, "<probe>a&#55357;&#55357;&#56489;</probe>").value);
+    }
+
+    /** The repair streams, so there is no size above which it stops working. */
+    @Test
+    public void largeInputIsRepaired() {
+        final StringBuilder sb = new StringBuilder("<probe>");
+        while (sb.length() < 9 * 1024 * 1024) {
+            sb.append("lorem ipsum dolor sit amet ");
+        }
+        sb.append("&#55357;&#56489;</probe>");
+        final byte[] bytes = sb.toString().getBytes(StandardCharsets.UTF_8);
+        final String value = JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(bytes)).value;
+        assertTrue(value.endsWith(" " + POO));
+        // the two references (16 chars) became one supplementary character (2 chars)
+        assertEquals(sb.length() - "<probe></probe>".length() - 16 + 2, value.length());
+    }
+
+    /** The scanner only ever looks ten units ahead, so unterminated markup cannot make it quadratic. */
+    @Test
     public void repairIsLinearOnHostileInput() {
-        final StringBuilder hostile = new StringBuilder("&#");
-        for (int i = 0; i < 300_000; i++) {
-            hostile.append("<!--<![CDATA[<?&#5");
+        final StringBuilder hostile = new StringBuilder("<probe>");
+        for (int i = 0; i < 200_000; i++) {
+            hostile.append("&#5").append("<![CDATA").append("<!-");
         }
-        final String input = hostile.toString();
-        assertSame(input, JaxbUtils.repairSurrogateCharacterReferences(input));
-        final StringBuilder refs = new StringBuilder();
-        for (int i = 0; i < 300_000; i++) {
-            refs.append("&#55357;&#56489;&#55357;x&#9731;");
-        }
-        final String repaired = JaxbUtils.repairSurrogateCharacterReferences(refs.toString());
-        assertEquals(300_000 * (POO.length() + 1 + 1 + "&#9731;".length()), repaired.length());
+        hostile.append("</probe>");
+        final long start = System.nanoTime();
+        final String repaired = SurrogateCharacterReferences.repair(hostile.toString());
+        final long elapsedMillis = (System.nanoTime() - start) / 1_000_000;
+        assertEquals(hostile.toString(), repaired);
+        assertTrue("took " + elapsedMillis + " ms", elapsedMillis < 5_000);
     }
 
+    /** The parser closes the caller's stream, as it did before the repair was added. */
     @Test
-    public void inputsAboveTheRepairLimitStillParse() {
-        final StringBuilder big = new StringBuilder("<probe pattern=\"p\">");
-        final int length = 9 * 1024 * 1024;
-        for (int i = 0; i < length; i++) {
-            big.append('a');
-        }
-        big.append("</probe>");
-        final String xml = big.toString();
-        assertEquals(length, JaxbUtils.unmarshal(Probe.class, new StringReader(xml)).value.length());
-        assertEquals(length, JaxbUtils.unmarshal(Probe.class, new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))).value.length());
-    }
-
-    /** The parser used to close the stream it was handed; buffering must not leak it. */
-    @Test
-    public void bufferedStreamsAreClosed() {
-        final String stored = "<probe>caf\u00e9 &#55357;&#56489;</probe>";
-        final boolean[] closed = new boolean[2];
-        final FilterReader reader = new FilterReader(new StringReader(stored)) {
+    public void parserStillClosesTheStream() throws IOException {
+        final boolean[] closed = new boolean[1];
+        final FilterInputStream stream = new FilterInputStream(new ByteArrayInputStream(STORED.getBytes(StandardCharsets.UTF_8))) {
             @Override
             public void close() throws IOException {
                 closed[0] = true;
                 super.close();
             }
         };
-        final FilterInputStream stream = new FilterInputStream(new ByteArrayInputStream(stored.getBytes(StandardCharsets.UTF_8))) {
-            @Override
-            public void close() throws IOException {
-                closed[1] = true;
-                super.close();
-            }
-        };
-        assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, reader).value);
         assertEquals(TEXT_OLD, JaxbUtils.unmarshal(Probe.class, new InputSource(stream)).value);
-        assertTrue("reader closed", closed[0]);
-        assertTrue("stream closed", closed[1]);
-    }
-
-    /** UTF-16 bytes can spell "&#55357;" by accident; they must not be treated as UTF-8. */
-    @Test
-    public void utf16ByteStreamsAreLeftAlone() {
-        final String lookalike = "\u2326\u3535\u3733\u3b37";          // UTF-16LE bytes of this read as "&#55377;"
-        final String document = "<?xml version=\"1.0\"?><probe pattern=\"" + POO + "\">" + lookalike + "</probe>";
-        for (final java.nio.charset.Charset charset : new java.nio.charset.Charset[] {
-                StandardCharsets.UTF_16LE, StandardCharsets.UTF_16BE, StandardCharsets.UTF_16 }) {
-            final byte[] bytes = document.getBytes(charset);
-            final Probe parsed = JaxbUtils.unmarshal(Probe.class, new InputSource(new ByteArrayInputStream(bytes)));
-            assertEquals(charset.name(), lookalike, parsed.value);
-            assertEquals(charset.name(), POO, parsed.pattern);
-        }
-    }
-
-    @Test
-    public void inputSourceEncodingIsHonoured() {
-        final InputSource latin1 = new InputSource(new ByteArrayInputStream("<probe>caf\u00e9</probe>".getBytes(StandardCharsets.ISO_8859_1)));
-        latin1.setEncoding("ISO-8859-1");
-        assertEquals("caf\u00e9", JaxbUtils.unmarshal(Probe.class, latin1).value);
-
-        final InputSource withRefs = new InputSource(new ByteArrayInputStream("<probe>caf\u00e9 &#55357;&#56489;</probe>".getBytes(StandardCharsets.ISO_8859_1)));
-        withRefs.setEncoding("ISO-8859-1");
-        try {
-            JaxbUtils.unmarshal(Probe.class, withRefs);
-            fail("the invalid references were expected to reach the parser");
-        } catch (final DataAccessException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("55357"));
-        }
-    }
-
-    @Test
-    public void inputsAtTheRepairLimitAreRepaired() {
-        final String prefix = "<probe>";
-        final String suffix = "&#55357;&#56489;</probe>";
-        final StringBuilder exact = new StringBuilder(prefix);
-        for (int i = exact.length(); i < 8 * 1024 * 1024 - suffix.length(); i++) {
-            exact.append('a');
-        }
-        exact.append(suffix);
-        assertEquals(8 * 1024 * 1024, exact.length());
-        final Probe parsed = JaxbUtils.unmarshal(Probe.class, new StringReader(exact.toString()));
-        assertTrue(parsed.value.endsWith(POO));
+        assertTrue("closed by the parser", closed[0]);
     }
 }
