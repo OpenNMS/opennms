@@ -121,6 +121,30 @@ describe('ScheduledOutages.vue', () => {
     expect(text).toContain('All nodes and interfaces')
   })
 
+  // NMS-9646: the list showed only a span count, so a weekly day was never visible
+  it('lists the time spans themselves, with the day of a weekly span', async () => {
+    vi.mocked(getScheduledOutages).mockResolvedValue([
+      ...OUTAGES,
+      { name: 'friday', type: 'weekly', time: [
+        { day: 'friday', begins: '22:25:00', ends: '22:40:00' },
+        { day: 'monday', begins: '01:00:00', ends: '02:00:00' },
+        { day: 'tuesday', begins: '01:00:00', ends: '02:00:00' }
+      ], node: [{ id: 5 }], interface: [] }
+    ] as any)
+    const wrapper = await mountPage()
+    const times = wrapper.findAll('[data-test="outage-times"]')
+    expect(times[0].text()).toBe('01:00:00 → 02:00:00')
+    expect(times[1].text()).toBe('--')
+    expect(times[2].text()).toBe('Friday 22:25:00 → 22:40:00; Monday 01:00:00 → 02:00:00; +1 more')
+    expect(times[2].attributes('title')).toContain('Tuesday 01:00:00 → 02:00:00')
+    expect(wrapper.text()).not.toContain('null')
+  })
+
+  it('wraps long names instead of widening the table', async () => {
+    const wrapper = await mountPage()
+    expect(wrapper.find('[data-test="outage-name"]').classes()).toContain('wrap-cell')
+  })
+
   it('reports a first-load failure without claiming a last known list', async () => {
     vi.mocked(getScheduledOutages).mockResolvedValue(null)
     const wrapper = await mountPage()

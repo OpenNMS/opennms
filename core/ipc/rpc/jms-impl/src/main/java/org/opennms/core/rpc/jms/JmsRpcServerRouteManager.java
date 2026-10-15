@@ -98,7 +98,7 @@ public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
             endpoint.setSelector(selector);
             // Initialize Tracer registry with service name.
             tracerRegistry.init(identity.getLocation()+"@"+identity.getId());
-            from(endpoint).setExchangePattern(ExchangePattern.InOut)
+            from(endpoint).noStreamCaching().setExchangePattern(ExchangePattern.InOut)
                     .process(new DiscardUnreadableBodies())
                     .process(new CamelRpcServerProcessor(module, tracerRegistry))
                     .routeId(getRouteId(module));

@@ -38,17 +38,21 @@
         :rowsPerPageOptions="[10, 20, 50, 100]"
         data-test="outages-table"
       >
-        <OnmsColumn field="name" header="Name" sortable />
+        <OnmsColumn field="name" header="Name" sortable>
+          <template #body="{ data }"><span class="wrap-cell" data-test="outage-name">{{ data.name }}</span></template>
+        </OnmsColumn>
         <OnmsColumn field="type" header="Type" sortable>
           <template #body="{ data }">{{ data.type ?? '--' }}</template>
         </OnmsColumn>
         <OnmsColumn header="Nodes/Interfaces">
           <template #body="{ data }">
-            <span :title="selectionTitle(data)">{{ selectionSummary(data) }}</span>
+            <span class="wrap-cell" :title="selectionTitle(data)">{{ selectionSummary(data) }}</span>
           </template>
         </OnmsColumn>
         <OnmsColumn header="Times">
-          <template #body="{ data }">{{ (data.time ?? []).length }}</template>
+          <template #body="{ data }">
+            <span class="wrap-cell" :title="timesTitle(data)" data-test="outage-times">{{ timesSummary(data) }}</span>
+          </template>
         </OnmsColumn>
         <OnmsColumn header="Notifications">
           <template #body="{ data }"><AppliedMark :on="data.applies?.notifications" /></template>
@@ -156,7 +160,8 @@ import {
   outageNameProblem,
   scheduledOutageErrorMessage
 } from '@/services/scheduledOutagesService'
-import { ScheduledOutage } from '@/types/scheduledOutage'
+import { describeOutageTime } from '@/components/ScheduledOutages/outageTime'
+import { OutageType, ScheduledOutage } from '@/types/scheduledOutage'
 import { BreadCrumb } from '@/types'
 
 interface OutageRow extends ScheduledOutage {
@@ -260,6 +265,20 @@ const selectionTitle = (o: ScheduledOutage): string => [
   ...(o.interface ?? []).map(i => i.address)
 ].join(', ')
 
+// The spans themselves rather than a count, so a weekly day is visible here too.
+const timeLabels = (o: ScheduledOutage): string[] =>
+  o.type ? (o.time ?? []).map(t => describeOutageTime(o.type as OutageType, t)) : []
+
+const timesSummary = (o: ScheduledOutage): string => {
+  const labels = timeLabels(o)
+  if (!labels.length) {
+    return '--'
+  }
+  return labels.length > 2 ? `${labels.slice(0, 2).join('; ')}; +${labels.length - 2} more` : labels.join('; ')
+}
+
+const timesTitle = (o: ScheduledOutage): string => timeLabels(o).join('\n')
+
 const showCreateDialog = ref(false)
 
 const openCreateDialog = () => {
@@ -342,6 +361,14 @@ const confirmDelete = async () => {
 
   .subtitle {
     color: var(--p-text-muted-color);
+  }
+
+  // an unbroken name or label would otherwise widen the table past the page
+  // and push the actions column out of view
+  .wrap-cell {
+    display: inline-block;
+    max-width: 24rem;
+    overflow-wrap: anywhere;
   }
 
   .action-container {

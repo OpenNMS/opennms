@@ -27,6 +27,11 @@ overrides:
   svgo: ^3.3.4
   undici: 5.28.4
 
+patchedDependencies:
+  primevue@4.5.5:
+    hash: b57f20c9405bdd95bd746bb0510722f26934054eccdd7f0ac11d1936ba90c6e6
+    path: patches/primevue@4.5.5.patch
+
 importers:
 
   .:
@@ -132,7 +137,7 @@ importers:
         version: 7.0.0
       primevue:
         specifier: ^4.5.4
-        version: 4.5.5(vue@3.5.33(typescript@5.9.3))
+        version: 4.5.5(patch_hash=b57f20c9405bdd95bd746bb0510722f26934054eccdd7f0ac11d1936ba90c6e6)(vue@3.5.33(typescript@5.9.3))
       rapidoc:
         specifier: ^9.3.8
         version: 9.3.8
@@ -262,7 +267,7 @@ importers:
     dependencies:
       primevue:
         specifier: ^4.5.0
-        version: 4.5.5(vue@3.5.33(typescript@5.9.3))
+        version: 4.5.5(patch_hash=b57f20c9405bdd95bd746bb0510722f26934054eccdd7f0ac11d1936ba90c6e6)(vue@3.5.33(typescript@5.9.3))
       vue:
         specifier: ^3.5.0
         version: 3.5.33(typescript@5.9.3)
@@ -5682,7 +5687,7 @@ snapshots:
 
   primeicons@7.0.0: {}
 
-  primevue@4.5.5(vue@3.5.33(typescript@5.9.3)):
+  primevue@4.5.5(patch_hash=b57f20c9405bdd95bd746bb0510722f26934054eccdd7f0ac11d1936ba90c6e6)(vue@3.5.33(typescript@5.9.3)):
     dependencies:
       '@primeuix/styled': 0.7.4
       '@primeuix/styles': 2.0.3

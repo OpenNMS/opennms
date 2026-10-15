@@ -38,8 +38,9 @@ import org.slf4j.LoggerFactory;
  * Letting the exception escape instead would roll the message back, so the
  * broker redelivers it and every attempt logs an error.
  *
- * Relies on the body staying lazy: with eagerLoadingOfProperties=true on the
- * endpoint, Camel reads it before the route starts and this never runs.
+ * Relies on the body staying lazy: eagerLoadingOfProperties=true on the endpoint,
+ * or stream caching on the route (the Camel 3 default), reads it before this
+ * step runs, so consuming routes must declare noStreamCaching().
  */
 public class DiscardUnreadableBodies implements Processor {
     private static final Logger LOG = LoggerFactory.getLogger(DiscardUnreadableBodies.class);
@@ -57,7 +58,7 @@ public class DiscardUnreadableBodies implements Processor {
                     exchange.getIn().getHeader("JMSDestination"), cause.getMessage());
             // no reply for InOut consumers, and no further processing
             exchange.setPattern(ExchangePattern.InOnly);
-            exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE);
+            exchange.setRouteStop(true);
         }
     }
 
