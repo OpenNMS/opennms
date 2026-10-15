@@ -15,6 +15,9 @@
         <exclude>**/zookeeper/3.4.14/*</exclude>
         <exclude>**/*jaxb-impl*/2.2.11_1</exclude>
         <exclude>**/*jaxb-impl*/2.2.11_1/*</exclude>
+        <!-- the cxf-jackson feature pins an older jackson; features-processing.xml redirects it to ${jackson2Version} -->
+        <exclude>**/com/fasterxml/jackson/**/2.22.1</exclude>
+        <exclude>**/com/fasterxml/jackson/**/2.22.1/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>
