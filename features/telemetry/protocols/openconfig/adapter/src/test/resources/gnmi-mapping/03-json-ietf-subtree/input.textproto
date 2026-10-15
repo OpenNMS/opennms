@@ -1,0 +1,10 @@
+update {
+  update {
+    path {
+      elem { name: "openconfig-interfaces:interfaces" }
+      elem { name: "interface" key { key: "name" value: "Ethernet1" } }
+      elem { name: "state" }
+    }
+    val { json_ietf_val: "{\"openconfig-interfaces:counters\":{\"in-octets\":\"18446744073709551615\",\"out-octets\":\"42\",\"in-errors\":0},\"oper-status\":\"UP\"}" }
+  }
+}

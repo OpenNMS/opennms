@@ -330,3 +330,128 @@ The following globals will be passed to the script:
 | Decoded message from which the metrics should be extracted.
 | org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData
 |===
+
+=== Declarative mapping
+
+Instead of writing a script, you can describe how gNMI paths become resources and attributes in a mapping file.
+The shipped script `openconfig-gnmi-mapping.groovy` reads the file and builds the collection set.
+
+To use it, point the adapter's `script` parameter at the shipped script:
+
+[source, xml]
+----
+<parameter key="script" value="$OPENNMS_HOME/etc/telemetryd-adapters/openconfig-gnmi-mapping.groovy"/>
+----
+
+The script reads `$OPENNMS_HOME/etc/telemetryd-adapters/openconfig-gnmi-mapping.yaml`.
+If that file does not exist, it reads `openconfig-gnmi-mapping.json` in the same directory.
+Changes to the mapping file take effect with the next message, without a restart.
+If a changed file is invalid, the script logs the errors and keeps the previous mapping.
+
+.Example mapping
+[source, yaml]
+----
+version: 1
+aliases:
+  if-counters: /interfaces/interface/state/counters
+groups:
+  - name: oc-if-counters
+    match: if-counters
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      in-octets: { type: counter, name: ifHCInOctets }
+      out-octets: { type: counter, name: ifHCOutOctets }
+  - name: oc-if-description
+    match: /interfaces/interface/state
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      description: { type: string, name: ifAlias }
+----
+
+.Mapping file keys
+[options="header", cols="1,1,3"]
+|===
+| Key
+| Required
+| Description
+
+| version
+| yes
+| Schema version. Must be `1`.
+
+| aliases
+| no
+| Map of name to gNMI path. Use an alias wherever a path is expected.
+
+| groups[].name
+| yes
+| Group name. Also used as the attribute group.
+
+| groups[].match
+| yes
+| Alias or path. `*` matches one element. `[key=value]` must match, and `value` may contain `*`.
+
+| groups[].resource-type
+| yes
+| `node`, `interface`, or the name of a generic resource type, such as `ocComponent`.
+
+| groups[].instance
+| for `interface` and generic types
+| Template such as `{interface.name}`. Each placeholder reads a key of the leaf's path. At least one placeholder is required. Not allowed for `node`.
+
+| groups[].attributes
+| yes
+| Map of leaf path, relative to `match`, to `{ type, name }`. Or the word `all` to collect every numeric leaf.
+
+| groups[].default-type
+| with `attributes: all`
+| `counter` or `gauge`.
+|===
+
+`type` is `counter`, `gauge` or `string`.
+`name` renames the attribute.
+The default name is the relative leaf path with `/` replaced by `-`.
+Keep names at 19 characters or fewer when you persist to RRD.
+
+==== How leaves are matched
+
+. The leaf path is the notification prefix followed by the update path. Module prefixes such as `openconfig-interfaces:` are removed.
+. A `json_val` or `json_ietf_val` that holds an object becomes one leaf per value. Numbers encoded as strings are converted.
+. JSON arrays are skipped with a warning. Subscribe to a deeper path to collect their contents.
+. A group matches when its `match` path is a prefix of the leaf path. Every matching group applies.
+. The rest of the leaf path selects the attribute. Leaves that are not listed are dropped, unless the group uses `attributes: all`.
+. Characters that resource paths do not allow, such as `/` and `:`, become `_` in instances. `TenGigE0/0/0/3` becomes `TenGigE0_0_0_3`.
+
+To enrich metrics with a description, map the description to a `string` attribute on the same resource as the counters.
+The `oc-if-description` group in the example does this.
+
+==== Translate gNMI collector concepts
+
+[options="header", cols="1,2"]
+|===
+| gNMI collector concept
+| OpenNMS
+
+| Path aliases
+| `aliases`
+
+| Subscription name and path
+| A group's `name` and `match`. The subscription itself is set in the connector's `paths` parameter.
+
+| Tag subscription, which labels metrics with a string value
+| A group with a `string` attribute on the same `resource-type` and `instance`
+
+| Guessing which part of a path names the measurement
+| Not needed. Leaf paths are always the prefix plus the update path.
+
+| Subscription mode, sample interval, heartbeat interval, maximum message size, gRPC keepalive, redial, TLS
+| Connector settings, see <<Connector configuration>>.
+|===
+
+==== Troubleshooting
+
+Set the log level of the telemetry adapter to `DEBUG` to see one line per message: `gNMI mapping for node <id>: <n> leaves seen, <n> matched, <n> attributes emitted`.
+If leaves are seen but none match, compare the leaf paths with your `match` paths.
+If SnakeYAML is not available, the log says so; write the same mapping as `openconfig-gnmi-mapping.json`.

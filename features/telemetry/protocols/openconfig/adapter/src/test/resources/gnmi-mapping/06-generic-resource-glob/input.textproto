@@ -1,0 +1,18 @@
+update {
+  update {
+    path {
+      elem { name: "components" }
+      elem { name: "component" key { key: "name" value: "CPU0:CORE0" } }
+      elem { name: "cpu" } elem { name: "utilization" } elem { name: "state" } elem { name: "avg" }
+    }
+    val { json_val: "15" }
+  }
+  update {
+    path {
+      elem { name: "components" }
+      elem { name: "component" key { key: "name" value: "FAN1" } }
+      elem { name: "cpu" } elem { name: "utilization" } elem { name: "state" } elem { name: "avg" }
+    }
+    val { uint_val: 3 }
+  }
+}

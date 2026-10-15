@@ -1,0 +1,10 @@
+version: 1
+groups:
+  - name: oc-if-state
+    match: /interfaces/interface/state
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      counters/in-octets: { type: counter, name: inOctets }
+      counters/out-octets: { type: counter }
+      oper-status: { type: string }
