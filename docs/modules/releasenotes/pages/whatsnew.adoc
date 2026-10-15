@@ -42,9 +42,9 @@ A `org.opennms.web.console.centerUrl` that still names the heatmap or trend box 
 
 === AMQP integration removed
 The AMQP event forwarder, event receiver and alarm northbounder (`opennms-amqp-*` Karaf features) have been removed, together with their `org.opennms.features.amqp.*` configuration PIDs, the `opennms-camel-amqp` feature and the Qpid JMS client.
-The Kafka producer and the Integration API remain the supported ways to publish events and alarms to external systems.
-Before upgrading, remove `opennms-amqp-event-forwarder`, `opennms-amqp-event-receiver` and `opennms-amqp-alarm-northbounder` from `featuresBoot` in `etc/org.apache.karaf.features.cfg` and from any file under `etc/featuresBoot.d/`, since Karaf cannot install a boot feature that no longer exists.
-The `etc/org.opennms.features.amqp.eventforwarder.cfg`, `etc/org.opennms.features.amqp.eventreceiver.cfg` and `etc/org.opennms.features.amqp.alarmnorthbounder.cfg` files are no longer read and can be deleted.
+Before upgrading, remove `opennms-amqp-event-forwarder`, `opennms-amqp-event-receiver` and `opennms-amqp-alarm-northbounder` from `featuresBoot` in `etc/org.apache.karaf.features.cfg` and from any file under `etc/featuresBoot.d/`.
+A stale entry in `featuresBoot` is skipped at startup, but a stale entry in a `featuresBoot.d` file stops every feature listed in that directory from being installed.
+The `etc/org.opennms.features.amqp.eventforwarder.cfg`, `etc/org.opennms.features.amqp.eventreceiver.cfg` and `etc/org.opennms.features.amqp.alarmnorthbounder.cfg` files are no longer used and can be deleted.
 
 === Statsd removed
 The Metrics Statistics (statsd) page and the Statsd daemon have been removed, together with `etc/statsd-configuration.xml` and the `CORE_SERVICE_STATSD_ENABLED` variable.

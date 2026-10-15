@@ -31,7 +31,6 @@
     <!-- Alarms -->
     <module>alarms</module>
 
-
     <!-- DHCP integration -->
     <module>dhcpd</module>
 
