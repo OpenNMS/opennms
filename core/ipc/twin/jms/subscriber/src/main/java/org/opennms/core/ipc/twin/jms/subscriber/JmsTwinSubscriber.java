@@ -27,6 +27,7 @@ import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
+import org.opennms.core.camel.hardening.DiscardUnreadableBodies;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
@@ -171,7 +172,8 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
             String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
             final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:topic:%s",
                     queueName), JmsEndpoint.class);
-            from(endpoint).setExchangePattern(ExchangePattern.InOnly)
+            from(endpoint).noStreamCaching().setExchangePattern(ExchangePattern.InOnly)
+                    .process(new DiscardUnreadableBodies())
                     .process(processor)
                     .routeId(SystemInfoUtils.getInstanceId() + ".Twin.Sink");
         }

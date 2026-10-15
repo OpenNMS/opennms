@@ -92,7 +92,7 @@
       <input type="hidden" name="<%=FormProcReportController.Parameters.graph_index%>" value="-1"/>
       <div class="form-group">
         <label class="label-control">Title</label>
-        <input class="form-control" type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="${title}" size="80" maxlength="80"/>
+        <input class="form-control" type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="<c:out value='${title}'/>" size="80" maxlength="80"/>
       </div>
       <table class="table table-sm">
         <c:if test="${fn:length(resultSets) > 0}">
@@ -107,16 +107,16 @@
                   </div>
                 </div>
                 <div>
-                  ${resultSet.title}
+                  <c:out value="${resultSet.title}"/>
                   <br/>
                   <c:if test="${!empty resultSet.resource.parent}">
                     ${resultSet.resource.parent.resourceType.label}:
                     <c:choose>
                       <c:when test="${!empty resultSet.resource.parent.link}">
-                        <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+                        <a href="<c:url value='${resultSet.resource.parent.link}'/>"><c:out value="${resultSet.resource.parent.label}"/></a>
                       </c:when>
                       <c:otherwise>
-                        ${resultSet.resource.parent.label}
+                        <c:out value="${resultSet.resource.parent.label}"/>
                       </c:otherwise>
                     </c:choose>
                     <br />
@@ -124,10 +124,10 @@
                   ${resultSet.resource.resourceType.label}:
                   <c:choose>
                     <c:when test="${!empty resultSet.resource.link}">
-                      <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
+                      <a href="<c:url value='${resultSet.resource.link}'/>"><c:out value="${resultSet.resource.label}"/></a>
                     </c:when>
                     <c:otherwise>
-                      ${resultSet.resource.label}
+                      <c:out value="${resultSet.resource.label}"/>
                     </c:otherwise>
                   </c:choose>
                   <br/>

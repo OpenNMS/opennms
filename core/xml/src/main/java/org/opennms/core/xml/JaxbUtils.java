@@ -193,11 +193,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate) {
-        try (final InputStream stream = new FileInputStream(file)) {
-            return unmarshal(clazz, new InputSource(stream), null, validate, false);
-        } catch (final IOException e) {
-            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
-        }
+        return unmarshal(clazz, file, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader) {
@@ -225,13 +221,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate) {
-        final StringReader sr = new StringReader(SurrogateCharacterReferences.repair(xml));
-        final InputSource is = new InputSource(sr);
-        try {
-            return unmarshal(clazz, is, null, validate, false, false);
-        } finally {
-            IOUtils.closeQuietly(sr);
-        }
+        return unmarshal(clazz, xml, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource) {
@@ -239,8 +229,36 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate) {
+        return unmarshal(clazz, resource, validate, false);
+    }
+
+    /**
+     * Unmarshals with the option to disable DOCTYPE processing. Use disableDOCTYPE=true for formats that do not
+     * need a DOCTYPE, such as requisition and foreign-source XML. Disabling it blocks XML entity-expansion
+     * denial of service, which the entity-expansion count limit alone does not stop on all parsers.
+     */
+    public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate, final boolean disableDOCTYPE) {
+        // a byte stream, so the parser decodes by the file's own declaration
+        try (final InputStream stream = new FileInputStream(file)) {
+            return unmarshal(clazz, new InputSource(stream), null, validate, disableDOCTYPE);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate, final boolean disableDOCTYPE) {
+        final StringReader sr = new StringReader(SurrogateCharacterReferences.repair(xml));
+        final InputSource is = new InputSource(sr);
         try {
-            return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate, false);
+            return unmarshal(clazz, is, null, validate, disableDOCTYPE, false);
+        } finally {
+            IOUtils.closeQuietly(sr);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate, final boolean disableDOCTYPE) {
+        try (final InputStream stream = resource.getInputStream()) {
+            return unmarshal(clazz, new InputSource(stream), null, validate, disableDOCTYPE);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
         }
