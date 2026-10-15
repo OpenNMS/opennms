@@ -196,8 +196,17 @@ class Parsers {
 
     static Object parseJson(String text) {
         Class<?> slurperClass = Class.forName('groovy.json.JsonSlurper', true, Parsers.class.getClassLoader())
-        def slurper = slurperClass.getDeclaredConstructor().newInstance()
-        return slurper.parseText(text)
+        // JsonSlurper finds its FastStringService through the context class loader. On Core-local
+        // sink threads that loader sees another groovy-json copy, so pin it to groovy-json's own.
+        Thread thread = Thread.currentThread()
+        ClassLoader previous = thread.getContextClassLoader()
+        thread.setContextClassLoader(slurperClass.getClassLoader())
+        try {
+            def slurper = slurperClass.getDeclaredConstructor().newInstance()
+            return slurper.parseText(text)
+        } finally {
+            thread.setContextClassLoader(previous)
+        }
     }
 
     // Parses any JSON value, including bare scalars such as 15 or "UP"
