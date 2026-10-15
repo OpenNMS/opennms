@@ -771,7 +771,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Only interested in entries with matching nodeId and IP
                 // address
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (!(cSvc.getNodeId() == nodeId && InetAddrUtils.str(addr).equals(ipAddr)))
+                if (!(cSvc.belongsOrIsMovingToNode(nodeId.intValue()) && InetAddrUtils.str(addr).equals(ipAddr)))
                     continue;
 
                 synchronized (cSvc) {
@@ -867,7 +867,11 @@ public class Collectd extends AbstractServiceDaemon implements
         // SnmpMonitor.NodeInfo attribute to reflect the new nodeId. All
         // subsequent collections will then be updating the appropriate RRDs.
         //
-        OnmsIpInterface iface = null;
+        final OnmsIpInterface iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
+        if (iface == null) {
+            LOG.warn("interfaceReparentedHandler: interface {} not found on node {}, unable to process.", event.getInterface(), event.getNodeid());
+            return;
+        }
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
             Iterator<CollectableService> iter = getCollectableServices().iterator();
@@ -875,7 +879,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-				if (addr.equals(event.getInterfaceAddress())) {
+                if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (cSvc) {
                         // Got a match!
                         LOG.debug("interfaceReparentedHandler: got a CollectableService match for {}", event.getInterface());
@@ -884,9 +888,6 @@ public class Collectd extends AbstractServiceDaemon implements
                         // with
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
-                        if (iface == null) {
-                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
-                        }
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr, iface);
@@ -991,7 +992,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = liter.next();
 
                 // Only interested in entries with matching nodeId
-                if (!(cSvc.getNodeId() == nodeId))
+                if (!cSvc.belongsOrIsMovingToNode(nodeId.intValue()))
                     continue;
 
                 synchronized (cSvc) {
@@ -1246,8 +1247,12 @@ public class Collectd extends AbstractServiceDaemon implements
                 if (addrString != null && addrString.equals(ipAddress) && cSvc.belongsOrIsMovingToNode(nodeId)) {
                     onInterface.add(cSvc);
                     synchronized (cSvc) {
-                        cSvc.getCollectorUpdates().markForReinitialization(iface);
-                        LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking {} for reinitialization for service {}.", ipAddress, cSvc.getServiceName());
+                        final CollectorUpdates updates = cSvc.getCollectorUpdates();
+                        // a pending reparent reinitializes the service anyway
+                        if (!updates.isReparentingFlagSet()) {
+                            updates.markForReinitialization(iface);
+                            LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking {} for reinitialization for service {}.", ipAddress, cSvc.getServiceName());
+                        }
                     }
                 }
             }
@@ -1270,11 +1275,12 @@ public class Collectd extends AbstractServiceDaemon implements
 
     /**
      * Whether some non-remote package enables the service, admits the address and has
-     * no collector for it yet. The single-address filter query bypasses the filter cache.
+     * no collector for it yet. Mirrors the checks of interfaceInPackage, but the filter
+     * is evaluated with a single-address query so the filter cache is bypassed.
      */
     private boolean hasUncollectedPackage(String ipAddress, String svcName, List<CollectableService> collected) {
         for (Package pkg : m_collectdConfigFactory.getPackages()) {
-            if (pkg.isRemote() || !pkg.serviceInPackageAndEnabled(svcName)) {
+            if (pkg.isRemote() || !pkg.serviceInPackageAndEnabled(svcName) || !pkg.addressInRanges(ipAddress)) {
                 continue;
             }
             if (collected.stream().anyMatch(c -> c.getPackageName().equals(pkg.getName()) && c.getServiceName().equals(svcName))) {
@@ -1285,7 +1291,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     return true;
                 }
             } catch (Throwable t) {
-                LOG.error("hasUncollectedPackage: failed to evaluate the filter of package {} for {}", pkg.getName(), ipAddress, t);
+                LOG.warn("hasUncollectedPackage: failed to evaluate the filter of package {} for {}: {}", pkg.getName(), ipAddress, t.getMessage());
             }
         }
         return false;
@@ -1331,7 +1337,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 InetAddress addr = (InetAddress) cSvc.getAddress();
                 
                 //WATCH the brackets; there used to be an extra close bracket after the ipAddr comparison which borked this whole expression
-                if (!(cSvc.getNodeId() == nodeId && 
+                if (!(cSvc.belongsOrIsMovingToNode(nodeId.intValue()) && 
                         InetAddrUtils.str(addr).equals(ipAddr) &&
                         cSvc.getServiceName().equals(svcName))) 
                     continue;

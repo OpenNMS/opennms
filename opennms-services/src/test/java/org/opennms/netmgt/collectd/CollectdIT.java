@@ -475,6 +475,7 @@ public class CollectdIT {
 
         setupInterface(iface);
         when(m_nodeDao.get(2)).thenReturn(newNode);
+        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(true);
         setupTransactionManager();
 
         when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
@@ -504,10 +505,12 @@ public class CollectdIT {
             .getEvent();
         m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
 
-        assertEquals(1, m_collectd.getCollectableServices().size());
+        assertEquals("the moving collector counts for the new node", 1, m_collectd.getCollectableServices().size());
 
         m_collectd.stop();
 
+        verify(m_filterDao, never()).isValid(anyString(), anyString());
+        verify(m_filterDao, never()).flushActiveIpAddressListCache();
         verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
         verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
     }
@@ -639,12 +642,49 @@ public class CollectdIT {
     }
 
     /**
-     * NMS-20432: an interface that no package filter admits does not flush the filter
-     * cache on every rescan.
+     * NMS-20432: a rejected service whose package filter does not admit the interface
+     * does not flush the filter cache on every rescan.
      */
-    @SuppressWarnings("unchecked")
     @Test
-    public void testReinitializeDoesNotFlushWhenNoPackageAdmitsInterface() throws Exception {
+    public void testReinitializeDoesNotFlushWhenFilterRejectsInterface() throws Exception {
+        setupRejectedSnmp(getCollectionPackageThatMatchesSNMP());
+        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(false);
+
+        sendReinitialize(1);
+        assertEquals(0, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, times(1)).isValid(eq("192.168.1.1"), anyString());
+        verify(m_filterDao, never()).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: a package whose specific/range rules exclude the interface is not
+     * consulted at all, so its filter is neither queried nor flushed.
+     */
+    @Test
+    public void testReinitializeDoesNotFlushWhenRangeExcludesInterface() throws Exception {
+        Package pkg = getCollectionPackageThatMatchesSNMP();
+        pkg.addSpecific("10.0.0.1");
+        setupRejectedSnmp(pkg);
+
+        sendReinitialize(1);
+        assertEquals(0, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, never()).isValid(anyString(), anyString());
+        verify(m_filterDao, never()).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /** One SNMP service on 192.168.1.1 that the collector always rejects, with the given package. */
+    @SuppressWarnings("unchecked")
+    private void setupRejectedSnmp(Package pkg) throws Exception {
         ServiceCollector svcCollector = mock(ServiceCollector.class);
         doThrow(new CollectionInitializationException("No sysObjectId"))
             .when(svcCollector).validateAgent(isA(CollectionAgent.class), isA(Map.class));
@@ -657,30 +697,22 @@ public class CollectdIT {
 
         setupInterface(iface);
         when(m_nodeDao.get(1)).thenReturn(iface.getNode());
-        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(false);
         setupTransactionManager();
 
-        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
-        when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
 
         m_collectd.afterPropertiesSet();
         m_collectd.start();
         m_scheduler.next();
-        assertEquals(0, m_collectd.getCollectableServices().size());
+        assertEquals("rejected at startup", 0, m_collectd.getCollectableServices().size());
+    }
 
+    private void sendReinitialize(int nodeId) {
         final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
-            .setNodeid(1)
+            .setNodeid(nodeId)
             .setInterface(addr("192.168.1.1"))
             .getEvent();
         m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
-        assertEquals(0, m_collectd.getCollectableServices().size());
-
-        m_collectd.stop();
-
-        verify(m_filterDao, times(1)).isValid(eq("192.168.1.1"), anyString());
-        verify(m_filterDao, never()).flushActiveIpAddressListCache();
-        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
-        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
     }
 
     @SuppressWarnings("unchecked")
