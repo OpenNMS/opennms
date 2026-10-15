@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.poller;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -60,9 +62,93 @@ public class DefaultPollContextTest {
         when(lost.getDate()).thenReturn(new Date());
         when(lost.getEventId()).thenReturn(42L);
 
-        context.openOutage(svc, lost);
+        assertFalse(context.openOutage(svc, lost));
 
         verify(queryManager, never()).updateOpenOutageWithEventId(anyInt(), anyLong());
         verify(eventManager, never()).sendNow(any(Event.class));
+    }
+
+    @Test
+    public void openOutageReportsPersistedOutage() {
+        final QueryManager queryManager = mock(QueryManager.class);
+        when(queryManager.openOutagePendingLostEventId(anyInt(), anyString(), anyString(), any())).thenReturn(7);
+        final EventIpcManager eventManager = mock(EventIpcManager.class);
+
+        final DefaultPollContext context = new DefaultPollContext();
+        context.setQueryManager(queryManager);
+        context.setEventManager(eventManager);
+
+        final PollableService svc = mock(PollableService.class);
+        when(svc.getNodeId()).thenReturn(1);
+        when(svc.getIpAddr()).thenReturn("127.0.0.1");
+        when(svc.getAddress()).thenReturn(InetAddress.getLoopbackAddress());
+        when(svc.getSvcName()).thenReturn("ICMP");
+        final PollEvent lost = mock(PollEvent.class);
+        when(lost.getDate()).thenReturn(new Date());
+        when(lost.getEventId()).thenReturn(42L);
+
+        assertTrue(context.openOutage(svc, lost));
+
+        verify(queryManager).updateOpenOutageWithEventId(7, 42L);
+        verify(eventManager).sendNow(any(Event.class));
+    }
+
+    @Test
+    public void openOutageReportsFailedWrite() {
+        final QueryManager queryManager = mock(QueryManager.class);
+        when(queryManager.openOutagePendingLostEventId(anyInt(), anyString(), anyString(), any())).thenThrow(new RuntimeException("insert failed"));
+        final EventIpcManager eventManager = mock(EventIpcManager.class);
+
+        final DefaultPollContext context = new DefaultPollContext();
+        context.setQueryManager(queryManager);
+        context.setEventManager(eventManager);
+
+        assertFalse(context.openOutage(service(), event()));
+        verify(eventManager, never()).sendNow(any(Event.class));
+    }
+
+    @Test
+    public void resolveOutageReportsFailedWrite() {
+        final QueryManager queryManager = mock(QueryManager.class);
+        when(queryManager.resolveOutagePendingRegainEventId(anyInt(), anyString(), anyString(), any())).thenThrow(new RuntimeException("update failed"));
+        final EventIpcManager eventManager = mock(EventIpcManager.class);
+
+        final DefaultPollContext context = new DefaultPollContext();
+        context.setQueryManager(queryManager);
+        context.setEventManager(eventManager);
+
+        assertFalse(context.resolveOutage(service(), event()));
+        verify(eventManager, never()).sendNow(any(Event.class));
+    }
+
+    @Test
+    public void resolveOutageWithNothingOpenNeedsNoRetry() {
+        final QueryManager queryManager = mock(QueryManager.class);
+        when(queryManager.resolveOutagePendingRegainEventId(anyInt(), anyString(), anyString(), any())).thenReturn(null);
+        final EventIpcManager eventManager = mock(EventIpcManager.class);
+
+        final DefaultPollContext context = new DefaultPollContext();
+        context.setQueryManager(queryManager);
+        context.setEventManager(eventManager);
+
+        assertTrue(context.resolveOutage(service(), event()));
+        verify(queryManager, never()).updateResolvedOutageWithEventId(anyInt(), anyLong());
+        verify(eventManager, never()).sendNow(any(Event.class));
+    }
+
+    private static PollableService service() {
+        final PollableService svc = mock(PollableService.class);
+        when(svc.getNodeId()).thenReturn(1);
+        when(svc.getIpAddr()).thenReturn("127.0.0.1");
+        when(svc.getAddress()).thenReturn(InetAddress.getLoopbackAddress());
+        when(svc.getSvcName()).thenReturn("ICMP");
+        return svc;
+    }
+
+    private static PollEvent event() {
+        final PollEvent event = mock(PollEvent.class);
+        when(event.getDate()).thenReturn(new Date());
+        when(event.getEventId()).thenReturn(42L);
+        return event;
     }
 }

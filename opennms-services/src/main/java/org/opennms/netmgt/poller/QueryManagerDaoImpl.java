@@ -111,23 +111,26 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Override
     public Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime) {
         LOG.info("opening outage for {}:{}:{} @ {}", nodeId, ipAddr, svcName, lostTime);
-        // Must not throw: an exception escaping the poll skips the reschedule in Schedule.ScheduleEntry
-        try {
-            return m_transcationOps.execute((TransactionCallback<Integer>) status -> {
-                final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-                if (service == null) {
-                    LOG.warn("Failed to open outage for {}:{}:{} @ {}. The service could not be found.",
-                            nodeId, ipAddr, svcName, lostTime);
-                    return null;
-                }
-                final OnmsOutage outage = new OnmsOutage(lostTime, service);
-                m_outageDao.saveOrUpdate(outage);
-                return outage.getId();
-            });
-        } catch (Exception e) {
-            LOG.error("Failed to open outage for {}:{}:{} @ {}.", nodeId, ipAddr, svcName, lostTime, e);
-            return null;
-        }
+        return m_transcationOps.execute((TransactionCallback<Integer>) status -> {
+            final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
+            if (service == null) {
+                // deleted or reparented while the poll was in flight
+                LOG.warn("Failed to open outage for {}:{}:{} @ {}. The service could not be found.",
+                        nodeId, ipAddr, svcName, lostTime);
+                return null;
+            }
+            // A second open row would break currentOutageForService(), so reuse one left
+            // behind by an earlier failed resolve or a write that committed but threw.
+            final OnmsOutage open = m_outageDao.currentOutageForService(service);
+            if (open != null) {
+                LOG.warn("An outage is already open for {}:{}:{} since {}, not opening another one.",
+                        nodeId, ipAddr, svcName, open.getIfLostService());
+                return open.getId();
+            }
+            final OnmsOutage outage = new OnmsOutage(lostTime, service);
+            m_outageDao.saveOrUpdate(outage);
+            return outage.getId();
+        });
     }
 
     /** {@inheritDoc} */

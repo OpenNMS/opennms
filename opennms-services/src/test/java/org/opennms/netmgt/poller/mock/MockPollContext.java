@@ -121,7 +121,7 @@ public class MockPollContext implements PollContext, EventListener {
         return e.getEvent();
     }
     @Override
-    public void openOutage(final PollableService pSvc, final PollEvent svcLostEvent) {
+    public boolean openOutage(final PollableService pSvc, final PollEvent svcLostEvent) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -132,6 +132,7 @@ public class MockPollContext implements PollContext, EventListener {
             ((PendingPollEvent)svcLostEvent).addPending(r);
         else  
             r.run();
+        return true;
     }
     
     private void writeOutage(PollableService pSvc, PollEvent svcLostEvent) {
@@ -142,7 +143,7 @@ public class MockPollContext implements PollContext, EventListener {
 
     }
     @Override
-    public void resolveOutage(final PollableService pSvc, final PollEvent svcRegainEvent) {
+    public boolean resolveOutage(final PollableService pSvc, final PollEvent svcRegainEvent) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -153,6 +154,7 @@ public class MockPollContext implements PollContext, EventListener {
             ((PendingPollEvent)svcRegainEvent).addPending(r);
         else  
             r.run();
+        return true;
     }
     
     public void closeOutage(PollableService pSvc, PollEvent svcRegainEvent) {

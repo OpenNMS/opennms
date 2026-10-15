@@ -21,9 +21,9 @@
  */
 package org.opennms.netmgt.poller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -71,10 +71,14 @@ public class QueryManagerDaoImplTest {
     }
 
     @Test
-    public void openOutageReturnsNullWhenSaveFails() {
-        when(m_monitoredServiceDao.get(1, InetAddress.getLoopbackAddress(), "ICMP")).thenReturn(new OnmsMonitoredService());
-        doThrow(new RuntimeException("insert failed")).when(m_outageDao).saveOrUpdate(any(OnmsOutage.class));
+    public void openOutageReusesTheOpenOutage() {
+        final OnmsMonitoredService service = new OnmsMonitoredService();
+        when(m_monitoredServiceDao.get(1, InetAddress.getLoopbackAddress(), "ICMP")).thenReturn(service);
+        final OnmsOutage open = new OnmsOutage();
+        open.setId(5);
+        when(m_outageDao.currentOutageForService(service)).thenReturn(open);
 
-        assertNull(m_queryManager.openOutagePendingLostEventId(1, "127.0.0.1", "ICMP", new Date()));
+        assertEquals(Integer.valueOf(5), m_queryManager.openOutagePendingLostEventId(1, "127.0.0.1", "ICMP", new Date()));
+        verify(m_outageDao, never()).saveOrUpdate(any());
     }
 }

@@ -77,5 +77,10 @@ public class ScheduleTest {
 
         timer.scheduled.get(0).run();
         assertEquals("a failed run must still be rescheduled", 2, timer.scheduled.size());
+
+        // a schedulable that keeps failing keeps running
+        timer.scheduled.get(1).run();
+        timer.scheduled.get(2).run();
+        assertEquals(4, timer.scheduled.size());
     }
 }
