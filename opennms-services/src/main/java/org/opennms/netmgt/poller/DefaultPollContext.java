@@ -315,10 +315,20 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
 
     /** {@inheritDoc} */
     @Override
-    public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
+    public boolean openOutage(final PollableService svc, final PollEvent svcLostEvent) {
         // Open the outage immediately
-        final Integer outageId = getQueryManager().openOutagePendingLostEventId(svc.getNodeId(),
-                svc.getIpAddr(), svc.getSvcName(), svcLostEvent.getDate());
+        final Integer outageId;
+        try {
+            outageId = getQueryManager().openOutagePendingLostEventId(svc.getNodeId(),
+                    svc.getIpAddr(), svc.getSvcName(), svcLostEvent.getDate());
+        } catch (RuntimeException e) {
+            LOG.error("openOutage: failed to open the outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId(), e);
+            return false;
+        }
+        if (outageId == null) {
+            LOG.warn("openOutage: no outage was persisted for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
+            return false;
+        }
 
         // Defer updating the outage with the event id until we receive back
         // from the event bus
@@ -341,6 +351,7 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
         }
         LOG.debug("openOutage: sending outageCreated event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
         sendEvent(createEvent(EventConstants.OUTAGE_CREATED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcLostEvent.getDate(), null));
+        return true;
     }
 
     /* (non-Javadoc)
@@ -348,16 +359,22 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
      */
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
+    public boolean resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
         // Resolve the outage immediately
-        final Integer outageId = getQueryManager().resolveOutagePendingRegainEventId(svc.getNodeId(),
-                svc.getIpAddr(), svc.getSvcName(), svcRegainEvent.getDate());
+        final Integer outageId;
+        try {
+            outageId = getQueryManager().resolveOutagePendingRegainEventId(svc.getNodeId(),
+                    svc.getIpAddr(), svc.getSvcName(), svcRegainEvent.getDate());
+        } catch (RuntimeException e) {
+            LOG.error("resolveOutage: failed to resolve the outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId(), e);
+            return false;
+        }
 
         // There may be no outage for this particular service. This can happen when interfaces
         // are reparented or when a node gains a new service while down.
         if (outageId == null) {
             LOG.info("resolveOutage: no outstanding outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
-            return;
+            return true;
         }
 
         // Defer updating the outage with the event id until we receive back
@@ -381,6 +398,7 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
         }
         LOG.debug("resolveOutage: sending outageResolved event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
         sendEvent(createEvent(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcRegainEvent.getDate(), null));
+        return true;
     }
 
     /* (non-Javadoc)

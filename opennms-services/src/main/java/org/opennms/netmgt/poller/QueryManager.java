@@ -48,7 +48,10 @@ public interface QueryManager {
 
     /**
      * Creates a new outage for the given service without setting
-     * the lost event id.
+     * the lost event id, or returns the outage that is already open
+     * for it.
+     *
+     * Returns null if the service does not exist.
      */
     Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime);
 
