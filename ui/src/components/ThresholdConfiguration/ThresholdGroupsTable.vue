@@ -19,7 +19,7 @@
       </OnmsColumn>
       <OnmsColumn header="Thresholds" field="thresholdCount" />
       <OnmsColumn header="Expressions" field="expressionCount" />
-      <OnmsColumn header="Used by">
+      <OnmsColumn header="Used by package">
         <template #body="{ data }">
           <span data-test="threshold-group-used-by">{{ usedBy(data.name) }}</span>
         </template>
