@@ -407,7 +407,6 @@ public class CollectdIT {
         new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
 
         setupInterface(iface);
-        when(m_ipIfDao.findByNodeIdAndIpAddress(1, "192.168.1.1")).thenReturn(iface);
         when(m_nodeDao.load(1)).thenReturn(iface.getNode());
         setupTransactionManager();
 
@@ -439,6 +438,7 @@ public class CollectdIT {
 
         m_collectd.stop();
 
+        verify(m_filterDao, times(2)).flushActiveIpAddressListCache();
         verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
         verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
     }
@@ -463,7 +463,6 @@ public class CollectdIT {
 
         setupInterface(iface);
         when(m_nodeDao.load(2)).thenReturn(newNode);
-        when(m_ipIfDao.findByNodeIdAndIpAddress(2, "192.168.1.1")).thenReturn(reparented);
         setupTransactionManager();
 
         when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
@@ -497,6 +496,7 @@ public class CollectdIT {
 
         m_collectd.stop();
 
+        verify(m_filterDao, times(1)).flushActiveIpAddressListCache();
         verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
         verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
     }
