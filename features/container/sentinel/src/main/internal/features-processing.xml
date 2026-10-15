@@ -264,8 +264,6 @@
             originalUri="mvn:javax.servlet/javax.servlet-api/[3,${servletApiVersion})" mode="maven" />
     <bundle replacement="mvn:joda-time/joda-time/${jodaTimeVersion}"
             originalUri="mvn:joda-time/joda-time/[2,${jodaTimeVersion})" mode="maven" />
-    <bundle replacement="mvn:org.apache.qpid/proton-j/0.34.0"
-            originalUri="mvn:org.apache.qpid/proton-j/[0,1)" mode="maven" />
     <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1"
             originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/[1,${jasyptVersion})" mode="maven" />
     <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasyptVersion}_1"
