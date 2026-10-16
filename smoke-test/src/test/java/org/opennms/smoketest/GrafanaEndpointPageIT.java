@@ -161,11 +161,11 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         final EndpointModal modal = uiPage.newModal().setInput(dummyEndpoint);
         new Button(getDriver(), "verify-endpoint").click();
 
-        final WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
-        wait.until(pageContainsText("Could not connect"));
+        final WebDriverWait verifyWait = waitFor(10);
+        verifyWait.until(pageContainsText("Could not connect"));
 
         // The server's error message is rendered as text in the alert below the status
-        final WebElement verificationResult = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#endpointModal .alert-danger")));
+        final WebElement verificationResult = verifyWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#endpointModal .alert-danger")));
         assertEquals("Grafana endpoint could not be verified.", verificationResult.getText().trim());
         modal.cancel();
     }
