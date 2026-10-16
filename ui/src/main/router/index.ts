@@ -249,6 +249,38 @@ const router = createRouter({
       ]
     },
     {
+      path: '/graph-collections',
+      name: 'GraphCollections',
+      component: () => import('@/containers/GraphCollections.vue')
+    },
+    {
+      // A collection built on the fly for a node (by id, by foreignSource:foreignId, or by domain),
+      // one graph per SNMP interface; nothing is stored. The static segment outranks :id below.
+      path: '/graph-collections/node/:nodeId([1-9]\\d*)',
+      name: 'GraphCollectionNode',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'node', source: route.params.nodeId })
+    },
+    {
+      path: '/graph-collections/nodeSource/:nodeSource',
+      name: 'GraphCollectionNodeSource',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'nodeSource', source: route.params.nodeSource })
+    },
+    {
+      path: '/graph-collections/domain/:domain',
+      name: 'GraphCollectionDomain',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'domain', source: route.params.domain })
+    },
+    {
+      // ids start at 0 in ksc-performance-reports.xml, so 0 is a real collection here
+      path: '/graph-collections/:id(\\d+)',
+      name: 'GraphCollectionView',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: true
+    },
+    {
       path: '/open-api',
       name: 'OpenAPI',
       component: () => import('@/containers/OpenAPI.vue')

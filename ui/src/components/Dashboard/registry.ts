@@ -180,7 +180,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     type: 'graph-collections',
     // formerly the "KSC Reports" box; the product name is Graph Collections now
     title: 'Graph Collections',
-    titleHref: '/opennms/KSC/index.jsp',
+    titleHref: '/opennms/ui/index.html#/graph-collections',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/GraphCollectionsPanel.vue')),
     defaultSize: { w: 3, h: 2 },
