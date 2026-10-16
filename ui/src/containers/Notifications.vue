@@ -114,6 +114,12 @@ const loadFromRoute = async () => {
     report(await withSpinner(() => notificationsStore.setNodeFilter(nodeId)))
   } else {
     report(await withSpinner(() => notificationsStore.load()))
+    // The view kept may not be what the URL says (a bare link over a node filter, a bookmark that
+    // lost it), and the store watcher below only fires on a store change.
+    const query = queryFor(notificationsStore.preset, notificationsStore.nodeFilter?.id)
+    if (!sameQuery(route.query, query)) {
+      router.replace({ query })
+    }
   }
 }
 

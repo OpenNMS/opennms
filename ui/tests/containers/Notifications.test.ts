@@ -46,13 +46,14 @@ vi.mock('@/composables/useActionFeedback', () => ({
   default: () => ({ withSpinner: (fn: () => unknown) => fn(), report: vi.fn() })
 }))
 
-const mountPage = (query: Record<string, string>) => {
+const mountPage = (query: Record<string, string>, initial: Partial<ReturnType<typeof useNotificationsStore>> = {}) => {
   route.query = query
   const pinia = createTestingPinia({ stubActions: true })
   const auth = useAuthStore(pinia)
   auth.loaded = true
   auth.whoAmI = { id: 'admin', fullName: 'Admin', internal: true, roles: [] }
   const store = useNotificationsStore(pinia)
+  Object.assign(store, initial)
   vi.mocked(store.applyQuery).mockImplementation(async (preset, nodeId) => {
     store.preset = preset
     store.nodeFilter = nodeId ? { id: nodeId, label: null } : null
@@ -118,6 +119,7 @@ describe('Notifications page URL', () => {
 
     store.preset = 'userSearch'
     store.userFilter = 'bob'
+    await flushPromises() // the page drops the default preset from the URL
     vi.mocked(store.load).mockClear()
     window.dispatchEvent(new CustomEvent(SAME_PAGE_NAVIGATION_EVENT))
     await flushPromises()
@@ -151,6 +153,32 @@ describe('Notifications page URL', () => {
 
     expect(replace).not.toHaveBeenCalled()
     expect(store.load).toHaveBeenCalledTimes(1)
+  })
+
+  it('writes the view on screen to a bare URL, loading once', async () => {
+    const { store } = mountPage({}, { preset: 'allAcknowledged', nodeFilter: { id: '16', label: null }})
+    await flushPromises()
+
+    expect(store.load).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledWith({ query: { preset: 'allAcknowledged', node: '16' }})
+  })
+
+  it('leaves a bare URL alone during a user search without a node', async () => {
+    const { store } = mountPage({}, { preset: 'userSearch' })
+    await flushPromises()
+
+    expect(store.load).toHaveBeenCalledTimes(1)
+    expect(replace).not.toHaveBeenCalled()
+  })
+
+  it('writes the default preset to a bare URL for a fresh store, loading once', async () => {
+    const { store } = mountPage({})
+    await flushPromises()
+
+    expect(store.load).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledWith({ query: { preset: 'yourOutstanding' }})
   })
 
   it('writes a preset chosen on the page to the URL, without loading twice', async () => {

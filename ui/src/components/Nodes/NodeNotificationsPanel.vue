@@ -6,7 +6,7 @@
         tooltip="View Notifications"
         data-test="notifications-link-button"
         :icon="IconViewDetails"
-        @click="router.push({ name: 'Notifications' })"
+        @click="router.push({ name: 'Notifications', query: { preset: 'yourOutstanding' } })"
       />
     </template>
     <div class="onms-row" v-for="link in links" :key="link.dataTest">
