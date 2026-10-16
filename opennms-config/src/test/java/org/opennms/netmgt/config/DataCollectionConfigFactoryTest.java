@@ -193,11 +193,19 @@ public class DataCollectionConfigFactoryTest {
     }
 
     @Test
+    public void testDottedInstance() throws IOException {
+        String modifiedXml = m_xml.replaceFirst("ifIndex", "1.5");
+        initDataCollectionFactory(modifiedXml);
+        List<MibObject> mibObjects = DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.3.6.1.4.1.200", "127.0.0.1", 0);
+        assertEquals("1.5", mibObjects.get(0).getInstance());
+    }
+
+    @Test
     public void testInvalidResourceType() throws IOException {
         String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex");
         ThrowableAnticipator ta = new ThrowableAnticipator();
 //        ta.anticipate(new DataAccessResourceFailureException("Instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' for group 'mib2-interfaces'. Allowable instance values: any positive number, 'ifIndex', or any of the custom resourceTypes."));
-        ta.anticipate(new IllegalArgumentException("instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' in collection 'default' for group 'mib2-interfaces'.  Allowable instance values: any positive number, 'ifIndex', or any of the configured resourceTypes: (none)"));
+        ta.anticipate(new IllegalArgumentException("instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' in collection 'default' for group 'mib2-interfaces'.  Allowable instance values: a non-negative number or instance identifier such as 1.5, 'ifIndex', or any of the configured resourceTypes: (none)"));
 
         try {
             initDataCollectionFactory(modifiedXml);

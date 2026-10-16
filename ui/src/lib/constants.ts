@@ -69,15 +69,19 @@ export const OID_PATTERN = /^\.?\d+(\.\d+)*$/
 
 export const OID_MASK_PATTERN = /^\.?\d+(\.\d+)*\.?$/
 
-const IF_TYPE_ALL = 'all'
-const IF_TYPE_IGNORE = 'ignore'
+export const IF_TYPE_ALL = 'all'
+export const IF_TYPE_IGNORE = 'ignore'
 
-export const DEFAULT_IF_TYPE_FILTER: ISelectItemType = { _text: 'Ignore', _value: IF_TYPE_IGNORE }
+// The collector compares each ifType in the list as text. Thus the list must not contain spaces.
+export const IF_TYPE_LIST_PATTERN = /^\d+(,\d+)*$/
 
-export const IF_TYPE_FILTERS_OPTIONS: ISelectItemType[] = [
-  { _text: 'Ignore', _value: IF_TYPE_IGNORE },
-  { _text: 'All', _value: IF_TYPE_ALL }
-]
+// A MIB object instance is an SNMP instance identifier (an OID suffix such as 0, 101 or 1.5),
+// ifIndex or a resource type name.
+export const INSTANCE_ID_PATTERN = /^\d+(\.\d+)*$/
+
+export const DEFAULT_IF_TYPE = IF_TYPE_IGNORE
+
+export const IF_TYPE_SUGGESTIONS: string[] = [IF_TYPE_IGNORE, IF_TYPE_ALL]
 
 export const VALID_MIB_OBJ_TYPES = [
   'counter',
@@ -91,6 +95,7 @@ export const VALID_MIB_OBJ_TYPES = [
   'timeticks',
   'string',
   'octetstring',
+  'hexstring',
   'opaque'
 ]
 
