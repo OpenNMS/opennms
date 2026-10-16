@@ -103,6 +103,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule {
             throw loginException;
         }
 
+        installRoleSource();
         final Set<Principal> rolePrincipals = createPrincipals(configUser);
 
         // This login module guards the OSGi console, so only administrators may log in.
@@ -118,6 +119,10 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule {
 
     protected UserConfig userConfig() {
         return JaasSupport.getUserConfig();
+    }
+
+    protected void installRoleSource() {
+        JaasSupport.installRoleSource();
     }
 
     private Set<Principal> createPrincipals(final User configUser) {

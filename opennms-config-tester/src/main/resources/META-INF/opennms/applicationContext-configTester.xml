@@ -251,7 +251,6 @@
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
 
   <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <property name="userManager" ref="userManager" />
   </bean>
   
