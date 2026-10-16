@@ -285,6 +285,10 @@ export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime, l
     query.pd = selection.pickedDatasourceKeys
   }
 
+  if (selection.excludedDatasourceKeys.length) {
+    query.xd = selection.excludedDatasourceKeys
+  }
+
   if (encodedOverrides.length) {
     query.o = encodedOverrides.map(([, entry]) => entry)
   }
@@ -357,11 +361,13 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
     datasourceFilter: first(query.df),
     pickedNodeIds: many(query.pn),
     pickedResourceIds: many(query.pr),
-    pickedDatasourceKeys: many(query.pd)
+    pickedDatasourceKeys: many(query.pd),
+    excludedDatasourceKeys: many(query.xd)
   }
 
   const hasSelection = Boolean(selection.nodeFilter || selection.resourceFilter || selection.datasourceFilter ||
-    selection.pickedNodeIds.length || selection.pickedResourceIds.length || selection.pickedDatasourceKeys.length)
+    selection.pickedNodeIds.length || selection.pickedResourceIds.length || selection.pickedDatasourceKeys.length ||
+    selection.excludedDatasourceKeys.length)
 
   if (!legacySeries.length && !rawOverrides.length && !rawExpressions.length && !start && !range && !hasSelection) {
     return null

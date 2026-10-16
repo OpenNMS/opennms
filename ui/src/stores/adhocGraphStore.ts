@@ -164,8 +164,11 @@ export const MAX_GRAPH_NODES = 200
 const FETCH_CONCURRENCY = 6
 
 const INVALID_RULE_MESSAGE = 'That filter rule could not be parsed.'
-const FAILED_RULE_MESSAGE = 'The filter rule could not be evaluated.'
+const FAILED_RULE_MESSAGE = 'The filter rule could not be evaluated. It may match more nodes than the server can list; try narrowing it.'
 const FAILED_SEARCH_MESSAGE = 'The node search failed.'
+
+/** How long a failed resource lookup is remembered before it is tried again. */
+const FAILURE_TTL_MS = 30_000
 
 /**
  * Run `worker` over `items`, at most `limit` in flight, preserving input order.
@@ -309,14 +312,16 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
    * The nodes the graph is built from: the picks when there are any, otherwise
    * everything the filter matches. An empty box matches nothing on purpose; the
    * list it shows is for browsing and picking, not an invitation to graph the
-   * first hundred nodes in inventory.
+   * first hundred nodes in inventory. Nor is a label search that was cut off at
+   * its page a match: the first hundred of two thousand by alphabet is not what
+   * anyone typed `r` to mean, and the column says how to get the whole set.
    */
   const effectiveNodes = computed<AdhocNodeOption[]>(() => {
     if (pickedNodes.value.length) {
       return pickedNodes.value
     }
 
-    return nodeFilter.value.trim() ? nodeMatches.value : []
+    return nodeFilter.value.trim() && !nodeMatchOverflow.value ? nodeMatches.value : []
   })
 
   /** Every id form of every effective node, for membership tests. */
@@ -356,12 +361,59 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
 
   /**
    * fornode responses by node id, so re-running a filter does not refetch. A
-   * failure is cached as null: retrying it on every keystroke would not make the
-   * node answer, and the column says how many are missing instead.
+   * failure is remembered for a short while (`FAILURE_TTL_MS`): retrying it on
+   * every keystroke would not make the node answer, but a transient failure must
+   * not hide a node for the rest of the session. Refresh empties the cache.
    */
-  const nodeResourceCache = new Map<string, { label: string, resources: AdhocResourceOption[] } | null>()
+  type NodeResources = { label: string, resources: AdhocResourceOption[] }
+  const nodeResourceCache = new Map<string, NodeResources | { failedAt: number }>()
+  /** Lookups in flight, so two overlapping loads of the same node share one request. */
+  const nodeResourceLoads = new Map<string, Promise<NodeResources | null>>()
   /** Effective nodes whose resources could not be loaded. */
   const failedNodeLoads = ref(0)
+
+  const cachedResources = (nodeId: string): NodeResources | null => {
+    const entry = nodeResourceCache.get(nodeId)
+    return entry && 'resources' in entry ? entry : null
+  }
+
+  const isCached = (nodeId: string): boolean => {
+    const entry = nodeResourceCache.get(nodeId)
+
+    if (!entry) {
+      return false
+    }
+
+    return 'resources' in entry || Date.now() - entry.failedAt < FAILURE_TTL_MS
+  }
+
+  /** One request per node however many loads overlap; the result lands in the cache. */
+  const fetchNodeResources = (node: AdhocNodeOption): Promise<NodeResources | null> => {
+    const inFlight = nodeResourceLoads.get(node.id)
+
+    if (inFlight) {
+      return inFlight
+    }
+
+    const load = API.getResourceForNode(node.id)
+      .then((resource) => {
+        if (!resource) {
+          return null
+        }
+
+        const label = resource.label || node.label
+        return { label, resources: graphableDescendants(node, label, resource) }
+      })
+      .catch(() => null)
+      .then((loaded) => {
+        nodeResourceCache.set(node.id, loaded ?? { failedAt: Date.now() })
+        nodeResourceLoads.delete(node.id)
+        return loaded
+      })
+
+    nodeResourceLoads.set(node.id, load)
+    return load
+  }
 
   const resourceCandidateById = computed<Map<string, AdhocResourceOption>>(() =>
     new Map(resourceCandidates.value.map(resource => [resource.id, resource])))
@@ -422,6 +474,8 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   // ---- Datasources ---------------------------------------------------------
   const datasourceFilter = ref('')
   const pickedDatasources = ref<AdhocDatasourceOption[]>([])
+  /** Series removed one by one from a filter-driven graph (see AdhocSelectionState). */
+  const excludedDatasourceKeys = ref<string[]>([])
 
   /** Every attribute of every effective resource; no request needed. */
   const datasourceCandidates = computed<AdhocDatasourceOption[]>(() =>
@@ -459,7 +513,16 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
       return reachablePickedDatasources.value
     }
 
-    return datasourceFilter.value.trim() ? datasourceMatches.value : []
+    if (!datasourceFilter.value.trim()) {
+      return []
+    }
+
+    if (!excludedDatasourceKeys.value.length) {
+      return datasourceMatches.value
+    }
+
+    const excluded = new Set(excludedDatasourceKeys.value)
+    return datasourceMatches.value.filter(datasource => !excluded.has(datasource.key))
   })
 
   const datasourceOptions = computed<AdhocDatasourceOption[]>(() => [
@@ -489,28 +552,12 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   const loadResources = async () => {
     const requestId = ++resourceRequestId
     const nodes = nodeLimitExceeded.value ? [] : [...effectiveNodes.value]
-    const missing = nodes.filter(node => !nodeResourceCache.has(node.id))
+    const missing = nodes.filter(node => !isCached(node.id))
 
     if (missing.length) {
       resourcesLoading.value = true
 
-      const responses = await mapWithConcurrency(
-        missing,
-        FETCH_CONCURRENCY,
-        node => API.getResourceForNode(node.id).then(resource => ({ node, resource }))
-      )
-
-      responses.forEach((response, index) => {
-        if (response?.resource) {
-          const label = response.resource.label || response.node.label
-          nodeResourceCache.set(response.node.id, {
-            label,
-            resources: graphableDescendants(response.node, label, response.resource)
-          })
-        } else {
-          nodeResourceCache.set(missing[index].id, null)
-        }
-      })
+      await mapWithConcurrency(missing, FETCH_CONCURRENCY, fetchNodeResources)
 
       if (requestId !== resourceRequestId) {
         return
@@ -521,15 +568,24 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     // answers twice, and a resource must never be listed, or graphed, twice.
     const seen = new Set<string>()
     resourceCandidates.value = nodes
-      .flatMap(node => nodeResourceCache.get(node.id)?.resources ?? [])
+      .flatMap(node => cachedResources(node.id)?.resources ?? [])
       .filter(resource => (seen.has(resource.id) ? false : (seen.add(resource.id), true)))
     resourcesLoading.value = false
-    failedNodeLoads.value = nodes.filter(node => nodeResourceCache.get(node.id) === null).length
+    failedNodeLoads.value = nodes.filter(node => !cachedResources(node.id)).length
 
     // A node restored from a link is known only by id until its resources load.
-    pickedNodes.value = pickedNodes.value.map(node => (node.label === node.id && nodeResourceCache.get(node.id) ?
-      { ...node, label: nodeResourceCache.get(node.id)?.label ?? node.id } :
+    pickedNodes.value = pickedNodes.value.map(node => (node.label === node.id && cachedResources(node.id) ?
+      { ...node, label: cachedResources(node.id)?.label ?? node.id } :
       node))
+  }
+
+  /**
+   * Forget every resource list and load them afresh: an interface added since
+   * the page was opened is invisible until then. Wired to Refresh.
+   */
+  const refreshResources = async () => {
+    nodeResourceCache.clear()
+    await loadResources()
   }
 
   /**
@@ -642,8 +698,14 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     pickedResources.value = resources
   }
 
+  /** Picking pins the set; the one-by-one removals that shaped the filter set are moot then. */
   const setPickedDatasources = (datasources: AdhocDatasourceOption[]) => {
     pickedDatasources.value = datasources
+    excludedDatasourceKeys.value = []
+  }
+
+  const setExcludedDatasourceKeys = (keys: string[]) => {
+    excludedDatasourceKeys.value = keys
   }
 
   /** The selection as a link carries it. */
@@ -653,7 +715,8 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     datasourceFilter: datasourceFilter.value,
     pickedNodeIds: pickedNodes.value.map(node => node.id),
     pickedResourceIds: pickedResources.value.map(resource => resource.id),
-    pickedDatasourceKeys: pickedDatasources.value.map(datasource => datasource.key)
+    pickedDatasourceKeys: pickedDatasources.value.map(datasource => datasource.key),
+    excludedDatasourceKeys: excludedDatasourceKeys.value
   }))
 
   /**
@@ -669,6 +732,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     pickedNodes.value = state.pickedNodeIds.map(id => ({ id, label: id }))
     pickedResources.value = state.pickedResourceIds.map(resourceStandIn)
     pickedDatasources.value = state.pickedDatasourceKeys.map(datasourceStandIn)
+    excludedDatasourceKeys.value = state.excludedDatasourceKeys
 
     await evaluateNodes()
   }
@@ -708,6 +772,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     pickedNodes.value = []
     pickedResources.value = []
     pickedDatasources.value = []
+    excludedDatasourceKeys.value = []
     resourceCandidates.value = []
     nodeResourceCache.clear()
     measurements.value = null
@@ -744,6 +809,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     datasourceOptions,
     pickedDatasources,
     reachablePickedDatasources,
+    excludedDatasourceKeys,
     effectiveDatasources,
     selectionState,
     measurements,
@@ -756,6 +822,8 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     setPickedNodes,
     setPickedResources,
     setPickedDatasources,
+    setExcludedDatasourceKeys,
+    refreshResources,
     restore,
     runQuery,
     clearAll

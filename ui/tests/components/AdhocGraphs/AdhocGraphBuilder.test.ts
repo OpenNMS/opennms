@@ -71,7 +71,6 @@ vi.mock('@/components/AdhocGraphs/AdhocChart.vue', () => ({
 const RESOURCE_ID = 'node[1].interfaceSnmp[eth0]'
 const RESPONSE_TIME_ID = 'node[1].responseTime[127.0.0.1]'
 const KEY_IN = `${RESOURCE_ID}|ifHCInOctets`
-const KEY_OUT = `${RESOURCE_ID}|ifHCOutOctets`
 
 /** Node 1 as fornode lists it: one SNMP interface and one response-time resource. */
 const NODE_RESOURCE = {
@@ -271,7 +270,7 @@ describe('AdhocGraphBuilder', () => {
       await wrapper.find('[data-test="datasources-select-all"]').trigger('click')
       await flushPromises()
 
-      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/Datasources are now a fixed selection of 2/) }))
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/Datasources: 2 selected/) }))
       expect(store.pickedDatasources).toHaveLength(2)
 
       // Already a fixed list: no second notice for a further change.
@@ -331,7 +330,8 @@ describe('AdhocGraphBuilder', () => {
       expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCOutOctets'])
     })
 
-    it('removing a series from a generated set pins the rest', async () => {
+    it('removing a series from a generated set excludes it, and the rest keep following the filter', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
       const { wrapper, store } = mountBuilder()
       await flushPromises()
       await filterAll(store)
@@ -339,9 +339,88 @@ describe('AdhocGraphBuilder', () => {
       component(wrapper, '[data-test="series-grid"]').vm.$emit('remove', KEY_IN)
       await flushPromises()
 
-      expect(store.pickedDatasources.map(datasource => datasource.key)).toEqual([KEY_OUT])
+      expect(store.pickedDatasources).toEqual([])
+      expect(store.excludedDatasourceKeys).toEqual([KEY_IN])
       expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCOutOctets'])
-      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/fixed selection of 1/) }))
+      expect(showSnackBar).not.toHaveBeenCalled()
+
+      await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+      await flushPromises()
+      const params = new URLSearchParams((copyToClipboard.mock.calls[0][0] as string).split('?')[1])
+      expect(params.getAll('xd')).toEqual([KEY_IN])
+      expect(params.getAll('pd')).toEqual([])
+    })
+
+    it('keeps selections the filter has set aside when the visible ones are clicked', async () => {
+      const forNode = (id: string) => ({
+        ...NODE_RESOURCE,
+        id: `node[${id}]`,
+        label: `switch-0${id}`,
+        children: { resource: [{ ...NODE_RESOURCE.children.resource[0], id: `node[${id}].interfaceSnmp[eth0]` }] }
+      })
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }, { id: '2', label: 'switch-02' }] })
+      getResourceForNode.mockImplementation((id: string) => Promise.resolve(forNode(id)))
+
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+      store.setResourceFilter('*')
+      store.setPickedResources([...store.resourceOptions])
+      expect(store.pickedResources).toHaveLength(2)
+
+      // The rule stops matching node 2: its pick is set aside, node 1's is listed.
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }] })
+      await store.setNodeFilter('catincRouters & catincCore')
+      await flushPromises()
+      expect(store.reachablePickedResources.map(resource => resource.id)).toEqual([RESOURCE_ID])
+
+      // Deselecting the visible one in the list must not take the hidden one with it.
+      component(wrapper, '[data-test="resources-list"]').vm.$emit('update:modelValue', [])
+      await flushPromises()
+      expect(store.pickedResources.map(resource => resource.id)).toEqual([])
+
+      store.setPickedResources([...store.resourceOptions])
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }, { id: '2', label: 'switch-02' }] })
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+      store.setPickedResources([...store.resourceOptions])
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }] })
+      await store.setNodeFilter('catincRouters & catincCore')
+      await flushPromises()
+
+      // Toggling (rather than clearing) keeps the hidden pick.
+      component(wrapper, '[data-test="resources-list"]').vm.$emit('update:modelValue', [store.resourceOptions[0]])
+      await flushPromises()
+      expect(store.pickedResources.map(resource => resource.id).sort()).toEqual(['node[1].interfaceSnmp[eth0]', 'node[2].interfaceSnmp[eth0]'])
+    })
+
+    it('adds to the selection on Select all rather than replacing it', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+      store.setResourceFilter('*')
+      store.setPickedResources([store.resourceOptions[1]])
+      store.setResourceFilter('interfaceSnmp[*]')
+      await flushPromises()
+
+      await wrapper.find('[data-test="resources-select-all"]').trigger('click')
+      await flushPromises()
+
+      expect(store.pickedResources.map(resource => resource.id).sort()).toEqual([RESOURCE_ID, RESPONSE_TIME_ID].sort())
+    })
+
+    it('reloads the resource lists on Refresh', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+      expect(getResourceForNode).toHaveBeenCalledTimes(1)
+
+      await wrapper.find('[data-test="toolbar-refresh"]').trigger('click')
+      await flushPromises()
+
+      expect(getResourceForNode).toHaveBeenCalledTimes(2)
     })
 
     it('keeps an edited label when the filters re-evaluate', async () => {
@@ -616,6 +695,55 @@ describe('AdhocGraphBuilder', () => {
       expect(getGraphMetrics.mock.calls[0][0].expression).toEqual([
         expect.objectContaining({ label: 'bits', value: 'switch_01_eth0_ifHCInOctets * 8' })
       ])
+    })
+
+    it('gives the recipient the colors the sender saw, expressions or not', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+      const sent = component(wrapper, '[data-test="series-grid"]').props('series').map((entry: { color: string }) => entry.color)
+
+      // An expression colored after the series, as in the sender's session.
+      const editor = component(wrapper, '[data-test="expressions-panel"]').findComponent({ name: 'ExpressionEditor' })
+      editor.vm.$emit('add')
+      await flushPromises()
+      editor.vm.$emit('update', 'expr-1', { value: 'switch_01_eth0_ifHCInOctets * 8' })
+      await flushPromises()
+      await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+      await flushPromises()
+      const query = (copyToClipboard.mock.calls[0][0] as string).split('?')[1]
+
+      mounted.pop()?.unmount()
+      const grouped: Record<string, string | string[]> = {}
+      for (const [key, value] of new URLSearchParams(query).entries()) {
+        const existing = grouped[key]
+        grouped[key] = existing === undefined ? value : [...(Array.isArray(existing) ? existing : [existing]), value]
+      }
+      routeQuery = grouped
+      const reopened = mountBuilder()
+      await flushPromises()
+
+      const received = component(reopened.wrapper, '[data-test="series-grid"]').props('series').map((entry: { color: string }) => entry.color)
+      expect(received).toEqual(sent)
+    })
+
+    it('keeps an edit in the link while its series is set aside by a filter', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+      await wrapper.find(`input[data-test="series-label-${KEY_IN}"]`).setValue('renamed_by_hand')
+      await flushPromises()
+
+      store.setDatasourceFilter('ifHCOutOctets')
+      await flushPromises()
+      expect(seriesLabels(wrapper)).toEqual(['switch_01_eth0_ifHCOutOctets'])
+
+      await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+      await flushPromises()
+      const params = new URLSearchParams((copyToClipboard.mock.calls[0][0] as string).split('?')[1])
+      expect(params.getAll('o')).toEqual([`${RESOURCE_ID}~ifHCInOctets~~renamed_by_hand~~~`])
     })
 
     it('re-applies the edits a link carries to the series it now produces', async () => {

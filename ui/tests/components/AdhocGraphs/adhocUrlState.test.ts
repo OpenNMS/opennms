@@ -37,7 +37,8 @@ const fullLink: AdhocLinkState = {
     datasourceFilter: 'ifHC*Octets',
     pickedNodeIds: ['1', 'FS:A'],
     pickedResourceIds: ['node[1].interfaceSnmp[eth0]', 'node[FS:A].interfaceSnmp[eth1]'],
-    pickedDatasourceKeys: [KEY_IN, KEY_OUT]
+    pickedDatasourceKeys: [KEY_IN, KEY_OUT],
+    excludedDatasourceKeys: []
   },
   overrides: {
     [KEY_IN]: { label: 'in_octets', aggregation: ConsolidationFunctionType.MAX, style: 'area', color: '#2a78d6', hidden: true },
@@ -53,7 +54,8 @@ const emptyLink: AdhocLinkState = {
     datasourceFilter: '',
     pickedNodeIds: [],
     pickedResourceIds: [],
-    pickedDatasourceKeys: []
+    pickedDatasourceKeys: [],
+    excludedDatasourceKeys: []
   },
   overrides: {},
   seriesCount: 0
@@ -113,6 +115,19 @@ describe('encodeAdhocState / decodeAdhocState', () => {
     expect(decodeAdhocState({ unrelated: 'value' })).toBeNull()
   })
 
+  it('round-trips the series removed from a filter-driven graph', () => {
+    const link: AdhocLinkState = {
+      ...emptyLink,
+      selection: { ...emptyLink.selection, nodeFilter: 'catincRouters', datasourceFilter: '*', excludedDatasourceKeys: [KEY_IN] }
+    }
+    const query = encodeAdhocState(fullConfig, time, link)
+
+    expect(query.xd).toEqual([KEY_IN])
+    expect(query.pd).toBeUndefined()
+    expect(decodeAdhocState(query)?.link.selection).toEqual(link.selection)
+    expect(decodeAdhocState({ xd: KEY_IN })).not.toBeNull()
+  })
+
   it('counts a filter alone as state worth restoring', () => {
     const restored = decodeAdhocState({ nf: 'catincRouters' })
 
@@ -136,7 +151,8 @@ describe('encodeAdhocState / decodeAdhocState', () => {
         ...emptyLink.selection,
         pickedNodeIds: ['1', 'FS:A'],
         pickedResourceIds: ['node[1].interfaceSnmp[eth0]', 'node[FS:A].interfaceSnmp[eth1]'],
-        pickedDatasourceKeys: [KEY_IN, KEY_OUT]
+        pickedDatasourceKeys: [KEY_IN, KEY_OUT],
+        excludedDatasourceKeys: []
       }
     }
 
@@ -177,7 +193,8 @@ describe('legacy static links', () => {
       datasourceFilter: '',
       pickedNodeIds: ['1', 'FS:A'],
       pickedResourceIds: ['node[1].interfaceSnmp[eth0]', 'nodeSource[FS:A].interfaceSnmp[eth1]'],
-      pickedDatasourceKeys: [KEY_IN, 'nodeSource[FS:A].interfaceSnmp[eth1]|ifHCOutOctets']
+      pickedDatasourceKeys: [KEY_IN, 'nodeSource[FS:A].interfaceSnmp[eth1]|ifHCOutOctets'],
+      excludedDatasourceKeys: []
     })
     expect(restored?.link.overrides[KEY_IN]).toEqual({
       label: 'in_octets',
@@ -209,7 +226,8 @@ describe('legacy static links', () => {
         ...emptyLink.selection,
         pickedNodeIds: ['1'],
         pickedResourceIds: ['node[1].interfaceSnmp[eth0]'],
-        pickedDatasourceKeys: [KEY_IN, 'node[1].interfaceSnmp[eth0]|ifHCOutOctets']
+        pickedDatasourceKeys: [KEY_IN, 'node[1].interfaceSnmp[eth0]|ifHCOutOctets'],
+        excludedDatasourceKeys: []
       },
       overrides: { [KEY_IN]: { label: 'in' }}
     }

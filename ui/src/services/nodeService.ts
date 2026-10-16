@@ -39,41 +39,36 @@ const endpoint = '/nodes'
  * The nodes matching an OpenNMS filter rule (`catincRouters & location='Default'`),
  * via the v1 endpoint: the filter engine lives there, not in v2.
  *
- * Count first, then fetch. A rule can match an entire estate, and the v1 endpoint
- * serialises full nodes with every join, so the first request asks for one node
- * and reads `totalCount` (the endpoint counts the whole match regardless of the
- * limit). Only a match within `max` is then fetched, and only up to `max`.
+ * One request, bounded. A rule can match an entire estate, and the v1 endpoint
+ * serialises full nodes with every join, so it is asked for at most `max + 1`
+ * nodes; the endpoint counts the whole match regardless of the limit, and that
+ * count says whether the rule fits. One node past the limit is enough to know
+ * without a second round trip through the filter engine.
  *
  * The one failure worth telling apart is a rule the engine cannot parse, which the
  * server reports as 400 with a fixed message; everything else is `failed`. That
  * includes the server failing on a match too large to bind as an `IN` list, which
- * no request from here can avoid.
+ * no request from here can avoid: the caller words that case accordingly.
  */
 const getNodesByFilterRule = async (rule: string, max: number): Promise<NodeFilterRuleResult> => {
-  const fetch = (limit: number) => rest.get(endpoint, {
-    params: { filterRule: rule, limit, orderBy: 'label', order: 'asc' }
-  })
-
   try {
-    const probe = await fetch(1)
+    const resp = await rest.get(endpoint, {
+      params: { filterRule: rule, limit: max + 1, orderBy: 'label', order: 'asc' }
+    })
 
-    if (probe.status === 204 || !probe.data) {
+    if (resp.status === 204 || !resp.data) {
       return { nodes: [] }
     }
 
-    const total = (probe.data as NodeApiResponse).totalCount ?? 0
+    const data = resp.data as NodeApiResponse
+    const nodes = data.node ?? []
+    const total = Math.max(data.totalCount ?? 0, nodes.length)
 
     if (total > max) {
       return { error: 'too-many', count: total }
     }
 
-    if (total <= 1) {
-      return { nodes: (probe.data as NodeApiResponse).node ?? [] }
-    }
-
-    const resp = await fetch(max)
-
-    return { nodes: (resp.data as NodeApiResponse)?.node ?? [] }
+    return { nodes }
   } catch (err) {
     const status = (err as { response?: { status?: number }})?.response?.status
     return { error: status === 400 ? 'invalid' : 'failed' }

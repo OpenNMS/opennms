@@ -159,7 +159,7 @@
           :viewOnly="viewOnly"
           @update="patch => Object.assign(config, patch)"
           @updateTime="updateTime"
-          @refresh="runQuery"
+          @refresh="refresh"
           @clear="clearAll"
           @share="shareLink"
           @toggleExpand="expanded = !expanded"
@@ -394,7 +394,7 @@ const nodeNote = computed<string>(() => {
 
   const shown = store.nodeMatches.length
   const total = (shown + store.nodeMatchOverflow).toLocaleString()
-  return `Showing the first ${shown} of ${total} nodes. Narrow the search, or use a filter rule to match them all.`
+  return `Showing the first ${shown} of ${total} nodes, for browsing only. Narrow the search, or use a filter rule, to graph them.`
 })
 
 /**
@@ -471,13 +471,29 @@ const onDatasourceFilter = (term: string) => {
 
 /**
  * Selecting in a column that was following its filter turns that column into a
- * fixed list: the link stops following inventory there. Say so once per switch,
- * because nothing on the page otherwise distinguishes the two states.
+ * fixed list: what the filter matches later is not added. Say so once per
+ * switch, because nothing on the page otherwise distinguishes the two states.
  */
 const notePinned = (what: string, count: number) => {
   showSnackBar({
-    msg: `${what} ${count === 1 ? 'is' : 'are'} now a fixed selection of ${count.toLocaleString()}; the filter no longer adds to ${count === 1 ? 'it' : 'them'}. Clear the selection to follow the filter again.`
+    msg: `${what}: ${count.toLocaleString()} selected. ${what} the filter matches from now on are not added; clear the selection to follow the filter again.`
   })
+}
+
+/**
+ * A column shows only the selections its filters currently reach; the rest are
+ * set aside, to come back when the filters reach them again. A click in the list
+ * therefore reports only the visible part of the selection, and the hidden part
+ * has to be kept by hand, or one click would silently delete it. Clearing is the
+ * exception: an empty selection means the whole selection.
+ */
+const withHidden = <T>(visible: T[], all: T[], reachable: T[], keyOf: (item: T) => string): T[] => {
+  if (!visible.length) {
+    return []
+  }
+
+  const reachableKeys = new Set(reachable.map(keyOf))
+  return [...visible, ...all.filter(item => !reachableKeys.has(keyOf(item)))]
 }
 
 const onPickNodes = (nodes: AdhocNodeOption[]) => {
@@ -488,7 +504,9 @@ const onPickNodes = (nodes: AdhocNodeOption[]) => {
   store.setPickedNodes(nodes)
 }
 
-const onPickResources = (resources: AdhocResourceOption[]) => {
+const onPickResources = (visible: AdhocResourceOption[]) => {
+  const resources = withHidden(visible, store.pickedResources, store.reachablePickedResources, resource => resource.id)
+
   if (!store.pickedResources.length && resources.length && store.resourceFilter.trim()) {
     notePinned('Resources', resources.length)
   }
@@ -496,7 +514,9 @@ const onPickResources = (resources: AdhocResourceOption[]) => {
   store.setPickedResources(resources)
 }
 
-const onPickDatasources = (datasources: AdhocDatasourceOption[]) => {
+const onPickDatasources = (visible: AdhocDatasourceOption[]) => {
+  const datasources = withHidden(visible, store.pickedDatasources, store.reachablePickedDatasources, datasource => datasource.key)
+
   if (!store.pickedDatasources.length && datasources.length && store.datasourceFilter.trim()) {
     notePinned('Datasources', datasources.length)
   }
@@ -563,7 +583,10 @@ const reconcileSeries = (datasources: AdhocDatasourceOption[]) => {
       resourceId: datasource.resourceId,
       attribute: datasource.attribute,
       aggregation: override.aggregation ?? ConsolidationFunctionType.AVERAGE,
-      color: override.color ?? previous?.color ?? seriesColor(next.length + config.expressions.length, appStore.theme),
+      // Slots count from the first series, never past the expressions: a link
+      // restores expressions first, and offsetting by them would hand the
+      // recipient different colors than the sender saw.
+      color: override.color ?? previous?.color ?? seriesColor(next.length, appStore.theme),
       style: override.style ?? 'line',
       hidden: override.hidden ?? false
     })
@@ -578,23 +601,25 @@ const updateSeries = (key: string, patch: Partial<AdhocSeries>) => {
 }
 
 /**
- * Taking one series out of a generated set means pinning the rest: the picks
- * become everything that was matched except this one. With picks already in
- * place it is simply one fewer pick. Removing the last one has to empty the
- * graph, not fall back to "everything matching", so the filter goes with it.
+ * Taking one series out of a generated set excludes that one series: the graph
+ * keeps following the filter, minus it, and the link carries one key rather
+ * than the other 199. With picks in place it is simply one fewer pick, hidden
+ * picks included. Removing the last series has to empty the graph, not fall
+ * back to "everything matching", so the filter goes with it.
  */
 const removeSeries = (key: string) => {
-  const wasFollowingFilter = !store.pickedDatasources.length
-  const current = wasFollowingFilter ? store.effectiveDatasources : store.reachablePickedDatasources
-  const remaining = current.filter(datasource => datasource.key !== key)
-
-  if (!remaining.length) {
-    store.setDatasourceFilter('')
-  } else if (wasFollowingFilter) {
-    notePinned('Datasources', remaining.length)
+  if (store.pickedDatasources.length) {
+    store.setPickedDatasources(store.pickedDatasources.filter(datasource => datasource.key !== key))
+    return
   }
 
-  store.setPickedDatasources(remaining)
+  if (store.effectiveDatasources.length <= 1) {
+    store.setDatasourceFilter('')
+    store.setExcludedDatasourceKeys([])
+    return
+  }
+
+  store.setExcludedDatasourceKeys([...new Set([...store.excludedDatasourceKeys, key])])
 }
 
 const addExpression = () => {
@@ -640,6 +665,12 @@ const refreshRelativeWindow = () => {
   const resolved = resolveRelativeRange(time.range)
   time.startTime = resolved.startTime
   time.endTime = resolved.endTime
+}
+
+/** Refresh means "as the server stands now": the resource lists too, not only the data. */
+const refresh = async () => {
+  await store.refreshResources()
+  runQuery()
 }
 
 const runQuery = () => {
@@ -692,8 +723,11 @@ const exportPdf = () => {
 
 /** What a link carries besides the config: the picker, the edits, and the series count for comparison. */
 const linkState = (): AdhocLinkState => {
+  // Every edit travels, plotted or not: a series the filters set aside for the
+  // moment, or the whole set while it is over the cap, keeps its edits for when
+  // it is back. Edits are few and deliberate; Clear all is what forgets them.
   const carried: Record<string, AdhocSeriesOverride> = Object.fromEntries(
-    Object.entries(overrides).filter(([key]) => config.series.some(entry => entry.key === key))
+    Object.entries(overrides).map(([key, override]) => [key, { ...override }])
   )
 
   // A generated label an expression refers to is part of the graph's meaning:

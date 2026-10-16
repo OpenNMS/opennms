@@ -208,12 +208,24 @@ describe('useAdhocGraphStore', () => {
       expect(getNodes.mock.calls[0][0]._s).toBe('label==*core switch*')
     })
 
-    it('says how many more a label search matched than it listed', async () => {
+    it('says how many more a label search matched than it listed, and graphs none of a cut-off page', async () => {
       getNodes.mockResolvedValue({ node: [{ id: '1', label: 'a' }], totalCount: 2310, count: 1 })
 
       await store.setNodeFilter('a')
 
       expect(store.nodeMatchOverflow).toBe(2309)
+      expect(store.nodeOptions).toHaveLength(1)
+      // The first hundred of two thousand by alphabet is not what was asked for.
+      expect(store.effectiveNodes).toEqual([])
+      expect(getResourceForNode).not.toHaveBeenCalled()
+    })
+
+    it('graphs a label search that fits within its page', async () => {
+      getNodes.mockResolvedValue({ node: [{ id: '1', label: 'core-a' }, { id: '2', label: 'core-b' }], totalCount: 2, count: 2 })
+
+      await store.setNodeFilter('core')
+
+      expect(ids(store.effectiveNodes)).toEqual(['1', '2'])
     })
 
     it('hands a rule to the filter engine, and everything it matches is effective', async () => {
@@ -277,6 +289,14 @@ describe('useAdhocGraphStore', () => {
       expect(getNodes.mock.calls[0][0]._s).toBe('label==*isLab*')
       expect(store.nodeFilterError).toBe('')
       expect(store.nodeOptions).toEqual([{ id: '5', label: 'isLab-01' }])
+    })
+
+    it('words a rule the server could not evaluate as possibly too large', async () => {
+      getNodesByFilterRule.mockResolvedValue({ error: 'failed' })
+
+      await store.setNodeFilter('catincRouters & catincSNMP')
+
+      expect(store.nodeFilterError).toMatch(/more nodes than the server can list/)
     })
 
     it('does not retry a real rule the engine rejects', async () => {
@@ -475,14 +495,16 @@ describe('useAdhocGraphStore', () => {
         datasourceFilter: '',
         pickedNodeIds: [],
         pickedResourceIds: ['nodeless[thing]'],
-        pickedDatasourceKeys: ['nodeless[thing]|value']
+        pickedDatasourceKeys: ['nodeless[thing]|value'],
+        excludedDatasourceKeys: []
       })
 
       expect(ids(store.effectiveResources)).toEqual(['nodeless[thing]'])
       expect(keys(store.effectiveDatasources)).toEqual(['nodeless[thing]|value'])
     })
 
-    it('remember a node that failed to load, count it, and do not ask again', async () => {
+    it('remember a node that failed to load for a while, count it, then try again', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
       getResourceForNode.mockImplementation((criterion: string) => (criterion === '1' ?
         Promise.reject(new Error('boom')) :
         twoInterfaces(criterion)))
@@ -495,8 +517,41 @@ describe('useAdhocGraphStore', () => {
       expect(getResourceForNode).toHaveBeenCalledTimes(2)
       expect(store.failedNodeLoads).toBe(1)
 
-      await store.setPickedNodes([{ id: '2', label: 'b' }])
+      // A transient failure must not hide the node for the rest of the session.
+      vi.setSystemTime(Date.now() + 31_000)
+      getResourceForNode.mockImplementation(twoInterfaces)
+      await store.setNodeFilter('catincRouters')
+      expect(getResourceForNode).toHaveBeenCalledTimes(3)
       expect(store.failedNodeLoads).toBe(0)
+      vi.useRealTimers()
+    })
+
+    it('are fetched once when two loads of the same node overlap', async () => {
+      let release: (value: unknown) => void = () => undefined
+      getResourceForNode.mockReturnValue(new Promise((resolve) => {
+        release = resolve
+      }))
+
+      const first = store.setPickedNodes([{ id: '1', label: 'a' }])
+      const second = store.setPickedNodes([{ id: '1', label: 'a' }])
+      release(nodeResource('1', [child('node[1].interfaceSnmp[eth0]', ['x'])]))
+      await Promise.all([first, second])
+
+      expect(getResourceForNode).toHaveBeenCalledTimes(1)
+      expect(ids(store.resourceOptions)).toEqual(['node[1].interfaceSnmp[eth0]'])
+    })
+
+    it('are fetched afresh on refresh, so a new interface shows up', async () => {
+      await store.setNodeFilter('catincRouters')
+      expect(getResourceForNode).toHaveBeenCalledTimes(2)
+
+      getResourceForNode.mockImplementation((criterion: string) => Promise.resolve(nodeResource(criterion, [
+        child(`node[${criterion}].interfaceSnmp[eth9]`, ['ifHCInOctets'])
+      ])))
+      await store.refreshResources()
+
+      expect(getResourceForNode).toHaveBeenCalledTimes(4)
+      expect(ids(store.resourceOptions)).toEqual(['node[1].interfaceSnmp[eth9]', 'node[2].interfaceSnmp[eth9]'])
     })
 
     // A pause mid-rule gets a 400 from the engine and, for a moment, no effective
@@ -545,7 +600,8 @@ describe('useAdhocGraphStore', () => {
         datasourceFilter: '',
         pickedNodeIds: [],
         pickedResourceIds: ['nodeSource[Demo:r1].interfaceSnmp[eth0]', 'nodeSource[Demo:r1].interfaceSnmp[gone]'],
-        pickedDatasourceKeys: ['nodeSource[Demo:r1].interfaceSnmp[eth0]|ifHCInOctets']
+        pickedDatasourceKeys: ['nodeSource[Demo:r1].interfaceSnmp[eth0]|ifHCInOctets'],
+        excludedDatasourceKeys: []
       })
 
       // The live one by its candidate, the vanished one by its node's other name.
@@ -659,6 +715,22 @@ describe('useAdhocGraphStore', () => {
       expect(store.effectiveDatasources).toHaveLength(2)
     })
 
+    it('leave out excluded series while still following the filter', () => {
+      store.setDatasourceFilter('ifHC*Octets')
+      store.setExcludedDatasourceKeys(['node[1].interfaceSnmp[eth0]|ifHCInOctets'])
+
+      expect(keys(store.effectiveDatasources)).toEqual([
+        'node[1].interfaceSnmp[eth0]|ifHCOutOctets',
+        'node[1].interfaceSnmp[eth1]|ifHCInOctets',
+        'node[1].interfaceSnmp[eth1]|ifHCOutOctets'
+      ])
+      expect(store.selectionState.excludedDatasourceKeys).toEqual(['node[1].interfaceSnmp[eth0]|ifHCInOctets'])
+
+      // Picking pins a list; the exclusions that shaped the filter set are moot.
+      store.setPickedDatasources([store.datasourceOptions[0]])
+      expect(store.excludedDatasourceKeys).toEqual([])
+    })
+
     it('drop a pick whose resource is deselected by hand, but not one merely narrowed around', () => {
       store.setDatasourceFilter('ifHC*Octets')
       store.setPickedDatasources([store.datasourceOptions[0], store.datasourceOptions[2]])
@@ -682,7 +754,8 @@ describe('useAdhocGraphStore', () => {
         datasourceFilter: 'ifHCInOctets',
         pickedNodeIds: [],
         pickedResourceIds: [],
-        pickedDatasourceKeys: []
+        pickedDatasourceKeys: [],
+        excludedDatasourceKeys: []
       })
 
       expect(getNodesByFilterRule).toHaveBeenCalledWith('catincRouters', 200)
@@ -701,7 +774,8 @@ describe('useAdhocGraphStore', () => {
         datasourceFilter: '',
         pickedNodeIds: ['1'],
         pickedResourceIds: ['node[1].interfaceSnmp[eth0]'],
-        pickedDatasourceKeys: ['node[1].interfaceSnmp[eth0]|ifHCInOctets']
+        pickedDatasourceKeys: ['node[1].interfaceSnmp[eth0]|ifHCInOctets'],
+        excludedDatasourceKeys: []
       })
 
       expect(store.pickedNodes).toEqual([{ id: '1', label: 'switch-1' }])
@@ -726,7 +800,8 @@ describe('useAdhocGraphStore', () => {
         datasourceFilter: '',
         pickedNodeIds: ['1'],
         pickedResourceIds: ['node[1].interfaceSnmp[gone]'],
-        pickedDatasourceKeys: ['node[1].interfaceSnmp[gone]|ifHCInOctets']
+        pickedDatasourceKeys: ['node[1].interfaceSnmp[gone]|ifHCInOctets'],
+        excludedDatasourceKeys: []
       })
 
       // Series must survive: the query is relaxed, so it comes back as NaN rather
@@ -743,7 +818,8 @@ describe('useAdhocGraphStore', () => {
         datasourceFilter: '',
         pickedNodeIds: ['9'],
         pickedResourceIds: ['node[9].interfaceSnmp[x]'],
-        pickedDatasourceKeys: ['node[9].interfaceSnmp[x]|ifHCInOctets']
+        pickedDatasourceKeys: ['node[9].interfaceSnmp[x]|ifHCInOctets'],
+        excludedDatasourceKeys: []
       })
 
       expect(store.pickedNodes).toEqual([{ id: '9', label: '9' }])
@@ -766,7 +842,8 @@ describe('useAdhocGraphStore', () => {
         datasourceFilter: 'ifHC*',
         pickedNodeIds: [],
         pickedResourceIds: ['node[1].interfaceSnmp[eth1]'],
-        pickedDatasourceKeys: ['node[1].interfaceSnmp[eth1]|ifHCInOctets']
+        pickedDatasourceKeys: ['node[1].interfaceSnmp[eth1]|ifHCInOctets'],
+        excludedDatasourceKeys: []
       })
     })
   })

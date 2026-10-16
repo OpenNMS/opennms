@@ -192,9 +192,14 @@ const onFilter = (value: string | undefined) => {
   emit('filter', filterTerm.value)
 }
 
-/** Select everything listed, so individual items can then be deselected. */
+/**
+ * Add everything listed to the selection, so individual items can then be
+ * deselected. Additive, as it always was: what is already selected stays, and
+ * anything selected but not currently listed is the parent's to keep.
+ */
 const selectAll = () => {
-  emit('update:modelValue', [...props.options])
+  const additions = props.options.filter(option => !selectedKeys.value.has(props.keyOf(option)))
+  emit('update:modelValue', [...props.modelValue, ...additions])
 }
 </script>
 

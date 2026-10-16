@@ -134,4 +134,11 @@ export interface AdhocSelectionState {
   pickedNodeIds: string[]
   pickedResourceIds: string[]
   pickedDatasourceKeys: string[]
+  /**
+   * Series taken out of a filter-driven graph one by one. Kept apart from the
+   * picks so that removing one series from "everything matching" leaves the graph
+   * following the filter, minus that series, instead of freezing the other 199
+   * into a list that no longer grows and no longer fits in a link.
+   */
+  excludedDatasourceKeys: string[]
 }
