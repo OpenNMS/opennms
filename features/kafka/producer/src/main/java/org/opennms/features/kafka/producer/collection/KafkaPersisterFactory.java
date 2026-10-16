@@ -143,4 +143,12 @@ public class KafkaPersisterFactory implements PersisterFactory {
     public void setMetricFilter(String metricFilter) {
         this.metricFilter = metricFilter;
     }
+
+    /**
+     * The metric filter expression handed to every persister created by this factory,
+     * i.e. the filter that is actually running, as opposed to the one currently in the configuration.
+     */
+    public String getMetricFilter() {
+        return metricFilter;
+    }
 }
