@@ -100,6 +100,15 @@ describe('Notifications page URL', () => {
     expect(store.setNodeFilter).not.toHaveBeenCalled()
   })
 
+  it('ignores a node id too large to be exact', async () => {
+    const { store } = mountPage({ node: '99999999999999999999' })
+    await flushPromises()
+
+    expect(store.setNodeFilter).not.toHaveBeenCalled()
+    expect(store.applyQuery).not.toHaveBeenCalled()
+    expect(store.nodeFilter).toBeNull()
+  })
+
   it('reloads the current view on a URL without a preset, keeping a user search', async () => {
     const { store } = mountPage({})
     await flushPromises()

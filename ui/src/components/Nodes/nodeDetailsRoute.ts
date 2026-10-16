@@ -27,6 +27,8 @@
 // The id accepts what the legacy element/node.jsp?node= accepted: a database id, or
 // foreignSource:foreignId (split on the first ':' by NodeDao.get(String)).
 
+import { parsePositiveIntegerId } from '@/lib/ids'
+
 export const NODE_DETAILS_ROUTE_NAME = 'Node Details'
 
 export type NodeRouteId =
@@ -38,8 +40,8 @@ export const parseNodeRouteId = (raw: string): NodeRouteId => {
   const value = raw.trim()
 
   if (/^\d+$/.test(value)) {
-    const id = Number(value)
-    return id > 0 && Number.isSafeInteger(id) ? { kind: 'numeric', id: String(id) } : { kind: 'invalid', value }
+    const id = parsePositiveIntegerId(value)
+    return id ? { kind: 'numeric', id } : { kind: 'invalid', value }
   }
 
   // Both halves must be non-empty: v2 /nodes/a: answers 500, not 404.

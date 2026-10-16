@@ -320,6 +320,15 @@ describe('NotificationQueriesCard', () => {
       expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Enter a node ID as a positive whole number, e.g. 42.', error: true })
     })
 
+    it('rejects a node id too large to be exact, applying nothing', async () => {
+      mountWithNodeActions()
+
+      await enterNode('99999999999999999999')
+
+      expect(store.setNodeFilter).not.toHaveBeenCalled()
+      expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Enter a node ID as a positive whole number, e.g. 42.', error: true })
+    })
+
     it('ignores Enter on an empty field', async () => {
       mountWithNodeActions()
 

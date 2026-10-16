@@ -49,6 +49,7 @@ import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
+import { parsePositiveIntegerId } from '@/lib/ids'
 import { SAME_PAGE_NAVIGATION_EVENT } from '@/lib/navigation'
 import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
@@ -98,7 +99,7 @@ const readRoute = () => {
   const node = route.query.node as string
   return {
     preset: (LINKABLE_PRESETS as readonly string[]).includes(preset) ? preset as NotificationQueryPreset : null,
-    nodeId: typeof node === 'string' && /^\d+$/.test(node) && Number(node) > 0 ? String(Number(node)) : null
+    nodeId: parsePositiveIntegerId(node)
   }
 }
 
