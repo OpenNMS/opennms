@@ -445,6 +445,7 @@
         <feature>commons-codec</feature>
         <feature>opennms-config-api</feature>
         <feature>opennms-core-db</feature>
+        <feature>opennms-dao-api</feature>
         <feature>opennms-mate-api</feature>
         <feature>opennms-poller-api</feature>
         <feature>opennms-rrd-api</feature>

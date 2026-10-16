@@ -58,22 +58,9 @@
 
     <onmsgi:service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 
-  <bean id="groupManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
-  </bean>
+  <!-- userManager, groupManager and groupDao are in applicationContext-usermgmt-{db,xml}.xml, imported by
+       applicationContext-dao.xml: the database implementations need the DAOs -->
 
-  <bean id="groupManager" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupManager-init" factory-method="getInstance"/>
-
-  <onmsgi:service interface="org.opennms.netmgt.config.api.GroupConfig" ref="groupManager" />
-
-  <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
-  </bean>
-
-  <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
-  
-  <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
-  
   <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" ref="discoveryFactory" />
@@ -140,8 +127,4 @@
   <bean id="resourceTypesDao" class="org.opennms.netmgt.config.DefaultResourceTypesDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.ResourceTypesDao" ref="resourceTypesDao" />
-
-  <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
-      <property name="groupManager" ref="groupManager"/>
-  </bean>
 </beans>
