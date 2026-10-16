@@ -35,6 +35,10 @@ import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { requireCondition, requireRole } from './guards'
+import useRole from '@/composables/useRole'
+
+// any logged-in user may change graph collections except a read-only one, as on the legacy pages
+const READONLY_GRAPH_COLLECTIONS = 'Read-only users cannot change graph collections.'
 
 const { startSpinner, stopSpinner } = useSpinner()
 
@@ -252,6 +256,19 @@ const router = createRouter({
       path: '/graph-collections',
       name: 'GraphCollections',
       component: () => import('@/containers/GraphCollections.vue')
+    },
+    {
+      path: '/graph-collections/new',
+      name: 'GraphCollectionNew',
+      component: () => import('@/containers/GraphCollectionEditor.vue'),
+      beforeEnter: requireCondition(() => useRole().rolesAreLoaded.value, () => !useRole().readOnlyRole.value, READONLY_GRAPH_COLLECTIONS)
+    },
+    {
+      path: '/graph-collections/:id(\\d+)/edit',
+      name: 'GraphCollectionEdit',
+      component: () => import('@/containers/GraphCollectionEditor.vue'),
+      props: true,
+      beforeEnter: requireCondition(() => useRole().rolesAreLoaded.value, () => !useRole().readOnlyRole.value, READONLY_GRAPH_COLLECTIONS)
     },
     {
       // A collection built on the fly for a node (by id, by foreignSource:foreignId, or by domain),

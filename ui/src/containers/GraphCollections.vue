@@ -12,6 +12,13 @@
           <div class="card-title">Graph Collections</div>
           <div class="subtitle">Saved sets of performance graphs, each drawn for one resource over a named timespan.</div>
         </div>
+        <OnmsButton
+          v-if="canEdit"
+          icon="pi pi-plus"
+          label="Create collection"
+          data-test="create-collection"
+          @click="router.push('/graph-collections/new')"
+        />
       </div>
 
       <p v-if="loadError" class="error" data-test="load-error">{{ loadError }}</p>
@@ -53,11 +60,19 @@
               />
               <OnmsIconButton
                 v-if="canEdit"
+                :icon="Edit"
+                :tooltip="`Edit ${data.title}`"
+                :aria-label="`Edit ${data.title}`"
+                data-test="edit-collection"
+                @click="router.push(`/graph-collections/${data.id}/edit`)"
+              />
+              <OnmsIconButton
+                v-if="canEdit"
                 :icon="ContentCopy"
                 :tooltip="`Duplicate ${data.title}`"
                 :aria-label="`Duplicate ${data.title}`"
                 data-test="duplicate-collection"
-                @click="duplicate(data)"
+                @click="router.push({ path: '/graph-collections/new', query: { from: String(data.id) }})"
               />
               <OnmsIconButton
                 v-if="canEdit"
@@ -100,9 +115,10 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 import ContentCopy from '@opennms/onms-ui/icons/action/ContentCopy.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import View from '@opennms/onms-ui/icons/action/View.vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -110,7 +126,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
-import { createGraphCollection, deleteGraphCollection, getGraphCollections } from '@/services/graphCollectionsService'
+import { deleteGraphCollection, getGraphCollections } from '@/services/graphCollectionsService'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 import { GraphCollection } from '@/types/graphCollection'
@@ -134,10 +150,11 @@ const loading = ref(true)
 const loadError = ref('')
 const collectionToDelete = ref<GraphCollection | null>(null)
 
-const emptyContent = {
+const emptyContent = computed(() => ({
   title: 'No graph collections',
-  msg: 'Add a graph to a new collection from any resource graph to create one.'
-}
+  msg: 'Create one with the Create collection button, or add a graph to a new collection from any resource graph.',
+  btn: canEdit.value ? { label: 'Create collection', action: () => router.push('/graph-collections/new') } : undefined
+}))
 
 const viewRoute = (collection: GraphCollection) => `/graph-collections/${collection.id}`
 
@@ -178,23 +195,6 @@ const confirmDelete = async () => {
   await withSpinner(async () => {
     const result = await deleteGraphCollection(collection.id as number)
     if (report(result, `Deleted graph collection "${collection.title}".`)) {
-      await load()
-    }
-  })
-}
-
-// A copy is a new collection with the same options and graphs; the server assigns its id.
-const duplicate = async (collection: GraphCollection) => {
-  await withSpinner(async () => {
-    const copy: GraphCollection = {
-      title: `Copy of ${collection.title}`.slice(0, 255),
-      showTimespanButton: collection.showTimespanButton,
-      showGraphtypeButton: collection.showGraphtypeButton,
-      graphsPerLine: collection.graphsPerLine,
-      graphs: collection.graphs.map(graph => ({ ...graph }))
-    }
-    const result = await createGraphCollection(copy)
-    if (report(result, `Created "${copy.title}".`)) {
       await load()
     }
   })

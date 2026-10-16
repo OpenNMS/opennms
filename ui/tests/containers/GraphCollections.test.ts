@@ -123,6 +123,8 @@ describe('GraphCollections.vue', () => {
     expect(wrapper.findAll('[data-test="view-collection"]')).toHaveLength(2)
     expect(wrapper.findAll('[data-test="delete-collection"]')).toHaveLength(0)
     expect(wrapper.findAll('[data-test="duplicate-collection"]')).toHaveLength(0)
+    expect(wrapper.findAll('[data-test="edit-collection"]')).toHaveLength(0)
+    expect(wrapper.find('[data-test="create-collection"]').exists()).toBe(false)
   })
 
   it('deletes after confirmation and reloads the list', async () => {
@@ -138,15 +140,14 @@ describe('GraphCollections.vue', () => {
     expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Deleted graph collection "Core".' })
   })
 
-  it('duplicates as a new collection with the same options and graphs', async () => {
-    createGraphCollection.mockResolvedValue({ success: true, message: '', payload: {}})
+  it('opens the editor for create, edit and duplicate', async () => {
     const wrapper = await mountList()
+    await wrapper.find('[data-test="create-collection"]').trigger('click')
+    expect(push).toHaveBeenLastCalledWith('/graph-collections/new')
+    await wrapper.findAll('[data-test="edit-collection"]')[1].trigger('click')
+    expect(push).toHaveBeenLastCalledWith('/graph-collections/2/edit')
     await wrapper.findAll('[data-test="duplicate-collection"]')[0].trigger('click')
-    await flushPromises()
-    expect(createGraphCollection).toHaveBeenCalledWith({
-      title: 'Copy of Core', showTimespanButton: true, showGraphtypeButton: false, graphsPerLine: 0,
-      graphs: collection(1, 'Core', 2).graphs
-    })
+    expect(push).toHaveBeenLastCalledWith({ path: '/graph-collections/new', query: { from: '1' }})
   })
 
   it('shows the failure and keeps the empty state away when the list cannot be read', async () => {
@@ -185,7 +186,7 @@ const mountView = async (props: Record<string, string>) => {
     global: {
       plugins: [createTestingPinia({ stubActions: false }), PrimeVue],
       stubs: {
-        'router-link': { props: ['to'], template: '<a :href="to"><slot /></a>' },
+        'router-link': { props: ['to'], template: '<a :href="typeof to === \'string\' ? to : to.path"><slot /></a>' },
         BreadCrumbs: true,
         GraphCollectionGrid: { props: ['collection'], template: '<div data-test="grid" :data-count="collection.graphs.length" />' }
       }
@@ -212,6 +213,9 @@ describe('GraphCollectionView.vue', () => {
     expect(wrapper.find('[data-test="gc-view-title"]').text()).toBe('Core')
     expect(wrapper.find('[data-test="grid"]').attributes('data-count')).toBe('1')
     expect(wrapper.find('[data-test="gc-back"]').exists()).toBe(true)
+    // data-test sits on the button inside the link
+    expect(wrapper.find('[data-test="gc-customize"]').element.closest('a')?.getAttribute('href')).toBe('/graph-collections/1/edit')
+    expect(wrapper.find('[data-test="gc-save-as"]').exists()).toBe(false)
     // the timespan list is only fetched for a collection that offers the override
     expect(getGraphCollectionTimespans).toHaveBeenCalledTimes(1)
   })
@@ -234,6 +238,8 @@ describe('GraphCollectionView.vue', () => {
     expect(getResolvedSyntheticGraphCollection).toHaveBeenCalledWith('node', '7', { timespan: null, graphtype: null })
     expect(wrapper.find('[data-test="gc-view-title"]').text()).toBe('Node 7')
     expect(wrapper.find('[data-test="gc-back"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="gc-customize"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="gc-save-as"]').exists()).toBe(true)
     expect(getGraphCollectionTimespans).not.toHaveBeenCalled()
   })
 

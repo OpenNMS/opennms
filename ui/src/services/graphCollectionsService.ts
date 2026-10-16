@@ -66,11 +66,22 @@ export const graphCollectionProblems = (err: any): string[] => {
 /** True when a write was refused because the collection changed since it was read (412). */
 export const isStaleWrite = (err: any): boolean => err?.response?.status === 412
 
-const failure = <T>(err: any, fallback: string): ValidationResultWithPayload<T> => {
+/** A result that also carries the HTTP status of a failure, so an editor can tell a 412 from a 400. */
+export interface GraphCollectionResult<T> extends ValidationResultWithPayload<T> {
+  status?: number
+}
+
+/** True when a failed result came from a 412; see isStaleWrite. */
+export const isStaleResult = (result: GraphCollectionResult<unknown>): boolean => result.status === 412
+
+const failure = <T>(err: any, fallback: string): GraphCollectionResult<T> => {
   const problems = graphCollectionProblems(err)
-  const result = createResultWithPayload<T>(false, graphCollectionErrorMessage(err, fallback))
+  const result: GraphCollectionResult<T> = createResultWithPayload<T>(false, graphCollectionErrorMessage(err, fallback))
   if (problems.length > 1) {
     result.errors = problems
+  }
+  if (typeof err?.response?.status === 'number') {
+    result.status = err.response.status
   }
   return result
 }
@@ -156,7 +167,7 @@ export const getResolvedSyntheticGraphCollection = async (
 /** Create a collection; the server assigns the id and returns the saved collection. */
 export const createGraphCollection = async (
   collection: GraphCollection
-): Promise<ValidationResultWithPayload<GraphCollectionWithEtag>> => {
+): Promise<GraphCollectionResult<GraphCollectionWithEtag>> => {
   try {
     const resp = await v2.post(endpoint, collection)
     return createResultWithPayload(true, '', { collection: resp.data as GraphCollection, etag: etagOf(resp) })
@@ -173,7 +184,7 @@ export const updateGraphCollection = async (
   id: number,
   collection: GraphCollection,
   etag?: string | null
-): Promise<ValidationResultWithPayload<GraphCollectionWithEtag>> => {
+): Promise<GraphCollectionResult<GraphCollectionWithEtag>> => {
   try {
     const resp = await v2.put(`${endpoint}/${seg(id)}`, collection, ifMatch(etag))
     return createResultWithPayload(true, '', { collection: resp.data as GraphCollection, etag: etagOf(resp) })
@@ -182,7 +193,7 @@ export const updateGraphCollection = async (
   }
 }
 
-export const deleteGraphCollection = async (id: number, etag?: string | null): Promise<ValidationResult> => {
+export const deleteGraphCollection = async (id: number, etag?: string | null): Promise<GraphCollectionResult<void>> => {
   try {
     await v2.delete(`${endpoint}/${seg(id)}`, ifMatch(etag))
     return createResultWithPayload(true, '')
@@ -196,7 +207,7 @@ export const addGraphToCollection = async (
   id: number,
   graph: GraphCollectionGraph,
   options?: { index?: number, etag?: string | null }
-): Promise<ValidationResultWithPayload<GraphCollectionWithEtag>> => {
+): Promise<GraphCollectionResult<GraphCollectionWithEtag>> => {
   try {
     const config = {
       ...ifMatch(options?.etag),

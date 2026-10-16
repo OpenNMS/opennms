@@ -18,6 +18,12 @@
           <router-link v-if="isStored" to="/graph-collections">
             <OnmsButton variant="outlined" label="All collections" data-test="gc-back" />
           </router-link>
+          <router-link v-if="isStored && canEdit" :to="`/graph-collections/${id}/edit`">
+            <OnmsButton label="Customize" data-test="gc-customize" />
+          </router-link>
+          <router-link v-if="!isStored && canEdit && collection" :to="saveAsRoute">
+            <OnmsButton label="Save as collection" data-test="gc-save-as" />
+          </router-link>
         </div>
       </div>
 
@@ -77,6 +83,7 @@ import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import GraphCollectionGrid from '@/components/GraphCollections/GraphCollectionGrid.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
+import useRole from '@/composables/useRole'
 import {
   getGraphCollectionTimespans,
   getResolvedGraphCollection,
@@ -109,12 +116,21 @@ const route = useRoute()
 const router = useRouter()
 const menuStore = useMenuStore()
 const { withSpinner } = useActionFeedback()
+const { readOnlyRole, rolesAreLoaded } = useRole()
+
+const canEdit = computed(() => rolesAreLoaded.value && !readOnlyRole.value)
 
 const collection = ref<ResolvedGraphCollection | null>(null)
 const timespans = ref<GraphCollectionTimespan[]>([])
 const loadError = ref('')
 
 const isStored = computed(() => !!props.id)
+
+// the legacy "customize" of a node report: start a new stored collection from these graphs
+const saveAsRoute = computed(() => {
+  const param = { node: 'fromNode', nodeSource: 'fromNodeSource', domain: 'fromDomain' }[props.kind ?? 'node']
+  return { path: '/graph-collections/new', query: { [param]: props.source ?? '' }}
+})
 
 const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: menuStore.mainMenu.homeUrl, isAbsoluteLink: true },
