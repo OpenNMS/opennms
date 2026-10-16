@@ -203,8 +203,9 @@ const clearUserSearch = () => {
   applyPreset('userSearch')
 }
 
-// Notification and node ids are positive integers; anything else would only reach the legacy
-// detail page, or the node filter, as an error (leading zeros are fine: "007" is 7)
+// Node and notification ids are positive integers (parsePositiveIntegerId; leading zeros are fine,
+// "007" is 7). Anything else would only reach the store or the legacy detail page as an error.
+
 // Not a mode: the filter narrows whatever is showing, user search included, so the preset and
 // any user search stay (the store's setNodeFilter keeps both).
 const filterByNode = async () => {

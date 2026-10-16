@@ -17,6 +17,8 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 
 // A database id typed or linked as text: digits only (surrounding whitespace allowed), greater than 0,
 // and small enough to be exact in a JS number. Returns the canonical form ('007' -> '7'), or null.
