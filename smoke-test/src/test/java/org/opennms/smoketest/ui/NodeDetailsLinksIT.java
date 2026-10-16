@@ -113,6 +113,33 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    public void routeResolvesAForeignIdWithASlash() throws Exception {
+        final String slashLabel = "Test_Node_Links_Slash";
+        final RestClient restClient = stack.opennms().getRestClient();
+
+        OnmsNode node = new OnmsNode();
+        node.setLabel(slashLabel);
+        node.setType(OnmsNode.NodeType.ACTIVE);
+        node.setForeignSource("test");
+        node.setForeignId("links/2");
+        final Response response = restClient.addNode(node);
+        assertEquals(201, response.getStatus());
+        // The v1 path lookup cannot resolve a '/' in a foreign id (and neither can delete by
+        // foreignSource:foreignId), so take the numeric id from the Location header, whose last
+        // segment is the new node's id.
+        final String location = response.getLocation().getPath();
+        final int slashNodeId = Integer.parseInt(location.substring(location.lastIndexOf('/') + 1));
+
+        try {
+            getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/node/test:links%2F2");
+            wait.until(ExpectedConditions.urlContains("#/node/" + slashNodeId));
+            wait.until(pageContainsText("Node Details for " + slashLabel));
+        } finally {
+            sendDelete("rest/nodes/" + slashNodeId, 202);
+        }
+    }
+
+    @Test
     public void routeShowsNodeNotFound() {
         getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/node/test:no-such-node");
         wait.until(pageContainsText("Node Not Found"));
