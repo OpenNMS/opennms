@@ -142,24 +142,43 @@ public abstract class UserManager implements UserConfig {
      * @param in a {@link java.io.InputStream} object.
      */
     public void parseXML(final InputStream in) {
-        m_writeLock.lock();
-
         InputStreamReader isr = null;
         try {
             isr = new InputStreamReader(in);
-            final Userinfo userinfo = JaxbUtils.unmarshal(Userinfo.class, isr);
+            load(JaxbUtils.unmarshal(Userinfo.class, isr));
+        } finally {
+            IOUtils.closeQuietly(isr);
+        }
+    }
+
+    /**
+     * Replaces the cached users with these. Subclasses that do not read users.xml call this.
+     *
+     * @param userinfo the users
+     */
+    protected void load(final Userinfo userinfo) {
+        m_writeLock.lock();
+        try {
             oldHeader = userinfo.getHeader();
             m_users = new TreeMap<String, User>();
-        
+
             for (final User curUser : userinfo.getUsers()) {
                 m_users.put(curUser.getUserId(), curUser);
             }
-        
+
             _buildDutySchedules(m_users);
         } finally {
-            IOUtils.closeQuietly(isr);
             m_writeLock.unlock();
         }
+    }
+
+    /**
+     * The lock that guards the cached users, for subclasses that change them outside the methods here.
+     *
+     * @return the write lock
+     */
+    protected final Lock writeLock() {
+        return m_writeLock;
     }
 
 
@@ -909,14 +928,24 @@ public abstract class UserManager implements UserConfig {
             userinfo.setHeader(header);
         }
         oldHeader = header;
-    
+
+        saveUsers(userinfo);
+    }
+
+    /**
+     * Stores all users. The default marshals them and calls {@link #saveXML(String)}; the database
+     * implementation writes them through the DAOs instead.
+     *
+     * @param userinfo all users
+     * @throws java.lang.Exception if the users cannot be stored
+     */
+    protected void saveUsers(final Userinfo userinfo) throws Exception {
         // marshal to a string first, then write the string to the file. This
         // way the original configuration
         // isn't lost if the XML from the marshal is hosed.
         final StringWriter stringWriter = new StringWriter();
         JaxbUtils.marshal(userinfo, stringWriter);
-        final String writerString = stringWriter.toString();
-        saveXML(writerString);
+        saveXML(stringWriter.toString());
     }
 
     /**

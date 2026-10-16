@@ -40,6 +40,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -62,6 +64,19 @@ public class Password {
 
         if (OPENNMS_HOME.isEmpty() || userId.isEmpty() || newPassword.isEmpty()){
             log.log(Level.ERROR, "Unable to determine OpenNMS home, or no username or password was provided.");
+            System.exit(1);
+        }
+
+        if (UserMgmtStore.isDatabase(new File(OPENNMS_HOME))) {
+            try {
+                DatabasePasswords.setPassword(DataSourceFactory.getInstance(), userId, newPassword);
+                log.log(Level.INFO, "The password of user " + userId + " was changed in the database.");
+                System.exit(0);
+            } catch (final IllegalArgumentException e) {
+                log.log(Level.ERROR, e.getMessage());
+            } catch (final Exception e) {
+                log.log(Level.ERROR, "Cannot change the password in the database: " + e.getMessage(), e);
+            }
             System.exit(1);
         }
 

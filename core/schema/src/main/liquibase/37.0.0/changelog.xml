@@ -572,4 +572,74 @@
         </rollback>
     </changeSet>
 
+    <!-- A version counter for the user data, so the in-memory caches of DbUserManager and DbGroupManager see
+         changes from any writer (the webapp, the password CLI, the upgrade tasks). The "users" row covers the
+         users and the security roles; the "groups" row covers the groups and the on-call roles. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-version">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="usermgmt_version"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="usermgmt_version">
+            <column name="name" type="varchar(16)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="usermgmt_version">
+            <column name="name" value="users"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+        <insert tableName="usermgmt_version">
+            <column name="name" value="groups"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_increment_version() RETURNS trigger AS $$
+BEGIN
+    UPDATE usermgmt_version SET version = version + 1 WHERE name = TG_ARGV[0];
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+CREATE TRIGGER security_roles_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON security_roles FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER users_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON users FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER user_contacts_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON user_contacts FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER user_duty_schedules_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON user_duty_schedules FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER user_security_roles_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON user_security_roles FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER groups_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON groups FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER group_members_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON group_members FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER group_duty_schedules_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON group_duty_schedules FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER oncall_roles_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON oncall_roles FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER oncall_schedules_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON oncall_schedules FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER oncall_schedule_times_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON oncall_schedule_times FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS security_roles_version ON security_roles;
+DROP TRIGGER IF EXISTS users_version ON users;
+DROP TRIGGER IF EXISTS user_contacts_version ON user_contacts;
+DROP TRIGGER IF EXISTS user_duty_schedules_version ON user_duty_schedules;
+DROP TRIGGER IF EXISTS user_security_roles_version ON user_security_roles;
+DROP TRIGGER IF EXISTS groups_version ON groups;
+DROP TRIGGER IF EXISTS group_members_version ON group_members;
+DROP TRIGGER IF EXISTS group_duty_schedules_version ON group_duty_schedules;
+DROP TRIGGER IF EXISTS oncall_roles_version ON oncall_roles;
+DROP TRIGGER IF EXISTS oncall_schedules_version ON oncall_schedules;
+DROP TRIGGER IF EXISTS oncall_schedule_times_version ON oncall_schedule_times;
+DROP FUNCTION IF EXISTS usermgmt_increment_version();
+            </sql>
+            <dropTable tableName="usermgmt_version"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

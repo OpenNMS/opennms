@@ -130,12 +130,16 @@ public abstract class GroupManager implements GroupConfig {
      */
     protected synchronized void parseXml(InputStream stream) throws IOException {
         try(final InputStreamReader isr = new InputStreamReader(stream)) {
-            Groupinfo groupinfo = JaxbUtils.unmarshal(Groupinfo.class, isr);
-            initializeGroupsAndRoles(groupinfo);
+            load(JaxbUtils.unmarshal(Groupinfo.class, isr));
         }
     }
 
-    private void initializeGroupsAndRoles(Groupinfo groupinfo) {
+    /**
+     * Replaces the cached groups and on-call roles with these. Subclasses that do not read groups.xml call this.
+     *
+     * @param groupinfo the groups and on-call roles
+     */
+    protected synchronized void load(final Groupinfo groupinfo) {
         List<Group> groups = groupinfo.getGroups();
         m_groups = new LinkedHashMap<String, Group>();
         m_oldHeader = groupinfo.getHeader();
@@ -270,14 +274,24 @@ public abstract class GroupManager implements GroupConfig {
         groupinfo.setHeader(header);
     
         m_oldHeader = header;
-    
+
+        saveGroups(groupinfo);
+    }
+
+    /**
+     * Stores all groups and on-call roles. The default marshals them and calls {@link #saveXml(String)}; the
+     * database implementation writes them through the DAOs instead.
+     *
+     * @param groupinfo all groups and on-call roles
+     * @throws java.lang.Exception if they cannot be stored
+     */
+    protected void saveGroups(final Groupinfo groupinfo) throws Exception {
         // marshal to a string first, then write the string to the file. This
         // way the original configuration
         // isn't lost if the XML from the marshal is hosed.
-        StringWriter stringWriter = new StringWriter();
+        final StringWriter stringWriter = new StringWriter();
         JaxbUtils.marshal(groupinfo, stringWriter);
-        String data = stringWriter.toString();
-        saveXml(data);
+        saveXml(stringWriter.toString());
     }
 
     /**

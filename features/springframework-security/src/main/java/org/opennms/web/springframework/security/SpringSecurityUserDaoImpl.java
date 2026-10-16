@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.web.api.Authentication;
@@ -55,9 +54,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     /** The user manager. */
     private UserManager m_userManager;
-
-    /** The users configuration file. */
-    private String m_usersConfigurationFile;
 
     /** The set of valid users from users.xml, keyed by userId. */
     private Map<String, OnmsUser> m_users = null;
@@ -179,25 +175,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         }
     }
 
-    /**
-     * Sets the users configuration file.
-     *
-     * @param usersConfigurationFile the new users configuration file
-     */
-    public void setUsersConfigurationFile(String usersConfigurationFile) {
-        m_usersConfigurationFile = usersConfigurationFile;
-        UserFactory.setInstance(null);
-    }
-
-    /**
-     * Gets the users configuration file.
-     *
-     * @return the users configuration file
-     */
-    public String getUsersConfigurationFile() {
-        return m_usersConfigurationFile;
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.web.springframework.security.SpringSecurityUserDao#getByUsername(java.lang.String)
      */
@@ -243,6 +220,18 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     }
 
     /**
+     * No longer used: the users come from the userManager bean. Kept so that a customized
+     * applicationContext-spring-security.xml of an older release, which still sets this property, does not stop the
+     * webapp from starting.
+     *
+     * @param usersConfigurationFile ignored
+     */
+    @Deprecated
+    public void setUsersConfigurationFile(final String usersConfigurationFile) {
+        LOG.warn("The usersConfigurationFile property of the userDao bean is ignored. Remove it from applicationContext-spring-security.xml.");
+    }
+
+    /**
      * Sets the user manager.
      *
      * @param mgr the new user manager
@@ -256,7 +245,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
         Assert.notNull(m_userManager);
     }
 }

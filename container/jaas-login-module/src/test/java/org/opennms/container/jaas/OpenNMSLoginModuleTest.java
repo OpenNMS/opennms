@@ -49,6 +49,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.api.Authentication;
 
 public class OpenNMSLoginModuleTest {
     @Rule
@@ -63,6 +64,30 @@ public class OpenNMSLoginModuleTest {
     @After
     public void tearDown() {
         System.clearProperty("opennms.home");
+        Authentication.setRoleSource(null);
+    }
+
+    @Test
+    public void usesTheInstalledRoleSource() throws Exception {
+        // the database mode: a custom role that is only in the security_roles table
+        final UserConfig userConfig = userConfig("admin", "secret", "ROLE_ADMIN", "ROLE_OPERATOR");
+        final Subject subject = new Subject();
+        final OpenNMSLoginModule module = new OpenNMSLoginModule() {
+            @Override
+            protected UserConfig userConfig() {
+                return userConfig;
+            }
+
+            @Override
+            protected void installRoleSource() {
+                Authentication.setRoleSource(() -> List.of("ROLE_ADMIN", "ROLE_OPERATOR", "ROLE_USER"));
+            }
+        };
+        module.initialize(subject, callbackHandler("admin", "secret"), Map.of(), Map.of());
+
+        assertTrue(module.login());
+        assertTrue(module.commit());
+        assertTrue(roleNames(subject).contains("ROLE_OPERATOR"));
     }
 
     @Test
@@ -160,6 +185,11 @@ public class OpenNMSLoginModuleTest {
             @Override
             protected UserConfig userConfig() {
                 return userConfig;
+            }
+
+            @Override
+            protected void installRoleSource() {
+                // no OSGi registry in this test: keep the roles of the files
             }
         };
         module.initialize(subject, callbackHandler(username, password), Map.of(), Map.of());
