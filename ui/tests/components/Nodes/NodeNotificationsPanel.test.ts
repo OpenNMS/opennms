@@ -27,6 +27,6 @@ describe('NodeNotificationsPanel.vue', () => {
 
   it('opens the Notifications page from the header button', async () => {
     await mountPanel().find('[data-test="notifications-link-button"]').trigger('click')
-    expect(push).toHaveBeenCalledWith({ name: 'Notifications' })
+    expect(push).toHaveBeenCalledWith({ name: 'Notifications', query: { preset: 'yourOutstanding' }})
   })
 })
