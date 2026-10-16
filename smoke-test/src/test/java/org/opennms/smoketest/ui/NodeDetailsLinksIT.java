@@ -22,6 +22,7 @@
 package org.opennms.smoketest.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -38,12 +39,15 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.utils.RestClient;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Entry points that link to the Vue Node Details page (NMS-20412): the route itself, the Vue node
  * list redirect, the home page quick search, and a sample of legacy pages.
  */
 public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeDetailsLinksIT.class);
     private static final String LABEL = "Test_Node_Links";
     private int nodeId;
 
@@ -115,27 +119,39 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     @Test
     public void routeResolvesAForeignIdWithASlash() throws Exception {
         final String slashLabel = "Test_Node_Links_Slash";
-        final RestClient restClient = stack.opennms().getRestClient();
-
-        OnmsNode node = new OnmsNode();
-        node.setLabel(slashLabel);
-        node.setType(OnmsNode.NodeType.ACTIVE);
-        node.setForeignSource("test");
-        node.setForeignId("links/2");
-        final Response response = restClient.addNode(node);
-        assertEquals(201, response.getStatus());
-        // The v1 path lookup cannot resolve a '/' in a foreign id (and neither can delete by
-        // foreignSource:foreignId), so take the numeric id from the Location header, whose last
-        // segment is the new node's id.
-        final String location = response.getLocation().getPath();
-        final int slashNodeId = Integer.parseInt(location.substring(location.lastIndexOf('/') + 1));
+        Integer slashNodeId = null;
 
         try {
+            final RestClient restClient = stack.opennms().getRestClient();
+
+            OnmsNode node = new OnmsNode();
+            node.setLabel(slashLabel);
+            node.setType(OnmsNode.NodeType.ACTIVE);
+            node.setForeignSource("test");
+            node.setForeignId("links/2");
+            final Response response = restClient.addNode(node);
+            assertEquals(201, response.getStatus());
+            // The v1 path lookup cannot resolve a '/' in a foreign id (and neither can delete by
+            // foreignSource:foreignId), so take the numeric id from the Location header, whose last
+            // segment is the new node's id.
+            assertNotNull(response.getLocation());
+            String location = response.getLocation().getPath();
+            while (location.endsWith("/")) {
+                location = location.substring(0, location.length() - 1);
+            }
+            slashNodeId = Integer.parseInt(location.substring(location.lastIndexOf('/') + 1));
+
             getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/node/test:links%2F2");
             wait.until(ExpectedConditions.urlContains("#/node/" + slashNodeId));
             wait.until(pageContainsText("Node Details for " + slashLabel));
         } finally {
-            sendDelete("rest/nodes/" + slashNodeId, 202);
+            if (slashNodeId != null) {
+                try {
+                    sendDelete("rest/nodes/" + slashNodeId, 202);
+                } catch (final Exception e) {
+                    LOG.warn("Could not delete node {}", slashNodeId, e);
+                }
+            }
         }
     }
 
