@@ -46,8 +46,26 @@
             @clear="clearUserSearch"
           />
         </div>
-        <!-- Not a query: Enter opens that notification's detail page, so this is a
-             plain label and takes no part in the selection above. -->
+        <!-- A filter on the current view, not a query of its own: a plain label that takes no
+             part in the selection above. -->
+        <div class="query-search">
+          <label
+            for="notification-node-search"
+            class="query-search-label"
+            data-test="node-search-label"
+          >Filter by node:</label>
+          <OnmsSearchInput
+            v-model="nodeSearch"
+            class="query-search-input"
+            inputId="notification-node-search"
+            placeholder="Node ID"
+            ariaLabel="Node ID"
+            dataTest="node-search-input"
+            @keyup.enter="filterByNode"
+            @clear="clearNodeFilter"
+          />
+        </div>
+        <!-- Not a query either: Enter opens that notification's detail page. -->
         <div class="query-search">
           <label
             for="notification-id-search"
@@ -65,6 +83,13 @@
           />
         </div>
       </div>
+      <div v-if="store.nodeFilter" class="query-node-filter" data-test="node-filter-chip">
+        <OnmsChip
+          :label="`Node: ${store.nodeFilter.label ?? store.nodeFilter.id}`"
+          removable
+          @remove="clearNodeFilter"
+        />
+      </div>
     </div>
   </TableCard>
 </template>
@@ -72,10 +97,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@opennms/onms-ui'
+import { OnmsChip, OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@opennms/onms-ui'
 
 import TableCard from '@/components/Common/TableCard.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
+import { parsePositiveIntegerId } from '@/lib/ids'
 import { useMenuStore } from '@/stores/menuStore'
 import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'
@@ -109,10 +135,15 @@ const refresh = async () => {
   report(await withSpinner(() => store.load()))
 }
 
+const clearNodeFilter = async () => {
+  report(await withSpinner(() => store.clearNodeFilter()))
+}
+
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
 const presetOptions: QueryModeOption[] = [
   { label: 'Your outstanding notifications', value: 'yourOutstanding' },
+  { label: 'Your acknowledged notifications', value: 'yourAcknowledged' },
   { label: 'Outstanding for anyone but you', value: 'teamOutstanding' },
   { label: 'All outstanding notifications', value: 'allOutstanding' },
   { label: 'All acknowledged notifications', value: 'allAcknowledged' }
@@ -122,12 +153,19 @@ const userSearchOptions: QueryModeOption[] = [{ label: 'Notifications for user:'
 const mode = ref<QueryMode>(store.preset)
 const userSearch = ref(store.preset === 'userSearch' ? store.userFilter ?? '' : '')
 const notificationIdSearch = ref('')
+const nodeSearch = ref(store.nodeFilter?.id ?? '')
 
 const userSearchInput = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
 
 // Follow preset changes made elsewhere (e.g. the top-bar bell deep link).
 watch(() => store.preset, (preset) => {
   mode.value = preset
+})
+
+// Show the filter that is applied: a deep link (?node=153) fills the input, and removing the chip
+// empties it.
+watch(() => store.nodeFilter?.id, (id) => {
+  nodeSearch.value = id ?? ''
 })
 
 const onModeChange = (value: unknown) => {
@@ -165,20 +203,33 @@ const clearUserSearch = () => {
   applyPreset('userSearch')
 }
 
-// notification ids are positive integers; anything else would only reach the
-// legacy detail page as an error (leading zeros are fine: "007" is notice 7)
-const isNotificationId = (value: string) => /^\d+$/.test(value) && Number(value) > 0
+// Node and notification ids are positive integers (parsePositiveIntegerId; leading zeros are fine,
+// "007" is 7). Anything else would only reach the store or the legacy detail page as an error.
 
-const goToNotification = () => {
-  const id = notificationIdSearch.value.trim()
-  if (!id) {
+// Not a mode: the filter narrows whatever is showing, user search included, so the preset and
+// any user search stay (the store's setNodeFilter keeps both).
+const filterByNode = async () => {
+  if (!nodeSearch.value.trim()) {
     return
   }
-  if (!isNotificationId(id)) {
+  const id = parsePositiveIntegerId(nodeSearch.value)
+  if (!id) {
+    showError('Enter a node ID as a positive whole number, e.g. 42.')
+    return
+  }
+  report(await withSpinner(() => store.setNodeFilter(id)))
+}
+
+const goToNotification = () => {
+  if (!notificationIdSearch.value.trim()) {
+    return
+  }
+  const id = parsePositiveIntegerId(notificationIdSearch.value)
+  if (!id) {
     showError('Enter a notification ID as a positive whole number, e.g. 42.')
     return
   }
-  window.location.href = `${baseHref.value}notification/detail.jsp?notice=${Number(id)}`
+  window.location.href = `${baseHref.value}notification/detail.jsp?notice=${id}`
 }
 </script>
 
@@ -199,6 +250,7 @@ const goToNotification = () => {
 
 .query-presets {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem;
 }

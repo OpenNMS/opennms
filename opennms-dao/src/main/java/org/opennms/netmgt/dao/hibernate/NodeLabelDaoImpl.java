@@ -158,7 +158,9 @@ public class NodeLabelDaoImpl implements NodeLabel{
         OnmsNode node = nodeDao.get(nodeID);
 
         String nodeLabel = node.getLabel();
-        NodeLabelSource nodeLabelSource = node.getLabelSource();
+        // A node added through the REST API can have no label source; treat it as unknown, as
+        // NodeLabelJDBCImpl does, rather than failing in the constructor's switch.
+        NodeLabelSource nodeLabelSource = node.getLabelSource() != null ? node.getLabelSource() : NodeLabelSource.UNKNOWN;
 
         return new NodeLabelDaoImpl(nodeLabel, nodeLabelSource);
     }

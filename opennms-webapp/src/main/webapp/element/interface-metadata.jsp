@@ -46,11 +46,12 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle(ipAddr)
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + nodeId)
           .breadcrumb("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr)
           .breadcrumb("Meta-Data")
           .build(request);

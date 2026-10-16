@@ -30,6 +30,7 @@
 	org.opennms.web.servlet.MissingParameterException
 	"
 %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -46,9 +47,7 @@
   String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
 %>
 
-<c:url var="nodeLink" value="element/node.jsp">
-	<c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-</c:url>
+<c:url var="nodeLink" value='<%= ElementConstants.NODE_DETAILS_URI + nodeId %>'/>
 <c:choose>
 	<c:when test="<%=(ipAddr == null)%>">
 		<c:set var="returnUrl" value="${nodeLink}"/>

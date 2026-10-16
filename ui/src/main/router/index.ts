@@ -206,9 +206,10 @@ const router = createRouter({
       component: () => import('@/containers/Nodes.vue')
     },
     {
-      // Constrain :id to a positive integer (1+, no leading zeros). Non-matching
-      // paths (e.g. /node/abc, /node/0) fall through to the catch-all redirect.
-      path: '/node/:id([1-9]\\d*)',
+      // :id is a node id or foreignSource:foreignId, as element/node.jsp?node= took. NodeDetails
+      // parses it: a foreign id is resolved and replaced with the node id, and an invalid or
+      // unknown one shows its own message instead of falling through to the catch-all.
+      path: '/node/:id',
       name: 'Node Details',
       props: true,
       component: () => import('@/containers/NodeDetails.vue')

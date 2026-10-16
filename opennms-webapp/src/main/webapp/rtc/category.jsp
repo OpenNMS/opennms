@@ -92,6 +92,7 @@
 
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle(category.getName())
           .headTitle("Category")
@@ -176,7 +177,7 @@
 
                     if ( showoutages.equals("all") || (showoutages.equals("outages") && serviceDownCount > 0 ) || (showoutages.equals("avail") && value < 100 ) ) { %>
                     <tr>
-                      <td><a href="element/node.jsp?node=<%=node.getNodeid()%>"><c:out value="<%=nodeLabel%>"/></a></td>
+                      <td><a href="<%= ElementConstants.NODE_DETAILS_URI %><%=node.getNodeid()%>"><c:out value="<%=nodeLabel%>"/></a></td>
                       <td class="bright severity-<%=outageClass%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
                       <td class="bright severity-<%=availClass%>" align="right" width="30%"><b><%=CategoryUtil.formatValue(value)%>%</b></td>
                     </tr>

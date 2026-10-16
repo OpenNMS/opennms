@@ -90,7 +90,7 @@ public class MenuRestService {
                       "formattedTime": "02:57:01 UTC-04",
                       "noticeStatus": "Off",
                       "username": "admin",
-                      "baseNodeUrl": "element/node.jsp?node=",
+                      "baseNodeUrl": "ui/index.html#/node/",
                       "zenithConnectEnabled": false,
                       "zenithConnectBaseUrl": "",
                       "zenithConnectRelativeUrl": "",

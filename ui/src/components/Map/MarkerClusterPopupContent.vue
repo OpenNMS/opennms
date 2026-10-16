@@ -49,6 +49,8 @@ import { useMapStore } from '@/stores/mapStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { IpInterface, Node } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
+import { useRouter } from 'vue-router'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 
 interface ClusterInfo {
   description: string
@@ -66,11 +68,11 @@ const props = defineProps({
   ipListForNode: { type: Function as PropType<(node: Node | null) => IpInterface[]>, required: true }
 })
 
+const router = useRouter()
 const mapStore = useMapStore()
 const menuStore = useMenuStore()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
-const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const nodes = computed<Node[]>(() => mapStore.getNodes())
 const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 const latitude = computed(() => props.cluster.getLatLng().lat.toFixed(6))
@@ -102,7 +104,7 @@ const getItems = () => {
 
   const items = currentNodes.map((node) => {
     const nodeId = node?.id || ''
-    const nodeLink = (nodeId && `${baseNodeUrl.value}${nodeId}`) || '#'
+    const nodeLink = (nodeId && router.resolve(nodeDetailsRoute(nodeId)).href) || '#'
     const description = node?.assetRecord?.description || 'N/A'
     const severity = nodeLabelAlarmSeverityMap.value[node?.label || '']
     const ipAddress = ipAddressesForNode(node)
