@@ -101,6 +101,7 @@ import { OnmsChip, OnmsIconButton, OnmsSearchInput, OnmsSelectButton } from '@op
 
 import TableCard from '@/components/Common/TableCard.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
+import { parsePositiveIntegerId } from '@/lib/ids'
 import { useMenuStore } from '@/stores/menuStore'
 import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'
@@ -204,32 +205,30 @@ const clearUserSearch = () => {
 
 // Notification and node ids are positive integers; anything else would only reach the legacy
 // detail page, or the node filter, as an error (leading zeros are fine: "007" is 7)
-const isPositiveInteger = (value: string) => /^\d+$/.test(value) && Number(value) > 0
-
 // Not a mode: the filter narrows whatever is showing, user search included, so the preset and
 // any user search stay (the store's setNodeFilter keeps both).
 const filterByNode = async () => {
-  const id = nodeSearch.value.trim()
-  if (!id) {
+  if (!nodeSearch.value.trim()) {
     return
   }
-  if (!isPositiveInteger(id)) {
+  const id = parsePositiveIntegerId(nodeSearch.value)
+  if (!id) {
     showError('Enter a node ID as a positive whole number, e.g. 42.')
     return
   }
-  report(await withSpinner(() => store.setNodeFilter(String(Number(id)))))
+  report(await withSpinner(() => store.setNodeFilter(id)))
 }
 
 const goToNotification = () => {
-  const id = notificationIdSearch.value.trim()
-  if (!id) {
+  if (!notificationIdSearch.value.trim()) {
     return
   }
-  if (!isPositiveInteger(id)) {
+  const id = parsePositiveIntegerId(notificationIdSearch.value)
+  if (!id) {
     showError('Enter a notification ID as a positive whole number, e.g. 42.')
     return
   }
-  window.location.href = `${baseHref.value}notification/detail.jsp?notice=${Number(id)}`
+  window.location.href = `${baseHref.value}notification/detail.jsp?notice=${id}`
 }
 </script>
 
