@@ -11,6 +11,12 @@
   <name>OpenNMS :: Core :: Upgrade</name>
   <packaging>jar</packaging>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.password</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <!-- Upgrade API Dependencies -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
