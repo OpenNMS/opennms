@@ -103,7 +103,16 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule {
             throw loginException;
         }
 
-        final Set<Principal> rolePrincipals = createPrincipals(configUser);
+        final Set<Principal> rolePrincipals;
+        try {
+            installRoleSource();
+            rolePrincipals = createPrincipals(configUser);
+        } catch (final RuntimeException e) {
+            LOG.warn("Cannot read the OpenNMS security roles for user {}.", user, e);
+            final LoginException loginException = new LoginException("Cannot read the OpenNMS security roles: " + e.getMessage());
+            loginException.initCause(e);
+            throw loginException;
+        }
 
         // This login module guards the OSGi console, so only administrators may log in.
         if (!rolePrincipals.contains(new RolePrincipal(Authentication.ROLE_ADMIN))) {
@@ -118,6 +127,10 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule {
 
     protected UserConfig userConfig() {
         return JaasSupport.getUserConfig();
+    }
+
+    protected void installRoleSource() {
+        JaasSupport.installRoleSource();
     }
 
     private Set<Principal> createPrincipals(final User configUser) {

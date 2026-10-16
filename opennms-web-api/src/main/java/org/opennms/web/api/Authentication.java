@@ -24,9 +24,11 @@ package org.opennms.web.api;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -82,6 +84,12 @@ public final class Authentication extends Object {
     private static List<String> s_availableRoles = new ArrayList<>();
     private static long lastModified = 0;
 
+    private static final long ROLE_SOURCE_CACHE_MS = 1000;
+
+    private static volatile Supplier<Collection<String>> s_roleSource;
+    private static volatile List<String> s_sourceRoles;
+    private static volatile long s_sourceRolesLoaded;
+
     static {
         s_availableRoles.addAll(SecurityRoles.BUILTIN_ROLES.keySet());
     }
@@ -90,14 +98,54 @@ public final class Authentication extends Object {
     private Authentication() {
     }
 
+    /**
+     * Sets where the valid roles come from. With null (the default), they are the built-in roles plus the roles in
+     * etc/security-roles.properties. In the database mode, DatabaseSecurityRoles sets the security_roles table here.
+     *
+     * @param source the names of all valid roles
+     */
+    public static void setRoleSource(final Supplier<Collection<String>> source) {
+        s_roleSource = source;
+        s_sourceRoles = null;
+    }
+
+    /** @return true if {@link #setRoleSource(Supplier)} has set a role source */
+    public static boolean hasRoleSource() {
+        return s_roleSource != null;
+    }
+
     public static List<String> getAvailableRoles() {
+        final List<String> sourceRoles = sourceRoles();
+        if (sourceRoles != null) {
+            return sourceRoles;
+        }
         loadRoles();
         return Collections.unmodifiableList(s_availableRoles);
     }
 
     public static boolean isValidRole(String role) {
+        final List<String> sourceRoles = sourceRoles();
+        if (sourceRoles != null) {
+            return sourceRoles.contains(role);
+        }
         loadRoles();
         return s_availableRoles.contains(role);
+    }
+
+    /** @return the roles of the role source, read at most once a second, or null without a role source */
+    private static List<String> sourceRoles() {
+        final Supplier<Collection<String>> source = s_roleSource;
+        if (source == null) {
+            return null;
+        }
+        final long now = System.currentTimeMillis();
+        List<String> roles = s_sourceRoles;
+        if (roles == null || now > s_sourceRolesLoaded + ROLE_SOURCE_CACHE_MS) {
+            roles = Collections.unmodifiableList(new ArrayList<>(source.get()));
+            s_sourceRoles = roles;
+            s_sourceRolesLoaded = now;
+        }
+        return roles;
     }
 
     private static void loadRoles() {
