@@ -120,31 +120,84 @@ describe('nodeService.resolveNodeId', () => {
     vi.clearAllMocks()
   })
 
-  it('asks v2 for the node, encoding the foreign id as one path segment', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: '153', label: 'something-226' }})
+  it('asks v2 for a numeric id', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 42, label: 'n' }})
 
-    const result = await resolveNodeId('My Source:a b#c')
+    const result = await resolveNodeId('42')
 
-    expect(v2.get).toHaveBeenCalledWith('/nodes/My%20Source%3Aa%20b%23c')
+    expect(v2.get).toHaveBeenCalledWith('/nodes/42')
+    expect(rest.get).not.toHaveBeenCalled()
     expect(result.success).toBe(true)
-    expect(result.payload).toBe('153')
+    expect(result.payload).toBe('42')
   })
 
-  it('answers null for a node that does not exist', async () => {
+  it('answers null for a numeric id that does not exist', async () => {
     vi.mocked(v2.get).mockRejectedValue({ response: { status: 404 }})
 
-    const result = await resolveNodeId('req3:nope')
+    const result = await resolveNodeId('999')
 
     expect(result.success).toBe(true)
     expect(result.payload).toBeNull()
   })
 
-  it('fails on any other error', async () => {
+  it('fails when the numeric lookup fails', async () => {
     vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
 
-    const result = await resolveNodeId('req3:1')
+    const result = await resolveNodeId('42')
 
     expect(result.success).toBe(false)
+  })
+
+  it('resolves a foreign id with a slash through query parameters', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: '163' }], totalCount: 1 }})
+
+    const result = await resolveNodeId('slashtest:a/b')
+
+    expect(rest.get).toHaveBeenCalledWith('/nodes', { params: { foreignSource: 'slashtest', foreignId: 'a/b', limit: 1 }})
+    expect(v2.get).not.toHaveBeenCalled()
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('163')
+  })
+
+  it('splits at the first colon only', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: 7 }] }})
+
+    const result = await resolveNodeId('FS:a:b')
+
+    expect(rest.get).toHaveBeenCalledWith('/nodes', { params: { foreignSource: 'FS', foreignId: 'a:b', limit: 1 }})
+    expect(result.payload).toBe('7')
+  })
+
+  it('handles a single node object', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: { id: '12' }}})
+
+    const result = await resolveNodeId('FS:x')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('12')
+  })
+
+  it.each([
+    ['an empty node array', { status: 200, data: { node: [], totalCount: 0 }}],
+    ['a missing node', { status: 200, data: { totalCount: 0 }}],
+    ['a 204', { status: 204, data: '' }],
+    ['an empty body', { status: 200, data: '' }]
+  ])('answers null for %s', async (_name, resp) => {
+    vi.mocked(rest.get).mockResolvedValue(resp)
+
+    const result = await resolveNodeId('FS:none')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('fails when the foreign id request fails', async () => {
+    vi.mocked(rest.get).mockRejectedValue(new Error('boom'))
+
+    const result = await resolveNodeId('FS:1')
+
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Failed to look up the node.')
   })
 })
 

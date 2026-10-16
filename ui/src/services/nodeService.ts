@@ -66,11 +66,10 @@ const getNodeById = async (id: string): Promise<any> => {
   }
 }
 
-// Looks a node up by database id or foreignSource:foreignId. v2 /nodes/{id} resolves
-// both (NodeDao.get(String)); %3A works as well as ':', so the value is encoded as one path
-// segment and ':', '#' and spaces survive. A foreign id holding '/' cannot be looked up this
-// way: the server's firewall rejects %2F. A 404 is an answer -- no such
-// node -- and is told apart from a failed lookup.
+// Looks a node up by database id. v2 /nodes/{id} also resolves foreignSource:foreignId
+// (NodeDao.get(String)), but a foreign id holding '/' cannot travel in the path: the server
+// decodes %2F into a separator and answers 404. Callers that may hold a foreign id should use
+// resolveNodeId. A 404 is an answer -- no such node -- and is told apart from a failed lookup.
 const lookupNodeById = async (idOrForeignId: string): Promise<ValidationResultWithPayload<Node | null>> => {
   try {
     const resp = await v2.get(`${endpoint}/${encodeURIComponent(idOrForeignId)}`)
@@ -83,14 +82,36 @@ const lookupNodeById = async (idOrForeignId: string): Promise<ValidationResultWi
   }
 }
 
-// Turns a database id or foreignSource:foreignId into the database id; null when no such node.
+/**
+ * Turns a database id or foreignSource:foreignId into the database id; null when no such node.
+ * A foreign id is resolved through query parameters on the v1 API, split at the first ':' only,
+ * because a path segment cannot carry an encoded '/'. axios encodes the parameters, so '/', ';',
+ * ',', '#' and spaces are safe, and v1 matches them exactly.
+ */
 const resolveNodeId = async (idOrForeignId: string): Promise<ValidationResultWithPayload<string | null>> => {
-  const result = await lookupNodeById(idOrForeignId)
-  if (!result.success) {
-    return createResultWithPayload<string | null>(false, result.message)
+  const colon = idOrForeignId.indexOf(':')
+
+  if (colon < 0) {
+    const result = await lookupNodeById(idOrForeignId)
+    if (!result.success) {
+      return createResultWithPayload<string | null>(false, result.message)
+    }
+    const id = result.payload?.id
+    return createResultWithPayload<string | null>(true, '', id === undefined || id === null ? null : String(id))
   }
-  const id = result.payload?.id
-  return createResultWithPayload<string | null>(true, '', id === undefined || id === null ? null : String(id))
+
+  const foreignSource = idOrForeignId.substring(0, colon)
+  const foreignId = idOrForeignId.substring(colon + 1)
+
+  try {
+    const resp = await rest.get(endpoint, { params: { foreignSource, foreignId, limit: 1 }})
+    const nodes = resp?.status === 204 ? undefined : resp?.data?.node
+    const first = Array.isArray(nodes) ? nodes[0] : nodes
+    const id = first?.id
+    return createResultWithPayload<string | null>(true, '', id === undefined || id === null ? null : String(id))
+  } catch (_err) {
+    return createResultWithPayload<string | null>(false, 'Failed to look up the node.')
+  }
 }
 
 const getNodeSnmpInterfaces = async (
