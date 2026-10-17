@@ -11,6 +11,7 @@
             :time="time"
             :label="resource.label"
             :isSingleGraph="isSingleGraph"
+            canAddToCollection
             @addGraphDefinition="$emit('addGraphDefinition')"
           />
         </div>
