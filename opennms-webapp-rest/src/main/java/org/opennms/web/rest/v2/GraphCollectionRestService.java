@@ -115,10 +115,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
     /** Legacy pages capped titles at 80 and 40 characters; this is a looser bound on the stored strings. */
     static final int MAX_TITLE_LENGTH = 255;
 
-    /**
-     * Shared with the legacy view page, which reads it through a Spring placeholder that cannot fall
-     * back between keys, so the key is not renamed until that page goes.
-     */
+    /** Kept under its historical key: it is user configuration in opennms.properties. */
     static final String DEFAULT_GRAPHS_PER_LINE_PROPERTY = "ksc.default.graphsPerLine";
 
     @Autowired

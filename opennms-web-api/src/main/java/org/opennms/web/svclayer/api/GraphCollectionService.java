@@ -65,19 +65,6 @@ public interface GraphCollectionService {
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
     public OnmsResource getResourceFromGraph(Graph graph);
-    /**
-     * <p>getTimeSpans</p>
-     *
-     * @param includeNone a boolean.
-     * @return a {@link java.util.Map} object.
-     */
-    public Map<String, String> getTimeSpans(boolean includeNone);
-    /**
-     * <p>getCollectionTitles</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    public Map<Integer, String> getCollectionTitles();
 
     /**
      * <p>getCollectionMap</p>

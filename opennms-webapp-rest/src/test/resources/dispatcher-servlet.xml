@@ -428,9 +428,9 @@
                                 <property name="locationMatch" value="performance"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="KSC Reports"/>
-                                <property name="url" value="KSC/index.jsp"/>
-                                <property name="locationMatch" value="ksc"/>
+                                <property name="name" value="Graph Collections"/>
+                                <property name="url" value="ui/index.html#/graph-collections"/>
+                                <property name="locationMatch" value="graph-collections"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Database Reports"/>
@@ -492,48 +492,6 @@
     <bean name="/graph/graph.png" class="org.opennms.web.controller.RrdGraphController">
         <property name="rrdGraphService" ref="rrdGraphService"/>
     </bean>
-
-    <!-- KSC reports -->
-
-    <bean name="/KSC/formProcMain.htm" class="org.opennms.web.controller.ksc.FormProcMainController">
-        <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
-    </bean>
-
-    <bean name="/KSC/formProcGraph.htm" class="org.opennms.web.controller.ksc.FormProcGraphController">
-        <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
-        <property name="graphCollectionService" ref="graphCollectionService"/>
-    </bean>
-
-    <bean name="/KSC/formProcReport.htm" class="org.opennms.web.controller.ksc.FormProcReportController">
-        <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
-        <property name="graphCollectionService" ref="graphCollectionService"/>
-    </bean>
-
-    <bean name="/KSC/formProcView.htm" class="org.opennms.web.controller.ksc.FormProcViewController">
-        <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
-        <property name="graphCollectionService" ref="graphCollectionService"/>
-    </bean>
-
-    <bean name="/KSC/customView.htm" class="org.opennms.web.controller.ksc.CustomViewController">
-        <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
-        <property name="graphCollectionService" ref="graphCollectionService"/>
-        <property name="resourceService" ref="resourceService"/>
-        <property name="defaultGraphsPerLine" value="${ksc.default.graphsPerLine}"/>
-    </bean>
-
-    <bean name="/KSC/customReport.htm" class="org.opennms.web.controller.ksc.CustomReportController">
-        <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
-        <property name="graphCollectionService" ref="graphCollectionService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/customGraphEditDetails.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphEditDetailsController">
-        <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
-        <property name="graphCollectionService" ref="graphCollectionService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
 
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

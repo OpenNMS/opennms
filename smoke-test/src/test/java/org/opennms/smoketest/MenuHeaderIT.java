@@ -375,7 +375,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // testAllFormsArePresent()
         reportsPage();
         findElementByName("resourceGraphs");
-        findElementByName("kscReports");
+        findElementByName("graphCollections");
 
         // testAllLinks
         reportsPage();

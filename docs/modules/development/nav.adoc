@@ -52,7 +52,6 @@
 *** xref:rest/info.adoc[]
 *** xref:rest/ifservices.adoc[]
 *** xref:rest/ipinterfaces.adoc[]
-*** xref:rest/ksc_reports.adoc[]
 *** xref:rest/logs.adoc[]
 *** xref:rest/measurements.adoc[]
 *** xref:rest/menu.adoc[]

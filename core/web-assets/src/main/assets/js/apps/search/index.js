@@ -29,7 +29,7 @@
 const angular = require('vendor/angular-js');
 require('lib/onms-http');
 
-const kscTemplate = require('./template.ksc.html');
+const graphCollectionsTemplate = require('./template.graph-collections.html');
 const nodesTemplate = require('./template.nodes.html');
 
 import Util from 'lib/util';
@@ -52,12 +52,12 @@ angular.module('onms-search', [
   };
 })
 
-.directive('onmsSearchKsc', function() {
+.directive('onmsSearchGraphCollections', function() {
   return {
     restrict: 'E',
     transclude: true,
-    templateUrl: kscTemplate,
-    controller: 'KscSearchCtrl'
+    templateUrl: graphCollectionsTemplate,
+    controller: 'GraphCollectionSearchCtrl'
   };
 })
 
@@ -79,19 +79,19 @@ angular.module('onms-search', [
 
 }])
 
-.controller('KscSearchCtrl', ['$scope', '$window', '$http', '$filter', function($scope, $window, $http, $filter) {
+.controller('GraphCollectionSearchCtrl', ['$scope', '$window', '$http', '$filter', function($scope, $window, $http, $filter) {
 
-  $scope.getKscReports = function(criteria) {
+  $scope.getGraphCollections = function(criteria) {
     return $http({
-      url: 'rest/ksc',
+      url: 'api/v2/graph-collections',
       method: 'GET'
     }).then(function(response) {
-       return $filter('filter')(response.data.kscReport, criteria);
+       return $filter('filter')(response.data, { title: criteria });
     });
   };
 
-  $scope.goToKscReport = function(ksc) {
-    $window.location.href = Util.getBaseHref() + 'KSC/customView.htm?type=custom&report=' + ksc.id;
+  $scope.goToGraphCollection = function(collection) {
+    $window.location.href = Util.getBaseHref() + 'ui/index.html#/graph-collections/' + collection.id;
   }
 
 }]);

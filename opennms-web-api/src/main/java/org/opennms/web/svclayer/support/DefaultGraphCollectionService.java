@@ -24,7 +24,6 @@ package org.opennms.web.svclayer.support;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,9 +53,6 @@ public class DefaultGraphCollectionService implements GraphCollectionService, In
 
     private ResourceService m_resourceService;
     private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
-
-    private static final Map<String, String> s_timeSpans = new LinkedHashMap<String, String>();
-    private static final Map<String, String> s_timeSpansWithNone = new LinkedHashMap<String, String>();
 
     /** {@inheritDoc} */
     @Override
@@ -160,35 +156,6 @@ public class DefaultGraphCollectionService implements GraphCollectionService, In
         return getResourceService().getResourceById(getResourceIdForGraph(graph));
     }
 
-    private void initTimeSpans() {
-        for (String timeSpan : GraphCollectionConfigFactory.TIMESPAN_OPTIONS) {
-            s_timeSpans.put(timeSpan, timeSpan);
-        }
-
-        s_timeSpansWithNone.put("none", "none");
-        s_timeSpansWithNone.putAll(s_timeSpans);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<String, String> getTimeSpans(boolean includeNone) {
-        if (includeNone) {
-            return s_timeSpansWithNone;
-        } else {
-            return s_timeSpans;
-        }
-    }
-
-    /**
-     * <p>getCollectionTitles</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    @Override
-    public Map<Integer, String> getCollectionTitles() {
-        return m_graphCollectionConfigFactory.getCollectionTitles();
-    }
-
     /**
      * <p>getResourceService</p>
      *
@@ -234,8 +201,6 @@ public class DefaultGraphCollectionService implements GraphCollectionService, In
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "resourceService property has not been set");
         Assert.state(m_graphCollectionConfigFactory != null, "graphCollectionConfigFactory property has not been set");
-
-        initTimeSpans();
     }
 
     /**
