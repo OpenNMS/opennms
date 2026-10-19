@@ -1,0 +1,345 @@
+# /interfaces/interface[name=xe-0/0/0]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "interfaces" }
+    elem { name: "interface" key { key: "name" value: "xe-0/0/0" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "in-octets" } }
+    val { json_val: "\"86860981988252\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "out-octets" } }
+    val { json_val: "\"89798989032132\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "in-fcs-errors" } }
+    val { json_val: "\"0\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "carrier-transitions" } }
+    val { json_val: "\"1\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "description" } }
+    val { json_val: "\"\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "oper-status" } }
+    val { json_val: "\"UP\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "high-speed" } }
+    val { json_val: "10000" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "mtu" } }
+    val { json_val: "9216" }
+  }
+}
+---
+# /interfaces/interface[name=xe-0/0/0]/subinterfaces/subinterface[index=100]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "interfaces" }
+    elem { name: "interface" key { key: "name" value: "xe-0/0/0" } }
+    elem { name: "subinterfaces" }
+    elem { name: "subinterface" key { key: "index" value: "100" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "in-octets" } }
+    val { json_val: "\"20547468637299\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "out-octets" } }
+    val { json_val: "\"21242471228893\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "name" } }
+    val { json_val: "\"xe-0/0/0.100\"" }
+  }
+}
+---
+# /interfaces/interface[name=xe-0/0/0]/state/counters/out-queue[queue-number=5]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "interfaces" }
+    elem { name: "interface" key { key: "name" value: "xe-0/0/0" } }
+    elem { name: "state" }
+    elem { name: "counters" }
+    elem { name: "out-queue" key { key: "queue-number" value: "5" } }
+  }
+  update {
+    path { elem { name: "queued-pkts" } }
+    val { json_val: "\"0\"" }
+  }
+  update {
+    path { elem { name: "queued-bytes" } }
+    val { json_val: "\"0\"" }
+  }
+  update {
+    path { elem { name: "lp-red-drop-pkts" } }
+    val { json_val: "\"0\"" }
+  }
+}
+---
+# /components/component[name=FPC0]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "components" }
+    elem { name: "component" key { key: "name" value: "FPC0" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "temperature" } elem { name: "instant" } }
+    val { json_val: "\"37.9\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "temperature" } elem { name: "alarm-status" } }
+    val { json_val: "false" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "temperature" } elem { name: "alarm-threshold" } }
+    val { json_val: "85" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "description" } }
+    val { json_val: "\"JNP10K-LC480\"" }
+  }
+}
+---
+# /components/component[name=FPC0:PIC0:PORT0:Xcvr0]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "components" }
+    elem { name: "component" key { key: "name" value: "FPC0:PIC0:PORT0:Xcvr0" } }
+  }
+  update {
+    path { elem { name: "transceiver" } elem { name: "state" } elem { name: "present" } }
+    val { json_val: "\"PRESENT\"" }
+  }
+  update {
+    path { elem { name: "transceiver" } elem { name: "state" } elem { name: "vendor" } }
+    val { json_val: "\"JUNIPER\"" }
+  }
+}
+---
+# /components/component[name=FPC0:PIC0:PORT0:Xcvr0]/transceiver
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "components" }
+    elem { name: "component" key { key: "name" value: "FPC0:PIC0:PORT0:Xcvr0" } }
+    elem { name: "transceiver" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "input-power" } elem { name: "instant" } }
+    val { json_val: "\"-2.53\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "output-power" } elem { name: "instant" } }
+    val { json_val: "\"-1.19\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "laser-bias-current" } elem { name: "instant" } }
+    val { json_val: "\"6.33\"" }
+  }
+}
+---
+# /components/component[name=CPU0:CORE0]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "components" }
+    elem { name: "component" key { key: "name" value: "CPU0:CORE0" } }
+  }
+  update {
+    path { elem { name: "cpu" } elem { name: "utilization" } elem { name: "state" } elem { name: "avg" } }
+    val { json_val: "20" }
+  }
+  update {
+    path { elem { name: "cpu" } elem { name: "utilization" } elem { name: "state" } elem { name: "instant" } }
+    val { json_val: "20" }
+  }
+}
+---
+# /system/cpus/cpu[index=0]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "system" }
+    elem { name: "cpus" }
+    elem { name: "cpu" key { key: "index" value: "0" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "total" } elem { name: "instant" } }
+    val { json_val: "12" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "user" } elem { name: "instant" } }
+    val { json_val: "6" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "idle" } elem { name: "instant" } }
+    val { json_val: "70" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "total" } elem { name: "avg" } }
+    val { json_val: "16" }
+  }
+}
+---
+# (prefix holds only the origin)
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+  }
+  update {
+    path { elem { name: "system" } elem { name: "memory" } elem { name: "state" } elem { name: "physical" } }
+    val { json_val: "\"34359738368\"" }
+  }
+  update {
+    path { elem { name: "system" } elem { name: "memory" } elem { name: "state" } elem { name: "used" } }
+    val { json_val: "\"15260430878\"" }
+  }
+  update {
+    path { elem { name: "system" } elem { name: "memory" } elem { name: "state" } elem { name: "free" } }
+    val { json_val: "\"19099307489\"" }
+  }
+}
+---
+# /network-instances/network-instance[name=DEFAULT]/protocols/protocol[identifier=BGP][name=DEFAULT]/bgp/neighbors/neighbor[neighbor-address=203.0.113.1]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "network-instances" }
+    elem { name: "network-instance" key { key: "name" value: "DEFAULT" } }
+    elem { name: "protocols" }
+    elem { name: "protocol" key { key: "identifier" value: "BGP" } key { key: "name" value: "DEFAULT" } }
+    elem { name: "bgp" }
+    elem { name: "neighbors" }
+    elem { name: "neighbor" key { key: "neighbor-address" value: "203.0.113.1" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "session-state" } }
+    val { json_val: "\"ESTABLISHED\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "peer-as" } }
+    val { json_val: "64496" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "established-transitions" } }
+    val { json_val: "\"1\"" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "local-as" } }
+    val { json_val: "64500" }
+  }
+}
+---
+# /network-instances/network-instance[name=DEFAULT]/protocols/protocol[identifier=BGP][name=DEFAULT]/bgp/neighbors/neighbor[neighbor-address=203.0.113.1]/afi-safis/afi-safi[afi-safi-name=IPV4_UNICAST]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "openconfig"
+    elem { name: "network-instances" }
+    elem { name: "network-instance" key { key: "name" value: "DEFAULT" } }
+    elem { name: "protocols" }
+    elem { name: "protocol" key { key: "identifier" value: "BGP" } key { key: "name" value: "DEFAULT" } }
+    elem { name: "bgp" }
+    elem { name: "neighbors" }
+    elem { name: "neighbor" key { key: "neighbor-address" value: "203.0.113.1" } }
+    elem { name: "afi-safis" }
+    elem { name: "afi-safi" key { key: "afi-safi-name" value: "IPV4_UNICAST" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "prefixes" } elem { name: "received" } }
+    val { json_val: "929" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "prefixes" } elem { name: "installed" } }
+    val { json_val: "650" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "active" } }
+    val { json_val: "true" }
+  }
+}
+---
+# /junos/system/linecard[name=FPC0]/environment/temp-record[temp-sensor-name=FPC0:EA0_TEMP_SENSOR]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "juniper"
+    elem { name: "junos" }
+    elem { name: "system" }
+    elem { name: "linecard" key { key: "name" value: "FPC0" } }
+    elem { name: "environment" }
+    elem { name: "temp-record" key { key: "temp-sensor-name" value: "FPC0:EA0_TEMP_SENSOR" } }
+  }
+  update {
+    path { elem { name: "temp-sensor-name" } }
+    val { json_val: "\"FPC0:EA0_TEMP_SENSOR\"" }
+  }
+  update {
+    path { elem { name: "temp-value" } }
+    val { json_val: "38" }
+  }
+}
+---
+# /junos/system/linecard[name=FPC0]/environment/voltage-record[voltage-sensor-name=VDD-0V9]
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "juniper"
+    elem { name: "junos" }
+    elem { name: "system" }
+    elem { name: "linecard" key { key: "name" value: "FPC0" } }
+    elem { name: "environment" }
+    elem { name: "voltage-record" key { key: "voltage-sensor-name" value: "VDD-0V9" } }
+  }
+  update {
+    path { elem { name: "voltage-sensor-name" } }
+    val { json_val: "\"VDD-0V9\"" }
+  }
+  update {
+    path { elem { name: "voltage-value" } }
+    val { json_val: "903" }
+  }
+}
+---
+# /junos/system/linecard[name=FPC0]/environment/power-record
+update {
+  timestamp: 1792412925789081983
+  prefix {
+    origin: "juniper"
+    elem { name: "junos" }
+    elem { name: "system" }
+    elem { name: "linecard" key { key: "name" value: "FPC0" } }
+    elem { name: "environment" }
+    elem { name: "power-record" }
+  }
+  update {
+    path { elem { name: "fpc-power" } }
+    val { json_val: "779" }
+  }
+  update {
+    path { elem { name: "max-fpc-power" } }
+    val { json_val: "1100" }
+  }
+}
