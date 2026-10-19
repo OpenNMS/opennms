@@ -21,11 +21,19 @@
  */
 package org.opennms.netmgt.telemetry.protocols.openconfig.adapter;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.junit.After;
@@ -39,6 +47,8 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
+
+import com.google.protobuf.TextFormat;
 
 import groovy.lang.GroovyClassLoader;
 
@@ -120,5 +130,34 @@ public class GnmiMappingScriptTest {
         // OpenConfigAdapter passes the notification timestamp straight through as milliseconds
         CollectionSet set = new ScriptedCollectionSetBuilder(GnmiMappingScript.file()).build(agent, message, nanos);
         assertEquals(1751293808127L, set.getCollectionTimestamp().getTime());
+    }
+
+    @Test
+    public void shippedSampleMappingIsValid() throws Exception {
+        File sample = new File(GnmiMappingScript.class.getResource("/openconfig-gnmi-mapping.yaml").toURI());
+        Object result = GnmiMappingScript.call(GnmiMappingScript.load(), "MappingLoader", "load", sample);
+        assertThat((List<?>) GnmiMappingScript.prop(result, "errors"), is(empty()));
+        assertThat((List<?>) GnmiMappingScript.prop(result, "warnings"), is(empty()));
+    }
+
+    @Test
+    public void shippedSampleMapsJuniperMx10004() throws Exception {
+        Path target = tmp.getRoot().toPath().resolve("etc/telemetryd-adapters");
+        Files.createDirectories(target);
+        Files.copy(Paths.get(GnmiMappingScript.class.getResource("/openconfig-gnmi-mapping.yaml").toURI()), target.resolve("openconfig-gnmi-mapping.yaml"));
+
+        // Notifications captured from an MX10004 with JSON encoding, a few leaves each, separated by ---
+        Path samples = Paths.get("src/test/resources/gnmi-mapping-samples");
+        List<String> lines = new ArrayList<>();
+        for (String block : Files.readString(samples.resolve("juniper-mx10004.textproto")).split("\n---\n")) {
+            Gnmi.SubscribeResponse.Builder response = Gnmi.SubscribeResponse.newBuilder();
+            TextFormat.merge(block, response);
+            String rendered = GnmiMappingScript.render(GnmiMappingScript.run(response.build()));
+            if (!rendered.isEmpty()) {
+                Collections.addAll(lines, rendered.split("\n"));
+            }
+        }
+        Collections.sort(lines);
+        assertEquals(Files.readString(samples.resolve("juniper-mx10004.expected.txt")).trim(), String.join("\n", lines));
     }
 }
