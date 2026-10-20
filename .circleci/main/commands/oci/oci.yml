@@ -106,7 +106,30 @@ commands:
             mkdir -p /tmp/sboms
             for IMAGE_FILE in *.oci; do
               IMAGE_ROOT="$(echo "${IMAGE_FILE}" | sed -e 's,\.oci$,,')"
-              syft scan "docker-archive:${IMAGE_FILE}" -o cyclonedx --quiet >"/tmp/sboms/${IMAGE_ROOT}-sbom.xml"
+              syft scan "docker-archive:${IMAGE_FILE}" \
+                -o cyclonedx="/tmp/sboms/${IMAGE_ROOT}-sbom.xml" \
+                -o cyclonedx-json="/tmp/sboms/${IMAGE_ROOT}-sbom.json" \
+                --quiet
+            done
+      - run:
+          name: generate SBOM HTML report (blitsbom)
+          command: |
+            # blitsbom 0.8.4 report generator; only reads CycloneDX/SPDX JSON
+            BLITSBOM_IMAGE="ghcr.io/no42-org/blitsbom:report-0.8.4@sha256:ba29324d42c646d0510639f54328d5fe01ba5fce6ce7c1502545103965809138"
+
+            # remote Docker can't bind-mount local paths, so copy files in and out
+            cd /tmp/sboms
+            for SBOM_FILE in *-sbom.json; do
+              IMAGE_ROOT="$(echo "${SBOM_FILE}" | sed -e 's,-sbom\.json$,,')"
+              _cid="$(docker create "${BLITSBOM_IMAGE}" "/work/${SBOM_FILE}" \
+                --output "/work/${IMAGE_ROOT}-sbom.html" \
+                --project "${IMAGE_ROOT}" \
+                --commit "${CIRCLE_SHA1}" \
+                --build-url "${CIRCLE_BUILD_URL}")"
+              docker cp "${SBOM_FILE}" "${_cid}:/work/"
+              docker start -a "${_cid}"
+              docker cp "${_cid}:/work/${IMAGE_ROOT}-sbom.html" .
+              docker rm "${_cid}" >/dev/null
             done
       - store_artifacts:
           path: /tmp/sboms/
