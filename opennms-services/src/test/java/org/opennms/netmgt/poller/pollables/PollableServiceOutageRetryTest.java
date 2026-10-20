@@ -135,6 +135,36 @@ public class PollableServiceOutageRetryTest {
     }
 
     /**
+     * A service that goes down again while its last resolution is still pending
+     * must not open a new outage until the old one is closed, or the retried
+     * resolution would close the new one.
+     */
+    @Test
+    public void doesNotOpenWhileAResolutionIsPending() {
+        when(m_context.isNodeProcessingEnabled()).thenReturn(false);
+        final PollableService svc = createService("ICMP", PollStatus.down("gone"), PollStatus.up(), PollStatus.down("gone again"));
+        when(m_context.openOutage(eq(svc), eq(m_event))).thenReturn(true);
+        when(m_context.resolveOutage(eq(svc), eq(m_event))).thenReturn(false, false, false, true);
+
+        svc.doRun();
+        svc.doRun();
+        assertTrue(svc.isResolutionPending());
+
+        // down again: the resolve fails before the poll and again in createOutage, so nothing is opened yet
+        svc.doRun();
+        assertTrue(svc.isResolutionPending());
+        assertTrue("open deferred behind the pending resolution", svc.isOutagePending());
+        verify(m_context, times(1)).openOutage(svc, m_event);
+
+        // resolve succeeds, then the deferred open runs
+        svc.doRun();
+        assertFalse(svc.isResolutionPending());
+        assertFalse(svc.isOutagePending());
+        verify(m_context, times(4)).resolveOutage(svc, m_event);
+        verify(m_context, times(2)).openOutage(svc, m_event);
+    }
+
+    /**
      * With a critical service down the other services on the interface get the
      * interface's cause without ever being polled or marked down themselves.
      * The retry must still run for them.

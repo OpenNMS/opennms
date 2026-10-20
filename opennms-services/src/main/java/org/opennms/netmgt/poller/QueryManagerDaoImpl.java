@@ -119,12 +119,12 @@ public class QueryManagerDaoImpl implements QueryManager {
                         nodeId, ipAddr, svcName, lostTime);
                 return null;
             }
-            // A second open row would break currentOutageForService(), so reuse one left
-            // behind by an earlier failed resolve or a write that committed but threw.
+            // A retry of a write that committed but threw must not insert a second
+            // row for the same loss; any other open row still trips the unique index.
             final OnmsOutage open = m_outageDao.currentOutageForService(service);
-            if (open != null) {
-                LOG.warn("An outage is already open for {}:{}:{} since {}, not opening another one.",
-                        nodeId, ipAddr, svcName, open.getIfLostService());
+            if (open != null && open.getIfLostService() != null && open.getIfLostService().getTime() == lostTime.getTime()) {
+                LOG.info("The outage for {}:{}:{} @ {} is already open, not opening another one.",
+                        nodeId, ipAddr, svcName, lostTime);
                 return open.getId();
             }
             final OnmsOutage outage = new OnmsOutage(lostTime, service);

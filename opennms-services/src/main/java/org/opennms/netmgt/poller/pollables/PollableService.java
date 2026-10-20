@@ -273,6 +273,11 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
         retryPendingResolution();
+        if (m_pendingResolution != null) {
+            // the open outage must close first, or it would absorb this one
+            m_outagePending = true;
+            return;
+        }
         m_outagePending = !getContext().openOutage(this, cause);
     }
     /** {@inheritDoc} */
@@ -291,7 +296,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     void retryPendingOutageWrites() {
         retryPendingResolution();
-        if (m_outagePending && getCause() != null) {
+        if (m_outagePending && m_pendingResolution == null && getCause() != null) {
             m_outagePending = !getContext().openOutage(this, getCause());
         }
     }

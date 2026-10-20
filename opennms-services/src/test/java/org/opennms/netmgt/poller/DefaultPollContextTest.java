@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -91,6 +92,56 @@ public class DefaultPollContextTest {
 
         verify(queryManager).updateOpenOutageWithEventId(7, 42L);
         verify(eventManager).sendNow(any(Event.class));
+    }
+
+    @Test
+    public void openOutageReportsFailedEventIdUpdate() {
+        final QueryManager queryManager = mock(QueryManager.class);
+        when(queryManager.openOutagePendingLostEventId(anyInt(), anyString(), anyString(), any())).thenReturn(7);
+        doThrow(new RuntimeException("update failed")).when(queryManager).updateOpenOutageWithEventId(7, 42L);
+        final EventIpcManager eventManager = mock(EventIpcManager.class);
+
+        final DefaultPollContext context = new DefaultPollContext();
+        context.setQueryManager(queryManager);
+        context.setEventManager(eventManager);
+
+        final PollableService svc = mock(PollableService.class);
+        when(svc.getNodeId()).thenReturn(1);
+        when(svc.getIpAddr()).thenReturn("127.0.0.1");
+        when(svc.getAddress()).thenReturn(InetAddress.getLoopbackAddress());
+        when(svc.getSvcName()).thenReturn("ICMP");
+        final PollEvent lost = mock(PollEvent.class);
+        when(lost.getDate()).thenReturn(new Date());
+        when(lost.getEventId()).thenReturn(42L);
+
+        assertFalse(context.openOutage(svc, lost));
+
+        verify(eventManager, never()).sendNow(any(Event.class));
+    }
+
+    @Test
+    public void resolveOutageReportsFailedEventSend() {
+        final QueryManager queryManager = mock(QueryManager.class);
+        when(queryManager.resolveOutagePendingRegainEventId(anyInt(), anyString(), anyString(), any())).thenReturn(7);
+        final EventIpcManager eventManager = mock(EventIpcManager.class);
+        doThrow(new RuntimeException("bus down")).when(eventManager).sendNow(any(Event.class));
+
+        final DefaultPollContext context = new DefaultPollContext();
+        context.setQueryManager(queryManager);
+        context.setEventManager(eventManager);
+
+        final PollableService svc = mock(PollableService.class);
+        when(svc.getNodeId()).thenReturn(1);
+        when(svc.getIpAddr()).thenReturn("127.0.0.1");
+        when(svc.getAddress()).thenReturn(InetAddress.getLoopbackAddress());
+        when(svc.getSvcName()).thenReturn("ICMP");
+        final PollEvent regained = mock(PollEvent.class);
+        when(regained.getDate()).thenReturn(new Date());
+        when(regained.getEventId()).thenReturn(43L);
+
+        assertFalse(context.resolveOutage(svc, regained));
+
+        verify(queryManager).updateResolvedOutageWithEventId(7, 43L);
     }
 
     @Test

@@ -71,14 +71,28 @@ public class QueryManagerDaoImplTest {
     }
 
     @Test
-    public void openOutageReusesTheOpenOutage() {
+    public void openOutageReusesTheOpenOutageOfTheSameLoss() {
         final OnmsMonitoredService service = new OnmsMonitoredService();
         when(m_monitoredServiceDao.get(1, InetAddress.getLoopbackAddress(), "ICMP")).thenReturn(service);
-        final OnmsOutage open = new OnmsOutage();
+        final Date lostTime = new Date();
+        final OnmsOutage open = new OnmsOutage(new Date(lostTime.getTime()), service);
         open.setId(5);
         when(m_outageDao.currentOutageForService(service)).thenReturn(open);
 
-        assertEquals(Integer.valueOf(5), m_queryManager.openOutagePendingLostEventId(1, "127.0.0.1", "ICMP", new Date()));
+        assertEquals(Integer.valueOf(5), m_queryManager.openOutagePendingLostEventId(1, "127.0.0.1", "ICMP", lostTime));
         verify(m_outageDao, never()).saveOrUpdate(any());
+    }
+
+    @Test
+    public void openOutageDoesNotReuseTheOpenOutageOfAnotherLoss() {
+        final OnmsMonitoredService service = new OnmsMonitoredService();
+        when(m_monitoredServiceDao.get(1, InetAddress.getLoopbackAddress(), "ICMP")).thenReturn(service);
+        final Date lostTime = new Date();
+        final OnmsOutage open = new OnmsOutage(new Date(lostTime.getTime() - 60_000), service);
+        open.setId(5);
+        when(m_outageDao.currentOutageForService(service)).thenReturn(open);
+
+        m_queryManager.openOutagePendingLostEventId(1, "127.0.0.1", "ICMP", lostTime);
+        verify(m_outageDao).saveOrUpdate(any());
     }
 }
