@@ -17,6 +17,9 @@
         <exclude>**/zookeeper/3.4.14/*</exclude>
         <exclude>**/com/fasterxml/jackson/core/jackson-*/2.14.1</exclude>
         <exclude>**/com/fasterxml/jackson/core/jackson-*/2.14.1/*</exclude>
+        <!-- the cxf-jackson feature pins an older jackson; features-processing.xml redirects it to ${jackson2Version} -->
+        <exclude>**/com/fasterxml/jackson/**/2.22.1</exclude>
+        <exclude>**/com/fasterxml/jackson/**/2.22.1/*</exclude>
         <exclude>io/netty/netty-*/4.1.22.Final</exclude>
         <exclude>io/netty/netty-*/4.1.22.Final/*</exclude>
         <exclude>io/netty/netty-*/4.1.77.Final</exclude>
