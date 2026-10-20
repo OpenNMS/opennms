@@ -140,6 +140,18 @@ describe('GraphCollections.vue', () => {
     expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Deleted graph collection "Core".' })
   })
 
+  it('deletes the collection with id 0, which is a real id', async () => {
+    getGraphCollections.mockResolvedValue({ success: true, message: '', payload: [collection(0, 'First')] })
+    deleteGraphCollection.mockResolvedValue({ success: true, message: '' })
+    const wrapper = await mountList()
+    await wrapper.find('[data-test="delete-collection"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="confirm-ok"]').trigger('click')
+    await flushPromises()
+    expect(deleteGraphCollection).toHaveBeenCalledWith(0)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Deleted graph collection "First".' })
+  })
+
   it('opens the editor for create, edit and duplicate', async () => {
     const wrapper = await mountList()
     await wrapper.find('[data-test="create-collection"]').trigger('click')
@@ -168,6 +180,14 @@ describe('GraphCollections.vue', () => {
     expect(getGraphCollections).toHaveBeenCalledTimes(1)
   })
 })
+
+const deferred = <T>() => {
+  let resolve!: (value: T) => void
+  const promise = new Promise<T>((r) => {
+    resolve = r
+  })
+  return { promise, resolve }
+}
 
 const resolved = (over: Record<string, unknown> = {}) => ({
   id: 1, type: 'custom', title: 'Core', showTimespanButton: true, showGraphtypeButton: true, graphsPerLine: 2,
@@ -241,6 +261,19 @@ describe('GraphCollectionView.vue', () => {
     expect(wrapper.find('[data-test="gc-customize"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="gc-save-as"]').exists()).toBe(true)
     expect(getGraphCollectionTimespans).not.toHaveBeenCalled()
+  })
+
+  it('shows the collection asked for last when an earlier load answers late', async () => {
+    const first = deferred<unknown>()
+    const second = deferred<unknown>()
+    getResolvedGraphCollection.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise)
+    const wrapper = await mountView({ id: '1' })
+    await wrapper.setProps({ id: '2' })
+    second.resolve({ success: true, message: '', payload: { collection: resolved({ id: 2, title: 'Edge' }), etag: null }})
+    await flushPromises()
+    first.resolve({ success: true, message: '', payload: { collection: resolved({ id: 1, title: 'Core' }), etag: null }})
+    await flushPromises()
+    expect(wrapper.find('[data-test="gc-view-title"]').text()).toBe('Edge')
   })
 
   it('drops the previous collection when a navigation to another one fails', async () => {

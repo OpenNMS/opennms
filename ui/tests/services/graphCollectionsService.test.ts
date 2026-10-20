@@ -109,6 +109,19 @@ describe('graphCollectionsService', () => {
     expect(graphCollectionProblems({ response: { status: 500, data: 'boom' }})).toEqual([])
   })
 
+  it('uses a plain-text body as the message but not an HTML error page', async () => {
+    const html = { response: { status: 502, data: '<html><body><h1>Bad Gateway</h1></body></html>', headers: { 'content-type': 'text/html' }}}
+    vi.mocked(v2.put).mockRejectedValueOnce(html)
+    expect((await updateGraphCollection(3, collection)).message).toBe('Failed to save graph collection 3.')
+
+    const plain = { response: { status: 404, data: 'Graph collection 3 was not found.', headers: { 'content-type': 'text/plain;charset=UTF-8' }}}
+    vi.mocked(v2.put).mockRejectedValueOnce(plain)
+    expect((await updateGraphCollection(3, collection)).message).toBe('Graph collection 3 was not found.')
+
+    // a 400 whose body is a page, not the problem list
+    expect(graphCollectionProblems({ response: { status: 400, data: '<!DOCTYPE html><html></html>', headers: {}}})).toEqual([])
+  })
+
   it('words a 403 itself and recognises a stale write', async () => {
     vi.mocked(v2.delete).mockRejectedValueOnce({ response: { status: 403, data: '' }})
     expect((await deleteGraphCollection(3)).message).toBe('You do not have permission to change graph collections.')

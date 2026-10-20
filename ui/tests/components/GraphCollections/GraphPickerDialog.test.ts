@@ -111,8 +111,8 @@ describe('GraphPickerDialog.vue', () => {
   it('opens an existing entry on its resource with the stored graph type kept selectable', async () => {
     getGraphDefinitionsByResourceId.mockResolvedValue({ name: ['mib2.bits'] })
     const wrapper = await mountPicker({
-      key: 3, title: 'Old', resourceId: 'node[1].nodeSnmp[]', resourceLabel: 'Node-level Performance Data',
-      graphtype: 'gone.graph', timespan: '7_day'
+      key: 3, title: 'Old', resourceId: 'node[1].nodeSnmp[]', resourceLabel: 'Node-level Performance Data', parentLabel: 'rtr-01',
+      graphtype: 'gone.graph', timespan: '7_day', nodeId: '1'
     })
     expect(wrapper.find('[data-test="picker-current"]').text()).toContain('Node-level Performance Data')
     const graphtype = wrapper.findAllComponents({ name: 'OnmsSelect' })[0]
@@ -121,7 +121,27 @@ describe('GraphPickerDialog.vue', () => {
     expect(wrapper.find('[data-test="picker-save"]').attributes('disabled')).toBeUndefined()
 
     await wrapper.find('[data-test="picker-save"]').trigger('click')
-    expect(wrapper.emitted('save')?.[0][0]).toMatchObject({ key: 3, title: 'Old', graphtype: 'gone.graph', timespan: '7_day' })
+    // the resource did not change, so its parent and older address stay as they were
+    expect(wrapper.emitted('save')?.[0][0]).toMatchObject({ key: 3, title: 'Old', graphtype: 'gone.graph', timespan: '7_day', parentLabel: 'rtr-01', nodeId: '1' })
+  })
+
+  it('gives a re-pointed entry its new parent and drops the old address', async () => {
+    getResourceForNode.mockResolvedValue(nodeWith(2, [{ id: 'node[2].nodeSnmp[]', label: 'Node-level Performance Data', typeLabel: 'SNMP Node Data' }]))
+    const wrapper = await mountPicker({
+      key: 3, title: 'Old', resourceId: 'node[1].nodeSnmp[]', graphtype: 'mib2.bits', timespan: '7_day',
+      parentLabel: 'rtr-01', nodeId: '1', interfaceId: 'eth0'
+    })
+    await wrapper.find('[data-test="picker-change"]').trigger('click')
+    wrapper.findComponent({ name: 'OnmsAutoComplete' }).vm.$emit('update:modelValue', { id: 2, label: 'rtr-02' })
+    await flushPromises()
+    wrapper.findComponent({ name: 'OnmsListbox' }).vm.$emit('update:modelValue', { id: 'node[2].nodeSnmp[]', label: 'Node-level Performance Data', typeLabel: 'SNMP Node Data' })
+    await flushPromises()
+    wrapper.findAllComponents({ name: 'OnmsSelect' })[0].vm.$emit('update:modelValue', 'mib2.bits')
+    await flushPromises()
+    await wrapper.find('[data-test="picker-save"]').trigger('click')
+    expect(wrapper.emitted('save')?.[0][0]).toMatchObject({
+      key: 3, resourceId: 'node[2].nodeSnmp[]', parentLabel: 'rtr-02', nodeId: null, nodeSource: null, domain: null, interfaceId: null
+    })
   })
 
   it('lets the user change the resource of an existing entry', async () => {

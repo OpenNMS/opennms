@@ -67,13 +67,13 @@ License.
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getGraphCollections } from '@/services/graphCollectionsService'
 import type { GraphCollection } from '@/types/graphCollection'
 
-const props = defineProps<PanelComponentProps>()
+defineProps<PanelComponentProps>()
 
 const router = useRouter()
 const query = ref('')
@@ -107,8 +107,9 @@ const open = () => {
   router.push(`/graph-collections/${match.id}`)
 }
 
+// Read once: the list carries every collection with all its graphs, and titles seldom change,
+// so the dashboard's refresh tick leaves it alone.
 onMounted(load)
-watch(() => props.refreshTick, load)
 </script>
 
 <style scoped lang="scss">

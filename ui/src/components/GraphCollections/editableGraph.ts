@@ -47,6 +47,9 @@ export const toEditableGraphs = (
     return {
       ...graph,
       key: nextKey++,
+      // an older entry addresses its resource the pre-resourceId way; the resolved view knows
+      // where that led, so the picker can open on it
+      resourceId: graph.resourceId ?? info?.resourceId ?? null,
       resourceLabel: info?.resource?.label,
       resourceTypeLabel: info?.resource?.typeLabel ?? undefined,
       parentLabel: info?.resource?.parent?.label,
@@ -71,16 +74,23 @@ export const fromResolvedCollection = (resolved: ResolvedGraphCollection): Edita
     error: graph.error ?? null
   }))
 
-/** Strip the editor's bookkeeping back to what the API stores. */
-export const toStoredGraph = (graph: EditableGraph): GraphCollectionGraph => ({
-  kind: graph.kind ?? 'prefab',
-  title: graph.title,
-  resourceId: graph.resourceId,
-  graphtype: graph.graphtype,
-  timespan: graph.timespan,
-  extlink: graph.extlink ?? null,
-  nodeId: graph.nodeId ?? null,
-  nodeSource: graph.nodeSource ?? null,
-  domain: graph.domain ?? null,
-  interfaceId: graph.interfaceId ?? null
-})
+/**
+ * Strip the editor's bookkeeping back to what the API stores. The server goes by resourceId when
+ * there is one, so an entry that has it sheds the pre-resourceId address it may still carry from
+ * an older file instead of storing two locators.
+ */
+export const toStoredGraph = (graph: EditableGraph): GraphCollectionGraph => {
+  const legacy = graph.resourceId ? null : graph
+  return {
+    kind: graph.kind ?? 'prefab',
+    title: graph.title,
+    resourceId: graph.resourceId,
+    graphtype: graph.graphtype,
+    timespan: graph.timespan,
+    extlink: graph.extlink ?? null,
+    nodeId: legacy?.nodeId ?? null,
+    nodeSource: legacy?.nodeSource ?? null,
+    domain: legacy?.domain ?? null,
+    interfaceId: legacy?.interfaceId ?? null
+  }
+}

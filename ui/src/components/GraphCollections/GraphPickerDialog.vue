@@ -313,8 +313,12 @@ const save = () => {
   if (!canSave.value || !resource.value) {
     return
   }
+  // An entry moved to another resource got there through a node pick, so that node is its parent
+  // now, and the pre-resourceId address an older file gave the old resource no longer applies.
+  const repointed = resource.value.id !== props.graph?.resourceId
   emit('save', {
     ...(props.graph ?? { key: 0 }),
+    ...(repointed ? { parentLabel: node.value?.label, nodeId: null, nodeSource: null, domain: null, interfaceId: null } : {}),
     kind: 'prefab',
     title: title.value.trim(),
     resourceId: resource.value.id,

@@ -54,11 +54,15 @@ vi.mock(import('@/services/graphCollectionsService'), async importOriginal => ({
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push }),
-  useRoute: () => ({ query }),
-  onBeforeRouteLeave: (guard: () => unknown) => {
-    leaveGuards.push(guard)
-  }
+  useRouter: () => ({
+    push,
+    // the editor guards every navigation on the router itself, see the component
+    beforeEach: (guard: () => unknown) => {
+      leaveGuards.push(guard)
+      return () => leaveGuards.splice(leaveGuards.indexOf(guard), 1)
+    }
+  }),
+  useRoute: () => ({ query })
 }))
 
 const stored = {
@@ -291,6 +295,20 @@ describe('GraphCollectionEditor.vue', () => {
     expect(wrapper.find('[data-test="leave-confirm"]').exists()).toBe(true)
     await wrapper.find('[data-test="leave-ok"]').trigger('click')
     expect(await pending).toBe(true)
+  })
+
+  it('keeps its guard on the router only while mounted', async () => {
+    const wrapper = await mountEditor({ id: '4' })
+    expect(leaveGuards).toHaveLength(1)
+    wrapper.unmount()
+    expect(leaveGuards).toHaveLength(0)
+  })
+
+  it('asks for the timespans and the collection at the same time', async () => {
+    getGraphCollectionTimespans.mockReturnValue(new Promise(() => {}))
+    await mountEditor({ id: '4' })
+    expect(getGraphCollection).toHaveBeenCalledWith(4)
+    expect(getResolvedGraphCollection).toHaveBeenCalledWith(4)
   })
 
   it('lets the navigation after a successful save through the leave guard', async () => {

@@ -329,7 +329,9 @@ const downloadCsv = () => {
   downloadGraphCsv(graphData.value, convertedGraphDataRef.value, convertedGraphDataRef.value.title || props.definition)
 }
 
-watch(props.time, () => render(true))
+// A getter: a plain object (the graph collection cell builds one per render) is not a watch
+// source. Deep, so the resource graphs page's in-place changes to its reactive object still count.
+watch(() => props.time, () => render(true), { deep: true })
 
 onMounted(() => render())
 

@@ -47,20 +47,32 @@ export const graphCollectionErrorMessage = (err: any, fallback: string): string 
   if (status === 403) {
     return 'You do not have permission to change graph collections.'
   }
-  const detail = err?.response?.data
-  if (typeof detail === 'string' && detail.trim()) {
-    return detail.trim()
-  }
-  return fallback
+  return explanation(err) || fallback
 }
 
 /** The one-per-line problems of a 400 body, for a form that can show them next to the fields. */
 export const graphCollectionProblems = (err: any): string[] => {
-  const detail = err?.response?.data
-  if (err?.response?.status !== 400 || typeof detail !== 'string') {
+  if (err?.response?.status !== 400) {
     return []
   }
-  return detail.split('\n').map((line: string) => line.trim()).filter(Boolean)
+  return explanation(err).split('\n').map((line: string) => line.trim()).filter(Boolean)
+}
+
+/**
+ * The body of a failed call when it is the API's own plain-text explanation. An HTML error page
+ * from Jetty or from a proxy in front of it is not one, whatever its status.
+ */
+const explanation = (err: any): string => {
+  const detail = err?.response?.data
+  if (typeof detail !== 'string') {
+    return ''
+  }
+  const text = detail.trim()
+  const type = String(err?.response?.headers?.['content-type'] ?? '').toLowerCase()
+  if (text.startsWith('<') || (type && !type.startsWith('text/plain'))) {
+    return ''
+  }
+  return text
 }
 
 /** True when a write was refused because the collection changed since it was read (412). */

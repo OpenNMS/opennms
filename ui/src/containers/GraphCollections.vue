@@ -189,11 +189,13 @@ onMounted(load)
 const confirmDelete = async () => {
   const collection = collectionToDelete.value
   collectionToDelete.value = null
-  if (!collection?.id) {
+  const id = collection?.id
+  // ids start at 0, so this is a null check and not a truthiness check
+  if (!collection || id === undefined || id === null) {
     return
   }
   await withSpinner(async () => {
-    const result = await deleteGraphCollection(collection.id as number)
+    const result = await deleteGraphCollection(id)
     if (report(result, `Deleted graph collection "${collection.title}".`)) {
       await load()
     }

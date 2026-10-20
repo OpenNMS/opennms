@@ -172,11 +172,19 @@ const applyOverride = (name: 'timespan' | 'graphtype', value: string) => {
   router.replace({ query })
 }
 
+// Each override change and navigation starts a load; a slow earlier one must not land on top of
+// the latest.
+let loadSeq = 0
+
 const load = async () => {
+  const current = ++loadSeq
   await withSpinner(async () => {
     const result = props.id
       ? await getResolvedGraphCollection(Number(props.id), options.value)
       : await getResolvedSyntheticGraphCollection(props.kind ?? 'node', props.source ?? '', options.value)
+    if (current !== loadSeq) {
+      return
+    }
     if (!result.success) {
       // this component instance is reused across collection routes, so drop what the previous
       // route showed instead of leaving it under the error

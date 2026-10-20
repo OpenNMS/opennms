@@ -144,7 +144,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsCheckbox, OnmsColumn, OnmsConfirmationDialog, OnmsDialog, OnmsIconButton, OnmsInputNumber, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -285,31 +285,36 @@ const resetForm = () => {
   leaveApproved = false
 }
 
+// the collection this route edits, copies or starts from, if any
+const loadTarget = (): Promise<void> => {
+  const from = queryValue('from')
+  const fromNode = queryValue('fromNode')
+  const fromNodeSource = queryValue('fromNodeSource')
+  const fromDomain = queryValue('fromDomain')
+  if (props.id) {
+    return loadStored(Number(props.id), false)
+  } else if (from) {
+    return loadStored(Number(from), true)
+  } else if (fromNode) {
+    return loadSynthetic('node', fromNode)
+  } else if (fromNodeSource) {
+    return loadSynthetic('nodeSource', fromNodeSource)
+  } else if (fromDomain) {
+    return loadSynthetic('domain', fromDomain)
+  }
+  return Promise.resolve()
+}
+
 const load = async () => {
   loading.value = true
   loadError.value = ''
   resetForm()
   await withSpinner(async () => {
-    const spans = await getGraphCollectionTimespans()
+    // the timespan list does not depend on the collection, so both go out at once
+    const [spans] = await Promise.all([getGraphCollectionTimespans(), loadTarget()])
     timespans.value = spans.payload ?? []
     if (!spans.success) {
       loadError.value = spans.message
-      return
-    }
-    const from = queryValue('from')
-    const fromNode = queryValue('fromNode')
-    const fromNodeSource = queryValue('fromNodeSource')
-    const fromDomain = queryValue('fromDomain')
-    if (props.id) {
-      await loadStored(Number(props.id), false)
-    } else if (from) {
-      await loadStored(Number(from), true)
-    } else if (fromNode) {
-      await loadSynthetic('node', fromNode)
-    } else if (fromNodeSource) {
-      await loadSynthetic('nodeSource', fromNodeSource)
-    } else if (fromDomain) {
-      await loadSynthetic('domain', fromDomain)
     }
   })
   pristine = snapshot()
@@ -413,7 +418,12 @@ let leaveResolvers: Array<(leave: boolean) => void> = []
 
 const isDirty = () => !leaveApproved && !loading.value && !loadError.value && snapshot() !== pristine
 
-onBeforeRouteLeave(() => {
+// Every navigation while the editor is up either leaves it or moves it to another collection, and
+// this one instance serves the new, copy and edit routes. A guard bound to a route record
+// (onBeforeRouteLeave, onBeforeRouteUpdate) stays with the record matched when the editor was set
+// up and misses the moves between those records, so the check sits on the router itself for as
+// long as the editor is mounted.
+const removeGuard = router.beforeEach(() => {
   if (saving.value) {
     return false
   }
@@ -425,6 +435,7 @@ onBeforeRouteLeave(() => {
     leaveResolvers.push(resolve)
   })
 })
+onBeforeUnmount(removeGuard)
 
 const settleLeave = (leave: boolean) => {
   showLeaveConfirm.value = false

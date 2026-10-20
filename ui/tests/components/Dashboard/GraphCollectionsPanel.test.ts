@@ -54,6 +54,7 @@ const mountPanel = async () => {
 describe('GraphCollectionsPanel', () => {
   beforeEach(() => {
     push.mockClear()
+    getGraphCollections.mockClear()
     getGraphCollections.mockResolvedValue({
       success: true,
       message: '',
@@ -91,6 +92,13 @@ describe('GraphCollectionsPanel', () => {
     await wrapper.find('form').trigger('submit')
 
     expect(push).toHaveBeenCalledWith('/graph-collections')
+  })
+
+  it('reads the list once and leaves the refresh tick alone', async () => {
+    const wrapper = await mountPanel()
+    await wrapper.setProps({ refreshTick: 1 })
+    await flushPromises()
+    expect(getGraphCollections).toHaveBeenCalledTimes(1)
   })
 
   it('shows the load failure instead of an empty list', async () => {
