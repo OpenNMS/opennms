@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -209,6 +210,15 @@ public abstract class GroupManager implements GroupConfig {
      */
     public abstract void update() throws IOException;
 
+    /** For the reads that do not declare IOException: a manager that loads on first use needs update() in each read. */
+    private void updateForRead() {
+        try {
+            update();
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     /**
      * Returns a boolean indicating if the group name appears in the xml file
      *
@@ -382,6 +392,7 @@ public abstract class GroupManager implements GroupConfig {
      * @throws java.lang.Exception if any.
      */
     public synchronized void saveGroup(String name, Group details) throws Exception {
+        update();
         if (name == null || details == null) {
             throw new Exception("GroupFactory:saveGroup  null");
         } else {
@@ -397,7 +408,8 @@ public abstract class GroupManager implements GroupConfig {
      * @param role a {@link org.opennms.netmgt.config.groups.Role} object.
      * @throws java.lang.Exception if any.
      */
-    public void saveRole(Role role) throws Exception {
+    public synchronized void saveRole(Role role) throws Exception {
+        update();
         m_roles.put(role.getName(), role);
         saveGroups();
     }
@@ -519,6 +531,35 @@ public abstract class GroupManager implements GroupConfig {
      * @param newName a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
+    /**
+     * Renames an on-call role.
+     *
+     * @param oldName the name of the role
+     * @param newName the new name, which no other role may have
+     * @throws java.lang.Exception if the role does not exist, the new name is taken, or the save fails
+     */
+    public synchronized void renameRole(final String oldName, final String newName) throws Exception {
+        update();
+        if (!m_roles.containsKey(oldName)) {
+            throw new Exception("GroupFactory.renameRole: Role doesn't exist: " + oldName);
+        }
+        if (m_roles.containsKey(newName)) {
+            throw new Exception("On-call role \"" + newName + "\" already exists.");
+        }
+        final Role role = m_roles.remove(oldName);
+        role.setName(newName);
+        m_roles.put(newName, role);
+        try {
+            saveGroups();
+        } catch (final Exception e) {
+            // the save did not persist, so undo the in-memory rename (as renameGroup does)
+            m_roles.remove(newName);
+            role.setName(oldName);
+            m_roles.put(oldName, role);
+            throw e;
+        }
+    }
+
     public synchronized void renameUser(String oldName, String newName) throws Exception {
         // Get the old data
         if (oldName == null || newName == null || oldName == "" || newName == "") {
@@ -561,6 +602,7 @@ public abstract class GroupManager implements GroupConfig {
      * @return an array of {@link java.lang.String} objects.
      */
     public String[] getRoleNames() {
+        updateForRead();
         final Set<String> keys = m_roles.keySet();
         return (String[]) keys.toArray(new String[keys.size()]);
     }
@@ -571,6 +613,7 @@ public abstract class GroupManager implements GroupConfig {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<Role> getRoles() {
+        updateForRead();
         return m_roles.values();
     }
     
@@ -581,6 +624,7 @@ public abstract class GroupManager implements GroupConfig {
      * @return a {@link org.opennms.netmgt.config.groups.Role} object.
      */
     public Role getRole(String roleName) {
+        updateForRead();
         return (Role)m_roles.get(roleName);
     }
 
@@ -716,6 +760,7 @@ public abstract class GroupManager implements GroupConfig {
      * @return a {@link java.util.List} object.
      */
     public List<Group> findGroupsForUser(String user) {
+        updateForRead();
         List<Group> groups = new ArrayList<Group>();
         
         for (Group group : m_groups.values()) {

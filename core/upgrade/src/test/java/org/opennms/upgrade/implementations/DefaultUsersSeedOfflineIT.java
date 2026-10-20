@@ -66,7 +66,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
-    private static final String EMPTY_USERS_XML = "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users/></userinfo>";
+    // users.xsd requires at least one user inside <users>, so a file without users has no <users> element
+    private static final String EMPTY_USERS_XML = "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"/>";
 
     @Rule
     public TemporaryFolder m_home = new TemporaryFolder();
@@ -119,6 +120,13 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
         seed.preExecute();
         seed.execute();
         seed.postExecute();
+    }
+
+    private static void migrate() throws Exception {
+        final UsersGroupsXmlMigratorOffline migrator = new UsersGroupsXmlMigratorOffline();
+        migrator.preExecute();
+        migrator.execute();
+        migrator.postExecute();
     }
 
     private void markMigratorComplete() throws Exception {
@@ -182,5 +190,31 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
         seed();
         assertEquals(2, count("users"));
         assertEquals(1, count("groups"));
+    }
+
+    @Test
+    public void testDoesNotSeedAfterMigratingAUsersXmlWithoutUsers() throws Exception {
+        // a site that uses only LDAP, RADIUS or SSO: an empty users.xml stays empty
+        write("users.xml", EMPTY_USERS_XML);
+        migrate();
+        markMigratorComplete();
+        seed();
+        assertEquals(0, count("users"));
+    }
+
+    @Test
+    public void testDoesNotSeedAfterAllUsersWereDeleted() throws Exception {
+        seed();
+        m_jdbc.update("DELETE FROM group_members");
+        m_jdbc.update("DELETE FROM user_security_roles");
+        m_jdbc.update("DELETE FROM users");
+        seed();
+        assertEquals(0, count("users"));
+    }
+
+    @Test
+    public void testSeedMarksTheDatabaseAsInitialized() throws Exception {
+        seed();
+        assertEquals(1, count("usermgmt_initialized"));
     }
 }

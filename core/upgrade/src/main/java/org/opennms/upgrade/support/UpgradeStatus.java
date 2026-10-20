@@ -81,13 +81,17 @@ public class UpgradeStatus {
      * @return true, if successful
      */
     public boolean wasExecuted(OnmsUpgrade upg) {
-        for (Object obj : status.keySet()) {
-            String cls = (String) obj;
-            if (cls.equals(upg.getId())) {
-                return true;
-            }
-        }
-        return false;
+        return wasExecuted(upg.getId());
+    }
+
+    /**
+     * Was executed, by the id of the task.
+     *
+     * @param id the id of the upgrade task (see {@link OnmsUpgrade#getId()})
+     * @return true, if successful
+     */
+    public boolean wasExecuted(final String id) {
+        return status.containsKey(id);
     }
 
     /**

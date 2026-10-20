@@ -58,7 +58,7 @@
 
     <onmsgi:service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 
-  <!-- userManager, groupManager and groupDao are in applicationContext-usermgmt-{db,xml}.xml, imported by
+  <!-- userManager, groupManager and groupDao are in applicationContext-usermgmt.xml, imported by
        applicationContext-dao.xml: the database implementations need the DAOs -->
 
   <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />

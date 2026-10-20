@@ -91,7 +91,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     private static final List<String> TABLES = Arrays.asList(
             "security_roles", "users", "user_contacts", "user_duty_schedules", "user_security_roles",
             "groups", "group_members", "group_duty_schedules",
-            "oncall_roles", "oncall_schedules", "oncall_schedule_times");
+            "oncall_roles", "oncall_schedules", "oncall_schedule_times", "usermgmt_initialized");
 
     // the column sizes in core/schema/src/main/liquibase/37.0.0/changelog.xml
     private static final int SECURITY_ROLE_NAME_LENGTH = 128;
@@ -161,6 +161,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             final String existingData = existingData(connection);
             if (existingData != null) {
                 log("The database already contains user data (%s), so nothing is copied from the files\n", existingData);
+                UserMgmtInitialized.set(connection, getId());
                 return;
             }
 
@@ -178,6 +179,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                 migration.users(userinfo == null ? Collections.emptyList() : userinfo.getUsers());
                 migration.groups(groupinfo == null ? Collections.emptyList() : groupinfo.getGroups());
                 migration.onCallRoles(groupinfo == null ? Collections.emptyList() : groupinfo.getRoles());
+                // also with no users: the default-users seed must not add admin/admin to this database later
+                UserMgmtInitialized.set(connection, getId());
                 connection.commit();
             } catch (final SQLException | RuntimeException e) {
                 try {

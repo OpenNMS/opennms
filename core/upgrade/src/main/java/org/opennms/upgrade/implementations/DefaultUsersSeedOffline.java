@@ -22,16 +22,11 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
@@ -42,6 +37,10 @@ import org.opennms.upgrade.support.UpgradeStatus;
  * Adds the default users (admin, rtc) and the Admin group to a database without users, with the values of the
  * shipped users.xml and groups.xml. Runs after UsersGroupsXmlMigratorOffline, on every install: the empty-table
  * check makes it safe, and a run-once marker in etc would block a new database used with an old etc.
+ *
+ * It seeds a database at most once: not when the table usermgmt_initialized has its row, which the migrator also
+ * sets (even when it copies no users). Thus a site without local users (LDAP, RADIUS or SSO only), or one that
+ * deleted them, does not get admin/admin back on its next upgrade.
  *
  * It does not seed while the migration of users.xml is pending (users.xml exists and the migrator has not run
  * successfully): Upgrade continues after a failed task, and a seeded admin would make the migrator's next run copy
@@ -89,8 +88,12 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
                 log("The database already contains users, so no default users are added\n");
                 return;
             }
+            if (UserMgmtInitialized.isSet(connection)) {
+                log("No default users are added: the user data of this database was initialized before (see the table usermgmt_initialized), and its users were removed later\n");
+                return;
+            }
             final File usersXml = new File(getHomeDirectory(), "etc" + File.separator + "users.xml");
-            if (usersXml.exists() && !migratorComplete()) {
+            if (usersXml.exists() && !new UpgradeStatus().wasExecuted(UsersGroupsXmlMigratorOffline.class.getSimpleName())) {
                 log("No default users are added: %s exists, and its migration (UsersGroupsXmlMigratorOffline) is not complete. See the messages of that task.\n", usersXml);
                 return;
             }
@@ -102,6 +105,7 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
                         "INSERT INTO groups (id, name, comments, created_time, last_modified) VALUES (nextval('groups_id_seq'), ?, ?, NOW(), NOW()) RETURNING id",
                         "Admin", "The administrators");
                 update(connection, "INSERT INTO group_members (group_id, position, user_id) VALUES (?, 0, ?)", group, admin);
+                UserMgmtInitialized.set(connection, getId());
                 connection.commit();
             } catch (final SQLException e) {
                 try {
@@ -118,19 +122,6 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
         }
     }
 
-    private boolean migratorComplete() throws OnmsUpgradeException {
-        final File statusFile = new File(getHomeDirectory(), "etc" + File.separator + UpgradeStatus.STATUS_FILE);
-        if (!statusFile.exists()) {
-            return false;
-        }
-        final Properties status = new Properties();
-        try (final Reader reader = Files.newBufferedReader(statusFile.toPath(), StandardCharsets.ISO_8859_1)) {
-            status.load(reader);
-        } catch (final IOException e) {
-            throw new OnmsUpgradeException("Cannot read " + statusFile + ": " + e.getMessage(), e);
-        }
-        return status.containsKey(UsersGroupsXmlMigratorOffline.class.getSimpleName());
-    }
 
     private static int insertUser(final Connection connection, final String username, final String fullName,
                                   final String comments, final String hash, final String role) throws SQLException {

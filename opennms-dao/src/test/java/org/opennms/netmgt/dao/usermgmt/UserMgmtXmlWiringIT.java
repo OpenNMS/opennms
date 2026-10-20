@@ -24,6 +24,7 @@ package org.opennms.netmgt.dao.usermgmt;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -56,9 +57,16 @@ import org.springframework.test.context.TestPropertySource;
 public class UserMgmtXmlWiringIT {
 
     static {
+        // UserMgmtManagers reads the system property; @TestPropertySource only gives this class its own context
+        System.setProperty(UserMgmtStore.PROPERTY, UserMgmtStore.XML);
         // other test classes in this JVM may have installed database managers in the factories
         UserFactory.setInstance(null);
         GroupFactory.setInstance(null);
+    }
+
+    @AfterClass
+    public static void clearProperty() {
+        System.clearProperty(UserMgmtStore.PROPERTY);
     }
 
     @Autowired

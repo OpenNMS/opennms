@@ -642,4 +642,35 @@ DROP FUNCTION IF EXISTS usermgmt_increment_version();
         </rollback>
     </changeSet>
 
+    <!-- Set once the user data of this database is initialized: by UsersGroupsXmlMigratorOffline (also when it
+         copies no users, or finds data already there) or by DefaultUsersSeedOffline. The seed adds the default
+         users only to a database without this row, so a site that has no local users (LDAP, RADIUS or SSO only)
+         or that deleted them does not get admin/admin back on its next upgrade. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-initialized">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="usermgmt_initialized"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="usermgmt_initialized">
+            <column name="initialized_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <!-- the upgrade task (or "liquibase") that initialized the data -->
+            <column name="initialized_by" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- a database that already has users (builds of the feature branch) is initialized -->
+        <sql>
+INSERT INTO usermgmt_initialized (initialized_by) SELECT 'liquibase' WHERE EXISTS (SELECT 1 FROM users);
+        </sql>
+
+        <rollback>
+            <dropTable tableName="usermgmt_initialized"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

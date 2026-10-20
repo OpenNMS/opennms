@@ -86,6 +86,9 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private void parseUsers() throws DataRetrievalFailureException {
         final HashMap<String, OnmsUser> users = new HashMap<String, OnmsUser>();
         final Map<String, List<GrantedAuthority>> roles = new HashMap<String, List<GrantedAuthority>>();
+        // read the version before the data: if another thread reloads in between, the next check sees a newer
+        // version and parses again, instead of keeping old data under the new version
+        final long lastModified = m_userManager.getLastModified();
 
         try {
             for (final OnmsUser user : m_userManager.getOnmsUserList()) {
@@ -109,7 +112,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
         LOG.debug("Loaded the users.xml file with {} users", users.size());
 
-        m_usersLastModified = m_userManager.getLastModified();
+        m_usersLastModified = lastModified;
         m_users = users;
         m_roles = roles;
     }

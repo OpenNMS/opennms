@@ -62,13 +62,16 @@ import org.opennms.bootstrap.FilesystemPermissionValidator;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.password.DatabasePasswords;
+import org.opennms.core.password.UserMgmtStoreSetting;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.config.api.UserMgmtStore;
+import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.opennms.upgrade.implementations.UsersGroupsXmlMigratorOffline;
+import org.opennms.upgrade.support.UpgradeStatus;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
@@ -295,13 +298,16 @@ public class Installer {
     }
 
     protected void resetWebAppAdminPassword() throws Exception {
-        if (UserMgmtStore.isDatabase(new File(m_opennms_home))) {
+        if (UserMgmtStoreSetting.isDatabase(new File(m_opennms_home))) {
             try {
                 setAdminPasswordInDatabase(m_resetWebAppAdminPassword);
             } catch (final IllegalArgumentException e) {
-                // -R runs before the upgrade tasks: on an upgrade from 36.x, the migrator copies users.xml later
-                if (!new File(m_opennms_home, "etc" + File.separator + "users.xml").exists()) {
-                    System.out.println("The admin user does not exist yet. Run the installer with -R again after the upgrade to set its password.");
+                // -R runs before the upgrade tasks: on an upgrade from 36.x, the migrator copies users.xml later.
+                // After the migration, users.xml stays in etc, but nothing reads it.
+                final File home = new File(m_opennms_home);
+                if (!new File(home, "etc" + File.separator + "users.xml").exists() || xmlMigrationComplete(home)) {
+                    System.out.println("The password was NOT set: the admin user does not exist in the database."
+                            + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
                     return;
                 }
                 resetAdminPasswordInUsersXml(m_resetWebAppAdminPassword);
@@ -310,6 +316,11 @@ public class Installer {
             resetAdminPasswordInUsersXml(m_resetWebAppAdminPassword);
         }
         System.out.println("Password for the web application admin user was set.");
+    }
+
+    private static boolean xmlMigrationComplete(final File opennmsHome) throws OnmsUpgradeException {
+        final File statusFile = new File(opennmsHome, "etc" + File.separator + UpgradeStatus.STATUS_FILE);
+        return new UpgradeStatus(statusFile).wasExecuted(UsersGroupsXmlMigratorOffline.class.getSimpleName());
     }
 
     protected void setAdminPasswordInDatabase(final String password) throws Exception {

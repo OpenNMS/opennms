@@ -26,19 +26,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.Properties;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 public class UserMgmtStoreTest {
-    @Rule
-    public TemporaryFolder m_home = new TemporaryFolder();
-
     @After
     public void tearDown() {
         System.clearProperty(UserMgmtStore.PROPERTY);
@@ -62,28 +55,5 @@ public class UserMgmtStoreTest {
         p.setProperty(UserMgmtStore.PROPERTY, "ldap");
         final IllegalStateException e = assertThrows(IllegalStateException.class, () -> UserMgmtStore.isDatabase(p));
         assertEquals("org.opennms.usermgmt.store must be \"db\" or \"xml\", not \"ldap\"", e.getMessage());
-    }
-
-    @Test
-    public void testHomeReadsPropertiesDotDAfterOpennmsProperties() throws Exception {
-        final File etc = m_home.newFolder("etc");
-        Files.writeString(etc.toPath().resolve("opennms.properties"), UserMgmtStore.PROPERTY + "=db\n");
-        final File d = new File(etc, "opennms.properties.d");
-        assertTrue(d.mkdir());
-        Files.writeString(d.toPath().resolve("usermgmt.properties"), UserMgmtStore.PROPERTY + "=xml\n");
-        assertFalse(UserMgmtStore.isDatabase(m_home.getRoot()));
-    }
-
-    @Test
-    public void testHomeWithoutFilesIsDatabase() {
-        assertTrue(UserMgmtStore.isDatabase(m_home.getRoot()));
-    }
-
-    @Test
-    public void testSystemPropertyWinsOverFiles() throws Exception {
-        final File etc = m_home.newFolder("etc");
-        Files.writeString(etc.toPath().resolve("opennms.properties"), UserMgmtStore.PROPERTY + "=db\n");
-        System.setProperty(UserMgmtStore.PROPERTY, "xml");
-        assertFalse(UserMgmtStore.isDatabase(m_home.getRoot()));
     }
 }

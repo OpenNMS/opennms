@@ -22,12 +22,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +39,6 @@ import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.Domain;
-import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
@@ -65,9 +62,8 @@ public class DbGroupManager extends GroupManager {
     private final TransactionOperations m_transactions;
 
     // guarded by this
-    /** The name each cached Role had when it was loaded, by identity: WebRoleManagerImpl renames the object in place. */
-    private final Map<Role, String> m_loadedRoleNames = new IdentityHashMap<>();
-    private boolean m_renamedInPlace;
+    /** The user id behind each member, supervisor and schedule name in the cache, as loaded. */
+    private Map<String, Integer> m_loadedUserIds = new HashMap<>();
     private long m_usersVersion = -1;
     private long m_groupsVersion = -1;
     private long m_lastCheck;
@@ -112,101 +108,53 @@ public class DbGroupManager extends GroupManager {
             groups.sort(Comparator.comparing(UserGroup::getId));
             final List<OnCallRole> roles = new ArrayList<>(m_roleDao.findAll());
             roles.sort(Comparator.comparing(OnCallRole::getId));
-            return new Loaded(UserMgmtJaxbMapper.toGroupinfo(groups, roles), usersVersion, groupsVersion);
+            final Map<String, Integer> userIds = new HashMap<>();
+            groups.forEach(g -> g.getMembers().forEach(u -> userIds.put(u.getUsername(), u.getId())));
+            roles.forEach(r -> {
+                userIds.put(r.getSupervisor().getUsername(), r.getSupervisor().getId());
+                r.getSchedules().forEach(sched -> userIds.put(sched.getUser().getUsername(), sched.getUser().getId()));
+            });
+            return new Loaded(UserMgmtJaxbMapper.toGroupinfo(groups, roles), usersVersion, groupsVersion, userIds);
         });
         load(loaded.m_groupinfo);
-        m_loadedRoleNames.clear();
-        loaded.m_groupinfo.getRoles().forEach(role -> m_loadedRoleNames.put(role, role.getName()));
+        m_loadedUserIds = loaded.m_userIds;
         m_usersVersion = loaded.m_usersVersion;
         m_groupsVersion = loaded.m_groupsVersion;
         m_lastCheck = System.currentTimeMillis();
     }
 
-    // GroupManager reads these without update(): GroupFactory loads in its constructor, this class on first use.
-
-    @Override
-    public synchronized String[] getRoleNames() {
-        loadForRead();
-        return super.getRoleNames();
-    }
-
-    @Override
-    public synchronized Collection<Role> getRoles() {
-        loadForRead();
-        return super.getRoles();
-    }
-
-    @Override
-    public synchronized Role getRole(final String roleName) {
-        loadForRead();
-        return super.getRole(roleName);
-    }
-
-    @Override
-    public synchronized List<Group> findGroupsForUser(final String user) {
-        loadForRead();
-        return super.findGroupsForUser(user);
-    }
-
-    private void loadForRead() {
-        try {
-            update();
-        } catch (final IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    // GroupManager's saveGroup, saveRole and save do not load first. Load here, so a new manager has the data
-    // and a manager whose last check is older than the interval sees other writers' changes before it saves.
-
-    @Override
-    public synchronized void saveGroup(final String name, final Group details) throws Exception {
-        update();
-        super.saveGroup(name, details);
-    }
-
-    @Override
-    public synchronized void saveRole(final Role role) throws Exception {
-        update();
-        super.saveRole(role);
-    }
-
-    @Override
-    public synchronized void save(final OnmsGroup group) throws Exception {
-        update();
-        super.save(group);
-    }
-
     @Override
     protected synchronized void saveGroups(final Groupinfo groupinfo) throws Exception {
         final boolean loaded = m_groupsVersion >= 0;
-        m_renamedInPlace = false;
+        final Map<String, Integer> writtenUserIds = new HashMap<>();
         try {
             m_groupsVersion = UserMgmtTransactions.inTransaction(m_transactions, () -> {
                 // a manager that never loaded holds only what the caller added, which an upsert can write safely
                 if (m_versionDao.lockVersion(Domain.groups) != m_groupsVersion && loaded) {
                     throw new UserDataChangedException();
                 }
-                write(groupinfo);
+                writtenUserIds.putAll(write(groupinfo));
                 return m_versionDao.getVersion(Domain.groups);
             });
+            m_loadedUserIds = writtenUserIds;
         } catch (final Exception e) {
             // the cache holds the change that was not saved: make it match the database again
             reload();
             throw e;
         }
-        if (!loaded || m_renamedInPlace) {
-            // GroupManager keys the cached roles by their old names
+        if (!loaded) {
             reload();
-            return;
         }
-        // the database now has the cached roles under their current names
-        groupinfo.getRoles().forEach(role -> m_loadedRoleNames.put(role, role.getName()));
     }
 
-    /** Inserts or updates the groups and on-call roles by name. Never deletes: see the class comment. */
-    private void write(final Groupinfo groupinfo) {
+    /**
+     * Inserts or updates the groups and on-call roles by name. Never deletes: see the class comment.
+     *
+     * @return the user id behind each member, supervisor and schedule name that was written
+     */
+    private Map<String, Integer> write(final Groupinfo groupinfo) {
         final Map<String, UserAccount> users = byName(m_userDao.findAll(), UserAccount::getUsername);
+        final Map<String, Integer> userIds = checkCachedUsers(groupinfo, users);
         final Map<String, UserGroup> groups = byName(m_groupDao.findAll(), UserGroup::getName);
         for (final Group group : groupinfo.getGroups()) {
             final UserGroup entity = groups.computeIfAbsent(group.getName(), UserGroup::new);
@@ -214,30 +162,42 @@ public class DbGroupManager extends GroupManager {
             m_groupDao.saveOrUpdate(entity);
         }
         final Map<String, OnCallRole> roles = byName(m_roleDao.findAll(), OnCallRole::getName);
-        renameRolesChangedInPlace(groupinfo.getRoles(), roles);
         for (final Role role : groupinfo.getRoles()) {
             final OnCallRole entity = roles.computeIfAbsent(role.getName(), name -> new OnCallRole());
             UserMgmtJaxbMapper.applyRole(role, entity, groups, users);
             m_roleDao.saveOrUpdate(entity);
         }
         m_groupDao.flush();
+        return userIds;
     }
 
-    /** Renames the row of a cached Role whose name was changed in place, so the upsert by name does not copy it. */
-    private void renameRolesChangedInPlace(final List<Role> cached, final Map<String, OnCallRole> roles) {
-        for (final Role role : cached) {
-            final String loadedName = m_loadedRoleNames.get(role);
-            if (loadedName == null || loadedName.equals(role.getName()) || !roles.containsKey(loadedName)) {
-                continue;
+    /**
+     * The save checks only the groups version, so a user renamed by another process since the last load is not
+     * noticed by it: the cached name would then match no user, or a new user who now has the old name. Fail
+     * instead of binding a membership, supervisor or schedule to the wrong person.
+     */
+    private Map<String, Integer> checkCachedUsers(final Groupinfo groupinfo, final Map<String, UserAccount> users) {
+        final List<String> names = new ArrayList<>();
+        groupinfo.getGroups().forEach(g -> names.addAll(g.getUsers()));
+        groupinfo.getRoles().forEach(r -> {
+            names.add(r.getSupervisor());
+            r.getSchedules().forEach(sched -> names.add(sched.getName()));
+        });
+        for (final String name : names) {
+            final Integer loadedId = m_loadedUserIds.get(name);
+            final UserAccount user = users.get(name);
+            if (loadedId != null && (user == null || !loadedId.equals(user.getId()))) {
+                throw new UserDataChangedException();
             }
-            if (roles.containsKey(role.getName())) {
-                throw new IllegalArgumentException("On-call role \"" + role.getName() + "\" already exists.");
-            }
-            final OnCallRole entity = roles.remove(loadedName);
-            entity.setName(role.getName());
-            roles.put(role.getName(), entity);
-            m_renamedInPlace = true;
         }
+        final Map<String, Integer> userIds = new HashMap<>();
+        for (final String name : names) {
+            final UserAccount user = users.get(name);
+            if (user != null) {
+                userIds.put(name, user.getId());
+            }
+        }
+        return userIds;
     }
 
     @Override
@@ -257,6 +217,21 @@ public class DbGroupManager extends GroupManager {
             }
             group.setName(UserMgmtJaxbMapper.checkLength("Group \"" + newName + "\"", "name", newName, UserMgmtJaxbMapper.GROUP_NAME_LENGTH));
             m_groupDao.update(group);
+        });
+    }
+
+    @Override
+    public synchronized void renameRole(final String oldName, final String newName) throws Exception {
+        change(() -> {
+            final OnCallRole role = m_roleDao.findByName(oldName);
+            if (role == null) {
+                throw new Exception("GroupFactory.renameRole: Role doesn't exist: " + oldName);
+            }
+            if (m_roleDao.findByName(newName) != null) {
+                throw new Exception("On-call role \"" + newName + "\" already exists.");
+            }
+            role.setName(UserMgmtJaxbMapper.checkLength("On-call role \"" + newName + "\"", "name", newName, UserMgmtJaxbMapper.ONCALL_ROLE_NAME_LENGTH));
+            m_roleDao.update(role);
         });
     }
 
@@ -347,11 +322,13 @@ public class DbGroupManager extends GroupManager {
         private final Groupinfo m_groupinfo;
         private final long m_usersVersion;
         private final long m_groupsVersion;
+        private final Map<String, Integer> m_userIds;
 
-        private Loaded(final Groupinfo groupinfo, final long usersVersion, final long groupsVersion) {
+        private Loaded(final Groupinfo groupinfo, final long usersVersion, final long groupsVersion, final Map<String, Integer> userIds) {
             m_groupinfo = groupinfo;
             m_usersVersion = usersVersion;
             m_groupsVersion = groupsVersion;
+            m_userIds = userIds;
         }
     }
 }

@@ -22,7 +22,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,17 +115,6 @@ public class DbUserManager extends UserManager {
         } finally {
             writeLock().unlock();
         }
-    }
-
-    /** UserManager does not load before this check; UserFactory loads in its constructor, this class on first use. */
-    @Override
-    public boolean comparePasswords(final String userID, final String aPassword) {
-        try {
-            update();
-        } catch (final IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return super.comparePasswords(userID, aPassword);
     }
 
     @Override

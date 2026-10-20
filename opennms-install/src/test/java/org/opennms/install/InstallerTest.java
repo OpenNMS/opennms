@@ -187,7 +187,8 @@ public class InstallerTest {
 
         assertTrue(userManager.comparePasswords("admin", "admin"));
         try {
-            installer.install(new String[]{"-s"});
+            // -S: these tests check the password; Upgrade (on the classpath with core.upgrade) would need a full etc
+            installer.install(new String[]{"-s", "-S"});
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,7 +209,7 @@ public class InstallerTest {
 
         assertTrue(userManager.comparePasswords("admin", "admin"));
         try {
-            installer.install(new String[]{"-R", "foobar"});
+            installer.install(new String[]{"-R", "foobar", "-S"});
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -294,6 +295,18 @@ public class InstallerTest {
         recording.m_adminMissing = true;
         recording.resetWebAppAdminPassword();
         assertEquals(List.of("db", "xml"), recording.m_calls);
+    }
+
+    @Test
+    public void testResetAdminPasswordDoesNotUseUsersXmlAfterTheMigration() throws Exception {
+        // the migrator keeps users.xml in etc, but nothing reads it any more: writing it would report a password
+        // that the login never sees
+        Files.writeString(etcDir.resolve("users.xml"), "<userinfo/>");
+        Files.writeString(etcDir.resolve("opennms-upgrade-status.properties"), "UsersGroupsXmlMigratorOffline=Tue Oct 14 10\\:00\\:00 UTC 2026\n");
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_adminMissing = true;
+        recording.resetWebAppAdminPassword();
+        assertEquals(List.of("db"), recording.m_calls);
     }
 
     @Test

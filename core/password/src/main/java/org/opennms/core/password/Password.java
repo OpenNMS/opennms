@@ -41,7 +41,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -67,7 +66,7 @@ public class Password {
         }
 
         // User management via database if applicable
-        if (UserMgmtStore.isDatabase(new File(OPENNMS_HOME))) {
+        if (UserMgmtStoreSetting.isDatabase(new File(OPENNMS_HOME))) {
             final int result = setPasswordDb(log, userId, newPassword);
             System.exit(result);
         }

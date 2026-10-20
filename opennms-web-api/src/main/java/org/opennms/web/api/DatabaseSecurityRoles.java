@@ -52,6 +52,11 @@ public class DatabaseSecurityRoles implements InitializingBean, DisposableBean {
     }
 
     List<String> roleNames() {
-        return m_securityRoleDao.findAll().stream().map(SecurityRole::getName).sorted().collect(Collectors.toList());
+        return roleNames(m_securityRoleDao);
+    }
+
+    /** @return the names of all security roles, sorted; also used by the Karaf JAAS login module */
+    public static List<String> roleNames(final SecurityRoleDao securityRoleDao) {
+        return securityRoleDao.findAll().stream().map(SecurityRole::getName).sorted().collect(Collectors.toList());
     }
 }

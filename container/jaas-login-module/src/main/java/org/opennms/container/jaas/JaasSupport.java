@@ -23,13 +23,12 @@ package org.opennms.container.jaas;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
-import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.api.DatabaseSecurityRoles;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -83,7 +82,7 @@ public final class JaasSupport {
 			LOG.warn("No SecurityRoleDao in the registry. The roles in security-roles.properties are used.");
 			return;
 		}
-		Authentication.setRoleSource(() -> dao.findAll().stream().map(SecurityRole::getName).collect(Collectors.toList()));
+		Authentication.setRoleSource(() -> DatabaseSecurityRoles.roleNames(dao));
 		m_roleSourceInstalled.set(true);
 	}
 

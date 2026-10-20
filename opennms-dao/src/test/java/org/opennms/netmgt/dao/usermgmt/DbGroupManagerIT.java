@@ -39,12 +39,17 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.DbGroupManager;
+import org.opennms.netmgt.config.DbUserManager;
+import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleManagerImpl;
+import org.opennms.netmgt.config.WebRolesException;
 import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.groups.Time;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
+import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
@@ -83,6 +88,9 @@ public class DbGroupManagerIT {
 
     @Autowired
     private UserMgmtVersionDao m_versionDao;
+
+    @Autowired
+    private SecurityRoleDao m_securityRoleDao;
 
     @Autowired
     private TransactionOperations m_tx;
@@ -161,9 +169,25 @@ public class DbGroupManagerIT {
             return null;
         });
         final Group ops = m_manager.getGroup("Ops");
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> m_manager.saveGroup("Ops", ops));
-        assertEquals("Group \"Ops\" has the member \"jane\", which is not a user.", e.getMessage());
+        assertThrows(UserDataChangedException.class, () -> m_manager.saveGroup("Ops", ops));
         assertEquals(Arrays.asList("janet"), m_manager.getGroup("Ops").getUsers());
+    }
+
+    @Test
+    public void testSaveDoesNotBindAMemberToANewUserWithTheOldName() throws Exception {
+        // another process renames jane to janet and creates a new jane: the cached "jane" is janet
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        final Integer janetId = m_tx.execute(s -> {
+            final UserAccount jane = m_userDao.findByUsername("jane");
+            jane.setUsername("janet");
+            m_userDao.flush();
+            m_userDao.save(new UserAccount("jane"));
+            return jane.getId();
+        });
+        final Group ops = m_manager.getGroup("Ops");
+        assertThrows(UserDataChangedException.class, () -> m_manager.saveGroup("Ops", ops));
+        assertEquals(Arrays.asList(janetId), m_tx.execute(s -> m_groupDao.findByName("Ops").getMembers().stream()
+                .map(UserAccount::getId).collect(Collectors.toList())));
     }
 
     @Test
@@ -246,25 +270,47 @@ public class DbGroupManagerIT {
         assertEquals(1, newManager().findGroupsForUser("jane").size());
     }
 
-    @Test
-    public void testRoleRenamedInPlaceIsRenamed() throws Exception {
-        // WebRoleManagerImpl renames the cached Role object and then calls saveGroups()
-        m_manager.saveGroup("Ops", group("Ops", "jane"));
-        m_manager.saveRole(role("Night", "Ops", "jane"));
-        m_manager.getRole("Night").setName("Late");
-        m_manager.saveGroups();
-        assertEquals(Arrays.asList("Late"), m_tx.execute(s -> m_onCallRoleDao.findAll().stream().map(r -> r.getName()).collect(Collectors.toList())));
-        assertEquals(Arrays.asList("Late"), Arrays.asList(m_manager.getRoleNames()));
+    private WebRoleManagerImpl webRoles() {
+        final DbUserManager users = new DbUserManager(m_manager, m_userDao, m_securityRoleDao, m_onCallRoleDao, m_versionDao, m_transactionManager);
+        return new WebRoleManagerImpl(m_manager, users);
     }
 
     @Test
-    public void testRoleRenamedInPlaceToAnExistingNameFails() throws Exception {
+    public void testWebRoleRenameAndEdit() throws Exception {
+        // the on-call role admin page (AdminRoleServlet) renames and edits through WebRoleManagerImpl
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        m_manager.saveRole(role("Night", "Ops", "jane"));
+        final WebRoleManagerImpl webRoles = webRoles();
+        final WebRole role = webRoles.getRole("Night");
+        role.setName("Late");
+        role.setDescription("after hours");
+        webRoles.saveRole(role);
+        assertEquals(Arrays.asList("Late"), m_tx.execute(s -> m_onCallRoleDao.findAll().stream().map(r -> r.getName()).collect(Collectors.toList())));
+        assertEquals("after hours", newManager().getRole("Late").getDescription().get());
+    }
+
+    @Test
+    public void testWebRoleEditSurvivesAReload() throws Exception {
+        // any user change reloads the group cache; a reload between getRole() and saveRole() must not lose the edit
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        m_manager.saveRole(role("Night", "Ops", "jane"));
+        final WebRoleManagerImpl webRoles = webRoles();
+        final WebRole role = webRoles.getRole("Night");
+        role.setDescription("after hours");
+        m_manager.reload();
+        webRoles.saveRole(role);
+        assertEquals("after hours", newManager().getRole("Night").getDescription().get());
+    }
+
+    @Test
+    public void testWebRoleRenameToAnExistingNameFails() throws Exception {
         m_manager.saveGroup("Ops", group("Ops", "jane"));
         m_manager.saveRole(role("Night", "Ops", "jane"));
         m_manager.saveRole(role("Day", "Ops", "jane"));
-        m_manager.getRole("Night").setName("Day");
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> m_manager.saveGroups());
-        assertEquals("On-call role \"Day\" already exists.", e.getMessage());
+        final WebRoleManagerImpl webRoles = webRoles();
+        final WebRole role = webRoles.getRole("Night");
+        role.setName("Day");
+        assertThrows(WebRolesException.class, () -> webRoles.saveRole(role));
         assertEquals(2, m_tx.execute(s -> m_onCallRoleDao.countAll()).intValue());
     }
 }

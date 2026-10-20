@@ -91,6 +91,11 @@ public final class UserMgmtJaxbMapper {
         user.setUserComments(account.getComments());
         if (account.getPasswordHash() != null) {
             user.setPassword(account.getPasswordHash(), account.isPasswordSalted());
+        } else {
+            // UserManager reads the password of every user, so a null would stop the whole user list (and all
+            // logins); an empty unsalted hash matches no password
+            LOG.warn("User \"{}\" has no password. The user cannot log in until a password is set.", account.getUsername());
+            user.setPassword("", false);
         }
         for (final UserContact contact : account.getContacts()) {
             final Contact xml = new Contact();
@@ -163,9 +168,11 @@ public final class UserMgmtJaxbMapper {
         target.setFullName(checkLength(owner, "full name", source.getFullName().orElse(null), FULL_NAME_LENGTH));
         target.setComments(source.getUserComments().orElse(null));
         final Password password = source.getPassword();
-        target.setPasswordHash(password == null ? null
+        // no password, or the empty one that toUser gives a user without a password: store none
+        final boolean noPassword = password == null || password.getEncryptedPassword() == null || password.getEncryptedPassword().isEmpty();
+        target.setPasswordHash(noPassword ? null
                 : checkLength(owner, "password", password.getEncryptedPassword(), PASSWORD_LENGTH));
-        target.setPasswordSalted(password != null && Boolean.TRUE.equals(password.getSalt()));
+        target.setPasswordSalted(!noPassword && Boolean.TRUE.equals(password.getSalt()));
         target.setTuiPin(checkLength(owner, "TUI PIN", source.getTuiPin().orElse(null), TUI_PIN_LENGTH));
         target.setTimeZoneId(checkLength(owner, "time zone",
                 source.getTimeZoneId().map(ZoneId::getId).orElse(null), TIME_ZONE_ID_LENGTH));

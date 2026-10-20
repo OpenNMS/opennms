@@ -22,12 +22,15 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,7 @@ import org.junit.Test;
 import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
+import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.Userinfo;
 
 /** The load and save hooks that the database implementations use instead of the XML. */
@@ -48,6 +52,7 @@ public class ManagerHooksTest {
 
     private static class TestGroupManager extends GroupManager {
         final AtomicReference<Groupinfo> m_saved = new AtomicReference<>();
+        final AtomicInteger m_updates = new AtomicInteger();
 
         TestGroupManager() throws IOException {
             parseXml(new ByteArrayInputStream(GROUPS.getBytes(StandardCharsets.UTF_8)));
@@ -55,6 +60,7 @@ public class ManagerHooksTest {
 
         @Override
         public void update() {
+            m_updates.incrementAndGet();
         }
 
         @Override
@@ -84,8 +90,11 @@ public class ManagerHooksTest {
             m_saved.set(userinfo);
         }
 
+        final AtomicInteger m_updates = new AtomicInteger();
+
         @Override
         protected void doUpdate() {
+            m_updates.incrementAndGet();
         }
 
         @Override
@@ -155,5 +164,51 @@ public class ManagerHooksTest {
         info.setUsers(Collections.singletonList(jane));
         manager.load(info);
         assertEquals(Collections.singletonList("jane"), manager.getUserNames());
+    }
+
+    @Test
+    public void testRoleAndMembershipReadsLoadFirst() throws Exception {
+        // GroupFactory loaded in its constructor; a manager that loads on first use needs update() in every read
+        final TestGroupManager manager = new TestGroupManager();
+        manager.getRoles();
+        manager.getRoleNames();
+        manager.getRole("Night");
+        manager.findGroupsForUser("admin");
+        assertEquals(4, manager.m_updates.get());
+    }
+
+    @Test
+    public void testComparePasswordsLoadsFirst() throws Exception {
+        final TestUserManager manager = new TestUserManager(new TestGroupManager());
+        manager.comparePasswords("nobody", "x");
+        assertEquals(1, manager.m_updates.get());
+    }
+
+    @Test
+    public void testRenameRole() throws Exception {
+        final TestGroupManager manager = new TestGroupManager();
+        manager.saveRole(role("Night"));
+        manager.renameRole("Night", "Late");
+        assertEquals(Arrays.asList("Late"), Arrays.asList(manager.getRoleNames()));
+        assertEquals(Arrays.asList("Late"),
+                manager.m_saved.get().getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void testRenameRoleToAnExistingNameFails() throws Exception {
+        final TestGroupManager manager = new TestGroupManager();
+        manager.saveRole(role("Night"));
+        manager.saveRole(role("Day"));
+        final Exception e = assertThrows(Exception.class, () -> manager.renameRole("Night", "Day"));
+        assertEquals("On-call role \"Day\" already exists.", e.getMessage());
+        assertNotNull(manager.getRole("Night"));
+    }
+
+    private static Role role(final String name) {
+        final Role role = new Role();
+        role.setName(name);
+        role.setMembershipGroup("Admin");
+        role.setSupervisor("admin");
+        return role;
     }
 }

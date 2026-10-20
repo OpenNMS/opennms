@@ -23,6 +23,7 @@ package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -284,5 +285,18 @@ public class UserMgmtJaxbMapperTest {
         UserMgmtJaxbMapper.applyUser(UserMgmtJaxbMapper.toUser(account), account, roles());
         UserMgmtJaxbMapper.applyUser(UserMgmtJaxbMapper.toUser(account), account, roles());
         assertEquals(raw, account.getFullName());
+    }
+
+    @Test
+    public void testUserWithoutPasswordHashGetsAPasswordThatMatchesNothing() {
+        // password_hash is nullable; UserManager dereferences getPassword() for every user, so a null would stop
+        // the whole user list (and all web logins)
+        final User user = UserMgmtJaxbMapper.toUser(new UserAccount("nopass"));
+        assertEquals("", user.getPassword().getEncryptedPassword());
+        assertFalse(user.getPassword().getSalt());
+
+        final UserAccount saved = new UserAccount();
+        UserMgmtJaxbMapper.applyUser(user, saved, roles());
+        assertNull(saved.getPasswordHash());
     }
 }

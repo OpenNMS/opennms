@@ -221,4 +221,15 @@ public class DbUserManagerIT {
         });
         assertFalse(newUserManager().hasUser("jane"));
     }
+
+    @Test
+    public void testUserWithoutPasswordHashDoesNotBreakTheOthers() throws Exception {
+        m_users.saveUser("jane", user("jane"));
+        m_users.setUnencryptedPassword("jane", "s3cret");
+        m_tx.execute(s -> m_userDao.save(new UserAccount("nopass")));
+        final DbUserManager other = newUserManager();
+        assertEquals(2, other.getOnmsUserList().size());
+        assertTrue(other.comparePasswords("jane", "s3cret"));
+        assertFalse(other.comparePasswords("nopass", ""));
+    }
 }
