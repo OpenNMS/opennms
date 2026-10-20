@@ -1882,7 +1882,7 @@
     <jsonSmartVersion>2.5.0</jsonSmartVersion>
     <!-- generally tied with json-smart -->
     <accessorsSmartVersion>2.5.0</accessorsSmartVersion>
-    <jsoupVersion>1.15.3</jsoupVersion>
+    <jsoupVersion>1.23.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junit4Version>4.13.2</junit4Version>
@@ -1986,7 +1986,7 @@
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
-    <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
+    <vaadinJsoupVersion>1.23.2</vaadinJsoupVersion>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
     <xalanVersion>2.7.3</xalanVersion>
