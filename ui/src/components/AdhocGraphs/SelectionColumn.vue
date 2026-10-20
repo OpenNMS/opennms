@@ -42,7 +42,7 @@
       >Select all</OnmsButton>
       <OnmsButton
         variant="ghost"
-        :disabled="!modelValue.length"
+        :disabled="!modelValue.length && !setAsideCount && !excludedCount"
         :data-test="`${dataTest}-clear`"
         @click="emit('update:modelValue', [])"
       >Clear</OnmsButton>
@@ -128,8 +128,12 @@ interface Props {
   emptyMessage?: string
   /** A server-side problem with the filter; replaces an empty list, sits above a non-empty one. */
   errorMessage?: string
-  /** A quiet line under the box, such as "showing the first 100 of 2,310". */
+  /** A quiet line under the box, such as "showing the first 100 of 2310". */
   note?: string
+  /** Selected items the parent's filters cannot reach right now. */
+  setAsideCount?: number
+  /** Matching items the user removed one by one; the filter still applies to the rest. */
+  excludedCount?: number
   filterPlaceholder?: string
 }
 
@@ -140,6 +144,8 @@ const props = withDefaults(defineProps<Props>(), {
   emptyMessage: 'Nothing to show yet.',
   errorMessage: '',
   note: '',
+  setAsideCount: 0,
+  excludedCount: 0,
   filterPlaceholder: 'Filter'
 })
 
@@ -176,15 +182,18 @@ const countLabel = computed<string>(() => {
   const matching = props.options.filter(option => !selectedKeys.value.has(props.keyOf(option))).length +
     props.modelValue.length
 
+  const setAside = props.setAsideCount ? `, ${props.setAsideCount} set aside` : ''
+
   if (props.modelValue.length) {
-    return `${props.modelValue.length} of ${matching} selected`
+    return `${props.modelValue.length} of ${matching} selected${setAside}`
   }
 
   if (props.filterActive) {
-    return `all ${matching} matching`
+    const removed = props.excludedCount ? `, ${props.excludedCount} removed` : ''
+    return `all ${matching} matching${removed}${setAside}`
   }
 
-  return `${matching} available`
+  return `${matching} available${setAside}`
 })
 
 const onFilter = (value: string | undefined) => {

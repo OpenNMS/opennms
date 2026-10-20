@@ -72,6 +72,7 @@
           :note="resourceNote"
           :options="store.resourceOptions"
           :modelValue="store.reachablePickedResources"
+          :setAsideCount="store.setAsideResources"
           :loading="store.resourcesLoading"
           :keyOf="option => (option as AdhocResourceOption).id"
           :labelOf="option => (option as AdhocResourceOption).label"
@@ -92,6 +93,8 @@
           :filterActive="Boolean(store.datasourceFilter.trim())"
           :options="store.datasourceOptions"
           :modelValue="store.reachablePickedDatasources"
+          :setAsideCount="store.setAsideDatasources"
+          :excludedCount="store.excludedDatasourceKeys.length"
           :keyOf="option => (option as AdhocDatasourceOption).key"
           :labelOf="option => (option as AdhocDatasourceOption).attribute"
           :descriptionOf="describeDatasource"
@@ -363,7 +366,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => (props.viewOnly ?
  */
 const tooManySeriesMessage = computed<string>(() => {
   if (store.nodeLimitExceeded) {
-    return `The node filter matches ${store.nodeLimitExceeded.toLocaleString()} nodes; a graph can be built from at most ${MAX_GRAPH_NODES}. Narrow the rule, or select nodes.`
+    return `The node filter matches ${store.nodeLimitExceeded} nodes; a graph can be built from at most ${MAX_GRAPH_NODES}. Narrow the rule, or select nodes.`
   }
 
   const count = store.effectiveDatasources.length
@@ -372,20 +375,20 @@ const tooManySeriesMessage = computed<string>(() => {
     return ''
   }
 
-  return `These filters match ${count.toLocaleString()} series; the limit is ${MAX_SERIES}. Narrow a filter, or select items in a column.`
+  return `These filters match ${count} series; the limit is ${MAX_SERIES}. Narrow a filter, or select items in a column.`
 })
 
 const canQuery = computed<boolean>(() => !tooManySeriesMessage.value && configIsQueryable(config))
 
 /** Resources the server would not give up, so the user knows the list is short. */
 const resourceNote = computed<string>(() => (store.failedNodeLoads > 0 ?
-  `Resources could not be loaded for ${store.failedNodeLoads.toLocaleString()} ${store.failedNodeLoads === 1 ? 'node' : 'nodes'}.` :
+  `Resources could not be loaded for ${store.failedNodeLoads} ${store.failedNodeLoads === 1 ? 'node' : 'nodes'}.` :
   ''))
 
 /** A label search is paged; say so, or a rule that matches 2,000 nodes looks like it matched 100. */
 const nodeNote = computed<string>(() => {
   if (store.nodeLimitExceeded) {
-    return `${store.nodeLimitExceeded.toLocaleString()} nodes match; a graph can be built from at most ${MAX_GRAPH_NODES}.`
+    return `${store.nodeLimitExceeded} nodes match; a graph can be built from at most ${MAX_GRAPH_NODES}.`
   }
 
   if (store.nodeMatchOverflow <= 0) {
@@ -393,7 +396,7 @@ const nodeNote = computed<string>(() => {
   }
 
   const shown = store.nodeMatches.length
-  const total = (shown + store.nodeMatchOverflow).toLocaleString()
+  const total = (shown + store.nodeMatchOverflow)
   return `Showing the first ${shown} of ${total} nodes, for browsing only. Narrow the search, or use a filter rule, to graph them.`
 })
 
@@ -476,7 +479,7 @@ const onDatasourceFilter = (term: string) => {
  */
 const notePinned = (what: string, count: number) => {
   showSnackBar({
-    msg: `${what}: ${count.toLocaleString()} selected. ${what} the filter matches from now on are not added; clear the selection to follow the filter again.`
+    msg: `${what}: ${count} selected. ${what} the filter matches from now on are not added; clear the selection to follow the filter again.`
   })
 }
 
@@ -525,6 +528,24 @@ const onPickDatasources = (visible: AdhocDatasourceOption[]) => {
 }
 
 /**
+ * The first palette color no current series or expression is using, so a series
+ * the filter adds later cannot land on an expression's color, and so the colors
+ * come out the same when a link is reopened: expressions travel with theirs, and
+ * the series fill in around them in order, as they did for the sender.
+ */
+const freeColor = (used: Set<string>): string => {
+  for (let slot = 0; slot < 64; slot++) {
+    const candidate = seriesColor(slot, appStore.theme)
+
+    if (!used.has(candidate)) {
+      return candidate
+    }
+  }
+
+  return seriesColor(used.size, appStore.theme)
+}
+
+/**
  * Rebuild `config.series` from what the filters currently match, re-applying the
  * user's edits. Colors are carried over from the previous build where the series
  * survived, so adding a series does not recolor its neighbors; a new series takes
@@ -542,6 +563,17 @@ const reconcileSeries = (datasources: AdhocDatasourceOption[]) => {
   const existing = new Map(config.series.map(entry => [entry.key, entry]))
   const taken = new Set<string>()
   const next: AdhocSeries[] = []
+  const usedColors = new Set(config.expressions.map(expression => expression.color))
+
+  // Colors held by series that survive this build are claimed before any new
+  // series picks one, whatever order the two come in.
+  for (const datasource of datasources) {
+    const color = overrides[datasource.key]?.color ?? existing.get(datasource.key)?.color
+
+    if (color) {
+      usedColors.add(color)
+    }
+  }
 
   // Edited labels are claimed first so a generated one can never collide with
   // them; then the labels series already hold, so a newcomer takes the suffix.
@@ -583,16 +615,19 @@ const reconcileSeries = (datasources: AdhocDatasourceOption[]) => {
       resourceId: datasource.resourceId,
       attribute: datasource.attribute,
       aggregation: override.aggregation ?? ConsolidationFunctionType.AVERAGE,
-      // Slots count from the first series, never past the expressions: a link
-      // restores expressions first, and offsetting by them would hand the
-      // recipient different colors than the sender saw.
-      color: override.color ?? previous?.color ?? seriesColor(next.length, appStore.theme),
+      color: override.color ?? previous?.color ?? claimColor(usedColors),
       style: override.style ?? 'line',
       hidden: override.hidden ?? false
     })
   }
 
   config.series = next
+}
+
+const claimColor = (used: Set<string>): string => {
+  const color = freeColor(used)
+  used.add(color)
+  return color
 }
 
 const updateSeries = (key: string, patch: Partial<AdhocSeries>) => {
@@ -614,6 +649,9 @@ const removeSeries = (key: string) => {
   }
 
   if (store.effectiveDatasources.length <= 1) {
+    // Emptying the graph on purpose: a filter still settling must not refill it.
+    filterGeneration++
+    datasourceText.value = ''
     store.setDatasourceFilter('')
     store.setExcludedDatasourceKeys([])
     return
@@ -627,7 +665,7 @@ const addExpression = () => {
     id: `expr-${++expressionSeq}`,
     label: `expression_${config.expressions.length + 1}`,
     value: '',
-    color: seriesColor(config.series.length + config.expressions.length, appStore.theme),
+    color: freeColor(new Set([...config.series, ...config.expressions].map(entry => entry.color))),
     style: 'line'
   }]
 }
@@ -873,6 +911,24 @@ const debouncedQuery = useDebounceFn(runQuery, 600)
 // The series are whatever the filters and picks currently produce.
 watch(() => store.effectiveDatasources, value => reconcileSeries([...value]))
 
+// Edits and generated labels for series no node seen this session can produce
+// are forgotten, so neither the page nor the link grows for as long as it is
+// open. Judged after a load has settled, never on an empty page: a restored
+// link's edits arrive before its nodes do.
+watch(() => store.resourceLoads, () => {
+  for (const key of Object.keys(overrides)) {
+    if (!store.isKnownKey(key)) {
+      delete overrides[key]
+    }
+  }
+
+  for (const key of [...generatedLabels.keys()]) {
+    if (!store.isKnownKey(key)) {
+      generatedLabels.delete(key)
+    }
+  }
+})
+
 // Only a change to what the server would return re-queries; style, color and
 // title changes re-render from the data already in hand.
 watch(() => querySignature(config, time), () => {
@@ -923,10 +979,11 @@ onMounted(async () => {
   }
 
   // An expression id is regenerated rather than carried; a color is optional.
-  config.expressions = config.expressions.map((entry, index) => ({
+  const expressionColors = new Set(config.expressions.map(entry => entry.color).filter(Boolean))
+  config.expressions = config.expressions.map(entry => ({
     ...entry,
     id: `expr-${++expressionSeq}`,
-    color: entry.color || seriesColor(index, appStore.theme)
+    color: entry.color || claimColor(expressionColors)
   }))
 
   // A link that carries expressions should show them; hiding them would make the
@@ -945,7 +1002,7 @@ onMounted(async () => {
   // reported by the columns themselves.
   if (shared > 0 && now !== shared && !store.nodeFilterError && !store.failedNodeLoads) {
     showSnackBar({
-      msg: `This link now matches ${now.toLocaleString()} series; it matched ${shared.toLocaleString()} when it was made.`
+      msg: `This link now matches ${now} series; it matched ${shared} when it was made.`
     })
   }
 

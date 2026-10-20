@@ -371,6 +371,15 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   const nodeResourceLoads = new Map<string, Promise<NodeResources | null>>()
   /** Effective nodes whose resources could not be loaded. */
   const failedNodeLoads = ref(0)
+  /** Bumped when a resource load completes; what to watch to act on a settled list. */
+  const resourceLoads = ref(0)
+  /**
+   * Every id form of every node whose resources have been seen this session,
+   * including the form the server used in the resource ids themselves. What
+   * belongs to a node seen here may come back when a filter changes; what does
+   * not can be forgotten.
+   */
+  const seenNodeForms = new Set<string>()
 
   const cachedResources = (nodeId: string): NodeResources | null => {
     const entry = nodeResourceCache.get(nodeId)
@@ -402,7 +411,17 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
         }
 
         const label = resource.label || node.label
-        return { label, resources: graphableDescendants(node, label, resource) }
+        const resources = graphableDescendants(node, label, resource)
+
+        for (const form of nodeIdForms(node)) {
+          seenNodeForms.add(form)
+        }
+
+        for (const found of resources) {
+          seenNodeForms.add(nodeCriteriaOf(found.id) ?? '')
+        }
+
+        return { label, resources }
       })
       .catch(() => null)
       .then((loaded) => {
@@ -459,12 +478,15 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     pickedResources.value.filter(resourceIsReachable).map(freshResource))
 
   const effectiveResources = computed<AdhocResourceOption[]>(() => {
-    if (pickedResources.value.length) {
+    if (reachablePickedResources.value.length) {
       return reachablePickedResources.value
     }
 
     return resourceFilter.value.trim() ? resourceMatches.value : []
   })
+
+  /** Selected resources the filters cannot reach right now; shown as a count so they are not a mystery. */
+  const setAsideResources = computed<number>(() => pickedResources.value.length - reachablePickedResources.value.length)
 
   const resourceOptions = computed<AdhocResourceOption[]>(() => [
     ...reachablePickedResources.value,
@@ -507,9 +529,13 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
       .filter(pick => datasourceCandidateByKey.value.has(pick.key) || effectiveResourceIds.value.has(pick.resourceId))
       .map(freshDatasource))
 
-  /** The series the graph plots, before styling. */
+  /**
+   * The series the graph plots, before styling. A selection the filters have
+   * set aside entirely counts as no selection: an empty graph under a column
+   * saying "all 12 matching", with nothing to click, is not what anyone meant.
+   */
   const effectiveDatasources = computed<AdhocDatasourceOption[]>(() => {
-    if (pickedDatasources.value.length) {
+    if (reachablePickedDatasources.value.length) {
       return reachablePickedDatasources.value
     }
 
@@ -524,6 +550,8 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     const excluded = new Set(excludedDatasourceKeys.value)
     return datasourceMatches.value.filter(datasource => !excluded.has(datasource.key))
   })
+
+  const setAsideDatasources = computed<number>(() => pickedDatasources.value.length - reachablePickedDatasources.value.length)
 
   const datasourceOptions = computed<AdhocDatasourceOption[]>(() => [
     ...reachablePickedDatasources.value,
@@ -577,14 +605,39 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     pickedNodes.value = pickedNodes.value.map(node => (node.label === node.id && cachedResources(node.id) ?
       { ...node, label: cachedResources(node.id)?.label ?? node.id } :
       node))
+
+    // An exclusion of a series no node seen this session can produce is dead weight.
+    excludedDatasourceKeys.value = excludedDatasourceKeys.value.filter(isKnownKey)
+    resourceLoads.value++
   }
 
   /**
-   * Forget every resource list and load them afresh: an interface added since
-   * the page was opened is invisible until then. Wired to Refresh.
+   * Whether a series key can still matter: it is selected or excluded, or it
+   * belongs to a node whose resources have been seen this session. Edits and
+   * generated labels for anything else are pruned, or they would grow, and the
+   * link with them, for as long as the page is open.
+   */
+  const isKnownKey = (key: string): boolean => {
+    if (pickedDatasources.value.some(datasource => datasource.key === key)) {
+      return true
+    }
+
+    const { resourceId } = splitDatasourceKey(key)
+    const criterion = nodeCriteriaOf(resourceId)
+
+    return criterion === null || seenNodeForms.has(criterion)
+  }
+
+  /**
+   * Load the effective nodes' resources afresh: an interface added since the
+   * page was opened is invisible until then. Wired to Refresh. Only those nodes;
+   * the rest of the cache is still good for when a filter reaches them again.
    */
   const refreshResources = async () => {
-    nodeResourceCache.clear()
+    for (const node of effectiveNodes.value) {
+      nodeResourceCache.delete(node.id)
+    }
+
     await loadResources()
   }
 
@@ -680,8 +733,13 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   const setPickedNodes = async (nodes: AdhocNodeOption[]) => {
     if (pickedNodes.value.length && nodes.length) {
       const forms = new Set(nodes.flatMap(nodeIdForms))
-      pickedResources.value = pickedResources.value.filter(resource =>
-        forms.has(resource.nodeId) || forms.has(nodeCriteriaOf(resource.id) ?? ''))
+      const underKeptNode = (nodeId: string, resourceId: string) =>
+        forms.has(nodeId) || forms.has(nodeCriteriaOf(resourceId) ?? '')
+
+      pickedResources.value = pickedResources.value.filter(resource => underKeptNode(resource.nodeId, resource.id))
+      // The datasource picks under a deselected node go with it too, or they
+      // would pile up unseen and travel in every link.
+      pickedDatasources.value = pickedDatasources.value.filter(datasource => underKeptNode(datasource.nodeId, datasource.resourceId))
     }
 
     pickedNodes.value = nodes
@@ -801,8 +859,10 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     resourceMatches,
     resourceOptions,
     resourcesLoading,
+    resourceLoads,
     pickedResources,
     reachablePickedResources,
+    setAsideResources,
     effectiveResources,
     datasourceFilter,
     datasourceMatches,
@@ -810,6 +870,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     pickedDatasources,
     reachablePickedDatasources,
     excludedDatasourceKeys,
+    setAsideDatasources,
     effectiveDatasources,
     selectionState,
     measurements,
@@ -823,6 +884,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     setPickedResources,
     setPickedDatasources,
     setExcludedDatasourceKeys,
+    isKnownKey,
     refreshResources,
     restore,
     runQuery,

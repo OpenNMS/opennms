@@ -541,17 +541,23 @@ describe('useAdhocGraphStore', () => {
       expect(ids(store.resourceOptions)).toEqual(['node[1].interfaceSnmp[eth0]'])
     })
 
-    it('are fetched afresh on refresh, so a new interface shows up', async () => {
+    it('are fetched afresh on refresh, for the effective nodes only', async () => {
       await store.setNodeFilter('catincRouters')
       expect(getResourceForNode).toHaveBeenCalledTimes(2)
+      await store.setPickedNodes([{ id: '1', label: 'a' }])
 
       getResourceForNode.mockImplementation((criterion: string) => Promise.resolve(nodeResource(criterion, [
         child(`node[${criterion}].interfaceSnmp[eth9]`, ['ifHCInOctets'])
       ])))
       await store.refreshResources()
 
-      expect(getResourceForNode).toHaveBeenCalledTimes(4)
-      expect(ids(store.resourceOptions)).toEqual(['node[1].interfaceSnmp[eth9]', 'node[2].interfaceSnmp[eth9]'])
+      expect(getResourceForNode).toHaveBeenCalledTimes(3)
+      expect(getResourceForNode).toHaveBeenLastCalledWith('1')
+      expect(ids(store.resourceOptions)).toEqual(['node[1].interfaceSnmp[eth9]'])
+
+      // Node 2 was not refetched; its list is the cached one.
+      await store.setPickedNodes([])
+      expect(ids(store.resourceOptions)).toEqual(['node[1].interfaceSnmp[eth9]', 'node[2].interfaceSnmp[eth0]', 'node[2].interfaceSnmp[eth1]'])
     })
 
     // A pause mid-rule gets a 400 from the engine and, for a moment, no effective
@@ -713,6 +719,60 @@ describe('useAdhocGraphStore', () => {
 
       store.setResourceFilter('interfaceSnmp[*]')
       expect(store.effectiveDatasources).toHaveLength(2)
+    })
+
+    it('fall back to the filter when every pick is set aside, and say how many are', async () => {
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'a' }, { id: '2', label: 'b' }] })
+      await store.setNodeFilter('catincRouters')
+      store.setResourceFilter('interfaceSnmp[*]')
+      store.setDatasourceFilter('ifHCInOctets')
+      store.setPickedDatasources([store.datasourceOptions[2]])
+      expect(keys(store.effectiveDatasources)).toEqual(['node[2].interfaceSnmp[eth0]|ifHCInOctets'])
+
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'a' }] })
+      await store.setNodeFilter('catincRouters & catincCore')
+
+      // The pick under node 2 is set aside, not lost, and the filter graphs node 1 meanwhile.
+      expect(store.setAsideDatasources).toBe(1)
+      expect(keys(store.effectiveDatasources)).toEqual([
+        'node[1].interfaceSnmp[eth0]|ifHCInOctets',
+        'node[1].interfaceSnmp[eth1]|ifHCInOctets'
+      ])
+
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'a' }, { id: '2', label: 'b' }] })
+      await store.setNodeFilter('catincRouters')
+      expect(store.setAsideDatasources).toBe(0)
+      expect(keys(store.effectiveDatasources)).toEqual(['node[2].interfaceSnmp[eth0]|ifHCInOctets'])
+    })
+
+    it('go with their node when it is deselected by hand', async () => {
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'a' }, { id: '2', label: 'b' }] })
+      await store.setNodeFilter('catincRouters')
+      await store.setPickedNodes([{ id: '1', label: 'a' }, { id: '2', label: 'b' }])
+      store.setResourceFilter('interfaceSnmp[*]')
+      store.setDatasourceFilter('ifHCInOctets')
+      store.setPickedDatasources([store.datasourceOptions[0], store.datasourceOptions[2]])
+
+      await store.setPickedNodes([{ id: '1', label: 'a' }])
+
+      expect(keys(store.pickedDatasources)).toEqual(['node[1].interfaceSnmp[eth0]|ifHCInOctets'])
+    })
+
+    it('forget an exclusion no node seen this session could produce', async () => {
+      await store.restore({
+        nodeFilter: 'catincRouters',
+        resourceFilter: '*',
+        datasourceFilter: '*',
+        pickedNodeIds: [],
+        pickedResourceIds: [],
+        pickedDatasourceKeys: [],
+        excludedDatasourceKeys: ['node[1].interfaceSnmp[eth0]|ifHCInOctets', 'node[99].interfaceSnmp[eth0]|ifHCInOctets']
+      })
+
+      expect(store.excludedDatasourceKeys).toEqual(['node[1].interfaceSnmp[eth0]|ifHCInOctets'])
+      expect(store.isKnownKey('node[1].interfaceSnmp[eth9]|x')).toBe(true)
+      expect(store.isKnownKey('node[99].interfaceSnmp[eth0]|x')).toBe(false)
+      expect(store.isKnownKey('nodeless[thing]|x')).toBe(true)
     })
 
     it('leave out excluded series while still following the filter', () => {

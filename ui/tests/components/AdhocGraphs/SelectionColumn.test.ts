@@ -88,6 +88,17 @@ describe('SelectionColumn', () => {
       expect(count(mountColumn({ filterActive: true }))).toBe('all 3 matching')
     })
 
+    it('says how many selections are set aside and how many matches were removed', () => {
+      expect(count(mountColumn({ filterActive: true, modelValue: [OPTIONS[0]], setAsideCount: 2 }))).toBe('1 of 3 selected, 2 set aside')
+      expect(count(mountColumn({ filterActive: true, excludedCount: 1 }))).toBe('all 3 matching, 1 removed')
+      expect(count(mountColumn({ setAsideCount: 1 }))).toBe('3 available, 1 set aside')
+    })
+
+    it('lets Clear drop removals and set-aside selections even with nothing checked', () => {
+      expect(mountColumn({ excludedCount: 1 }).find('[data-test="resources-clear"]').attributes('disabled')).toBeUndefined()
+      expect(mountColumn({ setAsideCount: 1 }).find('[data-test="resources-clear"]').attributes('disabled')).toBeUndefined()
+    })
+
     it('counts the selection against the matches, pinned selections included once', () => {
       // The parent pins picks on top of the list, so a pick the filter no longer
       // matches is still among the options.

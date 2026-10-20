@@ -478,6 +478,82 @@ describe('AdhocGraphBuilder', () => {
       expect(seriesLabels(wrapper)).toHaveLength(1)
     })
 
+    it('gives a series the filter adds later a color no expression already has', async () => {
+      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }] })
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+      store.setResourceFilter('interfaceSnmp[*]')
+      store.setDatasourceFilter('ifHCInOctets')
+      await flushPromises()
+
+      const editor = component(wrapper, '[data-test="expressions-panel"]').findComponent({ name: 'ExpressionEditor' })
+      editor.vm.$emit('add')
+      await flushPromises()
+
+      // The filter grows by one series.
+      store.setDatasourceFilter('ifHC*Octets')
+      await flushPromises()
+
+      const series = component(wrapper, '[data-test="series-grid"]').props('series') as { color: string }[]
+      const colors = series.map(entry => entry.color)
+      const expressionColor = component(wrapper, '[data-test="expressions-panel"]').findComponent({ name: 'ExpressionEditor' })
+        .props('expressions')[0].color
+      expect(colors).toHaveLength(2)
+      expect(new Set([...colors, expressionColor]).size).toBe(3)
+    })
+
+    it('shows removed series in the count and lets Clear bring them back', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+
+      component(wrapper, '[data-test="series-grid"]').vm.$emit('remove', KEY_IN)
+      await flushPromises()
+      expect(wrapper.find('[data-test="datasources-count"]').text()).toBe('all 2 matching, 1 removed')
+
+      await wrapper.find('[data-test="datasources-clear"]').trigger('click')
+      await flushPromises()
+      expect(store.excludedDatasourceKeys).toEqual([])
+      expect(seriesLabels(wrapper)).toHaveLength(2)
+    })
+
+    it('does not let a filter still settling refill a graph emptied by removing its last series', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await filterAll(store)
+      store.setDatasourceFilter('ifHCInOctets')
+      await flushPromises()
+
+      await wrapper.find('input[data-test="datasources-filter"]').setValue('ifHC*Octets')
+      component(wrapper, '[data-test="series-grid"]').vm.$emit('remove', KEY_IN)
+      await new Promise(resolve => setTimeout(resolve, 400))
+      await flushPromises()
+
+      expect(store.datasourceFilter).toBe('')
+      expect((wrapper.find('input[data-test="datasources-filter"]').element as HTMLInputElement).value).toBe('')
+      expect(wrapper.find('[data-test="series-empty"]').exists()).toBe(true)
+    })
+
+    it('forgets an edit for a series no node seen this session can produce', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
+      routeQuery = {
+        nf: 'catincRouters',
+        rf: 'interfaceSnmp[eth*]',
+        df: 'ifHC*Octets',
+        o: ['node[99].interfaceSnmp[eth0]~ifHCInOctets~~elsewhere~~~', `${RESOURCE_ID}~ifHCInOctets~~kept~~~`],
+        range: 'hours:1'
+      }
+      const { wrapper } = mountBuilder()
+      await flushPromises()
+
+      await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+      await flushPromises()
+      const params = new URLSearchParams((copyToClipboard.mock.calls[0][0] as string).split('?')[1])
+      expect(params.getAll('o')).toEqual([`${RESOURCE_ID}~ifHCInOctets~~kept~~~`])
+    })
+
     it('removing the last series empties the graph rather than bringing everything back', async () => {
       const { wrapper, store } = mountBuilder()
       await flushPromises()
@@ -516,7 +592,7 @@ describe('AdhocGraphBuilder', () => {
       await store.setNodeFilter('sw')
       await flushPromises()
 
-      expect(wrapper.find('[data-test="nodes-note"]').text()).toContain('first 1 of 2,310')
+      expect(wrapper.find('[data-test="nodes-note"]').text()).toContain('first 1 of 2310')
     })
 
     it('refuses to graph more series than the cap, and says why', async () => {
