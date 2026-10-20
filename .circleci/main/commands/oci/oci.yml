@@ -114,8 +114,8 @@ commands:
       - run:
           name: generate SBOM HTML report (blitsbom)
           command: |
-            # blitsbom 0.8.5 report generator; only reads CycloneDX/SPDX JSON
-            BLITSBOM_IMAGE="ghcr.io/no42-org/blitsbom:report-0.8.5@sha256:f81d0fb40d5642116dbc0e6787efa1fbdde29b1c8711066a123d3625c81d3d92"
+            # blitsbom 0.8.6 report generator; only reads CycloneDX/SPDX JSON
+            BLITSBOM_IMAGE="ghcr.io/no42-org/blitsbom:report-0.8.6@sha256:82cf7a7b5a6e8abaf341c3afe7b8e184e0511af9b7d9d345d0afb37ffef41baa"
 
             # remote Docker can't bind-mount local paths, so copy files in and out
             cd /tmp/sboms
