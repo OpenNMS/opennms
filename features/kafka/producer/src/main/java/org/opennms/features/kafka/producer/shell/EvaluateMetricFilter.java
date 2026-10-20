@@ -24,10 +24,16 @@ package org.opennms.features.kafka.producer.shell;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -44,10 +50,12 @@ import org.opennms.features.kafka.producer.collection.MetricFilter;
 import org.opennms.features.kafka.producer.collection.ResourceTreeMapper;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.netmgt.collection.api.PersisterFactory;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.osgi.framework.BundleContext;
@@ -74,6 +82,11 @@ public class EvaluateMetricFilter implements Action {
     static final String PRODUCER_PID = KafkaPersisterActivator.PRODUCER_CONFIG;
     static final String METRIC_FILTER_PROPERTY = "metricFilter";
     static final String METRIC_TOPIC_PROPERTY = "metricTopic";
+    static final String DISABLE_SPLITTING_PROPERTY = "disable.metrics.splitting";
+    static final String USE_JSON_PROPERTY = "metrics.useJson";
+
+    /** Matches expressions that look at the instance property, whose tree value may differ from the producer's. */
+    private static final Pattern INSTANCE_REFERENCE = Pattern.compile("\\binstance\\b|getInstance\\s*\\(");
 
     @Reference
     NodeDao nodeDao;
@@ -90,6 +103,9 @@ public class EvaluateMetricFilter implements Action {
     @Reference
     BundleContext bundleContext;
 
+    @Reference(optional = true)
+    ResourceTypesDao resourceTypesDao;
+
     @Option(name = "-n", aliases = "--node", description = "Node ID or FS:FID. When omitted, all nodes with resources are walked, up to --limit resources.")
     String nodeCriteria;
 
@@ -99,7 +115,7 @@ public class EvaluateMetricFilter implements Action {
     @Option(name = "-v", aliases = "--verbose", description = "Print every property the expression can see for each resource.")
     boolean verbose;
 
-    @Option(name = "-j", aliases = "--json", description = "Print the surviving resources as the JSON the producer would send with metrics.useJson=true.")
+    @Option(name = "-j", aliases = "--json", description = "Print the surviving resources in the JSON encoding the producer uses with metrics.useJson=true. Shows the shape only: attribute names and types, no values.")
     boolean json;
 
     @Option(name = "-c", aliases = "--show-config", description = "Print the metric forwarding configuration, including the configured and running filter.")
@@ -113,16 +129,22 @@ public class EvaluateMetricFilter implements Action {
     /** Tree resources skipped because the producer would not forward them, with the reason. */
     private final List<String> skipped = new ArrayList<>();
 
+    /** Resource types whose storage strategy names resources differently from their index. */
+    private Set<String> labelNamedTypes = Collections.emptySet();
+
     /** A resource from the tree together with its protobuf rendering and the filter result. */
     static final class Evaluation {
         final OnmsResource resource;
         final CollectionSetProtos.CollectionSetResource proto;
         final MetricFilter.Result result;
+        /** True when the expression looks at instance and the tree cannot know the instance the producer sends. */
+        final boolean uncertain;
 
-        Evaluation(OnmsResource resource, CollectionSetProtos.CollectionSetResource proto, MetricFilter.Result result) {
+        Evaluation(OnmsResource resource, CollectionSetProtos.CollectionSetResource proto, MetricFilter.Result result, boolean uncertain) {
             this.resource = Objects.requireNonNull(resource);
             this.proto = Objects.requireNonNull(proto);
             this.result = result;
+            this.uncertain = uncertain;
         }
     }
 
@@ -155,6 +177,7 @@ public class EvaluateMetricFilter implements Action {
             System.out.printf("SPEL Expression: %s (from %s)\n", filter.getExpressionString(), expressionSource);
         }
 
+        labelNamedTypes = findLabelNamedResourceTypes();
         final List<Evaluation> evaluations = sessionUtils.withReadOnlyTransaction(() -> evaluate(filter));
         if (evaluations == null) {
             return null;
@@ -200,15 +223,45 @@ public class EvaluateMetricFilter implements Action {
                     node.getLocation() != null ? node.getLocation().getLocationName() : null);
             walk(resourceDao.getResourceForNode(node), node, filter, evaluations);
         } else {
-            for (OnmsResource top : resourceDao.findTopLevelResources()) {
+            // Walk node by node and stop at the limit, instead of findTopLevelResources(), which
+            // probes the storage of every node before returning anything
+            for (Integer nodeId : new TreeSet<>(nodeDao.getNodeIds())) {
                 if (limitReached(evaluations)) {
                     break;
                 }
-                final OnmsEntity entity = top.getEntity();
-                walk(top, entity instanceof OnmsNode ? (OnmsNode) entity : null, filter, evaluations);
+                final OnmsNode node = nodeDao.get(nodeId);
+                if (node != null) {
+                    walk(resourceDao.getResourceForNode(node), node, filter, evaluations);
+                }
             }
         }
         return evaluations;
+    }
+
+    /**
+     * Resource types whose storage strategy is not the index strategy: the resource tree knows them by
+     * their storage label, while the producer sends the raw index as the instance.
+     */
+    Set<String> findLabelNamedResourceTypes() {
+        if (resourceTypesDao == null) {
+            return Collections.emptySet();
+        }
+        final Set<String> types = new TreeSet<>();
+        for (ResourceType type : resourceTypesDao.getResourceTypes().values()) {
+            if (type.getStorageStrategy() != null
+                    && !Strings.isNullOrEmpty(type.getStorageStrategy().getClazz())
+                    && !IndexStorageStrategy.class.getName().equals(type.getStorageStrategy().getClazz())) {
+                types.add(type.getName());
+            }
+        }
+        return types;
+    }
+
+    private boolean isUncertain(MetricFilter filter, CollectionSetProtos.CollectionSetResource proto) {
+        return filter != null
+                && proto.hasGeneric()
+                && labelNamedTypes.contains(proto.getGeneric().getType())
+                && INSTANCE_REFERENCE.matcher(filter.getExpressionString()).find();
     }
 
     private void walk(OnmsResource parent, OnmsNode node, MetricFilter filter, List<Evaluation> evaluations) {
@@ -223,7 +276,7 @@ public class EvaluateMetricFilter implements Action {
                 continue;
             }
             final CollectionSetProtos.CollectionSetResource proto = mapper.toProto(child, resourceNode);
-            evaluations.add(new Evaluation(child, proto, filter != null ? filter.evaluate(proto) : null));
+            evaluations.add(new Evaluation(child, proto, filter != null ? filter.evaluate(proto) : null, isUncertain(filter, proto)));
         }
     }
 
@@ -248,13 +301,13 @@ public class EvaluateMetricFilter implements Action {
             row.addContent(nullToDash(ctx.getResourceTypeName()));
             // The resource id the producer sends, which is not the id the resource tree uses
             row.addContent(nullToDash(Strings.emptyToNull(ctx.getResourceId())));
-            row.addContent(nullToDash(ctx.getInstance()));
+            row.addContent(e.uncertain ? ctx.getInstance() + " (label)" : nullToDash(ctx.getInstance()));
             row.addContent(nullToDash(ctx.getIfIndex()));
             row.addContent(ctx.getNodeId() != null ? ctx.getNodeId() + " (" + nullToDash(ctx.getNodeLabel()) + ")" : "-");
             row.addContent(nullToDash(ctx.getLocation()));
             row.addContent(e.proto.getNumericCount());
             row.addContent(e.proto.getStringCount());
-            row.addContent(describe(e.result));
+            row.addContent(e.uncertain ? describe(e.result) + " (uncertain)" : describe(e.result));
         }
         table.print(System.out);
     }
@@ -267,6 +320,9 @@ public class EvaluateMetricFilter implements Action {
             for (Map.Entry<String, Object> entry : new MetricFilter.ResourceFilterContext(e.proto).toMap().entrySet()) {
                 System.out.printf("    %-16s = %s\n", entry.getKey(), entry.getValue());
             }
+            if (e.uncertain) {
+                System.out.printf("    %-16s = %s\n", "uncertain", "instance is the storage label, the producer sends the raw index");
+            }
             if (e.result != null && e.result.getCause() != null) {
                 System.out.printf("    %-16s = %s\n", "error", e.result.getCause().getMessage());
             }
@@ -274,8 +330,11 @@ public class EvaluateMetricFilter implements Action {
     }
 
     private void printSummary(List<Evaluation> evaluations) {
-        long forwarded = 0, dropped = 0, errors = 0;
+        long forwarded = 0, dropped = 0, errors = 0, uncertain = 0;
         for (Evaluation e : evaluations) {
+            if (e.uncertain) {
+                uncertain++;
+            }
             if (e.result == null || e.result.getOutcome() == MetricFilter.Outcome.FORWARD) {
                 forwarded++;
             } else if (e.result.getOutcome() == MetricFilter.Outcome.DROP) {
@@ -285,8 +344,14 @@ public class EvaluateMetricFilter implements Action {
             }
         }
         System.out.println();
-        System.out.printf("Resources: %d, forwarded: %d, dropped: %d, errors (forwarded anyway): %d\n",
-                evaluations.size(), forwarded + errors, dropped, errors);
+        System.out.printf("Resources: %d, forwarded: %d, dropped: %d, errors (forwarded anyway): %d, uncertain: %d\n",
+                evaluations.size(), forwarded + errors, dropped, errors, uncertain);
+        if (uncertain > 0) {
+            System.out.printf("%d result(s) are uncertain: the expression uses instance, and for resource types with a storage strategy other than %s (%s)\n",
+                    uncertain, IndexStorageStrategy.class.getSimpleName(),
+                    evaluations.stream().filter(e -> e.uncertain).map(e -> e.proto.getGeneric().getType()).distinct().sorted().collect(Collectors.joining(", ")));
+            System.out.println("the resource tree only knows the storage label shown here, while the producer sends the raw index as the instance.");
+        }
         if (forwarded + errors == 0) {
             System.out.println("No resource matches the filter: the producer would not send any message for these resources.");
         }
@@ -310,7 +375,7 @@ public class EvaluateMetricFilter implements Action {
             }
         }
         System.out.println();
-        System.out.println("Surviving resources as JSON (attribute values are placeholders, the tree does not hold values):");
+        System.out.println("Surviving resources in the producer's JSON encoding (shape only: the resource tree holds no attribute values):");
         System.out.println(KafkaPersister.toJson(builder.build()));
     }
 
@@ -321,19 +386,42 @@ public class EvaluateMetricFilter implements Action {
         System.out.println("      services appear only after their first collection. Response time resources carry node");
         System.out.println("      information, but their location property is only set for nodes outside the Default location.");
         System.out.println("      The Resource column shows the id the producer sends, which differs from the resource tree id.");
+        System.out.println("      The instance of a generic resource is its storage label; the producer sends the raw index, which only");
+        System.out.println("      matches the label for the index storage strategy. Rows affected by that are marked uncertain.");
     }
 
     private void printConfig(Dictionary<String, Object> config) {
         System.out.printf("Configuration (%s):\n", PRODUCER_PID);
-        System.out.printf("    %-18s = %s\n", KafkaPersisterActivator.FORWARD_METRICS, valueOf(config, KafkaPersisterActivator.FORWARD_METRICS));
-        System.out.printf("    %-18s = %s\n", METRIC_TOPIC_PROPERTY, valueOf(config, METRIC_TOPIC_PROPERTY));
-        System.out.printf("    %-18s = %s\n", METRIC_FILTER_PROPERTY, valueOf(config, METRIC_FILTER_PROPERTY));
+        System.out.printf("    %-26s = %s\n", KafkaPersisterActivator.FORWARD_METRICS, valueOf(config, KafkaPersisterActivator.FORWARD_METRICS));
+        System.out.printf("    %-26s = %s\n", METRIC_TOPIC_PROPERTY, valueOf(config, METRIC_TOPIC_PROPERTY));
+        System.out.printf("    %-26s = %s\n", METRIC_FILTER_PROPERTY, valueOf(config, METRIC_FILTER_PROPERTY));
+        System.out.printf("    %-26s = %s\n", DISABLE_SPLITTING_PROPERTY, valueOf(config, DISABLE_SPLITTING_PROPERTY));
+        System.out.printf("    %-26s = %s\n", USE_JSON_PROPERTY, valueOf(config, USE_JSON_PROPERTY));
         final KafkaPersisterFactory factory = findKafkaPersisterFactory();
         if (factory != null) {
-            final String running = factory.getMetricFilter();
-            System.out.printf("Running metric filter: %s\n", Strings.isNullOrEmpty(running) ? "(none)" : running);
-            if (!Objects.equals(Strings.nullToEmpty(running), Strings.nullToEmpty(configuredFilter(config)))) {
-                System.out.println("WARNING: the running filter differs from the configured one. The metric filter is read when the");
+            // Everything the activator reads once at start, as the running persisters see it
+            final Map<String, String> running = new LinkedHashMap<>();
+            running.put(METRIC_FILTER_PROPERTY, Strings.nullToEmpty(factory.getMetricFilter()));
+            running.put(METRIC_TOPIC_PROPERTY, Strings.nullToEmpty(factory.getTopicName()));
+            running.put(DISABLE_SPLITTING_PROPERTY, String.valueOf(factory.isDisableMetricsSplitting()));
+            running.put(USE_JSON_PROPERTY, String.valueOf(factory.isUseJson()));
+            final Map<String, String> configured = new LinkedHashMap<>();
+            configured.put(METRIC_FILTER_PROPERTY, Strings.nullToEmpty(configuredFilter(config)));
+            configured.put(METRIC_TOPIC_PROPERTY, Strings.nullToEmpty(stringValue(config, METRIC_TOPIC_PROPERTY)));
+            configured.put(DISABLE_SPLITTING_PROPERTY, String.valueOf(Boolean.parseBoolean(stringValue(config, DISABLE_SPLITTING_PROPERTY))));
+            configured.put(USE_JSON_PROPERTY, String.valueOf(Boolean.parseBoolean(stringValue(config, USE_JSON_PROPERTY))));
+
+            System.out.println("Running (read when the feature started):");
+            final List<String> stale = new ArrayList<>();
+            for (Map.Entry<String, String> entry : running.entrySet()) {
+                final String value = entry.getValue().isEmpty() ? "(none)" : entry.getValue();
+                System.out.printf("    %-26s = %s\n", entry.getKey(), value);
+                if (!Objects.equals(entry.getValue(), configured.get(entry.getKey()))) {
+                    stale.add(entry.getKey());
+                }
+            }
+            if (!stale.isEmpty()) {
+                System.out.printf("WARNING: the running values of %s differ from the configuration. These settings are read when the\n", String.join(", ", stale));
                 System.out.println("         feature starts, restart the opennms-kafka-producer feature to apply the configuration.");
             }
         } else {
@@ -379,7 +467,11 @@ public class EvaluateMetricFilter implements Action {
     }
 
     private static String configuredFilter(Dictionary<String, Object> config) {
-        final Object value = config != null ? config.get(METRIC_FILTER_PROPERTY) : null;
+        return stringValue(config, METRIC_FILTER_PROPERTY);
+    }
+
+    private static String stringValue(Dictionary<String, Object> config, String key) {
+        final Object value = config != null ? config.get(key) : null;
         return value instanceof String ? (String) value : null;
     }
 

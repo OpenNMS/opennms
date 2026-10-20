@@ -44,7 +44,11 @@ import com.google.common.base.Strings;
  *
  * This allows the metric filter to be evaluated against the resources that have been collected
  * for a node without triggering an actual collection. Attribute values are not available from the
- * tree, so numeric attributes are emitted with a NaN value: only their names are meaningful.
+ * tree, so attributes are emitted without values: only their names (and string values) are meaningful.
+ *
+ * The instance of a generic resource is the resource tree name, i.e. the storage label. The producer
+ * sends the raw index instead, which only matches the label for the default index storage strategy;
+ * callers can detect the other strategies through the ResourceTypesDao.
  *
  * Resources the producer would not forward are not mapped at all (the mapper returns null): resources
  * that do not belong to a node, interface resources without a matching SNMP interface (the producer
@@ -201,8 +205,7 @@ public class ResourceTreeMapper {
     private static void addAttributes(CollectionSetProtos.CollectionSetResource.Builder builder, OnmsResource resource) {
         resource.getRrdGraphAttributes().keySet().stream().sorted().forEach(name ->
                 builder.addNumeric(CollectionSetProtos.NumericAttribute.newBuilder()
-                        .setName(name)
-                        .setValue(Double.NaN)));
+                        .setName(name)));
         resource.getStringPropertyAttributes().entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(e -> builder.addString(CollectionSetProtos.StringAttribute.newBuilder()

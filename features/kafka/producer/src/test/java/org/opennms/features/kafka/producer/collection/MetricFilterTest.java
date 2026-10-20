@@ -184,6 +184,14 @@ public class MetricFilterTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
+    public void deprecatedPersisterContextStillWorks() {
+        final KafkaPersister.ResourceFilterContext ctx = new KafkaPersister.ResourceFilterContext(interfaceResource(5, 3));
+        assertThat(ctx.getNodeId(), equalTo(5L));
+        assertThat(ctx.getIfIndex(), equalTo(3));
+    }
+
+    @Test
     public void contextExposesAllPropertiesInStableOrder() {
         final Map<String, Object> map = new MetricFilter.ResourceFilterContext(interfaceResource(5, 3)).toMap();
         assertThat(map.keySet(), contains("nodeId", "nodeLabel", "foreignSource", "foreignId", "location",

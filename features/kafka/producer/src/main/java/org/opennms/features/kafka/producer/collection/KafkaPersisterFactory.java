@@ -131,13 +131,26 @@ public class KafkaPersisterFactory implements PersisterFactory {
         this.topicName = topicName;
     }
 
+    /** The topic handed to every persister created by this factory, i.e. the one actually in use. */
+    public String getTopicName() {
+        return topicName;
+    }
+
 
     public void setDisableMetricsSplitting(boolean disableMetricsSplitting) {
         this.disableMetricsSplitting = disableMetricsSplitting;
     }
 
+    public boolean isDisableMetricsSplitting() {
+        return disableMetricsSplitting;
+    }
+
     public void setUseJson(boolean useJson) {
         this.useJson = useJson;
+    }
+
+    public boolean isUseJson() {
+        return useJson;
     }
 
     public void setMetricFilter(String metricFilter) {

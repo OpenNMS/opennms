@@ -159,7 +159,7 @@ admin@opennms()> opennms:kafka-evaluate-metric-filter -n 5 'getLocation() == "Ra
 ----
 
 The metric filter is read when the feature starts, so a changed configuration only applies after the `opennms-kafka-producer` feature has been restarted.
-The command's `--show-config` option shows both the configured and the running filter.
+The command's `--show-config` option shows both the configured and the running values.
 
 == Enable metric forwarding
 

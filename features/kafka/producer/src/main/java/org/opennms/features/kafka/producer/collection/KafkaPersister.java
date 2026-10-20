@@ -344,4 +344,15 @@ public class KafkaPersister implements Persister {
     public MetricFilter getMetricFilter() {
         return metricFilter;
     }
+
+    /**
+     * @deprecated the SpEL root object moved to {@link MetricFilter.ResourceFilterContext}; this alias only
+     * keeps external code compiling.
+     */
+    @Deprecated
+    public static class ResourceFilterContext extends MetricFilter.ResourceFilterContext {
+        public ResourceFilterContext(CollectionSetProtos.CollectionSetResource resource) {
+            super(resource);
+        }
+    }
 }

@@ -146,7 +146,9 @@ public class ResourceTreeMapperTest {
         assertThat(proto.getResourceName(), equalTo(""));
         assertThat(proto.getNumericList().stream().map(CollectionSetProtos.NumericAttribute::getName).collect(Collectors.toList()),
                 contains("loadavg1", "loadavg5"));
-        assertThat(Double.isNaN(proto.getNumeric(0).getValue()), is(true));
+        // the tree holds no values, so none are made up
+        assertThat(proto.getNumeric(0).getValue(), equalTo(0.0));
+        assertThat(proto.getNumeric(0).hasMetricValue(), is(false));
         assertThat(proto.getStringCount(), equalTo(1));
         assertThat(proto.getString(0).getName(), equalTo("sysName"));
         assertThat(proto.getString(0).getValue(), equalTo("host"));

@@ -44,6 +44,9 @@ import org.junit.Test;
 import org.opennms.features.kafka.producer.collection.KafkaPersisterFactory;
 import org.opennms.features.kafka.producer.collection.ResourceTreeMapperTest;
 import org.opennms.netmgt.collection.api.PersisterFactory;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -83,7 +86,8 @@ public class EvaluateMetricFilterTest {
         when(command.nodeDao.get("5")).thenReturn(node);
         command.resourceDao = mock(ResourceDao.class);
         when(command.resourceDao.getResourceForNode(node)).thenReturn(top);
-        when(command.resourceDao.findTopLevelResources()).thenReturn(Collections.singletonList(top));
+        when(command.nodeDao.getNodeIds()).thenReturn(Collections.singletonList(5));
+        when(command.nodeDao.get(5)).thenReturn(node);
         command.sessionUtils = mock(SessionUtils.class);
         when(command.sessionUtils.withReadOnlyTransaction(any(Supplier.class)))
                 .thenAnswer(invocation -> ((Supplier<Object>) invocation.getArgument(0)).get());
@@ -98,6 +102,22 @@ public class EvaluateMetricFilterTest {
 
         command.bundleContext = mock(BundleContext.class);
         when(command.bundleContext.getServiceReferences(PersisterFactory.class, "(strategy=kafka)")).thenReturn(Collections.emptyList());
+
+        // hrStorageIndex is stored by sibling column (its label, not its index), queueMetrics by index
+        command.resourceTypesDao = mock(ResourceTypesDao.class);
+        final java.util.Map<String, ResourceType> types = new java.util.HashMap<>();
+        types.put("hrStorageIndex", resourceType("hrStorageIndex", "org.opennms.netmgt.collection.support.SiblingColumnStorageStrategy"));
+        types.put("queueMetrics", resourceType("queueMetrics", "org.opennms.netmgt.collection.support.IndexStorageStrategy"));
+        when(command.resourceTypesDao.getResourceTypes()).thenReturn(types);
+    }
+
+    private static ResourceType resourceType(String name, String storageStrategyClass) {
+        final ResourceType type = new ResourceType();
+        type.setName(name);
+        final StorageStrategy strategy = new StorageStrategy();
+        strategy.setClazz(storageStrategyClass);
+        type.setStorageStrategy(strategy);
+        return type;
     }
 
     @SuppressWarnings("unchecked")
@@ -156,7 +176,7 @@ public class EvaluateMetricFilterTest {
         assertThat(output, containsString("Node: node-5 (id=5, foreignSource=fs, foreignId=fid-5, location=Raleigh)"));
         assertThat(output, containsString("node[5].interfaceSnmp[eth0-aabbcc]"));
         assertThat(output, containsString("node[5].hrStorageIndex[1]"));
-        assertThat(output, containsString("Resources: 4, forwarded: 1, dropped: 3, errors (forwarded anyway): 0"));
+        assertThat(output, containsString("Resources: 4, forwarded: 1, dropped: 3, errors (forwarded anyway): 0, uncertain: 0"));
         assertThat(output, containsString("Skipped 1 resource(s) the producer never forwards:"));
         assertThat(output, containsString("interfaceSnmp[eth9-stale]: no matching SNMP interface"));
         // the table shows the producer's id, not the tree id (the top-level resource is named "5" here, so both agree)
@@ -189,6 +209,32 @@ public class EvaluateMetricFilterTest {
         command.spelExpression = "nodeId == 5 and resourceTypeName == 'responseTime'";
         final String output = run();
         assertThat(output, containsString("Resources: 4, forwarded: 1, dropped: 3"));
+    }
+
+    @Test
+    public void marksInstanceResultsOfLabelNamedTypesAsUncertain() throws Exception {
+        command.nodeCriteria = "5";
+        command.spelExpression = "instance == '1'";
+        command.verbose = true;
+        final String output = run();
+        // hrStorageIndex[1] matches by its tree name, but the producer would send the raw index, which the tree does not know
+        assertThat(output, containsString("1 (label)"));
+        assertThat(output, containsString("FORWARD (uncertain)"));
+        assertThat(output, containsString("uncertain: 1"));
+        assertThat(output, containsString("1 result(s) are uncertain: the expression uses instance"));
+        assertThat(output, containsString("(hrStorageIndex)"));
+        assertThat(output, containsString("uncertain        = instance is the storage label"));
+
+        // an expression that does not look at instance is never uncertain
+        out.reset();
+        command.spelExpression = "resourceName == '1'";
+        assertThat(run(), containsString("uncertain: 0"));
+
+        // without the ResourceTypesDao nothing can be told apart, so nothing is marked
+        out.reset();
+        command.resourceTypesDao = null;
+        command.spelExpression = "instance == '1'";
+        assertThat(run(), containsString("uncertain: 0"));
     }
 
     @Test
@@ -237,6 +283,9 @@ public class EvaluateMetricFilterTest {
         final String output = run();
         assertThat(output, containsString("\"instance\":\"eth0-aabbcc\""));
         assertThat(output, containsString("\"ifIndex\":3"));
+        // no made up values, the printer omits the unset value field
+        assertThat(output, not(containsString("NaN")));
+        assertThat(output, not(containsString("\"value\"")));
         assertThat(output, not(containsString("hrStorageIndex\"")));
     }
 
@@ -245,16 +294,26 @@ public class EvaluateMetricFilterTest {
         config.put("metricFilter", "nodeId == 2");
         final KafkaPersisterFactory factory = new KafkaPersisterFactory();
         factory.setMetricFilter("nodeId == 1");
+        factory.setTopicName("metrics");
         // Another persister factory registered with the same strategy must not hide the Kafka one
         registerPersisterFactories(mock(PersisterFactory.class), factory);
         command.nodeCriteria = "5";
         command.showConfig = true;
         final String output = run();
 
-        assertThat(output, containsString("forward.metrics    = true"));
-        assertThat(output, containsString("metricFilter       = nodeId == 2"));
-        assertThat(output, containsString("Running metric filter: nodeId == 1"));
-        assertThat(output, containsString("WARNING: the running filter differs from the configured one"));
+        assertThat(output, containsString("forward.metrics            = true"));
+        assertThat(output, containsString("metricFilter               = nodeId == 2"));
+        assertThat(output, containsString("metricFilter               = nodeId == 1"));
+        assertThat(output, containsString("WARNING: the running values of metricFilter differ from the configuration"));
+
+        // the other settings the activator reads once are compared as well
+        out.reset();
+        factory.setMetricFilter("nodeId == 2");
+        factory.setTopicName("metrics");
+        config.put("metricTopic", "other-metrics");
+        config.put("disable.metrics.splitting", "true");
+        final String output2 = run();
+        assertThat(output2, containsString("WARNING: the running values of metricTopic, disable.metrics.splitting differ from the configuration"));
     }
 
     @Test
@@ -264,6 +323,6 @@ public class EvaluateMetricFilterTest {
         command.showConfig = true;
         final String output = run();
         assertThat(output, containsString("the Kafka persister is not registered"));
-        assertThat(output, containsString("metricFilter       = (not set)"));
+        assertThat(output, containsString("metricFilter               = (not set)"));
     }
 }
