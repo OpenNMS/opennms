@@ -1752,7 +1752,7 @@
     <bouncyCastleVersion>1.85</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
-    <byteBuddyVersion>1.14.9</byteBuddyVersion>
+    <byteBuddyVersion>1.17.8</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
