@@ -26,12 +26,12 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 
-import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -53,8 +53,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.Ports;
 
 /**
  * Measures how long a running Core takes to stop and to come back after a container restart.
@@ -80,6 +78,12 @@ public class CoreRestartTimeIT {
     /** The test fails when the container does not stop within this time after SIGTERM. */
     private static final Duration STOP_LIMIT = Duration.ofSeconds(30);
 
+    /** Docker sends SIGKILL when the container does not exit within this time after SIGTERM. */
+    private static final Duration KILL_TIMEOUT = STOP_LIMIT.plusSeconds(30);
+
+    /** Exit code of a container that Docker killed with SIGKILL. */
+    private static final long SIGKILL_EXIT_CODE = 137;
+
     private static final Pattern BEGIN_STARTUP = Pattern.compile("^(\\S+ \\S+) .*Starter: Beginning startup", Pattern.MULTILINE);
     private static final Pattern STARTUP_COMPLETE = Pattern.compile("^(\\S+ \\S+) .*Starter: Startup complete", Pattern.MULTILINE);
     private static final DateTimeFormatter LOG_TIMESTAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS");
@@ -104,16 +108,21 @@ public class CoreRestartTimeIT {
         // Stop: docker sends SIGTERM and waits up to the given timeout before it sends SIGKILL.
         LOG.info("Stopping container {}", containerId);
         final long stopStart = System.nanoTime();
-        docker.stopContainerCmd(containerId).withTimeout((int) STOP_LIMIT.getSeconds() + 30).exec();
+        docker.stopContainerCmd(containerId).withTimeout((int) KILL_TIMEOUT.getSeconds()).exec();
         await("container stopped").atMost(2, MINUTES).pollInterval(200, TimeUnit.MILLISECONDS)
                 .until(() -> !Boolean.TRUE.equals(docker.inspectContainerCmd(containerId).exec().getState().getRunning()));
         final Duration stopDuration = sinceNanos(stopStart);
-        LOG.info("Container stopped in {} ms", stopDuration.toMillis());
+        final Long exitCode = docker.inspectContainerCmd(containerId).exec().getState().getExitCodeLong();
+        LOG.info("Container stopped in {} ms with exit code {}", stopDuration.toMillis(), exitCode);
+        assertThat("Core did not exit on SIGTERM within " + KILL_TIMEOUT.getSeconds() + " s and Docker killed it (exit code)",
+                exitCode, not(equalTo(SIGKILL_EXIT_CODE)));
 
         // Start and wait for the markers of the second start.
         LOG.info("Starting container {}", containerId);
         final long startStart = System.nanoTime();
         docker.startContainerCmd(containerId).exec();
+        // Docker assigns new host ports on restart and testcontainers caches the old ones.
+        opennms.refreshContainerInfo();
 
         await("second Beginning startup").atMost(RESTART_LIMIT.getSeconds(), SECONDS).pollInterval(500, TimeUnit.MILLISECONDS)
                 .failFast("container is no longer running", () -> !Boolean.TRUE.equals(docker.inspectContainerCmd(containerId).exec().getState().getRunning()))
@@ -125,8 +134,7 @@ public class CoreRestartTimeIT {
                 .until(() -> count(STARTUP_COMPLETE, managerLog(opennms, managerLog)), greaterThanOrEqualTo(startsBefore + 1));
         final Duration toStartupComplete = sinceNanos(startStart);
 
-        // Docker assigns new host ports on restart and testcontainers caches the old ones, so resolve the port again.
-        final RestHealthClient health = new RestHealthClient(webUrlAfterRestart(docker, containerId, opennms.getHost()), Optional.of(OpenNMSContainer.ALIAS));
+        final RestHealthClient health = new RestHealthClient(opennms.getWebUrl(), Optional.of(OpenNMSContainer.ALIAS));
         await("health check after restart").atMost(RESTART_LIMIT.getSeconds(), SECONDS).pollInterval(1, SECONDS)
                 .ignoreExceptionsMatching(e -> e.getCause() instanceof SocketException)
                 .until(health::getProbeHealthResponse, containsString(health.getProbeSuccessMessage()));
@@ -137,8 +145,9 @@ public class CoreRestartTimeIT {
         final Duration jvmStartup = Duration.between(
                 lastTimestamp(BEGIN_STARTUP, log), lastTimestamp(STARTUP_COMPLETE, log));
 
-        LOG.info("Core restart measurement (ms): stop={}, entrypoint={}, daemons={}, health={}, total={}",
+        LOG.info("Core restart measurement (ms): stop={} (exit code {}), entrypoint={}, daemons={}, health={}, total={}",
                 stopDuration.toMillis(),
+                exitCode,
                 toBeginStartup.toMillis(),
                 jvmStartup.toMillis(),
                 toHealthy.minus(toStartupComplete).toMillis(),
@@ -149,19 +158,6 @@ public class CoreRestartTimeIT {
 
         assertThat("stop time (ms)", stopDuration.toMillis(), lessThanOrEqualTo(STOP_LIMIT.toMillis()));
         assertThat("restart time (ms)", toHealthy.toMillis(), lessThanOrEqualTo(RESTART_LIMIT.toMillis()));
-    }
-
-    private static URL webUrlAfterRestart(final DockerClient docker, final String containerId, final String host) {
-        final Ports.Binding[] bindings = docker.inspectContainerCmd(containerId).exec()
-                .getNetworkSettings().getPorts().getBindings().get(ExposedPort.tcp(OpenNMSContainer.OPENNMS_WEB_PORT));
-        if (bindings == null || bindings.length == 0) {
-            throw new IllegalStateException("No host port bound to " + OpenNMSContainer.OPENNMS_WEB_PORT + " after restart");
-        }
-        try {
-            return new URL(String.format("http://%s:%s/", host, bindings[0].getHostPortSpec()));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static String managerLog(final OpenNMSContainer opennms, final Path managerLog) {

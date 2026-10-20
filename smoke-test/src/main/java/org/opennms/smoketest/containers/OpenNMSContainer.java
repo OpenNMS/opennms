@@ -74,6 +74,7 @@ import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.google.common.collect.ImmutableMap;
 
@@ -326,6 +327,23 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private volatile InspectContainerResponse refreshedContainerInfo;
+
+    /**
+     * Re-reads the container state from Docker. Call this after a stop and start of the
+     * container: Docker assigns new host ports, and testcontainers caches the old ones for
+     * {@link #getMappedPort(int)}.
+     */
+    public void refreshContainerInfo() {
+        refreshedContainerInfo = getDockerClient().inspectContainerCmd(getContainerId()).exec();
+    }
+
+    @Override
+    public InspectContainerResponse getContainerInfo() {
+        final InspectContainerResponse refreshed = refreshedContainerInfo;
+        return refreshed != null ? refreshed : super.getContainerInfo();
     }
 
     /**
