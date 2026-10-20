@@ -152,13 +152,21 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
     @Test
     public void verifyTestConnection() {
+        // Use a closed local port so the connection is refused right away. The timeouts are in seconds,
+        // so the dummy endpoint's values (and an external host) can block for minutes in CI.
         final GrafanaEndpoint dummyEndpoint = GrafanaEndpointRestIT.createDummyEndpoint();
+        dummyEndpoint.setUrl("http://localhost:1");
+        dummyEndpoint.setConnectTimeout(1);
+        dummyEndpoint.setReadTimeout(1);
         final EndpointModal modal = uiPage.newModal().setInput(dummyEndpoint);
         new Button(getDriver(), "verify-endpoint").click();
-        execute(() -> {
-            pageContainsText("Could not connect");
-            return null;
-        });
+
+        final WebDriverWait verifyWait = waitFor(10);
+        verifyWait.until(pageContainsText("Could not connect"));
+
+        // The server's error message is rendered as text in the alert below the status
+        final WebElement verificationResult = verifyWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#endpointModal .alert-danger")));
+        assertEquals("Grafana endpoint could not be verified.", verificationResult.getText().trim());
         modal.cancel();
     }
 
