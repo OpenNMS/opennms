@@ -30,6 +30,10 @@ public final class ElementConstants {
      * The Vue node detail page. Callers append a node id or foreignSource:foreignId.
      * It is a hash route, so it takes no query parameters. It is relative to the
      * webapp context root (the pages' {@code <base href>}).
+     * <p>
+     * As a compile-time constant, its value is copied into every class that uses it. A change
+     * takes effect only once those classes are rebuilt, which matters for plugins built
+     * outside this repository. {@code NodeResourceType} in opennms-dao keeps its own copy.
      */
     public static final String NODE_DETAILS_URI = "ui/index.html#/node/";
 
