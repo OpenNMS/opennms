@@ -131,6 +131,18 @@ import {
 } from './notificationConfigService'
 import { acknowledgeNotification, browseNotifications } from './notificationService'
 import {
+  addGraphToCollection,
+  createGraphCollection,
+  deleteGraphCollection,
+  getGraphCollection,
+  getGraphCollectionTimespans,
+  getGraphCollections,
+  getResolvedGraphCollection,
+  getResolvedSyntheticGraphCollection,
+  reloadGraphCollections,
+  updateGraphCollection
+} from './graphCollectionsService'
+import {
   createManagedGroup,
   deleteManagedGroup,
   getGroupMemberCandidates,
@@ -275,5 +287,15 @@ export default {
   resetWsmanDataCollection,
   syncWsmanDefinition,
   updateWsmanConfig,
-  updateWsmanDataCollectionFile
+  updateWsmanDataCollectionFile,
+  addGraphToCollection,
+  createGraphCollection,
+  deleteGraphCollection,
+  getGraphCollection,
+  getGraphCollectionTimespans,
+  getGraphCollections,
+  getResolvedGraphCollection,
+  getResolvedSyntheticGraphCollection,
+  reloadGraphCollections,
+  updateGraphCollection
 }
