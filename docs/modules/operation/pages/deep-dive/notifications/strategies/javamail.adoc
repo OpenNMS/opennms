@@ -1,0 +1,167 @@
+
+= Email Notifications
+:description: How the JavaMail notification strategy in {page-component-title} sends notices by email, and the properties that configure the mail server.
+
+The JavaMail notification strategy sends a notice as an email message through an SMTP server.
+It runs inside the {page-component-title} JVM and is the strategy behind the default `javaEmail` and `javaPagerEmail` commands.
+
+The strategy class is `org.opennms.netmgt.notifd.JavaMailNotificationStrategy`.
+
+== Default commands
+
+`notificationCommands.xml` defines two commands that use this strategy:
+
+[source, xml]
+----
+<command binary="false">
+  <name>javaPagerEmail</name>
+  <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
+  <comment>class for sending pager email notifications</comment>
+  <contact-type>pagerEmail</contact-type>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-pemail</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+<command binary="false">
+  <name>javaEmail</name>
+  <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
+  <comment>class for sending email notifications</comment>
+  <contact-type>email</contact-type>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-email</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+`javaEmail` sends to the address in the user's *Email* contact field, and `javaPagerEmail` sends to the address in the *Pager Email* field.
+Pointing the pager email field at an email-to-SMS gateway is a common way to deliver short notices to a phone.
+
+When a destination path targets a one-off email address instead of a user, notifd uses the command named by the `email-address-command` attribute in `notifd-configuration.xml`, which defaults to `javaEmail`.
+
+== Arguments
+
+The strategy reads the following switches and ignores any others:
+
+[options="header"]
+[cols="1,3"]
+|===
+| Switch
+| Description
+
+| `-email`
+| Recipient address, taken from the user's *Email* contact field.
+
+| `-pemail`
+| Recipient address, taken from the user's *Pager Email* contact field.
+
+| `-subject`
+| Message subject, from the notification's `<subject>`.
+
+| `-tm`
+| Message body, from the notification's `<text-message>`.
+
+| `-nm`
+| Message body, from the notification's `<numeric-message>`.
+|===
+
+If a command declares both `-email` and `-pemail`, the one listed last sets the recipient.
+Likewise, if a command declares both `-tm` and `-nm`, the one listed last sets the body.
+
+== Mail server properties
+
+The strategy reads its mail server settings from `$\{OPENNMS_HOME}/etc/javamail-configuration.properties`.
+Properties not set in the file use the defaults below.
+
+[options="header"]
+[cols="2,3,1"]
+|===
+| Property
+| Description
+| Default
+
+| `org.opennms.core.utils.fromAddress`
+| Sender address.
+| `root@[127.0.0.1]`
+
+| `org.opennms.core.utils.replyToAddress`
+| Reply-To address.
+Not set unless you configure it.
+| _(empty)_
+
+| `org.opennms.core.utils.mailHost`
+| SMTP server host name or IP address.
+| `127.0.0.1`
+
+| `org.opennms.core.utils.smtpport`
+| SMTP server port.
+| `25`
+
+| `org.opennms.core.utils.transport`
+| JavaMail transport protocol.
+| `smtp`
+
+| `org.opennms.core.utils.starttls.enable`
+| Upgrade the connection with STARTTLS.
+| `false`
+
+| `org.opennms.core.utils.smtpssl.enable`
+| Connect with implicit TLS.
+Use it together with `org.opennms.core.utils.transport=smtps`, because the TLS settings it adds apply to the `smtps` transport.
+| `false`
+
+| `org.opennms.core.utils.authenticate`
+| Authenticate to the SMTP server.
+| `false`
+
+| `org.opennms.core.utils.authenticateUser`
+| User name for SMTP authentication.
+| `opennms`
+
+| `org.opennms.core.utils.authenticatePassword`
+| Password for SMTP authentication.
+| `opennms`
+
+| `org.opennms.core.utils.messageContentType`
+| Content type of the message body.
+| `text/plain`
+
+| `org.opennms.core.utils.charset`
+| Character set of the subject and body.
+| `us-ascii`
+
+| `org.opennms.core.utils.quitwait`
+| Wait for the server's reply to the SMTP `QUIT` command.
+| `true`
+
+| `org.opennms.core.utils.debug`
+| Log the SMTP dialogue.
+| `false`
+|===
+
+The authentication user and password accept metadata expressions, so you can reference the secure credentials vault (for example, `${scv:smtp:password}`) or an OAuth2 token (see xref:operation:deep-dive/admin/configuration/token-authentication.adoc[Token Authentication]).
+Any raw `mail.*` property in the file is passed to the JavaMail session unchanged.
+For certificate checks on TLS connections, see xref:operation:deep-dive/notifications/configuration.adoc#mail-tls[Mail server TLS].
+
+.Example: authenticated submission with STARTTLS
+[source, properties]
+----
+org.opennms.core.utils.fromAddress=opennms@example.org
+org.opennms.core.utils.mailHost=smtp.example.org
+org.opennms.core.utils.smtpport=587
+org.opennms.core.utils.starttls.enable=true
+org.opennms.core.utils.authenticate=true
+org.opennms.core.utils.authenticateUser=opennms@example.org
+org.opennms.core.utils.authenticatePassword=${scv:smtp:password}
+----
