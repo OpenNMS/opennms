@@ -279,6 +279,10 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public void login() {
+        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+    }
+
+    public void login(final String username, final String password) {
         // Start with a clean slate
         getDriver().manage().deleteAllCookies();
 
@@ -286,8 +290,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         waitForLogin();
 
-        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
-        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+        enterText(By.name("j_username"), username);
+        enterText(By.name("j_password"), password);
         clickElement(By.name("Login"));
 
         wait.until((WebDriver driver) -> {
