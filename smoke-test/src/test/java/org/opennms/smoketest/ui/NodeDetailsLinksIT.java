@@ -21,6 +21,7 @@
  */
 package org.opennms.smoketest.ui;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -55,6 +56,9 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     public void setUp() throws Exception {
         final RestClient restClient = stack.opennms().getRestClient();
 
+        // The previous test's delete is asynchronous (202), so the old node may still exist.
+        waitUntilNodeIsGone("test:links1");
+
         OnmsNode node = new OnmsNode();
         node.setLabel(LABEL);
         node.setType(OnmsNode.NodeType.ACTIVE);
@@ -71,10 +75,24 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     @After
     public void tearDown() throws Exception {
         sendDelete("rest/nodes/test:links1", 202);
+        // Leave nothing behind for the next test or test class.
+        waitUntilNodeIsGone("test:links1");
+    }
+
+    /** The delete answers 202 and runs later, so poll (up to 30 s) until the node answers 404. */
+    private void waitUntilNodeIsGone(final String nodeCriteria) {
+        final RestClient restClient = stack.opennms().getRestClient();
+        await().atMost(30, TimeUnit.SECONDS)
+                .pollInterval(500, TimeUnit.MILLISECONDS)
+                .until(() -> {
+                    try (Response response = restClient.getResponseForNode(nodeCriteria)) {
+                        return response.getStatus() == 404;
+                    }
+                });
     }
 
     private void waitForVueNodeDetails() {
-        wait.until(ExpectedConditions.urlContains("#/node/" + nodeId));
+        wait.until(ExpectedConditions.urlMatches(".*#/node/" + nodeId + "([?&].*)?$"));
         wait.until(pageContainsText("Node Details for " + LABEL));
     }
 
@@ -142,7 +160,7 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
             slashNodeId = Integer.parseInt(location.substring(location.lastIndexOf('/') + 1));
 
             getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/node/test:links%2F2");
-            wait.until(ExpectedConditions.urlContains("#/node/" + slashNodeId));
+            wait.until(ExpectedConditions.urlMatches(".*#/node/" + slashNodeId + "([?&].*)?$"));
             wait.until(pageContainsText("Node Details for " + slashLabel));
         } finally {
             if (slashNodeId != null) {
@@ -227,7 +245,7 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     public void centralSearchResultOpensTheNode() {
         getDriver().get(getBaseUrlInternal() + "opennms/index.jsp");
         findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']").sendKeys(LABEL);
-        clickElement(By.xpath("//div[@id='onms-central-search-control']//div[contains(@class, 'search-result-item')][contains(., '" + LABEL + "')]//button[contains(@class, 'search-result-button')]"));
+        clickElement(By.xpath("//div[@id='onms-central-search-control']//div[contains(@class, 'search-result-item')][.//button[contains(@class, 'search-result-button')]//div[not(*)][normalize-space(.)='" + LABEL + "']]//button[contains(@class, 'search-result-button')]"));
         waitForVueNodeDetails();
     }
 
