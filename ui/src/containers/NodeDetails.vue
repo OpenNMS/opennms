@@ -7,9 +7,12 @@
     </div>
     <div class="header">
       <div class="heading">
-        <h2>Node Details for {{ nodeTitle }}</h2>
+        <h2>{{ heading }}</h2>
       </div>
-      <div class="header-controls">
+      <div
+        v-if="pageState === 'node'"
+        class="header-controls"
+      >
         <OnmsSelectButton
           v-model="activeTab"
           :options="tabOptions"
@@ -20,49 +23,64 @@
         />
       </div>
     </div>
-    <div
-      v-if="nodeLoaded"
-      class="onms-row"
+    <p
+      v-if="pageState === 'resolving'"
+      data-test="node-details-resolving"
     >
-      <div class="onms-col-12">
-        <NodeDetailsHeader :node="nodeStore.node" />
-        <NodeDetailsLinks
-          :baseHref="baseHref"
-          :node="nodeStore.node"
-          :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
-          :existsInRequisition="nodeStore.existsInRequisition"
-          :services="nodeStore.linkServices"
-          :triggerNodeInfo="onNodeInfo"
-        />
-      </div>
-    </div>
-
-    <!--
-      KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
-      paging and sorting when the user switches away and back. A hidden tab does not follow the
-      route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
-    -->
-    <KeepAlive>
-      <NodeDetailsMainTab
-        v-if="activeTab === 'main'"
-        :node="nodeStore.node"
-        :nodeLoaded="nodeLoaded"
-        :baseHref="baseHref"
-      />
-      <NodeDetailsAdditionalTab v-else-if="activeTab === 'additional'" />
-      <NodeDetailsNetworkTab v-else />
-    </KeepAlive>
-
-    <NodeDetailsDialog
-      :visible="dialogVisible"
-      :node="nodeStore.node"
-      @close="dialogVisible = false"
+      Looking up node {{ lookupValue }}…
+    </p>
+    <NodeLookupMessage
+      v-else-if="pageState === 'invalid' || pageState === 'notFound' || pageState === 'error'"
+      :state="pageState"
+      :value="lookupValue"
+      @retry="followRoute"
     />
+    <template v-else>
+      <div
+        v-if="nodeLoaded"
+        class="onms-row"
+      >
+        <div class="onms-col-12">
+          <NodeDetailsHeader :node="nodeStore.node" />
+          <NodeDetailsLinks
+            :baseHref="baseHref"
+            :node="nodeStore.node"
+            :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+            :existsInRequisition="nodeStore.existsInRequisition"
+            :services="nodeStore.linkServices"
+            :triggerNodeInfo="onNodeInfo"
+          />
+        </div>
+      </div>
+
+      <!--
+        KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
+        paging and sorting when the user switches away and back. A hidden tab does not follow the
+        route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
+      -->
+      <KeepAlive>
+        <NodeDetailsMainTab
+          v-if="activeTab === 'main'"
+          :node="nodeStore.node"
+          :nodeLoaded="nodeLoaded"
+          :baseHref="baseHref"
+        />
+        <NodeDetailsAdditionalTab v-else-if="activeTab === 'additional'" />
+        <NodeDetailsNetworkTab v-else />
+      </KeepAlive>
+
+      <NodeDetailsDialog
+        :visible="dialogVisible"
+        :node="nodeStore.node"
+        @close="dialogVisible = false"
+      />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
@@ -71,6 +89,9 @@ import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
 import NodeDetailsLinks from '@/components/Nodes/NodeDetailsLinks.vue'
 import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
 import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
+import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
+import { nodeDetailsRoute, parseNodeRouteId } from '@/components/Nodes/nodeDetailsRoute'
+import API from '@/services'
 import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
 import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
@@ -79,6 +100,8 @@ import { BreadCrumb, Node } from '@/types'
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const { provisionRole } = useRole()
+const route = useRoute()
+const router = useRouter()
 
 const props = defineProps({
   id: {
@@ -113,42 +136,88 @@ const onNodeInfo = () => {
 // by node id themselves and do not need it.
 const nodeLoaded = computed<boolean>(() => nodeStore.nodeLoaded)
 
-// A node that failed to load has no label to show -- a nonexistent id 404s -- while one still
-// in flight has nothing to say yet, so only the failure is spelled out.
 // Fetched alongside the node: the node payload carries no interfaces, and the IP Interfaces
 // table holds only whatever page it is showing.
 const snmpPrimaryIpAddress = computed<string | undefined>(() => nodeStore.snmpPrimaryIpAddress)
 
-const nodeTitle = computed<string>(() => {
-  if (nodeStore.nodeLoadFailed) {
-    return 'N/A'
-  }
+type PageState = 'node' | 'resolving' | 'invalid' | 'notFound' | 'error'
 
-  return nodeStore.node?.label ?? ''
+// The tabs read route.params.id themselves (useActiveNodeId), so they mount only once the route
+// holds a canonical node id; a foreign id is resolved and replaced first.
+const resolveState = ref<'resolving' | 'notFound' | 'error' | null>(null)
+const routeId = computed(() => parseNodeRouteId(props.id ?? ''))
+const lookupValue = computed(() => (routeId.value.kind === 'numeric' ? routeId.value.id : routeId.value.value))
+
+const pageState = computed<PageState>(() => {
+  const rid = routeId.value
+  if (rid.kind === 'invalid') {
+    return 'invalid'
+  }
+  if (rid.kind === 'foreign' || rid.id !== props.id) {
+    return resolveState.value ?? 'resolving'
+  }
+  if (nodeStore.nodeLoadError === 'notFound') {
+    return 'notFound'
+  }
+  return nodeStore.nodeLoadError === 'failed' ? 'error' : 'node'
 })
+
+const heading = computed<string>(() =>
+  pageState.value === 'node' ? `Node Details for ${nodeStore.node?.label ?? ''}`.trimEnd() : 'Node Details')
+
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const items = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-  { label: 'Nodes', to: '/' },
+  { label: 'Nodes', to: '/nodes' },
   { label: 'Node Details', to: '#', position: 'last' }
 ])
 
-const fetchNode = async () => {
-  if (!props.id) {
+const fetchNode = async (id: string) => {
+  nodeStore.getNodeSnmpPrimaryInterface(id)
+  nodeStore.getNodeCriticalPath(id)
+  nodeStore.getNodeLinkServices(id)
+
+  await nodeStore.getNodeById({ id } as Node)
+}
+
+// Canonical numeric id: load. Anything else: replace the route with the canonical id (keeping the
+// query) and let this watcher run again for it.
+let resolveRequest = 0
+const followRoute = async () => {
+  const rid = routeId.value
+  const request = ++resolveRequest
+  resolveState.value = null
+
+  if (rid.kind === 'invalid') {
+    return
+  }
+  if (rid.kind === 'numeric') {
+    if (rid.id !== props.id) {
+      router.replace({ ...nodeDetailsRoute(rid.id), query: route.query })
+      return
+    }
+    await fetchNode(rid.id)
     return
   }
 
-  nodeStore.getNodeSnmpPrimaryInterface(props.id)
-  nodeStore.getNodeCriticalPath(props.id)
-  nodeStore.getNodeLinkServices(props.id)
-
-  await nodeStore.getNodeById({ id: props.id } as Node)
+  resolveState.value = 'resolving'
+  const result = await API.resolveNodeId(rid.value)
+  if (request !== resolveRequest) {
+    return
+  }
+  if (!result.success) {
+    resolveState.value = 'error'
+  } else if (result.payload === null || result.payload === undefined) {
+    resolveState.value = 'notFound'
+  } else {
+    router.replace({ ...nodeDetailsRoute(result.payload), query: route.query })
+  }
 }
 
-onMounted(fetchNode)
-
-watch(() => props.id, fetchNode)
+// Immediate, so the fetch starts (and the store clears an earlier visit's failure) before the
+// first render.
+watch(() => props.id, followRoute, { immediate: true })
 
 // The Edit in Requisition action needs to know whether the node is in its requisition, which the
 // node payload does not say. Asked once the node has loaded, and only of a user who could use
@@ -162,8 +231,6 @@ watch(
   },
   { immediate: true }
 )
-
-defineExpose({ fetchNode })
 </script>
 
 <style lang="scss" scoped>

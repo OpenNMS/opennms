@@ -33,12 +33,12 @@ License.
       <p>
         <i class="pi pi-user" />
         You have
-        <a :href="userLink">{{ phrase(summary.userUnacknowledgedCount) }}</a>
+        <router-link :to="{ name: 'Notifications', query: { preset: 'yourOutstanding' } }">{{ phrase(summary.userUnacknowledgedCount) }}</router-link>
       </p>
       <p>
         <i class="pi pi-users" />
         There {{ summary.totalUnacknowledgedCount === 1 ? 'is' : 'are' }}
-        <a :href="teamLink">{{ phrase(summary.totalUnacknowledgedCount) }}</a>
+        <router-link :to="{ name: 'Notifications', query: { preset: 'allOutstanding' } }">{{ phrase(summary.totalUnacknowledgedCount) }}</router-link>
       </p>
       <p>
         <i class="pi pi-calendar" />
@@ -55,26 +55,14 @@ License.
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getNotificationSummary, type NotificationSummary } from '@/services/notificationService'
-import { useAuthStore } from '@/stores/authStore'
 
 const props = defineProps<PanelComponentProps>()
-const authStore = useAuthStore()
 
 const loading = ref(true)
 const summary = ref<NotificationSummary | null>(null)
-
-// The controller honors filter=user=<remoteUser> (as the legacy notification-box
-// used); filtertype=user is ignored and would show everyone's notifications.
-const userLink = computed(() => {
-  const user = authStore.whoAmI?.id
-  return user
-    ? `/opennms/notification/browse?acktype=unack&filter=${encodeURIComponent(`user=${user}`)}`
-    : '/opennms/notification/browse?acktype=unack'
-})
-const teamLink = '/opennms/notification/browse?acktype=unack'
 
 const phrase = (n: number) => (n === 0 ? 'no outstanding notifications' : `${n} outstanding notification${n === 1 ? '' : 's'}`)
 

@@ -22,10 +22,9 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { buildNodeDetailUrl, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-import { MainMenu } from '@/types/mainMenu'
 
 const {
   buildNodeQueryFilterFromQueryString,
@@ -984,8 +983,6 @@ describe('Nodes useNodeQuery test', () => {
   })
 
   describe('legacy nodeId redirect', () => {
-    const loadedMainMenu = { baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' } as MainMenu
-
     describe('parseNodeIdQueryParam', () => {
       test.each([
         [ 'positive integer string', { nodeId: '42' }, 42 ],
@@ -997,25 +994,15 @@ describe('Nodes useNodeQuery test', () => {
         [ 'decimal', { nodeId: '3.5' }, null ],
         [ 'empty string', { nodeId: '' }, null ],
         [ 'array value', { nodeId: [ '1', '2' ] }, null ],
-        [ 'whitespace', { nodeId: '  ' }, null ]
+        [ 'whitespace', { nodeId: '  ' }, null ],
+        [ 'leading zeros', { nodeId: '007' }, 7 ],
+        [ 'hexadecimal', { nodeId: '0x10' }, null ],
+        [ 'exponent', { nodeId: '5e2' }, null ],
+        [ 'plus sign', { nodeId: '+5' }, null ],
+        [ 'exponent too large to be exact', { nodeId: '1e21' }, null ],
+        [ 'digits too many to be exact', { nodeId: '99999999999999999999' }, null ]
       ])('%s -> %s', (_title, query, expected) => {
         expect(parseNodeIdQueryParam(query as any)).toBe(expected)
-      })
-    })
-
-    describe('buildNodeDetailUrl', () => {
-      test('builds the node detail url when mainMenu has loaded', () => {
-        expect(buildNodeDetailUrl(loadedMainMenu, 42)).toBe('/opennms/element/node.jsp?node=42')
-      })
-
-      test.each([
-        [ 'undefined mainMenu', undefined ],
-        [ 'null mainMenu', null ],
-        [ 'empty mainMenu', {} as MainMenu ],
-        [ 'missing baseNodeUrl', { baseHref: '/opennms/' } as MainMenu ],
-        [ 'missing baseHref', { baseNodeUrl: 'element/node.jsp?node=' } as MainMenu ]
-      ])('returns null when mainMenu is not loaded: %s', (_title, mainMenu) => {
-        expect(buildNodeDetailUrl(mainMenu, 42)).toBe(null)
       })
     })
   })

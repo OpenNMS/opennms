@@ -25,12 +25,18 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useNodeStore } from '@/stores/nodeStore'
 import API from '@/services'
 import { IpInterface, Node, SnmpInterface } from '@/types'
+import { createResultWithPayload } from '@/types/validation'
+
+const found = (node: unknown) => createResultWithPayload<Node | null>(true, '', node as Node)
+const notFound = createResultWithPayload<Node | null>(true, '', null)
+const failed = createResultWithPayload<Node | null>(false, 'Failed to look up the node.')
 
 vi.mock('@/services', () => ({
   default: {
     getSnmpInterfaces: vi.fn(),
     getIpInterfaces: vi.fn(),
     getNodeById: vi.fn(),
+    lookupNodeById: vi.fn(),
     getNodeIpInterfaces: vi.fn(),
     nodeExistsInRequisition: vi.fn(),
     getNodeCriticalPath: vi.fn(),
@@ -281,7 +287,7 @@ describe('nodeStore getNodeById', () => {
   })
 
   it('publishes the fetched node and marks it loaded', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(found(node))
     const store = useNodeStore()
 
     await store.getNodeById({ id: '42' } as Node)
@@ -293,16 +299,16 @@ describe('nodeStore getNodeById', () => {
   // The store is global and outlives the page. Without a reset, a second node's page renders
   // the first node's label and ids until the new fetch lands.
   it('clears the previous node before fetching another', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(found(node))
     const store = useNodeStore()
     await store.getNodeById({ id: '42' } as Node)
 
     let nodeDuringFetch: unknown
     let loadedDuringFetch: unknown
-    vi.mocked(API.getNodeById).mockImplementation(async () => {
+    vi.mocked(API.lookupNodeById).mockImplementation(async () => {
       nodeDuringFetch = { ...store.node }
       loadedDuringFetch = store.nodeLoaded
-      return { id: '99', label: 'srv-99' } as unknown as Node
+      return found({ id: '99', label: 'srv-99' })
     })
 
     await store.getNodeById({ id: '99' } as Node)
@@ -314,23 +320,44 @@ describe('nodeStore getNodeById', () => {
 
   // A failed fetch must not leave the previous node's data on screen, nor claim to be loaded.
   it('leaves no node loaded when the request fails, and records the failure', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(found(node))
     const store = useNodeStore()
     await store.getNodeById({ id: '42' } as Node)
 
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(failed)
     await store.getNodeById({ id: '99' } as Node)
 
     expect(store.node).toEqual({})
     expect(store.nodeLoaded).toBe(false)
-    expect(store.nodeLoadFailed).toBe(true)
+    expect(store.nodeLoadError).toBe('failed')
+  })
+
+  // A 404 is an answer: the node does not exist. Every other failure leaves that open.
+  it('records notFound when the lookup answers a null node', async () => {
+    vi.mocked(API.lookupNodeById).mockResolvedValue(notFound)
+    const store = useNodeStore()
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.node).toEqual({})
+    expect(store.nodeLoaded).toBe(false)
+    expect(store.nodeLoadError).toBe('notFound')
+  })
+
+  it('looks the node up by its id as a string', async () => {
+    vi.mocked(API.lookupNodeById).mockResolvedValue(found(node))
+    const store = useNodeStore()
+
+    await store.getNodeById({ id: 42 } as unknown as Node)
+
+    expect(API.lookupNodeById).toHaveBeenCalledWith('42')
   })
 
   // The interface tables fetch by node id on their own, and only replace their rows on a
   // successful response -- so a 404 for the node would otherwise leave the previous node's
   // interfaces sitting under the new id.
   it('clears the interfaces when the request fails', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(failed)
     const store = useNodeStore()
     store.ipInterfaces = [{ id: 'ip1' }] as never
     store.ipInterfacesTotalCount = 1
@@ -346,14 +373,14 @@ describe('nodeStore getNodeById', () => {
   })
 
   it('clears the failure flag when a later fetch succeeds', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(failed)
     const store = useNodeStore()
     await store.getNodeById({ id: '99' } as Node)
 
-    vi.mocked(API.getNodeById).mockResolvedValue(node)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(found(node))
     await store.getNodeById({ id: '42' } as Node)
 
-    expect(store.nodeLoadFailed).toBe(false)
+    expect(store.nodeLoadError).toBeNull()
     expect(store.nodeLoaded).toBe(true)
   })
 })
@@ -425,7 +452,7 @@ describe('nodeStore stale node responses', () => {
   it('discards a node response a newer request has superseded', async () => {
     const first = deferred<unknown>()
     const second = deferred<unknown>()
-    vi.mocked(API.getNodeById)
+    vi.mocked(API.lookupNodeById)
       .mockImplementationOnce(() => first.promise as never)
       .mockImplementationOnce(() => second.promise as never)
     const store = useNodeStore()
@@ -433,9 +460,9 @@ describe('nodeStore stale node responses', () => {
     const firstCall = store.getNodeById({ id: '1' } as Node)
     const secondCall = store.getNodeById({ id: '2' } as Node)
 
-    second.resolve({ id: '2', label: 'node-2' })
+    second.resolve(found({ id: '2', label: 'node-2' }))
     await secondCall
-    first.resolve({ id: '1', label: 'node-1' })
+    first.resolve(found({ id: '1', label: 'node-1' }))
     await firstCall
 
     expect(store.node).toEqual({ id: '2', label: 'node-2' })
@@ -446,7 +473,7 @@ describe('nodeStore stale node responses', () => {
   it('discards a superseded failure rather than clearing the node that did load', async () => {
     const first = deferred<unknown>()
     const second = deferred<unknown>()
-    vi.mocked(API.getNodeById)
+    vi.mocked(API.lookupNodeById)
       .mockImplementationOnce(() => first.promise as never)
       .mockImplementationOnce(() => second.promise as never)
     const store = useNodeStore()
@@ -455,13 +482,13 @@ describe('nodeStore stale node responses', () => {
     const firstCall = store.getNodeById({ id: '1' } as Node)
     const secondCall = store.getNodeById({ id: '2' } as Node)
 
-    second.resolve({ id: '2', label: 'node-2' })
+    second.resolve(found({ id: '2', label: 'node-2' }))
     await secondCall
-    first.resolve(false)
+    first.resolve(failed)
     await firstCall
 
     expect(store.node).toEqual({ id: '2', label: 'node-2' })
-    expect(store.nodeLoadFailed).toBe(false)
+    expect(store.nodeLoadError).toBeNull()
     expect(store.ipInterfaces).toEqual([{ id: 7 }])
   })
 
@@ -673,7 +700,7 @@ describe('nodeStore getNodeExistsInRequisition', () => {
   })
 
   it('is cleared when the next node fails to load', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(failed)
     const store = useNodeStore()
     store.existsInRequisition = true
 
@@ -739,7 +766,7 @@ describe('nodeStore getNodeCriticalPath', () => {
   })
 
   it('is cleared when the next node fails to load', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(failed)
     const store = useNodeStore()
     store.criticalPath = path
 
@@ -795,7 +822,7 @@ describe('nodeStore getNodeLinkServices', () => {
   })
 
   it('is cleared when the next node fails to load', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    vi.mocked(API.lookupNodeById).mockResolvedValue(failed)
     const store = useNodeStore()
     store.linkServices = ssh
 

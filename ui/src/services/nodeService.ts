@@ -22,6 +22,7 @@
 
 import { v2, rest } from './axiosInstances'
 import {
+  Node,
   NodeApiResponse,
   SnmpInterfaceApiResponse,
   QueryParameters,
@@ -62,6 +63,73 @@ const getNodeById = async (id: string): Promise<any> => {
     return resp.data
   } catch (_err) {
     return false
+  }
+}
+
+// Looks a node up by database id. v2 /nodes/{id} also resolves foreignSource:foreignId
+// (NodeDao.get(String)), but a foreign id holding '/' cannot travel in the path: the server
+// decodes %2F into a separator and answers 404. Callers that may hold a foreign id should use
+// resolveNodeId. A 404 is an answer -- no such node -- and is told apart from a failed lookup.
+const lookupNodeById = async (idOrForeignId: string): Promise<ValidationResultWithPayload<Node | null>> => {
+  try {
+    const resp = await v2.get(`${endpoint}/${encodeURIComponent(idOrForeignId)}`)
+    return createResultWithPayload<Node | null>(true, '', resp.data ?? null)
+  } catch (err) {
+    if ((err as { response?: { status?: number }})?.response?.status === 404) {
+      return createResultWithPayload<Node | null>(true, '', null)
+    }
+    return createResultWithPayload<Node | null>(false, 'Failed to look up the node.')
+  }
+}
+
+const isNullFilterValue = (value: string) => ['null', 'notnull'].includes(value.toLowerCase())
+
+/**
+ * Turns a database id or foreignSource:foreignId into the database id; null when no such node.
+ * A foreign id is resolved through query parameters on the v1 API, split at the first ':' only,
+ * because a path segment cannot carry an encoded '/'. axios encodes the parameters, so '/', ';',
+ * ',', '#' and spaces are safe, and v1 matches them exactly.
+ */
+const resolveNodeId = async (idOrForeignId: string): Promise<ValidationResultWithPayload<string | null>> => {
+  const colon = idOrForeignId.indexOf(':')
+
+  if (colon < 0) {
+    const result = await lookupNodeById(idOrForeignId)
+    if (!result.success) {
+      return createResultWithPayload<string | null>(false, result.message)
+    }
+    const id = result.payload?.id
+    return createResultWithPayload<string | null>(true, '', id === undefined || id === null ? null : String(id))
+  }
+
+  const foreignSource = idOrForeignId.substring(0, colon)
+  const foreignId = idOrForeignId.substring(colon + 1)
+  const matches = (node: { foreignSource?: string, foreignId?: string } | undefined | null) => {
+    return node?.foreignSource === foreignSource && node?.foreignId === foreignId
+  }
+  const toId = (node: { id?: string | number } | undefined | null) => {
+    const id = node?.id
+    return id === undefined || id === null ? null : String(id)
+  }
+
+  // v1 reads a value of null or notnull (any case) as an IS NULL or IS NOT NULL filter, not as the
+  // literal text. v2 matches the literal value, so use it for those. A foreign source holding '/'
+  // together with such a foreign id is out of scope: a path segment cannot carry the '/'.
+  if (isNullFilterValue(foreignSource) || isNullFilterValue(foreignId)) {
+    const result = await lookupNodeById(idOrForeignId)
+    if (!result.success) {
+      return createResultWithPayload<string | null>(false, result.message)
+    }
+    return createResultWithPayload<string | null>(true, '', matches(result.payload) ? toId(result.payload) : null)
+  }
+
+  try {
+    const resp = await rest.get(endpoint, { params: { foreignSource, foreignId, limit: 1 }})
+    const nodes = resp?.status === 204 ? undefined : resp?.data?.node
+    const first = Array.isArray(nodes) ? nodes[0] : nodes
+    return createResultWithPayload<string | null>(true, '', matches(first) ? toId(first) : null)
+  } catch (_err) {
+    return createResultWithPayload<string | null>(false, 'Failed to look up the node.')
   }
 }
 
@@ -187,6 +255,8 @@ export {
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeById,
+  lookupNodeById,
+  resolveNodeId,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage

@@ -33,6 +33,7 @@
 <%@ page import="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Path Outages")
           .breadcrumb("Path Outages")
@@ -70,7 +71,7 @@
 			<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
 			<td><a href="ui/#/nodes?iplike=<%= pth[1] %>"><%= pthData[0] %></a></td>
 			<% } else { %>
-			<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
+			<td><a href="<%= ElementConstants.NODE_DETAILS_URI %><%= pthData[1] %>"><%= pthData[0] %></a></td>
 			<% } %>
 			<td><%= pth[1] %></td>
 			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>

@@ -26,7 +26,7 @@
     >
       <OnmsColumn field="id" header="Id">
         <template #body="{ data }">
-          <router-link :to="`/event/${data.id}`">{{ data.id }}</router-link>
+          <a :href="eventDetailLink(baseHref, data.id)">{{ data.id }}</a>
         </template>
       </OnmsColumn>
       <OnmsColumn field="createTime" header="Created">
@@ -59,6 +59,7 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { eventDetailLink } from '@/lib/linkUtils'
 import { sanitizeHtml } from '@/lib/sanitizeHtml'
 import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
@@ -76,6 +77,8 @@ const menuStore = useMenuStore()
 
 const { showSnackBar } = useSnackbar()
 const { downloadRecords } = useRecordDownload()
+
+const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const nodeId = useActiveNodeId()
 

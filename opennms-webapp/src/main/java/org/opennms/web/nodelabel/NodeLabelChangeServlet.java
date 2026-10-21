@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.servlet.MissingParameterException;
@@ -151,7 +152,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
                         }
                     }
                 });
-                response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
+                response.sendRedirect(Util.calculateUrlBase(request, ElementConstants.NODE_DETAILS_URI + nodeIdString));
             }
         } catch (SQLException e) {
             throw new ServletException("Database exception", e);

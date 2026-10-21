@@ -20,11 +20,10 @@
 /// License.
 ///
 
+import { parsePositiveIntegerId } from '@/lib/ids'
 import { isConvertibleToInteger } from '@/lib/utils'
-import { MainMenu } from '@/types/mainMenu'
 import { LocationQuery } from 'vue-router'
 import { normalizeMacSearch } from './useInterfaceListing'
-import { nodeLink } from '@/lib/linkUtils'
 import {
   AssetFilter,
   Category,
@@ -347,9 +346,8 @@ export const useNodeQuery = () => {
     // in Nodes.vue (nodeListStore.setShowInterfaces) rather than folded into the NodeQueryFilter.
     // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
     // NOTE nodeId: not handled here. Legacy `?nodeId=<n>` bookmarks are redirected to the node
-    //   detail page (element/node.jsp?node={id}) before the query filter is ever built — see
-    //   handleNodeIdRedirect() in Nodes.vue, which combines parseNodeIdQueryParam() and
-    //   buildNodeDetailUrl() (both below) with deferral until mainMenu has loaded.
+    //   detail page (route 'Node Details') before the query filter is ever built — see
+    //   handleNodeIdRedirect() in Nodes.vue, which uses parseNodeIdQueryParam() (below).
 
     return filter
   }
@@ -746,21 +744,6 @@ export const parseNodeIdQueryParam = (query: LocationQuery): number | null => {
   if (raw === undefined || Array.isArray(raw)) {
     return null
   }
-  if (!isConvertibleToInteger(raw)) {
-    return null
-  }
-  const id = Number(raw)
-  return Number.isInteger(id) && id > 0 ? id : null
-}
-
-/**
- * Builds the node detail page URL. The guard is what this adds over linkUtils' nodeLink:
- * menuStore.mainMenu (source of baseHref/baseNodeUrl) is empty until it loads, and a caller
- * here needs to tell "not ready yet" apart from a URL.
- */
-export const buildNodeDetailUrl = (mainMenu: MainMenu | null | undefined, id: number): string | null => {
-  if (!mainMenu?.baseHref || !mainMenu?.baseNodeUrl) {
-    return null
-  }
-  return nodeLink(mainMenu.baseHref, mainMenu.baseNodeUrl, id)
+  const id = parsePositiveIntegerId(raw)
+  return id === null ? null : Number(id)
 }

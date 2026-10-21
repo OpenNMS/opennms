@@ -251,6 +251,17 @@ The asset fields `password`, `enable` and `snmpcommunity` are now write-only in 
 === Raw SQL query parameter requires ROLE_ADMIN
 The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
+=== Node links point to the new node details page
+The `link` field of node resources in the `/rest/resources` and `/rest/graphs` REST APIs now holds the URL of the new node details page, `ui/index.html#/node/<node>`, instead of `element/node.jsp?node=<node>`.
+The node part is escaped as one URL path segment, so a `/` in a foreign ID becomes `%2F`.
+The link is still relative to the web application context root.
+Update integrations that read this field.
+
+The `baseNodeUrl` field of the menu REST API (`/api/v2/menu`) is now `ui/index.html#/node/`.
+Plugins append a node ID or `foreignSource:foreignId` to it to link to a node's details page.
+Escape the appended part as one URL path segment, for example with `encodeURIComponent`, so that a `/`, `#` or space in a foreign ID does not break the link.
+It is a hash route, so do not append query parameters such as `&quiet=true`.
+
 === DOCTYPE rejected in requisition and foreign-source XML
 Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
 Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.

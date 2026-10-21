@@ -23,6 +23,8 @@
 import {
   getNodes,
   getNodeById,
+  lookupNodeById,
+  resolveNodeId,
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeIpInterfaces,
@@ -153,6 +155,8 @@ export default {
   getEvents,
   modifyAlarm,
   getNodeById,
+  lookupNodeById,
+  resolveNodeId,
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeOutages,

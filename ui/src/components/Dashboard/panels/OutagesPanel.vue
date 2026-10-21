@@ -51,10 +51,10 @@ License.
         class="outages__row"
       >
         <span class="outages__dot" />
-        <a
+        <router-link
           class="outages__node"
-          :href="`/opennms/element/node.jsp?node=${o.nodeId}`"
-        >{{ o.nodeLabel ?? `Node ${o.nodeId}` }}</a>
+          :to="nodeDetailsRoute(o.nodeId)"
+        >{{ o.nodeLabel ?? `Node ${o.nodeId}` }}</router-link>
         <span class="outages__svc">{{ serviceName(o) }}</span>
       </li>
     </ul>
@@ -66,6 +66,7 @@ import { onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getCurrentOutages, outageServiceName } from '@/services/outageService'
 import { Outage } from '@/types'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 import { buildFilterClauses } from '../filter'
 
 const props = defineProps<PanelComponentProps>()

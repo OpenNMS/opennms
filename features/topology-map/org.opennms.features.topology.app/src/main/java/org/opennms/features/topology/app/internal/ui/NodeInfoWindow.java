@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URL;
 
 import org.opennms.features.topology.api.support.InfoWindow;
+import org.opennms.web.api.ElementConstants;
 
 import com.google.common.base.Throwables;
 import com.vaadin.server.Page;
@@ -40,7 +41,7 @@ public class NodeInfoWindow extends InfoWindow {
     private static URL getURL(int nodeId) {
         final URI currentLocation = Page.getCurrent().getLocation();
         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-        final String redirectFragment = contextRoot + "/element/node.jsp?node=" + nodeId;
+        final String redirectFragment = contextRoot + "/" + ElementConstants.NODE_DETAILS_URI + nodeId;
         try {
             return new URL(currentLocation.toURL(), redirectFragment);
         } catch (MalformedURLException e) {

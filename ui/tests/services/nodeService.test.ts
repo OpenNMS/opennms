@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath } from '@/services/nodeService'
+import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath, lookupNodeById, resolveNodeId } from '@/services/nodeService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -112,5 +112,175 @@ describe('nodeService.getNodeAvailabilityPercentage', () => {
     vi.mocked(rest.get).mockRejectedValue(new Error('boom'))
 
     expect(await getNodeAvailabilityPercentage('144')).toBe(false)
+  })
+})
+
+describe('nodeService.resolveNodeId', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('asks v2 for a numeric id', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 42, label: 'n' }})
+
+    const result = await resolveNodeId('42')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/42')
+    expect(rest.get).not.toHaveBeenCalled()
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('42')
+  })
+
+  it('answers null for a numeric id that does not exist', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 404 }})
+
+    const result = await resolveNodeId('999')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('fails when the numeric lookup fails', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
+
+    const result = await resolveNodeId('42')
+
+    expect(result.success).toBe(false)
+  })
+
+  it('resolves a foreign id with a slash through query parameters', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: '163', foreignSource: 'slashtest', foreignId: 'a/b' }], totalCount: 1 }})
+
+    const result = await resolveNodeId('slashtest:a/b')
+
+    expect(rest.get).toHaveBeenCalledWith('/nodes', { params: { foreignSource: 'slashtest', foreignId: 'a/b', limit: 1 }})
+    expect(v2.get).not.toHaveBeenCalled()
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('163')
+  })
+
+  it('splits at the first colon only', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: 7, foreignSource: 'FS', foreignId: 'a:b' }] }})
+
+    const result = await resolveNodeId('FS:a:b')
+
+    expect(rest.get).toHaveBeenCalledWith('/nodes', { params: { foreignSource: 'FS', foreignId: 'a:b', limit: 1 }})
+    expect(result.payload).toBe('7')
+  })
+
+  it('handles a single node object', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: { id: '12', foreignSource: 'FS', foreignId: 'x' }}})
+
+    const result = await resolveNodeId('FS:x')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('12')
+  })
+
+  it.each([
+    ['an empty node array', { status: 200, data: { node: [], totalCount: 0 }}],
+    ['a missing node', { status: 200, data: { totalCount: 0 }}],
+    ['a 204', { status: 204, data: '' }],
+    ['an empty body', { status: 200, data: '' }]
+  ])('answers null for %s', async (_name, resp) => {
+    vi.mocked(rest.get).mockResolvedValue(resp)
+
+    const result = await resolveNodeId('FS:none')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  // v1 turns a value of null or notnull into an IS NULL or IS NOT NULL filter, so it can return a
+  // node whose foreign id differs from the request.
+  it('answers null when the v1 node has a different foreign id', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: '9', foreignSource: 'FS', foreignId: 'other' }] }})
+
+    const result = await resolveNodeId('FS:wanted')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('uses v2 for the foreign id null, which v1 would read as IS NULL', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 31, foreignSource: 'nulltest', foreignId: 'null' }})
+
+    const result = await resolveNodeId('nulltest:null')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/nulltest%3Anull')
+    expect(rest.get).not.toHaveBeenCalled()
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('31')
+  })
+
+  it('uses v2 for the foreign id NOTNULL in any case', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 32, foreignSource: 'nulltest', foreignId: 'NOTNULL' }})
+
+    const result = await resolveNodeId('nulltest:NOTNULL')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/nulltest%3ANOTNULL')
+    expect(rest.get).not.toHaveBeenCalled()
+    expect(result.payload).toBe('32')
+  })
+
+  it('uses v2 for the foreign source null', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 33, foreignSource: 'Null', foreignId: 'x' }})
+
+    const result = await resolveNodeId('Null:x')
+
+    expect(rest.get).not.toHaveBeenCalled()
+    expect(result.payload).toBe('33')
+  })
+
+  it('answers null when the v2 node has a different foreign id', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 34, foreignSource: 'nulltest', foreignId: 'x' }})
+
+    const result = await resolveNodeId('nulltest:null')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('fails when the foreign id request fails', async () => {
+    vi.mocked(rest.get).mockRejectedValue(new Error('boom'))
+
+    const result = await resolveNodeId('FS:1')
+
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Failed to look up the node.')
+  })
+})
+
+describe('nodeService.lookupNodeById', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('answers the node, encoding the id as one path segment', async () => {
+    const node = { id: '153', label: 'something-226' }
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: node })
+
+    const result = await lookupNodeById('My Source:a b#c')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/My%20Source%3Aa%20b%23c')
+    expect(result.success).toBe(true)
+    expect(result.payload).toEqual(node)
+  })
+
+  it('answers a successful null on a 404', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 404 }})
+
+    const result = await lookupNodeById('42')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('fails on any other error', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
+
+    const result = await lookupNodeById('42')
+
+    expect(result.success).toBe(false)
   })
 })

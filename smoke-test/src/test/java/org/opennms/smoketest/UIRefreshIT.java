@@ -33,6 +33,7 @@ import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.smoketest.utils.RestClient;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
  * Basic validation of the new UI
@@ -74,13 +75,14 @@ public class UIRefreshIT extends OpenNMSSeleniumIT {
         // The node label should be displayed on the landing page
         wait.until(pageContainsText("ItsRainingItsPouring"));
 
-        // If I click on the node, I should see the node's recent events
+        // If I click on the node, I should see its Vue Node Details page
         clickElement(By.linkText("ItsRainingItsPouring"));
-        wait.until(pageContainsText("Recent Events"));
+        wait.until(ExpectedConditions.urlContains("#/node/"));
+        wait.until(pageContainsText("Node Details for ItsRainingItsPouring"));
 
-        // If I refresh the browser, I should still the node's recent events
+        // If I refresh the browser, I should still see the node's details
         // (This tests URL mapping to the SPA on the web server)
         driver.navigate().refresh();
-        wait.until(pageContainsText("Recent Events"));
+        wait.until(pageContainsText("Node Details for ItsRainingItsPouring"));
     }
 }

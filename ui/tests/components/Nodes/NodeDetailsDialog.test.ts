@@ -1,10 +1,15 @@
 // ui/tests/components/Nodes/NodeDetailsDialog.test.ts
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { describe, expect, it, vi } from 'vitest'
 import PrimeVue from 'primevue/config'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import { useMenuStore } from '@/stores/menuStore'
+
+vi.mock('vue-router', async importOriginal => ({
+  ...(await importOriginal<typeof import('vue-router')>()),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), resolve: (to: { params: { id: string }}) => ({ href: `/opennms/ui#/node/${to.params.id}` }) })
+}))
 
 // Stub the teleporting PrimeVue Dialog so its slots render inline and can be
 // queried directly, consistent with the established pattern in this codebase.
@@ -31,7 +36,7 @@ const mountIt = (visible: boolean, nodeProp = node) => {
     props: { visible, node: nodeProp },
     global: {
       plugins: [PrimeVue, pinia],
-      stubs: { Dialog: DialogStub }
+      stubs: { Dialog: DialogStub, RouterLink: RouterLinkStub }
     }
   })
 }
@@ -44,11 +49,23 @@ describe('NodeDetailsDialog.vue', () => {
     expect(wrapper.text()).toContain('Node Label')
   })
 
-  it('links the node id and label to the node page', () => {
+  it('links the node id and label to the Vue Node Details page', () => {
     const wrapper = mountIt(true)
-    const hrefs = wrapper.findAll('a').map(a => a.attributes('href'))
+    const links = wrapper.findAllComponents(RouterLinkStub)
 
-    expect(hrefs).toContain('/opennms/element/node.jsp?node=7')
+    expect(links.map(l => l.props('to'))).toEqual([
+      { name: 'Node Details', params: { id: '7' }},
+      { name: 'Node Details', params: { id: '7' }}
+    ])
+  })
+
+  // On the Node Details page these links point at the current route, so following them does
+  // nothing; the dialog has to close itself.
+  it('emits close when a node link is clicked', async () => {
+    const wrapper = mountIt(true)
+    await wrapper.findAllComponents(RouterLinkStub)[0].trigger('click')
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
   it('emits close when the dialog requests hide', async () => {
