@@ -149,7 +149,7 @@ describe('nodeService.resolveNodeId', () => {
   })
 
   it('resolves a foreign id with a slash through query parameters', async () => {
-    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: '163' }], totalCount: 1 }})
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: '163', foreignSource: 'slashtest', foreignId: 'a/b' }], totalCount: 1 }})
 
     const result = await resolveNodeId('slashtest:a/b')
 
@@ -160,7 +160,7 @@ describe('nodeService.resolveNodeId', () => {
   })
 
   it('splits at the first colon only', async () => {
-    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: 7 }] }})
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: 7, foreignSource: 'FS', foreignId: 'a:b' }] }})
 
     const result = await resolveNodeId('FS:a:b')
 
@@ -169,7 +169,7 @@ describe('nodeService.resolveNodeId', () => {
   })
 
   it('handles a single node object', async () => {
-    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: { id: '12' }}})
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: { id: '12', foreignSource: 'FS', foreignId: 'x' }}})
 
     const result = await resolveNodeId('FS:x')
 
@@ -186,6 +186,56 @@ describe('nodeService.resolveNodeId', () => {
     vi.mocked(rest.get).mockResolvedValue(resp)
 
     const result = await resolveNodeId('FS:none')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  // v1 turns a value of null or notnull into an IS NULL or IS NOT NULL filter, so it can return a
+  // node whose foreign id differs from the request.
+  it('answers null when the v1 node has a different foreign id', async () => {
+    vi.mocked(rest.get).mockResolvedValue({ status: 200, data: { node: [{ id: '9', foreignSource: 'FS', foreignId: 'other' }] }})
+
+    const result = await resolveNodeId('FS:wanted')
+
+    expect(result.success).toBe(true)
+    expect(result.payload).toBeNull()
+  })
+
+  it('uses v2 for the foreign id null, which v1 would read as IS NULL', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 31, foreignSource: 'nulltest', foreignId: 'null' }})
+
+    const result = await resolveNodeId('nulltest:null')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/nulltest%3Anull')
+    expect(rest.get).not.toHaveBeenCalled()
+    expect(result.success).toBe(true)
+    expect(result.payload).toBe('31')
+  })
+
+  it('uses v2 for the foreign id NOTNULL in any case', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 32, foreignSource: 'nulltest', foreignId: 'NOTNULL' }})
+
+    const result = await resolveNodeId('nulltest:NOTNULL')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/nulltest%3ANOTNULL')
+    expect(rest.get).not.toHaveBeenCalled()
+    expect(result.payload).toBe('32')
+  })
+
+  it('uses v2 for the foreign source null', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 33, foreignSource: 'Null', foreignId: 'x' }})
+
+    const result = await resolveNodeId('Null:x')
+
+    expect(rest.get).not.toHaveBeenCalled()
+    expect(result.payload).toBe('33')
+  })
+
+  it('answers null when the v2 node has a different foreign id', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { id: 34, foreignSource: 'nulltest', foreignId: 'x' }})
+
+    const result = await resolveNodeId('nulltest:null')
 
     expect(result.success).toBe(true)
     expect(result.payload).toBeNull()

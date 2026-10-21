@@ -82,6 +82,8 @@ const lookupNodeById = async (idOrForeignId: string): Promise<ValidationResultWi
   }
 }
 
+const isNullFilterValue = (value: string) => ['null', 'notnull'].includes(value.toLowerCase())
+
 /**
  * Turns a database id or foreignSource:foreignId into the database id; null when no such node.
  * A foreign id is resolved through query parameters on the v1 API, split at the first ':' only,
@@ -102,13 +104,30 @@ const resolveNodeId = async (idOrForeignId: string): Promise<ValidationResultWit
 
   const foreignSource = idOrForeignId.substring(0, colon)
   const foreignId = idOrForeignId.substring(colon + 1)
+  const matches = (node: { foreignSource?: string, foreignId?: string } | undefined | null) => {
+    return node?.foreignSource === foreignSource && node?.foreignId === foreignId
+  }
+  const toId = (node: { id?: string | number } | undefined | null) => {
+    const id = node?.id
+    return id === undefined || id === null ? null : String(id)
+  }
+
+  // v1 reads a value of null or notnull (any case) as an IS NULL or IS NOT NULL filter, not as the
+  // literal text. v2 matches the literal value, so use it for those. A foreign source holding '/'
+  // together with such a foreign id is out of scope: a path segment cannot carry the '/'.
+  if (isNullFilterValue(foreignSource) || isNullFilterValue(foreignId)) {
+    const result = await lookupNodeById(idOrForeignId)
+    if (!result.success) {
+      return createResultWithPayload<string | null>(false, result.message)
+    }
+    return createResultWithPayload<string | null>(true, '', matches(result.payload) ? toId(result.payload) : null)
+  }
 
   try {
     const resp = await rest.get(endpoint, { params: { foreignSource, foreignId, limit: 1 }})
     const nodes = resp?.status === 204 ? undefined : resp?.data?.node
     const first = Array.isArray(nodes) ? nodes[0] : nodes
-    const id = first?.id
-    return createResultWithPayload<string | null>(true, '', id === undefined || id === null ? null : String(id))
+    return createResultWithPayload<string | null>(true, '', matches(first) ? toId(first) : null)
   } catch (_err) {
     return createResultWithPayload<string | null>(false, 'Failed to look up the node.')
   }
