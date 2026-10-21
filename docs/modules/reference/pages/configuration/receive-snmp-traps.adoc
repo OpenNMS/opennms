@@ -11,7 +11,7 @@ NOTE: If you need the SNMP trap listener on port `162/udp` directly, see xref:de
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8/9::
+CentOS/RHEL::
 +
 --
 include::firewall/centos-rhel/firewall-core.adoc[]

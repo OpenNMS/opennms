@@ -32,10 +32,9 @@ sudo systemctl daemon-reload
 ----
 
 .Install PostgreSQL database
-[source, console]
-----
-sudo apt -y install postgresql
-----
+
+Install PostgreSQL as described in the Debian/Ubuntu tab of xref:deployment:core/install.adoc#setup-postgresql[Set up PostgreSQL].
+You do not need to create the `opennms` database user or the database, because the database backup restores them.
 
 .Restore OpenNMS database
 [source, console]
