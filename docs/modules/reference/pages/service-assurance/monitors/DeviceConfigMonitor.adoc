@@ -64,9 +64,10 @@ Overwrite in metadata as `dcb:ssh-timeout`.
 
 | schedule
 | Schedule to fetch configuration, in the form of cron expression.
-  Defaults to never run; overwrite this in metadata with proper cron expression.
+  Set to `never` to disable scheduled retrieval.
+  The `DeviceConfig` service in the default `poller-configuration.xml` sets it to `never`; overwrite this in metadata with a proper cron expression.
   Overwrite in metadata as `dcb:schedule`.
-| never
+| `0 0 0 * * ?` (daily at midnight)
 
 | retention-period
 | Maximum retention period after which configs without any updates will be deleted from database.
