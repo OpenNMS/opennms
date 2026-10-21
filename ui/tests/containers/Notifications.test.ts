@@ -33,7 +33,7 @@ import { reactive } from 'vue'
 
 const mounted: { unmount: () => void }[] = []
 
-const route = reactive({ query: {} as Record<string, string> })
+const route = reactive({ name: 'Notifications', query: {} as Record<string, string> })
 const replace = vi.fn((to: { query: Record<string, string> }) => {
   route.query = to.query
 })
@@ -42,8 +42,9 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push: vi.fn(), replace })
 }))
 
+const report = vi.hoisted(() => vi.fn())
 vi.mock('@/composables/useActionFeedback', () => ({
-  default: () => ({ withSpinner: (fn: () => unknown) => fn(), report: vi.fn() })
+  default: () => ({ withSpinner: (fn: () => unknown) => fn(), report })
 }))
 
 const mountPage = (query: Record<string, string>, initial: Partial<ReturnType<typeof useNotificationsStore>> = {}) => {
@@ -76,6 +77,8 @@ const mountPage = (query: Record<string, string>, initial: Partial<ReturnType<ty
 describe('Notifications page URL', () => {
   beforeEach(() => {
     replace.mockClear()
+    report.mockClear()
+    route.name = 'Notifications'
   })
 
   // the mocked route is shared, so earlier pages must stop watching it
@@ -128,6 +131,39 @@ describe('Notifications page URL', () => {
     expect(store.applyQuery).not.toHaveBeenCalled()
     expect(store.preset).toBe('userSearch')
     expect(store.userFilter).toBe('bob')
+  })
+
+  // A load that finishes after the user left must not write this page's query onto the new page's
+  // URL, or show its message there.
+  it.each([
+    ['a bare URL', {}],
+    ['a node only', { node: '16' }],
+    ['a preset', { preset: 'allOutstanding' }]
+  ])('leaves the URL and the message alone when the page closes during a load from %s', async (_name, query) => {
+    let finish: () => void = () => undefined
+    const pending = new Promise<void>((resolve) => {
+      finish = resolve
+    })
+    const { store } = mountPage(query)
+    await flushPromises() // the first load, which resolves at once
+    for (const action of [store.load, store.setNodeFilter, store.applyQuery]) {
+      vi.mocked(action).mockImplementation(async () => {
+        await pending
+        return createSuccessResponse()
+      })
+    }
+    // the page mounted before the slow mocks above, so run its load again through the menu event
+    replace.mockClear()
+    report.mockClear()
+    window.dispatchEvent(new CustomEvent(SAME_PAGE_NAVIGATION_EVENT))
+    await flushPromises()
+
+    route.name = 'Home'
+    finish()
+    await flushPromises()
+
+    expect(replace).not.toHaveBeenCalled()
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('applies only the node when the URL has a node but no preset', async () => {

@@ -108,12 +108,24 @@ const readRoute = () => {
 // preset would silently drop it.
 const loadFromRoute = async () => {
   const { preset, nodeId } = readRoute()
+  const bare = !preset && !nodeId
+  let result
   if (preset) {
-    report(await withSpinner(() => notificationsStore.applyQuery(preset, nodeId)))
+    result = await withSpinner(() => notificationsStore.applyQuery(preset, nodeId))
   } else if (nodeId) {
-    report(await withSpinner(() => notificationsStore.setNodeFilter(nodeId)))
+    result = await withSpinner(() => notificationsStore.setNodeFilter(nodeId))
   } else {
-    report(await withSpinner(() => notificationsStore.load()))
+    result = await withSpinner(() => notificationsStore.load())
+  }
+
+  // The user left while this loaded: the route now belongs to another page, so its URL and
+  // snackbar are not ours to touch.
+  if (route.name !== 'Notifications') {
+    return
+  }
+  report(result)
+
+  if (bare) {
     // The view kept may not be what the URL says (a bare link over a node filter, a bookmark that
     // lost it), and the store watcher below only fires on a store change.
     const query = queryFor(notificationsStore.preset, notificationsStore.nodeFilter?.id)
