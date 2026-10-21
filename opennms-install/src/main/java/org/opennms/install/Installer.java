@@ -22,6 +22,7 @@
 package org.opennms.install;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,6 +31,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.InetAddress;
@@ -1222,12 +1224,24 @@ public class Installer {
             if(!f.createNewFile()) {
                 LOG.warn("Could not create file: {}", f.getPath());
             }
-            FileOutputStream os = new FileOutputStream(f);
-            libraryProps.store(os, null);
+            try (final FileOutputStream os = new FileOutputStream(f)) {
+                storeWithoutTimestamp(libraryProps, os);
+            }
         } catch (IOException e) {
             System.out.println("unable to write to " + f.getPath());
             throw e;
         }
+    }
+
+    /**
+     * Same output as {@link Properties#store(OutputStream, String)} without the
+     * leading date comment, so rewriting unchanged properties leaves the file unchanged.
+     */
+    static void storeWithoutTimestamp(final Properties props, final OutputStream os) throws IOException {
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        props.store(buffer, null);
+        final String content = buffer.toString(StandardCharsets.ISO_8859_1);
+        os.write(content.substring(content.indexOf('\n') + 1).getBytes(StandardCharsets.ISO_8859_1));
     }
 
     /**
