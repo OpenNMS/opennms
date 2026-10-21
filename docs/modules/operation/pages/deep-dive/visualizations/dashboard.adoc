@@ -258,7 +258,7 @@ For this example, we will create two dashboards and two users: `dashboard1` and 
 ----
 
 . Edit `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-acegi-security.xml` to enable anonymous authentication for the `/dashboard1` and `/dashboard2` aliases:
-** Add the following code in the `<bean id="filterChainProxy" ...>` block, after the entry for `/rss.jsp*`:
+** Add the following code in the `<bean id="filterChainProxy" ...>` block, before the entry for `/**`:
 +
 [source, xml]
 ----
@@ -267,7 +267,6 @@ For this example, we will create two dashboards and two users: `dashboard1` and 
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
-        /rss.jsp*=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
         /dashboard1*=httpSessionContextIntegrationFilter,logoutFilter,securityContextHolderAwareRequestFilter,dash1AnonymousProcessingFilter,filterInvocationInterceptor
         /dashboard2*=httpSessionContextIntegrationFilter,logoutFilter,securityContextHolderAwareRequestFilter,dash2AnonymousProcessingFilter,filterInvocationInterceptor
         /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor
