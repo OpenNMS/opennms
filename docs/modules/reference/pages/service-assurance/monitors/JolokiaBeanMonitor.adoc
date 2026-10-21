@@ -104,8 +104,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Some example configurations showing how to configure the monitor in `poller-configuration.xml`.
 [source, xml]
 ----
-<parameter key="url" value="http://$\{ipaddr}:$\{port}/jolokia"/>
-<parameter key="url" value="https://$\{ipaddr}:$\{port}/jolokia"/>
+<parameter key="url" value="http://${ipaddr}:${port}/jolokia"/>
+<parameter key="url" value="https://${ipaddr}:${port}/jolokia"/>
 ----
 
 The following example reads the `VmName` attribute of the `java.lang:type=Runtime` MBean through a Jolokia JVM agent on port 8778.
