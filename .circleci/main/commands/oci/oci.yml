@@ -104,6 +104,9 @@ commands:
             fi
 
             mkdir -p /tmp/sboms
+            # fetch parent POMs from Maven Central for jars whose embedded POM
+            # inherits its licenses
+            export SYFT_ENRICH=java
             for IMAGE_FILE in *.oci; do
               IMAGE_ROOT="$(echo "${IMAGE_FILE}" | sed -e 's,\.oci$,,')"
               syft scan "docker-archive:${IMAGE_FILE}" \
