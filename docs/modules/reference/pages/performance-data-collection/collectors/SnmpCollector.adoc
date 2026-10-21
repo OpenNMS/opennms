@@ -56,7 +56,7 @@ Understanding xref:operation:deep-dive/performance-data-collection/resource-type
 [source, xml]
 ----
 <?xml version="1.0"?>
-<datacollection-config rrd-repository="/var/lib/opennms/rrd/snmp/"><1>
+<datacollection-config rrdRepository="/var/lib/opennms/rrd/snmp/"><1>
     <snmp-collection name="default"<2>
                      snmpStorageFlag="select"><3>
         <rrd step="300"><4>
