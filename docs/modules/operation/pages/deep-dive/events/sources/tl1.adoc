@@ -7,7 +7,7 @@ Autonomous messages can be retrieved from certain TL1-enabled equipment and tran
 TL1 (http://en.wikipedia.org/wiki/Transaction_Language_1[Transaction Language 1]) is a management protocol commonly used in the telecommunications industry.
 It is an ASCII-based protocol that is both machine-readable and human-readable.
 
-IMPORTANT: The xref:reference:daemons/daemon-config-files/tl1d.adoc[`Tl1d` service daemon], which enables {page-component-title} to receive TL1 autonomous messages, must be enabled for this functionality to work.
+IMPORTANT: The `Tl1d` service daemon, which enables {page-component-title} to receive TL1 autonomous messages, must be enabled for this functionality to work.
 This service daemon is *disabled* by default.
 
 TL1 messages are only supported over TCP, and cannot be retrieved over RS-232 serial connections.
