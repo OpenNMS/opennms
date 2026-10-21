@@ -66,6 +66,7 @@
 ** xref:service-assurance/monitors/LaTableMonitor.adoc[]
 ** xref:service-assurance/monitors/LdapMonitor.adoc[]
 ** xref:service-assurance/monitors/LdapsMonitor.adoc[]
+** xref:service-assurance/monitors/LogMatchTableMonitor.adoc[]
 ** xref:service-assurance/monitors/MailTransportMonitor.adoc[]
 ** xref:service-assurance/monitors/MemcachedMonitor.adoc[]
 ** xref:service-assurance/monitors/MinaSshMonitor.adoc[]
