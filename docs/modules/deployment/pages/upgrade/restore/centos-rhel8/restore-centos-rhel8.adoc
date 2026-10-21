@@ -36,7 +36,7 @@ You do not need to create the `opennms` database user or the database, because t
 .Restore OpenNMS database
 [source, console]
 ----
-sudo runuser -l postgres -c 'psql -f /tmp/opennms_postgres.dmp postgres'
+sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
 ----
 
 .Install OpenJDK
