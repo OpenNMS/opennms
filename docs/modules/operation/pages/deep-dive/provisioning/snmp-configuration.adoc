@@ -258,3 +258,105 @@ Each octet can be a number, a comma-separated list, a range separated by `-`, or
 
 A `profile` contains a required `label` element and an optional `filter` element.
 For details, see xref:deep-dive/provisioning/snmp-profile.adoc[].
+
+[[snmp-configuration-troubleshooting]]
+== Troubleshoot SNMP communication
+
+When nodes are not scanned through SNMP, SNMP data collection fails, or the SNMP service is reported down, check the configuration that {page-component-title} uses for the agent, then test requests with the same configuration.
+
+[[snmp-configuration-check]]
+=== Check the effective configuration
+
+Use the *Lookup* tab of the *SNMP Agent Configuration* page, or the `opennms:snmp-show-config` xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] command, to display the configuration that applies to an IP address after definitions and defaults are merged:
+
+[source, console]
+----
+admin@opennms()> opennms:snmp-show-config -l Branch-Office 10.1.0.20
+Address: 10.1.0.20
+ProxyForAddress: null
+Port: 161
+Timeout: 5000
+Retries: 3
+MaxVarsPerPdu: 10
+MaxRepetitions: 2
+MaxRequestSize: 65535
+Version: v2c
+ReadCommunity: branch
+WriteCommunity: private
+----
+
+The `-l` (`--location`) option selects the monitoring location; without it, the `Default` location is used.
+For SNMPv3 agents, the command prints the security name, security level, protocols, and passphrases instead of the community strings.
+
+[[snmp-configuration-test]]
+=== Test SNMP requests
+
+The `opennms:snmp-get` and `opennms:snmp-walk` Karaf shell commands send requests with the effective configuration of the target address.
+Use `-l` to send the request from a Minion at that location, and `-s` (`--system-id`) to select a specific Minion.
+
+[source, console]
+----
+admin@opennms()> opennms:snmp-get -l Branch-Office 10.1.0.20 .1.3.6.1.2.1.1.5.0 <1>
+admin@opennms()> opennms:snmp-walk -l Branch-Office 10.1.0.20 .1.3.6.1.2.1.1   <2>
+----
+<1> Requests the `sysName.0` object.
+<2> Walks the MIB-II `system` group.
+
+While a command waits for a response, it prints a dot every second.
+When the request fails, it prints the error, for example a timeout.
+If a request from the Karaf shell succeeds but a scan or collection fails, compare the location and the address that the daemon uses with the ones you tested.
+
+[[snmp-configuration-tuning]]
+=== Tune requests for slow or limited agents
+
+Agents on busy devices, behind high-latency links, or with small buffers might not answer the default requests in time.
+Adjust the following attributes in a definition for those agents:
+
+* Increase `timeout` for agents that respond slowly.
+Each retry waits for the full timeout again, so a request can take about `timeout` × (`retry` + 1) before it fails.
+* Increase `retry` for agents on lossy links.
+* Lower `max-vars-per-pdu` when an agent times out or returns errors for requests with many variables, or when responses are too large for the agent to send.
+* Lower `max-repetitions` when GETBULK requests time out or return `tooBig` errors.
+With SNMP v1, walks use GETNEXT requests instead of GETBULK, so `max-repetitions` has no effect.
+* Lower `max-request-size` when a device or network path drops large UDP packets.
+* Set `ttl` when requests sent through a Minion expire before the agent responds.
+
+To change how {page-component-title} reacts to specific `error-status` values in SNMP responses, see xref:deep-dive/workarounds/snmp.adoc[].
+
+[[snmp-configuration-common-problems]]
+=== Common problems
+
+The definition does not apply to the node::
+Definitions apply only to their own monitoring location and to the `Default` location.
+A definition without a `location` attribute does not override a matching definition for the node's location.
+Check the result with `opennms:snmp-show-config -l <location> <address>`.
+
+The wrong definition applies::
+If several definitions match an address at the same location, the first one wins.
+This typically happens with overlapping `ip-match` expressions.
+Use the *Lookup* tab or `opennms:snmp-show-config` to see the values that apply.
+
+SNMPv3 requests use the wrong security level::
+If you do not set `security-level`, it is derived from the passphrases.
+A privacy passphrase without an authentication passphrase results in security level `1` (noAuthNoPriv), and the privacy settings are not used.
+Set `auth-protocol` and `privacy-protocol` explicitly when the agent does not use the defaults (`MD5` and `DES`).
+
+SNMP profiles are not tried::
+Provisiond tries xref:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles] in two cases: when a node's primary interface has no SNMP service, and when the system-group walk fails and the address uses the default configuration or a profile-derived definition that no longer matches its profile.
+Outside the first case, a definition without a profile label prevents profile fitting.
+To fit a profile manually, use the `opennms:snmp-fit` command.
+
+Changes to `snmp-config.xml` have no effect::
+The configuration is stored in the database.
+Make changes through the web UI or the REST API, or upload a complete XML configuration on the *Upload/Download* tab.
+
+[[snmp-configuration-logs]]
+=== Logs
+
+SNMP errors are logged by the daemon that sends the request, in `$\{OPENNMS_HOME}/logs`:
+
+* `provisiond.log` for node scans and SNMP profile fitting.
+* `collectd.log` for SNMP data collection.
+* `poller.log` for SNMP-based service monitors.
+
+For SNMPv3 traps and informs, `opennms:snmp-local-engine-id` displays the local engine ID that {page-component-title} uses.
