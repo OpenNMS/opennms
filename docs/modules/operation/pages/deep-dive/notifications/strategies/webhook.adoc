@@ -1,6 +1,6 @@
 
 = Webhook Notifications
-:description: How to configure {page-component-title} to send notifications to an arbitrary HTTP webhook, with examples for Slack, Mattermost, Microsoft Teams, and Discord.
+:description: How to configure {page-component-title} to send notifications to an arbitrary HTTP webhook, with examples for Slack, Mattermost, Microsoft Teams, Discord, and PagerDuty.
 
 The webhook notification strategy posts a notice to an HTTP endpoint that you describe in the notification command.
 Because the request method, headers, and body all come from the command, one strategy can target most webhook receivers, including team chat platforms that each expect a different payload.
@@ -223,6 +223,124 @@ For more information, see the https://discord.com/developers/docs/resources/webh
 ----
 
 Discord replies with `204` and an empty body on success.
+
+[[pagerduty]]
+=== PagerDuty
+
+PagerDuty accepts events through its Events API v2.
+Create an integration of type *Events API V2* on a PagerDuty service and copy its integration key, which the API calls the routing key.
+For more information, see the https://developer.pagerduty.com/docs/events-api-v2/overview/[PagerDuty Events API v2] documentation.
+
+PagerDuty opens an incident for a `trigger` event and closes it for a `resolve` event that carries the same `dedup_key`.
+Notifd sends the same command for a problem and for its resolution, so this example uses one command for each action and one notification for each event.
+
+Add two commands to `notificationCommands.xml`:
+
+[source, xml]
+----
+<command binary="false">
+  <name>pagerDutyTrigger</name>
+  <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
+  <comment>Open a PagerDuty incident</comment>
+  <argument streamed="false">
+    <substitution>https://events.pagerduty.com/v2/enqueue</substitution>
+    <switch>-url</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>{"routing_key": "${routingKey}", "event_action": "trigger", "dedup_key": "${dedupKey}", "payload": {"summary": "${subject}", "source": "${source}", "severity": "critical"}}</substitution>
+    <switch>-body</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>0123456789abcdef0123456789abcdef</substitution>
+    <switch>-routingKey</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-dedupKey</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-source</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+</command>
+<command binary="false">
+  <name>pagerDutyResolve</name>
+  <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
+  <comment>Resolve a PagerDuty incident</comment>
+  <argument streamed="false">
+    <substitution>https://events.pagerduty.com/v2/enqueue</substitution>
+    <switch>-url</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>{"routing_key": "${routingKey}", "event_action": "resolve", "dedup_key": "${dedupKey}"}</substitution>
+    <switch>-body</switch>
+  </argument>
+  <argument streamed="false">
+    <substitution>0123456789abcdef0123456789abcdef</substitution>
+    <switch>-routingKey</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-dedupKey</switch>
+  </argument>
+</command>
+----
+
+Replace the `-routingKey` substitution with your integration key.
+To keep the key out of the file, remove the substitution and set the value on each notification instead, for example `<parameter name="-routingKey" value="${scv:pagerduty:password}"/>`.
+PagerDuty accepts `critical`, `error`, `warning`, and `info` as the `severity` value.
+
+Add a destination path for each command to `destinationPaths.xml`.
+The target is a user that exists only to run the commands; it needs no contact information, and a user without a duty schedule is always on duty.
+Target a single user rather than a group, because notifd runs the command once for each member of a group.
+
+[source, xml]
+----
+<path name="PagerDuty-Trigger">
+  <target>
+    <name>pagerduty</name>
+    <autoNotify>off</autoNotify>
+    <command>pagerDutyTrigger</command>
+  </target>
+</path>
+<path name="PagerDuty-Resolve">
+  <target>
+    <name>pagerduty</name>
+    <command>pagerDutyResolve</command>
+  </target>
+</path>
+----
+
+`autoNotify` is `off` on the trigger path because the default `notifd-configuration.xml` acknowledges a `nodeDown` notice automatically when the matching `nodeUp` event arrives, and then sends a resolution notice through the original command.
+Through `pagerDutyTrigger`, that resolution notice would trigger a new incident.
+For more information, see xref:operation:deep-dive/notifications/concepts.adoc#automatic-acknowledgment[Automatic acknowledgment].
+
+Add a notification for each event to `notifications.xml`.
+Both notifications build the same `dedup_key` from the node ID, which ties the resolve event to the incident that the trigger event opened:
+
+[source, xml]
+----
+<notification name="nodeDown to PagerDuty" status="on">
+  <uei>uei.opennms.org/nodes/nodeDown</uei>
+  <rule>IPADDR != '0.0.0.0'</rule>
+  <destinationPath>PagerDuty-Trigger</destinationPath>
+  <text-message>All services are down on node %nodelabel%.</text-message>
+  <subject>Node %nodelabel% is down</subject>
+  <parameter name="-dedupKey" value="opennms-nodeDown-%nodeid%"/>
+  <parameter name="-source" value="%nodelabel%"/>
+</notification>
+<notification name="nodeUp to PagerDuty" status="on">
+  <uei>uei.opennms.org/nodes/nodeUp</uei>
+  <rule>IPADDR != '0.0.0.0'</rule>
+  <destinationPath>PagerDuty-Resolve</destinationPath>
+  <text-message>Node %nodelabel% is up.</text-message>
+  <subject>Node %nodelabel% is up</subject>
+  <parameter name="-dedupKey" value="opennms-nodeDown-%nodeid%"/>
+</notification>
+----
+
+PagerDuty replies `202` to an accepted event, which counts as success.
+With the default `match-all="true"` in `notifd-configuration.xml`, these notifications fire in addition to the default `nodeDown` email notification rather than instead of it.
 
 === A webhook that is not a chat platform
 
