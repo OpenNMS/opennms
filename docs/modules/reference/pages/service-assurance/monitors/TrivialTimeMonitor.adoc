@@ -36,7 +36,7 @@ NOTE: This monitor uses the Time Protocol, not NTP.
 | 30
 
 | retry
-| Number of attempts to get a response.
+| Number of retries after the first failed attempt to get a response.
 | 0
 
 | timeout
