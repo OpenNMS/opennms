@@ -127,6 +127,7 @@ See xref:reference:configuration/ttl-rpc.adoc[Time to Live (TTL) for RPCs].
 | `proxy-host`
 | All
 | Address of an SNMP proxy to send requests to instead of the agent.
+See <<snmp-configuration-proxy, Use an SNMP proxy>>.
 | _Not set_
 
 | `read-community`
@@ -201,6 +202,31 @@ Do not set it; use the xref:deep-dive/admin/configuration/scv-configuration.adoc
 
 The `security-name`, `read-community`, `write-community`, `auth-passphrase`, and `privacy-passphrase` attributes accept metadata expressions that reference the Secure Credentials Vault, for example `${scv:snmpv3:password}`.
 Only the global scope is available in these expressions.
+
+[[snmp-configuration-proxy]]
+=== Use an SNMP proxy
+
+Some agents are reachable only through an SNMP proxy, for example a proxy agent that forwards requests to devices on an isolated network.
+When a definition sets `proxy-host`, {page-component-title} sends every SNMP request for the IP addresses of that definition to the proxy instead of to the agent address.
+All other attributes of the definition, including `port`, the community strings, and the SNMPv3 credentials, apply to the requests sent to the proxy.
+
+{page-component-title} does not add the original agent address to the request.
+Configure the proxy so that it can identify the target device from the credentials that you set in the definition, for example a community string or an SNMPv3 context name that is unique for each proxied device.
+The results are still associated with the node and IP interface of the original agent address.
+
+The following definition sends requests for the agent `10.0.0.3` to the proxy `192.168.0.3` on port `1161`, using a community that the proxy maps to that agent:
+
+[source, xml]
+----
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp" version="v2c" read-community="public">
+   <definition proxy-host="192.168.0.3" port="1161" read-community="device-10-0-0-3">
+      <specific>10.0.0.3</specific>
+   </definition>
+</snmp-config>
+----
+
+In the web UI, set the *Proxy Host* field of the definition.
+To verify the result, run `opennms:snmp-show-config 10.0.0.3` in the Karaf shell: `Address` shows the proxy address and `ProxyForAddress` shows the original agent address.
 
 === Definition attributes and elements
 
