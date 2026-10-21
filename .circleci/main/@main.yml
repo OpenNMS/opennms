@@ -26,6 +26,7 @@ jobs:
   #jobs:tests/integration/integration.index#
   #jobs:code-coverage#
   #jobs:tests/smoke/smoke-test.index#
+  #jobs:select-tests#
   #jobs:create-merge-foundation-branch#
   #jobs:create-merge-omega-branch#
   #jobs:merge-foundation-branch#
