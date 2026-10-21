@@ -9,41 +9,6 @@ specific configuration files will overwrite the corresponding config provided by
 ## Contents
 The following describes the keys that can be specified in `horizon-config.yaml` to configure Horizon via confd.
 
-### Slack
-
-```
----
-opennms:
-  notifd:
-    slack:
-      webhookURL: https://url.com
-      channel: alerting
-      userName: username
-      iconEmoji: :metal:
-      iconURL: https://url.com/picture
-      useSystemProxy: false
-```
-
-Config specified will be written to `etc/opennms.properties.d/_confd.slack.properties`. Check the docs for detailed information about the Slack configuration parameters.
-
-### Mattermost
-
-```
----
-opennms:
-  notifd:
-    mattermost:
-      webhookURL: https://url.com
-      channel: alerting
-      userName: username
-      iconEmoji: :metal:
-      iconURL: https://url.com/picture
-      useSystemProxy: false
-```
-
-Config specified will be written to `etc/opennms.properties.d/_confd.mattermost.properties`. Check the docs for detailed information about the Mattermost configuration parameters.
-
-
 ### Newts
 
 ```
