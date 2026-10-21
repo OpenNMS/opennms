@@ -177,6 +177,7 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         final MockHttpServletResponse noTimespan = sendData(POST, MediaType.APPLICATION_JSON, BASE,
                 "{\"title\":\"x\",\"graphs\":[{\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\"}]}", 400);
         assertEquals("Graph 1: a timespan is required.", noTimespan.getContentAsString());
+        assertPlainText(noTimespan);
         final String longTitle = "x".repeat(256);
         sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"" + longTitle + "\"}", 400);
         // Every problem comes back at once, one per line, so a client can show them all.
@@ -189,6 +190,7 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
                 + "graphsPerLine must be 0 or greater.\n"
                 + "Graph 1: unknown timespan 'fortnight'.\n"
                 + "Graph 3: extlink must be a relative link or an http, https or mailto URL.", several.getContentAsString());
+        assertPlainText(several);
         assertEquals(2, new JSONArray(getJson(BASE, 200)).length());
         assertFalse(slurp().contains("title=\"x\""));
     }
@@ -243,7 +245,9 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         assertTrue(xml, xml.contains("title=\"Renamed\""));
         assertFalse(xml, xml.contains("title=\"Test 2\""));
 
-        sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/99", body, 404);
+        final MockHttpServletResponse missing = sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/99", body, 404);
+        assertEquals("Graph collection 99 was not found.", missing.getContentAsString());
+        assertPlainText(missing);
         sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/1", "{\"title\":\"\"}", 400);
     }
 
@@ -294,7 +298,7 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         try {
             getJson(BASE, 200);
             getJson(BASE + "/0", 200);
-            sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"nope\"}", 403);
+            assertPlainText(sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"nope\"}", 403));
             sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/0", "{\"title\":\"nope\"}", 403);
             sendData(POST, MediaType.APPLICATION_JSON, BASE + "/0/graphs",
                     "{\"title\":\"nope\",\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"x\",\"timespan\":\"1_hour\"}", 403);
@@ -428,6 +432,7 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         // A stale tag is refused on every write and nothing changes.
         final MockHttpServletResponse stale = sendWithHeader(PUT, BASE + "/0", "{\"title\":\"Stale\"}", 412, "If-Match", "\"0000\"");
         assertTrue(stale.getContentAsString(), stale.getContentAsString().contains("has changed since it was read"));
+        assertPlainText(stale);
         assertEquals("Test", new JSONObject(getJson(BASE + "/0", 200)).getString("title"));
         sendWithHeader(POST, BASE + "/0/graphs", GRAPH, 412, "If-Match", "\"0000\"");
         sendWithHeader(DELETE, BASE + "/0", null, 412, "If-Match", "\"0000\"");
@@ -473,6 +478,13 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         dispatch(request, response);
         assertEquals(response.getContentAsString(), 200, response.getStatus());
         return response;
+    }
+
+    /** Error bodies are plain text and must say so, or a client that goes by the header drops them. */
+    private static void assertPlainText(final MockHttpServletResponse response) {
+        final String type = response.getContentType();
+        assertNotNull("no Content-Type on a " + response.getStatus() + " response", type);
+        assertTrue(type, type.startsWith(MediaType.TEXT_PLAIN));
     }
 
     private MockHttpServletResponse sendWithHeader(final String method, final String url, final String body, final int expectedStatus, final String header, final String value) throws Exception {

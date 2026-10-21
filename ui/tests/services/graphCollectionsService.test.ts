@@ -99,7 +99,8 @@ describe('graphCollectionsService', () => {
   })
 
   it('reports every validation problem of a 400, one per line', async () => {
-    const err = { response: { status: 400, data: 'title is required.\nGraph 2: unknown timespan \'fortnight\'.\n' }}
+    // the header the API sends, charset included
+    const err = { response: { status: 400, data: 'title is required.\nGraph 2: unknown timespan \'fortnight\'.\n', headers: { 'content-type': 'text/plain;charset=UTF-8' }}}
     vi.mocked(v2.put).mockRejectedValueOnce(err)
     const result = await updateGraphCollection(3, collection)
     expect(result.success).toBe(false)
@@ -117,6 +118,13 @@ describe('graphCollectionsService', () => {
     const plain = { response: { status: 404, data: 'Graph collection 3 was not found.', headers: { 'content-type': 'text/plain;charset=UTF-8' }}}
     vi.mocked(v2.put).mockRejectedValueOnce(plain)
     expect((await updateGraphCollection(3, collection)).message).toBe('Graph collection 3 was not found.')
+
+    // a string body under the JSON type, as the API sent before it declared its error bodies
+    const typedJson = { response: { status: 404, data: 'Graph collection 3 was not found.', headers: { 'content-type': 'application/json;charset=UTF-8' }}}
+    vi.mocked(v2.put).mockRejectedValueOnce(typedJson)
+    expect((await updateGraphCollection(3, collection)).message).toBe('Graph collection 3 was not found.')
+    expect(graphCollectionProblems({ response: { status: 400, data: 'Graph 1: unknown timespan \'fortnight\'.\nGraph 2: a graphtype is required.', headers: { 'content-type': 'application/json;charset=UTF-8' }}}))
+      .toEqual(['Graph 1: unknown timespan \'fortnight\'.', 'Graph 2: a graphtype is required.'])
 
     // a 400 whose body is a page, not the problem list
     expect(graphCollectionProblems({ response: { status: 400, data: '<!DOCTYPE html><html></html>', headers: {}}})).toEqual([])
