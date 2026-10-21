@@ -109,10 +109,6 @@ This table lists dependencies beyond those two.
 | Provisiond
 | SNMP interface status monitoring
 
-| Statsd
-|
-| Scheduled statistical reports
-
 | Syslogd
 |
 | Syslog-derived events
