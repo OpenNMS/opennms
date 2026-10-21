@@ -31,12 +31,12 @@ import java.sql.Statement;
  * The usermgmt_initialized marker: set once the user data of a database is initialized (copied from the files, or
  * seeded with the defaults). DefaultUsersSeedOffline adds the default users only to a database without it.
  */
-final class UserMgmtInitialized {
+public final class UserMgmtInitialized {
 
     private UserMgmtInitialized() {
     }
 
-    static boolean isSet(final Connection connection) throws SQLException {
+    public static boolean isSet(final Connection connection) throws SQLException {
         try (final Statement statement = connection.createStatement();
              final ResultSet rs = statement.executeQuery("SELECT EXISTS (SELECT 1 FROM usermgmt_initialized)")) {
             rs.next();
@@ -45,7 +45,7 @@ final class UserMgmtInitialized {
     }
 
     /** Sets the marker once; it runs in the connection's current transaction. */
-    static void set(final Connection connection, final String initializedBy) throws SQLException {
+    public static void set(final Connection connection, final String initializedBy) throws SQLException {
         try (final PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO usermgmt_initialized (initialized_by) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM usermgmt_initialized)")) {
             statement.setString(1, initializedBy);

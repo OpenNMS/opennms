@@ -161,11 +161,13 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
     }
 
     @Test
-    public void testSeedsWhenTheMigratorIsComplete() throws Exception {
+    public void testDoesNotSeedWhenUsersXmlWasNotCopiedEvenIfTheStatusFileSaysSo() throws Exception {
+        // a restored or new database on a host whose etc records the migrator: the users of users.xml must be
+        // copied (the migrator runs once per database), not replaced with admin/admin
         write("users.xml", EMPTY_USERS_XML);
         markMigratorComplete();
         seed();
-        assertEquals(2, count("users"));
+        assertEquals(0, count("users"));
     }
 
     @Test
@@ -197,7 +199,6 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
         // a site that uses only LDAP, RADIUS or SSO: an empty users.xml stays empty
         write("users.xml", EMPTY_USERS_XML);
         migrate();
-        markMigratorComplete();
         seed();
         assertEquals(0, count("users"));
     }

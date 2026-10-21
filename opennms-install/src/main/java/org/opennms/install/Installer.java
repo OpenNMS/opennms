@@ -38,6 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -69,9 +71,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.upgrade.api.OnmsUpgradeException;
-import org.opennms.upgrade.implementations.UsersGroupsXmlMigratorOffline;
-import org.opennms.upgrade.support.UpgradeStatus;
+import org.opennms.upgrade.implementations.UserMgmtInitialized;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
@@ -305,7 +305,7 @@ public class Installer {
                 // -R runs before the upgrade tasks: on an upgrade from 36.x, the migrator copies users.xml later.
                 // After the migration, users.xml stays in etc, but nothing reads it.
                 final File home = new File(m_opennms_home);
-                if (!new File(home, "etc" + File.separator + "users.xml").exists() || xmlMigrationComplete(home)) {
+                if (!new File(home, "etc" + File.separator + "users.xml").exists() || isUserDataInitialized()) {
                     System.out.println("The password was NOT set: the admin user does not exist in the database."
                             + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
                     return;
@@ -318,18 +318,31 @@ public class Installer {
         System.out.println("Password for the web application admin user was set.");
     }
 
-    private static boolean xmlMigrationComplete(final File opennmsHome) throws OnmsUpgradeException {
-        final File statusFile = new File(opennmsHome, "etc" + File.separator + UpgradeStatus.STATUS_FILE);
-        return new UpgradeStatus(statusFile).wasExecuted(UsersGroupsXmlMigratorOffline.class.getSimpleName());
+    protected void setAdminPasswordInDatabase(final String password) throws Exception {
+        DatabasePasswords.setPassword(openNmsDataSource(), "admin", password);
     }
 
-    protected void setAdminPasswordInDatabase(final String password) throws Exception {
+    /**
+     * @return true if the user data of the database is initialized (usermgmt_initialized): the migrator copied
+     *         users.xml into it, or the default users were added. The migrator runs once per database, not once per
+     *         etc, so the upgrade status file does not tell.
+     */
+    protected boolean isUserDataInitialized() throws Exception {
+        try (final Connection connection = openNmsDataSource().getConnection()) {
+            return UserMgmtInitialized.isSet(connection);
+        } catch (final SQLException e) {
+            // the table does not exist yet: a database before 37
+            return false;
+        }
+    }
+
+    private static DataSource openNmsDataSource() throws Exception {
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
         final JdbcDataSource dsConfig;
         try (final InputStream is = new FileInputStream(cfgFile)) {
             dsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(OPENNMS_DATA_SOURCE_NAME);
         }
-        DatabasePasswords.setPassword(new SimpleDataSource(dsConfig), "admin", password);
+        return new SimpleDataSource(dsConfig);
     }
 
     protected void resetAdminPasswordInUsersXml(final String password) throws Exception {

@@ -31,20 +31,18 @@ import java.sql.Statement;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
-import org.opennms.upgrade.support.UpgradeStatus;
 
 /**
  * Adds the default users (admin, rtc) and the Admin group to a database without users, with the values of the
- * shipped users.xml and groups.xml. Runs after UsersGroupsXmlMigratorOffline, on every install: the empty-table
- * check makes it safe, and a run-once marker in etc would block a new database used with an old etc.
+ * shipped users.xml and groups.xml. Runs after UsersGroupsXmlMigratorOffline, on every install.
  *
  * It seeds a database at most once: not when the table usermgmt_initialized has its row, which the migrator also
  * sets (even when it copies no users). Thus a site without local users (LDAP, RADIUS or SSO only), or one that
  * deleted them, does not get admin/admin back on its next upgrade.
  *
- * It does not seed while the migration of users.xml is pending (users.xml exists and the migrator has not run
- * successfully): Upgrade continues after a failed task, and a seeded admin would make the migrator's next run copy
- * nothing, so the users of the file would be lost.
+ * It does not seed while etc/users.xml exists: the migrator copies that file into a database without the marker
+ * (also a restored or new database on an upgraded host), so here it failed. Upgrade continues after a failed task,
+ * and a seeded admin would make the migrator's next run copy nothing, so the users of the file would be lost.
  */
 public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
 
@@ -93,8 +91,9 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
                 return;
             }
             final File usersXml = new File(getHomeDirectory(), "etc" + File.separator + "users.xml");
-            if (usersXml.exists() && !new UpgradeStatus().wasExecuted(UsersGroupsXmlMigratorOffline.class.getSimpleName())) {
-                log("No default users are added: %s exists, and its migration (UsersGroupsXmlMigratorOffline) is not complete. See the messages of that task.\n", usersXml);
+            if (usersXml.exists()) {
+                // the migrator runs before this task and sets the marker when it copies users.xml: it failed
+                log("No default users are added: %s exists, but its users were not copied. See the messages of UsersGroupsXmlMigratorOffline.\n", usersXml);
                 return;
             }
             connection.setAutoCommit(false);

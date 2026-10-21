@@ -254,6 +254,7 @@ public class InstallerTest {
     private static class RecordingInstaller extends Installer {
         private final List<String> m_calls = new ArrayList<>();
         private boolean m_adminMissing;
+        private boolean m_userDataInitialized;
 
         RecordingInstaller() throws Exception {
             super();
@@ -270,6 +271,11 @@ public class InstallerTest {
         @Override
         protected void resetAdminPasswordInUsersXml(final String password) {
             m_calls.add("xml");
+        }
+
+        @Override
+        protected boolean isUserDataInitialized() {
+            return m_userDataInitialized;
         }
     }
 
@@ -302,11 +308,23 @@ public class InstallerTest {
         // the migrator keeps users.xml in etc, but nothing reads it any more: writing it would report a password
         // that the login never sees
         Files.writeString(etcDir.resolve("users.xml"), "<userinfo/>");
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_adminMissing = true;
+        recording.m_userDataInitialized = true;
+        recording.resetWebAppAdminPassword();
+        assertEquals(List.of("db"), recording.m_calls);
+    }
+
+    @Test
+    public void testResetAdminPasswordUsesTheDatabaseMarkerNotTheStatusFile() throws Exception {
+        // a restored database on an upgraded host: etc records the migrator, but this database was not migrated
+        // yet, so the migrator copies users.xml (with the new password) later
+        Files.writeString(etcDir.resolve("users.xml"), "<userinfo/>");
         Files.writeString(etcDir.resolve("opennms-upgrade-status.properties"), "UsersGroupsXmlMigratorOffline=Tue Oct 14 10\\:00\\:00 UTC 2026\n");
         final RecordingInstaller recording = recordingInstaller();
         recording.m_adminMissing = true;
         recording.resetWebAppAdminPassword();
-        assertEquals(List.of("db"), recording.m_calls);
+        assertEquals(List.of("db", "xml"), recording.m_calls);
     }
 
     @Test

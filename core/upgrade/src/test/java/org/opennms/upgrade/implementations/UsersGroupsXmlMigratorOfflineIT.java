@@ -488,4 +488,27 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         assertThrows(OnmsUpgradeException.class, this::migrate);
         assertEquals(0, count("usermgmt_initialized"));
     }
+
+    @Test
+    public void testRunsOnEveryInstall() throws Exception {
+        // the run-once rule is per database (usermgmt_initialized), not per etc: a restored or new database on an
+        // upgraded host still gets the users of users.xml
+        assertFalse(new UsersGroupsXmlMigratorOffline().runOnlyOnce());
+    }
+
+    @Test
+    public void testSkipsADatabaseThatWasInitialized() throws Exception {
+        copyFixtures();
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");
+        migrate();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+    }
+
+    @Test
+    public void testDoesNotMarkADatabaseWithoutUsersXml() throws Exception {
+        // the default-users seed adds admin/admin to such a database (a new installation once the files are gone)
+        migrate();
+        assertEquals(0, count("usermgmt_initialized"));
+    }
 }
