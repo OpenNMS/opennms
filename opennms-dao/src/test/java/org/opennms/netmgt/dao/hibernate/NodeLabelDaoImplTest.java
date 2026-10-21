@@ -74,4 +74,10 @@ public class NodeLabelDaoImplTest {
         assertEquals("rest-node", label.getLabel());
         assertEquals(NodeLabelSource.UNKNOWN, label.getSource());
     }
+
+    // NodeLabelChangeServlet calls the constructor directly with node.getLabelSource(), which can be null.
+    @Test
+    public void constructorTreatsANullLabelSourceAsUnknown() {
+        assertEquals(NodeLabelSource.UNKNOWN, new NodeLabelDaoImpl("x", null).getSource());
+    }
 }

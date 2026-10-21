@@ -104,6 +104,12 @@ public class NodeLabelDaoImpl implements NodeLabel{
      *            Flag indicating source of node label
      */
     public NodeLabelDaoImpl(String nodeLabel, NodeLabelSource nodeLabelSource) {
+        // A node added through the REST API can have no label source; treat it as unknown, as
+        // NodeLabelJDBCImpl does, rather than failing in the switch. Callers such as
+        // NodeLabelChangeServlet pass node.getLabelSource() directly.
+        if (nodeLabelSource == null) {
+            nodeLabelSource = NodeLabelSource.UNKNOWN;
+        }
         switch(nodeLabelSource) {
             case ADDRESS:
             case HOSTNAME:
@@ -158,11 +164,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
         OnmsNode node = nodeDao.get(nodeID);
 
         String nodeLabel = node.getLabel();
-        // A node added through the REST API can have no label source; treat it as unknown, as
-        // NodeLabelJDBCImpl does, rather than failing in the constructor's switch.
-        NodeLabelSource nodeLabelSource = node.getLabelSource() != null ? node.getLabelSource() : NodeLabelSource.UNKNOWN;
-
-        return new NodeLabelDaoImpl(nodeLabel, nodeLabelSource);
+        // The constructor treats a null label source (a node added through the REST API) as unknown.
+        return new NodeLabelDaoImpl(nodeLabel, node.getLabelSource());
     }
 
     /**
