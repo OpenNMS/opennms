@@ -30,7 +30,7 @@ Use the xref:service-assurance/monitors/SshMonitor.adoc[SshMonitor] for new serv
 | banner
 | Java regular expression that must be found in the banner line that the SSH server sends.
 A value of `*` disables banner matching.
-See xref:service-assurance/monitors/SshMonitor.adoc[SshMonitor] for matching details.
+See xref:service-assurance/monitors/SshMonitor.adoc#ssh-banner-matching[SshMonitor banner matching].
 | n/a
 
 | client-banner
