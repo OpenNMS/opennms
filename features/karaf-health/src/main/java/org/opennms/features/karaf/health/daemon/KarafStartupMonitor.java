@@ -71,7 +71,12 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
             LOG.info("Waiting for loading of {}, will block startup until service is available.", serviceClass.getName());
             final long startNanos = System.nanoTime();
             final KarafHealthService service = SERVICE_LOOKUP.lookup(serviceClass, null);
-            LOG.info("Lookup of {} took {} ms (poll interval {} ms).", serviceClass.getName(), (System.nanoTime() - startNanos) / 1_000_000, LOOKUP_DELAY_MS);
+            final long elapsedMs = (System.nanoTime() - startNanos) / 1_000_000;
+            if (service != null) {
+                LOG.info("Lookup of {} took {} ms (poll interval {} ms).", serviceClass.getName(), elapsedMs, LOOKUP_DELAY_MS);
+            } else {
+                LOG.warn("Lookup of {} timed out after {} ms.", serviceClass.getName(), elapsedMs);
+            }
             return service != null;
         } catch (Exception e) {
             LOG.error("Could not lookup {}, will fail.", serviceClass.getName(), e);
