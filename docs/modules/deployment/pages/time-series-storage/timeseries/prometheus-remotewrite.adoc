@@ -23,6 +23,9 @@ To use the Prometheus RemoteWrite plugin, follow these steps:
 If your aim is to get up to speed quickly in a test environment, you can use Docker Compose to deploy a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone Cortex node].
 . Download the plugin's `.kar` file from https://github.com/OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin/releases[GitHub].
 . Copy the `.kar` file into `$\{OPENNMS_HOME}/deploy`.
+ifeval::["{page-component-title}" == "Horizon"]
+If you run {page-component-title} in a container, see xref:deployment:core/install.adoc#docker-install-plugins[Install plugins from KAR files].
+endif::[]
 . Enable and configure time series database plugins in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
 +
 [source, properties]
