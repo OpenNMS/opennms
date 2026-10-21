@@ -994,7 +994,13 @@ describe('Nodes useNodeQuery test', () => {
         [ 'decimal', { nodeId: '3.5' }, null ],
         [ 'empty string', { nodeId: '' }, null ],
         [ 'array value', { nodeId: [ '1', '2' ] }, null ],
-        [ 'whitespace', { nodeId: '  ' }, null ]
+        [ 'whitespace', { nodeId: '  ' }, null ],
+        [ 'leading zeros', { nodeId: '007' }, 7 ],
+        [ 'hexadecimal', { nodeId: '0x10' }, null ],
+        [ 'exponent', { nodeId: '5e2' }, null ],
+        [ 'plus sign', { nodeId: '+5' }, null ],
+        [ 'exponent too large to be exact', { nodeId: '1e21' }, null ],
+        [ 'digits too many to be exact', { nodeId: '99999999999999999999' }, null ]
       ])('%s -> %s', (_title, query, expected) => {
         expect(parseNodeIdQueryParam(query as any)).toBe(expected)
       })

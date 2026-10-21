@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { parsePositiveIntegerId } from '@/lib/ids'
 import { isConvertibleToInteger } from '@/lib/utils'
 import { LocationQuery } from 'vue-router'
 import { normalizeMacSearch } from './useInterfaceListing'
@@ -743,9 +744,6 @@ export const parseNodeIdQueryParam = (query: LocationQuery): number | null => {
   if (raw === undefined || Array.isArray(raw)) {
     return null
   }
-  if (!isConvertibleToInteger(raw)) {
-    return null
-  }
-  const id = Number(raw)
-  return Number.isInteger(id) && id > 0 ? id : null
+  const id = parsePositiveIntegerId(raw)
+  return id === null ? null : Number(id)
 }
