@@ -26,8 +26,8 @@ sudo apt clean
 +
 [source, console]
 ----
-sudo rsync -Ppav ${OPENNMS_HOME}/etc /tmp/etc.orig
-sudo rsync -Ppav ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
+sudo rsync -Ppav /opt/opennms/etc /tmp/etc.orig
+sudo rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 ----
 
 . Update the apt packages index:
@@ -65,7 +65,7 @@ sudo apt install openjdk-21-jdk-headless openjdk-21-jre-headless
 +
 [source, console]
 ----
-sudo ${OPENNMS_HOME}/bin/runjava -s
+sudo /opt/opennms/bin/runjava -s
 ----
 
 . Check for configuration file changes and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
@@ -78,7 +78,7 @@ Use `diff -Bbw` and `diff -y` to look for changes.
 +
 [source, console]
 ----
-sudo ${OPENNMS_HOME}/bin/install -dis
+sudo /opt/opennms/bin/install -dis
 ----
 +
 The upgrade may take some time.
@@ -89,7 +89,7 @@ If you do not get this message, check the output of the install command for any 
 +
 [source, console]
 ----
-yes | sudo ${OPENNMS_HOME}/bin/fix-karaf-setup.sh
+yes | sudo /opt/opennms/bin/fix-karaf-setup.sh
 ----
 
 . Start {page-component-title}:
@@ -99,7 +99,7 @@ yes | sudo ${OPENNMS_HOME}/bin/fix-karaf-setup.sh
 sudo systemctl start opennms.service
 ----
 +
-TIP: `tail -F $\{OPENNMS_HOME}/logs/manager.log` shows the {page-component-title} startup progress.
+TIP: `tail -F /opt/opennms/logs/manager.log` shows the {page-component-title} startup progress.
 
 . The upgrade is completed and operation resumes.
 
