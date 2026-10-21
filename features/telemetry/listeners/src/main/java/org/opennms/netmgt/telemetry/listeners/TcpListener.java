@@ -113,6 +113,9 @@ public class TcpListener implements GracefulShutdownListener {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(final SocketChannel ch) {
+                        // The group removes a channel when the channel closes.
+                        TcpListener.this.channels.add(ch);
+
                         final TcpParser.Handler session = TcpListener.this.parser.accept(ch.remoteAddress(), ch.localAddress());
                         ch.pipeline()
                                 .addFirst(new ChannelInboundHandlerAdapter() {
@@ -166,18 +169,6 @@ public class TcpListener implements GracefulShutdownListener {
                                     }
                                 });
                     }
-
-                    @Override
-                    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-                        TcpListener.this.channels.add(ctx.channel());
-                        super.channelActive(ctx);
-                    }
-
-                    @Override
-                    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-                        TcpListener.this.channels.remove(ctx.channel());
-                        super.channelInactive(ctx);
-                    }
                 })
                 .bind(address)
                 .sync();
@@ -187,11 +178,9 @@ public class TcpListener implements GracefulShutdownListener {
         NettyEventListener workerListener = new NettyEventListener("worker");
         NettyEventListener bossListener = new NettyEventListener("boss");
 
-        LOG.info("Disconnecting clients...");
-        this.channels.close().awaitUninterruptibly();
-
-        // Close the channel and stop the parser before the groups shut down. A close task
-        // submitted after a group has terminated fails with RejectedExecutionException.
+        // Close the server channel so that no new connection arrives, then disconnect the
+        // clients, then stop the parser. All of this runs before the groups shut down. A close
+        // task submitted after a group has terminated fails with RejectedExecutionException.
         if (this.socketFuture != null) {
             LOG.info("Closing channel...");
             this.socketFuture.channel().close().sync();
@@ -199,6 +188,9 @@ public class TcpListener implements GracefulShutdownListener {
                 this.socketFuture.channel().parent().close().sync();
             }
         }
+
+        LOG.info("Disconnecting clients...");
+        this.channels.close().awaitUninterruptibly();
 
         LOG.info("Stopping parser...");
         if (this.parser != null) {

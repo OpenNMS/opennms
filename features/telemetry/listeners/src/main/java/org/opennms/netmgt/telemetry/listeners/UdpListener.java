@@ -23,6 +23,7 @@ package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -140,7 +141,7 @@ public class UdpListener implements GracefulShutdownListener {
             }
         }
 
-        this.parsers.forEach(Parser::stop);
+        stopParsers();
 
         LOG.info("Closing boss group...");
         if (this.bossGroup != null) {
@@ -174,6 +175,28 @@ public class UdpListener implements GracefulShutdownListener {
                 return get();
             }
         };
+    }
+
+    /**
+     * Stops the parsers in parallel. A parser waits for the records that are still in its
+     * executor, so a sequential stop would take the sum of these waits.
+     */
+    private void stopParsers() throws InterruptedException {
+        final List<Thread> threads = new ArrayList<>(this.parsers.size());
+        for (final UdpParser parser : this.parsers) {
+            final Thread thread = new Thread(() -> {
+                try {
+                    parser.stop();
+                } catch (final Exception e) {
+                    LOG.warn("Failed to stop parser {}", parser.getName(), e);
+                }
+            }, "telemetryd-" + name + "-stop-" + parser.getName());
+            thread.start();
+            threads.add(thread);
+        }
+        for (final Thread thread : threads) {
+            thread.join();
+        }
     }
 
     public String getHost() {

@@ -21,16 +21,26 @@
  */
 package org.opennms.netmgt.telemetry.listeners;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
@@ -63,6 +73,74 @@ public class ListenerStopTest {
         listener.start();
 
         assertStopsPromptly(listener::stop, listener::getShutdownFuture);
+    }
+
+    /** The clients must be disconnected before the parser stops, or their records are lost. */
+    @Test
+    public void tcpListenerDisconnectsClientsBeforeParserStops() throws Exception {
+        final int port = freePort();
+        final CountDownLatch accepted = new CountDownLatch(1);
+        final AtomicReference<Socket> client = new AtomicReference<>();
+        final AtomicBoolean clientClosedBeforeParserStop = new AtomicBoolean(false);
+        final StubTcpParser parser = new StubTcpParser() {
+            @Override
+            public Handler accept(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
+                accepted.countDown();
+                return super.accept(remoteAddress, localAddress);
+            }
+
+            @Override
+            public void stop() {
+                super.stop();
+                try {
+                    client.get().setSoTimeout(2000);
+                    clientClosedBeforeParserStop.set(client.get().getInputStream().read() == -1);
+                } catch (final IOException e) {
+                    // read timeout: the connection is still open
+                }
+            }
+        };
+        final TcpListener listener = new TcpListener("tcp-clients-test", parser, new MetricRegistry());
+        listener.setPort(port);
+        listener.start();
+
+        try (Socket socket = new Socket("127.0.0.1", port)) {
+            client.set(socket);
+            assertTrue("the listener must accept the connection", accepted.await(5, TimeUnit.SECONDS));
+
+            listener.stop();
+        }
+
+        assertTrue("the client must see the connection closed before the parser stops", clientClosedBeforeParserStop.get());
+    }
+
+    /** Each parser may wait for its records on stop. The listener must not add up these waits. */
+    @Test
+    public void udpListenerStopsParsersInParallel() throws Exception {
+        final long stopMs = 1000;
+        final AtomicInteger stopped = new AtomicInteger();
+        final List<UdpParser> parsers = Arrays.asList(
+                new SlowStubUdpParser(stopMs, stopped),
+                new SlowStubUdpParser(stopMs, stopped),
+                new SlowStubUdpParser(stopMs, stopped),
+                new SlowStubUdpParser(stopMs, stopped));
+        final UdpListener listener = new UdpListener("udp-parallel-test", parsers, new MetricRegistry());
+        listener.setPort(0);
+        listener.start();
+
+        final long start = System.nanoTime();
+        listener.stop();
+        final long elapsedMs = (System.nanoTime() - start) / 1_000_000;
+
+        assertEquals("all parsers must be stopped", parsers.size(), stopped.get());
+        assertTrue("stop took " + elapsedMs + " ms, sequential would take " + (parsers.size() * stopMs) + " ms",
+                elapsedMs < (parsers.size() - 1) * stopMs);
+    }
+
+    private static int freePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
     }
 
     private interface Stop {
@@ -132,6 +210,33 @@ public class ListenerStopTest {
                     return Optional.empty();
                 }
             };
+        }
+    }
+
+    /** Takes a fixed time to stop, like a parser that waits for its records. */
+    private static class SlowStubUdpParser extends StubUdpParser implements Dispatchable {
+        private final long stopMs;
+        private final AtomicInteger stopped;
+
+        SlowStubUdpParser(final long stopMs, final AtomicInteger stopped) {
+            this.stopMs = stopMs;
+            this.stopped = stopped;
+        }
+
+        @Override
+        public boolean handles(final ByteBuf buffer) {
+            return true;
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            try {
+                Thread.sleep(stopMs);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            stopped.incrementAndGet();
         }
     }
 }
