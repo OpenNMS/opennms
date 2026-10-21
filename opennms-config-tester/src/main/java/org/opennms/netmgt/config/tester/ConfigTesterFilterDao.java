@@ -48,7 +48,7 @@ public class ConfigTesterFilterDao implements FilterDao {
      */
     public ConfigTesterFilterDao() {
         super();
-        LOG.info("Initializing ConfigTesterFilterDao");
+        LOG.debug("Initializing ConfigTesterFilterDao");
     }
 
     /* (non-Javadoc)
