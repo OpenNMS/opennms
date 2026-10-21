@@ -173,6 +173,7 @@ The collector and its related Java class must appear at the bottom of the `colle
 
 The following table lists service attributes common to all services.
 For a list of collector-specific parameters and their default values, refer to the specific collector listed in the xref:reference:performance-data-collection/introduction.adoc[] section.
+For the parameters that every collector accepts, such as `thresholding-enabled` and the Minion parameters, see xref:reference:performance-data-collection/introduction.adoc#ref-performance-data-collectors-common-parameters[Common configuration parameters].
 
 [caption=]
 .Common service attributes
