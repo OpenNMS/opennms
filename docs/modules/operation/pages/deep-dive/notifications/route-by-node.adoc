@@ -1,0 +1,93 @@
+
+= Send Notifications for Specific Nodes to Specific Users
+:description: How to send {page-component-title} notifications about a set of nodes only to the users or groups responsible for them, using surveillance categories, filter rules, and destination paths.
+
+This procedure sends notifications about a set of nodes to the team responsible for them.
+It combines three features: a filter rule selects the nodes, a group holds the team, and a destination path connects the two.
+
+The example sends `nodeDown` notices for the nodes of a branch office to a group called `BranchA-Team`.
+
+== Before you begin
+
+You need a way to select the nodes in a filter rule.
+A surveillance category is usually the most maintainable choice, because it does not depend on addresses or names:
+
+[options="header"]
+[cols="1,2"]
+|===
+| Nodes Selected By
+| Rule
+
+| Surveillance category
+| `(IPADDR != '0.0.0.0') & catincBranchA`
+
+| Requisition
+| `(IPADDR != '0.0.0.0') & (foreignSource == 'BranchA')`
+
+| IP address range
+| `IPADDR IPLIKE 10.20.*.*`
+
+| Node label
+| `(IPADDR != '0.0.0.0') & (nodeLabel LIKE 'brancha-%')`
+|===
+
+For the full rule syntax, see xref:reference:configuration/filters/filters.adoc[Filters].
+Category names used with `catinc` cannot contain spaces.
+
+== Procedure
+
+. Assign the nodes to a surveillance category called `BranchA`, either in their requisition or as described in xref:operation:quick-start/visualize-data.adoc[Visualize Data].
+. Create a group called `BranchA-Team` and add the users who should receive the notices, as described in xref:operation:deep-dive/user-management/user-groups.adoc[Groups].
+Make sure that each user has the contact information that the notification command needs, such as an email address for `javaEmail`.
+. Create a destination path called `BranchA` that targets the group with the commands to use, as described in xref:operation:quick-start/notifications.adoc[Turn on Default Notifications].
+The resulting entry in `destinationPaths.xml` looks like this:
++
+[source, xml]
+----
+<path name="BranchA">
+  <target>
+    <name>BranchA-Team</name>
+    <command>javaEmail</command>
+  </target>
+</path>
+----
+. Create an event notification for the `uei.opennms.org/nodes/nodeDown` UEI, enter the rule `(IPADDR != '0.0.0.0') & catincBranchA`, and choose the `BranchA` destination path, as described in xref:operation:quick-start/notification-config.adoc[Configure Notifications].
+The resulting entry in `notifications.xml` looks like this:
++
+[source, xml]
+----
+<notification name="nodeDown BranchA" status="on">
+  <uei>uei.opennms.org/nodes/nodeDown</uei>
+  <rule><![CDATA[(IPADDR != '0.0.0.0') & catincBranchA]]></rule>
+  <destinationPath>BranchA</destinationPath>
+  <text-message>All services are down on node %nodelabel%.</text-message>
+  <subject>Notice #%noticeid%: node %nodelabel% down.</subject>
+  <numeric-message>111-%noticeid%</numeric-message>
+</notification>
+----
+. Repeat the previous step for each other UEI that the team should receive, such as `nodeLostService` and `interfaceDown`.
+
+== Keep the notices away from other users
+
+By default, `notifd-configuration.xml` sets `match-all="true"`, so an event that matches several notifications produces a notice for each of them.
+The default `nodeDown` notification still matches the branch nodes and sends its notice to the `Email-Admin` path as well.
+
+If only the branch team should receive these notices, exclude the category from the rule of the general `nodeDown` notification:
+
+[source, xml]
+----
+<rule><![CDATA[(IPADDR != '0.0.0.0') & !(catincBranchA)]]></rule>
+----
+
+For more information on how notifd matches events and the effect of `match-all`, see xref:operation:deep-dive/notifications/concepts.adoc#event-matching[Matching events to notifications].
+
+== Verify the configuration
+
+* On the notification's rule page in the web UI, click *Validate rule results* to list the interfaces that the rule selects.
+* Send a test event for one of the nodes and check the notices in the web UI or `notifd.log` for the recipients.
+The test event produces real notices for every notification that it matches.
++
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl -n <node-id> uei.opennms.org/nodes/nodeDown
+----
