@@ -10,11 +10,6 @@ You will only need to import MIB files for unformatted events as part of configu
 You can parse SNMP MIB definitions and create {page-component-title} event definitions from any `TRAP-TYPE` or `NOTIFICATION-TYPE` macros that they contain through the UI.
 You can also generate data collection definitions from `OBJECT-TYPE` symbols defined in a MIB file.
 
-You can use the `mib2opennms` command line utility to help create event definitions from MIB definitions.
-Using the UI editor achieves similar results to using `mib2events`.
-
-NOTE: We do not recommend using `mib2opennms`, as it produces more bus errors than event definitions.
-
 [[mib-import]]
 == Import MIB and create event definitions
 
