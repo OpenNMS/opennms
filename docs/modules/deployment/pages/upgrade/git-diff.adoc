@@ -19,7 +19,7 @@ IMPORTANT: Remember to stop {page-component-title} before changing files in the 
 Debian OSes::
 +
 --
-IMPORTANT: `$OPENNMS_HOME/etc` is linked to `/etc/opennms`.
+IMPORTANT: `/opt/opennms/etc` is linked to `/etc/opennms`.
 Do not move that folder.
 Moving the folder will break the link and cause future upgrades to fail.
 
@@ -44,15 +44,15 @@ cp -pR /opt/opennms/share/etc-pristine /etc/opennms
 Other OSes::
 +
 --
-Run the following code to move your `$OPENNMS_HOME/etc` files to a safe place, then copy `etc-pristine` to the `$OPENNMS_HOME/etc` directory:
+Run the following code to move your `/opt/opennms/etc` files to a safe place, then copy `etc-pristine` to the `/opt/opennms/etc` directory:
 
 [source, console]
 ----
-mv $OPENNMS_HOME/etc $OPENNMS_HOME/etc.bak
-cp -pR $OPENNMS_HOME/share/etc-pristine $OPENNMS_HOME/etc
+mv /opt/opennms/etc /opt/opennms/etc.bak
+cp -pR /opt/opennms/share/etc-pristine /opt/opennms/etc
 ----
 
-NOTE: On RPM-based installations, the pristine configuration files are located in `$OPENNMS_HOME/share/etc-pristine`.
+NOTE: On RPM-based installations, the pristine configuration files are located in `/opt/opennms/share/etc-pristine`.
 --
 ====
 
@@ -62,9 +62,9 @@ Run the code below to turn your `etc` directory into a Git repository and add th
 
 [source, console]
 ----
-cd $OPENNMS_HOME/etc
+cd /opt/opennms/etc
 git init
-cat << EOF > $OPENNMS_HOME/etc/.gitignore
+cat << EOF > /opt/opennms/etc/.gitignore
 foreign-sources/
 imports/
 examples/
@@ -89,7 +89,7 @@ Run the code below to create a new branch in your repository:
 
 [source, console]
 ----
-cd $OPENNMS_HOME/etc
+cd /opt/opennms/etc
 git branch local-modifications
 git checkout local-modifications
 ----
@@ -102,14 +102,14 @@ If you previously backed up your modified configuration files, you can run this 
 
 [source, console]
 ----
-rsync -avr $OPENNMS_HOME/etc.bak/ $OPENNMS_HOME/etc/
+rsync -avr /opt/opennms/etc.bak/ /opt/opennms/etc/
 ----
 
 Any time you want to save your changes to the `etc` directory, run this code to commit them to the branch you created (in this case, `local-modifications`):
 
 [source, console]
 ----
-cd $OPENNMS_HOME/etc
+cd /opt/opennms/etc
 git add .
 git commit -m "Added initial discovery ranges."
 ----

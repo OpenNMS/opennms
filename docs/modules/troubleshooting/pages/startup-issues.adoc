@@ -89,7 +89,7 @@ You can also start the {page-component-title} services verbosely; this provides 
 
 [source, shell]
 ----
-# $\{OPENNMS_HOME}/bin/opennms -v start
+# /opt/opennms/bin/opennms -v start
 WARNING: relaunching as opennms
 WARNING: `systemctl` was found, but OpenNMS is not being run in Systemd mode.
 You will not be able to use systemctl to manage an OpenNMS started manually from the CLI.
@@ -174,4 +174,4 @@ Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (
 You can run this command to identify any `.rpmnew` or `.rpmsave` files in your environment:
 
 [source, shell]
-$ sudo find ${OPENNMS_HOME} -name '*.rpm*' -exec ls -la {} \;
+$ sudo find /opt/opennms -name '*.rpm*' -exec ls -la {} \;
