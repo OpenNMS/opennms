@@ -1,0 +1,234 @@
+
+[[snmp-configuration]]
+= SNMP Configuration
+:description: Reference for the SNMP agent configuration in {page-component-title}: definitions, address matching, and every attribute with its default value.
+
+The SNMP agent configuration tells {page-component-title} how to communicate with each SNMP agent: which SNMP version, credentials, port, timeout, and request sizes to use.
+Provisiond, Collectd, Pollerd, Enlinkd, and the SNMP Karaf shell commands all look up the agent configuration for an IP address before they send a request.
+
+The configuration is stored in the database.
+You can manage it in the web UI under menu:Integrations[SNMP Agent Configuration], or through the xref:development:rest/snmp_configuration.adoc[SNMP configuration REST API].
+The configuration uses the same structure as the former `snmp-config.xml` file, and you can still upload and download it in XML format on the *Upload/Download* tab of the *Advanced* tab or through the REST API.
+This page uses the XML element and attribute names.
+The JSON format of the REST API uses the same attributes in camel case (for example, `max-vars-per-pdu` becomes `maxVarsPerPdu`).
+
+NOTE: Editing `$\{OPENNMS_HOME}/etc/snmp-config.xml` has no effect.
+During an upgrade, the content of that file is migrated into the database.
+
+[[snmp-configuration-structure]]
+== Structure
+
+The configuration has the following parts:
+
+* The attributes of the top-level `snmp-config` element are the default overrides.
+They apply to every IP address that does not match a definition, and they fill in any attribute that a matching definition does not set.
+In the web UI, you edit them on the *Default Overrides* tab of the *Advanced* tab.
+* Each `definition` element applies a set of attributes to the IP addresses that it lists in `specific`, `range`, and `ip-match` child elements.
+* The optional `profiles` element contains xref:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles], which Provisiond tries when a node scan finds no working SNMP configuration; the troubleshooting section below lists the exact cases.
+
+[source, xml]
+.Example SNMP configuration in XML format
+----
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp"
+             version="v2c" read-community="public" timeout="1800" retry="1"> <1>
+   <definition read-community="n3tw0rk" max-vars-per-pdu="20"> <2>
+      <range begin="10.1.0.1" end="10.1.0.254"/>
+      <specific>192.168.10.5</specific>
+   </definition>
+   <definition version="v3" security-name="opennms"
+               auth-protocol="SHA-256" auth-passphrase="${scv:snmpv3:password}"
+               privacy-protocol="AES" privacy-passphrase="${scv:snmpv3:password}"> <3>
+      <ip-match>172.16-31.*.*</ip-match>
+   </definition>
+   <definition location="Branch-Office" read-community="branch" timeout="5000" retry="3"> <4>
+      <range begin="10.1.0.1" end="10.1.0.254"/>
+   </definition>
+</snmp-config>
+----
+<1> Default overrides: SNMP v2c with the community `public`, an 1800 ms timeout, and one retry.
+<2> Addresses `10.1.0.1` to `10.1.0.254` and `192.168.10.5` use a different community and send up to 20 variables per request; all other values come from the default overrides.
+<3> Addresses that match the IPLIKE expression `172.16-31.\*.*` use SNMPv3 with credentials from the xref:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault].
+<4> The same range at the `Branch-Office` monitoring location uses its own community, timeout, and retries.
+
+[[snmp-configuration-matching]]
+== How an IP address is matched
+
+To find the configuration for an IP address at a monitoring location, {page-component-title} evaluates the definitions in the order in which they appear:
+
+. A definition matches when the address is listed in one of its `specific` elements, falls inside one of its `range` elements, or matches one of its `ip-match` expressions.
+. Only definitions for the requested location and for the `Default` location are considered.
+A definition without a `location` attribute belongs to the `Default` location.
+. For each of these two locations, the first matching definition wins.
+A matching definition for the requested location takes precedence over a matching definition for the `Default` location.
+. Attributes that the winning definition does not set are taken from the default overrides.
+Attributes that neither sets use the built-in defaults listed in <<snmp-configuration-attributes, Attributes>>.
+. If no definition matches, the default overrides and built-in defaults apply.
+
+When you save a definition in the web UI or through the REST API, {page-component-title} removes the same specific addresses and ranges from other definitions at that location and merges definitions that have identical attributes.
+As a result, a specific address or range typically appears in only one definition, and the order of definitions matters mainly for overlapping `ip-match` expressions.
+
+To check which configuration applies to an IP address, use the *Lookup* tab of the *SNMP Agent Configuration* page, the `/snmp-config/lookup` REST endpoint, or the `opennms:snmp-show-config` Karaf shell command.
+
+[[snmp-configuration-attributes]]
+== Attributes
+
+You can set the following attributes on the top-level `snmp-config` element, on a `definition`, and on a `profile`.
+
+[options="header", cols="2,1,4,1"]
+|===
+| Attribute
+| SNMP version
+| Description
+| Default
+
+| `version`
+| All
+| SNMP version to use: `v1`, `v2c`, or `v3`.
+| `v1`
+
+| `port`
+| All
+| UDP port of the SNMP agent (1 to 65535).
+| `161`
+
+| `timeout`
+| All
+| Time in milliseconds to wait for a response before the request is retried or fails.
+| `3000`
+
+| `retry`
+| All
+| Number of times a request is retried after a timeout.
+| `1`
+
+| `max-vars-per-pdu`
+| All
+| Maximum number of variables (OIDs) that {page-component-title} requests in a single PDU.
+Lower it for agents that cannot handle large requests.
+| `10`
+
+| `max-repetitions`
+| v2c, v3
+| Value of the `max-repetitions` field in GETBULK requests, which controls how many rows the agent returns for each requested object.
+| `2`
+
+| `max-request-size`
+| All
+| Maximum size in bytes of an outgoing SNMP request PDU.
+Must be at least `484`.
+| `65535`
+
+| `ttl`
+| All
+| Time to live in milliseconds for SNMP requests that a Minion executes.
+See xref:reference:configuration/ttl-rpc.adoc[Time to Live (TTL) for RPCs].
+| _Not set_
+
+| `proxy-host`
+| All
+| Address of an SNMP proxy to send requests to instead of the agent.
+| _Not set_
+
+| `read-community`
+| v1, v2c
+| Community string for read requests.
+| `public`
+
+| `write-community`
+| v1, v2c
+| Community string for write (SET) requests.
+| `private`
+
+| `security-name`
+| v3
+| User-based Security Model (USM) user name.
+| `opennmsUser`
+
+| `security-level`
+| v3
+| Security level: `1` (noAuthNoPriv), `2` (authNoPriv), or `3` (authPriv).
+When you do not set it, {page-component-title} derives it from the passphrases: `1` without an authentication passphrase, `2` with only an authentication passphrase, and `3` with both an authentication and a privacy passphrase.
+| _Derived_
+
+| `auth-passphrase`
+| v3
+| Authentication passphrase.
+| _Not set_
+
+| `auth-protocol`
+| v3
+| Authentication protocol: `MD5`, `SHA`, `SHA-224`, `SHA-256`, or `SHA-512`.
+Ignored when no authentication passphrase is set.
+| `MD5`
+
+| `privacy-passphrase`
+| v3
+| Privacy (encryption) passphrase.
+| _Not set_
+
+| `privacy-protocol`
+| v3
+| Privacy protocol: `DES`, `AES`, `AES192`, or `AES256`.
+Ignored when no privacy passphrase is set.
+| `DES`
+
+| `engine-id`
+| v3
+| Authoritative engine ID of the agent.
+| _Not set_
+
+| `context-engine-id`
+| v3
+| Context engine ID to put in the scoped PDU of each request.
+| _Not set_
+
+| `context-name`
+| v3
+| Context name to put in the scoped PDU of each request.
+| _Not set_
+
+| `enterprise-id`
+| v3
+| Enterprise ID stored with the agent configuration.
+| _Not set_
+
+| `encrypted`
+| All
+| Legacy flag for configurations whose credentials were encrypted with the removed `snmp-config.xml` encryption feature.
+Do not set it; use the xref:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] to protect credentials.
+| _Not set_
+|===
+
+The `security-name`, `read-community`, `write-community`, `auth-passphrase`, and `privacy-passphrase` attributes accept metadata expressions that reference the Secure Credentials Vault, for example `${scv:snmpv3:password}`.
+Only the global scope is available in these expressions.
+
+=== Definition attributes and elements
+
+A `definition` also supports the following attributes and child elements:
+
+[options="header", cols="1,4"]
+|===
+| Name
+| Description
+
+| `location` (attribute)
+| Monitoring location that the definition applies to.
+If not set, the definition applies to the `Default` location.
+
+| `profile-label` (attribute)
+| Label of the SNMP profile from which this definition was created.
+Provisiond sets it when it saves the result of fitting a profile.
+
+| `specific` (element)
+| A single IPv4 or IPv6 address.
+
+| `range` (element)
+| An address range with the attributes `begin` and `end`.
+
+| `ip-match` (element)
+| An IPLIKE expression with four octets.
+Each octet can be a number, a comma-separated list, a range separated by `-`, or `*` for the whole octet (for example, `10.1-2.*.1,5`).
+|===
+
+A `profile` contains a required `label` element and an optional `filter` element.
+For details, see xref:deep-dive/provisioning/snmp-profile.adoc[].
