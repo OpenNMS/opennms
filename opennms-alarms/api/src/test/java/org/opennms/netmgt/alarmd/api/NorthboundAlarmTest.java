@@ -26,13 +26,13 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
-public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
+public class NorthboundAlarmTest extends XmlTest<NorthboundAlarm> {
 
     public NorthboundAlarmTest(NorthboundAlarm sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);
