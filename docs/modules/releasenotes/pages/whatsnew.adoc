@@ -259,6 +259,7 @@ Update integrations that read this field.
 
 The `baseNodeUrl` field of the menu REST API (`/api/v2/menu`) is now `ui/index.html#/node/`.
 Plugins append a node ID or `foreignSource:foreignId` to it to link to a node's details page.
+Escape the appended part as one URL path segment, for example with `encodeURIComponent`, so that a `/`, `#` or space in a foreign ID does not break the link.
 It is a hash route, so do not append query parameters such as `&quiet=true`.
 
 === DOCTYPE rejected in requisition and foreign-source XML
