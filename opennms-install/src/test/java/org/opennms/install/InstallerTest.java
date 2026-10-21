@@ -21,10 +21,15 @@
  */
 package org.opennms.install;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -240,5 +245,39 @@ public class InstallerTest {
         // check deb- and rpm-based library locations
         testPath("/usr/lib64", libExtension);
         testPath("/usr/lib/jni", libExtension);
+    }
+
+    @Test
+    public void testLibraryConfigHasNoTimestamp() throws Exception {
+        installer.m_opennms_home = opennmsHome.toString();
+        final Path libraries = etcDir.resolve(Installer.LIBRARY_PROPERTY_FILE);
+
+        installer.writeLibraryConfig("/usr/lib/jni/libjicmp.so", "/usr/lib/jni/libjicmp6.so", null, "/usr/lib/jni/libjrrd2.so");
+        final byte[] first = Files.readAllBytes(libraries);
+        installer.writeLibraryConfig("/usr/lib/jni/libjicmp.so", "/usr/lib/jni/libjicmp6.so", null, "/usr/lib/jni/libjrrd2.so");
+        assertArrayEquals(first, Files.readAllBytes(libraries));
+        assertFalse(new String(first, StandardCharsets.ISO_8859_1).contains("#"));
+
+        final Properties props = new Properties();
+        try (InputStream is = Files.newInputStream(libraries)) {
+            props.load(is);
+        }
+        assertEquals(3, props.size());
+        assertEquals("/usr/lib/jni/libjrrd2.so", props.getProperty("opennms.library.jrrd2"));
+    }
+
+    @Test
+    public void testStoreWithoutTimestampKeepsPropertiesFormat() throws Exception {
+        final Properties props = new Properties();
+        props.setProperty("opennms.library.jicmp", "C:\\Program Files\\j\u00e9cmp=1.dll");
+        props.setProperty("other key", "value");
+
+        final ByteArrayOutputStream expected = new ByteArrayOutputStream();
+        props.store(expected, null);
+        final String expectedText = expected.toString(StandardCharsets.ISO_8859_1);
+
+        final ByteArrayOutputStream actual = new ByteArrayOutputStream();
+        Installer.storeWithoutTimestamp(props, actual);
+        assertEquals(expectedText.substring(expectedText.indexOf('\n') + 1), actual.toString(StandardCharsets.ISO_8859_1));
     }
 }
