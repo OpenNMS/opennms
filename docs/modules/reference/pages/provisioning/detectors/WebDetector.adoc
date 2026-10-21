@@ -22,7 +22,7 @@ The WebDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector
 | Description
 | Default value
 
-| authEnable
+| authEnabled
 | Whether to enable basic authentication.
 | false
 

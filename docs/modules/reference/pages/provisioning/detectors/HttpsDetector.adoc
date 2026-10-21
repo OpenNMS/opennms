@@ -13,3 +13,4 @@ The HTTPSDetector finds and assigns services based on HTTPS.
 == Configuration and use
 
 Parameters for the HTTPSDetector are the same parameters as the <<provisioning/detectors/HttpDetector.adoc#HttpDetector, HTTPDetector>>.
+The defaults differ: `port` defaults to `443` and `maxRetCode` defaults to `500`.
