@@ -60,9 +60,9 @@ systemd[1]: Failed to start OpenNMS server.
 NOTE: You can also run `config-tester -a` to verify your configuration settings.
 If the tests pass, a success message is displayed.
 
-=== Non-obvious error messages with older Linux distributions
+=== Non-obvious startup error messages
 
-Some older Linux distributions (Red Hat Enterprise Linux 7, CentOS 7, and so on) are more terse when a {page-component-title} startup failure occurs.
+When a {page-component-title} startup failure occurs, `systemctl` may report only a brief error message.
 An additional diagnostic step can help reveal the problem.
 
 After installing the software and running `systemctl start opennms`, the process immediately exits with a brief error message:
@@ -74,7 +74,7 @@ Job for opennms.service failed because the control process exited with error cod
 See "systemctl status opennms.service" and "journalctl -xe" for details.
 ----
 
-Running `systemctl status opennms` produces the following output:
+Running `systemctl status opennms` produces output similar to the following; the exact wording depends on the systemd version:
 
 [source, shell]
 ----
