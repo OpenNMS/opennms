@@ -19,26 +19,17 @@ IMPORTANT: Remember to stop {page-component-title} before changing files in the 
 Debian OSes::
 +
 --
-IMPORTANT: `/opt/opennms/etc` is linked to `/etc/opennms`.
-Do not move that folder.
-Moving the folder will break the link and cause future upgrades to fail.
+NOTE: On Debian and Ubuntu, `/etc/opennms` is a symbolic link to `/opt/opennms/etc`, so it follows the directory you replace here.
 
-Run the following code to prevent breaking the link between folders:
+Run the following code to move your `/opt/opennms/etc` files to a safe place, then copy `etc-pristine` to the `/opt/opennms/etc` directory:
 
 [source, console]
 ----
-cd /opt/opennms
-mv etc etc_bad
-ln -s /etc/opennms etc
+mv /opt/opennms/etc /opt/opennms/etc.bak
+cp -pR /opt/opennms/share/etc-pristine /opt/opennms/etc
 ----
 
-Run the following code to move your customized configuration files to `/etc/opennms.bak` and replace them with the contents of `etc-pristine`:
-
-[source, console]
-----
-mv /etc/opennms /etc/opennms.bak
-cp -pR /opt/opennms/share/etc-pristine /etc/opennms
-----
+NOTE: On Debian-based installations, `/opt/opennms/share` is a symbolic link to `/var/lib/opennms`, which holds the pristine configuration files in `etc-pristine`.
 --
 
 Other OSes::
