@@ -6,7 +6,7 @@ Each profile may have a unique label and an optional filter expression.
 If the filter expression is present, it will be evaluated to check whether a given IP address or reverse-lookup hostname passes the filter.
 A profile with a filter expression will be fitted to a given IP address only if the filter expression evaluates true against that IP address.
 
-SNMP profiles can be added to snmp-config.xml to enable automatic fitting of SNMP interfaces.
+SNMP profiles can be added to the xref:deep-dive/provisioning/snmp-configuration.adoc[SNMP configuration] to enable automatic fitting of SNMP interfaces.
 
 [source, xml]
 .Sample snmp-config.xml with profiles
