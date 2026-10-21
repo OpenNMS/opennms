@@ -65,6 +65,7 @@ AND (snmpInterface.snmpifdescr = 'something else')
 LIMIT 1
 ----
 
-The IPLIKE function is shorthand to call a PostgreSQL function that was written in C to compare ipaddresses using *, lists, and ranges.
+The IPLIKE function is shorthand to call a PostgreSQL function that compares IP addresses using *, lists, and ranges.
+The installer creates this function in the database (see xref:deployment:core/install.adoc#iplike[IPLIKE stored procedure]).
 isService is shorthand to build a complicated join to match on a service name.
 notisService is also available.

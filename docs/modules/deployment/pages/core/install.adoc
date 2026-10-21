@@ -109,6 +109,16 @@ include::docker/postgresql.adoc[]
 endif::[]
 ====
 
+[[iplike]]
+== IPLIKE stored procedure
+
+{page-component-title} uses an `iplike` function in PostgreSQL to match IP addresses against patterns with wildcards, lists, and ranges (for example, `IPADDR IPLIKE 192.168.1.1-154` in a xref:reference:configuration/filters/filters.adoc[filter rule]).
+
+You do not need to install a separate package for this function.
+The `install -dis` command, which you run in <<set-up-core-instance, Set up the core instance>>, uses its `-s` option to check whether the database contains a working `iplike(text, text)` function.
+If it does not, the installer creates a PL/pgSQL implementation of `iplike` that supports IPv4 and IPv6 addresses.
+If the database already contains a working `iplike` function, such as a native implementation from an earlier installation, the installer keeps it.
+
 [[set-up-java]]
 == Set up Java
 

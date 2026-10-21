@@ -12,6 +12,7 @@ The default for most notifications is `IPADDR IPLIKE *.*.*.*`; however, you may 
 
 For an exclusive filter, use `!(IPADDR IPLIKE 169.254.*.*)`.
 This allows you to be very granular when defining what to alert on.
+The `IPLIKE` operator relies on the xref:deployment:core/install.adoc#iplike[IPLIKE stored procedure] in PostgreSQL.
 
 == collectd
 

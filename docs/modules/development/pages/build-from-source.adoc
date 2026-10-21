@@ -40,11 +40,8 @@ To build and run {page-component-title} from source, you must install the follow
 * Docker to run smoke tests or start services as container
 * `tar` that can uncompress `bzip2` archives (you may need to install the `bzip2` package)
 
-Optional packages:
-
-* IPLIKE which is a stored procedure in PostgreSQL for complex IP queries.
-  The iplike package is specific to the PostgreSQL major version.
-  For example, for PostgreSQL 13.x you need the package `iplike-pgsql13`.
+NOTE: You do not need a separate IPLIKE package.
+The installer creates the `iplike` stored procedure in PostgreSQL (see xref:deployment:core/install.adoc#iplike[IPLIKE stored procedure]).
 
 
 TIP: You can set the environment `JAVA_HOME` in `/etc/environment` if you want additional control about the Java JDK used during builds.
