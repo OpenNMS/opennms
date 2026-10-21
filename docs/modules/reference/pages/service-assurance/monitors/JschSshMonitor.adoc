@@ -1,0 +1,71 @@
+
+= JschSshMonitor
+:description: Learn about the deprecated JschSshMonitor in OpenNMS {page-component-title}, which delegates every poll to the SshMonitor.
+
+The JschSshMonitor tests the availability of an SSH service.
+It is a deprecated wrapper that passes every poll and all of its parameters to the xref:service-assurance/monitors/SshMonitor.adoc[SshMonitor].
+It accepts the same parameters and returns the same results as the SshMonitor.
+
+WARNING: The JschSshMonitor is deprecated.
+Use the xref:service-assurance/monitors/SshMonitor.adoc[SshMonitor] for new service definitions, and replace existing references to `org.opennms.netmgt.poller.monitors.JschSshMonitor` with `org.opennms.netmgt.poller.monitors.SshMonitor`.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.JschSshMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the JschSshMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| banner
+| Java regular expression that must be found in the banner line that the SSH server sends.
+A value of `*` disables banner matching.
+See xref:service-assurance/monitors/SshMonitor.adoc[SshMonitor] for matching details.
+| n/a
+
+| client-banner
+| The client banner that {page-component-title} uses to identify itself to the node.
+| SSH-1.99-OpenNMS_1.5
+
+| match
+| Deprecated, use `banner` instead.
+Takes precedence over `banner` when both are set.
+| n/a
+
+| port
+| TCP port to which the SSH connection is tried.
+| 22
+
+| retry
+| Number of retries after the first failed connection attempt.
+| 0
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+The following example checks that the SSH server on port 22 sends a banner that contains `OpenSSH`.
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="SSH-Jsch" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="22"/>
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="banner" value="OpenSSH"/>
+</service>
+
+<monitor service="SSH-Jsch" class-name="org.opennms.netmgt.poller.monitors.JschSshMonitor"/>
+----
