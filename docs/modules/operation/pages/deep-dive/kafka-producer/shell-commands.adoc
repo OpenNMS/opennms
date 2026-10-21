@@ -115,15 +115,14 @@ SPEL Expression: resourceTypeName == 'nodeSnmp' (from configuration (org.opennms
 Node: localhost (id=1, foreignSource=selfmonitor, foreignId=1, location=Default)
 Type         │ Resource                                               │ Instance          │ ifIndex │ Node          │ Location │ Numeric │ Strings │ Result
 ─────────────┼────────────────────────────────────────────────────────┼───────────────────┼─────────┼───────────────┼──────────┼─────────┼─────────┼────────
-nodeSnmp     │ nodeSource[selfmonitor:1].nodeSnmp[]                   │ -                 │ -       │ 1 (localhost) │ Default  │ 22      │ 0       │ FORWARD
+nodeSnmp     │ nodeSource[selfmonitor:1].nodeSnmp[]                   │ -                 │ -       │ 1 (localhost) │ Default  │ 223     │ 0       │ FORWARD
 responseTime │ -                                                      │ 127.0.0.1         │ -       │ 1 (localhost) │ -        │ 2       │ 0       │ DROP
 Eventlogs    │ nodeSource[selfmonitor:1].Eventlogs[eventlogs.process] │ eventlogs.process │ -       │ 1 (localhost) │ Default  │ 14      │ 3       │ DROP
 pgDatabase   │ nodeSource[selfmonitor:1].pgDatabase[postgres]         │ postgres          │ -       │ 1 (localhost) │ Default  │ 6       │ 1       │ DROP
 ...
 
 Resources: 44, forwarded: 1, dropped: 43, errors (forwarded anyway): 0, uncertain: 0
-Skipped 2 resource(s) the producer never forwards:
-    node[selfmonitor:1].interfaceSnmp[opennms-jvm]: no matching SNMP interface (node-level data of other collectors stored here is forwarded as nodeSnmp)
+Skipped 1 resource(s) the producer never forwards:
     node[selfmonitor:1].status[127.0.0.1]: service status is never forwarded
 ----
 
@@ -132,7 +131,8 @@ A resource for which the expression fails to evaluate is reported as `ERROR` wit
 A summary line follows the table, and the command says explicitly when no resource matches, since the producer then sends no message at all.
 
 The `Resource` column shows the `resourceId` the producer sends, which differs from the id the resource tree uses.
-Resources the producer never forwards are listed separately with the reason: resources that are not associated with a node, interface resources without a matching SNMP interface in the database, service status resources, and perspective response time resources.
+Resources the producer never forwards are listed separately with the reason: resources that are not associated with a node, service status resources, and perspective response time resources.
+Node directories without a matching SNMP interface in the database hold the node-level data of other collectors (JMX, XML, WMI), which the producer forwards as a node-level resource: they are merged into the node's `nodeSnmp` row, and `--verbose` lists the directories behind the row.
 
 The `instance` of a generic resource is known to the resource tree only by its storage label, while the producer sends the raw index.
 The two are the same for resource types that use the `IndexStorageStrategy`, but differ for any other storage strategy, for example `hrStorage` with the `SiblingColumnStorageStrategy` (`_root_fs` in the tree, `1` at the producer).

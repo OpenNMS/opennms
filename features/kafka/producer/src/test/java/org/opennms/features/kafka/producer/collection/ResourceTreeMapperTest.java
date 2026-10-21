@@ -175,12 +175,29 @@ public class ResourceTreeMapperTest {
     }
 
     @Test
-    public void skipsInterfaceLevelResourceWithoutIfIndex() {
-        // The producer only emits interface resources whose ifIndex is known
-        assertThat(mapper.toProto(resource(nodeTop, "interfaceSnmp", "eth1-ddeeff"), node), nullValue());
+    public void mapsDirectoriesWithoutSnmpInterfaceAsNodeLevel() {
+        // Non-SNMP collectors store node-level data in a sub-directory the tree lists as interfaceSnmp;
+        // the producer forwards that data as a node-level resource
+        final OnmsResource jvm = resource(nodeTop, "interfaceSnmp", "opennms-jvm",
+                new RrdGraphAttribute("HeapUsed", "snmp/5/opennms-jvm", "HeapUsed.rrd"));
+        assertThat(mapper.isNodeLevelDirectory(jvm), is(true));
+        assertThat(mapper.skipReason(jvm, node), nullValue());
+        final CollectionSetProtos.CollectionSetResource proto = mapper.toProto(jvm, node);
+        assertThat(proto.hasNode(), is(true));
+        assertThat(proto.getNode().getNodeId(), equalTo(5L));
+        assertThat(proto.getResourceId(), equalTo("node[5].nodeSnmp[]"));
+        assertThat(proto.getResourceTypeName(), equalTo("nodeSnmp"));
+        assertThat(proto.getNumeric(0).getName(), equalTo("HeapUsed"));
+
         final OnmsResource noIfIndex = resource(nodeTop, "interfaceSnmp", "eth2-ddeeff");
         noIfIndex.setEntity(new OnmsSnmpInterface(node, (Integer) null));
-        assertThat(mapper.toProto(noIfIndex, node), nullValue());
+        assertThat(mapper.isNodeLevelDirectory(noIfIndex), is(true));
+        assertThat(mapper.toProto(noIfIndex, node).hasNode(), is(true));
+
+        final OnmsResource eth0 = resource(nodeTop, "interfaceSnmp", "eth0-aabbcc");
+        eth0.setEntity(new OnmsSnmpInterface(node, 3));
+        assertThat(mapper.isNodeLevelDirectory(eth0), is(false));
+        assertThat(mapper.isNodeLevelDirectory(resource(nodeTop, "nodeSnmp", "")), is(false));
     }
 
     @Test
@@ -195,7 +212,6 @@ public class ResourceTreeMapperTest {
         assertThat(mapper.toProto(resource(nodeTop, "status", "10.0.0.1"), node), nullValue());
         assertThat(mapper.skipReason(resource(nodeTop, "status", "10.0.0.1"), node), containsString("never forwarded"));
         assertThat(mapper.skipReason(resource(nodeTop, "responseTime", "10.0.0.1"), node), nullValue());
-        assertThat(mapper.skipReason(resource(nodeTop, "interfaceSnmp", "opennms-jvm"), node), containsString("no matching SNMP interface"));
         assertThat(mapper.skipReason(resource(nodeTop, "nodeSnmp", ""), null), containsString("not associated with a node"));
     }
 

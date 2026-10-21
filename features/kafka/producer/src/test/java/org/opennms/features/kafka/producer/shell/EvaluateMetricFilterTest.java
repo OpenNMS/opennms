@@ -138,9 +138,13 @@ public class EvaluateMetricFilterTest {
         eth0.setEntity(new OnmsSnmpInterface(node, 3));
         final OnmsResource storage = ResourceTreeMapperTest.resource(null, "hrStorageIndex", "1");
         final OnmsResource icmp = ResourceTreeMapperTest.resource(null, "responseTime", "10.0.0.1");
-        // An interface whose SNMP interface is gone from the database: the producer never forwards it
-        final OnmsResource stale = ResourceTreeMapperTest.resource(null, "interfaceSnmp", "eth9-stale");
-        return Arrays.asList(nodeLevel, eth0, storage, icmp, stale);
+        // The JMX collector's directory: listed as an interface by the tree, forwarded as node-level data
+        final OnmsResource jvm = ResourceTreeMapperTest.resource(null, "interfaceSnmp", "opennms-jvm",
+                new RrdGraphAttribute("HeapUsed", "snmp/5/opennms-jvm", "HeapUsed.rrd"),
+                new RrdGraphAttribute("HeapMax", "snmp/5/opennms-jvm", "HeapMax.rrd"));
+        // Service status, which the producer never forwards
+        final OnmsResource status = ResourceTreeMapperTest.resource(null, "status", "10.0.0.1");
+        return Arrays.asList(nodeLevel, eth0, storage, icmp, jvm, status);
     }
 
     @After
@@ -157,6 +161,50 @@ public class EvaluateMetricFilterTest {
     public void reportsUnknownNode() throws Exception {
         command.nodeCriteria = "99";
         assertThat(run(), containsString("No node found with criteria: 99"));
+    }
+
+    @Test
+    public void nodeWithOnlyNonSnmpDataGetsANodeLevelRow() throws Exception {
+        // A node whose only persisted data comes from JMX: the tree shows interfaceSnmp[opennms-jvm] and status[...]
+        final OnmsNode jmxNode = ResourceTreeMapperTest.node(6, "Default");
+        final OnmsResource jvm = ResourceTreeMapperTest.resource(null, "interfaceSnmp", "opennms-jvm",
+                new RrdGraphAttribute("HeapUsed", "snmp/6/opennms-jvm", "HeapUsed.rrd"));
+        final OnmsResource status = ResourceTreeMapperTest.resource(null, "status", "10.0.0.6");
+        final OnmsResource top = new OnmsResource("6", "node-6", new ResourceTreeMapperTest.StubResourceType("node"),
+                Collections.emptySet(), Arrays.asList(jvm, status), ResourcePath.get("snmp", "6"));
+        top.setEntity(jmxNode);
+        top.getChildResources().forEach(c -> c.setParent(top));
+        when(command.nodeDao.get("6")).thenReturn(jmxNode);
+        when(command.resourceDao.getResourceForNode(jmxNode)).thenReturn(top);
+
+        command.nodeCriteria = "6";
+        command.spelExpression = "nodeId == 6";
+        command.verbose = true;
+        final String output = run();
+        assertThat(output, containsString("node[6].nodeSnmp[]"));
+        assertThat(output, containsString("│ 1       │ 0       │ FORWARD"));
+        assertThat(output, containsString("treeResource     = node[6].interfaceSnmp[opennms-jvm]"));
+        assertThat(output, containsString("Resources: 1, forwarded: 1, dropped: 0"));
+        assertThat(output, containsString("status[10.0.0.6]: service status is never forwarded"));
+        assertThat(output, not(containsString("No resources")));
+    }
+
+    @Test
+    public void printsSkippedResourcesWhenNothingIsForwardable() throws Exception {
+        final OnmsNode statusOnly = ResourceTreeMapperTest.node(7, "Default");
+        final OnmsResource status = ResourceTreeMapperTest.resource(null, "status", "10.0.0.7");
+        final OnmsResource top = new OnmsResource("7", "node-7", new ResourceTreeMapperTest.StubResourceType("node"),
+                Collections.emptySet(), Collections.singletonList(status), ResourcePath.get("snmp", "7"));
+        top.setEntity(statusOnly);
+        status.setParent(top);
+        when(command.nodeDao.get("7")).thenReturn(statusOnly);
+        when(command.resourceDao.getResourceForNode(statusOnly)).thenReturn(top);
+
+        command.nodeCriteria = "7";
+        final String output = run();
+        assertThat(output, containsString("No resources the producer would forward were found"));
+        assertThat(output, containsString("Skipped 1 resource(s) the producer never forwards:"));
+        assertThat(output, containsString("status[10.0.0.7]: service status is never forwarded"));
     }
 
     @Test
@@ -178,9 +226,12 @@ public class EvaluateMetricFilterTest {
         assertThat(output, containsString("node[5].hrStorageIndex[1]"));
         assertThat(output, containsString("Resources: 4, forwarded: 1, dropped: 3, errors (forwarded anyway): 0, uncertain: 0"));
         assertThat(output, containsString("Skipped 1 resource(s) the producer never forwards:"));
-        assertThat(output, containsString("interfaceSnmp[eth9-stale]: no matching SNMP interface"));
+        assertThat(output, containsString("status[10.0.0.1]: service status is never forwarded"));
         // the table shows the producer's id, not the tree id (the top-level resource is named "5" here, so both agree)
         assertThat(output, containsString("node[5].nodeSnmp[]"));
+        // the JMX directory is merged into the node-level row: 1 attribute of its own plus 2 from the JMX directory
+        assertThat(output, not(containsString("opennms-jvm")));
+        assertThat(output, containsString("│ 3       │ 0       │ DROP"));
         assertThat(output, containsString("not from a live collection"));
     }
 

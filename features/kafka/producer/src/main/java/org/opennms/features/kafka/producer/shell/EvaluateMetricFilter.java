@@ -134,17 +134,31 @@ public class EvaluateMetricFilter implements Action {
 
     /** A resource from the tree together with its protobuf rendering and the filter result. */
     static final class Evaluation {
-        final OnmsResource resource;
+        /** The tree resources behind this row: several when node-level directories of other collectors were merged. */
+        final List<OnmsResource> sources;
         final CollectionSetProtos.CollectionSetResource proto;
         final MetricFilter.Result result;
         /** True when the expression looks at instance and the tree cannot know the instance the producer sends. */
         final boolean uncertain;
 
-        Evaluation(OnmsResource resource, CollectionSetProtos.CollectionSetResource proto, MetricFilter.Result result, boolean uncertain) {
-            this.resource = Objects.requireNonNull(resource);
+        Evaluation(List<OnmsResource> sources, CollectionSetProtos.CollectionSetResource proto, MetricFilter.Result result, boolean uncertain) {
+            this.sources = Objects.requireNonNull(sources);
             this.proto = Objects.requireNonNull(proto);
             this.result = result;
             this.uncertain = uncertain;
+        }
+
+        Evaluation merge(OnmsResource source, CollectionSetProtos.CollectionSetResource other) {
+            final List<OnmsResource> merged = new ArrayList<>(sources);
+            merged.add(source);
+            return new Evaluation(merged, proto.toBuilder()
+                    .addAllNumeric(other.getNumericList())
+                    .addAllString(other.getStringList())
+                    .build(), result, uncertain);
+        }
+
+        String treeIds() {
+            return sources.stream().map(r -> r.getId().toString()).collect(Collectors.joining(", "));
         }
     }
 
@@ -183,7 +197,12 @@ public class EvaluateMetricFilter implements Action {
             return null;
         }
         if (evaluations.isEmpty()) {
-            System.out.println("No resources found in the resource tree. Nothing has been collected yet, or the node has no persisted data.");
+            if (skipped.isEmpty()) {
+                System.out.println("No resources found in the resource tree. Nothing has been collected yet, or the node has no persisted data.");
+            } else {
+                System.out.println("No resources the producer would forward were found in the resource tree.");
+                printSkipped();
+            }
             return null;
         }
 
@@ -265,6 +284,9 @@ public class EvaluateMetricFilter implements Action {
     }
 
     private void walk(OnmsResource parent, OnmsNode node, MetricFilter filter, List<Evaluation> evaluations) {
+        // Node-level resources of one node share a resource id: the node's own nodeSnmp directory and the
+        // directories of non-SNMP collectors are forwarded as one kind of resource, so show them as one row
+        final Map<String, Integer> nodeLevelRows = new LinkedHashMap<>();
         for (OnmsResource child : parent.getChildResources()) {
             if (limitReached(evaluations)) {
                 return;
@@ -276,7 +298,15 @@ public class EvaluateMetricFilter implements Action {
                 continue;
             }
             final CollectionSetProtos.CollectionSetResource proto = mapper.toProto(child, resourceNode);
-            evaluations.add(new Evaluation(child, proto, filter != null ? filter.evaluate(proto) : null, isUncertain(filter, proto)));
+            if (proto.hasNode()) {
+                final Integer existing = nodeLevelRows.get(proto.getResourceId());
+                if (existing != null) {
+                    evaluations.set(existing, evaluations.get(existing).merge(child, proto));
+                    continue;
+                }
+                nodeLevelRows.put(proto.getResourceId(), evaluations.size());
+            }
+            evaluations.add(new Evaluation(Collections.singletonList(child), proto, filter != null ? filter.evaluate(proto) : null, isUncertain(filter, proto)));
         }
     }
 
@@ -315,8 +345,8 @@ public class EvaluateMetricFilter implements Action {
     private void printVerbose(List<Evaluation> evaluations) {
         System.out.println();
         for (Evaluation e : evaluations) {
-            System.out.printf("%s: %s\n", describe(e.result), e.resource.getId());
-            System.out.printf("    %-16s = %s\n", "treeResource", e.resource.getId());
+            System.out.printf("%s: %s\n", describe(e.result), e.treeIds());
+            System.out.printf("    %-16s = %s\n", "treeResource", e.treeIds());
             for (Map.Entry<String, Object> entry : new MetricFilter.ResourceFilterContext(e.proto).toMap().entrySet()) {
                 System.out.printf("    %-16s = %s\n", entry.getKey(), entry.getValue());
             }
@@ -355,14 +385,18 @@ public class EvaluateMetricFilter implements Action {
         if (forwarded + errors == 0) {
             System.out.println("No resource matches the filter: the producer would not send any message for these resources.");
         }
+        printSkipped();
+        if (limitReached(evaluations)) {
+            System.out.printf("Stopped after %d resources. Use --limit to evaluate more.\n", limit);
+        }
+    }
+
+    private void printSkipped() {
         if (!skipped.isEmpty()) {
             System.out.printf("Skipped %d resource(s) the producer never forwards:\n", skipped.size());
             for (String s : skipped) {
                 System.out.printf("    %s\n", s);
             }
-        }
-        if (limitReached(evaluations)) {
-            System.out.printf("Stopped after %d resources. Use --limit to evaluate more.\n", limit);
         }
     }
 
@@ -386,6 +420,8 @@ public class EvaluateMetricFilter implements Action {
         System.out.println("      services appear only after their first collection. Response time resources carry node");
         System.out.println("      information, but their location property is only set for nodes outside the Default location.");
         System.out.println("      The Resource column shows the id the producer sends, which differs from the resource tree id.");
+        System.out.println("      Node directories without a matching SNMP interface hold node-level data of other collectors (JMX,");
+        System.out.println("      XML, WMI) and are merged into the node's nodeSnmp row, which is how the producer forwards them.");
         System.out.println("      The instance of a generic resource is its storage label; the producer sends the raw index, which only");
         System.out.println("      matches the label for the index storage strategy. Rows affected by that are marked uncertain.");
     }

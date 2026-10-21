@@ -51,10 +51,15 @@ import com.google.common.base.Strings;
  * callers can detect the other strategies through the ResourceTypesDao.
  *
  * Resources the producer would not forward are not mapped at all (the mapper returns null): resources
- * that do not belong to a node, interface resources without a matching SNMP interface (the producer
- * needs the ifIndex), perspective response time resources (which carry no node criteria at collection time)
- * and service status resources (whose collection resource has no parent path).
+ * that do not belong to a node, perspective response time resources (which carry no node criteria at
+ * collection time) and service status resources (whose collection resource has no parent path).
  * {@link #skipReason(OnmsResource, OnmsNode)} explains why a resource is not mapped.
+ *
+ * The resource tree lists every sub-directory of a node that is not a known resource type as an
+ * interfaceSnmp resource. Those without a matching SNMP interface are the directories non-SNMP collectors
+ * (JMX, XML, WMI, ...) use for their node-level data, which the producer forwards as a node-level
+ * resource: they are mapped to nodeSnmp, see {@link #isNodeLevelDirectory(OnmsResource)}, and callers
+ * should merge them with the node's own nodeSnmp resource.
  */
 public class ResourceTreeMapper {
 
@@ -93,7 +98,8 @@ public class ResourceTreeMapper {
         if (skipReason(resource, node) != null) {
             return null;
         }
-        final String type = resource.getResourceType().getName();
+        // Node-level directories of other collectors are forwarded as node-level resources
+        final String type = isNodeLevelDirectory(resource) ? NODE_RESOURCE_TYPE_NAME : resource.getResourceType().getName();
 
         final CollectionSetProtos.NodeLevelResource.Builder nodeLevel = buildNodeLevelResource(node);
         final CollectionSetProtos.CollectionSetResource.Builder builder = CollectionSetProtos.CollectionSetResource.newBuilder();
@@ -161,15 +167,19 @@ public class ResourceTreeMapper {
             // Collected as latency resources without a parent path: never forwarded
             return "service status is never forwarded";
         }
-        if (INTERFACE_RESOURCE_TYPE_NAME.equals(type)) {
-            final OnmsEntity entity = resource.getEntity();
-            if (!(entity instanceof OnmsSnmpInterface) || ((OnmsSnmpInterface) entity).getIfIndex() == null) {
-                // The producer only emits interface resources with a known ifIndex. Non-SNMP collectors
-                // (JMX, XML, ...) store node-level data in a sub-directory that the tree lists as an interface.
-                return "no matching SNMP interface (node-level data of other collectors stored here is forwarded as nodeSnmp)";
-            }
-        }
         return null;
+    }
+
+    /**
+     * Whether the given tree resource is a sub-directory of the node that holds node-level data of a
+     * non-SNMP collector: listed as interfaceSnmp by the tree, but without a matching SNMP interface.
+     */
+    public boolean isNodeLevelDirectory(final OnmsResource resource) {
+        if (!INTERFACE_RESOURCE_TYPE_NAME.equals(resource.getResourceType().getName())) {
+            return false;
+        }
+        final OnmsEntity entity = resource.getEntity();
+        return !(entity instanceof OnmsSnmpInterface) || ((OnmsSnmpInterface) entity).getIfIndex() == null;
     }
 
     static ResourceId parentResourceId(OnmsNode node) {
