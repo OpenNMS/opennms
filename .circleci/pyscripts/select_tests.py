@@ -225,6 +225,7 @@ def select(ref, base):
     smoke_all = {c for c, s in known.items() if s.startswith("smoke")}
     smoke = sorted(smoke_all if full_smoke else picked & smoke_all)
     return {**result, "mode": "selected", "its": its, "smoke": smoke, "always": always,
+            "total_its": sum(1 for s in known.values() if s == "it"), "total_smoke": len(smoke_all),
             "full_smoke_paths": full_smoke, "added_from_reasons": added_from_reasons,
             "unknown_dropped": sorted(picked - set(known)),
             "change_summary": sel["change_summary"], "reasons": sel["reasons"], "confidence": sel["confidence"],

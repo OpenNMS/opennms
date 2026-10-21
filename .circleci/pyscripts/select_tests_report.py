@@ -5,7 +5,9 @@ Compare shadow-mode test selections with the tests that failed.
 
 For each recent pipeline that ran the select-tests job, the script downloads the
 selection artifact and the failed test classes of the integration and smoke jobs.
-It prints whether the selection included each failed class.
+It prints the selected and total test counts, and whether the selection included
+each failed class. A failure in a job that passed (after a retry) is flaky and is
+not counted as a miss.
 """
 
 import argparse
@@ -58,7 +60,8 @@ def main():
     a = ap.parse_args()
     cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=a.days)
 
-    totals = {"pipelines": 0, "selected": 0, "full_run": 0, "failed": 0, "caught": 0}
+    totals = {"pipelines": 0, "selected": 0, "full_run": 0, "selected_its": 0, "total_its": 0,
+              "selected_smoke": 0, "total_smoke": 0, "failed": 0, "caught": 0, "flaky": 0}
     token = None
     while True:
         page = get(f"{API}/project/{PROJECT}/pipeline" + (f"?page-token={token}" if token else ""))
@@ -81,15 +84,24 @@ def main():
                 continue
             totals["selected"] += 1
             picked = set(sel["its"]) | set(sel["smoke"])
-            failed = set()
+            failed, flaky = set(), set()
             for j in jobs:
-                if j["name"].startswith(("integration-test", "smoke-test")) and j["status"] == "failed":
-                    failed |= {c for c in failed_classes(j["job_number"]) if c.endswith("IT") or "IT" in c.rsplit(".", 1)[-1]}
+                if not j["name"].startswith(("integration-test", "smoke-test")) or j["status"] not in ("success", "failed"):
+                    continue
+                classes = {c for c in failed_classes(j["job_number"]) if "IT" in c.rsplit(".", 1)[-1]}
+                (flaky if j["status"] == "success" else failed).update(classes)
+            flaky -= failed
             status = ", ".join(f"{c.rsplit('.', 1)[-1]}={'caught' if c in picked else 'MISSED'}" for c in sorted(failed))
+            for key in ("its", "smoke"):
+                totals[f"selected_{key}"] += len(sel[key])
+                totals[f"total_{key}"] += sel.get(f"total_{key}", 0)
             totals["failed"] += len(failed)
             totals["caught"] += len(failed & picked)
-            print(f"{p['number']} {branch}: {len(sel['its'])} ITs, {len(sel['smoke'])} smoke"
-                  + (f"; failed: {status}" if failed else ""))
+            totals["flaky"] += len(flaky)
+            print(f"{p['number']} {branch}: ITs {len(sel['its'])}/{sel.get('total_its', '?')},"
+                  f" smoke {len(sel['smoke'])}/{sel.get('total_smoke', '?')}"
+                  + (f"; failed: {status}" if failed else "")
+                  + (f"; flaky: {', '.join(sorted(c.rsplit('.', 1)[-1] for c in flaky))}" if flaky else ""))
         else:
             token = page.get("next_page_token")
             if token:

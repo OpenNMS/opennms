@@ -12,6 +12,14 @@ jobs:
             . ./.circleci/scripts/lib.sh
             BASE="$(get_reference_branch || echo develop)"
             echo "Reference branch: ${BASE}"
+            if [ -z "${CIRCLE_PULL_REQUEST:-}" ]; then
+              echo "No pull request for this branch; skipping test selection."
+              exit 0
+            fi
+            if [ "${BASE}" != "develop" ]; then
+              echo "Test selection runs only for branches based on develop; skipping."
+              exit 0
+            fi
             pip install --quiet "anthropic==1.16.0" \
               && python3 .circleci/pyscripts/select_tests.py --base "origin/${BASE}" --out-dir ~/selection \
               || echo "Selector failed; the full suites run as usual."
