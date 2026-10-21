@@ -93,7 +93,7 @@ describe('MibGroupCreationDrawer.vue', () => {
       expect(wrapper.vm.errors.ifType).toBeUndefined()
     })
 
-    it.each(['', 'abc', '6,', '-1', '6,all'])('rejects the Interface Type "%s"', async (value) => {
+    it.each(['', 'abc', '6,', '-1', '6,all', '06', '6,022'])('rejects the Interface Type "%s"', async (value) => {
       wrapper.vm.name = 'mib2-interfaces'
       wrapper.vm.ifType = value
       await nextTick()
@@ -111,7 +111,7 @@ describe('MibGroupCreationDrawer.vue', () => {
       expect(wrapper.vm.mibObjectErrors.instance).toBeUndefined()
     })
 
-    it.each(['', '-1', '1.', '.1', '1..5', 'unknownResource'])('rejects the MIB object instance "%s"', async (value) => {
+    it.each(['', '-1', '1.', '.1', '1..5', '01', '1.05', 'unknownResource'])('rejects the MIB object instance "%s"', async (value) => {
       wrapper.vm.openMibObjectDrawer(-1, null, CreateEditMode.Create)
       await nextTick()
       wrapper.vm.oid = '1.3.6.1.2.1'
@@ -166,6 +166,29 @@ describe('MibGroupCreationDrawer.vue', () => {
       wrapper.vm.saveMibObject()
       expect(wrapper.vm.mibObjects).toHaveLength(1)
       expect(wrapper.vm.mibObjects[0].instance).toBe('101')
+    })
+
+    it('accepts the stored instance when it edits a MIB object', async () => {
+      wrapper.vm.mibObjects = [{ oid: '1.1', alias: 'a', instance: 'removedResource', type: 'gauge', maxval: null, minval: null }]
+      await nextTick()
+      wrapper.vm.openMibObjectDrawer(0, wrapper.vm.mibObjects[0], CreateEditMode.Edit)
+      await nextTick()
+      wrapper.vm.alias = 'updated-alias'
+      await nextTick()
+      expect(wrapper.vm.mibObjectErrors.instance).toBeUndefined()
+      wrapper.vm.saveMibObject()
+      expect(wrapper.vm.mibObjects[0]).toEqual(expect.objectContaining({ alias: 'updated-alias', instance: 'removedResource' }))
+    })
+
+    it('accepts a resource type name when the resource type names are not loaded', async () => {
+      store.resourceTypeNames = []
+      wrapper.vm.openMibObjectDrawer(-1, null, CreateEditMode.Create)
+      await nextTick()
+      wrapper.vm.oid = '1.3.6.1.2.1'
+      wrapper.vm.alias = 'a'
+      wrapper.vm.instance = 'hrStorageIndex'
+      await nextTick()
+      expect(wrapper.vm.mibObjectErrors.instance).toBeUndefined()
     })
 
     it('keeps maxval and minval when it edits a MIB object', async () => {

@@ -415,8 +415,14 @@ const saveMibGroup = async () => {
   }
 }
 
+// An edit can keep the stored instance. When the resource type names are not loaded,
+// the form accepts any value. The server logs a warning at reload for an unknown resource type.
 const isValidInstance = (value: string) =>
-  INSTANCE_ID_PATTERN.test(value) || value === 'ifIndex' || store.resourceTypeNames.includes(value)
+  INSTANCE_ID_PATTERN.test(value) ||
+  value === 'ifIndex' ||
+  value === mibObjectDrawerState.value.mibObject?.instance ||
+  store.resourceTypeNames.length === 0 ||
+  store.resourceTypeNames.includes(value)
 
 // The collector does not trim the ifType list items, and compares all and ignore in lower case.
 const normalizeIfType = (value: string) => {
@@ -453,7 +459,7 @@ const validateMibObject = () => {
   if (!instance.value.trim()) {
     validationErrors.instance = 'Instance is required'
   } else if (!isValidInstance(instance.value.trim())) {
-    validationErrors.instance = 'Instance must be an instance identifier such as 0 or 1.5, ifIndex or a resource type name'
+    validationErrors.instance = 'Instance must be an instance identifier such as 0 or 1.5 (no leading zeros), ifIndex or a resource type name'
   }
   if (!dataType.value._value) {
     validationErrors.type = 'Data Type is required'
@@ -473,7 +479,7 @@ const validateMibGroup = (): MibGroupErrors => {
   if (!ifType.value.trim()) {
     validationErrors.ifType = 'Interface Type is required.'
   } else if (!isValidIfType(normalizeIfType(ifType.value))) {
-    validationErrors.ifType = 'Interface Type must be all, ignore, an ifType number or a comma-separated list of ifType numbers.'
+    validationErrors.ifType = 'Interface Type must be all, ignore, an ifType number or a comma-separated list of ifType numbers, without leading zeros.'
   }
   return validationErrors
 }

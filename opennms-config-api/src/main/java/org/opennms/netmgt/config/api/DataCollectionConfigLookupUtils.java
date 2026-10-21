@@ -55,7 +55,9 @@ public final class DataCollectionConfigLookupUtils {
 
     private static final String IF_TYPE_ALL = "all";
     private static final String IF_TYPE_IGNORE = "ignore";
-    private static final Pattern INSTANCE_ID_PATTERN = Pattern.compile("\\d+(\\.\\d+)*");
+    // The collector compares each ifType of the list as text with the ifType number.
+    // Thus the list must not contain spaces or leading zeros.
+    private static final Pattern IF_TYPE_LIST_PATTERN = Pattern.compile("[1-9]\\d*(,[1-9]\\d*)*");
 
     private DataCollectionConfigLookupUtils() {
     }
@@ -281,6 +283,15 @@ public final class DataCollectionConfigLookupUtils {
     }
 
     /**
+     * Tells if an ifType value of a MIB group is valid: all, ignore, one ifType number
+     * or a comma-separated list of ifType numbers.
+     */
+    public static boolean isValidIfType(final String ifType) {
+        return IF_TYPE_ALL.equals(ifType) || IF_TYPE_IGNORE.equals(ifType)
+                || (ifType != null && IF_TYPE_LIST_PATTERN.matcher(ifType).matches());
+    }
+
+    /**
      * Validate that all MibObj instances reference valid resource types.
      * A fixed instance is an SNMP instance identifier (an OID suffix such as 0 or 1.5).
      * The collector appends it to the OID.
@@ -301,7 +312,7 @@ public final class DataCollectionConfigLookupUtils {
                         if (instance == null) continue;
                         if (MibObject.INSTANCE_IFINDEX.equals(instance)) continue;
                         if (allowedResourceTypes.contains(instance)) continue;
-                        if (INSTANCE_ID_PATTERN.matcher(instance.trim()).matches()) continue;
+                        if (MibObject.isInstanceId(instance)) continue;
                         throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '"
                                 + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '"
                                 + group.getName() + "'.  Allowable instance values: " + allowableValues);

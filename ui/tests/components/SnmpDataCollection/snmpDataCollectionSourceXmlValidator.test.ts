@@ -661,7 +661,9 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         { value: '-1', description: 'negative number' },
         { value: '6, 22', description: 'list with a space' },
         { value: '6,', description: 'list with an empty item' },
-        { value: '6,all', description: 'list with a keyword' }
+        { value: '6,all', description: 'list with a keyword' },
+        { value: '06', description: 'number with a leading zero' },
+        { value: '6,022', description: 'list item with a leading zero' }
       ]
 
       it.each(invalidIfTypes)(

@@ -269,7 +269,7 @@ export const validateGroupElement = (group: Element, groupNumber: number): strin
 
   const ifTypeLower = ifType.toLowerCase()
   if (!VALID_IF_TYPES.includes(ifTypeLower) && !IF_TYPE_LIST_PATTERN.test(ifType)) {
-    return `Group "${name}": invalid "ifType" value "${ifType}". Expected "all", "ignore", a number or a comma-separated list of numbers`
+    return `Group "${name}": invalid "ifType" value "${ifType}". Expected "all", "ignore", an ifType number or a comma-separated list of ifType numbers. The collector does not remove spaces or leading zeros, so "6, 22" and "06" never match`
   }
 
   const mibObjs = group.querySelectorAll('mibObj')

@@ -629,7 +629,7 @@ public class DataCollectionConfPersistenceServiceIT {
 
         final var dto = new SnmpCollectionMibGroupDto();
         dto.setName("if-mib-interfaces");
-        dto.setIfType("Ethernet");
+        dto.setIfType("6");
         dto.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
         dto.setMibObjects("ifIndex,ifDescr,ifOperStatus");
         dto.setMibObjProperties("{\"property\":\"value\"}");
@@ -647,7 +647,7 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals(src.getId(), persisted.getCollectionSource().getId());
 
         assertEquals("if-mib-interfaces", persisted.getName());
-        assertEquals("Ethernet", persisted.getIfType());
+        assertEquals("6", persisted.getIfType());
         assertEquals("IF-MIB::ifEntry,IF-MIB::ifXEntry", persisted.getMibGroupNames());
         assertEquals("ifIndex,ifDescr,ifOperStatus", persisted.getMibObjects());
         assertEquals("{\"property\":\"value\"}", persisted.getMibObjProperties());
@@ -778,7 +778,7 @@ public class DataCollectionConfPersistenceServiceIT {
 
         final var dto = new SnmpCollectionMibGroupDto();
         dto.setName("new-mib-group");
-        dto.setIfType("NewIfType");
+        dto.setIfType("6,22");
         dto.setMibGroupNames("NEW-MIB::newEntry");
         dto.setMibObjects("newIndex,newDescr");
         dto.setMibObjProperties("{\"new\":\"value\"}");
@@ -794,7 +794,7 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals(src.getId(), updated.getCollectionSource().getId());
 
         assertEquals("new-mib-group", updated.getName());
-        assertEquals("NewIfType", updated.getIfType());
+        assertEquals("6,22", updated.getIfType());
         assertEquals("NEW-MIB::newEntry", updated.getMibGroupNames());
         assertEquals("newIndex,newDescr", updated.getMibObjects());
         assertEquals("{\"new\":\"value\"}", updated.getMibObjProperties());

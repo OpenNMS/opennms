@@ -23,12 +23,15 @@ package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+import org.opennms.netmgt.config.api.DataCollectionConfigLookupUtils;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.test.ThrowableAnticipator;
@@ -198,6 +201,16 @@ public class DataCollectionConfigFactoryTest {
         initDataCollectionFactory(modifiedXml);
         List<MibObject> mibObjects = DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.3.6.1.4.1.200", "127.0.0.1", 0);
         assertEquals("1.5", mibObjects.get(0).getInstance());
+    }
+
+    @Test
+    public void testIsValidIfType() {
+        for (final String ifType : new String[] {"all", "ignore", "6", "6,22", "131,135"}) {
+            assertTrue(ifType, DataCollectionConfigLookupUtils.isValidIfType(ifType));
+        }
+        for (final String ifType : new String[] {null, "", "ALL", "Ignore", "6, 22", "06", "6,022", "0", "6,", "6,all", "Ethernet"}) {
+            assertFalse(String.valueOf(ifType), DataCollectionConfigLookupUtils.isValidIfType(ifType));
+        }
     }
 
     @Test
