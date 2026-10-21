@@ -1,6 +1,6 @@
 [[minion-ipc]]
 = Communication Patterns
-:description: Learn how OpenNMS Core, Minion, and Sentinel exchange messages through the Sink and RPC inter-process communication (IPC) patterns.
+:description: Learn how OpenNMS Core, Minion, and Sentinel exchange messages through the Sink, RPC, and Twin inter-process communication (IPC) patterns.
 
 {page-component-title} Core, Minions, and Sentinels exchange messages through a message broker using a small set of inter-process communication (IPC) patterns.
 Each pattern is an API with interchangeable transport implementations, so the features that use it do not depend on the broker you deploy.
@@ -48,9 +48,51 @@ If no response arrives before the time to live expires, the request fails with a
 
 By default, requests for nodes in the `Default` location do not use the broker; {page-component-title} Core runs them locally.
 
+[[minion-ipc-twin]]
+== Twin
+
+The Twin pattern replicates configuration objects from {page-component-title} Core to Minions.
+A feature on {page-component-title} Core publishes an object under a unique key, and the matching feature on each Minion subscribes to that key.
+Twin delivers these objects over the same message broker that the Minion uses for RPC and Sink.
+
+The pattern works as follows:
+
+. When a Minion feature subscribes to a key, the Minion sends a request to {page-component-title} Core and receives the current version of the object.
+. When the object changes on {page-component-title} Core, Core pushes the update to the subscribed Minions.
+When possible, the update contains only a JSON patch with the differences from the previous version.
+. A publisher can target a single location, so Minions at different locations can receive different versions of the same object.
+
+The following table lists the keys that {page-component-title} publishes:
+
+[options="header", cols="2,3"]
+|===
+| Key
+| Object
+
+| `trapd.listener.config`
+| The SNMPv3 users from the trapd configuration, which the Minion uses to authenticate and decrypt SNMPv3 traps.
+
+| `telemetry.connector.config`
+| The telemetry connector configuration for the Minion's location, which the Minion uses to start streaming telemetry connectors.
+
+| `ipfix-dot-d.config`
+| The vendor-specific IPFIX information element definitions from `$\{OPENNMS_HOME}/etc/ipfix.d`, which the Minion uses to parse IPFIX flows.
+|===
+
+Twin uses the same transport as Sink and RPC.
+With Apache Kafka, Twin uses dedicated request and response topics; see xref:core/message-broker/kafka-topics.adoc[].
+
+To check that Twin works, run the `opennms:twin-subscribe` command in the Minion's Karaf shell with `trapd.listener.config` or `ipfix-dot-d.config`.
+The command prints the current object, or `Timeout` if no object arrives within 15 seconds:
+
+[source, karaf]
+----
+admin@minion()> opennms:twin-subscribe trapd.listener.config
+----
+
 == Transports
 
-The following table lists the transport implementations of each pattern:
+The following table lists the Sink and RPC transport implementations:
 
 [options="header", cols="1,2,2"]
 |===
