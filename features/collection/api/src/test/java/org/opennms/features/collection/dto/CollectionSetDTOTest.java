@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -47,7 +47,7 @@ import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 
-public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
+public class CollectionSetDTOTest extends XmlTest<CollectionSetDTO> {
 
     public CollectionSetDTOTest(CollectionSetDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

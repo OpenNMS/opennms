@@ -22,10 +22,10 @@
 package org.opennms.features.topology.api.support.breadcrumbs;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 
-public class BreadcrumbJaxbTest extends XmlTestNoCastor<Breadcrumb> {
+public class BreadcrumbJaxbTest extends XmlTest<Breadcrumb> {
 
     public BreadcrumbJaxbTest(Breadcrumb sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
