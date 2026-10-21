@@ -6,6 +6,9 @@
 Properties files let you configure {page-component-title}'s global behavior settings.
 They are stored in `$\{OPENNMS_HOME}/etc`.
 
+NOTE: Minion and Sentinel do not read these files.
+Set system properties for them in `$\{MINION_HOME}/etc/custom.system.properties` and `$\{SENTINEL_HOME}/etc/custom.system.properties`.
+
 NOTE: Your configuration settings can also affect the Java virtual machine on which {page-component-title} runs.
 
 After making configuration changes, you must restart {page-component-title} for them to take effect.
