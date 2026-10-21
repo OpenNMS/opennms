@@ -179,6 +179,7 @@ The `match-all` attribute in `notifd-configuration.xml` decides what happens whe
 * With `match-all="false"`, only the first matching notification in `notifications.xml` produces a notice.
 
 With `match-all="true"`, adding a notification for a UEI that already has one adds a second notice rather than replacing the first.
+To send a set of nodes' notices only to a specific team, narrow the rule of the general notification as well, as shown in xref:operation:deep-dive/notifications/route-by-node.adoc[Send Notifications for Specific Nodes to Specific Users].
 
 === After a match
 
