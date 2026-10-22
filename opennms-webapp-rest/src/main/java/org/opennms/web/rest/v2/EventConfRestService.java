@@ -95,6 +95,12 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Override
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
+        if (attachments == null || attachments.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.APPLICATION_JSON)
+                    .entity(Map.of("error", NO_UPLOAD_PART_ERROR))
+                    .build();
+        }
         final String username = getUsername(securityContext);
         final Date now = new Date();
         final List<Map<String, Object>> successList = new ArrayList<>();

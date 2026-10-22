@@ -73,6 +73,9 @@ import java.util.List;
         nothing but the row ids defines.""")
 public interface EventConfRestApi {
 
+    String NO_UPLOAD_PART_ERROR = "No eventconf files received: send each file as a multipart/form-data part named 'upload', "
+            + "for example curl -F upload=@my.events.xml";
+
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -121,9 +124,12 @@ public interface EventConfRestApi {
                         }
                       ]
                     }"""))),
-            @ApiResponse(responseCode = "400", description = "The multipart body has no `upload` part; rejected before the handler with an empty body. A file that fails to parse is not a 400: it is reported inside `errors` with 200.")
+            @ApiResponse(responseCode = "400", description = "The multipart body has no part named `upload`. A file that fails to parse is not a 400: it is reported inside `errors` with 200.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"" + EventConfRestApi.NO_UPLOAD_PART_ERROR + "\"}")))
     })
-    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
+    Response uploadEventConfFiles(@Multipart(value = "upload", required = false) List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
 
     @GET

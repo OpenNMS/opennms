@@ -160,17 +160,13 @@ public class EventConfRestServiceIT {
 
     @Test
     @Transactional
-    public void testEmptyAttachments_ShouldReturnEmptyResults() throws Exception {
-        List<Attachment> attachments = new ArrayList<>();
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
-        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-
-        Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
-        List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
-        List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
-
-        assertTrue(success.isEmpty());
-        assertTrue(errors.isEmpty());
+    public void testEmptyAttachments_ShouldBeABadRequestWithAReason() throws Exception {
+        for (final List<Attachment> attachments : java.util.Arrays.asList(new ArrayList<Attachment>(), null)) {
+            Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+            Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+            assertEquals(EventConfRestApi.NO_UPLOAD_PART_ERROR, entity.get("error"));
+        }
     }
 
     @Test
