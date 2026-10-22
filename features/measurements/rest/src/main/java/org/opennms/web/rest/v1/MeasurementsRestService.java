@@ -552,7 +552,16 @@ public class MeasurementsRestService {
 
     protected static WebApplicationException getException(final Status status, String msg, Object... params) throws WebApplicationException {
         if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
-        LOG.error(msg);
+        switch (status.getFamily()) {
+            case SERVER_ERROR:
+                LOG.error(msg);
+                break;
+            case SUCCESSFUL:
+                LOG.debug(msg);
+                break;
+            default:
+                LOG.warn(msg);
+        }
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
