@@ -12,8 +12,12 @@
       <div class="titles">
         <h2 data-test="threshold-group-name">
           {{ group.name }}
-          <InfoIconButton
-            ariaLabel="About threshold groups"
+          <OnmsIconButton
+            :icon="InfoIcon"
+            iconSize="1.2em"
+            class="info-icon-button"
+            title="About threshold groups"
+            aria-label="About threshold groups"
             data-test="threshold-group-info-icon"
             @click="isHelpVisible = true"
           />
@@ -55,11 +59,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import InfoIconButton from '@/components/Common/InfoIconButton.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
 import { GROUP_HELP } from '@/lib/thresholdHelpText'
 import type { ThresholdGroup } from '@/types/thresholdConfig'
-import { OnmsButton, OnmsIcon, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsTag } from '@opennms/onms-ui'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
 defineProps<{
@@ -76,6 +80,12 @@ const isHelpVisible = ref(false)
 </script>
 
 <style lang="scss" scoped>
+@use '@/components/ThresholdConfiguration/Common/info-icon-button' as *;
+
+.info-icon-button {
+  @include info-icon-button;
+}
+
 .group-header {
   display: flex;
   align-items: center;

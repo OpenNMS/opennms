@@ -12,8 +12,12 @@
     @save="onSave"
   >
     <template #section-actions>
-      <InfoIconButton
-        ariaLabel="About thresholds"
+      <OnmsIconButton
+        :icon="InfoIcon"
+        iconSize="1.2em"
+        class="info-icon-button"
+        title="About thresholds"
+        aria-label="About thresholds"
         data-test="threshold-definition-info-icon"
         @click="isHelpVisible = true"
       />
@@ -46,7 +50,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import InfoIconButton from '@/components/Common/InfoIconButton.vue'
 import ResourceFilterEditor from '@/components/ThresholdConfiguration/Group/ResourceFilterEditor.vue'
 import ThresholdDefinitionForm from '@/components/ThresholdConfiguration/Group/ThresholdDefinitionForm.vue'
 import ThresholdEditPage from '@/components/ThresholdConfiguration/Common/ThresholdEditPage.vue'
@@ -62,6 +65,8 @@ import {
 } from '@/lib/thresholdValidator'
 import { getDefaultThreshold, useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import type { ThresholdDefinition } from '@/types/thresholdConfig'
+import { OnmsIconButton } from '@opennms/onms-ui'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -131,3 +136,11 @@ const onSave = async () => {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@use '@/components/ThresholdConfiguration/Common/info-icon-button' as *;
+
+.info-icon-button {
+  @include info-icon-button;
+}
+</style>

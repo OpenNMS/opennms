@@ -3,8 +3,12 @@
     <div class="intro">
       <p>
         A threshd package selects interfaces with a filter and names the threshold groups applied to them.
-        <InfoIconButton
-          ariaLabel="About threshd packages"
+        <OnmsIconButton
+          :icon="InfoIcon"
+          iconSize="1.2em"
+          class="info-icon-button"
+          title="About threshd packages"
+          aria-label="About threshd packages"
           data-test="threshd-packages-info-icon"
           @click="isHelpVisible = true"
         />
@@ -25,14 +29,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ThresholdPackagesTable from '@/components/ThresholdConfiguration/ThresholdPackagesTable.vue'
-import InfoIconButton from '@/components/Common/InfoIconButton.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
 import { PACKAGE_HELP } from '@/lib/thresholdHelpText'
+import { OnmsIconButton } from '@opennms/onms-ui'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 const isHelpVisible = ref(false)
 </script>
 
 <style lang="scss" scoped>
+@use '@/components/ThresholdConfiguration/Common/info-icon-button' as *;
+
+.info-icon-button {
+  @include info-icon-button;
+}
+
 .threshd-packages-tab {
   display: flex;
   flex-direction: column;

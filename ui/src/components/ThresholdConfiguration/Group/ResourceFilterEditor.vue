@@ -2,8 +2,12 @@
   <div class="resource-filter-editor">
     <h4 class="section-header">
       Resource filters
-      <InfoIconButton
-        ariaLabel="About resource filters"
+      <OnmsIconButton
+        :icon="InfoIcon"
+        iconSize="1.2em"
+        class="info-icon-button"
+        title="About resource filters"
+        aria-label="About resource filters"
         data-test="resource-filter-info-icon"
         @click="isHelpVisible = true"
       />
@@ -150,7 +154,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import FormField from '@/components/Common/FormField.vue'
-import InfoIconButton from '@/components/Common/InfoIconButton.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
 import { RESOURCE_FILTER_HELP, THRESHOLD_FIELD_HINTS } from '@/lib/thresholdHelpText'
 import { FILTER_OPERATOR_OPTIONS, FilterOperator, validateResourceFilter } from '@/lib/thresholdValidator'
@@ -159,6 +162,7 @@ import type { ResourceFilter } from '@/types/thresholdConfig'
 import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import MoveDownIcon from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
 import MoveUpIcon from '@opennms/onms-ui/icons/navigation/ExpandLess.vue'
 
@@ -219,6 +223,12 @@ const onAdd = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/components/ThresholdConfiguration/Common/info-icon-button' as *;
+
+.info-icon-button {
+  @include info-icon-button;
+}
+
 .resource-filter-editor {
   .section-header {
     margin: 0;
