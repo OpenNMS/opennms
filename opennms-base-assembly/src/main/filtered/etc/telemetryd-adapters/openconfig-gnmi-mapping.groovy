@@ -24,9 +24,11 @@
 // to configure gNMI streaming telemetry metric processing. These files are not covered
 // by commercial service agreements.
 
-// Maps gNMI SubscribeResponse messages to collection sets using a declarative
-// mapping file: etc/telemetryd-adapters/openconfig-gnmi-mapping.yaml, or
-// openconfig-gnmi-mapping.json when no YAML file exists.
+// Maps gNMI SubscribeResponse messages to collection sets using the declarative
+// mapping files in etc/gnmi-datacollection-config.d. Every *.yaml, *.yml and
+// *.json file in that directory is loaded, and their groups are merged in file
+// name order. Name the files after the vendor and device class they cover,
+// e.g. juniper-mx-series.yaml.
 //
 // Maven filters this file when it is packaged. Never use the dollar sign in it,
 // and never write a word between two at signs.
@@ -192,7 +194,7 @@ class Parsers {
         try {
             yamlClass = Class.forName('org.yaml.snakeyaml.Yaml', true, Parsers.class.getClassLoader())
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException('SnakeYAML is not available to scripts, write the mapping as openconfig-gnmi-mapping.json instead')
+            throw new IllegalStateException('SnakeYAML is not available to scripts, write the mapping as a .json file instead')
         }
         def yaml = yamlClass.getDeclaredConstructor().newInstance()
         return yaml.load(text)
@@ -716,42 +718,67 @@ class ResourceEmitter {
 class MappingHolder {
     private static final Object LOCK = new Object()
     private static volatile CompiledMapping active
-    private static volatile File loadedFile
-    private static volatile long loadedStamp = -1L
+    private static volatile String loadedStamp
 
     static File locate() {
-        File dir = new File(System.getProperty('opennms.home', '/opt/opennms'), 'etc/telemetryd-adapters')
-        File yaml = new File(dir, 'openconfig-gnmi-mapping.yaml')
-        return yaml.exists() ? yaml : new File(dir, 'openconfig-gnmi-mapping.json')
+        return new File(System.getProperty('opennms.home', '/opt/opennms'), 'etc/gnmi-datacollection-config.d')
+    }
+
+    // Mapping files in name order, so the merged group order is predictable
+    static List<File> files() {
+        List<File> files = new ArrayList<>()
+        File[] found = locate().listFiles()
+        if (found == null) {
+            return files
+        }
+        for (File file : found) {
+            String name = file.getName()
+            if (file.isFile() && (name.endsWith('.yaml') || name.endsWith('.yml') || name.endsWith('.json'))) {
+                files.add(file)
+            }
+        }
+        Collections.sort(files)
+        return files
     }
 
     static CompiledMapping current() {
-        File file = locate()
-        if (!file.exists()) {
-            // Keep the last good mapping if the file disappears
+        List<File> files = files()
+        if (files.isEmpty()) {
+            // Keep the last good mapping if every file disappears
             return active
         }
-        long stamp = file.lastModified() * 31L + file.length()
-        if (file == loadedFile && stamp == loadedStamp) {
+        StringBuilder sb = new StringBuilder()
+        for (File file : files) {
+            sb.append(file.getName()).append(':').append(file.lastModified()).append(':').append(file.length()).append('\n')
+        }
+        String stamp = sb.toString()
+        if (stamp == loadedStamp) {
             return active
         }
         synchronized (LOCK) {
-            if (file == loadedFile && stamp == loadedStamp) {
+            if (stamp == loadedStamp) {
                 return active
             }
-            LoadResult result = MappingLoader.load(file)
-            loadedFile = file
             loadedStamp = stamp
-            for (String warning : result.warnings) {
-                log.warn('gNMI mapping {}: {}', file, warning)
+            List<Group> groups = new ArrayList<>()
+            boolean valid = true
+            for (File file : files) {
+                LoadResult result = MappingLoader.load(file)
+                for (String warning : result.warnings) {
+                    log.warn('gNMI mapping {}: {}', file, warning)
+                }
+                if (result.errors.isEmpty()) {
+                    groups.addAll(result.mapping.groups)
+                } else {
+                    valid = false
+                    log.error('gNMI mapping {} is invalid: {}', file, result.errors.join('; '))
+                }
             }
-            if (result.errors.isEmpty()) {
-                active = result.mapping
-                log.info('Loaded gNMI mapping {} with {} groups', file, active.groups.size())
-            } else if (active == null) {
-                log.error('gNMI mapping {} is invalid: {}', file, result.errors.join('; '))
-            } else {
-                log.error('gNMI mapping {} is invalid, keeping the previous mapping: {}', file, result.errors.join('; '))
+            if (valid) {
+                active = new CompiledMapping(groups)
+                log.info('Loaded {} gNMI mapping file(s) from {} with {} groups', files.size(), locate(), groups.size())
+            } else if (active != null) {
+                log.error('Keeping the previous gNMI mapping until every file in {} is valid', locate())
             }
             return active
         }

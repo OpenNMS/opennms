@@ -28,6 +28,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
@@ -72,7 +74,7 @@ public class GnmiMappingHolderTest {
         gcl = GnmiMappingScript.load();
         previousHome = System.getProperty("opennms.home");
         System.setProperty("opennms.home", tmp.getRoot().getAbsolutePath());
-        dir = new File(tmp.getRoot(), "etc/telemetryd-adapters");
+        dir = new File(tmp.getRoot(), GnmiMappingScript.MAPPING_DIR);
     }
 
     @After
@@ -98,53 +100,89 @@ public class GnmiMappingHolderTest {
         file.setLastModified(file.lastModified() + 5000);
     }
 
+    private static List<String> groupNames(Object mapping) {
+        List<String> names = new ArrayList<>();
+        for (Object group : groups(mapping)) {
+            names.add((String) GnmiMappingScript.prop(group, "name"));
+        }
+        return names;
+    }
+
     @Test
     public void returnsNullWhenNoFileExists() throws Exception {
         assertNull(current());
     }
 
     @Test
-    public void loadsYamlFromOpennmsHome() throws Exception {
-        GnmiMappingScript.writeFile(dir, "openconfig-gnmi-mapping.yaml", ONE_GROUP);
-        assertThat(groups(current()), hasSize(1));
-        assertEquals(new File(dir, "openconfig-gnmi-mapping.yaml"), GnmiMappingScript.call(gcl, "MappingHolder", "locate"));
+    public void locatesTheConfigDirectoryUnderOpennmsHome() throws Exception {
+        assertEquals(dir, GnmiMappingScript.call(gcl, "MappingHolder", "locate"));
     }
 
     @Test
-    public void fallsBackToJson() throws Exception {
-        GnmiMappingScript.writeFile(dir, "openconfig-gnmi-mapping.json",
+    public void loadsYamlFromOpennmsHome() throws Exception {
+        GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml", ONE_GROUP);
+        assertThat(groups(current()), hasSize(1));
+    }
+
+    @Test
+    public void loadsJson() throws Exception {
+        GnmiMappingScript.writeFile(dir, "acme-switch.json",
                 "{\"version\": 1, \"groups\": [{\"name\": \"a\", \"match\": \"/a\", \"resource-type\": \"node\",",
                 " \"attributes\": {\"b\": {\"type\": \"gauge\"}}}]}");
         assertThat(groups(current()), hasSize(1));
     }
 
     @Test
-    public void prefersYamlWhenBothExist() throws Exception {
-        GnmiMappingScript.writeFile(dir, "openconfig-gnmi-mapping.yaml", TWO_GROUPS);
-        GnmiMappingScript.writeFile(dir, "openconfig-gnmi-mapping.json", "not json");
+    public void mergesGroupsFromAllFilesInNameOrder() throws Exception {
+        GnmiMappingScript.writeFile(dir, "b-vendor.yml", ONE_GROUP);
+        GnmiMappingScript.writeFile(dir, "a-vendor.yaml", TWO_GROUPS);
+        assertEquals(Arrays.asList("a", "c", "a"), groupNames(current()));
+    }
+
+    @Test
+    public void ignoresFilesWithOtherExtensions() throws Exception {
+        GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml", ONE_GROUP);
+        GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml.bak", TWO_GROUPS);
+        GnmiMappingScript.writeFile(dir, "README.txt", "not a mapping");
+        assertThat(groups(current()), hasSize(1));
+    }
+
+    @Test
+    public void cachesUntilAFileChanges() throws Exception {
+        GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml", ONE_GROUP);
+        Object first = current();
+        assertSame(first, current());
+        rewrite(dir, "juniper-mx-series.yaml", TWO_GROUPS);
         assertThat(groups(current()), hasSize(2));
     }
 
     @Test
-    public void cachesUntilTheFileChanges() throws Exception {
-        GnmiMappingScript.writeFile(dir, "openconfig-gnmi-mapping.yaml", ONE_GROUP);
-        Object first = current();
-        assertSame(first, current());
-        rewrite(dir, "openconfig-gnmi-mapping.yaml", TWO_GROUPS);
-        assertThat(groups(current()), hasSize(2));
+    public void reloadsWhenAFileIsAdded() throws Exception {
+        GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml", ONE_GROUP);
+        assertThat(groups(current()), hasSize(1));
+        GnmiMappingScript.writeFile(dir, "cisco-nxos.yaml", TWO_GROUPS);
+        assertThat(groups(current()), hasSize(3));
     }
 
     @Test
     public void keepsPreviousMappingWhenReloadIsInvalid() throws Exception {
-        GnmiMappingScript.writeFile(dir, "openconfig-gnmi-mapping.yaml", ONE_GROUP);
+        GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml", ONE_GROUP);
         Object good = current();
-        rewrite(dir, "openconfig-gnmi-mapping.yaml", "version: 1", "groups: []");
+        rewrite(dir, "juniper-mx-series.yaml", "version: 1", "groups: []");
         assertSame(good, current());
     }
 
     @Test
-    public void keepsPreviousMappingWhenFileIsDeleted() throws Exception {
-        File file = GnmiMappingScript.writeFile(dir, "openconfig-gnmi-mapping.yaml", ONE_GROUP);
+    public void oneInvalidFileKeepsThePreviousMappingForAll() throws Exception {
+        GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml", ONE_GROUP);
+        Object good = current();
+        GnmiMappingScript.writeFile(dir, "cisco-nxos.yaml", "not: [valid");
+        assertSame(good, current());
+    }
+
+    @Test
+    public void keepsPreviousMappingWhenAllFilesAreDeleted() throws Exception {
+        File file = GnmiMappingScript.writeFile(dir, "juniper-mx-series.yaml", ONE_GROUP);
         Object good = current();
         file.delete();
         assertSame(good, current());
