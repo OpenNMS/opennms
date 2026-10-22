@@ -97,6 +97,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!--
+      jradius-extended 1.1.5 is the last release and its TLS code (EAP-TTLS/PEAP) is written against
+      the bouncycastle 1.46 API, so this cannot be moved to ${bouncyCastleVersion}. It is shaded and
+      relocated above, and jradius uses it only for the TLS handshake primitives, never for PKIX path
+      validation or CRL parsing.
+    -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>
