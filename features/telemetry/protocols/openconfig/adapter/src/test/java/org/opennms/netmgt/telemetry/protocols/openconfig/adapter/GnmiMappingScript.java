@@ -50,6 +50,9 @@ import groovy.lang.GroovyClassLoader;
  */
 final class GnmiMappingScript {
 
+    /** Where the script looks for mapping files, relative to opennms.home. */
+    static final String MAPPING_DIR = "etc/gnmi-datacollection-config.d";
+
     private GnmiMappingScript() {
     }
 
@@ -127,15 +130,15 @@ final class GnmiMappingScript {
         return String.join("\n", lines);
     }
 
-    /** Copies mapping.yaml or mapping.json from a fixture directory to home/etc/telemetryd-adapters/. */
+    /** Copies mapping.yaml or mapping.json from a fixture directory to home/etc/gnmi-datacollection-config.d/. */
     static void installMapping(File home, Path caseDir) throws IOException {
-        Path target = home.toPath().resolve("etc/telemetryd-adapters");
+        Path target = home.toPath().resolve(MAPPING_DIR);
         Files.createDirectories(target);
         Path yaml = caseDir.resolve("mapping.yaml");
         if (Files.exists(yaml)) {
-            Files.copy(yaml, target.resolve("openconfig-gnmi-mapping.yaml"));
+            Files.copy(yaml, target.resolve("mapping.yaml"));
         } else {
-            Files.copy(caseDir.resolve("mapping.json"), target.resolve("openconfig-gnmi-mapping.json"));
+            Files.copy(caseDir.resolve("mapping.json"), target.resolve("mapping.json"));
         }
     }
 }

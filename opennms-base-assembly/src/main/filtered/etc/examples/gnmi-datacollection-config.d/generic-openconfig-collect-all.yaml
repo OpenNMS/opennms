@@ -11,9 +11,10 @@
 # every numeric leaf it finds.
 #
 # This mapping does the same with one group per subscribed container and
-# "attributes: all". To try it, copy this file to
-# etc/telemetryd-adapters/openconfig-gnmi-mapping.yaml and set the OpenConfig
-# adapter's script parameter to openconfig-gnmi-mapping.groovy.
+# "attributes: all". It is vendor neutral. To try it, copy this file to
+# etc/gnmi-datacollection-config.d/ (the script merges every mapping file in that
+# directory) and set the OpenConfig adapter's script parameter to
+# openconfig-gnmi-mapping.groovy.
 # The resource types ocComponent and ocCpu are defined in
 # etc/resource-types.d/openconfig-gnmi-resource.xml.
 #

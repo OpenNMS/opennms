@@ -99,7 +99,7 @@ public class GnmiMappingScriptTest {
 
     @Test
     public void nullAgentEmitsNothing() throws Exception {
-        GnmiMappingScript.writeFile(new File(tmp.getRoot(), "etc/telemetryd-adapters"), "openconfig-gnmi-mapping.yaml",
+        GnmiMappingScript.writeFile(new File(tmp.getRoot(), GnmiMappingScript.MAPPING_DIR), "sys.yaml",
                 "version: 1",
                 "groups:",
                 "  - name: sys",
@@ -114,7 +114,7 @@ public class GnmiMappingScriptTest {
 
     @Test
     public void gnmiNanosecondTimestampBecomesMilliseconds() throws Exception {
-        GnmiMappingScript.writeFile(new File(tmp.getRoot(), "etc/telemetryd-adapters"), "openconfig-gnmi-mapping.yaml",
+        GnmiMappingScript.writeFile(new File(tmp.getRoot(), GnmiMappingScript.MAPPING_DIR), "sys.yaml",
                 "version: 1",
                 "groups:",
                 "  - name: sys",
@@ -134,7 +134,7 @@ public class GnmiMappingScriptTest {
 
     @Test
     public void shippedSampleMappingIsValid() throws Exception {
-        File sample = new File(GnmiMappingScript.class.getResource("/openconfig-gnmi-mapping.yaml").toURI());
+        File sample = new File(GnmiMappingScript.class.getResource("/juniper-mx-series.yaml").toURI());
         Object result = GnmiMappingScript.call(GnmiMappingScript.load(), "MappingLoader", "load", sample);
         assertThat((List<?>) GnmiMappingScript.prop(result, "errors"), is(empty()));
         assertThat((List<?>) GnmiMappingScript.prop(result, "warnings"), is(empty()));
@@ -142,9 +142,9 @@ public class GnmiMappingScriptTest {
 
     @Test
     public void shippedSampleMapsJuniperMx10004() throws Exception {
-        Path target = tmp.getRoot().toPath().resolve("etc/telemetryd-adapters");
+        Path target = tmp.getRoot().toPath().resolve(GnmiMappingScript.MAPPING_DIR);
         Files.createDirectories(target);
-        Files.copy(Paths.get(GnmiMappingScript.class.getResource("/openconfig-gnmi-mapping.yaml").toURI()), target.resolve("openconfig-gnmi-mapping.yaml"));
+        Files.copy(Paths.get(GnmiMappingScript.class.getResource("/juniper-mx-series.yaml").toURI()), target.resolve("juniper-mx-series.yaml"));
 
         // Notifications captured from an MX10004 with JSON encoding, a few leaves each, separated by ---
         Path samples = Paths.get("src/test/resources/gnmi-mapping-samples");

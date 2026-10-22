@@ -24,7 +24,12 @@
         <directory>${project.basedir}/../../../../../opennms-base-assembly/src/main/filtered/etc/telemetryd-adapters</directory>
         <includes>
           <include>openconfig-gnmi-mapping.groovy</include>
-          <include>openconfig-gnmi-mapping.yaml</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../../../../../opennms-base-assembly/src/main/filtered/etc/gnmi-datacollection-config.d</directory>
+        <includes>
+          <include>juniper-mx-series.yaml</include>
         </includes>
       </testResource>
     </testResources>
