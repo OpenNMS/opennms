@@ -23,6 +23,7 @@ package org.opennms.features.scv.rest;
 
 import com.google.common.base.Strings;
 import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.CredentialsChangedListener;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +43,23 @@ public class DefaultScvRestService implements ScvRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultScvRestService.class);
 
     private final SecureCredentialsVault scv;
+    private final CredentialsChangedListener credentialsChangedListener;
     private final Pattern pattern = Pattern.compile("\\*{2,}");
     private final String MASKED_PASSWORD = "******";
 
     public DefaultScvRestService(SecureCredentialsVault scv) {
+        this(scv, null);
+    }
+
+    public DefaultScvRestService(SecureCredentialsVault scv, CredentialsChangedListener credentialsChangedListener) {
         this.scv = scv;
+        this.credentialsChangedListener = credentialsChangedListener;
+    }
+
+    private void sendCredentialsUpdatedEvent() {
+        if (credentialsChangedListener != null) {
+            credentialsChangedListener.credentialsChanged("ScvRestService");
+        }
     }
 
     @Override
@@ -123,6 +136,7 @@ public class DefaultScvRestService implements ScvRestService {
 
             try {
                 scv.setCredentials(credentialsDTO.getAlias(), credentials);
+                sendCredentialsUpdatedEvent();
                 return Response.accepted().build();
             } catch (Exception e) {
                 LOG.error("Exception while adding credentials with alias {}", credentialsDTO.getAlias(), e);
@@ -166,6 +180,7 @@ public class DefaultScvRestService implements ScvRestService {
 
             try {
                 scv.setCredentials(alias, credentials);
+                sendCredentialsUpdatedEvent();
                 return Response.accepted().build();
             } catch (Exception e) {
                 LOG.error("Exception while adding credentials with alias {}", credentialsDTO.getAlias(), e);
@@ -180,6 +195,7 @@ public class DefaultScvRestService implements ScvRestService {
     public Response deleteCredentials(final String alias) {
         try {
             scv.deleteCredentials(alias);
+            sendCredentialsUpdatedEvent();
         } catch (Exception e) {
             LOG.error("Exception while deleting credentials with alias {} ", alias, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

@@ -27,6 +27,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.features.scv.api.CredentialsChangedListener;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
 @Command(scope = "opennms", name = "scv-delete", description="Delete the stored credentials for the given alias.")
@@ -36,6 +37,10 @@ public class ScvDeleteCommand implements Action {
     @Reference
     public SecureCredentialsVault secureCredentialsVault;
 
+    // registered on OpenNMS core only; absent on Minion and Sentinel
+    @Reference(optional = true)
+    public CredentialsChangedListener credentialsChangedListener;
+
     @Argument(index = 0, name = "alias", description = "Alias of the credentials to be deleted.", required = true, multiValued = false)
     @Completion(AliasCompleter.class)
     public String alias = null;
@@ -43,6 +48,9 @@ public class ScvDeleteCommand implements Action {
     @Override
     public Object execute() throws Exception {
         secureCredentialsVault.deleteCredentials(alias);
+        if (credentialsChangedListener != null) {
+            credentialsChangedListener.credentialsChanged("scv-delete");
+        }
         return null;
     }
 }
