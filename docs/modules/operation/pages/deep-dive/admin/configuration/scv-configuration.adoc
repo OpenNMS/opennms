@@ -215,22 +215,25 @@ The password is masked.
 | Deletes an entry.
 |===
 
+The examples below assume `scvcli` is on your `PATH`; otherwise use its full path, for example `/opt/opennms/bin/scvcli` or `/opt/minion/bin/scvcli`.
+Run it as the user that runs the service, so the keystore stays readable by that service.
+
 .Store database credentials on {page-component-title} Core and prompt for the password
 [source, console]
 ----
-sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms
+scvcli set postgres opennms
 ----
 
 .Store credentials with an attribute and read the password from a file
 [source, console]
 ----
-sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set corp-directory svc-monitor --from-stdin --attribute domain=CORP < /path/to/password.txt
+scvcli set corp-directory svc-monitor --from-stdin --attribute domain=CORP < /path/to/password.txt
 ----
 
 .Show an entry on a Minion
 [source, console]
 ----
-sudo -u minion ${MINION_HOME}/bin/scvcli get opennms.broker
+scvcli get opennms.broker
 ----
 
 [source, output]
