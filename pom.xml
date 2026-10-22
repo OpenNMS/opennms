@@ -1865,7 +1865,7 @@
     <javaxMailApiShimVersion>1.6.7</javaxMailApiShimVersion>
     <greenmailVersion>2.1.9</greenmailVersion>
     <jbossLoggingVersion>3.5.3.Final</jbossLoggingVersion>
-    <jcifsVersion>2.1.6</jcifsVersion>
+    <jcifsVersion>2.1.10</jcifsVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.5.4</jettisonVersion>
     <jettyVersion>9.4.60.onms1</jettyVersion>
