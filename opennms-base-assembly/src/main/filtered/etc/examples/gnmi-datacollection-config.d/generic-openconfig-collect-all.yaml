@@ -14,7 +14,8 @@
 # "attributes: all". It is vendor neutral. To try it, copy this file to
 # etc/gnmi-datacollection-config.d/ (the script merges every mapping file in that
 # directory) and set the OpenConfig adapter's script parameter to
-# openconfig-gnmi-mapping.groovy.
+# openconfig-gnmi-mapping.groovy. Remove the shipped openconfig-*.yaml files first,
+# or drop the interface groups below. Two groups on one leaf collect it twice.
 # The resource types ocComponent and ocCpu are defined in
 # etc/resource-types.d/openconfig-gnmi-resource.xml.
 #

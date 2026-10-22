@@ -23,6 +23,7 @@ package org.opennms.netmgt.telemetry.protocols.openconfig.adapter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Before;
@@ -133,18 +136,35 @@ public class GnmiMappingScriptTest {
     }
 
     @Test
-    public void shippedSampleMappingIsValid() throws Exception {
-        File sample = new File(GnmiMappingScript.class.getResource("/juniper-mx-series.yaml").toURI());
-        Object result = GnmiMappingScript.call(GnmiMappingScript.load(), "MappingLoader", "load", sample);
-        assertThat((List<?>) GnmiMappingScript.prop(result, "errors"), is(empty()));
-        assertThat((List<?>) GnmiMappingScript.prop(result, "warnings"), is(empty()));
+    public void shippedMappingsAreValid() throws Exception {
+        List<Path> shipped = shippedMappings();
+        assertThat(shipped, hasSize(5));
+        GroovyClassLoader gcl = GnmiMappingScript.load();
+        for (Path sample : shipped) {
+            Object result = GnmiMappingScript.call(gcl, "MappingLoader", "load", sample.toFile());
+            assertThat(sample.toString(), (List<?>) GnmiMappingScript.prop(result, "errors"), is(empty()));
+            assertThat(sample.toString(), (List<?>) GnmiMappingScript.prop(result, "warnings"), is(empty()));
+        }
+    }
+
+    /** The shipped mapping files, copied into the test classpath by the POM. */
+    private static List<Path> shippedMappings() throws Exception {
+        Path dir = Paths.get(GnmiMappingScript.class.getResource("/openconfig-interfaces.yaml").toURI()).getParent();
+        try (Stream<Path> files = Files.list(dir)) {
+            return files.filter(f -> {
+                String name = f.getFileName().toString();
+                return (name.startsWith("openconfig-") || name.startsWith("junos-")) && name.endsWith(".yaml");
+            }).sorted().collect(Collectors.toList());
+        }
     }
 
     @Test
-    public void shippedSampleMapsJuniperMx10004() throws Exception {
+    public void shippedMappingsMapJuniperMx10004() throws Exception {
         Path target = tmp.getRoot().toPath().resolve(GnmiMappingScript.MAPPING_DIR);
         Files.createDirectories(target);
-        Files.copy(Paths.get(GnmiMappingScript.class.getResource("/juniper-mx-series.yaml").toURI()), target.resolve("juniper-mx-series.yaml"));
+        for (Path sample : shippedMappings()) {
+            Files.copy(sample, target.resolve(sample.getFileName()));
+        }
 
         // Notifications captured from an MX10004 with JSON encoding, a few leaves each, separated by ---
         Path samples = Paths.get("src/test/resources/gnmi-mapping-samples");

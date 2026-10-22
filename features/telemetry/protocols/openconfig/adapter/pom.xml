@@ -29,7 +29,8 @@
       <testResource>
         <directory>${project.basedir}/../../../../../opennms-base-assembly/src/main/filtered/etc/gnmi-datacollection-config.d</directory>
         <includes>
-          <include>juniper-mx-series.yaml</include>
+          <include>openconfig-*.yaml</include>
+          <include>junos-*.yaml</include>
         </includes>
       </testResource>
     </testResources>

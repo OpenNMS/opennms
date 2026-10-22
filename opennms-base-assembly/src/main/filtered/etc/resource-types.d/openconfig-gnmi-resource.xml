@@ -25,8 +25,4 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
-   <resourceType name="junosFpcSensor" label="Junos Line Card Sensor" resourceLabel="${index}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
-   </resourceType>
 </resource-types>
