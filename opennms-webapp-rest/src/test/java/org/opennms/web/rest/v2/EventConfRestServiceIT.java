@@ -1972,6 +1972,61 @@ public class EventConfRestServiceIT {
         assertFalse(((List<?>) page.get("eventConfSourceList")).isEmpty());
     }
 
+    @SuppressWarnings("unchecked")
+    private static List<?> pageList(final Response resp) {
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        return (List<?>) ((Map<String, Object>) resp.getEntity()).get("eventConfSourceList");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static String errorOf(final Response resp) {
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        return String.valueOf(((Map<String, Object>) resp.getEntity()).get("error"));
+    }
+
+    @Test
+    @Transactional
+    public void testFilterEndpoints_ShareOptionalPagingContract() throws Exception {
+        final EventConfSource source = createSource("paging.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        for (int i = 1; i <= 3; i++) {
+            eventConfRestApi.addEventConfSourceEvent(source.getId(),
+                    eventDef("uei.opennms.org/test/paging/" + i, "Paging " + i, "Normal", "d" + i), securityContext);
+        }
+        flushAndClear();
+        final int sourceCount = eventConfSourceDao.countAll();
+        assertTrue(sourceCount > 2);
+
+        // /filter/sources: offset defaults to 0, a missing limit returns every match
+        assertEquals(sourceCount, pageList(eventConfRestApi.filterEventConfSource(null, null, null, null, null, null, securityContext)).size());
+        assertEquals(sourceCount, pageList(eventConfRestApi.filterEventConfSource(null, null, null, null, 0, null, securityContext)).size());
+        assertEquals(2, pageList(eventConfRestApi.filterEventConfSource(null, null, null, null, 0, 2, securityContext)).size());
+        assertEquals(2, pageList(eventConfRestApi.filterEventConfSource(null, null, null, null, null, 2, securityContext)).size());
+        assertEquals(sourceCount, pageList(eventConfRestApi.filterEventConfSource(null, null, null, null, null, 0, securityContext)).size());
+        assertTrue(errorOf(eventConfRestApi.filterEventConfSource(null, null, null, null, -1, 10, securityContext)).contains("offset"));
+        assertTrue(errorOf(eventConfRestApi.filterEventConfSource(null, null, null, null, 0, -1, securityContext)).contains("limit"));
+
+        // /filter/{sourceId}/events: a limit without an offset is the first page, not a 500
+        assertEquals(2, pageList(eventConfRestApi.filterConfEventsBySourceId(source.getId(), null, null, null, null, null, 2, securityContext)).size());
+        assertEquals(3, pageList(eventConfRestApi.filterConfEventsBySourceId(source.getId(), null, null, null, null, null, null, securityContext)).size());
+        assertTrue(errorOf(eventConfRestApi.filterConfEventsBySourceId(source.getId(), null, null, null, null, -1, null, securityContext)).contains("offset"));
+        assertTrue(errorOf(eventConfRestApi.filterConfEventsBySourceId(source.getId(), null, null, null, null, null, -1, securityContext)).contains("limit"));
+        assertTrue(errorOf(eventConfRestApi.filterConfEventsBySourceId(null, null, null, null, null, null, null, securityContext)).contains("sourceId"));
+
+        // /filter: same defaults
+        Response resp = eventConfRestApi.filterEventConf("uei.opennms.org/test/paging/", null, null, null, null, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        assertEquals(3, ((List<?>) resp.getEntity()).size());
+        resp = eventConfRestApi.filterEventConf("uei.opennms.org/test/paging/", null, null, null, 2, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        assertEquals(2, ((List<?>) resp.getEntity()).size());
+        resp = eventConfRestApi.filterEventConf("uei.opennms.org/test/paging/", null, null, 1, 0, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        assertEquals(2, ((List<?>) resp.getEntity()).size());
+        assertTrue(errorOf(eventConfRestApi.filterEventConf(null, null, null, -1, 10, securityContext)).contains("offset"));
+        assertTrue(errorOf(eventConfRestApi.filterEventConf(null, null, null, 0, -1, securityContext)).contains("limit"));
+    }
+
     @Test
     @Transactional
     public void testDeleteEventsForSource_InvalidInputIsA400() throws Exception {
