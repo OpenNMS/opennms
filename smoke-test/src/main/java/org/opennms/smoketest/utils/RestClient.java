@@ -29,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -128,6 +129,21 @@ public class RestClient {
             LOG.debug("Failed to get displayVersion from the info REST service. (OpenNMS is probably not up yet): {}", e.getMessage());
         }
         return null;
+    }
+
+    public Map<String, String> getServiceStatuses() {
+        final WebTarget target = getTarget().path("info");
+        final String json = getBuilder(target).get(String.class);
+
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            final JsonNode services = mapper.readTree(json).path("services");
+            final Map<String, String> statuses = new LinkedHashMap<>();
+            services.fields().forEachRemaining(entry -> statuses.put(entry.getKey(), entry.getValue().asText()));
+            return statuses;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read services from the info REST service", e);
+        }
     }
 
     public void addOrReplaceRequisition(Requisition requisition) {

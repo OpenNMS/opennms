@@ -28,8 +28,10 @@
 >
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { whenever } from '@vueuse/core'
 
 import { OnmsToastHost } from '@opennms/onms-ui'
+import startBrowserNotifications from '@/composables/useBrowserNotifications'
 import OnmsAppLayout from '@/components/Layout/OnmsAppLayout.vue'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
@@ -57,6 +59,10 @@ const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()
 const nodeListStore = useNodeListStore()
 const pluginStore = usePluginStore()
+
+// notifd 'browser' method delivery for /ui pages; needs baseHref from the menu
+const baseHref = computed<string>(() => menuStore.mainMenu?.baseHref ?? '')
+whenever(() => !!baseHref.value, () => startBrowserNotifications(baseHref.value), { once: true })
 
 onMounted(() => {
   authStore.getWhoAmI()
@@ -116,6 +122,13 @@ html:has(body.p-overflow-hidden),
 html:has(.p-dialog-mask.p-overlay-mask),
 html:has(.p-drawer-mask.p-overlay-mask) {
   overflow: hidden;
+}
+// PrimeVue pads the body by the measured scrollbar width while it locks scroll,
+// to hold the space of a scrollbar it expects to disappear. The stable gutter
+// above keeps that space reserved, so the padding only narrows the page and
+// shifts its in-flow content left for as long as a modal is open.
+body.p-overflow-hidden {
+  padding-right: 0;
 }
 // Offsets for the SPA content, clearing the two fixed chrome elements:
 // - padding-top clears the fixed top menu bar (Menubar, --onms-header-height).

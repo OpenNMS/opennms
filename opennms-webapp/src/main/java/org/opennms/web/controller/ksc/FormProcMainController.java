@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,7 +51,7 @@ public class FormProcMainController extends AbstractController implements Initia
         Create
     }
 
-    private KSC_PerformanceReportFactory m_kscReportFactory;
+    private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
 
     /** {@inheritDoc} */
     @Override
@@ -73,13 +73,13 @@ public class FormProcMainController extends AbstractController implements Initia
             KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
 
             if (Actions.Customize.toString().equals(action)) {
-                editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
+                editor.loadWorkingReport(getGraphCollectionConfigFactory(), getReportIndex(request));
                 return new ModelAndView("redirect:/KSC/customReport.htm");
             } else if (Actions.CreateFrom.toString().equals(action)) {
-                editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(request));
+                editor.loadWorkingReportDuplicate(getGraphCollectionConfigFactory(), getReportIndex(request));
                 return new ModelAndView("redirect:/KSC/customReport.htm");
             } else if (Actions.Delete.toString().equals(action)) {
-                getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
+                getGraphCollectionConfigFactory().deleteCollectionAndSave(getReportIndex(request)); 
                 return new ModelAndView("redirect:/KSC/index.jsp");
             } else if (Actions.Create.toString().equals(action)) {
                 editor.loadNewWorkingReport();
@@ -98,21 +98,21 @@ public class FormProcMainController extends AbstractController implements Initia
     }
 
     /**
-     * <p>getKscReportFactory</p>
+     * <p>getGraphCollectionConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @return a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public KSC_PerformanceReportFactory getKscReportFactory() {
-        return m_kscReportFactory;
+    public GraphCollectionConfigFactory getGraphCollectionConfigFactory() {
+        return m_graphCollectionConfigFactory;
     }
 
     /**
-     * <p>setKscReportFactory</p>
+     * <p>setGraphCollectionConfigFactory</p>
      *
-     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param graphCollectionConfigFactory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
-        m_kscReportFactory = kscReportFactory;
+    public void setGraphCollectionConfigFactory(GraphCollectionConfigFactory graphCollectionConfigFactory) {
+        m_graphCollectionConfigFactory = graphCollectionConfigFactory;
     }
 
     /**
@@ -122,6 +122,6 @@ public class FormProcMainController extends AbstractController implements Initia
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
+        Assert.state(m_graphCollectionConfigFactory != null, "property graphCollectionConfigFactory must be set");
     }
 }

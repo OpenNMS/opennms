@@ -34,6 +34,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +62,8 @@ public class EventConfEventDaoHibernate
 
     @Override
     public List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId) {
-        return find("from EventConfEvent e where e.uei = ?1 and e.source.id = ?2", uei, sourceId);
+        return find("from EventConfEvent e where e.uei = ?1 and e.source.id = ?2 order by e.eventOrder asc, e.id asc",
+                uei, sourceId);
     }
 
     @Override
@@ -158,7 +160,10 @@ public class EventConfEventDaoHibernate
 
 
             String dataQuery = "from EventConfEvent e " + whereClause + orderBy;
-            eventConfEventList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+            // a missing or zero limit means the whole result set in one page
+            final int firstResult = offset == null ? 0 : offset;
+            final int maxResults = (limit == null || limit <= 0) ? Integer.MAX_VALUE : limit;
+            eventConfEventList = findWithPagination(dataQuery, queryParams.toArray(), firstResult, maxResults);
         }
 
         // Return map with results
@@ -221,7 +226,7 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
-    public void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled) {
+    public void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled, String modifiedBy) {
         if (eventIds == null || eventIds.isEmpty()) {
             LOG.warn("No event IDs provided for update. Skipping...");
             return;
@@ -230,11 +235,13 @@ public class EventConfEventDaoHibernate
         var session = getSessionFactory().getCurrentSession();
         // bound the wait: this UPDATE queues behind whoever holds the source's event rows (e.g. an upload)
         EventConfLocks.applyLockTimeout(session);
-        String hql = "update EventConfEvent e set e.enabled = :enabled " +
+        String hql = "update EventConfEvent e set e.enabled = :enabled, e.lastModified = :now, e.modifiedBy = :modifiedBy " +
                 "where e.source.id = :sourceId and e.id in (:eventIds)";
 
         var query = session.createQuery(hql);
         query.setParameter("enabled", enabled);
+        query.setParameter("now", new Date());
+        query.setParameter("modifiedBy", modifiedBy);
         query.setParameter("sourceId", sourceId);
         query.setParameterList("eventIds", eventIds);
 
@@ -285,6 +292,54 @@ public class EventConfEventDaoHibernate
             throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
         }
         return findMaxEventOrder(sourceId) + 1;
+    }
+
+    @Override
+    public int shiftEventOrder(Long sourceId, int from, int to, int delta) {
+        if (from > to) {
+            return 0;
+        }
+        final var session = getSessionFactory().getCurrentSession();
+        EventConfLocks.applyLockTimeout(session);
+        return session.createQuery("update EventConfEvent e set e.eventOrder = e.eventOrder + :delta " +
+                        "where e.source.id = :sourceId and e.eventOrder between :fromOrder and :toOrder")
+                .setParameter("delta", delta)
+                .setParameter("sourceId", sourceId)
+                .setParameter("fromOrder", from)
+                .setParameter("toOrder", to)
+                .executeUpdate();
+    }
+
+    @Override
+    public void updateEventOrder(Long sourceId, Long eventId, int eventOrder) {
+        final var session = getSessionFactory().getCurrentSession();
+        EventConfLocks.applyLockTimeout(session);
+        // a position change is not a content change, so lastModified stays untouched
+        session.createQuery("update EventConfEvent e set e.eventOrder = :eventOrder " +
+                        "where e.source.id = :sourceId and e.id = :eventId")
+                .setParameter("eventOrder", eventOrder)
+                .setParameter("sourceId", sourceId)
+                .setParameter("eventId", eventId)
+                .executeUpdate();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Object[]> findEventOrderSummaries(Long sourceId) {
+        return getSessionFactory().getCurrentSession()
+                .createQuery("select e.id, e.uei, e.eventLabel, e.severity, e.enabled, e.eventOrder "
+                        + "from EventConfEvent e where e.source.id = :sourceId order by e.eventOrder asc, e.id asc")
+                .setParameter("sourceId", sourceId)
+                .list();
+    }
+
+    @Override
+    public EventConfEvent findNeighbourByOrder(Long sourceId, int eventOrder, boolean previous) {
+        final String hql = previous
+                ? "from EventConfEvent e where e.source.id = ?1 and e.eventOrder < ?2 order by e.eventOrder desc, e.id desc"
+                : "from EventConfEvent e where e.source.id = ?1 and e.eventOrder > ?2 order by e.eventOrder asc, e.id asc";
+        final List<EventConfEvent> neighbours = findWithPagination(hql, new Object[]{sourceId, eventOrder}, 0, 1);
+        return neighbours.isEmpty() ? null : neighbours.get(0);
     }
 
     @Override

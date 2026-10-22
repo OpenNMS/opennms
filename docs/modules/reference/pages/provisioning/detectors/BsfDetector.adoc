@@ -7,6 +7,9 @@ The only requirement is that the script returns the string `OK` if it passes.
 
 The BSFDetector passes the `map`, `ip_addr`, `svc_name`, and `results` variables as beans to the script.
 
+NOTE: Groovy is the scripting language that ships with {page-component-title}.
+BeanShell is no longer supported; rewrite any existing `.bsh` scripts in Groovy and update the `bsfEngine` and `langClass` parameters of the affected detectors.
+
 == Detector facts
 
 [options="autowidth"]
@@ -32,16 +35,14 @@ The BSFDetector passes the `map`, `ip_addr`, `svc_name`, and `results` variables
 | Short name of the language the script is written in.
 Choices:
 
-* jython
-* beanshell
 * groovy
+* jython
 | none
 
 | bsfEngine
 | BSF engine to use when running the script.
 Choices:
 
-* `bsh.util.BeanShellBSFEngine`
 * `org.codehaus.groovy.bsf.GroovyEngine`
 * `org.apache.bsf.engines.jython.JythonEngine`
 | none
@@ -91,15 +92,10 @@ The following table provides the required setup for commonly used languages.
 | bsfEngine parameter
 | Required library
 
-| http://www.beanshell.org[BeanShell]
-| beanshell
-| bsh.util.BeanShellBSFEngine
-| supported by default
-
 | https://groovy-lang.org/[Groovy]
 | groovy
 | org.codehaus.groovy.bsf.GroovyEngine
-| groovy-all-[version].jar
+| ships with {page-component-title}
 
 | http://www.jython.org[Jython]
 | jython
@@ -107,38 +103,13 @@ The following table provides the required setup for commonly used languages.
 | jython-[version].jar
 |===
 
-IMPORTANT: If you are using a Groovy or Jython script, you need to place the required library file in the `$\{OPENNMS_HOME}/lib` directory and restart the {page-component-title} service.
+IMPORTANT: If you are using a Jython script, you need to place the required library file in the `$\{OPENNMS_HOME}/lib` directory and restart the {page-component-title} service.
 
 == Example configurations
 
-=== BeanShell example
-
-.BeanShell example
-[source, xml]
-----
-<detector name="MinimalBeanShell" class="org.opennms.netmgt.provision.detector.bsf.BSFDetector">
-    <parameter key="bsfEngine" value="bsh.util.BeanShellBSFEngine"/>
-    <parameter key="langClass" value="beanshell"/>
-    <parameter key="fileName" value="/opt/opennms/etc/scripts/MinimalBeanShell.bsh"/>
-    <parameter key="runType" value="eval"/>
-</detector>
-----
-
-.BeanShell example `MinimalBeanShell.bsh` script file
-[source, java]
-----
-File testFile = new File("/tmp/TestFile");
-if (testFile.exists()) {
-  return "OK";
-} else {
-  results.put("reason", "file does not exist");
-  return "NOK";
-}
-----
-
 === Groovy example
 
-The Groovy language requires the installation of an additional library.
+Groovy ships with {page-component-title}, so no additional library is required.
 
 .Groovy example for `run-type` of `eval`
 [source, xml]

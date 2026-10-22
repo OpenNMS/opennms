@@ -24,6 +24,7 @@ import { isConvertibleToInteger } from '@/lib/utils'
 import { MainMenu } from '@/types/mainMenu'
 import { LocationQuery } from 'vue-router'
 import { normalizeMacSearch } from './useInterfaceListing'
+import { nodeLink } from '@/lib/linkUtils'
 import {
   AssetFilter,
   Category,
@@ -656,7 +657,7 @@ const buildMaclikeQuery = (macAddress?: string) => {
   // The backend maclike behavior does a case-insensitive ANYWHERE match, so a partial MAC is fine.
   // normalizeMacSearch strips every non-hex character, not just legacy's '[:-]' -- see its doc
   // comment in useInterfaceListing.ts for why that's a deliberate improvement, not parity. Shared
-  // with useInterfaceListing.ts's client-side maclike match and NodesTable.vue's buildSnmpNarrowing
+  // with useInterfaceListing.ts's client-side maclike match and utils.ts's buildSnmpNarrowing
   // so all three normalize a MAC-like value identically.
   const stripped = normalizeMacSearch(macAddress)
 
@@ -753,12 +754,13 @@ export const parseNodeIdQueryParam = (query: LocationQuery): number | null => {
 }
 
 /**
- * Builds the node detail page URL, mirroring computeNodeLink() in NodesTable.vue.
- * Returns null until menuStore.mainMenu (source of baseHref/baseNodeUrl) has loaded.
+ * Builds the node detail page URL. The guard is what this adds over linkUtils' nodeLink:
+ * menuStore.mainMenu (source of baseHref/baseNodeUrl) is empty until it loads, and a caller
+ * here needs to tell "not ready yet" apart from a URL.
  */
 export const buildNodeDetailUrl = (mainMenu: MainMenu | null | undefined, id: number): string | null => {
   if (!mainMenu?.baseHref || !mainMenu?.baseNodeUrl) {
     return null
   }
-  return `${mainMenu.baseHref}${mainMenu.baseNodeUrl}${id}`
+  return nodeLink(mainMenu.baseHref, mainMenu.baseNodeUrl, id)
 }

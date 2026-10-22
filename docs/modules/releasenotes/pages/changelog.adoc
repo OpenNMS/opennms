@@ -2,6 +2,86 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.5]]
+
+== Release 36.0.5
+
+=== Bug
+
+* Add order by id to three Hibernate DAO queries to fix SnmpDataCollectionXmlToDbParityIT flaky test ordering (Issue https://issues.opennms.org/browse/NMS-20337[NMS-20337])
+* Alarm northbounder filter rules can run arbitrary code on the server (Issue https://issues.opennms.org/browse/NMS-20382[NMS-20382])
+* Bug fixes for Topology Preview UI (Issue https://issues.opennms.org/browse/NMS-20375[NMS-20375])
+* Build fails in features/grpc/exporter when built on Apple Silicon without Rosetta (Issue https://issues.opennms.org/browse/NMS-20384[NMS-20384])
+* Deleting nodes does not update the gNMI OpenConfig telemetry connector twin (Issue https://issues.opennms.org/browse/NMS-20344[NMS-20344])
+* End-to-End lag of 191 s from OpenConfig gNMI collection to the Kafka metrics topic (Issue https://issues.opennms.org/browse/NMS-20350[NMS-20350])
+* Fix SFTP Collections (Issue https://issues.opennms.org/browse/NMS-20360[NMS-20360])
+* Fix Sentinel dropwizard-metrics version range in featuresProcessing (Issue https://issues.opennms.org/browse/NMS-20308[NMS-20308])
+* Harden Camel JMS (Issue https://issues.opennms.org/browse/NMS-20397[NMS-20397])
+* Kafka Sink consumer drops message chunk for larger buffer sizes (Issue https://issues.opennms.org/browse/NMS-20335[NMS-20335])
+* Migrate Topology Preview Icons to onms-ui icons. (Issue https://issues.opennms.org/browse/NMS-20393[NMS-20393])
+* Minion/Sentinel ignore JAVA_MIN_MEM and JAVA_MAX_MEM from /etc/sysconfig/minion (Issue https://issues.opennms.org/browse/NMS-20334[NMS-20334])
+* OpenAPI schemas document bean property names instead of the JSON wire names (Issue https://issues.opennms.org/browse/NMS-20321[NMS-20321])
+* OpenConfig leaks a gRPC ManagedChannel on every failed retry (Issue https://issues.opennms.org/browse/NMS-20338[NMS-20338])
+* Requisition import does not block DOCTYPE in imported XML (Issue https://issues.opennms.org/browse/NMS-20357[NMS-20357])
+* Startup time grows quadratically with the number of gNMI nodes per location (Issue https://issues.opennms.org/browse/NMS-20352[NMS-20352])
+* Throw error for browsers without WebGL for new topology UI (Issue https://issues.opennms.org/browse/NMS-20300[NMS-20300])
+* Topology Preview viewport doesn't honor background size correctly (Issue https://issues.opennms.org/browse/NMS-20312[NMS-20312])
+* Harden input validation in alarm search filters (Issue https://issues.opennms.org/browse/NMS-20383[NMS-20383])
+* Harden HTTP method handling in REST API authentication (Issue https://issues.opennms.org/browse/NMS-20348[NMS-20348])
+* Harden authorization checks on alarm REST endpoints (Issue https://issues.opennms.org/browse/NMS-20349[NMS-20349])
+* Update Karaf to version 4.4.9 in foundation-2024 (Issue https://issues.opennms.org/browse/NMS-20332[NMS-20332])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-20399[NMS-20399])
+* Update com.fasterxml.jackson.core:jackson-databind library (Issue https://issues.opennms.org/browse/NMS-20400[NMS-20400])
+* Update org.bouncycastle:bcprov-jdk18on library (Issue https://issues.opennms.org/browse/NMS-20346[NMS-20346])
+* Update org.freemarker:freemarker library (Issue https://issues.opennms.org/browse/NMS-20378[NMS-20378])
+* Update org.jline:jline-builtins library (Issues https://issues.opennms.org/browse/NMS-20380[NMS-20380], https://issues.opennms.org/browse/NMS-20403[NMS-20403])
+* Upgrade Kafka to 3.9.1 (Issue https://issues.opennms.org/browse/NMS-20395[NMS-20395])
+* `KafkaForwarderIT` fails with ConcurrentModificationException (Issue https://issues.opennms.org/browse/NMS-20340[NMS-20340])
+* gNMI subscription setup sleeps 1 second per device (Issue https://issues.opennms.org/browse/NMS-20336[NMS-20336])
+* lldp allows duplicate node ID references, which causes lookup issues in the topology UI (Issue https://issues.opennms.org/browse/NMS-16196[NMS-16196])
+
+=== Enhancement
+
+* Allow re-ordering of event-configuration sources and of events within a source (Issue https://issues.opennms.org/browse/NMS-20270[NMS-20270])
+* Expose event-configuration evaluation order (source order and event order) in the REST API and UI (Issue https://issues.opennms.org/browse/NMS-20269[NMS-20269])
+* Improve files we store under evidence folder for flaky tests (Issue https://issues.opennms.org/browse/NMS-20341[NMS-20341])
+* Improvements to Topology Preview UI Layout (Issue https://issues.opennms.org/browse/NMS-20376[NMS-20376])
+* Once an SNMP interface's collect flag is set by the user, there is no way to revert back to policy-driven collection (Issue https://issues.opennms.org/browse/NMS-15209[NMS-15209])
+* SNMP data collection: resolve MIB group references across sources (Issue https://issues.opennms.org/browse/NMS-20429[NMS-20429])
+* Source and destination node info swapped on every enriched flow (Issue https://issues.opennms.org/browse/NMS-20408[NMS-20408])
+* lastGood / lastFail for Collectd services (Issue https://issues.opennms.org/browse/NMS-20388[NMS-20388])
+
+=== New Feature
+
+* Add a Link Metrics API (Issue https://issues.opennms.org/browse/NMS-20354[NMS-20354])
+* Add geomap feature to Topology Preview UI (Issue https://issues.opennms.org/browse/NMS-20417[NMS-20417])
+* FE: Mib compiler test coverage (Issue https://issues.opennms.org/browse/NMS-19715[NMS-19715])
+* Improve "Unsaved Changes" and menu header UX (Issue https://issues.opennms.org/browse/NMS-20419[NMS-20419])
+
+=== Story
+
+* Add Rest API to replace Mib compiler Vaadin UI (Issue https://issues.opennms.org/browse/NMS-20158[NMS-20158])
+* Event-conf REST API: scripted-client improvements and accumulated API fixes (Issue https://issues.opennms.org/browse/NMS-20272[NMS-20272])
+* Update xStream to 1.4.21 (Issue https://issues.opennms.org/browse/NMS-20310[NMS-20310])
+
+=== Task
+
+* Add a Save icon to onms-ui (Issue https://issues.opennms.org/browse/NMS-20394[NMS-20394])
+* FE: MIB Compiler UI for deleting files (Issue https://issues.opennms.org/browse/NMS-19174[NMS-19174])
+* FE: MIB Compiler UI for downloading files (Issue https://issues.opennms.org/browse/NMS-19175[NMS-19175])
+* FE: MIB Compiler UI for editing and saving files (Issue https://issues.opennms.org/browse/NMS-19173[NMS-19173])
+* FE: MIB Compiler UI for generating events (Issue https://issues.opennms.org/browse/NMS-19187[NMS-19187])
+* FE: MIB Compiler UI for uploading files (Issue https://issues.opennms.org/browse/NMS-19171[NMS-19171])
+* FE: MIB Compiler UI for viewing and editing files (Issue https://issues.opennms.org/browse/NMS-19172[NMS-19172])
+* FE: MIB Compiler for compiling a MIB file (Issue https://issues.opennms.org/browse/NMS-19710[NMS-19710])
+* FE: MIB Compiler tables for listing files (Issue https://issues.opennms.org/browse/NMS-19169[NMS-19169])
+* FE: MIB Compiler, initial main page (Issue https://issues.opennms.org/browse/NMS-19168[NMS-19168])
+* FE: MIB Compiler, wire up tables with Rest API for getting filenames (Issue https://issues.opennms.org/browse/NMS-19170[NMS-19170])
+* Fix useRole caching issue (Issue https://issues.opennms.org/browse/NMS-20311[NMS-20311])
+* MIB compiler UI design / task breakout (Issue https://issues.opennms.org/browse/NMS-19131[NMS-19131])
+* Minion: Investigate if its possible to move away from Confd (Issue https://issues.opennms.org/browse/NMS-19541[NMS-19541])
+* Restructure mib compiler to include rest module (Issue https://issues.opennms.org/browse/NMS-19625[NMS-19625])
+
 [[releasenotes-changelog-36.0.4]]
 
 == Release 36.0.4

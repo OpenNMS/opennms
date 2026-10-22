@@ -61,6 +61,9 @@
     location (optional): used to "dull out" the item in the menu bar
       that has a link to the location given  (for example, on the
       outage/index.jsp, give the location "outages")
+    nomenujs (optional): "true" to omit the Vue menu bundle's modulepreload
+      link, for pages that never mount the menu but still use the bundle's
+      stylesheet (also settable as the Bootstrap "nomenujs" flag)
 --%>
 
 <%@page language="java"
@@ -244,16 +247,17 @@
   <%-- Start fetching/compiling the menu bundle now rather than when the parser
        reaches its <script type="module"> tag near the end of the body.
 
-       These two links are deliberately emitted on 'quiet' pages too, including
-       the unauthenticated login page: preloading there warms the cache while
-       the user types their credentials, so the menu mounts instantly on the
-       first post-login page. This is only safe because the bundle is
-       anonymously accessible (see the /ui-components/assets/** rule in
-       applicationContext-spring-security.xml) — without that rule the preload
-       would cache an auth redirect as text/html under the asset URL and break
-       the menu on every JSP page after login (NMS-20174). Keep the two in
-       sync. --%>
-  <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
+       Omitted on pages that never mount the menu: the 'nomenujs' include param
+       or Bootstrap flag (login.jsp and the password gate, which still use the
+       stylesheet above). Other 'quiet' pages still get the preload even though
+       they don't run the bundle. The bundle stays anonymously accessible (see
+       the /ui-components/assets/** rule in applicationContext-spring-security.xml)
+       so an unauthenticated request can never cache an auth redirect as
+       text/html under the asset URL and break the menu after login
+       (NMS-20174). Keep the version query in sync with the script tags below. --%>
+  <c:if test='${param.nomenujs != "true" and not __bs_flags.contains("nomenujs")}'>
+    <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
+  </c:if>
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the

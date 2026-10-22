@@ -21,9 +21,13 @@
  */
 package org.opennms.web.outage.filter;
 
+import java.util.Locale;
+import java.util.Set;
+
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.opennms.web.asset.AssetModel;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
@@ -42,6 +46,21 @@ public class AssetFilter extends EqualsFilter<String> {
     private String assetField;
 
     /**
+     * Columns of the assets table that are not part of the {@link AssetModel} UI column list but are
+     * still legitimate filter targets. Only text columns qualify, because the filter compares the
+     * value as a string. Kept in lower case because the allow-list check is
+     * case-insensitive.
+     */
+    private static final Set<String> ENTITY_ONLY_COLUMNS = Set.of(
+            "managedobjecttype", "managedobjectinstance");
+
+    /**
+     * Numeric columns in the {@link AssetModel} UI column list. They cannot be compared to the
+     * string value this filter binds, so they are not filter targets.
+     */
+    private static final Set<String> NON_TEXT_COLUMNS = Set.of("latitude", "longitude");
+
+    /**
      * Instantiates a new asset filter.
      *
      * @param field the name of the field field
@@ -49,7 +68,30 @@ public class AssetFilter extends EqualsFilter<String> {
      */
     public AssetFilter(String field, String value) {
         super(field, SQLType.STRING, "OUTAGES.IFSERVICEID", field, value);
-        assetField = field.replaceFirst("asset.","");
+        if (field == null || !field.startsWith(TYPE)) {
+            throw new IllegalArgumentException("Asset filter field must start with '" + TYPE + "'");
+        }
+        final String column = field.substring(TYPE.length());
+        if (!isValidAssetColumn(column)) {
+            throw new IllegalArgumentException("Unknown asset field");
+        }
+        // The SQL text gets the allow-list form of the name, not the request text. PostgreSQL folds
+        // unquoted identifiers to lower case, so the lower-case name refers to the same column.
+        assetField = column.toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * The asset field is a SQL identifier spliced into the query and cannot be bound as a
+     * parameter, so it must be validated against the known asset schema to prevent SQL
+     * injection (NMS-20383). The schema is the {@link AssetModel} column list plus the few
+     * assets-table columns that list does not expose in the UI, minus its numeric columns.
+     */
+    static boolean isValidAssetColumn(final String column) {
+        final String normalized = column.toLowerCase(Locale.ROOT);
+        if (NON_TEXT_COLUMNS.contains(normalized)) {
+            return false;
+        }
+        return AssetModel.isColumnValid(column) || ENTITY_ONLY_COLUMNS.contains(normalized);
     }
 
     /** {@inheritDoc} */

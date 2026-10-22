@@ -1,0 +1,14 @@
+<collectd-configuration xmlns="http://xmlns.opennms.org/xsd/config/collectd" threads="50">
+    <package name="wsman-test" remote="false">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+        <!-- shipped default is 300000 (5 minutes); shortened so the test doesn't have to wait
+             out a real collection cycle to see the first sample -->
+        <service name="WS-Man" interval="15000" user-defined="false" status="on">
+            <parameter key="collection" value="${requisition:collection|detector:collection|default}"/>
+            <parameter key="thresholding-enabled" value="true"/>
+        </service>
+    </package>
+    <collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector"/>
+</collectd-configuration>

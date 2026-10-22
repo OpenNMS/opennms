@@ -40,10 +40,10 @@ public class ScriptdConfigurationTest extends XmlTestNoCastor<ScriptdConfigurati
             {
                 getConfig(),
                 "<scriptd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/scriptd\">\n" + 
-                "   <engine language=\"beanshell\" className=\"bsh.util.BeanShellBSFEngine\" extensions=\"bsh\"/>\n" + 
-                "   <start-script language=\"beanshell\">println(&quot;start&quot;)</start-script>\n" + 
-                "   <stop-script language=\"beanshell\">println(&quot;stop&quot;)</stop-script>\n" + 
-                "   <event-script language=\"beanshell\">\n" +
+                "   <engine language=\"groovy\" className=\"org.codehaus.groovy.bsf.GroovyEngine\" extensions=\"groovy gy\"/>\n" + 
+                "   <start-script language=\"groovy\">println(&quot;start&quot;)</start-script>\n" + 
+                "   <stop-script language=\"groovy\">println(&quot;stop&quot;)</stop-script>\n" + 
+                "   <event-script language=\"groovy\">\n" +
                 "     <uei name=\"com.company.uei/testTrap\"/>\n" +
                 "     println(&quot;onEvent&quot;)\n" +
                 "   </event-script>\n" +
@@ -60,23 +60,23 @@ public class ScriptdConfigurationTest extends XmlTestNoCastor<ScriptdConfigurati
         ScriptdConfiguration config = new ScriptdConfiguration();
         
         Engine engine = new Engine();
-        engine.setLanguage("beanshell");
-        engine.setClassName("bsh.util.BeanShellBSFEngine");
-        engine.setExtensions("bsh");
+        engine.setLanguage("groovy");
+        engine.setClassName("org.codehaus.groovy.bsf.GroovyEngine");
+        engine.setExtensions("groovy gy");
         config.addEngine(engine);
 
         StartScript start = new StartScript();
-        start.setLanguage("beanshell");
+        start.setLanguage("groovy");
         start.setContent("println(\"start\")");
         config.addStartScript(start);
 
         StopScript stop = new StopScript();
-        stop.setLanguage("beanshell");
+        stop.setLanguage("groovy");
         stop.setContent("println(\"stop\")");
         config.addStopScript(stop);
 
         EventScript script = new EventScript();
-        script.setLanguage("beanshell");
+        script.setLanguage("groovy");
         script.setContent("\n" + 
                 "     println(\"onEvent\")\n" + 
                 "   ");

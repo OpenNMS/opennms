@@ -25,6 +25,13 @@
     <onmsgi:reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" />
     <onmsgi:reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" />
 
+    <!-- Backs SystemReportRestService. serviceRegistry is a root-context bean from
+         applicationContext-soa.xml (the CXF servlet context has the root as parent),
+         so this mirrors the legacy dispatcher-servlet wiring exactly. -->
+    <bean id="systemReport" class="org.opennms.systemreport.SystemReport">
+        <property name="serviceRegistry" ref="serviceRegistry" />
+    </bean>
+
     <import resource="classpath:/META-INF/cxf/cxf.xml" />
     <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
 

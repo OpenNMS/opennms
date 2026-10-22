@@ -6,7 +6,7 @@
 If your organization uses Kubernetes or Red Hat OpenShift, OpenNMS makes a Helm chart available to simplify {page-component-title} deployment.
 For information on deploying in a Docker environment, see the Docker tabs in https://docs.opennms.com/horizon/latest/deployment/core/getting-started.html[installation and configuration].
 
-The OpenNMS Helm Chart is based and tested against the latest {page-component-title}.
+The OpenNMS Helm Chart is based on and tested against the latest {page-component-title}.
 The minimum version available is
 ifeval::["{page-component-title}" == "Horizon"]
 Horizon 32.x.

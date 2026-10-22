@@ -107,13 +107,13 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 | Name  | Description
 
 | CasCommitTotalLatency
-| Time spent on Casandra commits since process start.
+| Time spent on Cassandra commits since process start.
 
 | CasPrepareTotalLatency
-| Time spent on Casandra prepare events since process start.
+| Time spent on Cassandra prepare events since process start.
 
 | CasProposeTotalLatency
-| Time spent on Casandra propose events since process start.
+| Time spent on Cassandra propose events since process start.
 |===
 
 == Bloom filter disk space

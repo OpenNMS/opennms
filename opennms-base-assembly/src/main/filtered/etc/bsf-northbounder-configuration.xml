@@ -10,19 +10,20 @@
    <engine>
       <name>Example</name>
       <filter>ipAddr != '0.0.0.0'</filter>
-      <language>beanshell</language>
-      <className>bsh.util.BeanShellBSFEngine</className>
-      <extensions>bsh</extensions>
+      <language>groovy</language>
+      <className>org.codehaus.groovy.bsf.GroovyEngine</className>
+      <extensions>groovy,gy</extensions>
       <onStart>
-         log = bsf.lookupBean("log");
-         log.info("Starting...");
+         // assign without 'def' so the binding is shared with onStop and onAlarm
+         log = bsf.lookupBean("log")
+         log.info("Starting...")
       </onStart>
       <onStop>
-         log.info("Stopping...");
+         log.info("Stopping...")
       </onStop>
       <onAlarm>
-         a = bsf.lookupBean("alarm");
-         log.info("processing alarm " + a);
+         a = bsf.lookupBean("alarm")
+         log.info("processing alarm " + a)
       </onAlarm>
     </engine>
    -->

@@ -274,7 +274,7 @@ class MailAckProcessor implements AckProcessor {
         if (readMailConfig.getReadmailHost() != null) {
             final ReadmailHost readmailHost = readMailConfig.getReadmailHost();
             final UserAuth userAuth = readMailConfig.getUserAuth();
-            LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readmailHost.getHost(), readmailHost.getPort(), readmailHost.getReadmailProtocol().isSslEnable(), readmailHost.getReadmailProtocol().getTransport(), userAuth == null? null : userAuth.getUserName(), userAuth == null? null : userAuth.getPassword());
+            LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {}", readmailHost.getHost(), readmailHost.getPort(), readmailHost.getReadmailProtocol().isSslEnable(), readmailHost.getReadmailProtocol().getTransport(), userAuth == null? null : userAuth.getUserName());
         }
         
         //TODO: make flag for folder open mode

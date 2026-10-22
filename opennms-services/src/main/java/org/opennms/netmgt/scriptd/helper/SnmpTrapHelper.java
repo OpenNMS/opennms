@@ -48,7 +48,7 @@ import org.opennms.netmgt.xml.event.Value;
  * forwarding SNMP traps. This class was created in order to make it easier to
  * write simple scripts to generate traps based on events or to forward traps,
  * using scripting languages that are able to access Java classes (such as
- * BeanShell).
+ * Groovy).
  *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>

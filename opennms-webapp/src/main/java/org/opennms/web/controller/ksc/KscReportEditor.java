@@ -26,9 +26,9 @@ import java.io.Serializable;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.Graph;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class KscReportEditor implements Serializable {
      * This is a working report that may be used to hold a report & its index
      * temporarily while moving between jsp's
      */
-    private Report m_workingReport = null;
+    private GraphCollection m_workingReport = null;
 
     private int m_workingGraphIndex = -1;
 
@@ -57,8 +57,8 @@ public class KscReportEditor implements Serializable {
     private Graph m_workingGraph = null;
 
     /** Create a new blank report & initialize it */
-    private static Report getNewReport() {
-        Report new_report = new Report();
+    private static GraphCollection getNewReport() {
+        GraphCollection new_report = new GraphCollection();
         new_report.setTitle("New Report Title");
         new_report.setShowGraphtypeButton(false);
         new_report.setShowTimespanButton(false);
@@ -68,16 +68,16 @@ public class KscReportEditor implements Serializable {
     /**
      * Returns the working report object
      *
-     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     * @return a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public Report getWorkingReport() {
+    public GraphCollection getWorkingReport() {
         return m_workingReport;
     }
 
     /**
      * Returns the working graph object
      *
-     * @return a {@link org.opennms.netmgt.config.kscReports.Graph} object.
+     * @return a {@link org.opennms.netmgt.config.graphcollections.Graph} object.
      */
     public Graph getWorkingGraph() {
         return m_workingGraph;
@@ -95,7 +95,7 @@ public class KscReportEditor implements Serializable {
     /**
      * Create a new blank graph & initialize it
      *
-     * @return a {@link org.opennms.netmgt.config.kscReports.Graph} object.
+     * @return a {@link org.opennms.netmgt.config.graphcollections.Graph} object.
      */
     private static Graph getNewGraph() {
         Graph new_graph = new Graph();
@@ -161,26 +161,26 @@ public class KscReportEditor implements Serializable {
     /**
      * Loads the source report into the working report object as a new report.
      *
-     * @param report a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     * @param report a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public void loadWorkingReport(Report report) {
-        m_workingReport = JaxbUtils.duplicateObject(report, Report.class);
+    public void loadWorkingReport(GraphCollection report) {
+        m_workingReport = JaxbUtils.duplicateObject(report, GraphCollection.class);
         m_workingReport.setId(null);
     }
 
     /**
      * Loads the indexed report into the working report object.
      *
-     * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param factory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      * @param index a int.
      */
-    public void loadWorkingReport(KSC_PerformanceReportFactory factory, int index) {
-        Report report = factory.getReportByIndex(index);
+    public void loadWorkingReport(GraphCollectionConfigFactory factory, int index) {
+        GraphCollection report = factory.getCollectionById(index);
         if (report == null) {
             throw new IllegalArgumentException("Could not find report with ID " + index);
         }
 
-        m_workingReport = JaxbUtils.duplicateObject(report, Report.class);
+        m_workingReport = JaxbUtils.duplicateObject(report, GraphCollection.class);
     }
     
     /**
@@ -188,10 +188,10 @@ public class KscReportEditor implements Serializable {
      * report.  The ID in the loaded report will be removed so a new ID will
      * be created when the duplicated report is saved.
      *
-     * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param factory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      * @param index a int.
      */
-    public void loadWorkingReportDuplicate(KSC_PerformanceReportFactory factory, int index) {
+    public void loadWorkingReportDuplicate(GraphCollectionConfigFactory factory, int index) {
         loadWorkingReport(factory, index);
 
         m_workingReport.setId(null);
@@ -210,19 +210,19 @@ public class KscReportEditor implements Serializable {
      * identified by working_index (this should have been set when the working
      * report was loaded), then create a new blank working report
      *
-     * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param factory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public void unloadWorkingReport(KSC_PerformanceReportFactory factory) {
-        final Report workingReport = getWorkingReport();
+    public void unloadWorkingReport(GraphCollectionConfigFactory factory) {
+        final GraphCollection workingReport = getWorkingReport();
         LOG.debug("unloading working report: {}", workingReport);
 
         if (workingReport != null) {
             if (workingReport.getId() != null) {
                 LOG.debug("working report has id: {}", workingReport.getId());
-                factory.setReport(workingReport.getId(), workingReport);
+                factory.setCollection(workingReport.getId(), workingReport);
             } else {
                 LOG.debug("adding working report");
-                factory.addReport(workingReport);
+                factory.addCollection(workingReport);
             }
         }
         

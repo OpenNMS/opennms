@@ -69,6 +69,7 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -158,6 +159,9 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired
     private volatile IpInterfaceDao m_ifaceDao;
+
+    @Autowired
+    private volatile MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
     private volatile FilterDao m_filterDao;
@@ -473,6 +477,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = new CollectableService(
                     iface, 
                     m_ifaceDao, 
+                    m_monitoredServiceDao,
                     spec, 
                     getScheduler(),
                     m_schedulingCompletedFlag,
@@ -974,6 +979,23 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleNode(nodeId.intValue());
     }
 
+    /**
+     * Applies the {@code threads} setting from the reloaded collectd configuration to the
+     * running scheduler, so that a changed thread count takes effect without a restart.
+     */
+    private void resizeScheduler() {
+        // Read the field directly: getScheduler() would create a scheduler if there is none yet
+        final Scheduler scheduler = m_scheduler;
+        if (scheduler == null) {
+            LOG.debug("resizeScheduler: no scheduler yet, nothing to resize.");
+        } else if (scheduler instanceof LegacyScheduler) {
+            ((LegacyScheduler) scheduler).setThreads(m_collectdConfigFactory.getThreads());
+        } else {
+            LOG.warn("resizeScheduler: scheduler is a {}, the configured thread count cannot be applied without a restart.",
+                    scheduler.getClass().getName());
+        }
+    }
+
     private void rebuildScheduler() {
         //Remove all collectable services
         Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
@@ -1096,6 +1118,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 final String cfgFile = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
                 try {
                     m_collectdConfigFactory.reload();
+                    resizeScheduler();
                     rebuildScheduler();
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
@@ -1390,6 +1413,15 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
+    }
+
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
+     */
+    void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+        m_monitoredServiceDao = monitoredServiceDao;
     }
 
     /**

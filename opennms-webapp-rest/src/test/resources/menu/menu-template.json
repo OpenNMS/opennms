@@ -154,20 +154,6 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
-          "id": "trend",
-          "name": "Trend",
-          "url": "trend/index.jsp",
-          "locationMatch": "trend",
-          "roles": null
-        },
-        {
           "id": "applications",
           "name": "Application",
           "url": "application/index.jsp",
@@ -192,13 +178,6 @@
           "roles": null
         },
         {
-          "id": "charts",
-          "name": "Charts",
-          "url": "charts/index.jsp",
-          "locationMatch": "chart",
-          "roles": null
-        },
-        {
           "id": "resourceGraphs",
           "name": "Resource Graphs",
           "url": "graph/index.jsp",
@@ -217,13 +196,6 @@
           "name": "Database Reports",
           "url": "report/database/index.jsp",
           "locationMatch": "database-reports",
-          "roles": null
-        },
-        {
-          "id": "statistics",
-          "name": "Statistics",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
           "roles": null
         }
       ]

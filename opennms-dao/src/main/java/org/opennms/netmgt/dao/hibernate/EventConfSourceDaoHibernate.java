@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityNotFoundException;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -93,23 +94,28 @@ public class EventConfSourceDaoHibernate
     }
 
     @Override
-    public void updateEnabledFlag(Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents) {
+    public void updateEnabledFlag(Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents, String modifiedBy) {
         if (sourceIds == null || sourceIds.isEmpty()) {
             return;
         }
+        final Date now = new Date();
         lockFileOrders(); // same lock order as the renumbering, which updates these rows one by one
-        String hqlSource = "update EventConfSource s set s.enabled = :enabled where s.id in (:ids)";
+        String hqlSource = "update EventConfSource s set s.enabled = :enabled, s.lastModified = :now where s.id in (:ids)";
         getSessionFactory().getCurrentSession()
                 .createQuery(hqlSource)
                 .setParameter("enabled", enabled)
+                .setParameter("now", now)
                 .setParameterList("ids", sourceIds)
                 .executeUpdate();
 
         if (cascadeToEvents) {
-            String hqlEvents = "update EventConfEvent e set e.enabled = :enabled where e.source.id in (:ids)";
+            String hqlEvents = "update EventConfEvent e set e.enabled = :enabled, e.lastModified = :now, e.modifiedBy = :modifiedBy " +
+                    "where e.source.id in (:ids)";
             getSessionFactory().getCurrentSession()
                     .createQuery(hqlEvents)
                     .setParameter("enabled", enabled)
+                    .setParameter("now", now)
+                    .setParameter("modifiedBy", modifiedBy)
                     .setParameterList("ids", sourceIds)
                     .executeUpdate();
         }
@@ -177,14 +183,16 @@ public class EventConfSourceDaoHibernate
                 String orderBy = " order by s." + sortField + " " + sortOrder + ", s.id " + sortOrder;
 
                 String dataQuery = "from EventConfSource s " + whereClause + orderBy;
-                eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+                // a missing offset means the first page; a missing or zero limit means everything
+                final int firstResult = offset == null ? 0 : offset;
+                final int maxResults = (limit == null || limit <= 0) ? Integer.MAX_VALUE : limit;
+                eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), firstResult, maxResults);
             }
 
         } catch (Exception e) {
-            // never report a page count for a page we could not produce
-            LOG.warn("Failed to filter event-conf sources (filter='{}', sortBy='{}', order='{}')", filter, sortBy, order, e);
-            resultCount = 0;
-            eventConfSourceList = Collections.emptyList();
+            // a page we could not produce is a server error, not an empty result
+            LOG.error("Failed to filter event-conf sources (filter='{}', sortBy='{}', order='{}')", filter, sortBy, order, e);
+            throw new RuntimeException("Failed to filter event-conf sources", e);
         }
 
         // Return map with results

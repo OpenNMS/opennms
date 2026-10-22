@@ -46,6 +46,37 @@ describe('OnmsTable', () => {
     expect(inner.props('tableStyle')).toBe('min-width: 50rem')
   })
 
+  it('forwards rowClass to DataTable', () => {
+    const rowClass = (data: any) => `status-${data.id}`
+    const inner = mount(OnmsTable, {
+      props: { value: rows, rowClass },
+      global: globalPlugins
+    }).findComponent({ name: 'DataTable' })
+    expect(inner.props('rowClass')).toBe(rowClass)
+  })
+
+  it('forwards loading to DataTable', () => {
+    const inner = mount(OnmsTable, { props: { value: rows, loading: true }, global: globalPlugins })
+      .findComponent({ name: 'DataTable' })
+    expect(inner.props('loading')).toBe(true)
+  })
+
+  // Prop forwarding alone would not catch a `loading` that reaches DataTable and renders nothing;
+  // the point of the prop is the visible mask.
+  it('renders a loading mask over the body when loading', () => {
+    const shown = mount(OnmsTable, { props: { value: rows, loading: true }, global: globalPlugins })
+    const hidden = mount(OnmsTable, { props: { value: rows, loading: false }, global: globalPlugins })
+
+    expect(shown.find('.p-datatable-mask').exists()).toBe(true)
+    expect(hidden.find('.p-datatable-mask').exists()).toBe(false)
+  })
+
+  it('is not loading by default', () => {
+    const inner = mount(OnmsTable, { props: { value: rows }, global: globalPlugins })
+      .findComponent({ name: 'DataTable' })
+    expect(inner.props('loading')).toBe(false)
+  })
+
   it('maps virtualScrollItemSize to virtualScrollerOptions', () => {
     const inner = mount(OnmsTable, {
       props: { value: rows, virtualScrollItemSize: 44 },

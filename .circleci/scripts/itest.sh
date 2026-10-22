@@ -202,13 +202,44 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
     echo "#### Failed tests: $FAILED_TESTS"
     RETRIED_TESTS="$FAILED_TESTS"
 
-    # Preserve failing XMLs as flaky evidence before overwriting with retry results
+    # Preserve failing test evidence as flaky evidence before overwriting with retry results.
+    # The XML alone is often not enough to diagnose testcontainers-based IT failures (e.g. a
+    # ContainerLaunchException just shows up as errors="1"), so also grab the plain-text
+    # surefire/failsafe reports (captured stdout/stderr) and, for smoke-test ITs, the
+    # per-container logs/thread dumps under target/logs/<test>/<container>/ that
+    # DevDebugUtils.clearLogs() will otherwise wipe as soon as the retry's teardown runs.
     FLAKY_EVIDENCE_DIR="/tmp/flaky-evidence/attempt-${ATTEMPT}"
     mkdir -p "${FLAKY_EVIDENCE_DIR}"
     set +e +o pipefail
-    find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
-      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
-      | xargs -I{} cp {} "${FLAKY_EVIDENCE_DIR}/"
+
+    # Group all evidence for a given failing test class under its own directory, so
+    # the XML/text reports and the container logs for that test sit together instead
+    # of being split between a flat root and a path mirroring the Maven build tree.
+    echo "$FAILED_TESTS" | while IFS= read -r TEST_CLASS; do
+      [ -z "$TEST_CLASS" ] && continue
+
+      TEST_EVIDENCE_DIR="${FLAKY_EVIDENCE_DIR}/${TEST_CLASS}"
+      mkdir -p "$TEST_EVIDENCE_DIR"
+
+      find . \( -path "*/failsafe-reports/TEST-${TEST_CLASS}.xml" -o -path "*/surefire-reports/TEST-${TEST_CLASS}.xml" \) \
+        -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
+        | xargs -I{} cp {} "$TEST_EVIDENCE_DIR/"
+
+      find . \( -path "*/surefire-reports/${TEST_CLASS}.txt" -o -path "*/failsafe-reports/${TEST_CLASS}.txt" \) \
+        | xargs -I{} cp {} "$TEST_EVIDENCE_DIR/"
+
+      # A class can have more than one failing method, and each gets its own
+      # target/logs/<class>-<method>/ directory, so nest by that method-level name
+      # (rather than flattening containers directly under the class) to avoid two
+      # methods' same-named container folders (e.g. "opennms") overwriting each other.
+      find . -type d -path "*/target/logs/${TEST_CLASS}-*" | while IFS= read -r LOGDIR; do
+        [ "$(basename "$(dirname "$LOGDIR")")" = "logs" ] || continue
+        DEST="$TEST_EVIDENCE_DIR/$(basename "$LOGDIR")"
+        mkdir -p "$DEST"
+        cp -r "${LOGDIR}/." "$DEST/"
+      done
+    done
+
     # Now delete originals so fresh results are written by the retry
     find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
       -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \

@@ -1,53 +1,175 @@
 <template>
-  <OnmsTable
-    lazy
-    :value="nodeStore.outages"
-    paginator
-    :rows="pageSize"
-    :first="first"
-    :totalRecords="nodeStore.outagesTotalCount"
-    :rowsPerPageOptions="[5, 10, 20, 50]"
-    data-test="outages-table"
-    @page="onPage"
-  >
-    <OnmsColumn field="ipAddress" header="IP Address" />
-    <OnmsColumn field="hostname" header="Host Name" />
-    <OnmsColumn field="serviceName" header="Service Name" />
-    <template #empty>
-      <EmptyList :content="emptyListContent" data-test="empty-list" />
+  <NodeDetailsPanel title="Recent Outages">
+    <template #actions>
+      <OnmsIconButton
+        aria-label="View Outages for this Node"
+        tooltip="View Outages for this Node"
+        data-test="view-outages-button"
+        :icon="IconViewDetails"
+        @click="onViewOutagesClick"
+      />
+      <NodeDownloadDropdown
+        :onCsvDownload="onCsvDownload"
+        :onJsonDownload="onJsonDownload"
+      />
     </template>
-  </OnmsTable>
+    <OnmsTable
+      lazy
+      :value="outages"
+      paginator
+      :rows="rows"
+      :first="first"
+      :totalRecords="totalRecords"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
+      data-test="outages-table"
+      @page="onPage"
+    >
+      <OnmsColumn field="id" header="ID">
+        <template #body="{ data }">
+          <a :href="outageDetailLink(data)">{{ data.id }}</a>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn field="ipAddress" header="IP Address">
+        <template #body="{ data }">
+          <a v-if="data.ipAddress" :href="interfaceLink(data)">{{ data.ipAddress }}</a>
+          <span v-else>N/A</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn field="serviceName" header="Service Name">
+        <template #body="{ data }">
+          <a v-if="serviceName(data) && data.ipAddress" :href="serviceLink(data)">{{ serviceName(data) }}</a>
+          <span v-else>{{ serviceName(data) || 'N/A' }}</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn field="ifLostService" header="Lost">
+        <template #body="{ data }">
+          <OnmsTag v-if="isUnresolved(data)" severity="danger">
+            <span v-date>{{ data.ifLostService }}</span>
+          </OnmsTag>
+          <span v-else-if="data.ifLostService" v-date>{{ data.ifLostService }}</span>
+          <span v-else>N/A</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn field="ifRegainedService" header="Regained">
+        <template #body="{ data }">
+          <span v-if="data.ifRegainedService" v-date>{{ data.ifRegainedService }}</span>
+          <span v-else>N/A</span>
+        </template>
+      </OnmsColumn>
+      <template #empty>
+        <EmptyList :content="emptyListContent" data-test="empty-list" />
+      </template>
+    </OnmsTable>
+  </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { OnmsColumn, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
+import { computed, watch } from 'vue'
+import { OnmsColumn, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
-import { useNodeStore } from '@/stores/nodeStore'
+import NodeDetailsPanel from './NodeDetailsPanel.vue'
+import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import { useMenuStore } from '@/stores/menuStore'
+import { useOutageStore } from '@/stores/outageStore'
+import { useRecordDownload } from './hooks/useRecordDownload'
+import {
+  OUTAGE_LIST_TYPE_BOTH,
+  interfaceLink as buildInterfaceLink,
+  nodeOutageListLink,
+  outageDetailLink as buildOutageDetailLink,
+  serviceLink as buildServiceLink
+} from '@/lib/linkUtils'
+import { Outage } from '@/types'
+import useActiveNodeId from './hooks/useActiveNodeId'
+import useNodeTablePaging from './hooks/useNodeTablePaging'
 
-const nodeStore = useNodeStore()
-const route = useRoute()
+const menuStore = useMenuStore()
+const outageStore = useOutageStore()
 
-const pageSize = ref(10)
-const first = ref(0)
-const emptyListContent = { msg: 'No results found.' }
+const { showSnackBar } = useSnackbar()
+const { downloadRecords } = useRecordDownload()
 
-const queryParameters = ref({
-  limit: 10,
-  offset: 0
+const nodeId = useActiveNodeId()
+const baseHref = computed(() => menuStore.mainMenu.baseHref)
+
+const DEFAULT_PAGE_SIZE = 5
+
+// The store's node slice is only replaced on a successful fetch, so it can still hold the
+// previous node's outages -- after a failed fetch, or while this node's is in flight. Show it
+// only when it is this node's.
+const isThisNode = computed<boolean>(() => outageStore.nodeOutagesNodeId === nodeId.value)
+const outages = computed<Outage[]>(() => (isThisNode.value ? outageStore.nodeOutages : []))
+const totalRecords = computed<number>(() => (isThisNode.value ? outageStore.nodeOutagesTotalCount : 0))
+
+// With nothing on hand for this node, say why: still loading, failed to load, or truly none.
+const emptyListContent = computed(() => {
+  if (isThisNode.value) {
+    return { msg: 'No results found.' }
+  }
+
+  return outageStore.nodeOutagesFailedNodeId === nodeId.value
+    ? { msg: 'Unable to load outages for this node.' }
+    : { msg: 'Loading outages…' }
 })
 
-const onPage = (event: OnmsTablePageEvent) => {
-  first.value = event.first
-  pageSize.value = event.rows
-  queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }
-  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: queryParameters.value })
+const { first, rows, onPage, firstPage } = useNodeTablePaging({
+  pageSize: DEFAULT_PAGE_SIZE,
+  load: page => outageStore.getNodeOutages(nodeId.value, page),
+  shownPage: () => (isThisNode.value ? outageStore.nodeOutagesPage : undefined),
+  total: () => totalRecords.value
+})
+
+// outtype=both so the legacy list shows current AND resolved outages, matching this panel.
+const onViewOutagesClick = () => {
+  window.location.assign(nodeOutageListLink(baseHref.value, nodeId.value, OUTAGE_LIST_TYPE_BOTH))
 }
 
-onMounted(() => {
-  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: queryParameters.value })
-})
+const outageDetailLink = (outage: Outage) => buildOutageDetailLink(baseHref.value, outage.id)
+
+const interfaceLink = (outage: Outage) =>
+  buildInterfaceLink(baseHref.value, nodeId.value, outage.ipAddress)
+
+const serviceLink = (outage: Outage) =>
+  buildServiceLink(baseHref.value, nodeId.value, outage.ipAddress, outage.serviceId)
+
+// Every outage carries its service inline, so the name needs no lookup: OnmsMonitoredService
+// requires a serviceType, and the outage row nests it.
+const serviceName = (outage: Outage) => outage.monitoredService?.serviceType?.name
+
+// Still down: the service was lost and has not come back, so the lost time is called out.
+const isUnresolved = (outage: Outage) => !!outage.ifLostService && !outage.ifRegainedService
+
+// The download is the page the paginator is showing, which the store already holds -- no
+// second request, and no way for the file to disagree with the table. Raising rows-per-page is
+// how a user takes more than the default page.
+const onDownload = (format: 'csv' | 'json') => {
+  if (outages.value.length === 0) {
+    showSnackBar({
+      msg: `No outages found for '${format}' download for this node`,
+      error: true
+    })
+
+    return
+  }
+
+  downloadRecords(outages.value, 'Outages', format)
+}
+
+const onCsvDownload = () => {
+  onDownload('csv')
+}
+
+const onJsonDownload = () => {
+  onDownload('json')
+}
+
+// The details page keeps one instance of this panel across node ids, so the id has to be
+// followed rather than read once: otherwise the table, its "View Outages for this Node" link
+// and its downloads would disagree about which node they are for. Back to the first page,
+// since the page the user was on says nothing about the new node.
+watch(nodeId, firstPage, { immediate: true })
 
 defineExpose({ onPage })
 </script>

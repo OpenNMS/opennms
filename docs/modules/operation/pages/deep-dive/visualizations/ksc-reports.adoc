@@ -40,7 +40,7 @@ Valid options for `timespan` are as follows:
   "Last Year"
 ----
 
-For more information, see `org.opennms.netmgt.config.KSC_PerformanceReportFactory.java:TIMESPAN_OPTIONS`.
+For more information, see `org.opennms.netmgt.config.GraphCollectionConfigFactory.java:TIMESPAN_OPTIONS`.
 
 NOTE: Make sure that each report's `id` is unique.
 

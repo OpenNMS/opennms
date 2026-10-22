@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { QueryParameters } from '@/types'
+import { NodePage, QueryParameters } from '@/types'
 
 const queryParametersHandler = (queryParameters: QueryParameters, endpoint: string): string => {
   let modifiedEndpoint = endpoint + '?'
@@ -36,4 +36,22 @@ const queryParametersHandler = (queryParameters: QueryParameters, endpoint: stri
   return modifiedEndpoint.slice(0, -1)
 }
 
-export { queryParametersHandler }
+/**
+ * Narrow a v2 query to one node, keeping any FIQL the caller already has. The caller's clause is
+ * parenthesised before the `;` (AND): FIQL binds `;` tighter than `,` (OR), so a bare
+ * `node.id==1;a,b` would read as `(node AND a) OR b` and let in other nodes' rows.
+ */
+/** The page a query asks for, as a node slice records it: no offset is the start, no limit is all. */
+const nodePageOf = (queryParameters?: QueryParameters): NodePage => ({
+  offset: queryParameters?.offset ?? 0,
+  limit: queryParameters?.limit ?? 0
+})
+
+const withNodeFilter = (nodeId: string | number, queryParameters?: QueryParameters): QueryParameters => {
+  const nodeClause = `node.id==${nodeId}`
+  const _s = queryParameters?._s ? `${nodeClause};(${queryParameters._s})` : nodeClause
+
+  return { ...queryParameters, _s }
+}
+
+export { nodePageOf, queryParametersHandler, withNodeFilter }

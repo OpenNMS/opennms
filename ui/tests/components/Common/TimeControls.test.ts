@@ -381,3 +381,29 @@ describe('TimeControls range validity', () => {
     expect(labels[0].attributes('for')).not.toBe(labels[1].attributes('for'))
   })
 })
+
+describe('TimeControls initial label', () => {
+  // A consumer that restores a previously chosen range needs the button to agree with it. Without
+  // a seed the button claimed the default while the consumer showed something else.
+  // The popover stub renders its slot, so the option list is in the tree too. Assert on the
+  // trigger button, which is what the seed is for.
+  const triggerText = (wrapper: ReturnType<typeof mountControls>) =>
+    wrapper.findComponent(OnmsButton).text()
+
+  it('shows the seeded label rather than the default', () => {
+    expect(triggerText(mountControls({ initialLabel: 'Last week' }))).toContain('Last week')
+  })
+
+  it('falls back to the default when no seed is given', () => {
+    expect(triggerText(mountControls())).toContain('Last day')
+  })
+
+  // A seed, not a binding: this component owns the label once mounted.
+  it('does not follow a later change to the seed', async () => {
+    const wrapper = mountControls({ initialLabel: 'Last week' })
+
+    await wrapper.setProps({ initialLabel: 'Last year' })
+
+    expect(triggerText(wrapper)).toContain('Last week')
+  })
+})

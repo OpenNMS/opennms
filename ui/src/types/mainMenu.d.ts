@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { OnmsNotification } from '@/types/notifications'
+
 export interface MenuItem {
   type?: string         // 'item', 'header', 'separator', 'plugins'. default is 'item'
   id: string | null
@@ -69,21 +71,6 @@ export interface NoticeStatusDisplay {
   iconComponent: object | null
   colorClass: string
   title: string
-}
-
-export interface OnmsServiceType {
-  id: number
-  name: string
-}
-
-export interface OnmsNotification {
-  id: number
-  ipAddress: string
-  nodeLabel: string
-  notificationName: string
-  pageTime: Date
-  serviceType: OnmsServiceType | null
-  severity: string
 }
 
 export interface NotificationItem {

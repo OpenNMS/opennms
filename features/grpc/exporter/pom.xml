@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.grpc</artifactId>
-        <version>36.0.5-SNAPSHOT</version>
+        <version>37.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.features.grpc</groupId>
@@ -96,7 +96,7 @@
                 <configuration>
                     <protocArtifact>com.google.protobuf:protoc:${protobufVersion}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpcVersion}:exe:${os.detected.classifier}</pluginArtifact>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpcCodegenVersion}:exe:${os.detected.classifier}</pluginArtifact>
                 </configuration>
                 <executions>
                     <execution>

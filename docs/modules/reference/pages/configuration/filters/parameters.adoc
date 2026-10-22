@@ -122,6 +122,7 @@ dpNumber
 | *ifServices* | |
 
 | lastGood | lastFail | serviceID
+| collectLastGood | collectLastFail |
 |===
 
 

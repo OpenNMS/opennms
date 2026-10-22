@@ -117,11 +117,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testActiondConfiguration() {
-        testConfigFile("actiond-configuration.xml");
-    }
-
-    @Test
     public void testAvailabilityReports() {
         testConfigFile("availability-reports.xml");
     }
@@ -136,10 +131,6 @@ public class ConfigTesterTest {
         testConfigFile("categories.xml");
     }
 
-    @Test
-    public void testChartConfiguration() {
-        testConfigFile("chart-configuration.xml");
-    }
 
     @Test
     public void testCollectdConfiguration() {
@@ -431,10 +422,6 @@ public class ConfigTesterTest {
         testConfigFile("snmptrap-northbounder-configuration.xml");
     }
 
-    @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
 
     @Test
     public void testSurveillanceViews() {
@@ -476,10 +463,6 @@ public class ConfigTesterTest {
         ignoreConfigFile("trapd-configuration.xml");
     }
 
-    @Test
-    public void testTrendConfiguration() {
-        ignoreConfigFile("trend-configuration.xml");
-    }
 
     @Test
     public void testUsers() {

@@ -1,6 +1,9 @@
 
 = KSC Reports
 
+NOTE: This API is superseded by the xref:development:rest/graph_collections.adoc[Graph Collections] API under `/api/v2/graph-collections`, which supports JSON, server-assigned ids, full-collection updates and deletion.
+New integrations should use that API; this one is kept for existing clients and will be removed in a future release.
+
 == GETs (reading data)
 
 [caption=]

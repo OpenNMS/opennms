@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+  <!-- Keep this persistence test focused instead of loading every component-dao.xml on the classpath. -->
+  <bean name="threshdDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThreshdDao">
+    <constructor-arg ref="jsonStore"/>
+  </bean>
+  <bean name="thresholdingDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThresholdingDao">
+    <constructor-arg ref="jsonStore"/>
+  </bean>
+
+</beans>
