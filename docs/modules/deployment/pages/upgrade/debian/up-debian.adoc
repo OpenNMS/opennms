@@ -4,7 +4,7 @@ ifeval::["{page-component-title}" == "Horizon"]
 The file may be named `opennms-repo-stable-<OSversion>.repo`, but it is not guaranteed to be.
 endif::[]
 
-. Log in as the root user or elevate your permissions to be the root user.
+. Sign in as a user with `sudo` privileges.
 . Enable auto updates:
 +
 [source, console]
@@ -19,29 +19,29 @@ sudo apt-mark unhold libopennms-java \
 +
 [source, console]
 ----
-apt clean
+sudo apt clean
 ----
 
 . Make a backup copy of your config:
 +
 [source, console]
 ----
-rsync -Ppav ${OPENNMS_HOME}/etc /tmp/etc.orig
-rsync -Ppav ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
+sudo rsync -Ppav /opt/opennms/etc /tmp/etc.orig
+sudo rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 ----
 
 . Update the apt packages index:
 +
 [source, console]
 ----
-apt update -y
+sudo apt update -y
 ----
 
 . Upgrade {page-component-title} packages to the newest version:
 +
 [source, console]
 ----
-apt upgrade opennms
+sudo apt upgrade opennms
 ----
 
 . Disable auto updates:
@@ -58,14 +58,14 @@ sudo apt-mark hold libopennms-java \
 +
 [source, console]
 ----
-apt install openjdk-25-jdk-headless openjdk-25-jre-headless
+sudo apt install openjdk-25-jdk-headless openjdk-25-jre-headless
 ----
 
 . Use the `runjava` command to set the JVM that {page-component-title} will use:
 +
 [source, console]
 ----
-${OPENNMS_HOME}/bin/runjava -s
+sudo /opt/opennms/bin/runjava -s
 ----
 
 . Check for configuration file changes and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
@@ -78,7 +78,7 @@ Use `diff -Bbw` and `diff -y` to look for changes.
 +
 [source, console]
 ----
-${OPENNMS_HOME}/bin/install -dis
+sudo /opt/opennms/bin/install -dis
 ----
 +
 The upgrade may take some time.
@@ -89,17 +89,17 @@ If you do not get this message, check the output of the install command for any 
 +
 [source, console]
 ----
-yes | ${OPENNMS_HOME}/bin/fix-karaf-setup.sh
+yes | sudo /opt/opennms/bin/fix-karaf-setup.sh
 ----
 
 . Start {page-component-title}:
 +
 [source, console]
 ----
-systemctl start opennms.service
+sudo systemctl start opennms.service
 ----
 +
-TIP: `tail -F $\{OPENNMS_HOME}/logs/manager.log` shows the {page-component-title} startup progress.
+TIP: `tail -F /opt/opennms/logs/manager.log` shows the {page-component-title} startup progress.
 
 . The upgrade is completed and operation resumes.
 

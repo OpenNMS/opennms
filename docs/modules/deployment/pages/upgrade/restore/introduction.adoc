@@ -30,7 +30,7 @@ NOTE: The PostgreSQL link:https://www.postgresql.org/about/news/announcing-apt-a
 
 [{tabs}]
 ====
-CentOS/RHEL 8::
+CentOS/RHEL::
 +
 --
 include::centos-rhel8/restore-centos-rhel8.adoc[]

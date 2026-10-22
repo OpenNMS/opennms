@@ -60,9 +60,9 @@ systemd[1]: Failed to start OpenNMS server.
 NOTE: You can also run `config-tester -a` to verify your configuration settings.
 If the tests pass, a success message is displayed.
 
-=== Non-obvious error messages with older Linux distributions
+=== Non-obvious startup error messages
 
-Some older Linux distributions (Red Hat Enterprise Linux 7, CentOS 7, and so on) are more terse when a {page-component-title} startup failure occurs.
+When a {page-component-title} startup failure occurs, `systemctl` may report only a brief error message.
 An additional diagnostic step can help reveal the problem.
 
 After installing the software and running `systemctl start opennms`, the process immediately exits with a brief error message:
@@ -74,7 +74,7 @@ Job for opennms.service failed because the control process exited with error cod
 See "systemctl status opennms.service" and "journalctl -xe" for details.
 ----
 
-Running `systemctl status opennms` produces the following output:
+Running `systemctl status opennms` produces output similar to the following; the exact wording depends on the systemd version:
 
 [source, shell]
 ----
@@ -89,7 +89,7 @@ You can also start the {page-component-title} services verbosely; this provides 
 
 [source, shell]
 ----
-# $\{OPENNMS_HOME}/bin/opennms -v start
+# /opt/opennms/bin/opennms -v start
 WARNING: relaunching as opennms
 WARNING: `systemctl` was found, but OpenNMS is not being run in Systemd mode.
 You will not be able to use systemctl to manage an OpenNMS started manually from the CLI.
@@ -174,4 +174,4 @@ Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (
 You can run this command to identify any `.rpmnew` or `.rpmsave` files in your environment:
 
 [source, shell]
-$ sudo find ${OPENNMS_HOME} -name '*.rpm*' -exec ls -la {} \;
+$ sudo find /opt/opennms -name '*.rpm*' -exec ls -la {} \;
