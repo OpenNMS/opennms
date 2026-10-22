@@ -111,6 +111,7 @@ When `false`, metrics are stored by `ifAlias` only for interfaces that are selec
 | ifAliasComment
 | A character or string that starts a comment in the `ifAlias` value.
 The comment string and any text after it are removed from the `ifAlias` before it is used as the directory name.
+An `ifAlias` that starts with the comment string is treated as empty, so it is not stored by `ifAlias` and `storFlagOverride` does not apply to it.
 | n/a
 |===
 
