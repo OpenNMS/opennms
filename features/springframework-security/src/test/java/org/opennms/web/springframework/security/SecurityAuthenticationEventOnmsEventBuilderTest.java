@@ -21,6 +21,7 @@
  */
 package org.opennms.web.springframework.security;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpSession;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -45,6 +47,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.authentication.event.LogoutSuccessEvent;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
@@ -125,6 +128,30 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest {
         builder.onApplicationEvent(authEvent);
 
         verify(m_eventProxy, atLeastOnce()).send(any(Event.class));
+    }
+
+    @Test
+    public void testLogoutSuccessEvent() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getRemoteAddr()).thenReturn("1.2.3.4");
+        WebAuthenticationDetails details = new WebAuthenticationDetails(request);
+
+        org.springframework.security.core.Authentication authentication = new TestingDetailsAuthenticationToken("bar", "cheesiness", new GrantedAuthority[0], details);
+        LogoutSuccessEvent authEvent = new LogoutSuccessEvent(authentication);
+
+        SecurityAuthenticationEventOnmsEventBuilder builder = new SecurityAuthenticationEventOnmsEventBuilder();
+        builder.setEventProxy(m_eventProxy);
+        builder.afterPropertiesSet();
+
+        builder.onApplicationEvent(authEvent);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(m_eventProxy).send(captor.capture());
+        Event sent = captor.getValue();
+        assertEquals("uei.opennms.org/internal/authentication/loggedOut", sent.getUei());
+        assertEquals("OpenNMS.WebUI", sent.getSource());
+        assertEquals("bar", sent.getParm("user").getValue().getContent());
+        assertEquals("1.2.3.4", sent.getParm("ip").getValue().getContent());
     }
 
     /**
