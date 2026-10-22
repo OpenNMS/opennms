@@ -16,11 +16,6 @@
 		<constructor-arg value="file:${opennms.home}/etc/ackd-configuration.xml" />
 	</bean>
 
-	<bean name="actiond-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
-		<constructor-arg value="org.opennms.netmgt.config.actiond.ActiondConfiguration" />
-		<constructor-arg value="file:${opennms.home}/etc/actiond-configuration.xml" />
-	</bean>
-
 	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
 		<constructor-arg value="file:${opennms.home}/etc/collectd-configuration.xml" />

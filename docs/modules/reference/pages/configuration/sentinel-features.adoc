@@ -130,7 +130,7 @@ Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
-    <!-- Bootstrap bootstrap feature to start all flow related features automatically -->
+    <!-- Bootstrap feature to start all flow related features automatically -->
     <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="200" install="auto">
         <!-- Configure the controller itself -->
         <config name="org.opennms.sentinel.controller">
@@ -204,7 +204,7 @@ org.opennms.core.ipc.sink.initialSleepTime=5000
 
 == Persisting Collection Sets to Newts
 
-In the previous chapter it is described on how to setup _{page-component-title}_, _Minion_ and _Sentinel_ in order to distribute the processing of flows.
+In the previous chapter it is described on how to set up _{page-component-title}_, _Minion_ and _Sentinel_ in order to distribute the processing of flows.
 However, it only covered flow processing adapters, but there are more, e.g. the `NxosGpbAdapter`, which can also be run on a _Sentinel_.
 
 The configuration of _Newts_ for _Sentinel_ uses the same properties as for _{page-component-title}_.

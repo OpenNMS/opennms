@@ -75,7 +75,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Manage Event Configurations", "//div[@id='app']//div[@class='event-config']//div[@class='heading']/h1[text()='Manage Event Configurations']" },
 
         // Service Monitoring
-        new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
+        new String[] { "Configure Scheduled Outages", "//div[@id='app']//div[@class='card-title' and text()='Scheduled Outages']" },
         new String[] { "Manage and Unmanage Interfaces and Services", "//span[text()='Manage and Unmanage Interfaces and Services']" },
         new String[] { "Manage Business Services", "//div[@id='content']//iframe[@name='bsm-admin-page']" },
 
@@ -85,9 +85,10 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Configure Thresholds", "//div[@id='app']//h1[text()='Threshold Configuration']" },
 
         // Distributed Monitoring
-        new String[] { "Manage Monitoring Locations", "//div[contains(@class,'card')]/table//tr//a[text()='Location Name']" },
+        // both links open the same /ui (Vue) page on different tabs; the xpath requires the title and the selected tab
+        new String[] { "Manage Monitoring Locations", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']]//*[@data-test='tab-locations' and @aria-selected='true']" },
         new String[] { "Manage Applications", "//span[text()='Applications']" },
-        new String[] { "Manage Minions", "//div[contains(@class,'card')]/table//th/a[text()='Location']" },
+        new String[] { "Manage Minions", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']]//*[@data-test='tab-minions' and @aria-selected='true']" },
 
         // Additional Tools
         new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },

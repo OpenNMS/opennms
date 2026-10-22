@@ -176,7 +176,7 @@ Separate the context and the key using a colon.
 Use a vertical bar (`|`) to separate any fallback context-key pairs and default values.
 
 If the first context-key value is not available (not found on a service, interface, node, or any other special context), the next value following the vertical bar is used.
-The final value--the default value--is interpreted if it contains a valid context-key pair, otherwise is is used as a literal.
+The final value--the default value--is interpreted if it contains a valid context-key pair, otherwise it is used as a literal.
 You can enforce a value to be interpreted as a literal by enclosing it with single or double quotes.
 Its evaluation will always succeed.
 

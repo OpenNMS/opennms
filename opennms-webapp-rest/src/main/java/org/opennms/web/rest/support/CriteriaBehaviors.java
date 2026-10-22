@@ -197,10 +197,10 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(INT_CONVERTER));
 
         // Situation Behaviours
-        CriteriaBehavior<String> affectedNodeCount = new StringCriteriaBehavior(Aliases.alarm.prop("affectedNodeCount"), (b, v, c, w) -> {
+        CriteriaBehavior<Long> affectedNodeCount = new CriteriaBehavior<Long>(Aliases.alarm.prop("affectedNodeCount"), LONG_CONVERTER, (b, v, c, w) -> {
             String op = stringForNumericCondition(c, "alarm.affectedNodeCount");
             b.sql("((SELECT COUNT (DISTINCT NODEID) from (SELECT NODEID FROM alarms where alarmid in (SELECT related_alarm_id from alarm_situations where situation_id = {alias}.alarmid) or alarmid = {alias}.alarmid) as from_nodes) "
-                    + op + " " + v + " ) ");
+                    + op + " ? ) ", countValue(v, "alarm.affectedNodeCount"), Type.LONG);
         });
         affectedNodeCount.setSkipPropertyByDefault(true);
         ALARM_BEHAVIORS.put("affectedNodeCount", affectedNodeCount);
@@ -253,10 +253,10 @@ public abstract class CriteriaBehaviors {
         isInSituation.setSkipPropertyByDefault(true);
         ALARM_BEHAVIORS.put("isInSituation", isInSituation);
 
-        CriteriaBehavior<String> situationAlarmCount = new StringCriteriaBehavior(Aliases.alarm.prop("situationAlarmCount"), (b, v, c, w) -> {
+        CriteriaBehavior<Long> situationAlarmCount = new CriteriaBehavior<Long>(Aliases.alarm.prop("situationAlarmCount"), LONG_CONVERTER, (b, v, c, w) -> {
             String op = stringForNumericCondition(c, "alarm.situationAlarmCount");
             b.sql("((SELECT COUNT (DISTINCT related_alarm_id) from alarm_situations where situation_id = {alias}.alarmid ) "
-                    + op + " " + v + " )");
+                    + op + " ? )", countValue(v, "alarm.situationAlarmCount"), Type.LONG);
         });
         situationAlarmCount.setSkipPropertyByDefault(true);
         ALARM_BEHAVIORS.put("situationAlarmCount", situationAlarmCount);
@@ -295,6 +295,8 @@ public abstract class CriteriaBehaviors {
         MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
         MONITORED_SERVICE_BEHAVIORS.put("lastGood", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        MONITORED_SERVICE_BEHAVIORS.put("collectLastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        MONITORED_SERVICE_BEHAVIORS.put("collectLastGood", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
         MONITORING_LOCATION_BEHAVIORS.put("latitude", new CriteriaBehavior<Float>(FLOAT_CONVERTER));
         MONITORING_LOCATION_BEHAVIORS.put("longitude", new CriteriaBehavior<Float>(FLOAT_CONVERTER));
@@ -425,6 +427,18 @@ public abstract class CriteriaBehaviors {
         });
         serviceTypeName.setSkipPropertyByDefault(true);
         NODE_SERVICE_TYPE_BEHAVIORS.put("name", serviceTypeName);
+    }
+
+    /**
+     * The COUNT subselects above bind their comparison value as a SQL parameter. The visitor has
+     * already run the value through {@code LONG_CONVERTER}, so anything other than a Long here is
+     * a FIQL null, which is meaningless for a count.
+     */
+    private static Long countValue(Object value, String property) {
+        if (!(value instanceof Long)) {
+            throw new IllegalArgumentException(property + " requires a numeric value");
+        }
+        return (Long) value;
     }
 
     private static String stringForNumericCondition(ConditionType c, String property) {

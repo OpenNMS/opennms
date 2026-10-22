@@ -29,10 +29,11 @@ import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
  * PersistRegexSelectorStrategy
@@ -54,10 +55,11 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
     private List<Parameter> m_parameterCollection;
 
     protected static final class EvaluatorContextVisitor extends AbstractCollectionSetVisitor {
-        private StandardEvaluationContext context;
+        // Restricted context: a configured match-expression cannot reference types, call constructors, or use reflection.
+        private EvaluationContext context;
 
         public EvaluatorContextVisitor() {
-            context = new StandardEvaluationContext();
+            context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         }
 
         @Override
@@ -67,7 +69,7 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
             }
         }
 
-        public StandardEvaluationContext getEvaluationContext() {
+        public EvaluationContext getEvaluationContext() {
             return context;
         }
     }

@@ -164,6 +164,7 @@
     <property name="importSchedule" ref="provisiondImportSchedule" />
     <property name="importActivities" ref="coreImportActivities" />
     <property name="taskCoordinator" ref="taskCoordinator" />
+    <property name="provisiondConfigDao" ref="provisiondConfigDao" />
     <property name="agentConfigFactory" ref="snmpPeerFactory" />
   </bean>
   

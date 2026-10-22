@@ -76,7 +76,7 @@ This list is not exhaustive; tab-completion in the shell console will show the c
 |shell:clear
 |clears the current console display
 |shell:completion
-|displays or change the current completion mode
+|displays or changes the current completion mode
 |shell:date
 |displays the current date (optionally using a format)
 |shell:each
@@ -126,7 +126,7 @@ This list is not exhaustive; tab-completion in the shell console will show the c
 |shell:threads
 |prints a dump of the current threads
 |shell:watch
-|periodically executes a command and refresh the output
+|periodically executes a command and refreshes the output
 |shell:wc
 |prints newline, words, and byte counts for each file
 |shell:while
@@ -143,9 +143,9 @@ This list is not exhaustive and only covers the most commonly used commands.
 |Command   | Description
 
 |bundle:diag
-|Displays diagnostic information why a bundle is not Active
+|Displays diagnostic information about why a bundle is not Active
 |bundle:info
-|Displays detailed information of a given bundles
+|Displays detailed information of a given bundle
 |bundle:install
 |Installs one or more bundles
 |bundle:list
@@ -153,7 +153,7 @@ This list is not exhaustive and only covers the most commonly used commands.
 |bundle:refresh
 |Refresh bundles
 |bundle:requirements
-|Displays OSGi requirements of a given bundles
+|Displays OSGi requirements of a given bundle
 |bundle:resolve
 |Resolve bundles
 |bundle:restart
@@ -174,7 +174,7 @@ This list is not exhaustive and only covers the most commonly used commands.
 
 [[karaf-shell-feature]]
 === Built-in Feature Management Commands
-An Apache Karaf `feature` describes an application as a name, a version, a optional description (eventually with a long description), a set of OSGi bundles, an optional set configurations or configuration files, and an optional set of dependency features.
+An Apache Karaf `feature` describes an application as a name, a version, an optional description (eventually with a long description), a set of OSGi bundles, an optional set configurations or configuration files, and an optional set of dependency features.
 xref:development:oia/introduction.adoc[OPA plugins] in {page-component-title} are packaged as Karaf `features`.
 This list is not exhaustive and only covers the most commonly used commands.
 [caption=]
@@ -280,7 +280,7 @@ This list is not exhaustive and only covers the most commonly used commands.
 |Lists all of the asset topologies currently installed
 |Enabled By Default
 |opennms:asset-topo-regenerate
-|Regeneates the asset topology for given providerId
+|Regenerates the asset topology for given providerId
 |Enabled By Default
 |opennms:asset-topo-regenerate-all
 |Uses Best Effort to regenerate all asset topologies
@@ -450,7 +450,7 @@ endif::[]
 |Show the Kafka topic that metrics for the given node, interface or service are routed to
 |opennms-kafka-producer
 |opennms:kafka-sync-alarms
-|Triggers a syncrhonization of the alarms topic against the database
+|Triggers a synchronization of the alarms topic against the database
 |opennms-kafka-producer
 |opennms:kv-benchmark-blob
 |Benchmark the blob store's throughput

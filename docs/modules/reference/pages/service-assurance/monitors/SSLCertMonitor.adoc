@@ -9,7 +9,7 @@ Run a command like this to simulate the behavior:
 
 `echo | openssl s_client -connect <site>:<port> 2>/dev/null | openssl x509 -noout -dates`
 
-The output indicates that the time range a certificate is valid:
+The output indicates the time range during which a certificate is valid:
 
  notBefore=Dec 24 14:11:34 2013 GMT
  notAfter=Dec 25 10:37:40 2014 GMT
@@ -85,11 +85,11 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 WARNING: The monitor has limited support for communicating on other protocol layers above the SSL session layer.
 The STARTTLS support has been tested only with a single XMPP server.
-It is not known if the same approach will prove useful for other use cases, like sending a host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, LDAP, or NNTP.
+It is not known if the same approach will prove useful for other use cases, like sending a host header for HTTPS, or issuing a STARTTLS command for IMAP, POP3, SMTP, FTP, LDAP, or NNTP.
 
 == Examples
 
-The following examples show how to monitor SSL certificates on services like IMAPS, SMTPS, and HTTPS, as well as an sample use of the STARTTLS feature for XMPP.
+The following examples show how to monitor SSL certificates on services like IMAPS, SMTPS, and HTTPS, as well as a sample use of the STARTTLS feature for XMPP.
 If the certificates expire within 30 days, the service goes down and indicates this issue in the reason of the monitor.
 In this example, the monitoring interval is reduced to test the certificate every two hours (7,200,000 ms).
 

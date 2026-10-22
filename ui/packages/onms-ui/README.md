@@ -47,7 +47,9 @@ OnmsDrawer, OnmsChip, OnmsToggleSwitch, OnmsRadioButton, OnmsInputNumber,
 OnmsSearchInput, OnmsPopover, OnmsPanel, OnmsCard, OnmsListbox,
 OnmsMultiSelect, OnmsDatePicker. This tranche also absorbed the
 pre-existing `OnmsConfirmationDialog` and `OnmsMessageDialog` (built on
-`OnmsDialog`) into the package.
+`OnmsDialog`) into the package. `OnmsMessage` (an inline callout with a
+`success` / `info` / `warn` / `error` severity, never closable) was added for
+the Manage Minions and Locations delete dialogs.
 
 Notable deviations from the underlying PrimeVue defaults — each is an
 intentional seam default, not an oversight, and matches what every existing
@@ -163,6 +165,15 @@ Where these diverge from PrimeVue, deliberately:
 - **`OnmsTieredMenu`** renders a nested `items` array as hover-opened submenus,
   where `OnmsMenu` flattens it under a heading. Popup by default; open via the
   exposed `toggle(event)`. Both reuse `OnmsMenuItem`, which already nests.
+- **`OnmsMenubar`** (added later, NMS-20303) is the inline, horizontal form:
+  top-level items in a row, each opening its nested `items` as a dropdown. It
+  takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
+  `#end` for content around the items. An item with `target: '_blank'` gets
+  `rel="noopener noreferrer"`, which PrimeVue does not add.
+- **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
+  for content that is not an `OnmsTable` (which has its own). `page` emits the
+  same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
+  `PageState`.
 - **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
   `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
   4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value
@@ -178,7 +189,7 @@ Where these diverge from PrimeVue, deliberately:
 
 ## Icons
 
-The icon set (262 template-only SVG SFCs, originally vendored from FeatherDS)
+The icon set (template-only SVG SFCs, originally vendored from FeatherDS)
 lives at `packages/onms-ui/src/icons/<category>/<Name>.vue`, alongside the
 `OnmsIcon` wrapper that renders it. It moved here from `ui/src/components/icons/`
 in NMS-20243: under the old `@/components/icons/...` path it was reachable only
@@ -193,7 +204,7 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 
 The 12 category directories (`account`, `action`, `communication`, `content`,
 `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
-`notification`, `status`) are part of the path. They matter: 22 basenames
+`notification`, `status`) are part of the path. They matter: several basenames
 (`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
 more than one category, so the category is what disambiguates them.
 
@@ -202,7 +213,7 @@ more than one category, so the category is what disambiguates them.
 Deliberate, and load-bearing. `ui/src/main/main.ts` does
 `import * as OnmsUI` and assigns that namespace object to `window.OnmsUI`. A
 namespace object cannot be tree-shaken — so **anything reachable from
-`index.ts` ships to every user unconditionally**. Exporting 262 icons from the
+`index.ts` ships to every user unconditionally**. Exporting every icon from the
 barrel would force the entire set into the core bundle even though a typical
 screen uses a handful.
 
@@ -309,9 +320,10 @@ The prop mounts the directive on the button itself, with no remount when the
 text arrives late — the wrapper handles that (see above). When `tooltip` is set
 the native `title` attribute is dropped, so the browser's own tooltip doesn't
 duplicate the rich one; `title`, if given, still names the button for assistive
-tech, and a `tooltip`-only button is named from the tooltip text. Positioning
-modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing
-one keeps using the directive.
+tech, and a `tooltip`-only button is named from the tooltip text. Placement is
+the `tooltipPosition` prop (`top`, `bottom`, `left`, `right`; default `right`),
+which the wrapper hands to the directive as its modifier — a button at the
+viewport's edge otherwise gets its tooltip squeezed against that edge.
 
 ## OnmsDatePicker: dates, times, and time-only (NMS-20280)
 

@@ -9,6 +9,8 @@
     :showToggleAll="showToggleAll"
     :maxSelectedLabels="maxSelectedLabels"
     :placeholder="placeholder"
+    :inputId="inputId"
+    :fluid="fluid"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
   />
@@ -28,6 +30,12 @@ withDefaults(defineProps<{
   showToggleAll?: boolean
   maxSelectedLabels?: number
   placeholder?: string
+  // PrimeVue MultiSelect exposes inputId (not labelId); forward it so a paired
+  // <label for> can associate with the control.
+  inputId?: string
+  // fluid: undefined lets a parent Fluid context be inherited; explicit false
+  // would break that inheritance.
+  fluid?: boolean
   unsafePt?: unknown
 }>(), {
   modelValue: undefined,
@@ -39,6 +47,8 @@ withDefaults(defineProps<{
   showToggleAll: true,
   maxSelectedLabels: undefined,
   placeholder: undefined,
+  inputId: undefined,
+  fluid: undefined,
   unsafePt: undefined
 })
 

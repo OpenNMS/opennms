@@ -210,7 +210,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
 
             final FilterResults lastFilterResults = lastFilterResultsRef.get();
             if (lastFilterResults != null) {
-                callback.accept(lastFilterResults);
+                notifyCallback(callback, lastFilterResults);
             }
         }
 
@@ -252,13 +252,15 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         }
 
         private void notifyCallbacks(FilterResults results) {
-            callbacks.forEach(c -> {
-                try {
-                    c.accept(results);
-                } catch (Exception e) {
-                    LOG.warn("Error notifying callback: {} for results of filter rule: {}.", c, rule, e);
-                }
-            });
+            callbacks.forEach(c -> notifyCallback(c, results));
+        }
+
+        private void notifyCallback(Consumer<FilterResults> callback, FilterResults results) {
+            try {
+                callback.accept(results);
+            } catch (Exception e) {
+                LOG.warn("Error notifying callback: {} for results of filter rule: {}.", callback, rule, e);
+            }
         }
     }
 

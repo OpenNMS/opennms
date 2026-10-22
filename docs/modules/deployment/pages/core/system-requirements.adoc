@@ -60,7 +60,7 @@ Components marked with an asterisk are required:
 |===
 | Component | Version Compatibility
 
-| OpenNMS plugin for Grafana
+| OpenNMS Plugin for Grafana
 | {compatible-opennms-plugin}
 
 | OpenNMS Plugin API

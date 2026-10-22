@@ -6,12 +6,39 @@ It can generate new events based on incoming data, enrich events with new data, 
 This feature enables better integration with external systems, based on data from sources internal and external to {page-component-title}.
 
 The `$\{OPENNMS_HOME}/etc/scriptd-configuration.xml` file contains elements and attributes that define how scriptd processes events and executes scripts.
-Beanshell scripts executed by `scriptd` should be placed in `$\{OPENNMS_HOME}/etc/scripts/`
+Groovy scripts executed by `scriptd` should be placed in `$\{OPENNMS_HOME}/etc/scripts/`
 
-When an event is published on the event bus that Scriptd is configured to listen for, it executes the beanscript associated with that event.
-A common (though not _only_, as you can see in the examples) usage pattern is to compose a script that defines one or more a callable functions that accept an immutable event `IEvent` as a argument, which is sourced when scriptd starts, in `start-script` block.
-This makes the function available within the context of `scriptd` so that the script function can be called from an `event-script` block.
-Beanshell script can also be embedded directly in the `start-script` or `event-script` blocks, using xml `CDATA` tags.
+When an event is published on the event bus that Scriptd is configured to listen for, it executes the script associated with that event.
+A common (though not _only_, as you can see in the examples) usage pattern is to compose a script that defines one or more callable closures that accept an immutable event `IEvent` as an argument, which is evaluated when scriptd starts, in the `start-script` block.
+This makes the closure available within the context of `scriptd` so that it can be called from an `event-script` block.
+Groovy scripts can also be embedded directly in the `start-script` or `event-script` blocks, using xml `CDATA` tags.
+
+IMPORTANT: Groovy is the only scripting language that ships with `scriptd`.
+If you are upgrading from an earlier version that uses BeanShell, see <<ga-scriptd-groovy-notes>> for the changes you need to make to existing scripts.
+
+[[ga-scriptd-groovy-notes]]
+== Writing Groovy scripts for scriptd
+
+Scriptd executes each `start-script`, `stop-script`, and `event-script` block separately, but all of them share a single set of variables called the _binding_.
+Anything you want to reuse across blocks -- a logger, a helper object, a closure -- must live in that binding.
+This leads to three rules that differ from the BeanShell scripts used in earlier releases:
+
+Assign shared variables without `def` or a type::
+An assignment such as `log = bsf.lookupBean("log")` places `log` in the shared binding, where later blocks can read it.
+Writing `def log = ...` or `Logger log = ...` instead creates a variable local to that one block, and later blocks fail with a "No such property" error.
+
+Define reusable functions as closures, not methods::
+A method declared with `def myFunction() { ... }` belongs only to the script that declares it and is not visible to other blocks.
+Assign a closure to a binding variable instead: `myFunction = { ... }`.
+Closures stored in the binding can be called normally, including from inside other closures.
+
+Load external script files with `evaluate`, not `source`::
+Replace `source("/path/to/script.bsh")` with `evaluate(new File("/path/to/script.groovy"))`.
+The evaluated file shares the calling script's binding, so any closures and variables it assigns without `def` become available to every later block.
+
+Beyond these rules, Groovy accepts most Java syntax, so much of an existing script will carry over unchanged.
+The most common remaining edits are replacing the Java-style `for (item : collection)` loop with Groovy's `for (item in collection)`, replacing Java array literals such as `new int[]{1, 2, 4}` with Groovy list literals such as `[1, 2, 4]`, and adding imports for classes that BeanShell resolved implicitly.
+Semicolons are optional in Groovy.
 
 == Examples
 
@@ -24,108 +51,118 @@ The following example performs a reverse DNS lookup on the content of a specifie
 [source, xml]
 ----
 <scriptd-configuration xmlns="http://xmlns.opennms.org/xsd/config/scriptd" transactional="false">
-   <engine language="beanshell" className="bsh.util.BeanShellBSFEngine" extensions="bsh"/>
+   <engine language="groovy" className="org.codehaus.groovy.bsf.GroovyEngine" extensions="groovy gy"/>
 
-   <start-script language="beanshell">
-     log = bsf.lookupBean("log"); <1>
-     source("/opt/opennms/etc/scripts/scriptd-parm-rdns.bsh"); <2>
+   <start-script language="groovy">
+     log = bsf.lookupBean("log") <1>
+     evaluate(new File("/opt/opennms/etc/scripts/scriptd-parm-rdns.groovy")) <2>
    </start-script>
 
-   <stop-script language="beanshell">
-     log.debug("executing a stop script");
+   <stop-script language="groovy">
+     log.debug("executing a stop script")
    </stop-script>
 
-   <event-script language="beanshell">
+   <event-script language="groovy">
      <uei name="uei.opennms.org/corporate_networks/traps/OSPF-State"/> <3>
      <uei name="uei.opennms.org/corporate_networks/traps/OSPFNbrState"/>
-       appendUei = "WithLookup";                <!-- the resulting event appends this to the UEI --> <4>
-       positions = new int[]{ 1, 2, 4 };        <!-- Do the work on parms parm[2] and parm[4] -->
-       event = bsf.lookupBean("event"); <5>
-       mangleEvent(event, appendUei, positions); <6>
+       appendUei = "WithLookup"                 <!-- the resulting event appends this to the UEI --> <4>
+       positions = [1, 2, 4]                    <!-- Do the work on parms parm[2] and parm[4] --> <5>
+       event = bsf.lookupBean("event") <6>
+       mangleEvent(event, appendUei, positions) <7>
 
    </event-script>
 </scriptd-configuration>
 ----
 <1> Boilerplate to define the log object, used for logging within your script.
-<2> The script is sourced on startup to define the functions it contains.
+    Note the absence of `def`, which keeps `log` in the shared binding so the other blocks can use it.
+<2> The script is evaluated on startup to define the closures it contains.
 <3> The `uei` for which to listen that will execute this `event-script` block.
 <4> This value is appended to the resulting event `uei`, making the emitted event uei `uei.opennms.org/corporate_networks/traps/OSPF-StateWithLookup`.
-<5> Fetch the incoming event. 
-<6> This function is defined in `scriptd-parm-rdns.bsh`, sourced by the `start-script` block.
+<5> A Groovy list literal; the equivalent BeanShell script used a Java array literal here.
+<6> Fetch the incoming event.
+<7> This closure is defined in `scriptd-parm-rdns.groovy`, evaluated by the `start-script` block.
 
-.`$\{OPENNMS_HOME}/etc/scripts/scriptd-parm-rdns.bsh`
-[source, beanshell]
+.`$\{OPENNMS_HOME}/etc/scripts/scriptd-parm-rdns.groovy`
+[source, groovy]
 ----
-import java.net.InetAddress; <1>
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.events.api.model.IEvent; <2>
-import org.opennms.netmgt.events.api.model.IParm;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.events.EventBuilder; <3>
-import org.opennms.netmgt.xml.event.Event; <4>
-import org.opennms.netmgt.xml.event.Parm;
+import java.net.InetAddress <1>
+import java.net.UnknownHostException
+import org.opennms.core.spring.BeanUtils
+import org.opennms.netmgt.events.api.model.IEvent <2>
+import org.opennms.netmgt.events.api.model.IParm
+import org.opennms.netmgt.events.api.EventForwarder
+import org.opennms.netmgt.model.events.EventBuilder <3>
+import org.opennms.netmgt.xml.event.Event <4>
+import org.opennms.netmgt.xml.event.Parm
 
-eventForwarder = BeanUtils.getBean("daemonContext", "eventForwarder", EventForwarder.class);
+eventForwarder = BeanUtils.getBean("daemonContext", "eventForwarder", EventForwarder.class) <5>
 
-void mangleEvent(IEvent event, String appendUei, int[] positions) { <5>
+lookupParm = { IParm parm -> <6>
 
-    log.debug("Mangling an event: {}", event.uei); <6>
-
-    iparms  = event.getParmCollection();
-    if (iparms == null) {
-        log.debug("Parameters null");
+    def value = parm.getValue().getContent()
+    def hostname
+    try {
+       InetAddress ip = InetAddress.getByName(value) <7>
+       hostname = ip.getCanonicalHostName()
+    } catch (UnknownHostException e) {
+       log.debug("Reverse DNS lookup failed for {}", value)
+       hostname = value //if the lookup fails, keep the original parm value
     }
-    else {
-        log.debug("Parameters NOT null");
-        newEvent = new EventBuilder(event.uei.concat(appendUei), "Scriptd", new Date()) <6>
-        .setNodeid(event.nodeid)
-        .setInterface(event.interfaceAddress)
-        .setService(event.service)
-        .getEvent();
-        for(p : iparms) {
-            parm = new Parm();
-            newEvent.addParm(parm.copyFrom(p)); //eventForwarder won't forward an event built with immutableParms
-        }
-        for( i : positions ) {
-            lookMeUp = lookupParm(iparms.get(i-1));
-            //log.debug("parm #{}", i); <7>
-            //log.debug("is appended as Name: {}", lookMeUp.getParmName());
-            //log.debug(" with Value: {}", lookMeUp.getValue().getContent());
-            newEvent.addParm(lookMeUp); <8>
-        }
 
-    }
-    log.debug("New event {}", newEvent.toString());
-    eventForwarder.sendNow(newEvent); <9>
+    return new Parm(parm.getParmName() + "-hostname", hostname) <8>
 }
 
-Parm lookupParm(IParm parm) { <10>
+mangleEvent = { IEvent event, String appendUei, List positions -> <9>
 
-    value = parm.getValue().getContent();
-    try {
-       InetAddress ip = InetAddress.getByName(value); <11>
-       hostname = ip.getCanonicalHostName();
-    } catch ( UnknownHostException e ) {
-       log.debug("Reverse DNS lookup failed for {}", value);
-       hostname = value; //if the lookup fails, keep the original parm value
+    log.debug("Mangling an event: {}", event.uei)
+
+    def iparms = event.getParmCollection() <10>
+    if (iparms == null) {
+        log.debug("Parameters null")
+        return <11>
     }
-    newParm = new Parm(parm.getParmName()+"-hostname", hostname); <12>
 
-    return newParm;
+    log.debug("Parameters NOT null")
+    def newEvent = new EventBuilder(event.uei.concat(appendUei), "Scriptd", new Date()) <12>
+    .setNodeid(event.nodeid)
+    .setInterface(event.interfaceAddress)
+    .setService(event.service)
+    .getEvent()
+    for (p in iparms) { <13>
+        def parm = new Parm()
+        newEvent.addParm(parm.copyFrom(p)) //eventForwarder won't forward an event built with immutableParms
+    }
+    for (i in positions) {
+        def lookMeUp = lookupParm(iparms.get(i - 1)) <14>
+        //log.debug("parm #{}", i) <15>
+        //log.debug("is appended as Name: {}", lookMeUp.getParmName())
+        //log.debug(" with Value: {}", lookMeUp.getValue().getContent())
+        newEvent.addParm(lookMeUp) <16>
+    }
+
+    log.debug("New event {}", newEvent.toString())
+    eventForwarder.sendNow(newEvent) <17>
 }
 ----
 <1> `java.net.InetAddress` is used to perform the reverse DNS lookup.
-<2> Incoming events are immutable `IEvent` objects, and event paramters are immutable `IParm` objects.
+    Groovy does not import the `java.net` package implicitly, so both it and `UnknownHostException` must be imported explicitly.
+<2> Incoming events are immutable `IEvent` objects, and event parameters are immutable `IParm` objects.
 <3> The `EventBuilder` is used to create new events.
 <4> The `EventForwarder` requires mutable `Event` and `Parm` objects.
-<5> This defines the `mangleEvent` function, called from the `event-script` block in `scripts-configuration.xml`.
-<6> Create a new event using the `EventBuilder` using the new, appended UEI and "Scriptd" as the source.
-<7> Additional debug logging can be added using the `log` object for troubleshooting; beanshell uses Java-style comments.
-<8> This adds the event parameter containing the rDNS hostname to the new event being created.
-<9> Using the `EventForwarder`, send the new event out on the event bus.
-<10> This function is called by `mangleEvent` to perform the rDNS lookup on the original event parameter.
-<11> Perform the rDNS loookup using `InetAddress.getByName()` from `java.net.InetAddress`.
-<12> Create a new event `Parm` object using the original `Parameter` name appended with `'-hostname'`, using the value returned by the `getByName()`
+<5> Assigned without `def` so that the closures below can resolve it from the shared binding.
+<6> This defines the `lookupParm` closure, called by `mangleEvent` to perform the rDNS lookup on the original event parameter.
+    Assigning a closure rather than declaring a method is what makes it reusable from the other script blocks.
+<7> Perform the rDNS lookup using `InetAddress.getByName()` from `java.net.InetAddress`.
+<8> Create a new event `Parm` object using the original `Parameter` name appended with `'-hostname'`, using the value returned by `getCanonicalHostName()`.
+<9> This defines the `mangleEvent` closure, called from the `event-script` block in `scriptd-configuration.xml`.
+<10> Local variables that are not shared between blocks should use `def`, as they are here.
+<11> Return early when the incoming event carries no parameters, as there is nothing to enrich.
+<12> Create a new event using the `EventBuilder` using the new, appended UEI and "Scriptd" as the source.
+<13> Groovy uses `for (item in collection)` where Java and BeanShell use `for (item : collection)`.
+<14> Closures held in the binding can be called from inside another closure, exactly like a method.
+<15> Additional debug logging can be added using the `log` object for troubleshooting; Groovy uses Java-style comments.
+<16> This adds the event parameter containing the rDNS hostname to the new event being created.
+<17> Using the `EventForwarder`, send the new event out on the event bus.
 
 [[ga-scriptd-forward-snmpv3]]
 === Example 2: Forward events to an external system using SNMPv3
@@ -137,12 +174,12 @@ The `snmpv3TrapHelper` will not forward an immutable `IEvent` or an event contai
 [source,xml]
 ----
 <scriptd-configuration xmlns="http://xmlns.opennms.org/xsd/config/scriptd" transactional="false">
-   <engine language="beanshell" className="bsh.util.BeanShellBSFEngine" extensions="bsh"/>
+   <engine language="groovy" className="org.codehaus.groovy.bsf.GroovyEngine" extensions="groovy gy"/>
 
-   <start-script language="beanshell"><![CDATA[ <1>
-    log = bsf.lookupBean("log"); <2>
+   <start-script language="groovy"><![CDATA[ <1>
+    log = bsf.lookupBean("log") <2>
 
-    snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper(); <3>
+    snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper() <3>
     snmpv3TrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpV3TrapEventForwarder( <4>
           "192.168.1.202", /* destination ip */
           162,             /* destination port */
@@ -153,32 +190,32 @@ The `snmpv3TrapHelper` will not forward an immutable `IEvent` or an event contai
           "0p3nNmsv3",     /* priv pass phrase */
           "DES",           /* priv protocol: DES, AES, AES192, AES256 */
           snmpTrapHelper   /* helper object */
-    );
+    )
     // Use the default policy rule that forwards all events - we can manage the filtering ourselves in this script
-    snmpv3TrapHelper.setEventPolicyRule(new org.opennms.netmgt.scriptd.helper.EventPolicyRuleDefaultImpl());
+    snmpv3TrapHelper.setEventPolicyRule(new org.opennms.netmgt.scriptd.helper.EventPolicyRuleDefaultImpl())
    ]]>
    </start-script>
 
-   <stop-script language="beanshell">
-    snmpTrapHelper.stop(); <5>
+   <stop-script language="groovy">
+    snmpTrapHelper.stop() <5>
    </stop-script>
 
-   <event-script language="beanshell"><![CDATA[
-    event = bsf.lookupBean("event");
+   <event-script language="groovy"><![CDATA[
+    event = bsf.lookupBean("event")
 
     if (event != null && !event.getSource().equals("trapd")) { <6>
-        iparms  = event.getParmCollection(); <7>
-        newEvent = new org.opennms.netmgt.model.events.EventBuilder(event.uei, "Scriptd", new Date()) <8>
+        def iparms = event.getParmCollection() <7>
+        def newEvent = new org.opennms.netmgt.model.events.EventBuilder(event.uei, "Scriptd", new Date()) <8>
            .setNodeid(event.nodeid)
            .setInterface(event.interfaceAddress)
            .setService(event.service)
-           .getEvent();
-        for(p : iparms) {
-            parm = new org.opennms.netmgt.xml.event.Parm(); <9>
-            newEvent.addParm(parm.copyFrom(p)); //eventForwarder won't forward an event built with immutableParms
+           .getEvent()
+        for (p in iparms) { <9>
+            def parm = new org.opennms.netmgt.xml.event.Parm() <10>
+            newEvent.addParm(parm.copyFrom(p)) //eventForwarder won't forward an event built with immutableParms
         }
-        //log.debug("Forwarding SNMPv3 trap with: {}", snmpv3TrapHelper); <10>
-        snmpv3TrapHelper.flushEvent(newEvent); <11>
+        //log.debug("Forwarding SNMPv3 trap with: {}", snmpv3TrapHelper) <11>
+        snmpv3TrapHelper.flushEvent(newEvent) <12>
     }
    ]]>
    </event-script>
@@ -187,14 +224,17 @@ The `snmpv3TrapHelper` will not forward an immutable `IEvent` or an event contai
 <1> Here we wrap the script content in CDATA tags directly in the `start-script`
 <2> Boilerplate to define the log object, used for logging within the script.
 <3> Create a new `snmpTrapHelper` object.
+    Like `log`, it is assigned without `def` so that the `stop-script` block can still reach it.
 <4> Create a new `snmpv3TrapHelper` with the desired parameters.
 <5> The `stop-script` block can be used to clean up on scriptd restart.
 <6> This checks if the incoming event originated from a daemon other than `Trapd` and is not `null`.
 <7> Fetch all immutable `IParm` event parameters from the incoming event; incoming events are always immutable.
+    These values are only used within this block, so they are declared with `def`.
 <8> Create a new `Event` using the `EventBuilder` and set the desired event attributes; the `snmpv3TrapHelper` will not forward immutable `IEvent` events.
-<9> Create a new, mutable event parameter `Parm` object; the `snmpv3TrapHelper` will not forward events with immutable `IParm` parameters.
-<10> Populate the new `Parm` object with the content of the `IParm` with `copyFrom()`.
-<11> Use the `snmpv3TrapHelper` to send the new, mutable event out to its destination.  
+<9> Groovy uses `for (item in collection)` where Java and BeanShell use `for (item : collection)`.
+<10> Create a new, mutable event parameter `Parm` object and populate it from the immutable `IParm` with `copyFrom()`; the `snmpv3TrapHelper` will not forward events with immutable `IParm` parameters.
+<11> Additional debug logging can be added using the `log` object for troubleshooting.
+<12> Use the `snmpv3TrapHelper` to send the new, mutable event out to its destination.
 
 [[ga-scriptd-other]]
 === Other examples

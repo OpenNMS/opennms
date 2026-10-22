@@ -129,9 +129,12 @@ export interface CanvasShape {
  * rect lives in graph coordinates (x/y = top-left corner; sigma's y axis
  * points up, so the image spans [y - height, y]) so it pans and zooms with
  * the nodes. Opacity is capped in the UI so status colors stay legible.
+ *
+ * `geomap` draws a geographic map instead and places nodes at their asset
+ * lat/long. The image fields are kept, so turning the map off restores the image.
  */
 export interface TopologyViewBackground {
-  type: 'none' | 'image'
+  type: 'none' | 'image' | 'geomap'
   ref?: string
   x?: number
   y?: number
@@ -149,7 +152,15 @@ export interface TopologyViewBackground {
 export interface TopologyViewStyle {
   nodeLabelColor?: string
   linkLabelColor?: string
+  /** Rendered node radius, px in graph units. */
+  nodeSize?: number
+  /** Rendered link thickness, px. */
+  linkWidth?: number
+  /** Where a node's label sits relative to the node. */
+  labelPlacement?: LabelPlacement
 }
+
+export type LabelPlacement = 'right' | 'bottom' | 'top'
 
 /**
  * A complete custom topology view. This is the unit that the views

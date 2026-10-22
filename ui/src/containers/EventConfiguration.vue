@@ -11,12 +11,36 @@
       </div>
       <div class="action">
         <OnmsButton
-          label="Create New Event Source"
-          @click="store.showCreateEventConfigSourceDialog"
-        />
+          variant="outlined"
+          data-test="reorder-sources-button"
+          :disabled="store.sourcesReorderMode"
+          @click="onReorderSources"
+        >
+          <OnmsIcon
+            :icon="SortIcon"
+            aria-hidden="true"
+            focusable="false"
+          />
+          Reorder Sources
+        </OnmsButton>
         <OnmsButton
-          label="Create New Event Config"
-          @click="goToCreateEventConfig()"
+          aria-haspopup="true"
+          aria-controls="create-event-config-menu"
+          data-test="create-menu-button"
+          :disabled="store.sourcesReorderMode"
+          @click="toggleCreateMenu"
+        >
+          Create
+          <OnmsIcon
+            :icon="ArrowDown"
+            aria-hidden="true"
+            focusable="false"
+          />
+        </OnmsButton>
+        <OnmsMenu
+          id="create-event-config-menu"
+          ref="createMenu"
+          :items="createMenuItems"
         />
       </div>
     </div>
@@ -28,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import CreateEventConfigurationDialog from '@/components/EventConfiguration/Dialog/CreateEventConfigurationDialog.vue'
@@ -39,12 +63,30 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb, CreateEditMode } from '@/types'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
+import SortIcon from '@opennms/onms-ui/icons/action/Sort.vue'
+import ArrowDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
 
 const store = useEventConfigStore()
 const router = useRouter()
 const menuStore = useMenuStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
+
+const createMenu = ref()
+const createMenuItems = computed<OnmsMenuItem[]>(() => [
+  {
+    label: 'New Event Source',
+    command: () => store.showCreateEventConfigSourceDialog()
+  },
+  {
+    label: 'New Event Config',
+    command: () => goToCreateEventConfig()
+  }
+])
+
+const toggleCreateMenu = (event: Event) => {
+  createMenu.value?.toggle(event)
+}
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -57,6 +99,12 @@ const goToCreateEventConfig = () => {
   const modificationStore = useEventModificationStore()
   modificationStore.openCreateWithoutSource(CreateEditMode.Create, getDefaultEventConfigEvent())
   router.push({ name: 'Event Configuration Create' })
+}
+
+// the reorder editor lives on the View tab: starting it from the Upload tab switches there first
+const onReorderSources = async () => {
+  store.activeTab = 0
+  await store.startSourcesReorder()
 }
 </script>
 

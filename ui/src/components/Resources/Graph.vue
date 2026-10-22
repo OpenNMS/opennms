@@ -1,13 +1,23 @@
 <template>
   <div class="onms-row">
     <div class="onms-col-12 container">
-      <router-link
-        v-if="!isSingleGraph"
-        :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
-        target="_blank"
-      >
-        <OnmsButton variant="outlined" class="single-graph-btn">Open</OnmsButton>
-      </router-link>
+      <div class="graph-actions">
+        <OnmsIconButton
+          v-if="graphData"
+          variant="outlined"
+          :icon="DownloadFile"
+          data-test="csv-download-btn"
+          title="Download this graph's data as CSV"
+          @click="downloadCsv"
+        />
+        <router-link
+          v-if="!isSingleGraph"
+          :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
+          target="_blank"
+        >
+          <OnmsButton variant="outlined">Open</OnmsButton>
+        </router-link>
+      </div>
       <OnmsTabs value="0" class="graph-data-tabs">
         <OnmsTabList>
           <OnmsTab value="0">Graph</OnmsTab>
@@ -16,14 +26,14 @@
         <OnmsTabPanels>
           <OnmsTabPanel value="0">
             <div class="canvas-wrapper">
-              <canvas :id="`${label}-${definition}`"></canvas>
-              <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
+              <canvas :id="chartId"></canvas>
+              <div ref="legendRef" class="lc" :id="`${chartId}-lc`"></div>
             </div>
           </OnmsTabPanel>
           <OnmsTabPanel value="1">
             <div class="canvas-wrapper" v-if="graphData">
               <GraphDataTable
-                :id="`${label}-${definition}`"
+                :id="chartId"
                 :convertedGraphData="convertedGraphDataRef"
                 :graphData="graphData"
               />
@@ -38,6 +48,7 @@
 <script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
+import { downloadGraphCsv } from './utils/graphExport'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
 import { useGraphStore } from '@/stores/graphStore'
@@ -47,7 +58,8 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 Chart.register(...registerables)
@@ -75,8 +87,16 @@ const props = defineProps({
   isSingleGraph: {
     required: true,
     type: Boolean
+  },
+  // The canvas and legend element ids default to label and definition, which is unique on the
+  // resource graphs page. A page that draws the same graph for the same resource more than once
+  // (a graph collection with two timespans of one graph) passes its own id.
+  canvasId: {
+    type: String
   }
 })
+
+const chartId = computed(() => props.canvasId || `${props.label}-${props.definition}`)
 
 const graphStore = useGraphStore()
 const graphData = ref<GraphMetricsResponse | null>(null)
@@ -102,7 +122,7 @@ const options = computed<ChartOptions>(() => ({
   plugins: {
     htmlLegend: {
       // ID of the container to put the legend in
-      containerID: `${props.label}-${props.definition}-lc`
+      containerID: `${chartId.value}-lc`
     },
     legend: {
       display: false
@@ -281,7 +301,7 @@ const render = async (update?: boolean) => {
       chart.data = chartData.value
       chart.update()
     } else {
-      const ctx: any = document.getElementById(`${props.label}-${props.definition}`)
+      const ctx: any = document.getElementById(chartId.value)
       // Chart.js throws "Canvas is already in use" if a chart still owns this
       // canvas — e.g. a stale instance left on a reused canvas after navigating
       // away and back. Destroy any prior chart on it before creating the new one.
@@ -302,7 +322,16 @@ const render = async (update?: boolean) => {
   }
 }
 
-watch(props.time, () => render(true))
+const downloadCsv = () => {
+  if (!graphData.value) {
+    return
+  }
+  downloadGraphCsv(graphData.value, convertedGraphDataRef.value, convertedGraphDataRef.value.title || props.definition)
+}
+
+// A getter: a plain object (the graph collection cell builds one per render) is not a watch
+// source. Deep, so the resource graphs page's in-place changes to its reactive object still count.
+watch(() => props.time, () => render(true), { deep: true })
 
 onMounted(() => render())
 
@@ -330,11 +359,13 @@ onBeforeUnmount(() => {
   margin-top: 50px;
   margin-bottom: v-bind(legendHeight);
 }
-.single-graph-btn {
+.graph-actions {
   position: absolute;
   top: 12px;
   right: 70px;
   z-index: 1;
+  display: flex;
+  gap: 0.5rem;
 }
 .lc {
   @include onms-body-small;

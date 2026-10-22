@@ -63,7 +63,7 @@ The <variable> name is arbitrary.
 |===
 
 NOTE: Metadata expressions can also be used in attributes of the `jmx-config.xml` configuration file.
-This lets the user to also reference credentials stored in the secure credentials.
+This lets the user also reference credentials stored in the secure credentials.
 
 == Examples
 

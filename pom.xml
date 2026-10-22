@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>36.0.5-SNAPSHOT</version>
+  <version>37.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1136,7 +1136,6 @@
                 <exclude>src/main/resources/checkstyle-suppressions.xml</exclude>
                 <exclude>src/main/resources/license-header.txt</exclude>
                 <exclude>src/main/resources/nms_checks.xml</exclude>
-                <exclude>src/site/site.xml</exclude>
                 <exclude>src/test/resources/test-data.sql</exclude>
 
                 <!-- don't need this can o' worms for now -->
@@ -1247,7 +1246,8 @@
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
                    <exclude>org.ow2.asm:asm-all</exclude>            <!-- doesn't exist anymore, use individual deps -->
                    <exclude>bouncycastle:*</exclude>                 <!-- use: org.bouncycastle:* instead, but not in a way that ends up in $OPENNMS_HOME/lib/ -->
-                   <exclude>bsh:*</exclude>                          <!-- use: org.apache-extras.beanshell:bsh -->
+                   <exclude>bsh:*</exclude>                          <!-- BeanShell is dead upstream and has open CVEs; use Groovy -->
+                   <exclude>org.apache-extras.beanshell:*</exclude>  <!-- BeanShell is dead upstream and has open CVEs; use Groovy -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
@@ -1674,11 +1674,11 @@
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <product.name>horizon</product.name>
-    <docs.product.version>36</docs.product.version>
+    <docs.product.version>37</docs.product.version>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>36.0.5.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>37.0.0.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1739,6 +1739,7 @@
 
     <!-- dependency versions -->
     <aaltoXmlVersion>1.3.3</aaltoXmlVersion>
+    <stax2ApiVersion>4.2.2</stax2ApiVersion>
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
@@ -1801,7 +1802,7 @@
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
-    <freemarkerVersion>2.3.32</freemarkerVersion>
+    <freemarkerVersion>2.3.35</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
     <objenesisVersion>3.5</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
@@ -1809,6 +1810,8 @@
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>3.0.21</groovyVersion>
     <grpcVersion>1.75.0</grpcVersion>
+    <!-- Codegen plugin only. 1.75.0 ships an x86_64-only macOS binary; 1.76.0+ is a universal binary (NMS-20384). -->
+    <grpcCodegenVersion>1.76.0</grpcCodegenVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>33.3.1-jre</guavaVersion>
     <guava32Version>32.1.3-jre</guava32Version>
@@ -1833,7 +1836,7 @@
     <httpclient5Version>5.6.4</httpclient5Version>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.22.1</jackson2Version>
+    <jackson2Version>2.22.3</jackson2Version>
     <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
     <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
     <jmsApiVersion>2.0.1</jmsApiVersion>
@@ -1890,13 +1893,13 @@
     <jsonSmartVersion>2.5.0</jsonSmartVersion>
     <!-- generally tied with json-smart -->
     <accessorsSmartVersion>2.5.0</accessorsSmartVersion>
-    <jsoupVersion>1.15.3</jsoupVersion>
+    <jsoupVersion>1.23.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.4.9</karafVersion>
+    <karafVersion>4.4.11</karafVersion>
     <!-- BEGIN: versions must match versions provided by embedded Karaf -->
     <eclipseOsgiVersion>3.18.0</eclipseOsgiVersion>
     <felixCmJsonVersion>1.0.8</felixCmJsonVersion>
@@ -1908,7 +1911,7 @@
     <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
-    <jansiVersion>2.4.2</jansiVersion>
+    <jansiVersion>2.4.3</jansiVersion>
     <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
     <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
@@ -1918,13 +1921,14 @@
     <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
     <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
          container/pax-url-aether-patch to replace the plexus-utils it shades
-         (CVE-2025-67030); keep ${plexusUtilsVersion} in mind when bumping this -->
-    <paxUrlAetherVersion>2.6.17</paxUrlAetherVersion>
-    <paxWebVersion>8.0.34</paxWebVersion>
+         (CVE-2025-67030; 2.7.1 already shades the fixed 3.6.1); keep ${plexusUtilsVersion}
+         in mind when bumping this -->
+    <paxUrlAetherVersion>2.7.1</paxUrlAetherVersion>
+    <paxWebVersion>8.0.35</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
-    <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
-    <kafkaVersion>3.6.2</kafkaVersion>
+    <kafkaBundleVersion>3.9.1_1</kafkaBundleVersion>
+    <kafkaVersion>3.9.1</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
@@ -1967,12 +1971,12 @@
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.13.1</pyroscopeVersion>
-    <lz4JavaVersion>1.10.2</lz4JavaVersion>
+    <lz4JavaVersion>1.11.4</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
-    <scalaLibraryVersion>2.13.12</scalaLibraryVersion>
+    <scalaLibraryVersion>2.13.15</scalaLibraryVersion>
     <scala11LibraryVersion>2.11.12</scala11LibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
@@ -1991,7 +1995,7 @@
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
-    <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
+    <vaadinJsoupVersion>1.23.2</vaadinJsoupVersion>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
     <xalanVersion>2.7.3</xalanVersion>
@@ -2004,8 +2008,8 @@
     <xstreamVersion>1.4.21</xstreamVersion>
     <wsmanVersion>1.3.7</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
-    <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.15.0</minaSshdVersion>
+    <zstdJniVersion>1.5.6-4</zstdJniVersion>
+    <minaSshdVersion>2.17.1</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <!-- Spring 5.3.x via stock ServiceMix bundles. The custom .ONMS.1 patches that the EOL 4.3.x line
@@ -2538,6 +2542,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.camel.hardening</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.config</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2762,11 +2771,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.charts</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.dhcpd</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2806,9 +2810,16 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.mib-compiler</artifactId>
+        <groupId>org.opennms.features.mib-compiler</groupId>
+        <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <!-- jsmiparser is scope=provided (bnd-embedded) inside the mib-compiler parser
+             bundle, so flat-classpath consumers need it as an explicit dependency -->
+        <groupId>org.jsmiparser</groupId>
+        <artifactId>jsmiparser-api</artifactId>
+        <version>0.14</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -3065,6 +3076,12 @@
       <dependency>
         <groupId>org.opennms.tests</groupId>
         <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.tests</groupId>
+        <artifactId>org.opennms.tests.mock-wsman-agent</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -3976,11 +3993,6 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache-extras.beanshell</groupId>
-        <artifactId>bsh</artifactId>
-        <version>2.0b6</version>
       </dependency>
       <dependency>
         <groupId>org.mongodb</groupId>
@@ -5007,6 +5019,12 @@
         <groupId>com.fasterxml</groupId>
         <artifactId>aalto-xml</artifactId>
         <version>${aaltoXmlVersion}</version>
+      </dependency>
+      <!-- aalto-xml 1.3.3 requires the stax2-api 4.2 packages (org.codehaus.stax2); provide the bundle -->
+      <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>stax2-api</artifactId>
+        <version>${stax2ApiVersion}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>

@@ -660,6 +660,72 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
     }
 
     @Override
+    public Response getDataCollectionSystemDefNames(SecurityContext securityContext) throws Exception {
+        try {
+            return Response.ok(dataCollectionConfPersistenceService.getAllSystemDefNames()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch System Definition names: " + e.getMessage()).build();
+        }
+    }
+
+    private static Response missingNameResponse() {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(Map.of("error", "The name query parameter is required.")).build();
+    }
+
+    @Override
+    public Response getDataCollectionMibGroupsByName(final String name, final SecurityContext securityContext) throws Exception {
+        if (name == null || name.isBlank()) {
+            return missingNameResponse();
+        }
+        try {
+            final var list = dataCollectionConfPersistenceService.findMibGroupsByName(name);
+            if (list.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(Map.of("error", "No MIB group found with name: " + name)).build();
+            }
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return internalServerError(e);
+        }
+    }
+
+    @Override
+    public Response getDataCollectionResourceTypesByName(final String name, final SecurityContext securityContext) throws Exception {
+        if (name == null || name.isBlank()) {
+            return missingNameResponse();
+        }
+        try {
+            final var list = dataCollectionConfPersistenceService.findResourceTypesByName(name);
+            if (list.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(Map.of("error", "No resource type found with name: " + name)).build();
+            }
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return internalServerError(e);
+        }
+    }
+
+    @Override
+    public Response getDataCollectionSystemDefsByName(final String name, final SecurityContext securityContext) throws Exception {
+        if (name == null || name.isBlank()) {
+            return missingNameResponse();
+        }
+        try {
+            final var list = dataCollectionConfPersistenceService.findSystemDefsByName(name);
+            if (list.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(Map.of("error", "No system definition found with name: " + name)).build();
+            }
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return internalServerError(e);
+        }
+    }
+
+    @Override
     public Response addMibGroupToSnmpCollectionSources(
             final Integer collectionSourceId,
             final SnmpCollectionMibGroupDto request,

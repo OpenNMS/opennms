@@ -27,11 +27,9 @@
     <property name="configs">
       <map>
         <entry key="ackd-configuration.xml" value="ackdConfigurationDao"/>
-        <entry key="actiond-configuration.xml" value="actiondConfigFactory"/>
         <entry key="availability-reports.xml" value="onmsReportConfigDao"/>
         <entry key="bsf-northbounder-configuration.xml" value="bsfNorthbounderConfigDao"/>
         <entry key="categories.xml" value="categoryFactory"/>
-        <entry key="chart-configuration.xml" value="chartConfigFactory"/>
         <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>
         <entry key="token-auth-configuration.xml" value="tokenAuthConfigFactory"/>
         <entry key="database-reports.xml" value="databaseReportConfigDao"/>
@@ -53,7 +51,7 @@
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="xml-datacollection-config.xml" value="xmlDataCollectionConfigDao"/>
-        <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
+        <entry key="ksc-performance-reports.xml" value="graphCollectionConfigFactory"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
@@ -79,7 +77,6 @@
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
         <entry key="snmp-metadata-adapter-configuration.xml" value="snmpMetadataConfigDao"/>
         <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
-        <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
@@ -110,13 +107,7 @@
   <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
   </bean>
-  
-  <bean id="actiondConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ActiondConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="actiondConfigFactory" class="org.opennms.netmgt.config.ActiondConfigFactory" depends-on="actiondConfigFactory-init" factory-method="getInstance"/>
-  
   <bean id="onmsReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/availability-reports.xml"/>
   </bean>
@@ -131,11 +122,6 @@
 
   <bean id="categoryFactory" class="org.opennms.netmgt.config.CategoryFactory" depends-on="categoryFactory-init" factory-method="getInstance"/>
   
-  <bean id="chartConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ChartConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="chartConfigFactory" class="org.opennms.netmgt.config.ChartConfigFactory" depends-on="chartConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
 
@@ -246,11 +232,11 @@
     <property name="configResource" ref="xmlDataCollectionConfigResourceLocation" />
   </bean>
 
-  <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
+  <bean id="graphCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.GraphCollectionConfigFactory.init</value></property>
   </bean>
 
-  <bean id="kscReportFactory" class="org.opennms.netmgt.config.KSC_PerformanceReportFactory" depends-on="kscReportFactory-init" factory-method="getInstance"/>
+  <bean id="graphCollectionConfigFactory" class="org.opennms.netmgt.config.GraphCollectionConfigFactory" depends-on="graphCollectionConfigFactory-init" factory-method="getInstance"/>
     
   <bean id="groupManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
@@ -407,9 +393,6 @@
     <property name="configResource" value="file:${opennms.home}/etc/snmptrap-northbounder-configuration.xml" />
   </bean>
 
-  <bean id="statisticsDaemonConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
-  </bean>
 
   <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml"/>

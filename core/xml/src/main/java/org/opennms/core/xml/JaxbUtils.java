@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -78,6 +79,10 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public abstract class JaxbUtils {
     private static final Logger LOG = LoggerFactory.getLogger(JaxbUtils.class);
+
+    private static final String XERCES_SECURITY_MANAGER_CLASS = "org.apache.xerces.util.SecurityManager";
+    private static final String XERCES_SECURITY_MANAGER_PROPERTY = "http://apache.org/xml/properties/security-manager";
+    private static volatile boolean s_warnedNoEntityExpansionLimit = false;
 
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
@@ -183,15 +188,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate) {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(file);
-            return unmarshal(clazz, new InputSource(reader), null, validate, false);
-        } catch (final FileNotFoundException e) {
-            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
-        } finally {
-            IOUtils.closeQuietly(reader);
-        }
+        return unmarshal(clazz, file, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader) {
@@ -223,13 +220,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate) {
-        final StringReader sr = new StringReader(xml);
-        final InputSource is = new InputSource(sr);
-        try {
-            return unmarshal(clazz, is, null, validate, false);
-        } finally {
-            IOUtils.closeQuietly(sr);
-        }
+        return unmarshal(clazz, xml, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource) {
@@ -237,8 +228,39 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate) {
+        return unmarshal(clazz, resource, validate, false);
+    }
+
+    /**
+     * Unmarshals with the option to disable DOCTYPE processing. Use disableDOCTYPE=true for formats that do not
+     * need a DOCTYPE, such as requisition and foreign-source XML. Disabling it blocks XML entity-expansion
+     * denial of service, which the entity-expansion count limit alone does not stop on all parsers.
+     */
+    public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate, final boolean disableDOCTYPE) {
+        FileReader reader = null;
         try {
-            return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate, false);
+            reader = new FileReader(file);
+            return unmarshal(clazz, new InputSource(reader), null, validate, disableDOCTYPE);
+        } catch (final FileNotFoundException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate, final boolean disableDOCTYPE) {
+        final StringReader sr = new StringReader(xml);
+        final InputSource is = new InputSource(sr);
+        try {
+            return unmarshal(clazz, is, null, validate, disableDOCTYPE);
+        } finally {
+            IOUtils.closeQuietly(sr);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate, final boolean disableDOCTYPE) {
+        try (final InputStream stream = resource.getInputStream()) {
+            return unmarshal(clazz, new InputSource(stream), null, validate, disableDOCTYPE);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
         }
@@ -302,9 +324,39 @@ public abstract class JaxbUtils {
         xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
         xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        limitEntityExpansion(xmlReader);
 
         filter.setParent(xmlReader);
         return filter;
+    }
+
+    /**
+     * Caps entity expansion so a DOCTYPE with nested internal entities ("billion laughs") cannot
+     * exhaust memory, while still allowing ordinary internal entities (e.g. named characters in
+     * imported requisitions). The JDK parser honours FEATURE_SECURE_PROCESSING; standalone Xerces
+     * does not, so it gets its own SecurityManager, loaded from the parser's classloader.
+     */
+    private static void limitEntityExpansion(final XMLReader xmlReader) {
+        try {
+            xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            return;
+        } catch (final SAXException e) {
+            LOG.trace("{} does not support secure processing, trying the Xerces security manager", xmlReader.getClass().getName());
+        }
+        final ClassLoader parserClassLoader = xmlReader.getClass().getClassLoader();
+        if (parserClassLoader != null) {
+            try {
+                final Object securityManager = parserClassLoader.loadClass(XERCES_SECURITY_MANAGER_CLASS).getDeclaredConstructor().newInstance();
+                xmlReader.setProperty(XERCES_SECURITY_MANAGER_PROPERTY, securityManager);
+                return;
+            } catch (final ReflectiveOperationException | SAXException e) {
+                LOG.trace("unable to install the Xerces security manager on {}", xmlReader.getClass().getName(), e);
+            }
+        }
+        if (!s_warnedNoEntityExpansionLimit) {
+            s_warnedNoEntityExpansionLimit = true;
+            LOG.warn("XML parser {} does not support an entity expansion limit; documents with a DOCTYPE are parsed without one", xmlReader.getClass().getName());
+        }
     }
 
     public static XMLFilter getXMLFilterForNamespace(final String namespace) throws SAXException {

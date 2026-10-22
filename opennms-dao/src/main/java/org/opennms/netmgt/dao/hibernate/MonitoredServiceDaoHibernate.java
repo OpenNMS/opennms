@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -155,5 +156,15 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
                     "left join fetch iface.node as node " +
                     "where node.id = ?1",
                     nodeId);
+    }
+
+    @Override
+    public int updateCollectLastGood(final int ifServiceId, final Date timestamp) {
+        return bulkUpdate("update OnmsMonitoredService svc set svc.collectLastGood = ?1 where svc.id = ?2", timestamp, ifServiceId);
+    }
+
+    @Override
+    public int updateCollectLastFail(final int ifServiceId, final Date timestamp) {
+        return bulkUpdate("update OnmsMonitoredService svc set svc.collectLastFail = ?1 where svc.id = ?2", timestamp, ifServiceId);
     }
 }

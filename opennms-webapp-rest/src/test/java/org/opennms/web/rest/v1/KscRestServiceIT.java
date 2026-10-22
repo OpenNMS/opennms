@@ -42,7 +42,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,8 +82,8 @@ public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
         /* make sure the file is reset every time, otherwise we're reliant on test ordering */
         final File sourceFile = new File("src/test/resources/ksc-performance-reports.xml");
         Files.copy(sourceFile, m_configFile);
-        KSC_PerformanceReportFactory.setConfigFile(m_configFile);
-        KSC_PerformanceReportFactory.getInstance().reload();
+        GraphCollectionConfigFactory.setConfigFile(m_configFile);
+        GraphCollectionConfigFactory.getInstance().reload();
     }
 
     @Override
@@ -139,6 +139,18 @@ public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         final String xml = slurp(m_configFile);
         assertTrue(xml, xml.contains("title=\"foo2\""));
+    }
+
+    @Test
+    public void testAddNewGraphRejectsUnsafeLink() throws Exception {
+        final String kscReport = "<kscReport id=\"4\" label=\"foo3\">"
+                +"<kscGraph title=\"Title1\" resourceId=\"node[2].responseTime[127.0.0.1]\" timespan=\"1_hour\" graphtype=\"icmp\" extlink=\"javascript:alert(1)\"/>"
+                +"</kscReport>";
+
+        sendPost("/ksc", kscReport, 400);
+
+        final String xml = slurp(m_configFile);
+        assertTrue(xml, !xml.contains("javascript"));
     }
 
     private static String slurp(final File file) throws Exception {

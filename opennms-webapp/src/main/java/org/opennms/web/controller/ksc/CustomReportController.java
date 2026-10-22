@@ -27,13 +27,13 @@ import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.Graph;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.graph.KscResultSet;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -49,8 +49,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class CustomReportController extends AbstractController implements InitializingBean {
     
-    private KSC_PerformanceReportFactory m_kscReportFactory;
-    private KscReportService m_kscReportService;
+    private GraphCollectionConfigFactory m_graphCollectionConfigFactory;
+    private GraphCollectionService m_graphCollectionService;
     private ResourceService m_resourceService;
 
     /** {@inheritDoc} */
@@ -58,7 +58,7 @@ public class CustomReportController extends AbstractController implements Initia
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // Get Form Variables
-        Report report = KscReportEditor.getFromSession(request.getSession(), true).getWorkingReport();
+        GraphCollection report = KscReportEditor.getFromSession(request.getSession(), true).getWorkingReport();
         if (report == null) {
             throw new IllegalStateException("There is no working report");
         }
@@ -71,11 +71,11 @@ public class CustomReportController extends AbstractController implements Initia
             Graph current_graph = report.getGraphs().get(index); 
             PrefabGraph display_graph = getResourceService().getPrefabGraph(current_graph.getGraphtype());
             
-            OnmsResource resource = getKscReportService().getResourceFromGraph(current_graph);
+            OnmsResource resource = getGraphCollectionService().getResourceFromGraph(current_graph);
 
             Calendar begin_time = Calendar.getInstance();
             Calendar end_time = Calendar.getInstance();
-            KSC_PerformanceReportFactory.getBeginEndTime(current_graph.getTimespan(), begin_time, end_time); 
+            GraphCollectionConfigFactory.getBeginEndTime(current_graph.getTimespan(), begin_time, end_time); 
 
             KscResultSet resultSet = new KscResultSet(current_graph.getTitle(), begin_time.getTime(), end_time.getTime(), resource, display_graph);
             resultSets.add(resultSet);
@@ -94,39 +94,39 @@ public class CustomReportController extends AbstractController implements Initia
     }
 
     /**
-     * <p>getKscReportFactory</p>
+     * <p>getGraphCollectionConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @return a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public KSC_PerformanceReportFactory getKscReportFactory() {
-        return m_kscReportFactory;
+    public GraphCollectionConfigFactory getGraphCollectionConfigFactory() {
+        return m_graphCollectionConfigFactory;
     }
 
     /**
-     * <p>setKscReportFactory</p>
+     * <p>setGraphCollectionConfigFactory</p>
      *
-     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param graphCollectionConfigFactory a {@link org.opennms.netmgt.config.GraphCollectionConfigFactory} object.
      */
-    public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
-        m_kscReportFactory = kscReportFactory;
+    public void setGraphCollectionConfigFactory(GraphCollectionConfigFactory graphCollectionConfigFactory) {
+        m_graphCollectionConfigFactory = graphCollectionConfigFactory;
     }
 
     /**
-     * <p>getKscReportService</p>
+     * <p>getGraphCollectionService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public KscReportService getKscReportService() {
-        return m_kscReportService;
+    public GraphCollectionService getGraphCollectionService() {
+        return m_graphCollectionService;
     }
 
     /**
-     * <p>setKscReportService</p>
+     * <p>setGraphCollectionService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @param graphCollectionService a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public void setKscReportService(KscReportService kscReportService) {
-        m_kscReportService = kscReportService;
+    public void setGraphCollectionService(GraphCollectionService graphCollectionService) {
+        m_graphCollectionService = graphCollectionService;
     }
 
     /**
@@ -154,8 +154,8 @@ public class CustomReportController extends AbstractController implements Initia
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
-        Assert.state(m_kscReportService != null, "property kscReportService must be set");
+        Assert.state(m_graphCollectionConfigFactory != null, "property graphCollectionConfigFactory must be set");
+        Assert.state(m_graphCollectionService != null, "property graphCollectionService must be set");
         Assert.state(m_resourceService != null, "property resourceService must be set");
     }
 

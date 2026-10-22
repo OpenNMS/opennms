@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- collectd counterpart to the poller's lastgood/lastfail: the completion time of the most recent
+         successful and the most recent failed data collection for the service. Written by
+         CollectableService after every collection whose status is SUCCEEDED or FAILED. -->
+
+    <!-- One changeset per column, each guarded by its own column check, so a partially applied
+         earlier run (either column present without the other) is completed rather than failed. -->
+
+    <changeSet author="dyancey" id="36.0.5-ifservices-collectlastgood">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="ifservices"/>
+            <not>
+                <columnExists tableName="ifservices" columnName="collectlastgood"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="ifservices">
+            <column name="collectlastgood" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="ifservices" columnName="collectlastgood"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="dyancey" id="36.0.5-ifservices-collectlastfail">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="ifservices"/>
+            <not>
+                <columnExists tableName="ifservices" columnName="collectlastfail"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="ifservices">
+            <column name="collectlastfail" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="ifservices" columnName="collectlastfail"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

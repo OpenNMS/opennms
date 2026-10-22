@@ -204,6 +204,7 @@ import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfi
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { nodeLink } from '@/lib/linkUtils'
 import { MainMenu } from '@/types/mainMenu'
 
 enum DCBModalContentComponentNames {
@@ -226,7 +227,7 @@ const rows = ref(deviceStore.deviceConfigBackupQueryParams.limit || defaultQuery
 const first = computed(() => deviceStore.deviceConfigBackupQueryParams.offset || 0)
 
 const computeNodeLink = (nodeId: number) => {
-  return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
+  return nodeLink(mainMenu.value.baseHref, mainMenu.value.baseNodeUrl, nodeId)
 }
 
 const onNodeLinkClick = (nodeId: number) => {

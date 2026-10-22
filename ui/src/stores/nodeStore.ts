@@ -22,23 +22,74 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { IpInterface, Node, NodeAvailability, Outage, QueryParameters, SnmpInterface } from '@/types'
+import { IpInterface, Node, NodeCriticalPath, QueryParameters, SnmpInterface } from '@/types'
+import { DEFAULT_SELECTION, RangeSelection } from '@/components/Nodes/availabilityRange'
+import { NodeLinkService, SERVICE_LINK_NAMES } from '@/components/Nodes/nodeServiceLinks'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
+
+export type NodeDetailsTab = 'main' | 'additional' | 'network'
 
 export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])
   const totalCount = ref(0)
   const node = ref({} as Node)
+
+  // Whether `node` holds a real node. The store is global and outlives any one page, so
+  // consumers cannot tell an unfetched node from a fetched one -- `node` starts as {}, which is
+  // truthy and answers undefined for every field.
+  const nodeLoaded = ref(false)
+
+  // Whether the last attempt to fetch a node failed, as distinct from not having finished:
+  // a page mid-fetch has nothing to say yet, a failed one has nothing to show at all.
+  const nodeLoadFailed = ref(false)
+
+  // Address of the node's SNMP-primary interface, which the node payload does not carry
+  // (OnmsNode.getPrimaryInterface is @Transient @JsonIgnore). Undefined when the node has none.
+  const snmpPrimaryIpAddress = ref<string | undefined>(undefined)
+
+  // Whether the node is in its requisition, for the Edit in Requisition action. False until
+  // known: offering the link and having it 404 is worse than leaving it out.
+  const existsInRequisition = ref(false)
+
+  // The node's own critical path, for the Path Outage panel; undefined when it has none, or until
+  // known.
+  const criticalPath = ref<NodeCriticalPath | undefined>(undefined)
+
+  // The node's remote-access and web services (Telnet, SSH, HTTP, ...) and where they run, for the
+  // links row's Services menu.
+  const linkServices = ref<NodeLinkService[]>([])
   const snmpInterfaces = ref([] as SnmpInterface[])
   const snmpInterfacesTotalCount = ref(0)
   const ipInterfaces = ref([] as IpInterface[])
   const ipInterfacesTotalCount = ref(0)
-  const availability = ref({} as NodeAvailability)
-  const outages = ref([] as Outage[])
-  const outagesTotalCount = ref(0)
   const nodeQueryParameters = ref({ limit: 50, offset: 0, orderBy: 'label' } as QueryParameters)
+
+  /**
+   * The time range the availability panel is showing.
+   *
+   * Deliberately NOT cleared with the rest when the node changes, and deliberately not held in the
+   * panel: the details page rebuilds that panel for each node, so a range kept there is lost the
+   * moment the user moves on. How someone chose to look at a node is their choice, not that node's
+   * data, so it outlives the node the way a sort order or a column choice would.
+   */
+  const availabilityRange = ref<RangeSelection>(DEFAULT_SELECTION)
+
+  const setAvailabilityRange = (selection: RangeSelection) => {
+    availabilityRange.value = selection
+  }
+
+  /**
+   * Which of the details page's tabs is showing. Kept here rather than in the page for the same
+   * reason as availabilityRange: it is how the user chose to look at nodes, so it carries over
+   * from one node to the next instead of resetting each time the page is rebuilt.
+   */
+  const nodeDetailsTab = ref<NodeDetailsTab>('main')
+
+  const setNodeDetailsTab = (tab: NodeDetailsTab) => {
+    nodeDetailsTab.value = tab
+  }
 
   // map of nodeId to IpInterfaces associated with that node
   const nodeToIpInterfaceMap = ref<Map<string, IpInterface[]>>(new Map<string, IpInterface[]>())
@@ -60,16 +111,164 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  // Every fetch below is sequenced the same way, mirroring getIpInterfacesForNodes: the details
+  // page fires one per node id as the user moves between nodes, and the paginated ones fire
+  // again per page, so responses can come back in any order. A response applies only if no
+  // newer call has started since its request was issued.
+  let nodeSnmpInterfacesRequestId = 0
+  let nodeIpInterfacesRequestId = 0
+
+  // Monotonic id sequencing getNodeById requests, mirroring getIpInterfacesForNodes below: the
+  // details page fires one per node id as the user moves between nodes, and the responses can
+  // come back in any order. Without this a slow response for the node the user left would
+  // overwrite the one they are on -- and a slow FAILURE would wipe every panel's data.
+  let nodeRequestId = 0
+
   const getNodeById = async (n: Node) => {
+    const requestId = ++nodeRequestId
+
+    // Clear first: until this resolves there is no node to show, and the previous one belongs
+    // to a different page. A failed request leaves nothing loaded rather than the node the
+    // user navigated away from.
+    node.value = {} as Node
+    nodeLoaded.value = false
+    nodeLoadFailed.value = false
+
     const resp = await API.getNodeById(n.id)
+
+    if (requestId !== nodeRequestId) {
+      return
+    }
 
     if (resp) {
       node.value = resp
+      nodeLoaded.value = true
+
+      return
+    }
+
+    nodeLoadFailed.value = true
+
+    // Every panel fetches by node id on its own and only replaces its rows on a successful
+    // response, so without this the previous node's data stays on screen under an id that has
+    // no node. Events, alarms and outages live in their own stores, whose node slices are stamped
+    // with the node id, so their panels can tell for themselves.
+    ipInterfaces.value = []
+    ipInterfacesTotalCount.value = 0
+    snmpInterfaces.value = []
+    snmpInterfacesTotalCount.value = 0
+    snmpPrimaryIpAddress.value = undefined
+    existsInRequisition.value = false
+    criticalPath.value = undefined
+    linkServices.value = []
+  }
+
+  let snmpPrimaryRequestId = 0
+
+  /**
+   * Fetch the address of the node's SNMP-primary interface, which the "Update SNMP Information"
+   * action needs. Asked for directly rather than read off `ipInterfaces`: that holds whatever
+   * page the IP Interfaces table is showing, which need not include the primary.
+   */
+  const getNodeSnmpPrimaryInterface = async (id: string) => {
+    const requestId = ++snmpPrimaryRequestId
+
+    snmpPrimaryIpAddress.value = undefined
+
+    const resp = await API.getNodeIpInterfaces(id, {
+      limit: 1,
+      offset: 0,
+      _s: 'snmpPrimary==P'
+    })
+
+    // Sequenced like getNodeById above. A stale address here is worse than a missing one: the
+    // Update SNMP action would point at an address that is not this node's, and the form
+    // rewrites SNMP configuration for whatever address it is handed.
+    if (requestId !== snmpPrimaryRequestId) {
+      return
+    }
+
+    if (resp) {
+      snmpPrimaryIpAddress.value = resp.ipInterface[0]?.ipAddress
+    }
+  }
+
+  let linkServicesRequestId = 0
+
+  /**
+   * Fetch the node's services that the Services menu links to. Sequenced like the fetches above,
+   * so a slow answer for the node the user left cannot link this one to another node's address.
+   */
+  const getNodeLinkServices = async (id: string) => {
+    const requestId = ++linkServicesRequestId
+
+    linkServices.value = []
+
+    const result = await API.getNodeServicesByName(id, SERVICE_LINK_NAMES)
+
+    if (requestId === linkServicesRequestId && result.success) {
+      linkServices.value = result.payload ?? []
+    }
+  }
+
+  let criticalPathRequestId = 0
+
+  /**
+   * Fetch the node's critical path. Sequenced like the fetches above: a slow answer for the node
+   * the user left must not show its critical path under this one.
+   */
+  const getNodeCriticalPath = async (id: string) => {
+    const requestId = ++criticalPathRequestId
+
+    criticalPath.value = undefined
+
+    const result = await API.getNodeCriticalPath(id)
+
+    if (requestId === criticalPathRequestId && result.success) {
+      criticalPath.value = result.payload ?? undefined
+    }
+  }
+
+  let existsInRequisitionRequestId = 0
+
+  /**
+   * Find out whether the node is in its requisition, which the Edit in Requisition action needs.
+   * A node with no foreign source is in none, so nothing is asked. Sequenced like the fetches
+   * above, so a slow answer for the node the user left cannot offer this one a link it does not
+   * have.
+   */
+  const getNodeExistsInRequisition = async (n: Pick<Node, 'foreignSource' | 'foreignId'>) => {
+    const requestId = ++existsInRequisitionRequestId
+
+    existsInRequisition.value = false
+
+    if (!n.foreignSource || !n.foreignId) {
+      return
+    }
+
+    const exists = await API.nodeExistsInRequisition(n.foreignSource, n.foreignId)
+
+    if (requestId === existsInRequisitionRequestId) {
+      existsInRequisition.value = exists === true
     }
   }
 
   const getNodeSnmpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++nodeSnmpInterfacesRequestId
+
+    // Clear first, the same way getNodeById does: until this resolves there are no rows for THIS
+    // node, and the rows still up belong to a different one. The details page keeps the table
+    // mounted across node ids, so leaving them there renders the previous node's rows while the
+    // page (and every link built from the route) has already moved on -- and an ifIndex collides
+    // across nodes, so such a link goes somewhere real and wrong rather than 404ing.
+    snmpInterfaces.value = []
+    snmpInterfacesTotalCount.value = 0
+
     const resp = await API.getNodeSnmpInterfaces(payload.id, payload.queryParameters)
+
+    if (requestId !== nodeSnmpInterfacesRequestId) {
+      return
+    }
 
     if (resp) {
       snmpInterfaces.value = resp.snmpInterface
@@ -78,11 +277,28 @@ export const useNodeStore = defineStore('nodeStore', () => {
   }
 
   const getNodeIpInterfaces = async (payload: { id: string; queryParameters?: QueryParameters }) => {
+    const requestId = ++nodeIpInterfacesRequestId
+
+    // Cleared first for the same reason as getNodeSnmpInterfaces above.
+    ipInterfaces.value = []
+    ipInterfacesTotalCount.value = 0
+
     const resp = await API.getNodeIpInterfaces(payload.id, payload.queryParameters)
+
+    if (requestId !== nodeIpInterfacesRequestId) {
+      return
+    }
 
     if (resp) {
       ipInterfaces.value = resp.ipInterface
       ipInterfacesTotalCount.value = resp.totalCount
+
+      // Also record them against the node, which is what the node info dialog reads to pick the
+      // node's best IP. The details page used to issue a second, near-identical limit=0 request
+      // just to fill this; the rows are right here. Replaced wholesale, like
+      // getIpInterfacesForNodes: this action only ever serves one node at a time, and the node
+      // list uses that one instead, so the two never populate the map on the same page.
+      nodeToIpInterfaceMap.value = new Map([[payload.id, resp.ipInterface]])
     }
   }
 
@@ -181,23 +397,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeToSnmpInterfaceMap.value = grouped
   }
 
-  const getNodeAvailabilityPercentage = async (id: string) => {
-    const av = await API.getNodeAvailabilityPercentage(id)
-
-    if (av) {
-      availability.value = av
-    }
-  }
-
-  const getNodeOutages = async (payload: { id: string; queryParameters?: QueryParameters }) => {
-    const resp = await API.getNodeOutages(payload.id, payload.queryParameters)
-
-    if (resp) {
-      outages.value = resp.outage
-      outagesTotalCount.value = resp.totalCount
-    }
-  }
-
   const setNodeQueryParameters = async (params: QueryParameters) => {
     nodeQueryParameters.value = {
       ...params
@@ -208,24 +407,33 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodes,
     totalCount,
     node,
+    nodeLoaded,
+    nodeLoadFailed,
+    snmpPrimaryIpAddress,
+    existsInRequisition,
+    criticalPath,
+    linkServices,
     snmpInterfaces,
     snmpInterfacesTotalCount,
     ipInterfaces,
     ipInterfacesTotalCount,
-    availability,
     nodeToIpInterfaceMap,
     nodeToSnmpInterfaceMap,
+    availabilityRange,
+    setAvailabilityRange,
+    nodeDetailsTab,
+    setNodeDetailsTab,
     nodeQueryParameters,
-    outages,
-    outagesTotalCount,
     getIpInterfacesForNodes,
     getSnmpInterfacesForNodes,
     getNodes,
     getNodeById,
     getNodeSnmpInterfaces,
     getNodeIpInterfaces,
-    getNodeAvailabilityPercentage,
-    getNodeOutages,
+    getNodeSnmpPrimaryInterface,
+    getNodeExistsInRequisition,
+    getNodeCriticalPath,
+    getNodeLinkServices,
     setNodeQueryParameters
   }
 })
