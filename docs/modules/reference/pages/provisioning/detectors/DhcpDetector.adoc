@@ -3,7 +3,7 @@
 
 The DhcpDetector finds DHCP servers in your network.
 It uses the same DHCP client as the xref:service-assurance/monitors/DhcpMonitor.adoc[DhcpMonitor]: it sends a DISCOVER message to the interface and detects the service when the server answers with a valid response.
-The CAUTION about UDP ports 67 and 68 on the DhcpMonitor page also applies to this detector.
+The CAUTION about UDP ports 67 and 68 on the xref:service-assurance/monitors/DhcpMonitor.adoc[DhcpMonitor] page also applies to this detector.
 
 == Detector facts
 

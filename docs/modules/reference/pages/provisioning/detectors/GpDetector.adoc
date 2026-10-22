@@ -44,6 +44,10 @@ The path must be inside `$\{OPENNMS_HOME}`.
 
 3+| *Optional*
 
+| match
+| Accepted, but not used: only `banner` decides the result.
+| none
+
 | args
 | Additional arguments appended to the command line.
 | none
