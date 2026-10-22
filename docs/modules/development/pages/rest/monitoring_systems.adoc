@@ -8,8 +8,8 @@ and report events that occur on the network.
 Examples of monitoring systems include:
 
 - OpenNMS (main)
-- OpenNMS Remote Poller
 - OpenNMS Minion
+- OpenNMS Sentinel
 
 NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
 
