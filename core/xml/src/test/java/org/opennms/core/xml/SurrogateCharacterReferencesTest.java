@@ -35,6 +35,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
@@ -160,6 +161,65 @@ public class SurrogateCharacterReferencesTest {
         }
     }
 
+    /**
+     * Literals in the document type declaration may hold markup-like text; a section opener
+     * in there must not swallow the real CDATA section that follows.
+     */
+    @Test
+    public void documentTypeDeclarationIsLiteral() throws IOException {
+        for (final String literal : new String[] {
+                "<!DOCTYPE r [<!ENTITY e \"<!--\">]><r><![CDATA[-->&#55357;&#56489;]]></r>",
+                "<!DOCTYPE r [<!ENTITY e '<?'>]><r><![CDATA[?>&#55357;&#56489;]]></r>",
+                "<!DOCTYPE r [<!ENTITY e \"&#55357;&#56489;\">]><r/>",
+        }) {
+            assertSame(literal, SurrogateCharacterReferences.repair(literal));
+            assertEquals(literal, readAll(SurrogateCharacterReferences.repairing(new OneCharReader(literal))));
+            assertArrayEquals(literal.getBytes(StandardCharsets.UTF_8), readAll(SurrogateCharacterReferences.repairing(new ByteArrayInputStream(literal.getBytes(StandardCharsets.UTF_8)))));
+        }
+        // the declaration ends at the first '>' outside the subset, a literal or a comment
+        assertEquals("<!DOCTYPE r [<!-- ]> --><!ENTITY e '>'><?pi ]>?>]><r>" + POO + "</r>",
+                SurrogateCharacterReferences.repair("<!DOCTYPE r [<!-- ]> --><!ENTITY e '>'><?pi ]>?>]><r>&#55357;&#56489;</r>"));
+        assertEquals("<!DOCTYPE r SYSTEM \"r.dtd\"><r>" + POO + "</r>",
+                SurrogateCharacterReferences.repair("<!DOCTYPE r SYSTEM \"r.dtd\"><r>&#55357;&#56489;</r>"));
+    }
+
+    /**
+     * ISO-2022-JP switches to two-byte JIS characters in the ASCII range: U+0393 U+4E80
+     * U+6982 U+5144 encode to the bytes of {@code &#55357;}. Only an encoding in which every
+     * ASCII byte is that character is scanned.
+     */
+    @Test
+    public void nonAsciiCompatibleEncodingsPassThrough() throws IOException {
+        final Charset iso2022jp = Charset.forName("ISO-2022-JP");
+        final String jis = new String("\u001b$B&#55357;&#56489;\u001b(B".getBytes(StandardCharsets.US_ASCII), iso2022jp);
+        final byte[] lookalike = ("<?xml version=\"1.0\" encoding=\"ISO-2022-JP\"?><a>" + jis + "</a>").getBytes(iso2022jp);
+        assertTrue(new String(lookalike, StandardCharsets.US_ASCII).contains("&#55357;&#56489;"));
+        assertArrayEquals(lookalike, readAll(SurrogateCharacterReferences.repairing(new ByteArrayInputStream(lookalike))));
+
+        final String pair = "<a>&#55357;&#56489;</a>";
+        for (final String encoding : new String[] { "Shift_JIS", "GB18030", "ISO-2022-KR", "no-such-encoding" }) {
+            final byte[] input = ("<?xml version='1.0' encoding='" + encoding + "'?>" + pair).getBytes(StandardCharsets.US_ASCII);
+            assertArrayEquals(encoding, input, readAll(SurrogateCharacterReferences.repairing(new ByteArrayInputStream(input))));
+        }
+        for (final String encoding : new String[] { "UTF-8", "utf-8", "ISO-8859-1", "latin1", "windows-1252", "US-ASCII" }) {
+            final byte[] input = ("\ufeff<?xml version=\"1.0\"  encoding = \"" + encoding + "\" ?>" + pair).getBytes(StandardCharsets.UTF_8);
+            assertEquals(encoding, new String(input, StandardCharsets.UTF_8).replace(pair, "<a>&#128169;</a>"),
+                    new String(readAll(SurrogateCharacterReferences.repairing(new ByteArrayInputStream(input))), StandardCharsets.UTF_8));
+        }
+        // EBCDIC does not even spell the markup in ASCII
+        final byte[] ebcdic = "<a>&#55357;&#56489;</a>".getBytes(Charset.forName("IBM037"));
+        assertArrayEquals(ebcdic, readAll(SurrogateCharacterReferences.repairing(new ByteArrayInputStream(ebcdic))));
+    }
+
+    /** A document with ordinary references is scanned but never copied; a string comes back as the same instance. */
+    @Test
+    public void unchangedTextIsNotCopied() throws IOException {
+        final String xml = "<?xml version=\"1.0\"?><a b=\"&#10;\">&#x1F4A9; &amp; <![CDATA[&#55357;]]> " + POO + "</a>";
+        assertSame(xml, SurrogateCharacterReferences.repair(xml));
+        assertEquals(xml, readAll(SurrogateCharacterReferences.repairing(new StringReader(xml))));
+        assertArrayEquals(xml.getBytes(StandardCharsets.UTF_8), readAll(SurrogateCharacterReferences.repairing(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)))));
+    }
+
     /** One large write is drained in a single pass, not chunk by chunk with a shrinking buffer. */
     @Test
     public void oneLargeWriteStaysLinear() throws IOException {
@@ -178,6 +238,16 @@ public class SurrogateCharacterReferencesTest {
         writer.finish();
         final long elapsedMillis = (System.nanoTime() - start) / 1_000_000;
         assertTrue("took " + elapsedMillis + " ms", elapsedMillis < 2_000);
+    }
+
+    private static String readAll(final Reader reader) throws IOException {
+        final StringWriter out = new StringWriter();
+        final char[] buf = new char[7];
+        int n;
+        while ((n = reader.read(buf, 0, buf.length)) >= 0) {
+            out.write(buf, 0, n);
+        }
+        return out.toString();
     }
 
     private static byte[] readAll(final InputStream stream) throws IOException {
