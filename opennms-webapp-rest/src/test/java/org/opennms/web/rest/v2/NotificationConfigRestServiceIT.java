@@ -45,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
@@ -165,7 +166,7 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         FileUtils.writeStringToFile(new File(etc, "users.xml"), "<?xml version=\"1.0\"?>"
                 + "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\">"
                 + "<header><rev>.9</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
-                + "<users><user><user-id>admin</user-id><full-name>Administrator</full-name></user></users>"
+                + "<users><user><user-id>admin</user-id><full-name>Administrator</full-name><password salt=\"true\">x</password></user></users>"
                 + "</userinfo>", Charset.defaultCharset());
 
 
@@ -197,6 +198,9 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         // had opennms.home pointed elsewhere; pin a factory built against the
         // test home so the seeded roles are visible.
         GroupFactory.setInstance(new GroupFactory());
+        // The same for the users: the DAO context installs the database manager, but this test's
+        // target validation works on the users.xml written above.
+        UserFactory.setInstance(new UserFactory());
         // Seed the node the mocked filter matches through Hibernate (a committed
         // transaction), so the service's PathOutageDao/NodeDao — which read via
         // Hibernate, not DataSourceFactory — can see it for the foreign key.

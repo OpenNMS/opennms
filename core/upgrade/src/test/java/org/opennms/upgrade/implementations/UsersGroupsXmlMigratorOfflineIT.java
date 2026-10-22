@@ -466,4 +466,49 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     private static List<String> usernames(final List<UserAccount> users) {
         return users.stream().map(UserAccount::getUsername).collect(Collectors.toList());
     }
+
+    @Test
+    public void testMarksTheDatabaseAsInitialized() throws Exception {
+        // also with no users to copy: the default-users seed must not add admin/admin to it later
+        write("users.xml", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"/>");
+        migrate();
+        assertEquals(1, count("usermgmt_initialized"));
+    }
+
+    @Test
+    public void testMarksADatabaseThatAlreadyHasUserData() throws Exception {
+        m_jdbc.update("INSERT INTO users (id, username, password_salted, created_time) VALUES (nextval('users_id_seq'), 'jane', false, NOW())");
+        migrate();
+        assertEquals(1, count("usermgmt_initialized"));
+    }
+
+    @Test
+    public void testDoesNotMarkAFailedMigration() throws Exception {
+        write("users.xml", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users><user/></users></userinfo>");
+        assertThrows(OnmsUpgradeException.class, this::migrate);
+        assertEquals(0, count("usermgmt_initialized"));
+    }
+
+    @Test
+    public void testRunsOnEveryInstall() throws Exception {
+        // the run-once rule is per database (usermgmt_initialized), not per etc: a restored or new database on an
+        // upgraded host still gets the users of users.xml
+        assertFalse(new UsersGroupsXmlMigratorOffline().runOnlyOnce());
+    }
+
+    @Test
+    public void testSkipsADatabaseThatWasInitialized() throws Exception {
+        copyFixtures();
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");
+        migrate();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+    }
+
+    @Test
+    public void testDoesNotMarkADatabaseWithoutUsersXml() throws Exception {
+        // the default-users seed adds admin/admin to such a database (a new installation once the files are gone)
+        migrate();
+        assertEquals(0, count("usermgmt_initialized"));
+    }
 }

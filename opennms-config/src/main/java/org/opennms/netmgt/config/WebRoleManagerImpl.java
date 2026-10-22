@@ -235,6 +235,10 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         public void save() {
             try {
                 Role role = (m_role == null ? new Role() : m_role);
+                if (m_role != null && m_flags.get(NAME) && !super.getName().equals(m_role.getName())) {
+                    // rename explicitly: saving the renamed object would add a role under the new name
+                    m_groupManager.renameRole(m_role.getName(), super.getName());
+                }
                 if (m_flags.get(DESCR)) {
                     role.setDescription(super.getDescription());
                 }
@@ -247,18 +251,16 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
                 if (m_flags.get(NAME)) {
                     role.setName(super.getName());
                 }
-                
+
                 Collection<WebSchedEntry> newEntries = getNewEntries();
                 for (WebSchedEntry entry : newEntries) {
                     entry.update(role);
                 }
-                
-                if (m_role != null) {
-                    m_groupManager.saveGroups();
-                } else {
-                    m_groupManager.saveRole(role);
-                    m_role = role;
-                }
+
+                // saveRole() puts this object back into the cache by name: if the cache was reloaded since
+                // getRole(), saving the cache as it is would lose the edit
+                m_groupManager.saveRole(role);
+                m_role = role;
             } catch (Throwable e) {
                 throw new WebRolesException("Unable to save role "+getName()+". "+e.getMessage(), e);
             }

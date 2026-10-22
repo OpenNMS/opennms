@@ -38,6 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -61,12 +63,15 @@ import org.opennms.bootstrap.FilesystemPermissionException;
 import org.opennms.bootstrap.FilesystemPermissionValidator;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.SimpleDataSource;
+import org.opennms.core.password.DatabasePasswords;
+import org.opennms.core.password.UserMgmtStoreSetting;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.upgrade.implementations.UserMgmtInitialized;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
@@ -293,10 +298,57 @@ public class Installer {
     }
 
     protected void resetWebAppAdminPassword() throws Exception {
+        if (UserMgmtStoreSetting.isDatabase(new File(m_opennms_home))) {
+            try {
+                setAdminPasswordInDatabase(m_resetWebAppAdminPassword);
+            } catch (final IllegalArgumentException e) {
+                // -R runs before the upgrade tasks: on an upgrade from 36.x, the migrator copies users.xml later.
+                // After the migration, users.xml stays in etc, but nothing reads it.
+                final File home = new File(m_opennms_home);
+                if (!new File(home, "etc" + File.separator + "users.xml").exists() || isUserDataInitialized()) {
+                    System.out.println("The password was NOT set: the admin user does not exist in the database."
+                            + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
+                    return;
+                }
+                resetAdminPasswordInUsersXml(m_resetWebAppAdminPassword);
+            }
+        } else {
+            resetAdminPasswordInUsersXml(m_resetWebAppAdminPassword);
+        }
+        System.out.println("Password for the web application admin user was set.");
+    }
+
+    protected void setAdminPasswordInDatabase(final String password) throws Exception {
+        DatabasePasswords.setPassword(openNmsDataSource(), "admin", password);
+    }
+
+    /**
+     * @return true if the user data of the database is initialized (usermgmt_initialized): the migrator copied
+     *         users.xml into it, or the default users were added. The migrator runs once per database, not once per
+     *         etc, so the upgrade status file does not tell.
+     */
+    protected boolean isUserDataInitialized() throws Exception {
+        try (final Connection connection = openNmsDataSource().getConnection()) {
+            return UserMgmtInitialized.isSet(connection);
+        } catch (final SQLException e) {
+            // the table does not exist yet: a database before 37
+            return false;
+        }
+    }
+
+    private static DataSource openNmsDataSource() throws Exception {
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+        final JdbcDataSource dsConfig;
+        try (final InputStream is = new FileInputStream(cfgFile)) {
+            dsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(OPENNMS_DATA_SOURCE_NAME);
+        }
+        return new SimpleDataSource(dsConfig);
+    }
+
+    protected void resetAdminPasswordInUsersXml(final String password) throws Exception {
         UserFactory.init();
         UserManager userManager = UserFactory.getInstance();
-        userManager.setUnencryptedPassword("admin", m_resetWebAppAdminPassword);
-        System.out.println("Password for the web application admin user was set.");
+        userManager.setUnencryptedPassword("admin", password);
     }
 
     private void checkIPv6() {

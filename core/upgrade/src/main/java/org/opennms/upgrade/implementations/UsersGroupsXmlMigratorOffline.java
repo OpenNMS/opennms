@@ -69,8 +69,11 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * Copies users.xml, groups.xml and security-roles.properties into the user management tables (37.0.0).
  *
  * <p>The task copies only into a database without user data: if there is a user, a group, an on-call
- * role or a custom security role, it copies nothing and logs why. With the run-once marker of
- * {@code Upgrade}, this makes the copy a one-time step of the upgrade that never changes existing data.</p>
+ * role or a custom security role, it copies nothing and logs why. It runs on every install, but once per
+ * database: it sets the usermgmt_initialized marker when it copied a users.xml (also one without users) or
+ * found data already there, and it skips a database with the marker. A run-once marker in etc would skip a
+ * restored or new database on an upgraded host, and the default-users seed would then add admin/admin
+ * instead of the users of users.xml. Thus, the copy never changes existing data.</p>
  *
  * <p>Everything is written in one transaction. Entries that the tables cannot hold are skipped with a message: unknown security roles (which login drops today as
  * well), group members and schedule users that do not exist, on-call roles whose membership group or
@@ -91,7 +94,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     private static final List<String> TABLES = Arrays.asList(
             "security_roles", "users", "user_contacts", "user_duty_schedules", "user_security_roles",
             "groups", "group_members", "group_duty_schedules",
-            "oncall_roles", "oncall_schedules", "oncall_schedule_times");
+            "oncall_roles", "oncall_schedules", "oncall_schedule_times", "usermgmt_initialized");
 
     // the column sizes in core/schema/src/main/liquibase/37.0.0/changelog.xml
     private static final int SECURITY_ROLE_NAME_LENGTH = 128;
@@ -134,7 +137,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public boolean runOnlyOnce() {
-        return true;
+        // once per database: see the class comment
+        return false;
     }
 
     @Override
@@ -158,9 +162,14 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     @Override
     public void execute() throws OnmsUpgradeException {
         try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            if (UserMgmtInitialized.isSet(connection)) {
+                log("The user data of this database was initialized before (see the table usermgmt_initialized), so nothing is copied from the files\n");
+                return;
+            }
             final String existingData = existingData(connection);
             if (existingData != null) {
                 log("The database already contains user data (%s), so nothing is copied from the files\n", existingData);
+                UserMgmtInitialized.set(connection, getId());
                 return;
             }
 
@@ -178,6 +187,11 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                 migration.users(userinfo == null ? Collections.emptyList() : userinfo.getUsers());
                 migration.groups(groupinfo == null ? Collections.emptyList() : groupinfo.getGroups());
                 migration.onCallRoles(groupinfo == null ? Collections.emptyList() : groupinfo.getRoles());
+                if (userinfo != null) {
+                    // also with no users: the default-users seed must not add admin/admin to this database later.
+                    // Without a users.xml (a new installation once the files are gone), the seed adds them.
+                    UserMgmtInitialized.set(connection, getId());
+                }
                 connection.commit();
             } catch (final SQLException | RuntimeException e) {
                 try {

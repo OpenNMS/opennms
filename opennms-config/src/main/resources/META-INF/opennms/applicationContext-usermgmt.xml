@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <!-- Users, groups and on-call roles: from the database (org.opennms.usermgmt.store=db, the default) or from
+       users.xml and groups.xml (xml). Imported by applicationContext-dao.xml, because the database managers
+       need the DAOs. UserMgmtManagers reads the property and rejects an invalid value. -->
+
+  <bean id="userMgmtManagers" class="org.opennms.netmgt.config.UserMgmtManagers">
+    <constructor-arg ref="userAccountDao"/>
+    <constructor-arg ref="userGroupDao"/>
+    <constructor-arg ref="onCallRoleDao"/>
+    <constructor-arg ref="securityRoleDao"/>
+    <constructor-arg ref="userMgmtVersionDao"/>
+    <constructor-arg ref="transactionManager"/>
+  </bean>
+
+  <bean id="groupManager" factory-bean="userMgmtManagers" factory-method="getGroupManager"/>
+  <bean id="userManager" factory-bean="userMgmtManagers" factory-method="getUserManager"/>
+
+  <!-- The servlets, JSPs and other static callers use the factories -->
+  <bean id="userMgmtFactoryRegistration" class="org.opennms.netmgt.config.UserMgmtFactoryRegistration">
+    <constructor-arg ref="userManager"/>
+    <constructor-arg ref="groupManager"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.config.api.GroupConfig" ref="groupManager" />
+  <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
+
+  <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
+    <property name="groupManager" ref="groupManager"/>
+  </bean>
+</beans>
