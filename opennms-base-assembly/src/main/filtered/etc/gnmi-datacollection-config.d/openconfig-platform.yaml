@@ -47,3 +47,14 @@ groups:
       output-power/instant: { type: gauge, name: optTxPower }  # dBm
       laser-bias-current/instant: { type: gauge, name: optLaserBias }  # mA
       present: { type: string, name: optPresent }
+
+# Catch-all alternative: every numeric leaf below a component as a gauge, named
+# after the relative leaf path, e.g. state-temperature-instant or
+# cpu-utilization-state-avg. Uncomment only after removing the groups above,
+# otherwise shared leaves are stored twice. See openconfig-interfaces.yaml.
+#  - name: oc-component-all
+#    match: /components/component
+#    resource-type: ocComponent
+#    instance: "{component.name}"
+#    attributes: all
+#    default-type: gauge

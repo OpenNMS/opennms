@@ -35,3 +35,19 @@ groups:
       physical: { type: gauge, name: memPhysical }
       used: { type: gauge, name: memUsed }
       free: { type: gauge, name: memFree }
+
+# Catch-all alternative: every numeric leaf under the state containers as a gauge,
+# named after the relative leaf path, e.g. total-instant or physical. Uncomment
+# only after removing the groups above, otherwise shared leaves are stored twice.
+# See openconfig-interfaces.yaml.
+#  - name: oc-system-cpu-all
+#    match: system-cpu
+#    resource-type: ocCpu
+#    instance: "{cpu.index}"
+#    attributes: all
+#    default-type: gauge
+#  - name: oc-system-memory-all
+#    match: system-memory
+#    resource-type: node
+#    attributes: all
+#    default-type: gauge

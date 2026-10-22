@@ -77,3 +77,34 @@ groups:
       queued-bytes: { type: counter, name: qQueuedBytes }
       hp-red-drop-pkts: { type: counter, name: qHpRedDropPkts }
       lp-red-drop-pkts: { type: counter, name: qLpRedDropPkts }
+
+# Catch-all alternative. "attributes: all" collects every numeric leaf below the
+# match path, named after the leaf path relative to match with "/" replaced by "-".
+# Strings are not collected by "all", so list them explicitly. Names longer than
+# 19 characters need a "name:" when you persist to RRD. Uncomment these groups
+# only after removing the explicit groups above: two groups on one leaf store it
+# twice. port-speed stays a string such as SPEED_10GB; use high-speed as a gauge.
+#  - name: oc-if-all
+#    match: if-counters
+#    resource-type: interface
+#    instance: "{interface.name}"
+#    attributes: all
+#    default-type: counter
+#  - name: oc-if-state-all
+#    match: if-state
+#    resource-type: interface
+#    instance: "{interface.name}"
+#    attributes:
+#      ifindex: { type: gauge }
+#      mtu: { type: gauge }
+#      high-speed: { type: gauge }
+#      description: { type: string }
+#      oper-status: { type: string }
+#      admin-status: { type: string }
+#      port-speed: { type: string }
+#  - name: oc-subif-all
+#    match: subif-counters
+#    resource-type: interface
+#    instance: "{interface.name}.{subinterface.index}"
+#    attributes: all
+#    default-type: counter
