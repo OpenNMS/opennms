@@ -131,5 +131,18 @@ public class InetAddressUtilsTest {
         InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.255.251.0"));
     }
 
+    @Test
+    public void shouldMatchIpv4NetworksWithoutAddressArrayExtraction() {
+        Assert.assertTrue(InetAddressUtils.inSameNetwork(
+                InetAddressUtils.addr("192.168.1.10"),
+                InetAddressUtils.addr("192.168.1.99"),
+                InetAddressUtils.addr("255.255.255.0")));
+
+        Assert.assertFalse(InetAddressUtils.inSameNetwork(
+                InetAddressUtils.addr("192.168.1.10"),
+                InetAddressUtils.addr("192.168.2.99"),
+                InetAddressUtils.addr("255.255.255.0")));
+    }
+
 
 }
