@@ -69,6 +69,7 @@ Matching is case-sensitive by default.
 Use a character class such as `[Ss][Ss][Hh]` or the inline flag `(?i)` to ignore case.
 
 If the banner does not match, the service is considered down without further retries.
+If the server opens the connection and then closes it before it sends a banner, the service is considered down with the reason `server closed connection before banner was received.`
 If the expression is not a valid Java regular expression, the monitor logs the error and reports the service as down.
 
 .Example banner expressions
