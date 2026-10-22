@@ -92,3 +92,52 @@ Based on this example and under the assumption that a node provides correspondin
 | myHardware.aTable[.2].anotherEntryValue
 | anotherValue2
 |===
+
+[[snmp-metadata-karaf]]
+== Manually trigger the SNMP metadata adapter
+
+When the adapter is enabled (`enabled="true"`; the shipped configuration sets `enabled="false"`), it runs when Provisiond adds or updates a node.
+You can use the `opennms:snmp-metadata-provisioning-adapter` xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] command to run it on demand.
+This is useful when you are writing or changing `snmp-metadata-adapter-configuration.xml` and want to check which metadata entries a node produces without waiting for the next rescan, or when you want to refresh the `snmp` metadata of existing nodes after a configuration change.
+
+The command accepts exactly one of the following node selection options:
+
+[options="header", cols="1,3"]
+|===
+| Option
+| Description
+
+| `-i`, `--id`
+| Process the node with the given node ID.
+
+| `-a`, `--all`
+| Process all nodes.
+
+| `-r`, `--regexp`
+| Process all nodes whose label matches the given regular expression.
+|===
+
+By default, the command performs a dry run: it queries each selected node and prints the resulting metadata entries in a table with the columns `Context`, `Key`, and `Value`, but it does not store them.
+Add the `-p` (`--persist`) option to store the results in the node's `snmp` metadata context, applying the configured `resultsBehavior`.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms:snmp-metadata-provisioning-adapter --id 42            <1>
+admin@opennms()> opennms:snmp-metadata-provisioning-adapter --regexp '^core-' <2>
+admin@opennms()> opennms:snmp-metadata-provisioning-adapter --all --persist   <3>
+----
+<1> Prints the metadata entries that the adapter produces for the node with ID `42`.
+<2> Prints the metadata entries for every node whose label starts with `core-`.
+<3> Queries all nodes and stores the results.
+
+Keep the following in mind when you use the command:
+
+* The adapter queries the node's primary interface with the SNMP configuration that applies to that interface and location.
+The command skips a node that has no primary interface or no System Object ID.
+It prints an error line for a node without a primary interface in both modes, and for a node without a System Object ID only in a dry run.
+* A dry run ignores the `enabled` attribute in `snmp-metadata-adapter-configuration.xml`, so you can test a configuration before you enable the adapter.
+With `--persist`, the command does nothing for a node when the adapter is disabled.
+* With `--persist`, the command does not print the metadata entries; view them on the node's page in the web UI or through the REST API.
+* Running the command with `--all` performs an SNMP walk for every matching configuration on every node, which can take a long time and generate significant SNMP traffic in large installations.
