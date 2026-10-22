@@ -11,7 +11,6 @@ Optionally, the banner line the node provides may be parsed and compared against
 
 The SshMonitor only tests that the SSH port is accepting connections.
 The xref:service-assurance/monitors/MinaSshMonitor.adoc[MinaSshMonitor] also tests connecting and authenticating to a node via SSH.
-The deprecated xref:service-assurance/monitors/JschSshMonitor.adoc[JschSshMonitor] passes every poll to the SshMonitor.
 
 == Monitor facts
 

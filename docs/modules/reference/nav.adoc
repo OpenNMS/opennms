@@ -62,7 +62,6 @@
 ** xref:service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
 ** xref:service-assurance/monitors/JmxMonitor.adoc[]
 ** xref:service-assurance/monitors/JolokiaBeanMonitor.adoc[]
-** xref:service-assurance/monitors/JschSshMonitor.adoc[]
 ** xref:service-assurance/monitors/LaTableMonitor.adoc[]
 ** xref:service-assurance/monitors/LdapMonitor.adoc[]
 ** xref:service-assurance/monitors/LdapsMonitor.adoc[]
