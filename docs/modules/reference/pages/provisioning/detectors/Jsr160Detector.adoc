@@ -69,6 +69,7 @@ Valid values are `STANDARD`, `PASSWORD_CLEAR`, and `SASL`.
 
 | retries
 | Number of connection attempts.
+A value of `0` makes no attempt, so the service is never detected.
 | 1
 
 | timeout
