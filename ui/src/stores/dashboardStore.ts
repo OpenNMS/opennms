@@ -25,6 +25,7 @@ import type { DashboardFilter, DashboardLayout, DashboardPanel, PanelHeightMode,
 import { createDefaultLayout, ROW_PX } from '@/components/Dashboard/defaultLayout'
 import { getPanelDefinition } from '@/components/Dashboard/registry'
 import { getSystemDashboard, saveSystemDashboard } from '@/services/dashboardService'
+import { invalidateKpiSources } from '@/services/topnService'
 
 // Dependency-free RFC-4122 v4 UUID for panel ids. crypto.getRandomValues works
 // in every context, whereas crypto.randomUUID requires a secure context — which
@@ -246,6 +247,7 @@ export const useDashboardStore = defineStore('dashboardStore', {
       }
     },
     tickRefresh() {
+      invalidateKpiSources()
       this.refreshTick++
     }
   }

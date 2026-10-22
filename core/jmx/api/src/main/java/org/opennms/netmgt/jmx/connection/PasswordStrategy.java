@@ -79,7 +79,7 @@ public interface PasswordStrategy {
     PasswordStrategy STANDARD = (env, config) -> {
         // If we have credentials we will apply them even if strategy is STANDARD
         if (config.hasCredentials()) {
-            LoggerFactory.getLogger(PasswordStrategy.class).warn("PasswordStrategy is STANDARD but credentials are provided. Using PASSWORD_CLEAR instead.");
+            LoggerFactory.getLogger(PasswordStrategy.class).debug("PasswordStrategy is STANDARD but credentials are provided. Using PASSWORD_CLEAR instead.");
             PASSWORD_CLEAR.apply(env, config);
         }
     };
