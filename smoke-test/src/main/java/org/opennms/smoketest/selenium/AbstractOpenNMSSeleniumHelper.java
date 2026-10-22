@@ -299,7 +299,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
      * skip the password gate page and then close the Usage Statistics Sharing dialog if present.
      */
     public void login() {
-        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, true, true, true, false);
+        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+    }
+
+    /**
+     * Standard login with the given credentials. Navigate to login page, log in,
+     * skip the password gate page if applicable and close the Usage Statistics Sharing dialog if present.
+     */
+    public void login(final String username, final String password) {
+        login(username, password, true, true, true, false);
     }
 
     /**
