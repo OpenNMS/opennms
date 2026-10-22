@@ -29,4 +29,26 @@
         </sql>
     </changeSet>
 
+    <!-- Nothing sends or handles this event; rows a user has edited are left alone. -->
+    <changeSet author="janes" id="37.0.0-remove-unused-syslogdConfigChange">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+        </preConditions>
+        <sql>
+            DELETE FROM eventconf_events
+            WHERE uei = 'uei.opennms.org/internal/syslogdConfigChange'
+            AND modified_by = 'system-migration'
+            AND source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.config.events');
+            UPDATE eventconf_events e SET event_order = r.rn
+            FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY event_order, id) AS rn
+                  FROM eventconf_events
+                  WHERE source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.config.events')) r
+            WHERE e.id = r.id AND e.event_order &lt;&gt; r.rn;
+            UPDATE eventconf_sources s
+            SET event_count = (SELECT COUNT(*) FROM eventconf_events e WHERE e.source_id = s.id),
+                last_modified = NOW()
+            WHERE s.name = 'opennms.config.events';
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
