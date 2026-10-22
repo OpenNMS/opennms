@@ -23,9 +23,12 @@ package org.opennms.smoketest.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -58,7 +61,10 @@ public class RestHealthClient {
     public RestHealthClient(final URL webUrl, final Optional<String> alias){
         this.alias = alias;
         this.url = webUrl;
-        this.client = ClientBuilder.newClient();
+        this.client = ClientBuilder.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build();
     }
 
     private WebTarget getTargetFor(final String path){
@@ -67,8 +73,16 @@ public class RestHealthClient {
     }
 
     public String getProbeHealthResponse(){
-        Response response
-                = getTargetFor(PROBE).request(MediaType.TEXT_PLAIN).get();
+        final Response response;
+        try {
+            response = getTargetFor(PROBE).request(MediaType.TEXT_PLAIN).get();
+        } catch (ProcessingException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                // Not a SocketException, so callers would stop polling; report it as an unhealthy response instead
+                return "Health probe timed out: " + e.getCause();
+            }
+            throw e;
+        }
         /*
         return response.getStatus() == 200 && response.getHeaders().containsKey(HEALTH_KEY + "foo") ?
                 response.getHeaders().get(HEALTH_KEY +"foo").toString() : { throw new RuntimeException("Health key not found in: " + response.toString()); return ""; };

@@ -141,6 +141,18 @@ public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("title=\"foo2\""));
     }
 
+    @Test
+    public void testAddNewGraphRejectsUnsafeLink() throws Exception {
+        final String kscReport = "<kscReport id=\"4\" label=\"foo3\">"
+                +"<kscGraph title=\"Title1\" resourceId=\"node[2].responseTime[127.0.0.1]\" timespan=\"1_hour\" graphtype=\"icmp\" extlink=\"javascript:alert(1)\"/>"
+                +"</kscReport>";
+
+        sendPost("/ksc", kscReport, 400);
+
+        final String xml = slurp(m_configFile);
+        assertTrue(xml, !xml.contains("javascript"));
+    }
+
     private static String slurp(final File file) throws Exception {
         Reader fileReader = null;
         BufferedReader reader = null;

@@ -105,13 +105,15 @@ public class FormProcReportController extends AbstractController implements Init
             try {
                 LOG.debug("reports: {}", getGraphCollectionConfigFactory().getCollectionMap());
 
-                LOG.debug("unloading working report");
-                // First copy working report into report arrays
-                editor.unloadWorkingReport(getGraphCollectionConfigFactory());
+                // Copy the working report into the stored list and save it as one step, under the
+                // monitor the REST services take, so neither sees the list half updated.
+                synchronized (getGraphCollectionConfigFactory()) {
+                    LOG.debug("unloading working report");
+                    editor.unloadWorkingReport(getGraphCollectionConfigFactory());
 
-                LOG.debug("saving current report");
-                // Save the changes to the config file
-                getGraphCollectionConfigFactory().saveCurrent();
+                    LOG.debug("saving current report");
+                    getGraphCollectionConfigFactory().saveCurrent();
+                }
 
                 LOG.debug("unloading editor from session");
                 // Go ahead and unload the editor from the session since we're done using it
