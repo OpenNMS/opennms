@@ -16,6 +16,8 @@ A Error flag to indicate the load-average has crossed its threshold value define
 It is set to 1 if the threshold is crossed, 0 otherwise.
 ____
 
+The agent sets the flag when a load average reaches or crosses its threshold.
+
 == Monitor facts
 
 [cols="1,7"]
