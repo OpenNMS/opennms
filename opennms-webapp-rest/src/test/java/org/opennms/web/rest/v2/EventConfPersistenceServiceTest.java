@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -73,11 +72,6 @@ public class EventConfPersistenceServiceTest {
         when(eventConfEventDao.findByUeiAndSourceId(eq(KNOWN_UEI), eq(42L))).thenReturn(List.of(new EventConfEvent()));
         when(eventConfEventDao.findByUeiAndSourceId(eq(NEW_UEI), eq(42L))).thenReturn(List.of());
         when(eventConfEventDao.countBySourceId(42L)).thenReturn(2);
-    }
-
-    @After
-    public void tearDown() {
-        service.shutdown();
     }
 
     @Test
