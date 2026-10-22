@@ -104,9 +104,11 @@ commands:
             fi
 
             mkdir -p /tmp/sboms
-            # fetch parent POMs from Maven Central for jars whose embedded POM
-            # inherits its licenses
-            export SYFT_ENRICH=java
+            # resolve licenses from parent POMs (java) and the Go module proxy (golang).
+            # Maven Central answers syft's parallel POM fetches with a block page and
+            # syft caches it as the POM, so use our own Nexus group instead.
+            export SYFT_ENRICH=all
+            export SYFT_JAVA_MAVEN_URL=https://maven.opennms.org/repository/everything
             for IMAGE_FILE in *.oci; do
               IMAGE_ROOT="$(echo "${IMAGE_FILE}" | sed -e 's,\.oci$,,')"
               syft scan "docker-archive:${IMAGE_FILE}" \
