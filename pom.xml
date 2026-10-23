@@ -5342,11 +5342,6 @@
         <version>${protobufVersion}</version>
       </dependency>
       <dependency>
-        <groupId>com.rometools</groupId>
-        <artifactId>rome</artifactId>
-        <version>1.18.0</version>
-      </dependency>
-      <dependency>
         <groupId>com.ximpleware</groupId>
         <artifactId>vtd-xml</artifactId>
         <version>2.13.4</version>
