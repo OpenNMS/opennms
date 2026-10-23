@@ -392,21 +392,6 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
-  <!-- Only use BASIC auth for the RSS URL -->
-  <http pattern="/rss.jsp*" realm="OpenNMS Realm" use-expressions="false">
-    <csrf disabled="true" />
-    <headers defaults-disabled="true" />
-
-    <access-denied-handler error-page="/accessDenied.jsp" />
-    <intercept-url pattern="/rss.jsp*" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
-
-    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
-
-    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
-    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
-    <custom-filter position="LAST" ref="authFilterEnabler"/>
-  </http>
-  
   <http pattern="/admin/userGroupView/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <!-- see NMS-13124 -->
     <csrf request-matcher-ref="csrfMatcher"/>
