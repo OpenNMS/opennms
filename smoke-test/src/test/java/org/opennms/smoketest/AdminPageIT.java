@@ -30,7 +30,9 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.ws.rs.core.Response;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPageIT extends OpenNMSSeleniumIT {
@@ -186,20 +190,21 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // this is a malicious string that should be properly escaped
         final String evilString = "foobar'\"><script>alert(document.domain)</script>";
 
-        // navigate to locations page
-        getDriver().get(getBaseUrlInternal() + "opennms/locations/index.jsp");
-        // add a new location
-        findElementByXpath("//button[text()='Add a new location']").click();
-        // wait for modal dialog to appear
-        waitUntil(pageContainsText("Add a new Monitoring Location"));
-        // enter the evil string...
-        enterText(By.xpath("//*[@id=\"addLocationModal\"]/div/div/div/form/div[1]/input"), evilString);
-        // ...and something in the other mandatory field
-        enterText(By.xpath("//*[@id=\"addLocationModal\"]/div/div/div/form/div[2]/input"), "foobar");
-        // hit the submit button
-        findElementByXpath("//*[@id=\"addLocationModal\"]/div/div/div/form/button").click();
-        // wait till the modal dialog is closed
-        waitForClose(By.cssSelector(".modal-dialog"));
+        // the location editor refuses these characters, so the location is created over REST
+        final Response response = stack.opennms().getRestClient().addMonitoringLocation(new OnmsMonitoringLocation(evilString, "foobar"));
+        assertEquals(Response.Status.Family.SUCCESSFUL, response.getStatusInfo().getFamily());
+
+        // the Monitoring Locations tab must show the name as text; a script that ran would raise an alert and fail the wait
+        getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/distributed-monitoring?tab=locations");
+        wait.until(driver -> {
+            try {
+                return driver.findElements(By.cssSelector("[data-test='locations-table'] td")).stream()
+                        .anyMatch(cell -> evilString.equals(cell.getText().trim()));
+            } catch (final StaleElementReferenceException e) {
+                // the table re-renders as its data loads; poll again
+                return false;
+            }
+        });
 
         // navigate to the applications page
         driver.get(getBaseUrlInternal() + "opennms/admin/applications.htm");
