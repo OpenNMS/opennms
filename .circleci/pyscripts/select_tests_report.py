@@ -7,7 +7,7 @@ For each recent pipeline that ran the select-tests job, the script downloads the
 selection artifact and the failed test classes of the integration and smoke jobs.
 It prints the selected and total test counts, and whether the selection included
 each failed class. A failure in a job that passed (after a retry) is flaky, and a
-failure that also occurs on develop in the same period is not caused by the PR.
+failure that also occurred on develop before the PR pipeline is not caused by the PR.
 Neither is counted as a miss.
 """
 
@@ -72,22 +72,23 @@ def main():
     a = ap.parse_args()
     cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=a.days)
 
-    records, develop_failed, token = [], set(), None
+    records, develop_runs, token = [], [], None
     while True:
         page = get(f"{API}/project/{PROJECT}/pipeline" + (f"?page-token={token}" if token else "")) or {"items": []}
         for p in page["items"]:
-            if datetime.datetime.fromisoformat(p["created_at"].replace("Z", "+00:00")) < cutoff:
+            created = datetime.datetime.fromisoformat(p["created_at"].replace("Z", "+00:00"))
+            if created < cutoff:
                 break
             jobs = [j for w in (get(f"{API}/pipeline/{p['id']}/workflow") or {"items": []})["items"]
                     for j in (get(f"{API}/workflow/{w['id']}/job") or {"items": []})["items"] if j.get("job_number")]
             branch = p["vcs"].get("branch")
             if branch == "develop":
-                develop_failed |= failures(jobs)[0]
+                develop_runs.append((created, failures(jobs)[0]))
                 continue
             sel_job = next((j for j in jobs if j["name"] == "select-tests"), None)
             sel = sel_job and selection(sel_job["job_number"])
             if sel:
-                records.append((p["number"], branch, sel, *(failures(jobs) if sel["mode"] == "selected" else (set(), set()))))
+                records.append((p["number"], created, branch, sel, *(failures(jobs) if sel["mode"] == "selected" else (set(), set()))))
         else:
             token = page.get("next_page_token")
             if token:
@@ -97,13 +98,15 @@ def main():
     totals = {"pipelines": len(records), "selected": 0, "full_run": 0, "selected_its": 0, "total_its": 0,
               "selected_smoke": 0, "total_smoke": 0, "failed": 0, "caught": 0, "missed": 0,
               "failing_on_develop": 0, "flaky": 0}
-    for number, branch, sel, failed, flaky in records:
+    for number, created, branch, sel, failed, flaky in records:
         if sel["mode"] != "selected":
             totals["full_run"] += 1
             print(f"{number} {branch}: full run ({sel.get('reason')})")
             continue
         totals["selected"] += 1
         picked = set(sel["its"]) | set(sel["smoke"])
+        # Only develop failures from before the PR pipeline count; later ones can come from the PR after its merge.
+        develop_failed = set().union(*(c for t, c in develop_runs if t < created))
         status = {c: "caught" if c in picked else "develop" if c in develop_failed else "MISSED" for c in failed}
         for key in ("its", "smoke"):
             totals[f"selected_{key}"] += len(sel[key])

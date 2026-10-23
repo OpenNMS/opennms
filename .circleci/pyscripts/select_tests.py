@@ -137,13 +137,13 @@ def build_catalog(ref):
         if re.search(r"^(?:public )?abstract class", src, re.M):
             continue
         ctx, pkgs, runs, configs, parent = own(f)
-        child = f
+        text, child = src, f
         for _ in range(3):  # merge parents up to three levels
             pfile = parent and parent_file(parent, child)
             if not pfile:
                 break
             pctx, ppkgs, pruns, pconfigs, parent = own(pfile)
-            child = pfile
+            text, child = text + sources.get(pfile, ""), pfile
             ctx |= pctx
             pkgs |= ppkgs
             runs |= pruns
@@ -158,7 +158,7 @@ def build_catalog(ref):
             continue
         cls = f.split("src/test/java/")[1][:-5].replace("/", ".")
         entries.append({"cls": cls, "suite": suite, "module": module, "ctx": ctx, "pkgs": pkgs,
-                        "runs": runs, "configs": configs})
+                        "runs": runs, "configs": configs, "text": text})
 
     # Drop entries that most classes share; they do not help the choice.
     n = len(entries)
@@ -225,8 +225,10 @@ def select(ref, base):
     changed_xml = {p.rsplit("/", 1)[1][:-4] for p in changed if p.endswith(".xml") and "/src/main/" in p}
     changed_tests = {p.split("/src/test/java/")[1][:-5].replace("/", ".") for p in changed
                      if "/src/test/java/" in p and p.endswith(".java")}
-    always = sorted(e["cls"] for e in entries if e["cls"] in changed_tests or e["suite"] == "it"
-                    and (e["module"] in changed_modules or e["ctx"] & changed_xml))
+    # A changed test class runs, and so does every test that uses it as a helper or (grand)parent class.
+    used = re.compile(r"\b(?:" + "|".join(sorted(c.rsplit(".", 1)[1] for c in changed_tests)) + r")\b")
+    always = sorted(e["cls"] for e in entries if changed_tests and used.search(e["text"])
+                    or e["suite"] == "it" and (e["module"] in changed_modules or e["ctx"] & changed_xml))
     full_smoke = sorted({p for p in changed for r in FULL_SMOKE_PATHS if re.search(r, p)})
 
     diff = git("diff", f"{merge_base}..{ref}", "--", ".", ":(exclude)*.svg", ":(exclude)*package-lock.json",
@@ -234,7 +236,7 @@ def select(ref, base):
     if len(diff) > MAX_DIFF_CHARS:
         return {**result, "mode": "full_run", "reason": f"diff has {len(diff)} characters > {MAX_DIFF_CHARS}"}
     user = ("Changed files:\n" + "\n".join(changed)
-            + "\n\nTests that always run (the PR changes them, or ITs in the same module as a change,"
+            + "\n\nTests that always run (the PR changes them or a test class they use, or ITs in the same module as a change,"
             + " or ITs that load a changed Spring XML file):\n"
             + ("\n".join(always) or "(none)") + f"\n\nDiff:\n{diff}")
     system = RULES + "\n\nCatalog:\n" + "\n".join(lines)
@@ -292,7 +294,7 @@ def main():
     if result["mode"] == "selected":
         u = result["usage"]
         print(f"Selected {len(result['its'])} ITs and {len(result['smoke'])} smoke tests "
-              f"({len(result['always'])} ITs always run). Confidence: {result['confidence']}. "
+              f"({len(result['always'])} tests always run). Confidence: {result['confidence']}. "
               f"Tokens: {u['input_tokens']} in, {u['output_tokens']} out.")
         print(f"Change: {result['change_summary']}")
     else:
