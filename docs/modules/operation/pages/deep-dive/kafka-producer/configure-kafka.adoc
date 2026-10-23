@@ -251,9 +251,9 @@ In alarm stream mode, no `null` record is sent.
 |===
 
 There is no separate node filter.
-The Kafka Producer forwards a node only when it forwards an event or alarm that references that node, so the event and alarm filters also limit the records in the node topic.
+The Kafka Producer forwards a node when it forwards an event or alarm that references that node, or a topology message with a vertex for that node, so the event and alarm filters also reduce the records in the node topic.
 
-The following example forwards only Major and Critical alarms and node-related events, and disables metric filtering:
+The following example forwards only Major and Critical alarms and events that are associated with a node:
 
 [source, console]
 ----
@@ -262,7 +262,6 @@ $ ssh -p 8101 admin@localhost
 admin@opennms()> config:edit org.opennms.features.kafka.producer
 admin@opennms()> config:property-set alarmFilter 'getSeverityId() >= 6'
 admin@opennms()> config:property-set eventFilter 'getNodeid() != null and getNodeid() > 0'
-admin@opennms()> config:property-set metricFilter ''
 admin@opennms()> config:update
 ----
 

@@ -70,15 +70,7 @@ NOTE: When exclusively writing to Kafka, no metrics or resource graphs will be a
 [[kafka-producer-schema]]
 == Schema
 
-The Kafka Producer encodes record values with the following Protocol Buffers (proto3) definitions in the {page-component-title} source tree:
-
-* `features/kafka/producer/src/main/proto/opennms-kafka-producer.proto` defines events, alarms, alarm feedback, nodes, and topology edges.
-* `features/kafka/producer/src/main/proto/collectionset.proto` defines metrics.
-It imports `google/protobuf/wrappers.proto`, which ships with the Protocol Buffers compiler.
-
-Neither file declares a `package`, so the message types use the root namespace.
-The Java classes that {page-component-title} generates from them are in the `org.opennms.features.kafka.producer.model` package, in the outer classes `OpennmsModelProtos` and `CollectionSetProtos`.
-
+Record values are Protocol Buffers messages defined in `opennms-kafka-producer.proto` (events, alarms, alarm feedback, nodes, and topology edges) and `collectionset.proto` (metrics).
 The following table lists the message type of the records in each topic:
 
 [options="header", cols="1,1,2,2"]
@@ -123,30 +115,6 @@ The `Severity` enum in `opennms-kafka-producer.proto` starts at `INDETERMINATE =
 Its numeric values are therefore one lower than the severity IDs that {page-component-title} uses elsewhere.
 
 To consume the records, generate classes for your language from the `.proto` files with the Protocol Buffers compiler (`protoc`), then parse each record value with the generated message type for its topic.
-The following example generates Python classes in the current directory:
-
-[source, console]
-----
-protoc --proto_path=features/kafka/producer/src/main/proto --python_out=. opennms-kafka-producer.proto collectionset.proto
-----
-
-The following Python example parses records from the `alarms` topic with the generated module and the `kafka-python` client:
-
-[source, python]
-----
-from kafka import KafkaConsumer
-import opennms_kafka_producer_pb2 as onms
-
-consumer = KafkaConsumer("alarms", bootstrap_servers="my-kafka-ip-1:9092")
-for record in consumer:
-    if record.value is None:
-        print(f"Alarm deleted: {record.key.decode()}")
-        continue
-    alarm = onms.Alarm()
-    alarm.ParseFromString(record.value)
-    print(alarm.reduction_key, onms.Severity.Name(alarm.severity))
-----
-
 Use the `.proto` files from the same version as your {page-component-title} instance.
 
 View the https://github.com/OpenNMS/opennms/blob/develop/features/kafka/producer/src/main/proto/opennms-kafka-producer.proto[Kafka Producer schema] on GitHub.
