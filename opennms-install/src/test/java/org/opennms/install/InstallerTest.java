@@ -21,18 +21,18 @@
  */
 package org.opennms.install;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Locale;
@@ -254,8 +254,6 @@ public class InstallerTest {
 
         installer.writeLibraryConfig("/usr/lib/jni/libjicmp.so", "/usr/lib/jni/libjicmp6.so", null, "/usr/lib/jni/libjrrd2.so");
         final byte[] first = Files.readAllBytes(libraries);
-        installer.writeLibraryConfig("/usr/lib/jni/libjicmp.so", "/usr/lib/jni/libjicmp6.so", null, "/usr/lib/jni/libjrrd2.so");
-        assertArrayEquals(first, Files.readAllBytes(libraries));
         assertFalse(new String(first, StandardCharsets.ISO_8859_1).contains("#"));
 
         final Properties props = new Properties();
@@ -267,17 +265,27 @@ public class InstallerTest {
     }
 
     @Test
-    public void testStoreWithoutTimestampKeepsPropertiesFormat() throws Exception {
+    public void testLibraryConfigIsOnlyRewrittenWhenItChanges() throws Exception {
+        installer.m_opennms_home = opennmsHome.toString();
+        final Path libraries = etcDir.resolve(Installer.LIBRARY_PROPERTY_FILE);
+        final FileTime past = FileTime.fromMillis(1_000_000_000_000L);
+
+        installer.writeLibraryConfig("/usr/lib/jni/libjicmp.so", null, null, null);
+        Files.setLastModifiedTime(libraries, past);
+        installer.writeLibraryConfig("/usr/lib/jni/libjicmp.so", null, null, null);
+        assertEquals(past, Files.getLastModifiedTime(libraries));
+
+        installer.writeLibraryConfig("/usr/lib64/libjicmp.so", null, null, null);
+        assertNotEquals(past, Files.getLastModifiedTime(libraries));
+        assertEquals("opennms.library.jicmp=/usr/lib64/libjicmp.so" + System.lineSeparator(),
+                new String(Files.readAllBytes(libraries), StandardCharsets.ISO_8859_1));
+    }
+
+    @Test
+    public void testFormatWithoutTimestampEscapesLikeProperties() throws Exception {
         final Properties props = new Properties();
         props.setProperty("opennms.library.jicmp", "C:\\Program Files\\j\u00e9cmp=1.dll");
-        props.setProperty("other key", "value");
-
-        final ByteArrayOutputStream expected = new ByteArrayOutputStream();
-        props.store(expected, null);
-        final String expectedText = expected.toString(StandardCharsets.ISO_8859_1);
-
-        final ByteArrayOutputStream actual = new ByteArrayOutputStream();
-        Installer.storeWithoutTimestamp(props, actual);
-        assertEquals(expectedText.substring(expectedText.indexOf('\n') + 1), actual.toString(StandardCharsets.ISO_8859_1));
+        assertEquals("opennms.library.jicmp=C\\:\\\\Program Files\\\\j\\u00E9cmp\\=1.dll" + System.lineSeparator(),
+                new String(Installer.formatWithoutTimestamp(props), StandardCharsets.ISO_8859_1));
     }
 }
