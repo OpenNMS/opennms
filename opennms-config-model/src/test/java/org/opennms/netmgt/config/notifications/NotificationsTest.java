@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class NotificationsTest extends XmlTestNoCastor<Notifications> {
+public class NotificationsTest extends XmlTest<Notifications> {
 
     public NotificationsTest(Notifications sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/notifications.xsd");

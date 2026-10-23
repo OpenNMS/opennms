@@ -5,12 +5,12 @@
 The Kafka Producer feature lets {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
 
 These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
-See `opennms-kafka-producer.proto` and `collectionset.proto` in the corresponding source distribution for the model definitions.
+See <<kafka-producer-schema, Schema>> for the model definitions.
 
 == Events
 
 The Kafka Producer listens for all events on the event bus and forwards these to a Kafka topic.
-The records are keyed by event ID and contain a GPB-encoded model of the event.
+The records have no key and contain a GPB-encoded model of the event.
 
 By default, all events are forwarded to a topic named `events`.
 
@@ -67,7 +67,56 @@ When enabled (this functionality is disabled by default), the metrics are writte
 
 NOTE: When exclusively writing to Kafka, no metrics or resource graphs will be available on the {page-component-title} instance.
 
+[[kafka-producer-schema]]
 == Schema
+
+Record values are Protocol Buffers messages defined in `opennms-kafka-producer.proto` (events, alarms, alarm feedback, nodes, and topology edges) and `collectionset.proto` (metrics).
+The following table lists the message type of the records in each topic:
+
+[options="header", cols="1,1,2,2"]
+|===
+| Topic Property
+| Default Topic
+| Record Key
+| Record Value
+
+| `eventTopic`
+| events
+| None.
+| `Event`
+
+| `alarmTopic`
+| alarms
+| Reduction key, as a UTF-8 string.
+| `Alarm`, or `null` when the alarm is deleted (unless `alarmStream` is `true`).
+
+| `alarmFeedbackTopic`
+| alarmFeedback
+| Key of the alarm that the feedback is about.
+| `AlarmFeedback`
+
+| `nodeTopic`
+| nodes
+| Node criteria, as a UTF-8 string.
+| `Node`, or `null` when the node is deleted.
+
+| `topologyEdgeTopic`
+| edges
+| `topology:` followed by the protocol and edge ID, separated by colons.
+| `TopologyEdge`, or `null` when the edge is deleted.
+
+| `metricTopic`
+| metrics
+| Node ID, or the IP address for response time resources.
+| `CollectionSet`, encoded as protobuf or JSON depending on `metrics.useJson`.
+|===
+
+The `Severity` enum in `opennms-kafka-producer.proto` starts at `INDETERMINATE = 0`, because proto3 requires the first enum value to be zero.
+Its numeric values are therefore one lower than the severity IDs that {page-component-title} uses elsewhere.
+
+To consume the records, generate classes for your language from the `.proto` files with the Protocol Buffers compiler (`protoc`), then parse each record value with the generated message type for its topic.
+Use the `.proto` files from the same version as your {page-component-title} instance.
+
 View the https://github.com/OpenNMS/opennms/blob/develop/features/kafka/producer/src/main/proto/opennms-kafka-producer.proto[Kafka Producer schema] on GitHub.
 Change branches or tags to see a version from that point in time.
 

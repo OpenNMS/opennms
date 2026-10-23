@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc.sink</groupId>
     <artifactId>org.opennms.core.ipc.sink.camel</artifactId>
-    <version>36.0.4-SNAPSHOT</version>
+    <version>37.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,6 +31,10 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel.hardening</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.sink.camel</groupId>
       <artifactId>org.opennms.core.ipc.sink.camel.common</artifactId>

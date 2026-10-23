@@ -291,7 +291,7 @@ const props = defineProps<{
   /** Sends the complete order; the component rebases or closes on the outcome */
   save: (ids: number[]) => Promise<EventConfigMutationResult>
   /** Re-fetches `items` after the server rejected the list as out of date */
-  refetch: () => Promise<void>
+  refetch: () => Promise<unknown>
   /** How many rows render at once; "Show more" extends by this much (default 250) */
   renderChunk?: number
 }>()

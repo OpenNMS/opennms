@@ -59,6 +59,14 @@ describe('EventConfiguration.vue (container)', () => {
     expect(store.startSourcesReorder).toHaveBeenCalled()
   })
 
+  it('reorder from the Upload tab switches to the View tab first', async () => {
+    store.activeTab = 1
+    await wrapper.vm.$nextTick()
+    await wrapper.find('[data-test="reorder-sources-button"]').trigger('click')
+    expect(store.activeTab).toBe(0)
+    expect(store.startSourcesReorder).toHaveBeenCalled()
+  })
+
   it('disables both header buttons during reorder mode so nothing is added mid-edit', async () => {
     store.sourcesReorderMode = true
     await wrapper.vm.$nextTick()

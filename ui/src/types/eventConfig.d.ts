@@ -145,6 +145,9 @@ export type EventConfigFilesUploadResponse = {
   success: [
     {
       file: string
+      // present on non-file steps, e.g. 'Source order applied (12 entries)'
+      message?: string
+      eventCount?: number
     }
   ]
 }
@@ -169,6 +172,11 @@ export type UploadEventFileType = {
   isValid: boolean
   errors: string[]
   isDuplicate: boolean
+  // set once the user confirms replacing the existing source, so store refreshes
+  // (which recompute duplicate flags) do not resurrect an already-answered question
+  replaceConfirmed?: boolean
+  // for an eventconf.xml ordering manifest: how many <event-file> entries it carries
+  manifestEntries?: number
 }
 
 export type EventModificationStoreState = {

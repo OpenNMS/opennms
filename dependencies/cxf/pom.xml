@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>36.0.4-SNAPSHOT</version>
+    <version>37.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -107,6 +107,16 @@
         <exclusion>
           <groupId>xml-apis</groupId>
           <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <!-- Woodstox 3.x/4.1 duplicate the com.ctc.wstx classes shipped by woodstox-core;
+             CXF's secure-parser fallback breaks when the old copies load first -->
+        <exclusion>
+          <groupId>org.codehaus.woodstox</groupId>
+          <artifactId>wstx-asl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.woodstox</groupId>
+          <artifactId>woodstox-core-asl</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -29,6 +29,7 @@
 // - legacy `snmpParm`/`snmpParmValue`/`snmpParmMatchType` (ifAlias/ifName/ifDescr, contains/equals)
 //     -> filter.extendedSearch.snmpParams.{snmpIfAlias,snmpIfName,snmpIfDescription}
 //        + filter.extendedSearch.snmpParams.snmpMatchType (MatchType.Equals / MatchType.Contains)
+import { interfaceByIdLink, snmpInterfaceLink } from '@/lib/linkUtils'
 import { IpInterface, MatchType, NodeQueryFilter, SnmpInterface } from '@/types'
 
 export interface InterfaceListRow {
@@ -313,8 +314,8 @@ const buildSnmpInterfaceRow = (
         : formatIfIndexFallback(snmpInterface.ifIndex)
 
   const href = associatedIp
-    ? `${baseHref}element/interface.jsp?ipinterfaceid=${associatedIp.id}`
-    : `${baseHref}element/snmpinterface.jsp?node=${nodeId}&ifindex=${snmpInterface.ifIndex}`
+    ? interfaceByIdLink(baseHref, associatedIp.id)
+    : snmpInterfaceLink(baseHref, nodeId, snmpInterface.ifIndex)
 
   return {
     key: `snmp-${snmpInterface.id}`,
@@ -331,7 +332,7 @@ const buildSnmpInterfaceRow = (
  * Cisco-style dotted MAC like 'aabb.ccdd' never matched anything there. Stripping every non-hex
  * character means our maclike/snmpParm matching treats 'aabb.ccdd', 'aabb:ccdd', and 'aabbccdd' as
  * the same search, which is an improvement, not a port of the old behavior. Shared by the
- * client-side maclike match here, NodesTable.vue's buildSnmpNarrowing, and useNodeQuery.ts's
+ * client-side maclike match here, utils.ts's buildSnmpNarrowing, and useNodeQuery.ts's
  * buildMaclikeQuery so all three treat a given input identically.
  */
 export const normalizeMacSearch = (mac: string): string => mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
@@ -351,7 +352,7 @@ const getDefaultModeRows = (ipInterfaces: IpInterface[], baseHref: string): Inte
     .map(ip => ({
       key: `ip-${ip.id}`,
       label: ip.ipAddress,
-      href: `${baseHref}element/interface.jsp?ipinterfaceid=${ip.id}`
+      href: interfaceByIdLink(baseHref, ip.id)
     }))
 }
 

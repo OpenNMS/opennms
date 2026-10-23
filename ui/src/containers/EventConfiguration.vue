@@ -14,7 +14,7 @@
           variant="outlined"
           data-test="reorder-sources-button"
           :disabled="store.sourcesReorderMode"
-          @click="store.startSourcesReorder()"
+          @click="onReorderSources"
         >
           <OnmsIcon
             :icon="SortIcon"
@@ -99,6 +99,12 @@ const goToCreateEventConfig = () => {
   const modificationStore = useEventModificationStore()
   modificationStore.openCreateWithoutSource(CreateEditMode.Create, getDefaultEventConfigEvent())
   router.push({ name: 'Event Configuration Create' })
+}
+
+// the reorder editor lives on the View tab: starting it from the Upload tab switches there first
+const onReorderSources = async () => {
+  store.activeTab = 0
+  await store.startSourcesReorder()
 }
 </script>
 

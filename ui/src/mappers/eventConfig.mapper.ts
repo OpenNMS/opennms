@@ -16,7 +16,9 @@ export const mapUploadedEventConfigFilesResponseFromServer = (response: any): Ev
       error: err.error
     })),
     success: response.success.map((success: any) => ({
-      file: success.file
+      file: success.file,
+      message: success.message,
+      eventCount: success.eventCount
     }))
   }
 }

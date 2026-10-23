@@ -27,9 +27,9 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class IfTttConfigTest extends XmlTestNoCastor<IfTttConfig> {
+public class IfTttConfigTest extends XmlTest<IfTttConfig> {
 
     public IfTttConfigTest(final IfTttConfig sampleObject, final Object sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

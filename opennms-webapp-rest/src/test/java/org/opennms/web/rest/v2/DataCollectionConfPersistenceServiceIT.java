@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
@@ -628,7 +629,7 @@ public class DataCollectionConfPersistenceServiceIT {
 
         final var dto = new SnmpCollectionMibGroupDto();
         dto.setName("if-mib-interfaces");
-        dto.setIfType("Ethernet");
+        dto.setIfType("6");
         dto.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
         dto.setMibObjects("ifIndex,ifDescr,ifOperStatus");
         dto.setMibObjProperties("{\"property\":\"value\"}");
@@ -646,7 +647,7 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals(src.getId(), persisted.getCollectionSource().getId());
 
         assertEquals("if-mib-interfaces", persisted.getName());
-        assertEquals("Ethernet", persisted.getIfType());
+        assertEquals("6", persisted.getIfType());
         assertEquals("IF-MIB::ifEntry,IF-MIB::ifXEntry", persisted.getMibGroupNames());
         assertEquals("ifIndex,ifDescr,ifOperStatus", persisted.getMibObjects());
         assertEquals("{\"property\":\"value\"}", persisted.getMibObjProperties());
@@ -777,7 +778,7 @@ public class DataCollectionConfPersistenceServiceIT {
 
         final var dto = new SnmpCollectionMibGroupDto();
         dto.setName("new-mib-group");
-        dto.setIfType("NewIfType");
+        dto.setIfType("6,22");
         dto.setMibGroupNames("NEW-MIB::newEntry");
         dto.setMibObjects("newIndex,newDescr");
         dto.setMibObjProperties("{\"new\":\"value\"}");
@@ -793,7 +794,7 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals(src.getId(), updated.getCollectionSource().getId());
 
         assertEquals("new-mib-group", updated.getName());
-        assertEquals("NewIfType", updated.getIfType());
+        assertEquals("6,22", updated.getIfType());
         assertEquals("NEW-MIB::newEntry", updated.getMibGroupNames());
         assertEquals("newIndex,newDescr", updated.getMibObjects());
         assertEquals("{\"new\":\"value\"}", updated.getMibObjProperties());
@@ -1474,6 +1475,52 @@ public class DataCollectionConfPersistenceServiceIT {
         final var r2 = snmpCollectionSystemDefDao.get(def2.getId());
         Assert.assertFalse(r1.getEnabled());
         Assert.assertFalse(r2.getEnabled());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testFindDefinitionsByName() {
+        final DatacollectionGroup a = new DatacollectionGroup();
+        a.setName("NMS20429-A");
+        a.addGroup(group("nms20429-shared"));
+        a.addSystemDef(systemDef("nms20429 NT/2000", "nms20429-shared"));
+        final DatacollectionGroup b = new DatacollectionGroup();
+        b.setName("NMS20429-B");
+        b.addGroup(group("nms20429-shared"));
+        dataCollectionConfPersistenceService.bulkUploadConfig(List.of(a, b), null, "testuser", new Date());
+
+        final List<SnmpCollectionMibGroupDto> groups = dataCollectionConfPersistenceService.findMibGroupsByName("nms20429-shared");
+        assertEquals(List.of("NMS20429-A", "NMS20429-B"),
+                groups.stream().map(SnmpCollectionMibGroupDto::getCollectionSourceName).toList());
+
+        final List<SnmpCollectionSystemDefDto> sds = dataCollectionConfPersistenceService.findSystemDefsByName("nms20429 NT/2000");
+        assertEquals(1, sds.size());
+        assertEquals("NMS20429-A", sds.get(0).getCollectionSourceName());
+        assertTrue(dataCollectionConfPersistenceService.getAllSystemDefNames().contains("nms20429 NT/2000"));
+
+        assertTrue(dataCollectionConfPersistenceService.findMibGroupsByName("nms20429").isEmpty());
+        assertTrue(dataCollectionConfPersistenceService.findResourceTypesByName("nms20429-none").isEmpty());
+    }
+
+    private static Group group(final String name) {
+        final Group g = new Group();
+        g.setName(name);
+        g.setIfType("ignore");
+        g.addMibObj(createMibObj(".1.3.6.1.2.1.1.3", "0", "nms20429Up", "timeticks"));
+        return g;
+    }
+
+    private static SystemDef systemDef(final String name, final String... groups) {
+        final SystemDef sd = new SystemDef();
+        sd.setName(name);
+        sd.setSysoidMask(".1.3.6.1.4.1.99999.");
+        final Collect collect = new Collect();
+        for (final String g : groups) {
+            collect.addIncludeGroup(g);
+        }
+        sd.setCollect(collect);
+        return sd;
     }
 
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {

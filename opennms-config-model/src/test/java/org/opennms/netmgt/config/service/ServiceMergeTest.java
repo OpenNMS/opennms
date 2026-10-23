@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -139,7 +140,7 @@ public class ServiceMergeTest {
     }
 
     @Test
-    public void testServiceConfigurationMergeWithDefaults() {
+    public void testServiceMergeForMatchingUserAndDefaultEntries() {
         // Create user config with only 2 services
         ServiceConfiguration userConfig = new ServiceConfiguration();
         userConfig.addService(createService("Service1", null, true));
@@ -164,8 +165,8 @@ public class ServiceMergeTest {
             merged.addService(Service.merge(userService, defaultService));
         }
 
-        // Verify merged config
-        assertEquals(2, merged.getServices().size()); // Only user services should be in merged config
+        // Verify the field-level merge for matching entries.
+        assertEquals(2, merged.getServices().size());
 
         Service service1 = merged.getServices().get(0);
         assertEquals("Service1", service1.getName());
@@ -207,32 +208,62 @@ public class ServiceMergeTest {
     }
 
     @Test
-    public void testRealWorldScenarioUserRemovesService() {
-        // If user removes a service from config, it shouldn't be in merged config
-        ServiceConfiguration userConfig = new ServiceConfiguration();
+    public void testOmittedDefaultServiceRemainsInMergedConfiguration() {
+        final ServiceConfiguration userConfig = new ServiceConfiguration();
         userConfig.addService(createService("OpenNMS:Name=Manager", null, true));
-        // User intentionally did NOT include Syslogd
 
-        ServiceConfiguration defaults = new ServiceConfiguration();
-        defaults.addService(createService("OpenNMS:Name=Manager", "org.opennms.netmgt.vmmgr.Manager", true));
-        defaults.addService(createService("OpenNMS:Name=Syslogd", "org.opennms.netmgt.syslogd.jmx.Syslogd", false));
+        final ServiceConfiguration merged = ServiceConfiguration.mergeWithDefaults(userConfig);
+        final Service syslogd = merged.getServices().stream()
+                .filter(service -> "OpenNMS:Name=Syslogd".equals(service.getName()))
+                .findFirst()
+                .orElseThrow(AssertionError::new);
 
-        // Simulate merge
-        ServiceConfiguration merged = new ServiceConfiguration();
-        for (Service userService : userConfig.getServices()) {
-            Service defaultService = null;
-            for (Service ds : defaults.getServices()) {
-                if (ds.getName().equals(userService.getName())) {
-                    defaultService = ds;
-                    break;
-                }
-            }
-            merged.addService(Service.merge(userService, defaultService));
-        }
+        assertFalse(syslogd.isEnabled());
+        assertEquals("org.opennms.netmgt.syslogd.jmx.Syslogd", syslogd.getClassName());
+    }
 
-        assertEquals(1, merged.getServices().size());
-        assertEquals("OpenNMS:Name=Manager", merged.getServices().get(0).getName());
-        // Syslogd should NOT be in merged config
+    @Test
+    public void testNewDefaultServiceIsAddedToLegacyConfigurationInDefaultOrder() {
+        final ServiceConfiguration userConfig = new ServiceConfiguration();
+        userConfig.addService(createService("OpenNMS:Name=Ackd", null, true));
+        userConfig.addService(createService("OpenNMS:Name=JettyServer", null, true));
+        userConfig.addService(createService("OpenNMS:Name=KarafStartupMonitor", null, true));
+
+        final ServiceConfiguration merged = ServiceConfiguration.mergeWithDefaults(userConfig);
+        final List<String> names = merged.getServices().stream()
+                .map(Service::getName)
+                .collect(Collectors.toList());
+
+        assertTrue(names.indexOf("OpenNMS:Name=Karaf") < names.indexOf("OpenNMS:Name=JettyServer"));
+        assertTrue(names.contains("OpenNMS:Name=Syslogd"));
+    }
+
+    @Test
+    public void testServiceRemovedFromDefaultCatalogIsNotRestoredByUserConfiguration() {
+        final ServiceConfiguration userConfig = new ServiceConfiguration();
+        userConfig.addService(createService("OpenNMS:Name=Manager", null, true));
+        userConfig.addService(createService("OpenNMS:Name=RemovedModule", "com.example.RemovedModule", true));
+
+        final ServiceConfiguration merged = ServiceConfiguration.mergeWithDefaults(userConfig);
+
+        assertFalse(merged.getServices().stream()
+                .anyMatch(service -> "OpenNMS:Name=RemovedModule".equals(service.getName())));
+    }
+
+    @Test
+    public void testExplicitlyDisabledEssentialServiceTakesPrecedence() {
+        final ServiceConfiguration userConfig = new ServiceConfiguration();
+        userConfig.addService(createService("OpenNMS:Name=Karaf", null, false));
+        userConfig.addService(createService("OpenNMS:Name=JettyServer", null, true));
+
+        final ServiceConfiguration merged = ServiceConfiguration.mergeWithDefaults(userConfig);
+        final List<Service> karafServices = merged.getServices().stream()
+                .filter(service -> "OpenNMS:Name=Karaf".equals(service.getName()))
+                .collect(Collectors.toList());
+
+        assertEquals(1, karafServices.size());
+        assertFalse(karafServices.get(0).isEnabled());
+        assertEquals("org.opennms.container.daemon.jmx.KarafDaemon", karafServices.get(0).getClassName());
     }
 
     // Helper method to create services

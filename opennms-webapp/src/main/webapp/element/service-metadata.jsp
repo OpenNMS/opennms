@@ -60,7 +60,7 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
-<h4>Meta-Data for Service: <strong><%= entity.getServiceName() %></strong></h4>
+<h4>Meta-Data for Service: <strong><%= WebSecurityUtils.sanitizeString(entity.getServiceName()) %></strong></h4>
 
 <div class="row">
     <div class="col-md-12">

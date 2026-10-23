@@ -47,7 +47,9 @@ OnmsDrawer, OnmsChip, OnmsToggleSwitch, OnmsRadioButton, OnmsInputNumber,
 OnmsSearchInput, OnmsPopover, OnmsPanel, OnmsCard, OnmsListbox,
 OnmsMultiSelect, OnmsDatePicker. This tranche also absorbed the
 pre-existing `OnmsConfirmationDialog` and `OnmsMessageDialog` (built on
-`OnmsDialog`) into the package.
+`OnmsDialog`) into the package. `OnmsMessage` (an inline callout with a
+`success` / `info` / `warn` / `error` severity, never closable) was added for
+the Manage Minions and Locations delete dialogs.
 
 Notable deviations from the underlying PrimeVue defaults — each is an
 intentional seam default, not an oversight, and matches what every existing
@@ -163,6 +165,15 @@ Where these diverge from PrimeVue, deliberately:
 - **`OnmsTieredMenu`** renders a nested `items` array as hover-opened submenus,
   where `OnmsMenu` flattens it under a heading. Popup by default; open via the
   exposed `toggle(event)`. Both reuse `OnmsMenuItem`, which already nests.
+- **`OnmsMenubar`** (added later, NMS-20303) is the inline, horizontal form:
+  top-level items in a row, each opening its nested `items` as a dropdown. It
+  takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
+  `#end` for content around the items. An item with `target: '_blank'` gets
+  `rel="noopener noreferrer"`, which PrimeVue does not add.
+- **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
+  for content that is not an `OnmsTable` (which has its own). `page` emits the
+  same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
+  `PageState`.
 - **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
   `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
   4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value

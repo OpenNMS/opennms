@@ -155,18 +155,22 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
       this.createEventConfigSourceDialogState.visible = false
     },
     async startSourcesReorder() {
-      this.sourcesReorderMode = true
-      await this.fetchOrderedSources()
+      // the mode turns on only once the current order has loaded, so the editor never
+      // opens on a stale previous list that the arriving fetch would then replace
+      if (await this.fetchOrderedSources()) {
+        this.sourcesReorderMode = true
+      }
     },
     stopSourcesReorder() {
       this.sourcesReorderMode = false
     },
-    async fetchOrderedSources() {
+    async fetchOrderedSources(): Promise<boolean> {
       this.isLoading = true
       try {
         const sources = await getOrderedEventConfigSources()
         this.orderedSources = sources.filter(source => source.name !== EVENT_CONF_CATCH_ALL_SOURCE)
         this.catchAllSource = sources.find(source => source.name === EVENT_CONF_CATCH_ALL_SOURCE) ?? null
+        return true
       } catch (error) {
         console.error('Error fetching ordered event configuration sources:', error)
         this.orderedSources = []
@@ -175,6 +179,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         // showing an inexplicable empty list
         this.stopSourcesReorder()
         useSnackbar().showSnackBar({ msg: 'Failed to load the source order. Try again.', error: true })
+        return false
       } finally {
         this.isLoading = false
       }

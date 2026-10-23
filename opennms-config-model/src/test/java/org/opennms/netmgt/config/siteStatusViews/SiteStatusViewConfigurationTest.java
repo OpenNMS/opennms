@@ -28,9 +28,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class SiteStatusViewConfigurationTest extends XmlTestNoCastor<SiteStatusViewConfiguration> {
+public class SiteStatusViewConfigurationTest extends XmlTest<SiteStatusViewConfiguration> {
 
     public SiteStatusViewConfigurationTest(SiteStatusViewConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/site-status-views.xsd");

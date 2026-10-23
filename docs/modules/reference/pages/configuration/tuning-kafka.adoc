@@ -30,6 +30,31 @@ Update the Minion's instance ID accordingly to match the {page-component-title} 
 org.opennms.instance.id=MyNMS
 ----
 
+Update the Sentinel's instance ID accordingly to match the {page-component-title} instance.
+
+.`$\{SENTINEL_HOME}/etc/custom.system.properties`
+[source, properties]
+----
+org.opennms.instance.id=MyNMS
+----
+
+On Sentinel, also set the Kafka consumer group in `$\{SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`, or with the `org.opennms.core.ipc.sink.kafka.consumer` PID in the Karaf shell.
+The consumer group defaults to `OpenNMS`; set it to the same value as the instance ID:
+
+[source, properties]
+----
+group.id=MyNMS
+----
+
+The two properties have different roles, and multi-tenancy needs both:
+
+* `org.opennms.instance.id` sets the topic prefix.
+Without it, Sentinel does not consume from the topics of your instance.
+* `group.id` sets the Kafka consumer group that Sentinel uses to read those topics.
+{page-component-title} Core sets its consumer group to the instance ID automatically.
+
+For the complete Sentinel setup, see xref:operation:deep-dive/flows/sentinel/sentinel.adoc[].
+
 == Tips for Kafka
 
 * For Kafka RPC, the number of partitions must be greater than or equal to the number of Minions at a location, and should be a multiple of the number of Minions at a location.

@@ -28,23 +28,11 @@
 
 package org.opennms.smoketest.rest;
 
-import static io.restassured.RestAssured.authentication;
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.preemptive;
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.is;
-
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.bind.JAXB;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.model.OnmsUser;
 
 import io.restassured.http.ContentType;
 
@@ -60,7 +48,6 @@ public class ConfigRestAccessIT extends AbstractRestIT {
 
     private static final String REST_USER = "nms20382-rest-only";
     private static final String REST_PASSWORD = "rest-only-password";
-    private static final String USERS_PATH = "/opennms/rest/users";
 
     public ConfigRestAccessIT() {
         super(Version.V1, "config/email-nbi");
@@ -68,40 +55,12 @@ public class ConfigRestAccessIT extends AbstractRestIT {
 
     @Before
     public void createRestOnlyUser() {
-        final OnmsUser user = new OnmsUser();
-        user.setUsername(REST_USER);
-        user.setFullName("ROLE_REST only");
-        user.setPassword(REST_PASSWORD);
-        user.setPasswordSalted(false);
-        user.setRoles(Collections.singletonList("ROLE_REST"));
-
-        final StringWriter xml = new StringWriter();
-        JAXB.marshal(user, xml);
-
-        // AbstractRestIT.before() has already selected admin credentials
-        given().basePath(USERS_PATH)
-                .contentType(ContentType.XML)
-                .queryParam("hashPassword", true)
-                .body(xml.toString())
-                .post()
-                .then().log().status()
-                .assertThat().statusCode(201);
-
-        // UserFactory throttles its users.xml change check to once per second, so the new user
-        // is not visible to authentication immediately. Wait until it can log in.
-        asRestUser();
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS)
-                .until(() -> given().basePath("/opennms/rest/whoami").get().getStatusCode() == 200);
-        applyDefaultCredentials();
+        addUser(REST_USER, REST_PASSWORD, "ROLE_REST");
     }
 
     @After
     public void deleteRestOnlyUser() {
-        applyDefaultCredentials();
-        given().basePath(USERS_PATH + "/" + REST_USER)
-                .delete()
-                .then().log().status()
-                .assertThat().statusCode(anyOf(is(200), is(204), is(404)));
+        removeUser(REST_USER);
     }
 
     @Test
@@ -153,6 +112,6 @@ public class ConfigRestAccessIT extends AbstractRestIT {
     }
 
     private void asRestUser() {
-        authentication = preemptive().basic(REST_USER, REST_PASSWORD);
+        useCredentials(REST_USER, REST_PASSWORD);
     }
 }

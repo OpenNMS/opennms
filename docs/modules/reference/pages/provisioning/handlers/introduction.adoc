@@ -17,8 +17,9 @@ endif::[]
 An external requisition enables periodic inventory synchronization from external sources.
 Each definition contains a URL, schedule, and setting to specify the nodes to rescan.
 
-Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`), but they can also come from external URLs.
+Most commonly, these URLs are files on the file system with an absolute path (`file:///opt/requisitions/<my-requisition.xml>`), but they can also come from external URLs.
 For example, OpenNMS can use the HTTP protocol to retrieve inventory.
+See xref:reference:provisioning/handlers/file.adoc[File Handler] for why the source file should not be stored in `$\{OPENNMS_HOME}/etc/imports`.
 
 In addition to the standard protocols Java supports, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
 

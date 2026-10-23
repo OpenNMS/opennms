@@ -32,9 +32,9 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
+import org.opennms.netmgt.config.graphcollections.Graph;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.vmmgr.ControllerUtils;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
@@ -99,7 +99,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
             log("Backing up %s\n", configFile);
             zipFile(configFile);
             initializeDatasource();
-            KSC_PerformanceReportFactory.init();
+            GraphCollectionConfigFactory.init();
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't initialize ksc-performance-reports.xml because " + e.getMessage());
         }
@@ -135,8 +135,8 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
         log("Fixing KSC Reports.\n");
         boolean changed = false;
         List<SnmpInterface> interfacesToMerge = getInterfacesToMerge();
-        for (Integer reportId : KSC_PerformanceReportFactory.getInstance().getReportList().keySet()) {
-            Report report = KSC_PerformanceReportFactory.getInstance().getReportByIndex(reportId);
+        for (Integer reportId : GraphCollectionConfigFactory.getInstance().getCollectionTitles().keySet()) {
+            GraphCollection report = GraphCollectionConfigFactory.getInstance().getCollectionById(reportId);
             log("  Checking report %s\n", report.getTitle());
             for (Graph graph : report.getGraphs()) {
                 for (SnmpInterface intf : interfacesToMerge) {
@@ -152,7 +152,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
         if (changed) {
             log("Updating the KSC reports configuration file.\n");
             try {
-                KSC_PerformanceReportFactory.getInstance().saveCurrent();
+                GraphCollectionConfigFactory.getInstance().saveCurrent();
             } catch (Exception e) {
                 log("Warning: can't save KSC Reports because %s\n", e.getMessage());
             }

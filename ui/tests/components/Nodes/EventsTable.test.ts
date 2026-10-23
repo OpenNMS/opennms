@@ -21,17 +21,34 @@
 ///
 
 import EventsTable from '@/components/Nodes/EventsTable.vue'
+import NodeDownloadDropdown from '@/components/Nodes/NodeDownloadDropdown.vue'
 import { useEventStore } from '@/stores/eventStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 const mockNodeId = '42'
 
-vi.mock('vue-router', () => ({
-  useRoute: () => ({ params: { id: mockNodeId }})
+// A reactive route, so a test can change the node id the way navigating to another node does.
+// The details page keeps one component instance across those changes.
+vi.mock('vue-router', async () => {
+  const { reactive } = await import('vue')
+  const route = reactive({ params: { id: '42' }})
+
+  return { useRoute: () => route }
+})
+
+const { showSnackBar } = vi.hoisted(() => ({ showSnackBar: vi.fn() }))
+vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
+
+// DOMPurify misbehaves under happy-dom (it strips <p> yet keeps onerror), so the sanitizer is
+// stood in for here: these tests check the message goes through it, not what DOMPurify removes.
+vi.mock('@/lib/sanitizeHtml', () => ({
+  sanitizeHtml: (html?: string | null) => `<span data-test="sanitized">${html ?? ''}</span>`
 }))
 
 const mockEvent = {
@@ -56,12 +73,19 @@ describe('EventsTable.vue', () => {
   let wrapper: VueWrapper<any>
   let eventStore: ReturnType<typeof useEventStore>
 
+  // Seed the store's node slice as a successful fetch for `nodeId` would leave it.
+  const setNodeEvents = (events: unknown[], totalCount = events.length, nodeId = mockNodeId) => {
+    eventStore.nodeEvents = events as any
+    eventStore.nodeEventsTotalCount = totalCount
+    eventStore.nodeEventsNodeId = nodeId
+  }
+
   // The store action must be mocked BEFORE mounting — the component fetches in
   // onMounted, and an unmocked action would fire a real network request.
   const mountTable = () => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     eventStore = useEventStore(pinia)
-    eventStore.getEvents = vi.fn().mockResolvedValue(undefined)
+    eventStore.getNodeEvents = vi.fn().mockResolvedValue({ success: true, message: '' })
 
     return mount(EventsTable, {
       global: {
@@ -86,9 +110,9 @@ describe('EventsTable.vue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    ;(useRoute() as any).params.id = mockNodeId
     wrapper = mountTable()
-    eventStore.events = []
-    eventStore.totalCount = 0
+    setNodeEvents([])
     await flushPromises()
     await nextTick()
   })
@@ -112,8 +136,7 @@ describe('EventsTable.vue', () => {
     })
 
     it('renders a row for each event', async () => {
-      eventStore.events = [mockEvent] as any
-      eventStore.totalCount = 1
+      setNodeEvents([mockEvent], 1)
       await nextTick()
 
       const rows = wrapper.findAll('tbody tr')
@@ -121,8 +144,7 @@ describe('EventsTable.vue', () => {
     })
 
     it('Id cell renders a router-link to /event/{id}', async () => {
-      eventStore.events = [mockEvent] as any
-      eventStore.totalCount = 1
+      setNodeEvents([mockEvent], 1)
       await nextTick()
 
       const link = wrapper.find('tbody tr td a')
@@ -132,8 +154,7 @@ describe('EventsTable.vue', () => {
     })
 
     it('Severity cell renders a PrimeVue Tag', async () => {
-      eventStore.events = [mockEvent] as any
-      eventStore.totalCount = 1
+      setNodeEvents([mockEvent], 1)
       await nextTick()
 
       // PrimeVue Tag renders with class p-tag
@@ -141,20 +162,227 @@ describe('EventsTable.vue', () => {
       expect(wrapper.find('.p-tag').text()).toContain('Major')
     })
 
-    it('Message cell renders html via v-html', async () => {
-      eventStore.events = [mockEvent] as any
-      eventStore.totalCount = 1
+    it('Message cell renders sanitized html via v-html', async () => {
+      setNodeEvents([mockEvent], 1)
       await nextTick()
 
       const rows = wrapper.findAll('tbody tr')
-      expect(rows[0].html()).toContain('<p>A test log message</p>')
+      expect(rows[0].find('[data-test="sanitized"]').html()).toContain('<p>A test log message</p>')
+    })
+  })
+
+  describe('Card and title row', () => {
+    it('wraps the panel content in a card with the title and both action buttons on one row', () => {
+      expect(wrapper.find('.card').exists()).toBe(true)
+
+      const titleRow = wrapper.find('.title-row')
+      expect(titleRow.text()).toContain('Recent Events')
+      expect(titleRow.find('[data-test="events-for-node-button"]').exists()).toBe(true)
+      expect(titleRow.find('[data-test="download-button"]').exists()).toBe(true)
+    })
+  })
+
+  describe('Events for this Node link', () => {
+    it('navigates to the legacy event list filtered to this node', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', { assign } as any)
+      useMenuStore().mainMenu = { baseHref: '/opennms/' } as any
+      await nextTick()
+
+      await wrapper.find('[data-test="events-for-node-button"]').trigger('click')
+
+      expect(assign).toHaveBeenCalledWith(`/opennms/event/list?filter=node%3D${mockNodeId}`)
+      vi.unstubAllGlobals()
+    })
+  })
+
+  describe('Download', () => {
+    // Drive the real menu wiring rather than the component internals: the dropdown owns the
+    // CSV/JSON menu items and calls back into the table.
+    const runDownload = async (label: string) => {
+      const items = wrapper.findComponent(NodeDownloadDropdown).vm.items as Array<{ label: string, command: () => void }>
+      await items.find(i => i.label === label)!.command()
+      await flushPromises()
+    }
+
+    let blobs: Blob[]
+    let downloadNames: string[]
+
+    beforeEach(() => {
+      blobs = []
+      downloadNames = []
+
+      vi.stubGlobal('URL', {
+        createObjectURL: (blob: Blob) => {
+          blobs.push(blob)
+          return 'blob:fake'
+        }
+      } as any)
+
+      const realCreateElement = document.createElement.bind(document)
+      vi.spyOn(document, 'createElement').mockImplementation(((tag: string, options?: any) => {
+        const el = realCreateElement(tag, options)
+        if (tag === 'a') {
+          Object.defineProperty(el, 'click', { value: () => downloadNames.push((el as HTMLAnchorElement).download) })
+        }
+        return el
+      }) as any)
+    })
+
+    // The download is the page the paginator is showing, which the store already holds: no
+    // second request, and no way for the file to disagree with the table.
+    it('exports the rows the table is showing without another request', async () => {
+      setNodeEvents([mockEvent], 1)
+      vi.clearAllMocks()
+
+      await runDownload('Download CSV...')
+
+      expect(eventStore.getNodeEvents).not.toHaveBeenCalled()
+      expect(downloadNames).toEqual(['Events.csv'])
+      expect(await blobs[0].text()).toContain(String(mockEvent.id))
+    })
+
+    it('downloads a CSV of every event field, quoting values that contain commas or quotes', async () => {
+      setNodeEvents([
+        {
+          id: 101,
+          severity: 'Major',
+          logMessage: '<p>Interface "eth0" down, node 42</p>'
+        }
+      ])
+
+      await runDownload('Download CSV...')
+
+      expect(downloadNames).toEqual(['Events.csv'])
+      expect(blobs[0].type).toBe('text/csv')
+      expect(await blobs[0].text()).toBe(
+        'id,severity,logMessage\n' +
+        '101,Major,"<p>Interface ""eth0"" down, node 42</p>"'
+      )
+    })
+
+    // The table only shows 4 columns, but the export is the whole record.
+    it('includes CSV columns for fields the table does not display', async () => {
+      setNodeEvents([mockEvent])
+
+      await runDownload('Download CSV...')
+
+      const [header] = (await blobs[0].text()).split('\n')
+      expect(header.split(',')).toEqual(Object.keys(mockEvent))
+    })
+
+    // parameters is the other non-primitive field on an event; String() on it would put
+    // '[object Object]' in the cell.
+    it('keeps array CSV fields readable as JSON', async () => {
+      setNodeEvents([{ id: 101, parameters: [{ name: 'p1', value: 'v1' }] }])
+
+      await runDownload('Download CSV...')
+
+      expect(await blobs[0].text()).toBe(
+        'id,parameters\n' +
+        '101,"[{""name"":""p1"",""value"":""v1""}]"'
+      )
+    })
+
+    it('downloads JSON of the full event records', async () => {
+      setNodeEvents([mockEvent])
+
+      await runDownload('Download JSON...')
+
+      expect(downloadNames).toEqual(['Events.json'])
+      expect(blobs[0].type).toBe('application/json')
+      expect(JSON.parse(await blobs[0].text())).toEqual([mockEvent])
+    })
+
+    it('shows an error snackbar and downloads nothing when the node has no events', async () => {
+      setNodeEvents([])
+
+      await runDownload('Download CSV...')
+
+      expect(downloadNames).toEqual([])
+      expect(showSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({ error: true })
+      )
+    })
+  })
+
+  describe('Node changes under the same component instance', () => {
+    // /node/42 -> /node/99 reuses this instance, so a table that only reads the route id at
+    // setup would keep showing node 42 while the panel's other links point at 99.
+    it('refetches for the new node', async () => {
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+
+      expect(eventStore.getNodeEvents).toHaveBeenLastCalledWith(
+        '99',
+        expect.objectContaining({ offset: 0, limit: 5 })
+      )
+    })
+
+    // The store's slice is replaced only on success, so until node 99's events arrive -- or
+    // when they fail to -- it still holds node 42's. Those must not be shown under node 99.
+    it('shows nothing until the store holds the new node\'s events', async () => {
+      setNodeEvents([mockEvent], 1, mockNodeId)
+      ;(useRoute() as any).params.id = '99'
+      await flushPromises()
+
+      expect(wrapper.findAll('tbody tr td a')).toHaveLength(0)
+      expect(wrapper.findComponent({ name: 'EmptyList' }).exists()).toBe(true)
+
+      setNodeEvents([{ ...mockEvent, id: 202, nodeId: 99 }], 1, '99')
+      await nextTick()
+
+      expect(wrapper.find('tbody tr td a').text()).toBe('202')
+    })
+
+    it('does not download another node\'s events', async () => {
+      setNodeEvents([mockEvent], 1, '7')
+      await nextTick()
+
+      const items = wrapper.findComponent(NodeDownloadDropdown).vm.items as Array<{ label: string, command: () => void }>
+      await items.find(i => i.label === 'Download CSV...')!.command()
+
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    })
+  })
+
+  describe('Loading and failure', () => {
+    // Another node's slice is not this node's: nothing to show yet, and not "no results".
+    it('says it is loading while this node\'s events are in flight', async () => {
+      setNodeEvents([], 0, 'some-other-node')
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Loading events…')
+      expect(wrapper.text()).not.toContain('No results found.')
+    })
+
+    it('says the events could not be loaded when this node\'s fetch failed', async () => {
+      setNodeEvents([], 0, 'some-other-node')
+      eventStore.nodeEventsFailedNodeId = mockNodeId
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Unable to load events for this node.')
+      expect(wrapper.text()).not.toContain('No results found.')
+    })
+
+    // The slice still holds page one, so the paginator must not say page two.
+    it('goes back to the page on screen when a page change fails', async () => {
+      setNodeEvents(Array.from({ length: 5 }, (_, i) => ({ id: i + 1 })), 12)
+      eventStore.nodeEventsPage = { offset: 0, limit: 5 }
+      eventStore.getNodeEvents = vi.fn().mockResolvedValue({ success: false, message: 'nope' })
+      await nextTick()
+
+      await wrapper.findAll('.p-paginator-page')[1].trigger('click')
+      await flushPromises()
+
+      expect(eventStore.getNodeEvents).toHaveBeenCalledWith(mockNodeId, { offset: 5, limit: 5 })
+      expect(wrapper.find('.p-paginator-page-selected').text()).toBe('1')
     })
   })
 
   describe('Empty state', () => {
     it('shows EmptyList when there are no rows', async () => {
-      eventStore.events = []
-      eventStore.totalCount = 0
+      setNodeEvents([], 0)
       await nextTick()
 
       expect(wrapper.findComponent({ name: 'EmptyList' }).exists()).toBe(true)
@@ -163,28 +391,21 @@ describe('EventsTable.vue', () => {
   })
 
   describe('Lazy pagination — onPage', () => {
-    it('calls getEvents with offset and _s node filter when page changes', async () => {
+    it('fetches this node\'s events at the new offset and page size', async () => {
       await wrapper.vm.onPage({ first: 5, rows: 5, page: 1, pageCount: 2 })
       await flushPromises()
 
-      expect(eventStore.getEvents).toHaveBeenCalledWith(
-        expect.objectContaining({
-          offset: 5,
-          limit: 5,
-          _s: `node.id==${mockNodeId}`
-        })
+      expect(eventStore.getNodeEvents).toHaveBeenLastCalledWith(
+        mockNodeId,
+        expect.objectContaining({ offset: 5, limit: 5 })
       )
     })
 
-    it('preserves the node.id _s filter after page change', async () => {
+    it('keeps fetching for this node after a page change', async () => {
       await wrapper.vm.onPage({ first: 10, rows: 10, page: 2, pageCount: 3 })
       await flushPromises()
 
-      expect(eventStore.getEvents).toHaveBeenCalledWith(
-        expect.objectContaining({
-          _s: `node.id==${mockNodeId}`
-        })
-      )
+      expect(eventStore.getNodeEvents).toHaveBeenLastCalledWith(mockNodeId, expect.objectContaining({ limit: 10 }))
     })
   })
 })

@@ -29,10 +29,10 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
 
-public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfiguration> {
+public class SyslogdConfigurationTest extends XmlTest<SyslogdConfiguration> {
 
     public SyslogdConfigurationTest(SyslogdConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/syslog.xsd");

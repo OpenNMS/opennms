@@ -32,10 +32,10 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.StringUtils;
 
-public class SyslogMessageLogDTOTest extends XmlTestNoCastor<SyslogMessageLogDTO> {
+public class SyslogMessageLogDTOTest extends XmlTest<SyslogMessageLogDTO> {
 
     public SyslogMessageLogDTOTest(SyslogMessageLogDTO sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

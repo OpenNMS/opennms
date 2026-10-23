@@ -24,9 +24,9 @@ package org.opennms.web.controller.ksc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
 import org.opennms.web.api.Authentication;
-import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.GraphCollectionService;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.GrantedAuthority;
@@ -45,21 +45,21 @@ import org.springframework.web.servlet.mvc.AbstractController;
 public class IndexController extends AbstractController implements InitializingBean {
     
     private ResourceService m_resourceService;
-    private KscReportService m_kscReportService;
+    private GraphCollectionService m_graphCollectionService;
 
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String reloadConfig = request.getParameter("reloadConfig");
         if (reloadConfig != null && Boolean.parseBoolean(reloadConfig)) {
-            KSC_PerformanceReportFactory.getInstance().reload();
+            GraphCollectionConfigFactory.getInstance().reload();
         }
 
         ModelAndView modelAndView = new ModelAndView("KSC/index");
 
         modelAndView.addObject("isReadOnly", isReadOnly());
         modelAndView.addObject("kscReadOnly", ( (!request.isUserInRole( Authentication.ROLE_ADMIN )) || request.isUserInRole(Authentication.ROLE_READONLY)) || (request.getRemoteUser() == null));
-        modelAndView.addObject("reports", getKscReportService().getReportList());
+        modelAndView.addObject("reports", getGraphCollectionService().getCollectionTitles());
         modelAndView.addObject("topLevelResources", getResourceService().findTopLevelResources());
         
         return modelAndView;
@@ -94,21 +94,21 @@ public class IndexController extends AbstractController implements InitializingB
     }
     
     /**
-     * <p>getKscReportService</p>
+     * <p>getGraphCollectionService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public KscReportService getKscReportService() {
-        return m_kscReportService;
+    public GraphCollectionService getGraphCollectionService() {
+        return m_graphCollectionService;
     }
 
     /**
-     * <p>setKscReportService</p>
+     * <p>setGraphCollectionService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
+     * @param graphCollectionService a {@link org.opennms.web.svclayer.api.GraphCollectionService} object.
      */
-    public void setKscReportService(KscReportService kscReportService) {
-        m_kscReportService = kscReportService;
+    public void setGraphCollectionService(GraphCollectionService graphCollectionService) {
+        m_graphCollectionService = graphCollectionService;
     }
 
     /**
@@ -119,6 +119,6 @@ public class IndexController extends AbstractController implements InitializingB
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "property resourceService must be set");
-        Assert.state(m_kscReportService != null, "property kscReportService must be set");
+        Assert.state(m_graphCollectionService != null, "property graphCollectionService must be set");
     }
 }

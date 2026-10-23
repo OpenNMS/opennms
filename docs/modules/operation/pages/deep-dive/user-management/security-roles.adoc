@@ -59,7 +59,8 @@ endif::opennms-prime[]
 | Permissions to use OpenNMS COMPASS mobile application to acknowledge alarms and notifications via the REST API.
 
 | ROLE_PROVISION
-| Permissions to use the provisioning system and configure SNMP in {page-component-title} to access management information from devices.
+| Permissions to use the provisioning system and configure SNMP in {page-component-title} to access management information from devices. +
+Reading requisitions through the REST API (the `/rest/requisitions` endpoints) requires `ROLE_PROVISION` or `ROLE_ADMIN`.
 
 | ROLE_READONLY *
 | Permissions only to read information in the web UI.
@@ -70,7 +71,8 @@ Does not allow user to change alarm states or notifications.
 
 | ROLE_REST
 | Permissions to interact with the {page-component-title} REST API. +
-Writing configuration through the REST API (the `/rest/config` endpoints) requires `ROLE_ADMIN`.
+Writing configuration through the REST API (the `/rest/config` endpoints) requires `ROLE_ADMIN`. +
+Reading requisitions through the REST API (the `/rest/requisitions` endpoints) requires `ROLE_PROVISION` or `ROLE_ADMIN`.
 
 | ROLE_RTC *
 | Permissions to exchange information with the {page-component-title} Real-Time Console for availability calculations.

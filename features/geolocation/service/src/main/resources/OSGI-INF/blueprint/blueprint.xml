@@ -8,8 +8,12 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
 
     <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
-    <reference id="nodeStatusCalculator" interface="org.opennms.features.status.api.node.NodeStatusCalculator" availability="mandatory"/>
     <reference id="geocoderServiceManager" interface="org.opennms.features.geocoder.GeocoderServiceManager" availability="mandatory" />
+
+    <!-- This service must not depend on the web application exporting its status calculator. -->
+    <bean id="nodeStatusCalculator" class="org.opennms.features.status.api.node.strategy.DefaultNodeStatusCalculator">
+        <argument ref="genericPersistenceAccessor" />
+    </bean>
 
     <bean id="geolocationResolver" class="org.opennms.features.geolocation.services.DefaultGeolocationResolver" >
         <argument ref="geocoderServiceManager" />

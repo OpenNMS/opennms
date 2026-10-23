@@ -23,6 +23,7 @@ package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -62,6 +63,11 @@ import io.netty.util.internal.SocketUtils;
 
 public class UdpListener implements GracefulShutdownListener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+
+    // No quiet period: the channel is closed before the group shuts down, so no new tasks arrive.
+    // Netty's default quiet period of 2 s per group delays every daemon stop.
+    private static final long SHUTDOWN_QUIET_PERIOD_MS = 0;
+    private static final long SHUTDOWN_TIMEOUT_MS = 1000;
 
     public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
@@ -125,12 +131,8 @@ public class UdpListener implements GracefulShutdownListener {
     public void stop() throws InterruptedException {
         NettyEventListener bossListener = new NettyEventListener("boss");
 
-        LOG.info("Closing boss group...");
-        if (this.bossGroup != null) {
-            // switch to use even listener rather than sync to prevent shutdown deadlock hang
-            this.bossGroup.shutdownGracefully().addListener(bossListener);
-        }
-
+        // Close the channel and stop the parsers before the group shuts down. A close task
+        // submitted after the group has terminated fails with RejectedExecutionException.
         if (this.socketFuture != null) {
             LOG.info("Closing channel...");
             this.socketFuture.channel().close().sync();
@@ -139,7 +141,13 @@ public class UdpListener implements GracefulShutdownListener {
             }
         }
 
-        this.parsers.forEach(Parser::stop);
+        stopParsers();
+
+        LOG.info("Closing boss group...");
+        if (this.bossGroup != null) {
+            // switch to use even listener rather than sync to prevent shutdown deadlock hang
+            this.bossGroup.shutdownGracefully(SHUTDOWN_QUIET_PERIOD_MS, SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS).addListener(bossListener);
+        }
 
         stopFuture = new Future<String>() {
             @Override
@@ -167,6 +175,28 @@ public class UdpListener implements GracefulShutdownListener {
                 return get();
             }
         };
+    }
+
+    /**
+     * Stops the parsers in parallel. A parser waits for the records that are still in its
+     * executor, so a sequential stop would take the sum of these waits.
+     */
+    private void stopParsers() throws InterruptedException {
+        final List<Thread> threads = new ArrayList<>(this.parsers.size());
+        for (final UdpParser parser : this.parsers) {
+            final Thread thread = new Thread(() -> {
+                try {
+                    parser.stop();
+                } catch (final Exception e) {
+                    LOG.warn("Failed to stop parser {}", parser.getName(), e);
+                }
+            }, "telemetryd-" + name + "-stop-" + parser.getName());
+            thread.start();
+            threads.add(thread);
+        }
+        for (final Thread thread : threads) {
+            thread.join();
+        }
     }
 
     public String getHost() {

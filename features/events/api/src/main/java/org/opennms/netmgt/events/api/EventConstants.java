@@ -515,7 +515,8 @@ public abstract class EventConstants {
     public static final String HARDWARE_INVENTORY_FAILED_UEI = "uei.opennms.org/internal/discovery/hardwareInventoryFailed";
     public static final String HARDWARE_INVENTORY_SUCCESSFUL_UEI = "uei.opennms.org/internal/discovery/hardwareInventorySuccessful";
 
-    public static final String KSC_REPORT_UPDATED_UEI = "uei.opennms.org/internal/kscReportUpdated";
+    /** The UEI keeps its historical value: the event definition in eventconf_events.sql is keyed on it. */
+    public static final String GRAPH_COLLECTION_UPDATED_UEI = "uei.opennms.org/internal/kscReportUpdated";
     public static final String PARAM_REPORT_TITLE = "reportTitle";
     public static final String PARAM_REPORT_GRAPH_COUNT = "graphCount";
 

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.4-SNAPSHOT</version>
+    <version>37.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-openapi-docs</artifactId>
@@ -179,6 +179,21 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.features.topology-views</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- SystemReportRestService.m_systemReport: the swagger scan reflects over
+         the resource's declared fields, so the field's type must be on the
+         classpath. webapp-rest declares it as provided (non-transitive). -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.system-report</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.wsman</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
