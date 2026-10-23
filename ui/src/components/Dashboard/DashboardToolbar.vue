@@ -137,8 +137,13 @@ License.
           @click="store.setEditMode(false)"
         />
       </template>
+      <!--
+        NMS-20482: the Edit button is temporarily hidden. The dashboard ships as a
+        read-only Vue port of the homepage first; editing will be enabled in a later
+        release. All edit-mode controls are kept intact. See showEditButton below.
+      -->
       <OnmsButton
-        v-else-if="canEdit"
+        v-else-if="canEdit && showEditButton"
         variant="outlined"
         label="Edit"
         icon="pi pi-pencil"
@@ -166,6 +171,11 @@ const { editMode, isDirty, isSaving, isPaused } = storeToRefs(store)
 // save (the PUT is ROLE_ADMIN-only, so non-admin edits would 403 and be lost)
 const { adminRole } = useRole()
 const canEdit = adminRole
+
+// NMS-20482: dashboard editing is temporarily disabled to roll the feature out
+// gradually and reduce risk: first move the homepage to Vue, then allow editing
+// in a later release. Set to true to bring the Edit button back.
+const showEditButton = false
 
 const panelToAdd = ref<string | null>(null)
 
